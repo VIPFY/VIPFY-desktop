@@ -4,6 +4,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 </head>
 <body style="overflow: hidden; background-color: rgba(0,0,0,0); margin: 0" >
+  <!-- Begin Hack; TODO: transfer this functionality into react app -->
+  <span style="font-size:25px">
+    <a href="javascript:document.getElementById('webview').loadURL('https://vipfy.com')"><img src="images/icon.png" width="22" height="22"></a>
+    |
+    <a href="javascript:document.getElementById('webview').loadURL('https://dropbox.com')"><img src="images/dropbox.png" width="22" height="22"></a>
+    |
+    <a href="javascript:document.getElementById('webview').openDevTools()"><img src="images/icon.png" width="22" height="22"></a>
+  </span>
+  <webview id="webview" preload="./preload.js" webpreferences="contextIsolation, webSecurity=no" src="https://vipfy.com" style="position:absolute;top:25px;left:0;width:100%;height:calc(100% - 25px);"></webview>
+  <!-- End Hack -->
+
   <div id="App"></div>
 </body>
 
