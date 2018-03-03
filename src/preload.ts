@@ -11,6 +11,8 @@ try {
     require('./locationScripts/dropbox.js')();
   } else if (hostMatches('.*\.?pipedrive.com')) {
     require('./locationScripts/pipedrive.js')();
+  } else if (hostMatches('.*\.?wrike.com')) {
+    require('./locationScripts/wrike.js')();
   } else {
     con.log(`No Script for ${hostname}`);
   }
