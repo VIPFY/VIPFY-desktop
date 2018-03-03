@@ -3,7 +3,7 @@ import electron = require("electron")
 export const con = electron.remote.getGlobal("console");
 const app = electron.remote.app;
 export const appPath = app.getAppPath();
-export const todoPath = "file://" + path.join(appPath, "todo.html");
+export const todoPath = "file://" + path.join(appPath, "src", "todo.html");
 
 export function hideByQuery(query: string, parent: boolean): void {
   let elements = document.querySelectorAll<HTMLElement>(query);
@@ -17,7 +17,11 @@ export function hideByQuery(query: string, parent: boolean): void {
 
 export function redirectLinks(originalUrl: string, targetUrl: string): void {
   //select all links with hrefs starting with originalUrl
-  let elements = document.querySelectorAll<HTMLAnchorElement>(`a[href^='${originalUrl}']`);
+  redirectLinksByQuery(`a[href^='${originalUrl}']`, targetUrl);
+}
+
+export function redirectLinksByQuery(query: string, targetUrl: string): void {
+  let elements = document.querySelectorAll<HTMLAnchorElement>(query);
   for (let i = 0; i < elements.length; i++) {
     elements[i].href = targetUrl;
   }
