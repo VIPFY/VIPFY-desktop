@@ -38,8 +38,8 @@ function modifyAll() {
 }
 
 function login() {
-  document.querySelector("input[name='login']")!.value = "jf@vipfy.com";
-  document.querySelector("input[name='password']")!.value = "ejHawIX4nWQmj6csB7TZ";
-  document.querySelector("input[name='remember']")!.checked = "checked";
-  document.querySelector("button[type='submit']")!.click();
+  document.querySelector<HTMLInputElement>("input[name='login']")!.value = "jf@vipfy.com";
+  document.querySelector<HTMLInputElement>("input[name='password']")!.value = "ejHawIX4nWQmj6csB7TZ";
+  document.querySelector<HTMLInputElement>("input[name='remember']")!.checked = true;
+  document.querySelector<HTMLInputElement>("button[type='submit']")!.click();
 }

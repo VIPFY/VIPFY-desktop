@@ -24,9 +24,10 @@ function modifyAll() {
   redirectLinks("/accounts.htm#checkout", todoPath);
 }
 
+
 function login() {
-  document.querySelector("input[name='login']")!.value = "jf@vipfy.com";
-  document.querySelector("input[name='pwd']")!.value = "ytaZGkuOVbIwgua3KdQY";
-  document.querySelector("input[name='rememberMe']")!.checked = "checked";
-  document.querySelector("button[id='submit-login-button']")!.click();
+  document.querySelector<HTMLInputElement>("input[name='login']")!.value = "jf@vipfy.com";
+  document.querySelector<HTMLInputElement>("input[name='pwd']")!.value = "ytaZGkuOVbIwgua3KdQY";
+  document.querySelector<HTMLInputElement>("input[name='rememberMe']")!.checked = true;
+  document.querySelector<HTMLInputElement>("button[id='submit-login-button']")!.click();
 }

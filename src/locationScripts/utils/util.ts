@@ -6,7 +6,7 @@ export const appPath = app.getAppPath();
 export const todoPath = "file://" + path.join(appPath, "todo.html");
 
 export function hideByQuery(query: string, parent: boolean): void {
-  let elements = document.querySelectorAll(query) as NodeListOf<HTMLElement>;
+  let elements = document.querySelectorAll<HTMLElement>(query);
   for (let i = 0; i < elements.length; i++) {
       elements[i].style.display = "none";
       if (parent) {
@@ -17,7 +17,7 @@ export function hideByQuery(query: string, parent: boolean): void {
 
 export function redirectLinks(originalUrl: string, targetUrl: string): void {
   //select all links with hrefs starting with originalUrl
-  let elements = document.querySelectorAll(`a[href^='${originalUrl}']`) as NodeListOf<HTMLAnchorElement>;
+  let elements = document.querySelectorAll<HTMLAnchorElement>(`a[href^='${originalUrl}']`);
   for (let i = 0; i < elements.length; i++) {
     elements[i].href = targetUrl;
   }

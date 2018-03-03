@@ -1,4 +1,5 @@
 import { con, todoPath, hideByQuery } from "./utils/util";
+import "./utils/domQuery";
 
 module.exports = function() {
   if (window.location.pathname == "/account/delete") {
@@ -45,8 +46,8 @@ function modifySettings() {
 }
 
 function login(form: Element) {
-  form.querySelector("input[name='login_email']")!.value = "jf@vipfy.com";
-  form.querySelector("input[name='login_password']")!.value = "zdwMYqQPE4gSHr3QQSkm";
-  form.querySelector("input[name='remember_me']")!.checked = "checked";
-  form.querySelector("button[type='submit']")!.click();
+  form.querySelector<HTMLInputElement>("input[name='login_email']")!.value = "jf@vipfy.com";
+  form.querySelector<HTMLInputElement>("input[name='login_password']")!.value = "zdwMYqQPE4gSHr3QQSkm";
+  form.querySelector<HTMLInputElement>("input[name='remember_me']")!.checked = true;
+  form.querySelector<HTMLInputElement>("button[type='submit']")!.click();
 }
