@@ -22,7 +22,9 @@
     |
     <a href="javascript:document.getElementById('webview').openDevTools()" style="position:absolute;right:5px;"><img src="images/gear.png" width="22" height="22"></a>
   </span>
-  <webview id="webview" preload="./preload.ts" webpreferences="contextIsolation, webSecurity=no" src="https://vipfy.com" style="position:absolute;top:25px;left:0;width:100%;height:calc(100% - 25px);"></webview>
+  <!-- TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker -->
+  <!-- TODO: move TODO page to web so webSecurity=no is no longer nessesary -->
+  <webview id="webview" preload="./preload.ts" webpreferences="webSecurity=no" src="https://vipfy.com" style="position:absolute;top:25px;left:0;width:100%;height:calc(100% - 25px);"></webview>
   <!-- End Hack -->
   
   <div id="App"></div>

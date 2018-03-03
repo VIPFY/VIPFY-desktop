@@ -1,6 +1,6 @@
 const con = require('electron').remote.getGlobal('console');
 const hostname = window.location.hostname;
-function hostMatches(domain) {
+function hostMatches(domain: string) {
   return new RegExp(domain).test(hostname);
 }
 
