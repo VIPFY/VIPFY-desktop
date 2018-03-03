@@ -1,7 +1,7 @@
 //TODO: buying Proofing&Approval gives me a "Request a quote" window. How to handle this?
 //TODO: account deletion flow
 
-import { con, todoPath, hideByQuery } from "./utils/util";
+import { con, todoPath, hideByQuery, redirectLinks } from "./utils/util";
 
 module.exports = function() {
   window.addEventListener("DOMContentLoaded", onReady);
@@ -22,14 +22,6 @@ function onReady() {
 
 function modifyAll() {
   redirectLinks("/accounts.htm#checkout", todoPath);
-}
-
-function redirectLinks(originalUrl, targetUrl) {
-  //select all links with hrefs starting with originalUrl
-  let elements = document.querySelectorAll(`a[href^='${originalUrl}']`);
-  for (let i = 0; i < elements.length; i++) {
-    elements[i].href = targetUrl;
-  }
 }
 
 function login() {
