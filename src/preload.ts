@@ -1,11 +1,9 @@
 const con = require('electron').remote.getGlobal('console');
-con.log('1');
 const hostname = window.location.hostname;
-con.log('1');
 function hostMatches(domain) {
   return new RegExp(domain).test(hostname);
 }
-con.log('1');
+
 try {
   if (hostMatches('(www.)?vipfy.com')) {
     require('./locationScripts/vipfy.js')();

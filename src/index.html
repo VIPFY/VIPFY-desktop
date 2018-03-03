@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <style>
+    img {
+      border: 1px solid #707070;
+      border-radius: 3px/10px;
+    }
+  </style>
 </head>
 <body style="overflow: hidden; background-color: rgba(0,0,0,0); margin: 0" >
   <!-- Begin Hack; TODO: transfer this functionality into react app -->
@@ -12,7 +18,9 @@
     |
     <a href="javascript:document.getElementById('webview').loadURL('https://app.pipedrive.com/auth/login')"><img src="images/pipedrive.png" width="22" height="22"></a>
     |
-    <a href="javascript:document.getElementById('webview').openDevTools()"><img src="images/icon.png" width="22" height="22"></a>
+    <a href="javascript:document.getElementById('webview').loadURL('https://www.wrike.com/login/')"><img src="images/wrike.png" width="22" height="22"></a>
+    |
+    <a href="javascript:document.getElementById('webview').openDevTools()" style="position:absolute;right:5px;"><img src="images/gear.png" width="22" height="22"></a>
   </span>
   <webview id="webview" preload="./preload.ts" webpreferences="contextIsolation, webSecurity=no" src="https://vipfy.com" style="position:absolute;top:25px;left:0;width:100%;height:calc(100% - 25px);"></webview>
   <!-- End Hack -->
