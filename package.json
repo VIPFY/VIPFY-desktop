@@ -19,7 +19,8 @@
       "make_targets": {
         "win32": [
           "squirrel",
-          "appx"
+          "appx",
+          "zip"
         ],
         "darwin": [
           "zip"
