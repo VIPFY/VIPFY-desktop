@@ -1,8 +1,8 @@
 {
   "name": "vipfy-desktop",
   "productName": "vipfy-desktop",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "0.1.0",
+  "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
   "scripts": {
     "start": "electron-forge start",
@@ -12,27 +12,29 @@
     "lint": "tslint --project tsconfig.json --type-check --force"
   },
   "keywords": [],
-  "author": "jannis",
-  "license": "MIT",
+  "author": "Vipfy GmbH i.G.",
+  "license": "proprietary",
   "config": {
     "forge": {
       "make_targets": {
         "win32": [
+          "zip",
           "squirrel",
-          "appx",
-          "zip"
+          "appx"
         ],
         "darwin": [
           "zip"
         ],
         "linux": [
+          "zip",
           "deb",
           "rpm"
         ]
       },
       "electronPackagerConfig": {
         "packageManager": "yarn",
-        "icon": "icon"
+        "icon": "iconTransparent",
+        "asar": true
       },
       "electronWinstallerConfig": {
         "name": "vipfy_desktop"

@@ -15,8 +15,17 @@ if (isDevMode) {
 const createWindow = async () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 800,
+    icon: "iconTransparent.png",
+    show: false,
+    center: true,
+    title: "Vipfy",
+    titleBarStyle: "hiddenInset",
+  });
+
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show()
   });
 
   // and load the index.html of the app.
