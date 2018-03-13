@@ -1,5 +1,4 @@
 import { con, todoPath, hideByQuery } from "./utils/util";
-import "./utils/domQuery";
 
 module.exports = function() {
   if (window.location.pathname == "/account/delete") {
