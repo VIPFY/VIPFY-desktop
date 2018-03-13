@@ -13,9 +13,9 @@ npx electron-forge start
 # How to package
 
 ```bash
-npx electron-forge package --platform=win32
-npx electron-forge package --platform=darwin
-npx electron-forge package --platform=linux
+npx electron-forge make --platform=win32
+npx electron-forge make --platform=darwin
+npx electron-forge make --platform=linux
 ```
 
 # Architecture
