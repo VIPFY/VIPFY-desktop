@@ -14,8 +14,8 @@
             },
             // runtimeArgs will be passed directly to your Electron application
             "runtimeArgs": [
-                "foo",
-                "bar"
+                "--ignore-certificate-errors",
+                ""
             ],
             "cwd": "${workspaceRoot}"
         }
