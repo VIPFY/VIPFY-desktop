@@ -1,5 +1,6 @@
 //TODO: buying Proofing&Approval gives me a "Request a quote" window. How to handle this?
 //TODO: account deletion flow
+//TODO: user adding
 
 import { con, todoPath, hideByQuery, redirectLinks } from "./utils/util";
 
@@ -22,6 +23,7 @@ function onReady() {
 
 function modifyAll() {
   redirectLinks("/accounts.htm#checkout", todoPath);
+  hideByQuery("change-password-section", false);
 }
 
 
