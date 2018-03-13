@@ -71,10 +71,20 @@
 
       hideLoadingScreen();
 
-      wv = document.getElementById("webview");
-      wv.addEventListener("did-fail-load", (code, desc, url, isMain) => {hideLoadingScreen(); console.log(`failed loading ${url}: ${code} ${desc}`)});
+      const wv = document.getElementById("webview");
+      wv.addEventListener("did-fail-load", (code, desc, url, isMain) => {hideLoadingScreen(); console.log(`failed loading ${url}: ${code} ${desc}`)});  //TODO: smoother handling of this
       wv.addEventListener("did-start-loading", showLoadingScreen);
       wv.addEventListener("did-stop-loading", maybeHideLoadingScreen);
+
+      //if wv tries to open new window, open it in default browser
+      //TODO: probably needs more fine grained control for cases where new window should stay logged in
+      const {shell} = require('electron');
+      wv.addEventListener('new-window', (e) => {
+        const protocol = require('url').parse(e.url).protocol
+        if (protocol === 'http:' || protocol === 'https:') {
+          shell.openExternal(e.url)
+        }
+      });
     });
 
 
