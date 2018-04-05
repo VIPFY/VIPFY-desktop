@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "vipfy-desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
   "scripts": {
@@ -54,25 +54,27 @@
     }
   },
   "dependencies": {
+    "@superhuman/electron-context-menu": "^0.9.2",
     "@types/electron-devtools-installer": "^2.0.2",
     "@types/react": "^0.14.55",
     "@types/react-dom": "^0.14.20",
     "electron-compile": "^6.4.2",
-    "@superhuman/electron-context-menu": "^0.9.2",
     "electron-devtools-installer": "^2.1.0",
     "electron-squirrel-startup": "^1.0.0",
+    "npm": "^5.8.0",
+    "nucleus-uploader": "^1.0.0",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-hot-loader": "^3.0.0-beta.6",
-    "tslib": "^1.4.0"
+    "tslib": "^1.9.0"
   },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "electron-forge": "^5.1.1",
-    "electron-prebuilt-compile": "1.8.2",
-    "tslint": "^5.1.0",
-    "typescript": "~2.2.2"
+    "electron-prebuilt-compile": "2.0.0-beta.5",
+    "tslint": "^5.9.0",
+    "typescript": "~2.7.2"
   }
 }
