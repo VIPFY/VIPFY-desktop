@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="stylesheet" type="text/css" href="./css/layout.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Dosis:200,300,400,500,600,700,800|Fjalla+One|Quicksand:300,400,500,700&amp;subset=latin-ext" rel="stylesheet"> 
   <style>
     img {
       border: 1px solid #707070;
@@ -14,6 +16,7 @@
       left:0;
       width:100%;
       height:calc(100% - 25px);
+      display: none;
     }
 
     #loadingScreen {
@@ -35,14 +38,14 @@
 </head>
 <body style="overflow: hidden; background-color: rgba(0,0,0,0); margin: 0" >
   <!-- Begin Hack; TODO: transfer this functionality into react app -->
-  <span style="font-size:25px">
+  <!--<span style="font-size:25px">
     <a href="javascript:document.getElementById('webview').loadURL('https://vipfy.com')"><img src="images/icon.png" width="22" height="22"></a>
     <a href="javascript:document.getElementById('webview').loadURL('https://dropbox.com')"><img src="images/dropbox.png" width="22" height="22"></a>
     <a href="javascript:document.getElementById('webview').loadURL('https://app.pipedrive.com/auth/login')"><img src="images/pipedrive.png" width="22" height="22"></a>
     <a href="javascript:document.getElementById('webview').loadURL('https://www.wrike.com/login/')"><img src="images/wrike.png" width="22" height="22"></a>
     
     <a href="javascript:document.getElementById('webview').openDevTools()" style="position:absolute;right:5px;"><img src="images/gear.png" width="22" height="22"></a>
-  </span>
+  </span>-->
   <!-- TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker -->
   <!-- TODO: move TODO page to web so webSecurity=no is no longer nessesary -->
   <webview id="webview" class="mainPosition" preload="./preload-launcher.js" webpreferences="webSecurity=no" src="https://vipfy.com" partition="persist:services"></webview>
@@ -66,7 +69,7 @@
       });
       //normal windows
       require('@superhuman/electron-context-menu')({
-        "showInspectElement": false
+        "showInspectElement": true
       });
 
       hideLoadingScreen();
@@ -117,17 +120,5 @@
 </body>
 
 <script>window.exports = module.exports</script>
-<script type="text/tsx">
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import {AppContainer} from 'react-hot-loader';
-
-let render = () => {
-  const { App } = require('./app');
-  ReactDOM.render(<AppContainer><App /></AppContainer>, document.getElementById('App'));
-}
-
-render();
-if (module.hot) { module.hot.accept(render); }
-</script>
+<script type="text/tsx">require("./react/index.tsx")</script>
 </html>
