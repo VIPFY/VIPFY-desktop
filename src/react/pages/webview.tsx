@@ -18,11 +18,11 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   constructor(props) {
     super(props);
     this.state = {
-      url: this.appToUrl(props.app) //passed prop as initial value
+      url: Webview.appToUrl(props.app) //passed prop as initial value
     }
   }
 
-  private appToUrl(app: string):string {
+  private static appToUrl(app: string):string {
     switch (app) {
       case "vipfy": return "https://vipfy.com";
       case "pipedrive": return "https://pipedrive.com";
@@ -30,11 +30,8 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     }
   }
 
-  getDerivedStateFromProps(nextProps: WebViewProps, prevState: WebViewState): WebViewState | null {
-    if(nextProps.app != this.props.app) {
-      return { ...prevState, url: this.appToUrl(nextProps.app) }
-    }
-    return null;
+  static getDerivedStateFromProps(nextProps: WebViewProps, prevState: WebViewState): WebViewState | null {
+    return { ...prevState, url: Webview.appToUrl(nextProps.app) };
   }
 
   onDidNavigate(url: string): void {
