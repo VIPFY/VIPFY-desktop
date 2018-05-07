@@ -28,17 +28,25 @@ class Dashboard extends Component {
 
         <div className="useableApps">
           <div className="useableAppsTitle">Just click on a service to start</div>
-          <img className="useableAppsLogo" onClick={() => (this.setApp("pipedrive"))}
-          src="https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png" />
-          <img className="useableAppsLogo" onClick={() => (this.setApp("slack"))}
-          src="https://storage.googleapis.com/vipfy-imagestore-01/logos/slack.svg" />
+          <div className="useableAppsLogo" onClick={() => (this.setApp("pipedrive"))}
+            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"}}>
+            <span className="useableServiceName">Pipedrive</span>
+          </div>
+          <div className="useableAppsLogo" onClick={() => (this.setApp("slack"))}
+            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/slack.svg)"}}>
+            <span className="useableServiceName">Slack</span>
+          </div>
         </div>
         <div className="recommendedApps">
           <div className="recommendedAppsTitle">We belive you also need these services</div>
-          <img className="recommendedAppsLogo" onClick={() => (this.goTo("marketplace"))}
-          src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png" />
-          <img className="recommendedAppsLogo" onClick={() => (this.goTo("marketplace"))}
-          src="https://storage.googleapis.com/vipfy-imagestore-01/logos/wave.png" />
+          <div className="recommendedAppsLogo" onClick={() => (this.goTo("marketplace"))}
+          style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png)"}}>
+            <span className="recommendedServiceName">Vipfy</span>
+          </div>
+          <div className="recommendedAppsLogo" onClick={() => (this.goTo("marketplace"))}
+          style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/wave.png)"}}>
+            <span className="recommendedServiceName">Wave</span>
+          </div>
         </div>
         <Link to="/area/webview">LINK</Link>
       </div>
