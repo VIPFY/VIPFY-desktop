@@ -11,20 +11,35 @@ class Login extends Component {
     focus: 1
   }
 
+  componentWillMount() {
+    console.log("MOUNT", this)
+    if (this.props.location.state) {
+      if (this.props.location.state.loginError) {
+        this.state.error = this.props.location.state.loginError
+        this.state.errorbool = true
+      }
+    }
+  }
 
   loginClick() {
+    this.handleEnter(null, null, true)
+  }
+
+  login() {
     this.setState({loginMove: true})
     console.log("EMail", this.emailInput.value)
     console.log("Pass", this.passInput.value)
 
-    this.props.history.push("/dashboard")
+    //this.props.history.push("/dashboard")
+    this.props.login()
   }
+
   forgetClick() {
     this.setState({forgotMove: true})
   }
 
-  handleEnter(e, field) {
-    if (e.key === "Enter") {
+  handleEnter(e, field, force) {
+    if (force || e.key === "Enter") {
       let email = this.emailInput.value
       let pass = this.passInput.value
       console.log("EMail", this.emailInput.value)
@@ -33,28 +48,23 @@ class Login extends Component {
       this.state.errorbool = false
       if (email.includes("@") && email.includes(".") && !(pass ==="")) {
         //Email Basic Check and Password not empty -> Check
-        this.loginClick()
+        this.login()
       } else if (!(email.includes("@") && email.includes("."))) {
         //Email Basic Check not successfull -> Delete PassInput and focus email (again)
-        this.state.error = "Not a E-mail Address."
-        this.state.errorbool = true
         this.passInput.value = ""
         this.emailInput.focus()
-        this.setState({focus: 1})
+        this.setState({focus: 1, errorbool: true, error: "Not an E-mail Address."})
       } else if (pass==="") {
         //Email Basic Check ok, but no password -> if focus before on email than just focus, otherwise also error
         if (!(this.state.focus === 1)) {
-          this.state.error = "Please insert your password."
-          this.state.errorbool = true
+          this.setState({errorbool: true, error: "Please insert your password."})
         }
         this.passInput.focus()
         this.setState({focus: 2})
       } else {
-        this.state.error = "Not a E-mail Address or Password not set"
-        this.state.errorbool = true
         this.passInput.value = ""
         this.emailInput.focus()
-        this.setState({focus: 1})
+        this.setState({focus: 1, errorbool: true, error: "Not an E-mail Address or Password not set"})
       }
     } else {
       this.setState({focus: field})
