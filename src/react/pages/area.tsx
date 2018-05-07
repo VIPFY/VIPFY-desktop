@@ -11,7 +11,7 @@ import Webview from "./webview";
 
 class Area extends Component {
   state = {
-    app: null
+    app: 'vipfy'
   }
 
   setapp = appname => {
