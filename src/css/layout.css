@@ -114,7 +114,11 @@ label{
     transition-timing-function: ease-in-out;
     opacity: 1;
 }
-
+.navi{
+    background-color: #333;
+    height: 4em;
+    color: white;
+}
 /*fonts
 
     font-family: 'Dosis', sans-serif;

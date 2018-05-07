@@ -31,7 +31,7 @@ class Login extends Component {
     console.log("Pass", this.passInput.value)
 
     //this.props.history.push("/dashboard")
-    this.props.login()
+    this.props.login(this.emailInput.value, this.passInput.value)
   }
 
   forgetClick() {

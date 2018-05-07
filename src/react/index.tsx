@@ -1,14 +1,21 @@
+require("dotenv").config();
+
+console.log("PROCESS", process.cwd(), process.env)
+
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { HashRouter as Router } from "react-router-dom";
+import { ApolloProvider } from "react-apollo";
 
 import App from "./app";
-
+import client from "./networkInterface";
 
 const Application = () => (
-  <Router>
-    <App />
-  </Router>
+  <ApolloProvider client={client}>
+    <Router>
+      <App />
+    </Router>
+  </ApolloProvider>
 );
 
 ReactDOM.render(<Application />, document.getElementById("App"));
