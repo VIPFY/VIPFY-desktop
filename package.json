@@ -56,8 +56,8 @@
   "dependencies": {
     "@superhuman/electron-context-menu": "^0.9.2",
     "@types/electron-devtools-installer": "^2.0.2",
-    "@types/react": "^0.14.55",
-    "@types/react-dom": "^0.14.20",
+    "@types/react": "^16.03.13",
+    "@types/react-dom": "^16.0.5",
     "apollo-cache-inmemory": "^1.2.1",
     "apollo-client": "^2.3.1",
     "apollo-link-context": "^1.0.8",
