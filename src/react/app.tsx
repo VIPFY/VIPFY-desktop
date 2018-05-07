@@ -2,7 +2,8 @@ import * as React from "react";
 import { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 import { withRouter, Redirect} from "react-router";
-import { graphql } from "react-apollo";
+import { graphql, compose } from "react-apollo";
+import { me } from "./queries/auth";
 
 import { signInUser } from "./mutations/auth";
 
@@ -13,33 +14,11 @@ import Bug from "./pages/bug";
 
 class App extends Component {
   state = {
-    login: false
+    login: false,
+    firstname: "",
+    lastname: ""
   }
 
-  /*logMeIn = (email, password) => {
-    console.log("LogMeIn", this)
-
-
-    this.props
-      .signIn({variables: { email, password }})
-      .then(res => {
-        const { ok, token, refreshToken, error } = res.data.signIn;
-        console.log("RESULT GRAPHQL");
-        console.log(res);
-        if (ok) {
-          localStorage.setItem("token", token);
-          localStorage.setItem("refreshToken", refreshToken);
-          this.setState({login:  true})
-        }
-      })
-      .catch(err => {
-        console.log("BIG ERROR", err, this)
-      })
-
-
-      this.props.history.push("/area/dashboard")
-
-  }*/
   logMeOut = () => {
     this.setState({login:  false})
     this.props.history.push("/")
@@ -48,11 +27,15 @@ class App extends Component {
   logMeIn = async (email, password) => {
     try {
       const res = await this.props.signIn({variables: { email, password }})
-        const { ok, token, refreshToken} = res.data.signIn;
+        const { ok, token, refreshToken, user} = res.data.signIn;
         if (ok) {
           localStorage.setItem("token", token);
           localStorage.setItem("refreshToken", refreshToken);
           this.setState({login:  true})
+          console.log(res)
+          this.setState({firstname: user.firstname})
+          this.setState({lastname: user.lastname})
+          this.setState({profilepicture: user.profilepicture})
         }
       }
       catch(err) {
@@ -62,10 +45,6 @@ class App extends Component {
 
       this.props.history.push("/area/dashboard")
 
-  }
-  loggedIn() {
-    console.log("LoggedIn", this)
-    return this.state.login
   }
 
   render() {
@@ -77,7 +56,8 @@ class App extends Component {
           <Route exact path="/" render={
               (props) => (<Login login={this.logMeIn} {...props} />)}/>
           <Route path="/area" render={
-              (props) => (this.loggedIn() ? (<Area logMeOut={this.logMeOut} {...props} />):
+              (props) => (this.state.login ? (<Area logMeOut={this.logMeOut} {...props}
+                firstname={this.state.firstname} lastname={this.state.lastname} profilepic={this.state.profilepicture} />):
                 (<Redirect to={{pathname: "/", state: {loginError: "E-mail or Password incorrect!"} }}/>))
             } />
           <Route component={Bug} />
@@ -88,5 +68,6 @@ class App extends Component {
 }
 
 export default graphql(signInUser, {
-  name: "signIn"
-})(withRouter(App, history))
+    name: "signIn"
+  })
+  (withRouter(App, history))

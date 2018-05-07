@@ -27,7 +27,9 @@ class Area extends Component {
       <div className="area">
         <Route render={
               (props) => (<Navigation setapp={this.setapp}  logMeOut={this.props.logMeOut} {...props} />)}/>
-        <Route exact path="/area/dashboard" component={Dashboard} />
+        <Route exact path="/area/dashboard" render={
+              (props) => (<Dashboard {...props}
+              firstname={this.props.firstname} lastname={this.props.lastname} profilepic={this.props.profilepicture}/>)} />
         <Route exact path="/area/webview" render={
               (props) => (<Webview app={this.state.app} {...props} />)}/>
       </div>

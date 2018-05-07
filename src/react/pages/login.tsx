@@ -20,6 +20,12 @@ class Login extends Component {
     }
   }
 
+  cheat() {
+    this.emailInput.value = "nv@vipfy.com"
+    this.passInput.value = "12345678"
+    this.handleEnter(null, null, true)
+  }
+
   loginClick() {
     this.handleEnter(null, null, true)
   }
@@ -68,7 +74,7 @@ class Login extends Component {
     return (
       <div className="centralize backgroundLogo">
         <div className="loginHolder">
-          <div className="formHeading">Please log in</div>
+          <div className="formHeading" onDoubleClick={() => this.cheat()} >Please log in</div>
           <div className={this.state.errorbool===false? "formError noError" : "formError oneError"}>{this.state.error}</div>
           <label>Username:</label>
           <input className="inputField" placeholder="Your E-mail Address" autoFocus
