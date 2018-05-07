@@ -15,9 +15,21 @@ export type WebViewProps = {
   app: string;
 }
 
+// TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
+// TODO: move TODO page to web so webSecurity=no is no longer nessesary
+
 export class Webview extends Component<WebViewProps, WebViewState> {
 
   static defaultProps = { app: 'vipfy' }
+
+  static loadingQuotes = [
+    "Loading",
+    "Connecting to the World",
+    "Constructing Pylons",
+    "Loading",
+    "Did you know that Vipfy is cool",
+    "Just a second"
+  ];
 
   constructor(props) {
     super(props);
@@ -53,7 +65,17 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   }
 
   showLoadingScreen(): void {
-    this.setState({ showLoadingScreen: true });
+    this.setState({
+      showLoadingScreen: true,
+      inspirationalText: Webview.loadingQuotes[Math.floor(Math.random()*Webview.loadingQuotes.length)]
+    });
+  }
+
+  maybeHideLoadingScreen(): void {
+    let loginPageRegex = "^https://(www.)?dropbox.com/?(/login.*|/logout)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login";
+    if(new RegExp(loginPageRegex).test(this.state.url))
+      return;
+    this.hideLoadingScreen();
   }
 
   onNewWindow(e): void {
@@ -73,7 +95,8 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           src={this.state.url} partition="persist:services" onDidNavigate={e => this.onDidNavigate(e.target.src)}
           style={{display: this.state.showLoadingScreen ? 'none' : 'block' }}
           onDidFailLoad={(code, desc, url, isMain) => {this.hideLoadingScreen(); console.log(`failed loading ${url}: ${code} ${desc}`)}}
-          onDidStartLoading={e => this.showLoadingScreen()} onDidStopLoading={e => this.hideLoadingScreen()}
+          onDidStartLoading={e => this.showLoadingScreen()}
+          onDidStopLoading={e => this.maybeHideLoadingScreen()}
           onNewWindow={e => this.onNewWindow(e)}></WebView>
         <div id="loadingScreen" className="mainPosition" style={{display: this.state.showLoadingScreen ? 'block' : 'none' }}>
           <div className="loadingTextBlock">

@@ -9,18 +9,6 @@
   </style>
 </head>
 <body style="overflow: hidden; background-color: rgba(0,0,0,0); margin: 0" >
-  <!-- Begin Hack; TODO: transfer this functionality into react app -->
-  <!--<span style="font-size:25px">
-    <a href="javascript:document.getElementById('webview').loadURL('https://vipfy.com')"><img src="images/icon.png" width="22" height="22"></a>
-    <a href="javascript:document.getElementById('webview').loadURL('https://dropbox.com')"><img src="images/dropbox.png" width="22" height="22"></a>
-    <a href="javascript:document.getElementById('webview').loadURL('https://app.pipedrive.com/auth/login')"><img src="images/pipedrive.png" width="22" height="22"></a>
-    <a href="javascript:document.getElementById('webview').loadURL('https://www.wrike.com/login/')"><img src="images/wrike.png" width="22" height="22"></a>
-    
-    <a href="javascript:document.getElementById('webview').openDevTools()" style="position:absolute;right:5px;"><img src="images/gear.png" width="22" height="22"></a>
-  </span>-->
-  <!-- TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker -->
-  <!-- TODO: move TODO page to web so webSecurity=no is no longer nessesary -->
-  <!-- End Hack -->
   
   <div id="App"></div>
 
@@ -36,54 +24,11 @@
       require('@superhuman/electron-context-menu')({
         "showInspectElement": true
       });
-
-      hideLoadingScreen();
-
-      const wv = document.getElementById("webview");
-      wv.addEventListener("did-fail-load", (code, desc, url, isMain) => {hideLoadingScreen(); console.log(`failed loading ${url}: ${code} ${desc}`)});  //TODO: smoother handling of this
-      wv.addEventListener("did-start-loading", showLoadingScreen);
-      wv.addEventListener("did-stop-loading", maybeHideLoadingScreen);
-
-      //if wv tries to open new window, open it in default browser
-      //TODO: probably needs more fine grained control for cases where new window should stay logged in
-      const {shell} = require('electron');
-      wv.addEventListener('new-window', (e) => {
-        const protocol = require('url').parse(e.url).protocol
-        if (protocol === 'http:' || protocol === 'https:') {
-          shell.openExternal(e.url)
-        }
-      });
     });
-
-
-    function maybeHideLoadingScreen() {
-      let loginPageRegex = "^https://(www.)?dropbox.com/?(/login.*|/logout)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login";
-      if(new RegExp(loginPageRegex).test(document.getElementById("webview").src))
-        return;
-      hideLoadingScreen();
-    }
-
-
-    let loadingQuotes = [
-      "Loading",
-      "Connecting to the World",
-      "Constructing Pylons",
-      "Loading",
-      "Did you know that Vipfy is cool",
-      "Just a second"
-    ];
-
-    function showLoadingScreen() {
-      document.getElementById("inspirational").innerText = loadingQuotes[Math.floor(Math.random()*loadingQuotes.length)];
-      document.getElementById("loadingScreen").style.display = "block";
-    }
-
-    function hideLoadingScreen() {
-      document.getElementById("loadingScreen").style.display = "none";
-    }
   </script>
-</body>
 
 <script>window.exports = module.exports</script>
 <script type="text/tsx">require("./react/index.tsx")</script>
+</body>
+
 </html>
