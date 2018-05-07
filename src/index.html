@@ -6,35 +6,6 @@
   <link href="https://fonts.googleapis.com/css?family=Dosis:200,300,400,500,600,700,800|Fjalla+One|Quicksand:300,400,500,700&amp;subset=latin-ext" rel="stylesheet"> 
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.12/css/all.css" integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9" crossorigin="anonymous">
   <style>
-    img {
-      border: 1px solid #707070;
-      border-radius: 3px/10px;
-    }
-
-    .mainPosition {
-      position:absolute;
-      top:25px;
-      left:0;
-      width:100%;
-      height:calc(100% - 25px);
-      display: none;
-    }
-
-    #loadingScreen {
-      background-color: white;
-      background-image: url('images/loading.gif');
-      background-repeat:no-repeat;
-      background-position: center center;
-    }
-
-    .inspirationalText {
-      color: rgb(141, 0, 0);
-      font-size: 1.5rem;
-    }
-
-    .legalText {
-      font-size: 0.7rem;
-    }
   </style>
 </head>
 <body style="overflow: hidden; background-color: rgba(0,0,0,0); margin: 0" >
@@ -49,13 +20,6 @@
   </span>-->
   <!-- TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker -->
   <!-- TODO: move TODO page to web so webSecurity=no is no longer nessesary -->
-  <webview id="webview" class="mainPosition" preload="./preload-launcher.js" webpreferences="webSecurity=no" src="https://vipfy.com" partition="persist:services"></webview>
-  <div id="loadingScreen" class="mainPosition">
-    <div style="position:absolute; top:70%; width: 100%;">
-      <center class="inspirationalText" id="inspirational">Connecting</center><br>
-      <center class="legalText">Legal Text</center>
-    </div>
-  </div>
   <!-- End Hack -->
   
   <div id="App"></div>

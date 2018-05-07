@@ -5,6 +5,9 @@ import WebView = require('react-electron-web-view');
 
 export type WebViewState = {
   url: string;
+  inspirationalText: string;
+  legalText: string;
+  showLoadingScreen: boolean;
 }
 
 export type WebViewProps = {
@@ -18,7 +21,10 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   constructor(props) {
     super(props);
     this.state = {
-      url: Webview.appToUrl(props.app) //passed prop as initial value
+      url: Webview.appToUrl(props.app), //passed prop as initial value
+      inspirationalText: "Loading",
+      legalText: "Legal Text",
+      showLoadingScreen: false,
     }
   }
 
@@ -44,9 +50,16 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   render() {
     console.log("WEBVIEW", this.props.app)
     return (
-      <div>
-         <WebView id="webview" preload="./preload-launcher.js" webpreferences="webSecurity=no" 
-          src={this.state.url} partition="persist:services" onDidNavigate={e => this.onDidNavigate(e.target.src)}></WebView>
+      <div>WEBVIEW
+        <WebView id="webview" preload="./preload-launcher.js" webpreferences="webSecurity=no" className="mainPosition"
+          src={this.state.url} partition="persist:services" onDidNavigate={e => this.onDidNavigate(e.target.src)}
+          style={{display: this.state.showLoadingScreen ? 'none' : 'block' }}></WebView>
+        <div id="loadingScreen" className="mainPosition" style={{display: this.state.showLoadingScreen ? 'block' : 'none' }}>
+          <div className="loadingTextBlock">
+            <div className="centerText inspirationalText"><div>{this.state.inspirationalText}</div></div>
+            <div className="centerText legalText"><div>{this.state.legalText}</div></div>
+          </div>
+        </div>
       </div>
     );
   }

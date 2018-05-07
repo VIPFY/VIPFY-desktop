@@ -187,9 +187,41 @@ label{
     background-color: #771a1c;
 }
 
-webview {
-    height: calc(100vh - 4em);
+.centerText {
+    display: flex;
+    justify-content: center;
 }
+
+.inspirationalText {
+    color: rgb(141, 0, 0);
+    font-size: 1.5rem;
+}
+
+.legalText {
+    font-size: 0.7rem;
+}
+
+.loadingTextBlock {
+    position:absolute;
+    top:70%;
+    width: 100%;
+}
+
+.mainPosition {
+    position:absolute;
+    top:4em;
+    left:0;
+    width:100%;
+    height:calc(100vh - 4em);
+}
+
+#loadingScreen {
+    background-color: white;
+    background-image: url('../images/loading.gif');
+    background-repeat:no-repeat;
+    background-position: center center;
+}
+
 /*fonts
 
     font-family: 'Dosis', sans-serif;
