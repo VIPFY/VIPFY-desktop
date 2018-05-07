@@ -24,7 +24,7 @@ class Area extends Component {
     console.log("RENDER AREA", this)
 
     return (
-      <div className="area">
+      <div className="area fullSize">
         <Route render={
               (props) => (<Navigation setapp={this.setapp}  logMeOut={this.props.logMeOut} {...props} />)}/>
         <Route exact path="/area/dashboard" component={Dashboard} />
