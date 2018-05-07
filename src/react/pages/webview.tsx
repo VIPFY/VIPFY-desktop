@@ -4,11 +4,15 @@ import { Link } from "react-router-dom";
 
 class Webview extends Component<any, any> {
 
+  navigateTo(url: string) {
+    
+  }
+
   render() {
 
     return (
-      <div>WEBVIEW
-         <webview id="webview" className="mainPosition" preload="./preload-launcher.js" webpreferences="webSecurity=no" src="https://vipfy.com" partition="persist:services"></webview>
+      <div>
+         <webview id="webview" preload="./preload-launcher.js" webpreferences="webSecurity=no" src="https://vipfy.com" partition="persist:services"></webview>
       </div>
     );
   }
