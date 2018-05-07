@@ -1,7 +1,5 @@
 require("dotenv").config();
 
-console.log("PROCESS", process.cwd(), process.env)
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { HashRouter as Router } from "react-router-dom";

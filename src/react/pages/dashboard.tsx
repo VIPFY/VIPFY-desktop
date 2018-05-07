@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 class Dashboard extends Component {
 
   setApp(appname) {
-    console.log(appname)
     this.props.setapp(appname)
   }
 
@@ -15,12 +14,9 @@ class Dashboard extends Component {
   }
 
   render() {
-
-    console.log("DASH", this.props)
     let bI = this.props.profilpicture ? this.props.profilpicture : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg"
-    console.log(bI)
     return (
-      <div>
+      <div className="fullWorking">
         <div className="welcomeHolder">
           <div className="welcomeImage" style={{backgroundImage: `url(${bI})`}}></div>
           <div className="welcomeMessage"><span>Welcome back, {this.props.firstname} {this.props.lastname}</span></div>
@@ -48,7 +44,6 @@ class Dashboard extends Component {
             <span className="recommendedServiceName">Wave</span>
           </div>
         </div>
-        <Link to="/area/webview">LINK</Link>
       </div>
     );
   }

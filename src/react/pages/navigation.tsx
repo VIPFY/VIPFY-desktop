@@ -4,7 +4,6 @@ import {Component} from "react";
 class Navigation extends Component {
 
   setApp(appname) {
-    console.log(appname)
     this.props.setapp(appname)
   }
 
@@ -14,7 +13,6 @@ class Navigation extends Component {
   }
 
   render() {
-    console.log("NAVI", this)
     return (
       <div className="navigation">
         <div className="navigationLogoHolder">
@@ -22,8 +20,12 @@ class Navigation extends Component {
           src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png" />
         </div>
         <div className="appLogoHolder">
-          <img className="appLogo" onClick={() => (this.setApp("pipedrive"))}
-          src="https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png" />
+          <div className="appLogo" onClick={() => (this.setApp("pipedrive"))}
+            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"}}>
+          </div>
+          <div className="appLogo" onClick={() => (this.setApp("slack"))}
+            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/slack.svg)"}}>
+          </div>
         </div>
         <div className="searchbarHolder">
           <input className="searchbar" placeholder="Search for something..."/>

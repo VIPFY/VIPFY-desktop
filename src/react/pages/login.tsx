@@ -1,6 +1,5 @@
 import * as React from "react";
 import {Component} from "react";
-import {history} from "history";
 
 class Login extends Component {
   state = {

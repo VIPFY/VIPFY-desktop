@@ -32,7 +32,6 @@ class App extends Component {
           localStorage.setItem("token", token);
           localStorage.setItem("refreshToken", refreshToken);
           this.setState({login:  true})
-          console.log(res)
           this.setState({firstname: user.firstname})
           this.setState({lastname: user.lastname})
           this.setState({profilepicture: user.profilepicture})
@@ -47,16 +46,27 @@ class App extends Component {
 
   }
 
-  render() {
-    console.log("RENDER", this)
+  loggedIn = async () => {
+    //TODO Check if this is working
+    try {
+      const res = await this.props.me.me
+      if (res) {return true}
+    }
+    catch(err) {
+      console.log("ErrorLI", err)
+      return false
+    }
+    return false
+  }
 
+  render() {
     return (
       <div className="fullSize">
         <Switch>
           <Route exact path="/" render={
               (props) => (<Login login={this.logMeIn} {...props} />)}/>
           <Route path="/area" render={
-              (props) => (this.state.login ? (<Area logMeOut={this.logMeOut} {...props}
+              (props) => (this.loggedIn() ? (<Area logMeOut={this.logMeOut} {...props}
                 firstname={this.state.firstname} lastname={this.state.lastname} profilepic={this.state.profilepicture} />):
                 (<Redirect to={{pathname: "/", state: {loginError: "E-mail or Password incorrect!"} }}/>))
             } />
@@ -67,7 +77,11 @@ class App extends Component {
   }
 }
 
-export default graphql(signInUser, {
+export default compose(
+  graphql(signInUser, {
     name: "signIn"
-  })
+  }),
+  graphql(me, {
+    name: "me"
+  }))
   (withRouter(App, history))

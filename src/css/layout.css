@@ -175,6 +175,9 @@ label{
     left: -1em;
     cursor: pointer;
 }
+.appLogoHolder{
+    display: flex;
+}
 .appLogo{
     width: 3em;
     border: none;
@@ -182,6 +185,10 @@ label{
     padding: 0.5em;
     cursor: pointer;
     background-color: white;
+    height: 3em;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .appLogo:hover{
     background-color: #771a1c;
@@ -303,6 +310,13 @@ label{
     color: white;
     font-weight: bold;
     font-size: 1.2em;
+}
+.fullWorking{
+    height: calc(100vh - 4em);
+    background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%)
+}
+.backgroundLogo{
+    background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%)
 }
 /*fonts
 

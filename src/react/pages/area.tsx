@@ -15,14 +15,11 @@ class Area extends Component {
   }
 
   setapp = appname => {
-    console.log("SETAPP", this)
     this.setState({app: appname})
     this.props.history.push("/area/webview")
   }
 
   render() {
-    console.log("RENDER AREA", this)
-
     return (
       <div className="area">
         <Route render={
