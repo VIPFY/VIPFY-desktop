@@ -19,6 +19,7 @@ class Area extends Component<undefined, undefined> {
       <div className="area">
         <Route component={Navigation} />
         <Route path="/area/dashboard" component={Dashboard} />
+        <Route path="/area/webview" component={Dashboard} />
       </div>
     );
   }
