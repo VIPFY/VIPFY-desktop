@@ -7,7 +7,7 @@ class Webview extends Component {
   render() {
 
     return (
-      <div>DASHBOARD
+      <div>WEBVIEW
         <Link to="/area/bug">LINK</Link>
       </div>
     );

@@ -5,6 +5,7 @@ import { withRouter } from "react-router";
 
 import Dashboard from "./dashboard";
 import Navigation from "./navigation";
+import Webview from "./webview";
 
 
 
@@ -18,8 +19,8 @@ class Area extends Component<undefined, undefined> {
     return (
       <div className="area">
         <Route component={Navigation} />
-        <Route path="/area/dashboard" component={Dashboard} />
-        <Route path="/area/webview" component={Dashboard} />
+        <Route exact path="/area/dashboard" component={Dashboard} />
+        <Route exact path="/area/webview" component={Webview} />
       </div>
     );
   }

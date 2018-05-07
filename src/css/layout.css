@@ -114,10 +114,55 @@ label{
     transition-timing-function: ease-in-out;
     opacity: 1;
 }
-.navi{
+.navigation{
     background-color: #333;
     height: 4em;
     color: white;
+    display: flex;
+    justify-content: space-between;
+}
+.navigationButton{
+    font-size: 2em;
+    line-height: 1em;
+    padding: 0.5em 0.5em;
+    cursor: pointer;
+}
+.navigationButton:hover{
+    color: #771a1c;
+    background-color: white;
+}
+.searchbar{
+    font-size: 1.5em;
+    padding: 0px;
+    border: 0px;
+    font-family: 'Quicksand', sans-serif;
+    outline: none !important;
+    padding: 5px;
+}
+.searchbarHolder{
+    line-height: 4em;
+}
+.searchbarButton{
+    display: inline;
+    font-size: 1.5em;
+    padding: 5px 0.5em;
+    outline: none;
+    cursor: pointer;
+}
+.searchbarButton:hover{
+    color: #771a1c;
+    background-color: white;
+}
+.navigationButtonHolder{
+    display: flex;
+}
+.navigationLogo{
+    height: 6em;
+    border: 0px;
+    border-radius: 0px;
+    position: relative;
+    top: -1em;
+    left: -1em;
 }
 /*fonts
 
