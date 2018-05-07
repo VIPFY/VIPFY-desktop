@@ -186,6 +186,10 @@ label{
 .appLogo:hover{
     background-color: #771a1c;
 }
+
+webview {
+    height: calc(100vh - 4em);
+}
 /*fonts
 
     font-family: 'Dosis', sans-serif;

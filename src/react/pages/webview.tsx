@@ -44,8 +44,8 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   render() {
     console.log("WEBVIEW", this.props.app)
     return (
-      <div className="fullSize">
-         <WebView id="webview" preload="./preload-launcher.js" webpreferences="webSecurity=no" className="fullSize"
+      <div>
+         <WebView id="webview" preload="./preload-launcher.js" webpreferences="webSecurity=no" 
           src={this.state.url} partition="persist:services" onDidNavigate={e => this.onDidNavigate(e.target.src)}></WebView>
       </div>
     );
