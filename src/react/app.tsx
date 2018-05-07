@@ -40,6 +40,10 @@ class App extends Component {
       this.props.history.push("/area/dashboard")
 
   }*/
+  logMeOut = () => {
+    this.setState({login:  false})
+    this.props.history.push("/")
+  }
 
   logMeIn = async (email, password) => {
     try {
@@ -73,7 +77,7 @@ class App extends Component {
           <Route exact path="/" render={
               (props) => (<Login login={this.logMeIn} {...props} />)}/>
           <Route path="/area" render={
-              (props) => (this.loggedIn() ? (<Area {...props} />):
+              (props) => (this.loggedIn() ? (<Area logMeOut={this.logMeOut} {...props} />):
                 (<Redirect to={{pathname: "/", state: {loginError: "E-mail or Password incorrect!"} }}/>))
             } />
           <Route component={Bug} />

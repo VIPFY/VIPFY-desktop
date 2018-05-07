@@ -17,6 +17,7 @@ class Area extends Component {
   setapp = appname => {
     console.log("SETAPP", this)
     this.setState({app: appname})
+    this.props.history.push("/area/webview")
   }
 
   render() {
@@ -25,7 +26,7 @@ class Area extends Component {
     return (
       <div className="area">
         <Route render={
-              (props) => (<Navigation setapp={this.setapp} {...props} />)}/>
+              (props) => (<Navigation setapp={this.setapp}  logMeOut={this.props.logMeOut} {...props} />)}/>
         <Route exact path="/area/dashboard" component={Dashboard} />
         <Route exact path="/area/webview" render={
               (props) => (<Webview app={this.state.app} {...props} />)}/>
