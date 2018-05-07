@@ -12,7 +12,6 @@ class Login extends Component {
   }
 
   componentWillMount() {
-    console.log("MOUNT", this)
     if (this.props.location.state) {
       if (this.props.location.state.loginError) {
         this.state.error = this.props.location.state.loginError
@@ -27,10 +26,6 @@ class Login extends Component {
 
   login() {
     this.setState({loginMove: true})
-    console.log("EMail", this.emailInput.value)
-    console.log("Pass", this.passInput.value)
-
-    //this.props.history.push("/dashboard")
     this.props.login(this.emailInput.value, this.passInput.value)
   }
 
@@ -42,9 +37,6 @@ class Login extends Component {
     if (force || e.key === "Enter") {
       let email = this.emailInput.value
       let pass = this.passInput.value
-      console.log("EMail", this.emailInput.value)
-      console.log("Pass", this.passInput.value)
-      console.log("Focus", this.state.focus)
       this.state.errorbool = false
       if (email.includes("@") && email.includes(".") && !(pass ==="")) {
         //Email Basic Check and Password not empty -> Check
