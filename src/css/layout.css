@@ -221,7 +221,57 @@ label{
     background-repeat:no-repeat;
     background-position: center center;
 }
-
+.welcomeHolder{
+    padding: 5em;
+}
+.welcomeImage{
+    height: 7em;
+    width: 7em;
+    background-size: cover;
+    margin: auto;
+    margin-bottom: 2em;
+}
+.welcomeMessage{
+    display: flex;
+    font-size: 2em;
+    justify-content: center;
+}
+.useableApps{
+    display: flex;
+    height: 10em;
+    justify-content: center;
+    margin: 2em;
+}
+.useableAppsTitle{
+    width: 10em;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    border: 5px solid #333;
+}
+.useableAppsLogo{
+    width: 10em;
+    border: 5px solid #333;
+    cursor: pointer;
+}
+.recommendedApps{
+    display: flex;
+    height: 7em;
+    justify-content: center;
+    margin: 2em;
+}
+.recommendedAppsTitle{
+    width: 7em;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    border: 5px solid #771a1c;
+}
+.recommendedAppsLogo{
+    width: 7em;
+    border: 5px solid #771a1c;
+    cursor: pointer;
+}
 /*fonts
 
     font-family: 'Dosis', sans-serif;
