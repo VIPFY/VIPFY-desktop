@@ -13,6 +13,7 @@ class Navigation extends Component {
   }
 
   render() {
+    console.log("NAVI", this)
     return (
       <div className="navigation">
         <div className="navigationLogoHolder">
@@ -32,6 +33,9 @@ class Navigation extends Component {
           <div className="searchbarButton"><i className="fas fa-search"></i></div>
         </div>
         <div className="navigationButtonHolder">
+          {this.props.admin ? <div className="navigationButton"
+            onClick={() => (this.goTo("billing"))}><i className="fas fa-dollar-sign"></i></div> : ""}
+          <div className="navigationButton" onClick={() => (this.goTo("marketplace"))}><i className="fas fa-shopping-cart"></i></div>
           <div className="navigationButton" onClick={() => (this.goTo("settings"))}><i className="fas fa-cog"></i></div>
           <div className="navigationButton" onClick={() => (this.props.logMeOut())}>
             <i className="fas fa-sign-out-alt"></i>

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Component } from "react";
 import { Route } from "react-router-dom";
-import { withRouter, Redirect } from "react-router";
 import { graphql, compose } from "react-apollo";
 import { me } from "../queries/auth";
 
@@ -9,6 +8,8 @@ import Dashboard from "./dashboard";
 import Navigation from "./navigation";
 import Webview from "./webview";
 import Settings from "./settings";
+import Marketplace from "./marketplace";
+import Billing from "./billing";
 
 
 
@@ -39,7 +40,7 @@ class Area extends Component {
   }
 
   render() {
-    console.log("AREA")
+    console.log("AREA", this)
     if (this.loggedIn()) {
       return (
         <div className="area">
@@ -51,6 +52,12 @@ class Area extends Component {
                 (props) => (<Webview app={this.state.app} {...props} />)}/>
           <Route exact path="/area/settings" render={
                 (props) => (<Settings {...props} {...this.props} />)}/>
+          <Route exact path="/area/billing" render={
+                (props) => (<Billing {...props} {...this.props} />)}/>
+          <Route exact path="/area/marketplace" render={
+                (props) => (<Marketplace {...props} {...this.props} />)}/>
+          <Route path="/area/marketplace/:appname" render={
+                (props) => (<Marketplace match={this.match} {...this.props} {...props}/>)}/>
         </div>
       );
     } else {
@@ -65,4 +72,4 @@ export default compose(
   name: "me",
   options: { fetchPolicy: "network-only" }
   }))
-(withRouter(Area, history))
+(Area)
