@@ -46,7 +46,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   private static appToUrl(app: string):string {
     switch (app) {
       case "vipfy": return "https://vipfy.com";
-      case "pipedrive": return "https://pipedrive.com";
+      case "pipedrive": return "https://app.pipedrive.com/auth/login";
       case "slack": return "https://slack.com";
       default: return "/area/dashboard?error=unknownapp";
     }
