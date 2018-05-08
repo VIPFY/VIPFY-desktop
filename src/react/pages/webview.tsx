@@ -47,6 +47,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     switch (app) {
       case "vipfy": return "https://vipfy.com";
       case "pipedrive": return "https://pipedrive.com";
+      case "slack": return "https://slack.com";
       default: return "/area/dashboard?error=unknownapp";
     }
   }
@@ -105,7 +106,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           onDidStartLoading={e => console.log("DidStartLoading", e)}
           onDidStartNavigation={e => console.log("DidStartNavigation", e)}
           onDidFinishLoad={e => {console.log("DidFinishLoad", e);this.maybeHideLoadingScreen()}}
-          onDidStopLoading={e => console.log("DidStopLoading", e)}
+          onDidStopLoading={e => {console.log("DidStopLoading", e);this.maybeHideLoadingScreen()}}
           ></WebView>
         <div id="loadingScreen" className="mainPosition" style={{display: this.state.showLoadingScreen ? 'block' : 'none' }}>
           <div className="loadingTextBlock">
