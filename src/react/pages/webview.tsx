@@ -61,6 +61,16 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     this.setState({
       url: url
     })
+    this.showLoadingScreen();
+  }
+
+  onLoadCommit(event: any): void {
+    console.log("LoadCommit", event)
+    if (!event.isMainFrame)
+      return;
+    this.setState({
+      url: event.url
+    })
   }
 
   hideLoadingScreen(): void {
@@ -79,8 +89,10 @@ export class Webview extends Component<WebViewProps, WebViewState> {
 
   maybeHideLoadingScreen(): void {
     let loginPageRegex = "^https://(www.)?dropbox.com/?(/login.*|/logout)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login";
-    if(new RegExp(loginPageRegex).test(this.state.url))
+    if(new RegExp(loginPageRegex).test(this.state.url)) {
+      console.log("Not hiding loading screen for " + this.state.url)
       return;
+    }
     this.hideLoadingScreen();
   }
 
@@ -100,13 +112,14 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           src={this.state.url} partition="persist:services" onDidNavigate={e => this.onDidNavigate(e.target.src)}
           style={{display: this.state.showLoadingScreen ? 'none' : 'block' }}
           onDidFailLoad={(code, desc, url, isMain) => {if(isMain)this.hideLoadingScreen(); console.log(`failed loading ${url}: ${code} ${desc}`)}}
-          onLoadCommit={e => {if(e.isMainFrame){console.log("LoadCommit", e);this.showLoadingScreen();}}}
+          onLoadCommit={e => this.onLoadCommit(e)}
           onNewWindow={e => this.onNewWindow(e)}
           onWillNavigate={e => console.log("WillNavigate", e)}
           onDidStartLoading={e => console.log("DidStartLoading", e)}
           onDidStartNavigation={e => console.log("DidStartNavigation", e)}
-          onDidFinishLoad={e => {console.log("DidFinishLoad", e);this.maybeHideLoadingScreen()}}
-          onDidStopLoading={e => {console.log("DidStopLoading", e);this.maybeHideLoadingScreen()}}
+          onDidFinishLoad={e => {console.log("DidFinishLoad", e);}}
+          onDidStopLoading={e => {console.log("DidStopLoading", e);}}
+          onDomReady={e => {console.log("DomReady", e); this.maybeHideLoadingScreen()}}
           ></WebView>
         <div id="loadingScreen" className="mainPosition" style={{display: this.state.showLoadingScreen ? 'block' : 'none' }}>
           <div className="loadingTextBlock">
