@@ -1,17 +1,20 @@
 import * as React from "react";
 import { Component } from "react";
 import { Route } from "react-router-dom";
-import { withRouter } from "react-router";
+import { withRouter, Redirect } from "react-router";
+import { graphql, compose } from "react-apollo";
+import { me } from "../queries/auth";
 
 import Dashboard from "./dashboard";
 import Navigation from "./navigation";
 import Webview from "./webview";
+import Settings from "./settings";
 
 
 
 class Area extends Component {
   state = {
-    app: 'vipfy'
+    app: "vipfy"
   }
 
   setapp = appname => {
@@ -19,19 +22,47 @@ class Area extends Component {
     this.props.history.push("/area/webview")
   }
 
+  loggedIn = async () => {
+    console.log("LoggedIn", this)
+    try {
+      const res = await this.props.me.refetch()
+      console.log("LoggedIn", res)
+      if (res) {return true}
+    }
+    catch(err) {
+      console.log("ErrorLI", err)
+      this.props.history.push("/")
+      return false
+    }
+    this.props.history.push("/")
+    return false
+  }
+
   render() {
-    return (
-      <div className="area">
-        <Route render={
-              (props) => (<Navigation setapp={this.setapp}  logMeOut={this.props.logMeOut} {...props} />)}/>
-        <Route exact path="/area/dashboard" render={
-              (props) => (<Dashboard {...props} setapp={this.setapp}
-              firstname={this.props.firstname} lastname={this.props.lastname} profilepic={this.props.profilepicture}/>)} />
-        <Route exact path="/area/webview" render={
-              (props) => (<Webview app={this.state.app} {...props} />)}/>
-      </div>
-    );
+    console.log("AREA")
+    if (this.loggedIn()) {
+      return (
+        <div className="area">
+          <Route render={
+                (props) => (<Navigation setapp={this.setapp}  {...this.props} {...props} />)}/>
+          <Route exact path="/area/dashboard" render={
+                (props) => (<Dashboard {...props} setapp={this.setapp} {...this.props}/>)} />
+          <Route exact path="/area/webview" render={
+                (props) => (<Webview app={this.state.app} {...props} />)}/>
+          <Route exact path="/area/settings" render={
+                (props) => (<Settings {...props} {...this.props} />)}/>
+        </div>
+      );
+    } else {
+      console.log("AREA FALSE")
+      return ""
+    }
   }
 }
 
-export default withRouter(Area, history);
+export default compose(
+  graphql(me, {
+  name: "me",
+  options: { fetchPolicy: "network-only" }
+  }))
+(withRouter(Area, history))
