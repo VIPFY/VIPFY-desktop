@@ -32,7 +32,7 @@ class Navigation extends Component {
           <div className="searchbarButton"><i className="fas fa-search"></i></div>
         </div>
         <div className="navigationButtonHolder">
-          <div className="navigationButton"><i className="fas fa-cog"></i></div>
+          <div className="navigationButton" onClick={() => (this.goTo("settings"))}><i className="fas fa-cog"></i></div>
           <div className="navigationButton" onClick={() => (this.props.logMeOut())}>
             <i className="fas fa-sign-out-alt"></i>
           </div>
