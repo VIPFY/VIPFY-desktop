@@ -4,17 +4,46 @@ import { Link } from "react-router-dom";
 
 class Dashboard extends Component {
 
-  render() {
+  setApp(appname) {
+    this.props.setapp(appname)
+  }
 
-    console.log("DASH", this.props)
-    let bI = this.props.profilpicture ? this.props.profilpicture : "https://storage.googleapis.com/vipfy-imagestore-01/team-member/_DSC8277a.jpg"
+  goTo(view) {
+    let gotoview = "/area/"+view
+    this.props.history.push(gotoview)
+  }
+
+  render() {
+    let bI = this.props.profilpicture ? this.props.profilpicture : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg"
     return (
-      <div>
+      <div className="fullWorking">
         <div className="welcomeHolder">
-          <div className="welcomeImage" style={{backgroundImage: `url(${bI})}`}}></div>
-          <div className="welcomeMessage">Welcome back, {this.props.firstname} {this.props.lastname}</div>
+          <div className="welcomeImage" style={{backgroundImage: `url(${bI})`}}></div>
+          <div className="welcomeMessage"><span>Welcome back, {this.props.firstname} {this.props.lastname}</span></div>
         </div>
-        <Link to="/area/webview">LINK</Link>
+
+        <div className="useableApps">
+          <div className="useableAppsTitle">Just click on a service to start</div>
+          <div className="useableAppsLogo" onClick={() => (this.setApp("pipedrive"))}
+            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"}}>
+            <span className="useableServiceName">Pipedrive</span>
+          </div>
+          <div className="useableAppsLogo" onClick={() => (this.setApp("slack"))}
+            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/slack.svg)"}}>
+            <span className="useableServiceName">Slack</span>
+          </div>
+        </div>
+        <div className="recommendedApps">
+          <div className="recommendedAppsTitle">We belive you also need these services</div>
+          <div className="recommendedAppsLogo" onClick={() => (this.goTo("marketplace"))}
+          style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png)"}}>
+            <span className="recommendedServiceName">Vipfy</span>
+          </div>
+          <div className="recommendedAppsLogo" onClick={() => (this.goTo("marketplace"))}
+          style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/wave.png)"}}>
+            <span className="recommendedServiceName">Wave</span>
+          </div>
+        </div>
       </div>
     );
   }

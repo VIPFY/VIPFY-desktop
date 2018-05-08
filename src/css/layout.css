@@ -175,6 +175,9 @@ label{
     left: -1em;
     cursor: pointer;
 }
+.appLogoHolder{
+    display: flex;
+}
 .appLogo{
     width: 3em;
     border: none;
@@ -182,6 +185,10 @@ label{
     padding: 0.5em;
     cursor: pointer;
     background-color: white;
+    height: 3em;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .appLogo:hover{
     background-color: #771a1c;
@@ -221,7 +228,96 @@ label{
     background-repeat:no-repeat;
     background-position: center center;
 }
-
+.welcomeHolder{
+    padding: 5em;
+}
+.welcomeImage{
+    height: 7em;
+    width: 7em;
+    background-size: cover;
+    margin: auto;
+    margin-bottom: 2em;
+}
+.welcomeMessage{
+    display: flex;
+    font-size: 2em;
+    justify-content: center;
+}
+.useableApps{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 2em;
+}
+.useableAppsTitle{
+    width: 10em;
+    height: 10em;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    border: 5px solid #333;
+}
+.useableAppsLogo{
+    width: 10em;
+    height: 10em;
+    border: 5px solid #333;
+    cursor: pointer;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+}
+.recommendedApps{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 2em;
+}
+.recommendedAppsTitle{
+    width: 7em;
+    height: 7em;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    border: 5px solid #771a1c;
+}
+.recommendedAppsLogo{
+    width: 7em;
+    height: 7em;
+    border: 5px solid #771a1c;
+    cursor: pointer;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+}
+.useableServiceName{
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    text-align: center;
+    background-color: #333;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.recommendedServiceName{
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    text-align: center;
+    background-color: #771a1c;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.fullWorking{
+    height: calc(100vh - 4em);
+    background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%)
+}
+.backgroundLogo{
+    background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%)
+}
 /*fonts
 
     font-family: 'Dosis', sans-serif;
