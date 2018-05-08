@@ -9,6 +9,7 @@ export type WebViewState = {
   inspirationalText: string;
   legalText: string;
   showLoadingScreen: boolean;
+  t: number;
 }
 
 export type WebViewProps = {
@@ -38,6 +39,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       inspirationalText: "Loading",
       legalText: "Legal Text",
       showLoadingScreen: false,
+      t: performance.now(),
     }
   }
 
@@ -54,20 +56,23 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   }
 
   onDidNavigate(url: string): void {
+    console.log("DidNavigate", url);
     this.setState({
       url: url
     })
-    console.log("URL", url)
   }
 
   hideLoadingScreen(): void {
+    console.log("Loading Screen Hidden", performance.now() - this.state.t);
     this.setState({ showLoadingScreen: false });
   }
 
   showLoadingScreen(): void {
+    console.log("Show Loading Screen");
     this.setState({
       showLoadingScreen: true,
-      inspirationalText: Webview.loadingQuotes[Math.floor(Math.random()*Webview.loadingQuotes.length)]
+      inspirationalText: Webview.loadingQuotes[Math.floor(Math.random()*Webview.loadingQuotes.length)],
+      t: performance.now(),
     });
   }
 
@@ -88,16 +93,20 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   }
 
   render() {
-    console.log("WEBVIEW", this.props.app)
     return (
-      <div>WEBVIEW
+      <div>
         <WebView id="webview" preload="./preload-launcher.js" webpreferences="webSecurity=no" className="mainPosition"
           src={this.state.url} partition="persist:services" onDidNavigate={e => this.onDidNavigate(e.target.src)}
           style={{display: this.state.showLoadingScreen ? 'none' : 'block' }}
-          onDidFailLoad={(code, desc, url, isMain) => {this.hideLoadingScreen(); console.log(`failed loading ${url}: ${code} ${desc}`)}}
-          onDidStartLoading={e => this.showLoadingScreen()}
-          onDidStopLoading={e => this.maybeHideLoadingScreen()}
-          onNewWindow={e => this.onNewWindow(e)}></WebView>
+          onDidFailLoad={(code, desc, url, isMain) => {if(isMain)this.hideLoadingScreen(); console.log(`failed loading ${url}: ${code} ${desc}`)}}
+          onLoadCommit={e => {if(e.isMainFrame){console.log("LoadCommit", e);this.showLoadingScreen();}}}
+          onNewWindow={e => this.onNewWindow(e)}
+          onWillNavigate={e => console.log("WillNavigate", e)}
+          onDidStartLoading={e => console.log("DidStartLoading", e)}
+          onDidStartNavigation={e => console.log("DidStartNavigation", e)}
+          onDidFinishLoad={e => {console.log("DidFinishLoad", e);this.maybeHideLoadingScreen()}}
+          onDidStopLoading={e => console.log("DidStopLoading", e)}
+          ></WebView>
         <div id="loadingScreen" className="mainPosition" style={{display: this.state.showLoadingScreen ? 'block' : 'none' }}>
           <div className="loadingTextBlock">
             <div className="centerText inspirationalText"><div>{this.state.inspirationalText}</div></div>
