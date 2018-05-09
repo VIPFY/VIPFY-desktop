@@ -1,8 +1,8 @@
 import * as React from "react";
-import {Component, ReactPropTypes} from "react";
+import { Component } from "react";
 import { Link } from "react-router-dom";
-import WebView = require('react-electron-web-view');
-const {shell} = require('electron');
+import WebView = require("react-electron-web-view");
+const { shell } = require("electron");
 
 export type WebViewState = {
   url: string;
@@ -10,18 +10,17 @@ export type WebViewState = {
   legalText: string;
   showLoadingScreen: boolean;
   t: number;
-}
+};
 
 export type WebViewProps = {
   app: string;
-}
+};
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
 // TODO: move TODO page to web so webSecurity=no is no longer nessesary
 
 export class Webview extends Component<WebViewProps, WebViewState> {
-
-  static defaultProps = { app: 'vipfy' }
+  static defaultProps = { app: "vipfy" };
 
   static loadingQuotes = [
     "Loading",
@@ -39,20 +38,27 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       inspirationalText: "Loading",
       legalText: "Legal Text",
       showLoadingScreen: false,
-      t: performance.now(),
-    }
+      t: performance.now()
+    };
   }
 
-  private static appToUrl(app: string):string {
+  private static appToUrl(app: string): string {
     switch (app) {
-      case "vipfy": return "https://vipfy.com";
-      case "pipedrive": return "https://app.pipedrive.com/auth/login";
-      case "slack": return "https://slack.com";
-      default: return "/area/dashboard?error=unknownapp";
+      case "vipfy":
+        return "https://vipfy.com";
+      case "pipedrive":
+        return "https://app.pipedrive.com/auth/login";
+      case "slack":
+        return "https://slack.com";
+      default:
+        return "/area/dashboard?error=unknownapp";
     }
   }
 
-  static getDerivedStateFromProps(nextProps: WebViewProps, prevState: WebViewState): WebViewState | null {
+  static getDerivedStateFromProps(
+    nextProps: WebViewProps,
+    prevState: WebViewState
+  ): WebViewState | null {
     return { ...prevState, url: Webview.appToUrl(nextProps.app) };
   }
 
@@ -60,17 +66,18 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     console.log("DidNavigate", url);
     this.setState({
       url: url
-    })
+    });
     this.showLoadingScreen();
   }
 
   onLoadCommit(event: any): void {
-    console.log("LoadCommit", event)
-    if (!event.isMainFrame)
+    console.log("LoadCommit", event);
+    if (!event.isMainFrame) {
       return;
+    }
     this.setState({
       url: event.url
-    })
+    });
   }
 
   hideLoadingScreen(): void {
@@ -82,15 +89,19 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     console.log("Show Loading Screen");
     this.setState({
       showLoadingScreen: true,
-      inspirationalText: Webview.loadingQuotes[Math.floor(Math.random()*Webview.loadingQuotes.length)],
-      t: performance.now(),
+      inspirationalText:
+        Webview.loadingQuotes[
+          Math.floor(Math.random() * Webview.loadingQuotes.length)
+        ],
+      t: performance.now()
     });
   }
 
   maybeHideLoadingScreen(): void {
-    let loginPageRegex = "^https://(www.)?dropbox.com/?(/login.*|/logout)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login";
-    if(new RegExp(loginPageRegex).test(this.state.url)) {
-      console.log("Not hiding loading screen for " + this.state.url)
+    let loginPageRegex =
+      "^https://(www.)?dropbox.com/?(/login.*|/logout)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login";
+    if (new RegExp(loginPageRegex).test(this.state.url)) {
+      console.log("Not hiding loading screen for " + this.state.url);
       return;
     }
     this.hideLoadingScreen();
@@ -99,32 +110,58 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   onNewWindow(e): void {
     //if webview tries to open new window, open it in default browser
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
-    const protocol = require('url').parse(e.url).protocol
-    if (protocol === 'http:' || protocol === 'https:') {
-      shell.openExternal(e.url)
+    const protocol = require("url").parse(e.url).protocol;
+    if (protocol === "http:" || protocol === "https:") {
+      shell.openExternal(e.url);
     }
   }
 
   render() {
     return (
       <div>
-        <WebView id="webview" preload="./preload-launcher.js" webpreferences="webSecurity=no" className="mainPosition"
-          src={this.state.url} partition="persist:services" onDidNavigate={e => this.onDidNavigate(e.target.src)}
-          style={{display: this.state.showLoadingScreen ? 'none' : 'block' }}
-          onDidFailLoad={(code, desc, url, isMain) => {if(isMain)this.hideLoadingScreen(); console.log(`failed loading ${url}: ${code} ${desc}`)}}
+        <WebView
+          id="webview"
+          preload="./preload-launcher.js"
+          webpreferences="webSecurity=no"
+          className="mainPosition"
+          src={this.state.url}
+          partition="persist:services"
+          onDidNavigate={e => this.onDidNavigate(e.target.src)}
+          style={{ display: this.state.showLoadingScreen ? "none" : "block" }}
+          onDidFailLoad={(code, desc, url, isMain) => {
+            if (isMain) {
+              this.hideLoadingScreen();
+            }
+            console.log(`failed loading ${url}: ${code} ${desc}`);
+          }}
           onLoadCommit={e => this.onLoadCommit(e)}
           onNewWindow={e => this.onNewWindow(e)}
           onWillNavigate={e => console.log("WillNavigate", e)}
           onDidStartLoading={e => console.log("DidStartLoading", e)}
           onDidStartNavigation={e => console.log("DidStartNavigation", e)}
-          onDidFinishLoad={e => {console.log("DidFinishLoad", e);}}
-          onDidStopLoading={e => {console.log("DidStopLoading", e);}}
-          onDomReady={e => {console.log("DomReady", e); this.maybeHideLoadingScreen()}}
-          ></WebView>
-        <div id="loadingScreen" className="mainPosition" style={{display: this.state.showLoadingScreen ? 'block' : 'none' }}>
+          onDidFinishLoad={e => {
+            console.log("DidFinishLoad", e);
+          }}
+          onDidStopLoading={e => {
+            console.log("DidStopLoading", e);
+          }}
+          onDomReady={e => {
+            console.log("DomReady", e);
+            this.maybeHideLoadingScreen();
+          }}
+        />
+        <div
+          id="loadingScreen"
+          className="mainPosition"
+          style={{ display: this.state.showLoadingScreen ? "block" : "none" }}
+        >
           <div className="loadingTextBlock">
-            <div className="centerText inspirationalText"><div>{this.state.inspirationalText}</div></div>
-            <div className="centerText legalText"><div>{this.state.legalText}</div></div>
+            <div className="centerText inspirationalText">
+              <div>{this.state.inspirationalText}</div>
+            </div>
+            <div className="centerText legalText">
+              <div>{this.state.legalText}</div>
+            </div>
           </div>
         </div>
       </div>
