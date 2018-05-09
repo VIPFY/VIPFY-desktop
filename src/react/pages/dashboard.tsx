@@ -14,8 +14,6 @@ class Dashboard extends Component {
   }
 
   render() {
-    console.log("Dashboard", this)
-
     let bI = this.props.profilepicture ? this.props.profilepicture : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg"
     return (
       <div className="fullWorking">

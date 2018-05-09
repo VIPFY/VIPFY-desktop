@@ -1,21 +1,55 @@
 import * as React from "react";
 import {Component} from "react";
+import { graphql } from "react-apollo";
 
-import { Link } from "react-router-dom";
+import { fetchApps } from "../queries/products";
 
 class Marketplace extends Component {
 
-  render() {
-    console.log("Marketplace", this)
-
-    if (this.props.match.params.appname) {
-        //SHOW APP DETAILS
-        return (<div>{this.props.match.params.appname} <Link to="../marketplace">LINK zum Marketplace</Link></div>)
-    } else {
-        //Show Marketplaceoverview
-        return (<div> Marketplace <Link to="marketplace/pipedrive">LINK zu Pipedrive</Link></div>)
+  renderLoading(apps) {
+    if (apps) {
+      return (
+        <div className="marketplace">
+          {apps.map(appDetails => {
+            return this.renderAppCard(appDetails)}
+          )}
+        </div>
+      )
     }
+    return (<div>LOADING</div>)
+  }
+
+  openAppDetails(id) {
+    this.props.history.push(`/area/marketplace/${id}`)
+  }
+
+  renderAppCard(appDetails) {
+    return(
+      <div className="appThumbnail" key={appDetails.id} onClick={() => this.openAppDetails(appDetails.id)}>
+        <div className="appThumbnailLogo"
+            style={{backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${appDetails.logo})`}}>
+        </div>
+        <div className="caption">
+          <h3>{appDetails.name}</h3>
+          <div className="appdiscripton">
+            <p>{appDetails.teaserdescription}</p>
+          </div>
+          <div className="app-short-info-holder">
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  render() {
+    return(
+      <div className="fullWorking">
+        {this.renderLoading(this.props.products.allApps)}
+      </div>
+    )
   }
 }
 
-export default Marketplace;
+export default graphql(fetchApps, {
+  name: "products"
+})(Marketplace);

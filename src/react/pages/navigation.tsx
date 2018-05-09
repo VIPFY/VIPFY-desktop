@@ -13,7 +13,6 @@ class Navigation extends Component {
   }
 
   render() {
-    console.log("NAVI", this)
     return (
       <div className="navigation">
         <div className="navigationLogoHolder">

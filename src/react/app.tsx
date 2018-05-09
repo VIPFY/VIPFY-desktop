@@ -34,7 +34,6 @@ class App extends Component {
         if (ok) {
           localStorage.setItem("token", token);
           localStorage.setItem("refreshToken", refreshToken);
-          console.log("LOGMEIN", user)
           this.setState({login:  true})
           this.setState({firstname: user.firstname})
           this.setState({lastname: user.lastname})

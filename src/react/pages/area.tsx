@@ -9,6 +9,7 @@ import Navigation from "./navigation";
 import Webview from "./webview";
 import Settings from "./settings";
 import Marketplace from "./marketplace";
+import AppPage from "./apppage";
 import Billing from "./billing";
 
 
@@ -24,10 +25,8 @@ class Area extends Component {
   }
 
   loggedIn = async () => {
-    console.log("LoggedIn", this)
     try {
       const res = await this.props.me.refetch()
-      console.log("LoggedIn", res)
       if (res) {return true}
     }
     catch(err) {
@@ -40,7 +39,6 @@ class Area extends Component {
   }
 
   render() {
-    console.log("AREA", this)
     if (this.loggedIn()) {
       return (
         <div className="area">
@@ -56,8 +54,8 @@ class Area extends Component {
                 (props) => (<Billing {...props} {...this.props} />)}/>
           <Route exact path="/area/marketplace" render={
                 (props) => (<Marketplace {...props} {...this.props} />)}/>
-          <Route path="/area/marketplace/:appname" render={
-                (props) => (<Marketplace match={this.match} {...this.props} {...props}/>)}/>
+          <Route path="/area/marketplace/:appid" render={
+                (props) => (<AppPage match={this.match} {...this.props} {...props}/>)}/>
         </div>
       );
     } else {
