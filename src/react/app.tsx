@@ -16,7 +16,8 @@ class App extends Component {
   state = {
     login: false,
     firstname: "",
-    lastname: ""
+    lastname: "",
+    admin: false
   }
 
   logMeOut = () => {
@@ -36,11 +37,15 @@ class App extends Component {
           this.setState({login:  true})
           this.setState({firstname: user.firstname})
           this.setState({lastname: user.lastname})
-          this.setState({profilepicture: user.profilepicture})
+          this.setState({admin: user.admin})
+          this.setState({profilepicture: user.company.profilepicture})
         }
       }
       catch(err) {
-        console.log("LoginError")
+        this.setState({login:  false})
+        localStorage.setItem("token", "");
+        localStorage.setItem("refreshToken", "");
+        console.log("LoginError", err)
       }
 
 
@@ -55,7 +60,8 @@ class App extends Component {
           <Route exact path="/" render={
               (props) => (<Login login={this.logMeIn} {...props} />)}/>
           <Route path="/area" render={(props) => (<Area logMeOut={this.logMeOut} {...props}
-                firstname={this.state.firstname} lastname={this.state.lastname} profilepic={this.state.profilepicture} />) } />
+                firstname={this.state.firstname} lastname={this.state.lastname}
+                profilepicture={this.state.profilepicture} admin={this.state.admin}/>) } />
           <Route component={Bug} />
         </Switch>
       </div>

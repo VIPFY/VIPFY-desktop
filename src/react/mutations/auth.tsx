@@ -11,6 +11,10 @@ export const signInUser = gql`
         id
         firstname
         lastname
+        admin
+        company{
+          profilepicture
+        }
       }
     }
   }
