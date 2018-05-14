@@ -1,5 +1,7 @@
-import { app, BrowserWindow } from "electron";
-import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
+import { app, BrowserWindow, autoUpdater, dialog } from "electron";
+import installExtension, {
+  REACT_DEVELOPER_TOOLS
+} from "electron-devtools-installer";
 import { enableLiveReload } from "electron-compile";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -9,10 +11,49 @@ let mainWindow: Electron.BrowserWindow | null = null;
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
 if (isDevMode) {
-  enableLiveReload({strategy: "react-hmr"});
+  enableLiveReload({ strategy: "react-hmr" });
+}
+
+function initUpdates() {
+  const DOMAIN = "http://release.vipfy.com:9999";
+  const suffix =
+    process.platform === "darwin"
+      ? `/RELEASES.json?method=JSON&version=${app.getVersion()}`
+      : "";
+  autoUpdater.setFeedURL({
+    url: `${DOMAIN}/vipfy-desktop/810e67d425a96eb8a85d68a03bd4c4ea/${
+      process.platform
+    }/${process.arch}${suffix}`,
+    serverType: "json"
+  });
+
+  autoUpdater.on("checking-for-update", () => {});
+
+  autoUpdater.on("update-available", () => {});
+
+  autoUpdater.on("update-not-available", () => {});
+
+  autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+      type: "info",
+      buttons: ["Restart", "Later"],
+      title: "Application Update",
+      message: process.platform === "win32" ? releaseNotes : releaseName,
+      detail:
+        "A new version has been downloaded. Restart the application to apply the updates."
+    };
+
+    dialog.showMessageBox(dialogOpts, response => {
+      if (response === 0) {autoUpdater.quitAndInstall()};
+    });
+  });
+
+  autoUpdater.checkForUpdates();
 }
 
 const createWindow = async () => {
+  initUpdates();
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -21,11 +62,11 @@ const createWindow = async () => {
     show: false,
     center: true,
     title: "Vipfy",
-    titleBarStyle: "hiddenInset",
+    titleBarStyle: "hiddenInset"
   });
 
   mainWindow.once("ready-to-show", () => {
-    mainWindow.show()
+    mainWindow.show();
   });
 
   // and load the index.html of the app.
