@@ -32,6 +32,7 @@ class App extends Component {
       const res = await this.props.signIn({variables: { email, password }})
         const { ok, token, refreshToken, user} = res.data.signIn;
         if (ok) {
+          console.log("SIGNIN", user)
           localStorage.setItem("token", token);
           localStorage.setItem("refreshToken", refreshToken);
           this.setState({login:  true})
@@ -39,6 +40,7 @@ class App extends Component {
           this.setState({lastname: user.lastname})
           this.setState({admin: user.admin})
           this.setState({profilepicture: user.company.profilepicture})
+          this.setState({employees: user.company.employees})
         }
       }
       catch(err) {
@@ -61,7 +63,7 @@ class App extends Component {
               (props) => (<Login login={this.logMeIn} {...props} />)}/>
           <Route path="/area" render={(props) => (<Area logMeOut={this.logMeOut} {...props}
                 firstname={this.state.firstname} lastname={this.state.lastname}
-                profilepicture={this.state.profilepicture} admin={this.state.admin}/>) } />
+                profilepicture={this.state.profilepicture} admin={this.state.admin} employees={this.state.employees}/>) } />
           <Route component={Bug} />
         </Switch>
       </div>
