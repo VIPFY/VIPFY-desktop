@@ -5,6 +5,7 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+
 function onLoad() {
   if (window.location.pathname == "/auth/login") {
     login();
@@ -40,9 +41,17 @@ function modifyAll() {
   hideByQuery('a[href="/settings/sso"]', true);
 }
 
+
+
 function login() {
-  document.querySelector<HTMLInputElement>("input[name='login']")!.value = "jf@vipfy.com";
-  document.querySelector<HTMLInputElement>("input[name='password']")!.value = "ejHawIX4nWQmj6csB7TZ";
-  document.querySelector<HTMLInputElement>("input[name='remember']")!.checked = true;
-  document.querySelector<HTMLInputElement>("button[type='submit']")!.click();
+  let ipcRenderer = require("electron").ipcRenderer;
+  ipcRenderer.sendToHost("getLoginData", 4);
+  ipcRenderer.on("loginData", function(e, key) {
+    let email = key.email;
+    let password = key.password;
+    document.querySelector<HTMLInputElement>("input[name='login']")!.value = email;
+    document.querySelector<HTMLInputElement>("input[name='password']")!.value = password;
+    document.querySelector<HTMLInputElement>("input[name='remember']")!.checked = true;
+    document.querySelector<HTMLInputElement>("button[type='submit']")!.click();
+  });
 }

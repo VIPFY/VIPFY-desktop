@@ -3,6 +3,8 @@ import { Component } from "react";
 import { Link } from "react-router-dom";
 import WebView = require("react-electron-web-view");
 const { shell } = require("electron");
+import { withApollo } from "react-apollo";
+import gql from "graphql-tag";
 
 export type WebViewState = {
   url: string;
@@ -14,6 +16,7 @@ export type WebViewState = {
 
 export type WebViewProps = {
   app: string;
+  client: ApolloClient;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -110,9 +113,35 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   onNewWindow(e): void {
     //if webview tries to open new window, open it in default browser
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
+    console.log("onNewWindow", e);
     const protocol = require("url").parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
       shell.openExternal(e.url);
+    }
+  }
+
+  onIpcMessage(e): void {
+    console.log("onIpcMessage", e);
+    if(e.channel === "getLoginData") {
+      let app = e.args[0];
+      this.props.client.query({
+        query: gql`
+          {
+            fetchLicencesByApp(appid: ${app}) {
+                key
+            }
+          }
+        `
+      })
+      .then(result => {
+        console.log("LICENCE", result);
+        let key = result.data.fetchLicencesByApp[0].key;
+        console.log("chosen key", key);
+        if(key === null) {
+          window.alert("invalid licence");
+        }
+        e.target.send("loginData", key)
+      });
     }
   }
 
@@ -149,6 +178,12 @@ export class Webview extends Component<WebViewProps, WebViewState> {
             console.log("DomReady", e);
             this.maybeHideLoadingScreen();
           }}
+          onDialog={e => {
+            console.log("Dialog", e);
+          }}
+          onIpcMessage={e => {
+            this.onIpcMessage(e);
+          }}
         />
         <div
           id="loadingScreen"
@@ -169,4 +204,4 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   }
 }
 
-export default Webview;
+export default withApollo(Webview);
