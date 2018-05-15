@@ -93,6 +93,7 @@ class Login extends Component {
             </div>
           </div>
         </div>
+        <div className="newUserButton button">Register Now</div>
       </div>
     );
   }

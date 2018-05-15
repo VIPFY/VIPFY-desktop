@@ -14,6 +14,7 @@ export const signInUser = gql`
         admin
         company{
           profilepicture
+          employees
         }
       }
     }

@@ -23,6 +23,7 @@
     justify-content: center;
     width: 100%;
     height: 100%;
+    flex-flow: column;
 }
 .loginHolder{
     font-size: 1.5em;
@@ -34,6 +35,7 @@
     background-position: center;
     background-color: rgba(255,255,255,0.7);
     box-shadow: inset 2px 2px 10px 2px #aaa;
+    width: 25rem;
 }
 label{
     font-weight: 300;
@@ -313,7 +315,7 @@ label{
     font-size: 1.2em;
 }
 .fullWorking{
-    height: calc(100vh - 4em);
+    height: calc(100vh - 4rem);
     background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);
     overflow-y: scroll;
 }
@@ -422,13 +424,230 @@ label{
     overflow: hidden;
 }
 .paddingPage{
-    padding: 5% 10%;
+    padding: 5vh 10%;
+    height: calc(90vh - 4rem);
+}
+.appHeaderHolder {
+    display: flex;
+    margin-bottom: 3em;
 }
 .appLogoLarge{
-    height: 5em;
+    height: 6em;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    width: 80%;
+}
+.halfStarHolder{
+    position: relative;
+}
+.secondHalfStar{
+    position: absolute;
+    transform: scaleX(-1);
+    left: 0;
+    top: 2px;
+}
+.appHeaderShortHolder {
+    text-align: center;
+    width: 20%;
+    box-shadow: 2px 2px 10px #aaa;
+    background-color: white;
+}
+.appHeaderLink{
+    color: #771a1c;
+    text-decoration: underline;
+    line-height: 2em;
+    cursor: pointer;
+}
+.appHeaderLink:hover{
+    box-shadow: inset 2px 2px 5px #aaa;
+}
+.appHeaderStars{
+    line-height: 2em;
+}
+.appHeaderImportantLink{
+    background-color: #771a1c;
+    text-decoration: underline;
+    line-height: 2em;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+}
+.appHeaderImportantLink:hover {
+    box-shadow: inset 2px 2px 5px #771a1c;
+    background-color: #C32B2E;
+}
+.appGallery  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.galleryImage {
+    width: 20%;
+    margin: 2.5%;
+    text-align: center;
+}
+.galleryView {
+    max-height: 30em;
+    max-width: 100%;
+    cursor: pointer;
+}
+.galleryBig {
+    width: 80%;
+}
+.detail-fulldescription{
+	padding: 20px;
+	max-height: 500px;
+	position: relative;
+	overflow: hidden;
+}
+.detail-fulldescription-showmore{
+	position: absolute;
+	top: 450px;
+	width: calc(100% - 40px);
+}
+.detail-fulldescription-full{
+	max-height: 100000px;
+}
+.detail-fulldescription-showmore-full{
+	display: none;
+}
+.planHolder {
+    display: flex;
+    justify-content: center;
+}
+.planSingleHolder {
+    width: 30%;
+    margin: 1em;
+    text-align: center;
+    background-color: white;
+    box-shadow: 2px 2px 10px #aaa;
+    border: 1px solid #771a1c;
+    position: relative;
+    padding-bottom: 2em;
+    min-width: 20em;
+}
+.planHeader {
+    padding: 0.5em;
+}
+.planTitle {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.planNumberSelector {
+    text-align: center;
+    margin-bottom: 2em;
+}
+.planNumberSelectorInput {
+    font-family: 'Quicksand', sans-serif;
+    padding: 0.2em;
+    text-align: center;
+    font-size: 1.2em;
+    background-color: rgba(255,255,255,0.7);
+    border: 1px solid #aaa;
+    font-style: italic;
+    margin-bottom: calc(0.6em + 1px);
+    font-weight: 500;
+}
+.planNumberSelectorInput:focus{
+    outline: 0;
+    border-bottom: 2px solid #771a1c !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 0.6em;
+}
+.planNumberSelectorLabel {
+    font-size: 1.5em;
+}
+.planPriceBefore{
+    font-size: 0.75em;
+}
+.billInput:focus {
+    outline: 0;
+    border-bottom: 2px solid #771a1c !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 0.6em;
+}
+.billInput {
+    font-family: 'Quicksand', sans-serif;
+    padding: 0.2em;
+    text-align: center;
+    font-size: 1.2em;
+    background-color: rgba(255,255,255,0.7);
+    border: 1px solid #aaa;
+    font-style: italic;
+    margin-bottom: calc(0.6em + 1px);
+    font-weight: 500;
+    width: 2em;
+}
+.planCosts {
+    background-color: #771a1c;
+    position: absolute;
+    bottom: 0px;
+    line-height: 1.5em;
+    color: white;
+    width: 100%;
+    cursor: pointer;
+}
+.detail-comments{
+	padding: 1em;
+}
+.detail-comments-heading{
+}
+.detail-comments-holder{
+
+}
+.detail-comments-oversizeholder{
+	display: flex;
+	align-items: center;
+	overflow-x: auto;
+}
+.detail-comments-stars{
+	padding: 5px;
+}
+.detail-comments-stars-bignum{
+	font-size: 2em;
+	text-align: center;
+}
+.detail-comments-stars-holder{
+}
+.detail-comments-section{
+	display: flex;
+	min-width: 200px;
+	flex-direction: column;
+	flex-wrap: wrap;
+	height: 300px;
+}
+.detail-comment{
+	padding: 10px;
+	max-width: 250px;
+	overflow: auto;
+}
+.detail-comment-author{
+	font-style: italic;
+	font-size: 12px;
+}
+.detail-comment-date{
+	font-style: italic;
+	font-size: 12px;
+}
+.detail-comment-text{
+	word-wrap: break-word;
+	text-align: left;
+}
+.detail-informations{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	padding: 10px;
+}
+.detail-information-holder{
+	padding: 10px;
+}
+.newUserButton.button {
+    font-size: 1.5em;
+    padding: 0.5rem;
+    margin: 0.5rem;
 }
 /*fonts
 
