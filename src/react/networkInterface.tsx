@@ -1,11 +1,13 @@
 import { ApolloClient } from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
 import { WebSocketLink } from "apollo-link-ws";
-import { createHttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
+//import createFileLink from "./createFileLink";
+import { createHttpLink } from "apollo-link-http";
 import { onError } from "apollo-link-error";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache } from "apollo-cache-inmemory";
+
 
 const SERVER_NAME = process.env.SERVER_NAME;
 const SERVER_PORT = process.env.SERVER_PORT;
@@ -13,8 +15,6 @@ const SERVER_PORT = process.env.SERVER_PORT;
 const secure = SERVER_NAME == "vipfy.com" || SERVER_NAME == "dev.vipfy.com" ? "s" : "";
 
 const cache = new InMemoryCache();
-//console.log(cache)
-
 const httpLink = createHttpLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
   credentials: "same-origin"
@@ -67,13 +67,14 @@ const wsLink = new WebSocketLink({
 });
 
 const errorLink = onError(({ graphqlErrors, networkError }) => {
-  if (graphqlErrors) {
-    graphqlErrors.map(({ message, locations, path }) =>
-      console.log(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      )
-    );
-
+  if (!secure) {
+    if (graphqlErrors) {
+      graphqlErrors.map(({ message, locations, path }) =>
+        console.log(
+          `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+        )
+      );
+    }
     if (networkError) {
       console.log(`[Network error]: ${networkError}`);
     }
@@ -91,6 +92,7 @@ const link = split(
   errorLink
 );
 
+// const link = ApolloLink.from([wsLink, httpLinkWithMiddleware, errorLink]);
 //Create a client to use Apollo for communication with GraphQL
 export default new ApolloClient({
   link,

@@ -11,6 +11,7 @@ import Settings from "./settings";
 import Marketplace from "./marketplace";
 import AppPage from "./apppage";
 import Billing from "./billing";
+import Advisor from "./advisor";
 
 
 
@@ -52,6 +53,8 @@ class Area extends Component {
                 (props) => (<Settings {...props} {...this.props} />)}/>
           <Route exact path="/area/billing" render={
                 (props) => (<Billing {...props} {...this.props} />)}/>
+          <Route exact path="/area/advisor" render={
+                (props) => (<Advisor {...props} {...this.props} />)}/>
           <Route exact path="/area/marketplace" render={
                 (props) => (<Marketplace {...props} {...this.props} />)}/>
           <Route path="/area/marketplace/:appid" render={
