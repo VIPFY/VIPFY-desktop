@@ -12,6 +12,14 @@ class Navigation extends Component {
     this.props.history.push(gotoview)
   }
 
+  /*showApps(licences) {
+    let appLogos = []
+
+    for 
+
+    return appLogos
+  }*/
+
   render() {
     return (
       <div className="navigation">
@@ -19,6 +27,7 @@ class Navigation extends Component {
           <img className="navigationLogo" onClick={() => (this.goTo("dashboard"))}
           src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png" />
         </div>
+        {/*this.showApps(this.props.licences)*/}
         <div className="appLogoHolder">
           <div className="appLogo" onClick={() => (this.setApp("pipedrive"))}
             style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"}}>

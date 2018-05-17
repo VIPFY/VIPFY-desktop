@@ -2,7 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import { Route } from "react-router-dom";
 import { graphql, compose } from "react-apollo";
-import { me } from "../queries/auth";
+import { me, fetchLicences } from "../queries/auth";
 
 import Dashboard from "./dashboard";
 import Navigation from "./navigation";
@@ -41,6 +41,7 @@ class Area extends Component {
 
   render() {
     if (this.loggedIn()) {
+      console.log("AREA", this.props)
       return (
         <div className="area">
           <Route render={
@@ -72,5 +73,8 @@ export default compose(
   graphql(me, {
   name: "me",
   options: { fetchPolicy: "network-only" }
-  }))
+  }),
+  graphql(fetchLicences, {
+    name: "licences",
+    }))
 (Area)
