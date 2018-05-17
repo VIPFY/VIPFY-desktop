@@ -21,6 +21,7 @@ class Area extends Component {
   }
 
   setapp = appname => {
+    console.log(appname)
     this.setState({app: appname})
     this.props.history.push("/area/webview")
   }
