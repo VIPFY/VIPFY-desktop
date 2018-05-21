@@ -17,9 +17,19 @@
   "config": {
     "forge": {
       "make_targets": {
-        "win32": ["zip", "squirrel", "appx"],
-        "darwin": ["zip"],
-        "linux": ["zip", "deb", "rpm"]
+        "win32": [
+          "zip",
+          "squirrel",
+          "appx"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "zip",
+          "deb",
+          "rpm"
+        ]
       },
       "electronPackagerConfig": {
         "packageManager": "npm",
@@ -33,15 +43,21 @@
         }
       },
       "publish_targets": {
-        "darwin": ["nucleus-uploader"],
-          "win32": ["nucleus-uploader"],
-          "linux": ["nucleus-uploader"]
-        },
-        "nucleus": {
-          "host": "http://release.vipfy.com:7777",
-          "appId": "1",
-          "channelId": "7401a6564d489681964d740e4d483467",
-          "token": "7175b35e9cc412b1a6f0ffa85646e08a"
+        "darwin": [
+          "nucleus-uploader"
+        ],
+        "win32": [
+          "nucleus-uploader"
+        ],
+        "linux": [
+          "nucleus-uploader"
+        ]
+      },
+      "nucleus": {
+        "host": "http://release.vipfy.com:7777",
+        "appId": "1",
+        "channelId": "7401a6564d489681964d740e4d483467",
+        "token": "7175b35e9cc412b1a6f0ffa85646e08a"
       },
       "electronWinstallerConfig": {
         "name": "vipfy_desktop"
