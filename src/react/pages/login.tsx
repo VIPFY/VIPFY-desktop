@@ -5,9 +5,10 @@ class Login extends Component {
   state = {
     loginMove: false,
     forgotMove: false,
-    error: "noError",
-    errorbool: false,
-    focus: 1
+    error: this.props.error+"" || "No error",
+    errorbool: this.props.error ? true : false,
+    focus: 1,
+    login: true
   }
 
   componentWillMount() {
@@ -39,6 +40,17 @@ class Login extends Component {
   }
 
   handleEnter(e, field, force) {
+    if (field === 3 && (force || e.key === "Enter")) {
+      let email = this.registerInput.value
+      if (email.includes("@") && email.includes(".") ) {
+        this.register()
+        return
+      } else {
+        this.registerInput.focus()
+        this.setState({focus: 3, errorbool: true, error: "Not an E-mail Address."})
+        return
+      }
+    }
     if (force || e.key === "Enter") {
       let email = this.emailInput.value
       let pass = this.passInput.value
@@ -68,34 +80,73 @@ class Login extends Component {
     }
   }
 
-  render() {
+  changeLogin(bool) {
+    this.state.errorbool = false
+    this.setState({registerMove: false})
+    this.setState({forgotMove: false})
+    this.setState({login: bool})
+  }
 
-    return (
-      <div className="centralize backgroundLogo">
-        <div className="loginHolder">
-          <div className="formHeading" onDoubleClick={() => this.cheat()} >Please log in</div>
-          <div className={this.state.errorbool===false? "formError noError" : "formError oneError"}>{this.state.error}</div>
-          <label>Username:</label>
-          <input className="inputField" placeholder="Your E-mail Address" autoFocus
-            onKeyPress={(e) => this.handleEnter(e, 1)}
-            ref={(input) => { this.emailInput = input; }}
-          />
-          <label>Password:</label>
-          <input className="inputField" placeholder="Your Password" type="password"
-            onKeyPress={(e) => this.handleEnter(e, 2)}
-            ref={(input) => { this.passInput = input; }} />
-          <div className="buttonHolder">
-            <div className={this.state.forgotMove ? "buttonForgot button buttonMoved": "buttonForgot button"} onClick={this.forgetClick.bind(this)}>
-              <span className={this.state.forgotMove ? "buttonMove": ""}>Forgot Password</span>
+  registerClick() {
+    this.handleEnter(null, 3, true)
+  }
+
+  register() {
+    this.setState({registerMove: true})
+    this.props.register(this.registerInput.value, true)
+    console.log("REGISTER")
+  }
+
+  render() {
+    if (this.state.login) {
+      return (
+        <div className="centralize backgroundLogo">
+          <div className="loginHolder">
+            <div className="formHeading" onDoubleClick={() => this.cheat()} >Please log in</div>
+            <div className={this.state.errorbool===false? "formError noError" : "formError oneError"}>{this.state.error}</div>
+            <label>Username:</label>
+            <input className="inputField" placeholder="Your E-mail Address" autoFocus
+              onKeyPress={(e) => this.handleEnter(e, 1)}
+              ref={(input) => { this.emailInput = input; }}
+            />
+            <label>Password:</label>
+            <input className="inputField" placeholder="Your Password" type="password"
+              onKeyPress={(e) => this.handleEnter(e, 2)}
+              ref={(input) => { this.passInput = input; }} />
+            <div className="buttonHolder">
+              <div className={this.state.forgotMove ? "buttonForgot button buttonMoved": "buttonForgot button"} onClick={this.forgetClick.bind(this)}>
+                <span className={this.state.forgotMove ? "buttonMove": ""}>Forgot Password</span>
+              </div>
+              <div className={this.state.loginMove ? "buttonLogin button buttonMoved": "buttonLogin button"} onClick={this.loginClick.bind(this)}>
+                <span className={this.state.loginMove ? "buttonMove": ""}>Login</span>
+              </div>
             </div>
-            <div className={this.state.loginMove ? "buttonLogin button buttonMoved": "buttonLogin button"} onClick={this.loginClick.bind(this)}>
-              <span className={this.state.loginMove ? "buttonMove": ""}>Login</span>
+          </div>
+          <div className="newUserButton button" onClick={() => this.changeLogin(false)}>Register Now</div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="centralize backgroundLogo">
+          <div className="newUserButton button" onClick={() => this.changeLogin(true)}>Already registered? Login Now</div>
+          <div className="loginHolder">
+            <div className="formHeading">Please register</div>
+            <div className={this.state.errorbool===false? "formError noError" : "formError oneError"}>{this.state.error}</div>
+            <label>Username:</label>
+            <input className="inputField" placeholder="Your E-mail Address" autoFocus
+              onKeyPress={(e) => this.handleEnter(e, 3)}
+              ref={(input) => { this.registerInput = input; }}
+            />
+            <div className="buttonHolder">
+              <div className={this.state.registerMove ? "buttonLogin button buttonMoved": "buttonLogin button"} onClick={() => this.registerClick()}>
+                <span className={this.state.registerMove ? "buttonMove": ""}>Register</span>
+              </div>
+              <div className="registerInfo">I agree to receive updates from Vipfy</div>
             </div>
           </div>
         </div>
-        <div className="newUserButton button">Register Now</div>
-      </div>
-    );
+      );
+    }
   }
 }
 

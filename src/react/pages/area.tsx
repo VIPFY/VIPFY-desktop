@@ -2,7 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import { Route } from "react-router-dom";
 import { graphql, compose } from "react-apollo";
-import { me } from "../queries/auth";
+import { me, fetchLicences } from "../queries/auth";
 
 import Dashboard from "./dashboard";
 import Navigation from "./navigation";
@@ -11,6 +11,7 @@ import Settings from "./settings";
 import Marketplace from "./marketplace";
 import AppPage from "./apppage";
 import Billing from "./billing";
+import Advisor from "./advisor";
 
 
 
@@ -20,6 +21,7 @@ class Area extends Component {
   }
 
   setapp = appname => {
+    console.log(appname)
     this.setState({app: appname})
     this.props.history.push("/area/webview")
   }
@@ -40,6 +42,7 @@ class Area extends Component {
 
   render() {
     if (this.loggedIn()) {
+      console.log("AREA", this.props)
       return (
         <div className="area">
           <Route render={
@@ -52,6 +55,8 @@ class Area extends Component {
                 (props) => (<Settings {...props} {...this.props} />)}/>
           <Route exact path="/area/billing" render={
                 (props) => (<Billing {...props} {...this.props} />)}/>
+          <Route exact path="/area/advisor" render={
+                (props) => (<Advisor {...props} {...this.props} />)}/>
           <Route exact path="/area/marketplace" render={
                 (props) => (<Marketplace {...props} {...this.props} />)}/>
           <Route path="/area/marketplace/:appid" render={
@@ -69,5 +74,8 @@ export default compose(
   graphql(me, {
   name: "me",
   options: { fetchPolicy: "network-only" }
-  }))
+  }),
+  graphql(fetchLicences, {
+    name: "licences",
+    }))
 (Area)

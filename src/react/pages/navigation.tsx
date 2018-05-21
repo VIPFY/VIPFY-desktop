@@ -12,7 +12,27 @@ class Navigation extends Component {
     this.props.history.push(gotoview)
   }
 
+  showApps(licences) {
+    let appLogos = []
+    console.log("SHOWAPPS", licences)
+    if (licences) {
+      let i = 0;
+      licences.forEach(licence => {
+        console.log("L", licence)
+        appLogos.push(
+          <div key={`AppLogo-${i}`} className="appLogo" onClick={() => (this.setApp(licence.boughtplanid.planid.appid.name.toLowerCase()))}
+              style={{backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${licence.boughtplanid.planid.appid.logo})`}}>
+            </div>
+        )
+        i++
+      });
+    }
+
+    return appLogos
+  }
+
   render() {
+    console.log("NAVI", this.props)
     return (
       <div className="navigation">
         <div className="navigationLogoHolder">
@@ -20,12 +40,13 @@ class Navigation extends Component {
           src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png" />
         </div>
         <div className="appLogoHolder">
-          <div className="appLogo" onClick={() => (this.setApp("pipedrive"))}
+          {this.showApps(this.props.licences.fetchLicences)}
+          {/*<div className="appLogo" onClick={() => (this.setApp("pipedrive"))}
             style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"}}>
           </div>
           <div className="appLogo" onClick={() => (this.setApp("slack"))}
             style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/slack.svg)"}}>
-          </div>
+    </div>*/}
         </div>
         <div className="searchbarHolder">
           <input className="searchbar" placeholder="Search for something..."/>

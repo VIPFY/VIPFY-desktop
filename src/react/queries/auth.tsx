@@ -10,3 +10,19 @@ export const me = gql`
     }
   }
 `;
+
+export const fetchLicences = gql`
+query fetchLicences {
+  fetchLicences {
+    boughtplanid{
+      planid{
+        appid{
+          id
+          name
+          logo
+        }
+      }
+    }
+  }
+}
+`;
