@@ -38,8 +38,8 @@
         "nucleus-uploader": {
           "host": "http://release.vipfy.com:7777",
           "appId": "1",
-          "channelId": "7401a6564d489681964d740e4d483467",
-          "token": "7175b35e9cc412b1a6f0ffa85646e08a"
+          "channelId": "4ef58dc1acb88964e2fe2b177b6559a0",
+          "token": "fbac64f0c5cd10d654613042c85b3835"
         }
       },
       "publish_targets": {
@@ -56,8 +56,8 @@
       "nucleus": {
         "host": "http://release.vipfy.com:7777",
         "appId": "1",
-        "channelId": "7401a6564d489681964d740e4d483467",
-        "token": "7175b35e9cc412b1a6f0ffa85646e08a"
+        "channelId": "4ef58dc1acb88964e2fe2b177b6559a0",
+        "token": "fbac64f0c5cd10d654613042c85b3835"
       },
       "electronWinstallerConfig": {
         "name": "vipfy_desktop"
