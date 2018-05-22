@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "vipfy-desktop",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
   "scripts": {
@@ -18,9 +18,7 @@
     "forge": {
       "make_targets": {
         "win32": [
-          "zip",
-          "squirrel",
-          "appx"
+          "zip"
         ],
         "darwin": [
           "zip"
@@ -38,8 +36,8 @@
         "nucleus-uploader": {
           "host": "http://release.vipfy.com:7777",
           "appId": "1",
-          "channelId": "4ef58dc1acb88964e2fe2b177b6559a0",
-          "token": "fbac64f0c5cd10d654613042c85b3835"
+          "channelId": "acb2089ce426062c9a7430386ee57101",
+          "token": "88632efd5e29a1424342a4c56ef25cd4"
         }
       },
       "publish_targets": {
@@ -56,8 +54,8 @@
       "nucleus": {
         "host": "http://release.vipfy.com:7777",
         "appId": "1",
-        "channelId": "4ef58dc1acb88964e2fe2b177b6559a0",
-        "token": "fbac64f0c5cd10d654613042c85b3835"
+        "channelId": "acb2089ce426062c9a7430386ee57101",
+        "token": "88632efd5e29a1424342a4c56ef25cd4"
       },
       "electronWinstallerConfig": {
         "name": "vipfy_desktop"
