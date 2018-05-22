@@ -9,8 +9,8 @@ import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 
-const SERVER_NAME = process.env.SERVER_NAME;
-const SERVER_PORT = process.env.SERVER_PORT;
+const SERVER_NAME = process.env.SERVER_NAME || "dev.vipfy.com";
+const SERVER_PORT = process.env.SERVER_PORT || 4000;
 // eslint-disable-next-line
 const secure = SERVER_NAME == "vipfy.com" || SERVER_NAME == "dev.vipfy.com" ? "s" : "";
 
