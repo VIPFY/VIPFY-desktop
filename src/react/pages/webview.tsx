@@ -148,6 +148,20 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   render() {
     return (
       <div>
+        <div
+          id="loadingScreen"
+          className="mainPosition"
+          style={{ display: this.state.showLoadingScreen ? "block" : "none" }}
+        >
+          <div className="loadingTextBlock">
+            <div className="centerText inspirationalText">
+              <div>{this.state.inspirationalText}</div>
+            </div>
+            <div className="centerText legalText">
+              <div>{this.state.legalText}</div>
+            </div>
+          </div>
+        </div>
         <WebView
           id="webview"
           preload="./preload-launcher.js"
@@ -156,7 +170,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           src={this.state.url}
           partition="persist:services"
           onDidNavigate={e => this.onDidNavigate(e.target.src)}
-          style={{ display: this.state.showLoadingScreen ? "none" : "block" }}
+          style={{ visibility: this.state.showLoadingScreen ? "hidden" : "visible" }}
           onDidFailLoad={(code, desc, url, isMain) => {
             if (isMain) {
               this.hideLoadingScreen();
@@ -177,6 +191,9 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           onDomReady={e => {
             console.log("DomReady", e);
             this.maybeHideLoadingScreen();
+            //if(!e.target.isDevToolsOpened()) {
+            //  e.target.openDevTools();
+            //}
           }}
           onDialog={e => {
             console.log("Dialog", e);
@@ -185,20 +202,6 @@ export class Webview extends Component<WebViewProps, WebViewState> {
             this.onIpcMessage(e);
           }}
         />
-        <div
-          id="loadingScreen"
-          className="mainPosition"
-          style={{ display: this.state.showLoadingScreen ? "block" : "none" }}
-        >
-          <div className="loadingTextBlock">
-            <div className="centerText inspirationalText">
-              <div>{this.state.inspirationalText}</div>
-            </div>
-            <div className="centerText legalText">
-              <div>{this.state.legalText}</div>
-            </div>
-          </div>
-        </div>
       </div>
     );
   }
