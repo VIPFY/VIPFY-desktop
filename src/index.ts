@@ -52,7 +52,7 @@ function initUpdates() {
 }
 
 const createWindow = async () => {
-  initUpdates();
+  //initUpdates();
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
