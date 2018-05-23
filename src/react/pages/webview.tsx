@@ -7,7 +7,8 @@ import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 export type WebViewState = {
-  url: string;
+  setUrl: string;
+  currentUrl: string;
   inspirationalText: string;
   legalText: string;
   showLoadingScreen: boolean;
@@ -37,7 +38,8 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   constructor(props) {
     super(props);
     this.state = {
-      url: Webview.appToUrl(props.app), //passed prop as initial value
+      setUrl: Webview.appToUrl(props.app), //passed prop as initial value
+      currentUrl: Webview.appToUrl(props.app), //passed prop as initial value
       inspirationalText: "Loading",
       legalText: "Legal Text",
       showLoadingScreen: false,
@@ -62,13 +64,13 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     nextProps: WebViewProps,
     prevState: WebViewState
   ): WebViewState | null {
-    return { ...prevState, url: Webview.appToUrl(nextProps.app) };
+    return { ...prevState, setUrl: Webview.appToUrl(nextProps.app) };
   }
 
   onDidNavigate(url: string): void {
     console.log("DidNavigate", url);
     this.setState({
-      url: url
+      currentUrl: url
     });
     this.showLoadingScreen();
   }
@@ -79,7 +81,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       return;
     }
     this.setState({
-      url: event.url
+      currentUrl: event.url
     });
   }
 
@@ -103,8 +105,8 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   maybeHideLoadingScreen(): void {
     let loginPageRegex =
       "^https://(www.)?dropbox.com/?(/login.*|/logout)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login";
-    if (new RegExp(loginPageRegex).test(this.state.url)) {
-      console.log("Not hiding loading screen for " + this.state.url);
+    if (new RegExp(loginPageRegex).test(this.state.currentUrl)) {
+      console.log("Not hiding loading screen for " + this.state.currentUrl);
       return;
     }
     this.hideLoadingScreen();
@@ -167,7 +169,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           preload="./preload-launcher.js"
           webpreferences="webSecurity=no"
           className="mainPosition"
-          src={this.state.url}
+          src={this.state.setUrl}
           partition="persist:services"
           onDidNavigate={e => this.onDidNavigate(e.target.src)}
           style={{ visibility: this.state.showLoadingScreen ? "hidden" : "visible" }}
