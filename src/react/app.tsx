@@ -44,7 +44,7 @@ class App extends Component<AppProps, AppState> {
     firstname: "",
     lastname: "",
     admin: false,
-    employees: 0,
+    employees: 3,
     profilepicture: "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg",
     error: null
   };
