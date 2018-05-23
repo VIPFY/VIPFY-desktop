@@ -3,12 +3,14 @@ import {Component} from "react";
 import { graphql, compose } from "react-apollo";
 
 import { fetchAppById, fetchReviews, fetchPlans } from "../queries/products";
+import { buyPlan } from "../mutations/products";
 
 export type AppPageProps = {
   employees: number;
   productPlans: any;
   product: any;
   productReview: any;
+  buyPlan: any;
   match: any;
 };
 
@@ -167,7 +169,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               <span>Add Features</span>
               {this.printOptionalPlans(plan.subplans, plan.numlicences, i)}
             </div>
-            <div className="planCosts">{totalprice} {plan.currency}/month</div>
+            <div className="planCosts" onClick={() => {this.props.buyPlan({variables: {"planid": plan.id, "amount": usercount}})}}>{totalprice} {plan.currency}/month</div>
           </div>
         )
         i++;
@@ -489,5 +491,8 @@ export default  compose(
   graphql(fetchPlans, {
     options: (props: AppPageProps) => ({ variables: { appid: props.match.params.appid } }),
     name: "productPlans"
+  }),
+  graphql(buyPlan, {
+    name: "buyPlan"
   })
 )(AppPage);
