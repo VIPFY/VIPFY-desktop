@@ -577,7 +577,11 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               <div className="appHeaderStars">
                 {this.showStars(appDetails.avgstars)}
               </div>
-              <div className="appHeaderImportantLink">Buy now</div>
+              <div className="appHeaderImportantLink"
+                onClick={() => {
+                  document.getElementById("planNumberSelectorLabel")!.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
+                }}
+              >Buy now</div>
             </div>
           </div>
           <div className="appGallery">{this.showgal(appDetails)}</div>
@@ -595,7 +599,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
           </div>
           <div className="planSectionHolder">
             <div className="planNumberSelector">
-              <label className="planNumberSelectorLabel">
+              <label className="planNumberSelectorLabel" id="planNumberSelectorLabel">
                 Number Employees
               </label>
               <input
