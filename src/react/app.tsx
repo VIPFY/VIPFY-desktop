@@ -57,6 +57,9 @@ class App extends Component {
         this.setState({ admin: user.admin });
         this.setState({ profilepicture: user.company.profilepicture });
         this.setState({ employees: user.company.employees });
+
+        this.props.history.push("/area/dashboard");
+        return true;
       }
     } catch (err) {
       this.setState({ login: false });
@@ -64,9 +67,10 @@ class App extends Component {
       localStorage.setItem("refreshToken", "");
       console.log("LoginError", err);
       this.setState({ error: filterError(err) });
+
+      return filterError(err);
     }
 
-    this.props.history.push("/area/dashboard");
     //this.props.history.push("/area/advisor")
   };
 
