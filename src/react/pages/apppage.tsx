@@ -12,6 +12,7 @@ export type AppPageProps = {
   productReview: any;
   buyPlan: any;
   match: any;
+  history: string[];
 };
 
 export type AppPageState = {
@@ -198,6 +199,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 this.props.buyPlan({
                   variables: { planid: plan.id, amount: usercount }
                 });
+                this.props.history.push("/area/dashboard"); //todo: this doesn't update the dashboard and navigation
               }}
             >
               {totalprice} {plan.currency}/month
