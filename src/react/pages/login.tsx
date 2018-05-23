@@ -8,7 +8,8 @@ class Login extends Component {
     error: this.props.error + "" || "No error",
     errorbool: this.props.error ? true : false,
     focus: 1,
-    login: true
+    login: true,
+    newsletter: false
   };
 
   componentWillMount() {
@@ -118,7 +119,7 @@ class Login extends Component {
 
   register() {
     this.setState({ registerMove: true });
-    this.props.register(this.registerInput.value, true);
+    this.props.register(this.registerInput.value, this.state.newsletter);
     console.log("REGISTER");
   }
 
@@ -231,6 +232,15 @@ class Login extends Component {
                 </span>
               </div>
               <div className="registerInfo">
+                <input
+                  type="checkbox"
+                  value={this.state.newsletter}
+                  onClick={() =>
+                    this.setState(prevState => ({
+                      newsletter: !prevState.newsletter
+                    }))
+                  }
+                />
                 I agree to receive updates from Vipfy
               </div>
             </div>
