@@ -3,6 +3,7 @@ import { Component } from "react";
 import { Route } from "react-router-dom";
 import { graphql, compose } from "react-apollo";
 import { me, fetchLicences } from "../queries/auth";
+import { fetchRecommendedApps } from "../queries/products";
 
 import Dashboard from "./dashboard";
 import Navigation from "./navigation";
@@ -118,5 +119,8 @@ export default compose(
   }),
   graphql(fetchLicences, {
     name: "licences"
+  }),
+  graphql(fetchRecommendedApps, {
+    name: "rcApps"
   })
 )(Area);

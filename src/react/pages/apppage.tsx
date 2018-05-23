@@ -2,7 +2,13 @@ import * as React from "react";
 import { Component } from "react";
 import { graphql, compose } from "react-apollo";
 
-import { fetchAppById, fetchReviews, fetchPlans } from "../queries/products";
+import {
+  fetchAppById,
+  fetchReviews,
+  fetchPlans,
+  fetchRecommendedApps
+} from "../queries/products";
+import { fetchLicences } from "../queries/auth";
 import { buyPlan } from "../mutations/products";
 
 export type AppPageProps = {
@@ -40,9 +46,14 @@ class AppPage extends Component<AppPageProps, AppPageState> {
 
   buyApp = async (planid, amount) => {
     try {
-      await this.props.buyPlan({ variables: { planid, amount } });
+      await this.props.buyPlan({
+        variables: { planid, amount },
+        refetchQueries: [
+          { query: fetchLicences },
+          { query: fetchRecommendedApps }
+        ]
+      });
       this.props.history.push("/area/dashboard"); //todo: this doesn't update the dashboard and navigation
-      //this.props.setapp(this.props.product.fetchAppById.name);
     } catch (err) {
       console.log(err);
     }
@@ -685,6 +696,7 @@ export default compose(
     }),
     name: "productPlans"
   }),
+  graphql(fetchLicences),
   graphql(buyPlan, {
     name: "buyPlan"
   })

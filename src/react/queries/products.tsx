@@ -11,6 +11,16 @@ export const fetchApps = gql`
   }
 `;
 
+export const fetchRecommendedApps = gql`
+  {
+    fetchRecommendedApps {
+      id
+      name
+      logo
+    }
+  }
+`;
+
 export const fetchAppById = gql`
   query fetchAppById($id: Int!) {
     fetchAppById(id: $id) {
@@ -65,7 +75,7 @@ export const fetchPlans = gql`
       options
       optional
       payperiod
-      gotoplan{
+      gotoplan {
         id
         numlicences
         currency
@@ -75,7 +85,7 @@ export const fetchPlans = gql`
         name
         teaserdescription
         options
-        subplans{
+        subplans {
           id
           numlicences
           currency
@@ -87,7 +97,7 @@ export const fetchPlans = gql`
           options
         }
       }
-      subplans{
+      subplans {
         id
         numlicences
         currency
@@ -97,7 +107,7 @@ export const fetchPlans = gql`
         name
         teaserdescription
         options
-        gotoplan{
+        gotoplan {
           id
           numlicences
           currency
@@ -108,7 +118,7 @@ export const fetchPlans = gql`
           teaserdescription
           options
         }
-        subplans{
+        subplans {
           id
           numlicences
           currency
@@ -118,7 +128,7 @@ export const fetchPlans = gql`
           name
           teaserdescription
           options
-          gotoplan{
+          gotoplan {
             id
             numlicences
             currency
