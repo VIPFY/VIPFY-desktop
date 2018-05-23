@@ -38,6 +38,16 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     mainprice: []
   };
 
+  buyApp = async (planid, amount) => {
+    try {
+      await this.props.buyPlan({ variables: { planid, amount } });
+      this.props.history.push("/area/dashboard"); //todo: this doesn't update the dashboard and navigation
+      //this.props.setapp(this.props.product.fetchAppById.name);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   showStars(stars) {
     console.log("STARS", stars);
     const starsArray: JSX.Element[] = [];
@@ -103,8 +113,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             key={index}
             className={
               "galleryImage " + this.showBig(this.state.bigImage, index)
-            }
-          >
+            }>
             <img
               className={"galleryView"}
               src={`https://storage.googleapis.com/vipfy-imagestore-01/${
@@ -195,13 +204,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             </div>
             <div
               className="planCosts"
-              onClick={() => {
-                this.props.buyPlan({
-                  variables: { planid: plan.id, amount: usercount }
-                });
-                this.props.history.push("/area/dashboard"); //todo: this doesn't update the dashboard and navigation
-              }}
-            >
+              onClick={() => this.buyApp(plan.id, usercount)}>
               {totalprice} {plan.currency}/month
             </div>
           </div>
@@ -526,8 +529,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
           <div
             key={`review-${i}`}
             className="detail-comment"
-            style={{ marginTop: "0px" }}
-          >
+            style={{ marginTop: "0px" }}>
             <div className="rating">{this.showStars(review.stars)}</div>
             <span className="detail-comment-author">
               by{" "}
@@ -569,8 +571,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             <div className="appHeaderShortHolder">
               <div
                 className="appHeaderLink"
-                onClick={() => this.openExternal(appDetails.website)}
-              >
+                onClick={() => this.openExternal(appDetails.website)}>
                 Website
               </div>
               <div className="appHeaderStars">
@@ -588,8 +589,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 "detail-fulldescription-showmore secondary-button " +
                 this.showfulldesc(false)
               }
-              onClick={() => this.toggledescbutton()}
-            >
+              onClick={() => this.toggledescbutton()}>
               Show more
             </div>
           </div>
