@@ -45,6 +45,7 @@ function modifySettings() {
 }
 
 function login(form: Element) {
+  con.log("filling in dropbox login form");
   form.querySelector<HTMLInputElement>("input[name='login_email']")!.value = "jf@vipfy.com";
   form.querySelector<HTMLInputElement>("input[name='login_password']")!.value = "zdwMYqQPE4gSHr3QQSkm";
   form.querySelector<HTMLInputElement>("input[name='remember_me']")!.checked = true;
