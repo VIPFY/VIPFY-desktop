@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Component} from "react";
+import { Component } from "react";
 import { graphql, compose } from "react-apollo";
 
 import { fetchAppById, fetchReviews, fetchPlans } from "../queries/products";
@@ -26,7 +26,6 @@ export type AppPageState = {
 };
 
 class AppPage extends Component<AppPageProps, AppPageState> {
-
   state: AppPageState = {
     bigImage: null,
     showDescriptionFull: false,
@@ -36,45 +35,48 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     checkboxes: [[]],
     totalprice: [],
     mainprice: []
-  }
+  };
 
   showStars(stars) {
-    console.log("STARS", stars)
+    console.log("STARS", stars);
     const starsArray: JSX.Element[] = [];
     if (stars) {
       for (let n = 0; n < 5; n++) {
         if (n < stars - 0.5) {
-          starsArray.push(<i key={`star${n}`} className="fas fa-star"></i>);
+          starsArray.push(<i key={`star${n}`} className="fas fa-star" />);
         } else if (n < stars) {
-          starsArray.push(<span key={`star${n}`} className="halfStarHolder"><i className="fas fa-star-half"></i>
-            <i className="far fa-star-half secondHalfStar"></i></span>);
+          starsArray.push(
+            <span key={`star${n}`} className="halfStarHolder">
+              <i className="fas fa-star-half" />
+              <i className="far fa-star-half secondHalfStar" />
+            </span>
+          );
         } else {
-          starsArray.push(<i key={`star${n}`} className="far fa-star"></i>);
+          starsArray.push(<i key={`star${n}`} className="far fa-star" />);
         }
       }
     } else {
-      starsArray.push(<div>No Reviews yet</div>)
+      starsArray.push(<div>No Reviews yet</div>);
     }
     return starsArray;
   }
 
-
   openExternal(url) {
-    require("electron").shell.openExternal(url)
+    require("electron").shell.openExternal(url);
   }
 
   showBig(state, index) {
     if (state === index) {
-      return "galleryBig"
+      return "galleryBig";
     }
-    return ""
+    return "";
   }
 
   changeBig(index) {
     if (this.state.bigImage === index) {
-      this.setState({bigImage: null})
+      this.setState({ bigImage: null });
     } else {
-      this.setState({bigImage: index})
+      this.setState({ bigImage: index });
     }
   }
 
@@ -83,13 +85,14 @@ class AppPage extends Component<AppPageProps, AppPageState> {
       return " detail-fulldescription-full";
     } else if (!bool && this.state.showDescriptionFull) {
       return " detail-fulldescription-showmore-full";
-    } else {return ""};
+    } else {
+      return "";
+    }
   }
 
   toggledescbutton() {
     this.setState({ showDescriptionFull: true });
   }
-
 
   showgal(appDetails) {
     if (appDetails.images) {
@@ -97,8 +100,10 @@ class AppPage extends Component<AppPageProps, AppPageState> {
         return (
           <div
             key={index}
-            className={"galleryImage " + this.showBig(this.state.bigImage, index)}
-            >
+            className={
+              "galleryImage " + this.showBig(this.state.bigImage, index)
+            }
+          >
             <img
               className={"galleryView"}
               src={`https://storage.googleapis.com/vipfy-imagestore-01/${
@@ -114,128 +119,188 @@ class AppPage extends Component<AppPageProps, AppPageState> {
   }
 
   calculatepartsum(plan, useralready, usercount): number {
-    if (!plan) {return 0}
+    if (!plan) {
+      return 0;
+    }
     let calculatedprice = 0;
     let calculateduseralready = useralready;
     let nosp: any[] = [];
 
-    if (usercount-calculateduseralready <= 0) {return calculatedprice; } //if now enough licences already
+    if (usercount - calculateduseralready <= 0) {
+      return calculatedprice;
+    } //if now enough licences already
 
     calculatedprice += plan.price;
     calculateduseralready += plan.numlicences;
 
-    if (usercount-calculateduseralready <= 0) {return calculatedprice; } //if now enough licences already
+    if (usercount - calculateduseralready <= 0) {
+      return calculatedprice;
+    } //if now enough licences already
 
     if (plan.subplans) {
       plan.subplans.forEach(function(subplan) {
         if (subplan.optional === false) {
-          nosp.push(subplan)
+          nosp.push(subplan);
         }
       });
     }
 
     switch (nosp.length) {
       case 0: // Kein nosp => add licences from plan and return
-        calculatedprice += Math.ceil((usercount-calculateduseralready)/plan.numlicences)*plan.price;
+        calculatedprice +=
+          Math.ceil((usercount - calculateduseralready) / plan.numlicences) *
+          plan.price;
         return calculatedprice;
       case 1: // genau ein nosp
-        return (calculatedprice + this.calculatepartsum(nosp[0], calculateduseralready, usercount))
+        return (
+          calculatedprice +
+          this.calculatepartsum(nosp[0], calculateduseralready, usercount)
+        );
 
-      default: // More than one nonoptionalsubplan
+      default:
+        // More than one nonoptionalsubplan
         let minnosp = Infinity;
         let that = this;
         nosp.forEach(function(subplan) {
-          minnosp = Math.min(minnosp, that.calculatepartsum(subplan, calculateduseralready, usercount))
-        })
-        return (calculatedprice + minnosp);
+          minnosp = Math.min(
+            minnosp,
+            that.calculatepartsum(subplan, calculateduseralready, usercount)
+          );
+        });
+        return calculatedprice + minnosp;
     }
   }
 
   showPlans(plans, usercount) {
-    console.log("Plans", plans)
-    let plandivs: JSX.Element[] = []
+    console.log("Plans", plans);
+    let plandivs: JSX.Element[] = [];
     let i = 0;
     if (plans) {
       plans.forEach(plan => {
-        let totalprice = this.state.totalprice[i] || this.calculatepartsum(plan, 0, usercount)
+        let totalprice =
+          this.state.totalprice[i] || this.calculatepartsum(plan, 0, usercount);
         plandivs.push(
           <div key={`plan-${i}`} className="planSingleHolder">
             <div className="planHeader">
               <div className="planTitle">{plan.name}</div>
-              <div className="planPrice"><div className="planPriceBefore">starting at</div>
-              {this.calculatepartsum(plan, 0, usercount)} {plan.currency}/month</div>
+              <div className="planPrice">
+                <div className="planPriceBefore">starting at</div>
+                {this.calculatepartsum(plan, 0, usercount)} {plan.currency}/month
+              </div>
             </div>
             <div className="planAdditionalOptions">
               <span>Add Features</span>
               {this.printOptionalPlans(plan.subplans, plan.numlicences, i)}
             </div>
-            <div className="planCosts" onClick={() => {this.props.buyPlan({variables: {"planid": plan.id, "amount": usercount}})}}>{totalprice} {plan.currency}/month</div>
+            <div
+              className="planCosts"
+              onClick={() => {
+                this.props.buyPlan({
+                  variables: { planid: plan.id, amount: usercount }
+                });
+              }}
+            >
+              {totalprice} {plan.currency}/month
+            </div>
           </div>
-        )
+        );
         i++;
       });
     }
-    return plandivs
+    return plandivs;
   }
 
   printOptionalPlans(plans, mainplanlicences, plancounter) {
-    if (!plans) {return ""}
+    if (!plans) {
+      return "";
+    }
     let OptionalPlans: JSX.Element[] = [];
-    let {optionalSliders, optionalCosts} = this.state;
-    console.log("PRINT", this, plancounter)
+    let { optionalSliders, optionalCosts } = this.state;
+    console.log("PRINT", this, plancounter);
     for (let i = 0; i < plans.length; i++) {
-      if (!optionalSliders[plancounter]) {optionalSliders[plancounter] = []}
-      if (!optionalCosts[plancounter]) {optionalCosts[plancounter] = []}
-      if (!optionalSliders[plancounter][i]) {optionalSliders[plancounter] = [...optionalSliders[plancounter], 0]};
-      if (!optionalCosts[plancounter][i]) {optionalCosts[plancounter] = [...optionalCosts[plancounter], 0]};
+      if (!optionalSliders[plancounter]) {
+        optionalSliders[plancounter] = [];
+      }
+      if (!optionalCosts[plancounter]) {
+        optionalCosts[plancounter] = [];
+      }
+      if (!optionalSliders[plancounter][i]) {
+        optionalSliders[plancounter] = [...optionalSliders[plancounter], 0];
+      }
+      if (!optionalCosts[plancounter][i]) {
+        optionalCosts[plancounter] = [...optionalCosts[plancounter], 0];
+      }
 
       if (plans[i].optional === true) {
         if (plans[i].options) {
           switch (plans[i].options.type) {
             case "checkbox":
               OptionalPlans.push(
-                <div key={"opt-"+i} className="billPos">
+                <div key={"opt-" + i} className="billPos">
                   <div className="billTextOptional">
-                    <input className="billCheckBox" type="checkbox"  onChange={(e) => this.changeCheckbox(e, i, plans[i], plancounter)}/>
+                    <input
+                      className="billCheckBox"
+                      type="checkbox"
+                      onChange={e =>
+                        this.changeCheckbox(e, i, plans[i], plancounter)
+                      }
+                    />
                     <span className="billTextPlan">{plans[i].name}</span>
                   </div>
                   {/*<div className="billprice">{optionalCosts[plancounter][i]} {plans[i].currency}</div>*/}
-                </div>)
+                </div>
+              );
               break;
             case "counter":
               OptionalPlans.push(
-                <div key={"opt-"+i} className="billPos">
+                <div key={"opt-" + i} className="billPos">
                   <div className="billTextOptional">
-                    <input className="billInput" value={optionalSliders[plancounter][i]}
-                      onChange={(e) => this.optionalSliderChange(e, i, plans[i], plancounter)}/>
+                    <input
+                      className="billInput"
+                      value={optionalSliders[plancounter][i]}
+                      onChange={e =>
+                        this.optionalSliderChange(e, i, plans[i], plancounter)
+                      }
+                    />
                     <span className="billTextPlan">{plans[i].name}</span>
                   </div>
                   {/*<div className="billprice">{optionalCosts[plancounter][i]} {plans[i].currency}</div>*/}
-                </div>)
-              break
+                </div>
+              );
+              break;
             default:
               OptionalPlans.push(
-                <div key={"opt-"+i} className="billPos">
+                <div key={"opt-" + i} className="billPos">
                   <div className="billTextOptional">
                     <span className="billTextPlan">{plans[i].name}</span>
-                    <span> for {(this.state.numberEmployees-mainplanlicences)} additional users</span>
+                    <span>
+                      {" "}
+                      for {this.state.numberEmployees - mainplanlicences}{" "}
+                      additional users
+                    </span>
                   </div>
                   {/*<div className="billprice">
                     {plans[i].price*Math.ceil((this.state.numberEmployees-mainplanlicences)/plans[i].numlicences)} {plans[i].currency}
                   </div>*/}
-                </div>)
+                </div>
+              );
           }
         } else {
           OptionalPlans.push(
-            <div key={"opt-"+i} className="billPos">
+            <div key={"opt-" + i} className="billPos">
               <div className="billTextOptional">
                 <span className="billTextPlan">{plans[i].name}</span>
-                <span> for {(this.state.numberEmployees-mainplanlicences)} additional users</span>
+                <span>
+                  {" "}
+                  for {this.state.numberEmployees - mainplanlicences} additional
+                  users
+                </span>
               </div>
               {/*<div className="billprice">
                 {plans[i].price*Math.ceil((this.state.numberEmployees-mainplanlicences)/plans[i].numlicences)} {plans[i].currency}
               </div>*/}
-            </div>)
+            </div>
+          );
         }
       }
     }
@@ -247,33 +312,76 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     let optionalSliders = this.state.optionalSliders;
     let optionalCosts = this.state.optionalCosts;
     let totalprice = this.state.totalprice;
-    console.log("optionalSliderChange", optionalSliders[plancounter], id)
-    if (!optionalSliders[plancounter]) {optionalSliders[plancounter] = []}
-    if (!optionalCosts[plancounter]) {optionalCosts[plancounter] = []}
+    console.log("optionalSliderChange", optionalSliders[plancounter], id);
+    if (!optionalSliders[plancounter]) {
+      optionalSliders[plancounter] = [];
+    }
+    if (!optionalCosts[plancounter]) {
+      optionalCosts[plancounter] = [];
+    }
 
     if (!totalprice[plancounter]) {
-      totalprice[plancounter] = this.calculatepartsum(this.props.productPlans.fetchPlans[plancounter], 0, this.state.numberEmployees)}
+      totalprice[plancounter] = this.calculatepartsum(
+        this.props.productPlans.fetchPlans[plancounter],
+        0,
+        this.state.numberEmployees
+      );
+    }
 
-    for(let i = 0; i<=id; i++) {
-      if (!optionalSliders[plancounter][i]) {optionalSliders[plancounter] = [...optionalSliders[plancounter], 0]};
-      if (!optionalCosts[plancounter][i]) {optionalCosts[plancounter] = [...optionalCosts[plancounter], 0]};
+    for (let i = 0; i <= id; i++) {
+      if (!optionalSliders[plancounter][i]) {
+        optionalSliders[plancounter] = [...optionalSliders[plancounter], 0];
+      }
+      if (!optionalCosts[plancounter][i]) {
+        optionalCosts[plancounter] = [...optionalCosts[plancounter], 0];
+      }
     }
 
     optionalSliders[plancounter][id] = event.target.value;
 
     //total - oldcost | Calc new Cost | total + newcost | saveeverything
 
-    console.log("SLIDERCHANGE1", id, totalprice[plancounter], optionalCosts[plancounter], id)
-    totalprice[plancounter] = (totalprice[plancounter]-optionalCosts[plancounter][id])
-    console.log("SLIDERCHANGE2", id, totalprice[plancounter], optionalCosts[plancounter], id)
-    optionalCosts[plancounter][id] = this.calculatepartsum(plan, 0, event.target.value)
-    console.log("SLIDERCHANGE3", id, totalprice[plancounter], optionalCosts[plancounter], id)
-    totalprice[plancounter] = (totalprice[plancounter]+optionalCosts[plancounter][id])
-    console.log("SLIDERCHANGE4", id, totalprice, optionalCosts[plancounter], id)
+    console.log(
+      "SLIDERCHANGE1",
+      id,
+      totalprice[plancounter],
+      optionalCosts[plancounter],
+      id
+    );
+    totalprice[plancounter] =
+      totalprice[plancounter] - optionalCosts[plancounter][id];
+    console.log(
+      "SLIDERCHANGE2",
+      id,
+      totalprice[plancounter],
+      optionalCosts[plancounter],
+      id
+    );
+    optionalCosts[plancounter][id] = this.calculatepartsum(
+      plan,
+      0,
+      event.target.value
+    );
+    console.log(
+      "SLIDERCHANGE3",
+      id,
+      totalprice[plancounter],
+      optionalCosts[plancounter],
+      id
+    );
+    totalprice[plancounter] =
+      totalprice[plancounter] + optionalCosts[plancounter][id];
+    console.log(
+      "SLIDERCHANGE4",
+      id,
+      totalprice,
+      optionalCosts[plancounter],
+      id
+    );
 
-    this.setState({optionalSliders: optionalSliders})
-    this.setState({optionalCosts: optionalCosts})
-    this.setState({totalprice: totalprice})
+    this.setState({ optionalSliders: optionalSliders });
+    this.setState({ optionalCosts: optionalCosts });
+    this.setState({ totalprice: totalprice });
   }
 
   changeCheckbox(event, id, plan, plancounter) {
@@ -282,16 +390,33 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     let checkboxes = this.state.checkboxes;
     let totalprice = this.state.totalprice;
 
-    if (!optionalSliders[plancounter]) {optionalSliders[plancounter] = []}
-    if (!optionalCosts[plancounter]) {optionalCosts[plancounter] = []}
-    if (!checkboxes[plancounter]) {checkboxes[plancounter] = []}
+    if (!optionalSliders[plancounter]) {
+      optionalSliders[plancounter] = [];
+    }
+    if (!optionalCosts[plancounter]) {
+      optionalCosts[plancounter] = [];
+    }
+    if (!checkboxes[plancounter]) {
+      checkboxes[plancounter] = [];
+    }
     if (!totalprice[plancounter]) {
-      totalprice[plancounter] = this.calculatepartsum(this.props.productPlans.fetchPlans[plancounter], 0, this.state.numberEmployees)}
+      totalprice[plancounter] = this.calculatepartsum(
+        this.props.productPlans.fetchPlans[plancounter],
+        0,
+        this.state.numberEmployees
+      );
+    }
 
-    for(let i = 0; i<=id; i++) {
-      if (!optionalSliders[plancounter][i]) {optionalSliders[plancounter] = [...optionalSliders[plancounter], 0]};
-      if (!optionalCosts[plancounter][i]) {optionalCosts[plancounter] = [...optionalCosts[plancounter], 0]};
-      if (!checkboxes[plancounter][i]) {checkboxes[plancounter] = [...checkboxes[plancounter], false]};
+    for (let i = 0; i <= id; i++) {
+      if (!optionalSliders[plancounter][i]) {
+        optionalSliders[plancounter] = [...optionalSliders[plancounter], 0];
+      }
+      if (!optionalCosts[plancounter][i]) {
+        optionalCosts[plancounter] = [...optionalCosts[plancounter], 0];
+      }
+      if (!checkboxes[plancounter][i]) {
+        checkboxes[plancounter] = [...checkboxes[plancounter], false];
+      }
     }
 
     if (event.target.checked === true) {
@@ -302,133 +427,191 @@ class AppPage extends Component<AppPageProps, AppPageState> {
       checkboxes[plancounter][id] = false;
     }
 
-    console.log("COSTSA", totalprice)
-    console.log("COSTS", optionalCosts[plancounter], id, totalprice[plancounter])
-    totalprice[plancounter] = (totalprice[plancounter]-optionalCosts[plancounter][id])
-    console.log("COSTS", optionalCosts[plancounter][id], id, totalprice[plancounter])
-    optionalCosts[plancounter][id] = this.calculatepartsum(plan, 0, (optionalSliders[plancounter][id]*this.state.numberEmployees))
-    console.log("COSTS", optionalCosts[plancounter], id, totalprice[plancounter])
-    totalprice[plancounter] = (totalprice[plancounter]+optionalCosts[plancounter][id])
-    console.log("COSTS", optionalCosts[plancounter], id, totalprice[plancounter])
+    console.log("COSTSA", totalprice);
+    console.log(
+      "COSTS",
+      optionalCosts[plancounter],
+      id,
+      totalprice[plancounter]
+    );
+    totalprice[plancounter] =
+      totalprice[plancounter] - optionalCosts[plancounter][id];
+    console.log(
+      "COSTS",
+      optionalCosts[plancounter][id],
+      id,
+      totalprice[plancounter]
+    );
+    optionalCosts[plancounter][id] = this.calculatepartsum(
+      plan,
+      0,
+      optionalSliders[plancounter][id] * this.state.numberEmployees
+    );
+    console.log(
+      "COSTS",
+      optionalCosts[plancounter],
+      id,
+      totalprice[plancounter]
+    );
+    totalprice[plancounter] =
+      totalprice[plancounter] + optionalCosts[plancounter][id];
+    console.log(
+      "COSTS",
+      optionalCosts[plancounter],
+      id,
+      totalprice[plancounter]
+    );
 
-
-    this.setState({optionalSliders: optionalSliders})
-    this.setState({optionalCosts: optionalCosts})
-    this.setState({checkboxes: checkboxes})
-    this.setState({totalprice: totalprice})
-
+    this.setState({ optionalSliders: optionalSliders });
+    this.setState({ optionalCosts: optionalCosts });
+    this.setState({ checkboxes: checkboxes });
+    this.setState({ totalprice: totalprice });
   }
 
   changeusers(event) {
-    let checkboxes = this.state.checkboxes
-    let optionalCosts = this.state.optionalCosts
+    let checkboxes = this.state.checkboxes;
+    let optionalCosts = this.state.optionalCosts;
     let that = this;
     let totalprice: number[] = [];
     let mainprice: number[] = [];
     let i = 0;
 
-    console.log("CHANGEUSERS", optionalCosts, this)
+    console.log("CHANGEUSERS", optionalCosts, this);
 
     this.props.productPlans.fetchPlans.forEach(plan => {
       mainprice[i] = this.calculatepartsum(plan, 0, event.target.value);
       totalprice[i] = mainprice[i];
 
       //Set Checkboxprices
-      if (!checkboxes[i]) {checkboxes[i] = []}
+      if (!checkboxes[i]) {
+        checkboxes[i] = [];
+      }
       checkboxes[i].forEach(function(checkbox, index) {
-        console.log("ITERATOR", totalprice, index)
+        console.log("ITERATOR", totalprice, index);
         if (checkbox[i] == true) {
-          let partprice = that.calculatepartsum(plan.subplans[index], 0, event.target.value)
+          let partprice = that.calculatepartsum(
+            plan.subplans[index],
+            0,
+            event.target.value
+          );
           optionalCosts[i][index] = partprice;
         }
-      })
-      if (!optionalCosts[i]) {optionalCosts[i] = []}
+      });
+      if (!optionalCosts[i]) {
+        optionalCosts[i] = [];
+      }
       optionalCosts[i].forEach(function(cost) {
-        totalprice[i] = (totalprice[i]+cost)
-      })
+        totalprice[i] = totalprice[i] + cost;
+      });
       i++;
 
       //console.log("CHANGEUSERS", totalprice, optionalCosts)
     });
-    this.setState({mainprice: mainprice});
-    this.setState({totalprice: totalprice});
-    this.setState({optionalCosts: optionalCosts})
-    this.setState({numberEmployees: event.target.value})
+    this.setState({ mainprice: mainprice });
+    this.setState({ totalprice: totalprice });
+    this.setState({ optionalCosts: optionalCosts });
+    this.setState({ numberEmployees: event.target.value });
   }
 
   showComments(reviewData) {
-    let reviewDivs: JSX.Element[] = []
+    let reviewDivs: JSX.Element[] = [];
     let i = 0;
 
     if (reviewData) {
-      console.log("REVIEWS", reviewData)
+      console.log("REVIEWS", reviewData);
       reviewData.forEach(review => {
         reviewDivs.push(
-          <div key={`review-${i}`} className="detail-comment" style={{ marginTop: "0px" }}>
-            <div className="rating">
-              {this.showStars(review.stars)}
-            </div>
+          <div
+            key={`review-${i}`}
+            className="detail-comment"
+            style={{ marginTop: "0px" }}
+          >
+            <div className="rating">{this.showStars(review.stars)}</div>
             <span className="detail-comment-author">
-              by {`${review.reviewer.firstname} ${review.reviewer.middlename} ${review.reviewer.lastname}`}
+              by{" "}
+              {`${review.reviewer.firstname} ${review.reviewer.middlename} ${
+                review.reviewer.lastname
+              }`}
             </span>
             <p className="detail-comment-text">{review.reviewtext}</p>
             <span className="detail-comment-date">
-              {review.reviewdate.split(" ")[1]} {review.reviewdate.split(" ")[2]} {review.reviewdate.split(" ")[3]}
+              {review.reviewdate.split(" ")[1]}{" "}
+              {review.reviewdate.split(" ")[2]}{" "}
+              {review.reviewdate.split(" ")[3]}
             </span>
           </div>
-        )
+        );
         i++;
       });
-  }
+    }
 
-    return reviewDivs
+    return reviewDivs;
   }
 
   render() {
-    console.log("AppPage", this)
+    console.log("AppPage", this);
 
     if (this.props.product.fetchAppById) {
-      let appDetails = this.props.product.fetchAppById
+      let appDetails = this.props.product.fetchAppById;
       return (
         <div className="fullWorking paddingPage">
           <div className="appHeaderHolder">
-            <div className="appLogoLarge"
-              style={{backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${appDetails.logo})`}}></div>
+            <div
+              className="appLogoLarge"
+              style={{
+                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
+                  appDetails.logo
+                })`
+              }}
+            />
             <div className="appHeaderShortHolder">
-              <div className="appHeaderLink" onClick={() => this.openExternal(appDetails.website)}>Website</div>
+              <div
+                className="appHeaderLink"
+                onClick={() => this.openExternal(appDetails.website)}
+              >
+                Website
+              </div>
               <div className="appHeaderStars">
                 {this.showStars(appDetails.avgstars)}
               </div>
               <div className="appHeaderImportantLink">Buy now</div>
             </div>
           </div>
-          <div className="appGallery">
-            {this.showgal(appDetails)}
-          </div>
+          <div className="appGallery">{this.showgal(appDetails)}</div>
           <div className={"detail-fulldescription " + this.showfulldesc(true)}>
             <h3>Description</h3>
-            <p
-              dangerouslySetInnerHTML={{ __html: appDetails.description }}
-            />
+            <p dangerouslySetInnerHTML={{ __html: appDetails.description }} />
             <div
               className={
                 "detail-fulldescription-showmore secondary-button " +
                 this.showfulldesc(false)
               }
-              onClick={() => this.toggledescbutton()}>
+              onClick={() => this.toggledescbutton()}
+            >
               Show more
             </div>
           </div>
           <div className="planSectionHolder">
             <div className="planNumberSelector">
-              <label className="planNumberSelectorLabel">Number Employees</label>
-              <input className="planNumberSelectorInput" onChange={(e) => this.changeusers(e)} value={this.state.numberEmployees}/>
+              <label className="planNumberSelectorLabel">
+                Number Employees
+              </label>
+              <input
+                className="planNumberSelectorInput"
+                onChange={e => this.changeusers(e)}
+                value={this.state.numberEmployees}
+              />
             </div>
             {/*<div className="planScroller">*/}
-              <div className="planHolder"
-                  /*style={{width: this.props.productPlans.fetchPlans ? this.props.productPlans.fetchPlans.length * 22 +"em" : 0 * 22 +"em"}}*/>
-                {this.showPlans(this.props.productPlans.fetchPlans, this.state.numberEmployees)}
-              </div>
+            <div
+              className="planHolder"
+              /*style={{width: this.props.productPlans.fetchPlans ? this.props.productPlans.fetchPlans.length * 22 +"em" : 0 * 22 +"em"}}*/
+            >
+              {this.showPlans(
+                this.props.productPlans.fetchPlans,
+                this.state.numberEmployees
+              )}
+            </div>
             {/*</div>*/}
           </div>
           <div className="detail-comments">
@@ -450,46 +633,50 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             </div>
           </div>
           <div className="detail-informations">
-          <div className="detail-information-holder">
-            <h3>Developer</h3>
-            {appDetails ? (
-              <div>
-                <p>{appDetails.developername}</p>
-                <p>
-                    {appDetails.developerwebsite}
-                </p>
-              </div>
-            ) : (
-              ""
-            )}
+            <div className="detail-information-holder">
+              <h3>Developer</h3>
+              {appDetails ? (
+                <div>
+                  <p>{appDetails.developername}</p>
+                  <p>{appDetails.developerwebsite}</p>
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+            <div className="detail-information-holder">
+              <h3>Support</h3>
+            </div>
+            <div className="detail-information-holder">
+              <h3>Report</h3>
+              <p>Flag as not working</p>
+              <p>Flag as inappropriate</p>
+            </div>
           </div>
-          <div className="detail-information-holder">
-            <h3>Support</h3>
-          </div>
-          <div className="detail-information-holder">
-            <h3>Report</h3>
-            <p>Flag as not working</p>
-            <p>Flag as inappropriate</p>
-          </div>
-        </div>
         </div>
       );
     }
-    return (<div>Loading</div>)
+    return <div>Loading</div>;
   }
 }
 
-export default  compose(
+export default compose(
   graphql(fetchAppById, {
-    options: (props: AppPageProps) => ({ variables: { id: props.match.params.appid } }),
+    options: (props: AppPageProps) => ({
+      variables: { id: props.match.params.appid }
+    }),
     name: "product"
   }),
   graphql(fetchReviews, {
-    options: (props: AppPageProps) => ({ variables: { appid: props.match.params.appid } }),
+    options: (props: AppPageProps) => ({
+      variables: { appid: props.match.params.appid }
+    }),
     name: "productReview"
   }),
   graphql(fetchPlans, {
-    options: (props: AppPageProps) => ({ variables: { appid: props.match.params.appid } }),
+    options: (props: AppPageProps) => ({
+      variables: { appid: props.match.params.appid }
+    }),
     name: "productPlans"
   }),
   graphql(buyPlan, {
