@@ -4,10 +4,28 @@ import { graphql, compose } from "react-apollo";
 
 import { fetchAppById, fetchReviews, fetchPlans } from "../queries/products";
 
+export type AppPageProps = {
+  employees: number;
+  productPlans: any;
+  product: any;
+  productReview: any;
+  match: any;
+};
 
-class AppPage extends Component {
+export type AppPageState = {
+  bigImage: null;
+  showDescriptionFull: boolean;
+  numberEmployees: number;
+  optionalSliders: number[][];
+  optionalCosts: any[][];
+  checkboxes: any[][];
+  totalprice: any[];
+  mainprice: any[];
+};
 
-  state = {
+class AppPage extends Component<AppPageProps, AppPageState> {
+
+  state: AppPageState = {
     bigImage: null,
     showDescriptionFull: false,
     numberEmployees: this.props.employees,
@@ -20,7 +38,7 @@ class AppPage extends Component {
 
   showStars(stars) {
     console.log("STARS", stars)
-    const starsArray = [];
+    const starsArray: JSX.Element[] = [];
     if (stars) {
       for (let n = 0; n < 5; n++) {
         if (n < stars - 0.5) {
@@ -93,11 +111,11 @@ class AppPage extends Component {
     }
   }
 
-  calculatepartsum(plan, useralready, usercount) {
+  calculatepartsum(plan, useralready, usercount): number {
     if (!plan) {return 0}
     let calculatedprice = 0;
     let calculateduseralready = useralready;
-    let nosp = [];
+    let nosp: any[] = [];
 
     if (usercount-calculateduseralready <= 0) {return calculatedprice; } //if now enough licences already
 
@@ -133,7 +151,7 @@ class AppPage extends Component {
 
   showPlans(plans, usercount) {
     console.log("Plans", plans)
-    let plandivs = []
+    let plandivs: JSX.Element[] = []
     let i = 0;
     if (plans) {
       plans.forEach(plan => {
@@ -149,7 +167,7 @@ class AppPage extends Component {
               <span>Add Features</span>
               {this.printOptionalPlans(plan.subplans, plan.numlicences, i)}
             </div>
-            <div className="planCosts">{totalprice + " "+ plan.currency}/month</div>
+            <div className="planCosts">{totalprice} {plan.currency}/month</div>
           </div>
         )
         i++;
@@ -160,7 +178,7 @@ class AppPage extends Component {
 
   printOptionalPlans(plans, mainplanlicences, plancounter) {
     if (!plans) {return ""}
-    let OptionalPlans = [];
+    let OptionalPlans: JSX.Element[] = [];
     let {optionalSliders, optionalCosts} = this.state;
     console.log("PRINT", this, plancounter)
     for (let i = 0; i < plans.length; i++) {
@@ -198,10 +216,10 @@ class AppPage extends Component {
                 <div key={"opt-"+i} className="billPos">
                   <div className="billTextOptional">
                     <span className="billTextPlan">{plans[i].name}</span>
-                    <span> for {(this.state.numemployees-mainplanlicences)} additional users</span>
+                    <span> for {(this.state.numberEmployees-mainplanlicences)} additional users</span>
                   </div>
                   {/*<div className="billprice">
-                    {plans[i].price*Math.ceil((this.state.numemployees-mainplanlicences)/plans[i].numlicences)} {plans[i].currency}
+                    {plans[i].price*Math.ceil((this.state.numberEmployees-mainplanlicences)/plans[i].numlicences)} {plans[i].currency}
                   </div>*/}
                 </div>)
           }
@@ -210,10 +228,10 @@ class AppPage extends Component {
             <div key={"opt-"+i} className="billPos">
               <div className="billTextOptional">
                 <span className="billTextPlan">{plans[i].name}</span>
-                <span> for {(this.state.numemployees-mainplanlicences)} additional users</span>
+                <span> for {(this.state.numberEmployees-mainplanlicences)} additional users</span>
               </div>
               {/*<div className="billprice">
-                {plans[i].price*Math.ceil((this.state.numemployees-mainplanlicences)/plans[i].numlicences)} {plans[i].currency}
+                {plans[i].price*Math.ceil((this.state.numberEmployees-mainplanlicences)/plans[i].numlicences)} {plans[i].currency}
               </div>*/}
             </div>)
         }
@@ -277,8 +295,7 @@ class AppPage extends Component {
     if (event.target.checked === true) {
       optionalSliders[plancounter][id] = 1;
       checkboxes[plancounter][id] = true;
-    }
-    else {
+    } else {
       optionalSliders[plancounter][id] = 0;
       checkboxes[plancounter][id] = false;
     }
@@ -304,8 +321,8 @@ class AppPage extends Component {
     let checkboxes = this.state.checkboxes
     let optionalCosts = this.state.optionalCosts
     let that = this;
-    let totalprice = [];
-    let mainprice = [];
+    let totalprice: number[] = [];
+    let mainprice: number[] = [];
     let i = 0;
 
     console.log("CHANGEUSERS", optionalCosts, this)
@@ -338,7 +355,7 @@ class AppPage extends Component {
   }
 
   showComments(reviewData) {
-    let reviewDivs = []
+    let reviewDivs: JSX.Element[] = []
     let i = 0;
 
     if (reviewData) {
@@ -354,11 +371,7 @@ class AppPage extends Component {
             </span>
             <p className="detail-comment-text">{review.reviewtext}</p>
             <span className="detail-comment-date">
-              {review.reviewdate.split(" ")[1] +
-                " " +
-                review.reviewdate.split(" ")[2] +
-                " " +
-                review.reviewdate.split(" ")[3]}
+              {review.reviewdate.split(" ")[1]} {review.reviewdate.split(" ")[2]} {review.reviewdate.split(" ")[3]}
             </span>
           </div>
         )
@@ -466,15 +479,15 @@ class AppPage extends Component {
 
 export default  compose(
   graphql(fetchAppById, {
-    options: props => ({ variables: { id: props.match.params.appid } }),
+    options: (props: AppPageProps) => ({ variables: { id: props.match.params.appid } }),
     name: "product"
   }),
   graphql(fetchReviews, {
-    options: props => ({ variables: { appid: props.match.params.appid } }),
+    options: (props: AppPageProps) => ({ variables: { appid: props.match.params.appid } }),
     name: "productReview"
   }),
   graphql(fetchPlans, {
-    options: props => ({ variables: { appid: props.match.params.appid } }),
+    options: (props: AppPageProps) => ({ variables: { appid: props.match.params.appid } }),
     name: "productPlans"
   })
 )(AppPage);
