@@ -126,7 +126,7 @@ class Dashboard extends Component {
                     })`
                   }}>
                   <span className="recommendedServiceName">{app.name}</span>
-                </div>;
+                </div>
               ))}
         </div>
       </div>
