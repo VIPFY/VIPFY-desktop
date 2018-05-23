@@ -15,6 +15,8 @@
       require("./locationScripts/pipedrive.ts")();
     } else if (hostMatches(".*\.?wrike.com")) {
       require("./locationScripts/wrike.ts")();
+    } else if (hostMatches(".*\.?google.com")) {
+      require("./locationScripts/googledocs.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }

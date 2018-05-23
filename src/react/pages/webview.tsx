@@ -53,8 +53,15 @@ export class Webview extends Component<WebViewProps, WebViewState> {
         return "https://vipfy.com";
       case "pipedrive":
         return "https://app.pipedrive.com/auth/login";
+      case "google apps":
+        return "https://docs.google.com"
+      case "weebly":
+        return "https://weebly.com"
       case "slack":
-        return "https://slack.com";
+        return "https://slack.com"
+      case "dropbox":
+        return "https://www.dropbox.com/login"
+        //return "http://dev.vipfy.com:7000/";
       default:
         return "/area/dashboard?error=unknownapp";
     }
