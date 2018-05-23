@@ -13,10 +13,18 @@ import AppPage from "./apppage";
 import Billing from "./billing";
 import Advisor from "./advisor";
 
+export type AreaProps = {
+  history: any[];
+  me: any;
+  fetchLicences: any;
+};
 
+export type AreaState = {
+  app: string;
+};
 
-class Area extends Component {
-  state = {
+class Area extends Component<AreaProps, AreaState> {
+  state: AreaState = {
     app: "vipfy"
   }
 

@@ -22,12 +22,31 @@ const SignUp = gql`
   }
 `;
 
-class App extends Component {
-  state = {
+export type AppProps = {
+  history: any[];
+  signIn: any;
+  signUp: any;
+};
+
+export type AppState = {
+  login: boolean;
+  firstname: string;
+  lastname: string;
+  admin: boolean;
+  employees: number;
+  profilepicture: string;
+  error: string|null;
+};
+
+class App extends Component<AppProps, AppState> {
+  state: AppState = {
     login: false,
     firstname: "",
     lastname: "",
-    admin: false
+    admin: false,
+    employees: 0,
+    profilepicture: "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg",
+    error: null
   };
 
   logMeOut = () => {

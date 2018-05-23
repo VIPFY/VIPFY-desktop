@@ -38,7 +38,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    let bI = this.props.profilepicture ? this.props.profilepicture : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg"
+    let bI = this.props.profilepicture;
     if (this.state.recommended) {
       return(
         <div className="fullWorking">
