@@ -1,4 +1,4 @@
-import { con, todoPath, hideByQuery } from "./utils/util";
+import { con, todoPath, hideByQuery, redirectLinks } from "./utils/util";
 
 module.exports = function() {
   if (window.location.pathname == "/account/delete") {
@@ -7,6 +7,11 @@ module.exports = function() {
   }
 
   if (window.location.pathname == "/upgrade") {
+    window.location.replace(todoPath);
+    return;
+  }
+
+  if (window.location.pathname == "/plans") {
     window.location.replace(todoPath);
     return;
   }
@@ -35,6 +40,11 @@ function onReady() {
         });
     }, true);*/
   }
+  setInterval(modifyAll, 100);
+}
+
+function modifyAll() {
+  redirectLinks("/prompt/confirm_v2", todoPath);
 }
 
 function modifySettings() {
@@ -46,8 +56,15 @@ function modifySettings() {
 
 function login(form: Element) {
   con.log("filling in dropbox login form");
-  form.querySelector<HTMLInputElement>("input[name='login_email']")!.value = "jf@vipfy.com";
-  form.querySelector<HTMLInputElement>("input[name='login_password']")!.value = "zdwMYqQPE4gSHr3QQSkm";
-  form.querySelector<HTMLInputElement>("input[name='remember_me']")!.checked = true;
-  form.querySelector<HTMLInputElement>("button[type='submit']")!.click();
+  let ipcRenderer = require("electron").ipcRenderer;
+  ipcRenderer.sendToHost("getLoginData", 18);
+  ipcRenderer.on("loginData", (e, key) => {
+    let email = key.email;
+    let password = key.password;
+
+    form.querySelector<HTMLInputElement>("input[name='login_email']")!.value = email;
+    form.querySelector<HTMLInputElement>("input[name='login_password']")!.value = password;
+    form.querySelector<HTMLInputElement>("input[name='remember_me']")!.checked = true;
+    form.querySelector<HTMLInputElement>("button[type='submit']")!.click();
+  });
 }
