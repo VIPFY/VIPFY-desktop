@@ -232,16 +232,18 @@ class Login extends Component {
                 </span>
               </div>
               <div className="registerInfo">
-                <input
-                  type="checkbox"
-                  value={this.state.newsletter}
-                  onClick={() =>
-                    this.setState(prevState => ({
-                      newsletter: !prevState.newsletter
-                    }))
-                  }
-                />
-                I agree to receive updates from Vipfy
+                <label>
+                  <input
+                    type="checkbox"
+                    value={this.state.newsletter}
+                    onChange={() =>
+                      this.setState(prevState => ({
+                        newsletter: !prevState.newsletter
+                      }))
+                    }
+                  />
+                  I agree to receive updates from<br/>Vipfy. I can revoke this at any time.
+                </label>
               </div>
             </div>
           </div>

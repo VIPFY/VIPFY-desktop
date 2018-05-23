@@ -345,7 +345,7 @@ class Advisor extends Component {
         return (
           <div className="advisorInputHolder">
             <label className="advisorInputHeading">
-              To set up a suitleable user-interface: How old are you?
+              To set up a suitable user-interface: How old are you?
             </label>
             <div className="advisorOptionHolder">
               <div
