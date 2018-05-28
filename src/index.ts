@@ -1,7 +1,5 @@
 import { app, BrowserWindow, autoUpdater, dialog } from "electron";
-import installExtension, {
-  REACT_DEVELOPER_TOOLS
-} from "electron-devtools-installer";
+import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import { enableLiveReload } from "electron-compile";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -17,13 +15,11 @@ if (isDevMode) {
 function initUpdates() {
   const DOMAIN = "http://release.vipfy.com:9999";
   const suffix =
-    process.platform === "darwin"
-      ? `/RELEASES.json?method=JSON&version=${app.getVersion()}`
-      : "";
+    process.platform === "darwin" ? `/RELEASES.json?method=JSON&version=${app.getVersion()}` : "";
   autoUpdater.setFeedURL({
-    url: `${DOMAIN}/vipfy-desktop/810e67d425a96eb8a85d68a03bd4c4ea/${
-      process.platform
-    }/${process.arch}${suffix}`,
+    url: `${DOMAIN}/vipfy-desktop/810e67d425a96eb8a85d68a03bd4c4ea/${process.platform}/${
+      process.arch
+    }${suffix}`,
     serverType: "json"
   });
 
@@ -39,12 +35,13 @@ function initUpdates() {
       buttons: ["Restart", "Later"],
       title: "Application Update",
       message: process.platform === "win32" ? releaseNotes : releaseName,
-      detail:
-        "A new version has been downloaded. Restart the application to apply the updates."
+      detail: "A new version has been downloaded. Restart the application to apply the updates."
     };
 
     dialog.showMessageBox(dialogOpts, response => {
-      if (response === 0) {autoUpdater.quitAndInstall()};
+      if (response === 0) {
+        autoUpdater.quitAndInstall();
+      }
     });
   });
 
