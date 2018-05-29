@@ -569,7 +569,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     if (this.props.product.fetchAppById) {
       let appDetails = this.props.product.fetchAppById;
       return (
-        <div className="fullWorking paddingPage">
+        <div className={this.props.chatopen ? "fullWorking paddingPage chatopen" : "fullWorking paddingPage"}>
           <div className="appHeaderHolder">
             <div
               className="appLogoLarge"

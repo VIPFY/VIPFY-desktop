@@ -18,6 +18,7 @@ export type WebViewState = {
 export type WebViewProps = {
   app: string;
   client: ApolloClient;
+  chatopen: boolean;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -54,14 +55,14 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       case "pipedrive":
         return "https://app.pipedrive.com/auth/login";
       case "google apps":
-        return "https://docs.google.com"
+        return "https://docs.google.com";
       case "weebly":
-        return "https://weebly.com"
+        return "https://weebly.com";
       case "slack":
-        return "https://slack.com"
+        return "https://slack.com";
       case "dropbox":
-        return "https://www.dropbox.com/login"
-        //return "http://dev.vipfy.com:7000/";
+        return "https://www.dropbox.com/login";
+      //return "http://dev.vipfy.com:7000/";
       default:
         return "/area/dashboard?error=unknownapp";
     }
@@ -102,9 +103,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     this.setState({
       showLoadingScreen: true,
       inspirationalText:
-        Webview.loadingQuotes[
-          Math.floor(Math.random() * Webview.loadingQuotes.length)
-        ],
+        Webview.loadingQuotes[Math.floor(Math.random() * Webview.loadingQuotes.length)],
       t: performance.now()
     });
   }
@@ -131,37 +130,37 @@ export class Webview extends Component<WebViewProps, WebViewState> {
 
   onIpcMessage(e): void {
     console.log("onIpcMessage", e);
-    if(e.channel === "getLoginData") {
+    if (e.channel === "getLoginData") {
       let app = e.args[0];
-      this.props.client.query({
-        query: gql`
+      this.props.client
+        .query({
+          query: gql`
           {
             fetchLicencesByApp(appid: ${app}) {
                 key
             }
           }
         `
-      })
-      .then(result => {
-        console.log("LICENCE", result);
-        let key = result.data.fetchLicencesByApp[0].key;
-        console.log("chosen key", key);
-        if(key === null) {
-          window.alert("invalid licence");
-        }
-        e.target.send("loginData", key)
-      });
+        })
+        .then(result => {
+          console.log("LICENCE", result);
+          let key = result.data.fetchLicencesByApp[0].key;
+          console.log("chosen key", key);
+          if (key === null) {
+            window.alert("invalid licence");
+          }
+          e.target.send("loginData", key);
+        });
     }
   }
 
   render() {
     return (
-      <div>
+      <div className="fullWorking">
         <div
           id="loadingScreen"
-          className="mainPosition"
-          style={{ display: this.state.showLoadingScreen ? "block" : "none" }}
-        >
+          className={this.props.chatopen ? "mainPosition chatopenWeb" : "mainPosition"}
+          style={{ display: this.state.showLoadingScreen ? "block" : "none" }}>
           <div className="loadingTextBlock">
             <div className="centerText inspirationalText">
               <div>{this.state.inspirationalText}</div>
@@ -175,7 +174,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           id="webview"
           preload="./preload-launcher.js"
           webpreferences="webSecurity=no"
-          className="mainPosition"
+          className={this.props.chatopen ? "mainPosition chatopenWeb" : "mainPosition"}
           src={this.state.setUrl}
           partition="persist:services"
           onDidNavigate={e => this.onDidNavigate(e.target.src)}

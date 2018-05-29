@@ -17,7 +17,7 @@ class Dashboard extends Component {
   }
 
   showApps(licences) {
-    let appLogos = [];
+    let appLogos: JSX.Element[] = [];
     console.log("SHOWAPPS", licences);
     if (licences) {
       let i = 0;
@@ -27,17 +27,13 @@ class Dashboard extends Component {
           <div
             className="useableAppsLogo"
             key={`useableLogo-${i}`}
-            onClick={() =>
-              this.setApp(licence.boughtplanid.planid.appid.name.toLowerCase())
-            }
+            onClick={() => this.setApp(licence.boughtplanid.planid.appid.name.toLowerCase())}
             style={{
               backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
                 licence.boughtplanid.planid.appid.logo
               })`
             }}>
-            <span className="useableServiceName">
-              {licence.boughtplanid.planid.appid.name}
-            </span>
+            <span className="useableServiceName">{licence.boughtplanid.planid.appid.name}</span>
           </div>
         );
         i++;
@@ -55,9 +51,7 @@ class Dashboard extends Component {
           <div className="centralize backgroundLogo">
             <div className="loginHolder">
               <div className="recommendedApps">
-                <div className="recommendedAppsTitle">
-                  We believe you need these services
-                </div>
+                <div className="recommendedAppsTitle">We believe you need these services</div>
                 <div
                   className="recommendedAppsLogo"
                   onClick={() => this.BuyApp("pipedrive")}
@@ -83,12 +77,9 @@ class Dashboard extends Component {
       );
     }
     return (
-      <div className="fullWorking">
+      <div className={this.props.chatopen ? "fullWorking chatopen" : "fullWorking"}>
         <div className="welcomeHolder">
-          <div
-            className="welcomeImage"
-            style={{ backgroundImage: `url(${bI})` }}
-          />
+          <div className="welcomeImage" style={{ backgroundImage: `url(${bI})` }} />
           <div className="welcomeMessage">
             <span>
               Welcome back, {this.props.firstname} {this.props.lastname}
@@ -97,27 +88,16 @@ class Dashboard extends Component {
         </div>
 
         <div className="useableApps">
-          <div className="useableAppsTitle">
-            Just click on a service to start
-          </div>
-          {/*<div className="useableAppsLogo" onClick={() => (this.setApp("pipedrive"))}
-            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"}}>
-            <span className="useableServiceName">Pipedrive</span>
-          </div>
-          <div className="useableAppsLogo" onClick={() => (this.setApp("slack"))}
-            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/slack.svg)"}}>
-            <span className="useableServiceName">Slack</span>
-    </div>*/}
+          <div className="useableAppsTitle">Just click on a service to start</div>
           {this.showApps(this.props.licences.fetchLicences)}
         </div>
         <div className="recommendedApps">
-          <div className="recommendedAppsTitle">
-            We believe you also need these services
-          </div>
+          <div className="recommendedAppsTitle">We believe you also need these services</div>
           {this.props.rcApps.loading
             ? "Loading Apps..."
             : this.props.rcApps.fetchRecommendedApps.map(app => (
-                <div key={app.id}
+                <div
+                  key={app.id}
                   className="recommendedAppsLogo"
                   onClick={() => this.goTo(`marketplace/${app.id}`)}
                   style={{
