@@ -48,11 +48,14 @@ class Marketplace extends Component {
   }
 
   render() {
-    return (
-      <div className={this.props.chatopen ? "fullWorking chatopen" : "fullWorking"}>
-        {this.renderLoading(this.props.products.allApps)}
-      </div>
-    );
+    let cssClass = "fullWorking";
+    if (this.props.chatopen) {
+      cssClass += " chatopen";
+    }
+    if (this.props.sidebaropen) {
+      cssClass += " SidebarOpen";
+    }
+    return <div className={cssClass}>{this.renderLoading(this.props.products.allApps)}</div>;
   }
 }
 

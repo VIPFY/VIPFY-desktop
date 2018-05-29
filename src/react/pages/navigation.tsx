@@ -99,26 +99,39 @@ class Navigation extends Component {
     this.setState({ showNotification: !this.state.showNotification });
   };
 
-  toogleSearch = bool => {
+  toggleSearch = bool => {
     console.log("FOCUS", bool);
     this.setState({ searchFocus: bool });
   };
 
   render() {
     console.log("NAVI", this.props);
+
+    let cssClass = "navigation";
+    if (this.props.chatopen) {
+      cssClass += " chatopen";
+    }
+    if (this.props.sidebaropen) {
+      cssClass += " SidebarOpen";
+    }
     return (
-      <div className={this.props.chatopen ? "navigation chatopen" : "navigation"}>
-        <div
-          className={this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"}>
-          <div className="searchbarButton">
-            <i className="fas fa-search" />
+      <div className={cssClass}>
+        <div className="leftNavigation">
+          <span onClick={this.props.toggleSidebar} className="fas fa-bars barIcon" />
+          <div
+            className={
+              this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
+            }>
+            <div className="searchbarButton">
+              <i className="fas fa-search" />
+            </div>
+            <input
+              onFocus={() => this.toggleSearch(true)}
+              onBlur={() => this.toggleSearch(false)}
+              className="searchbar"
+              placeholder="Search for something..."
+            />
           </div>
-          <input
-            onFocus={() => this.toogleSearch(true)}
-            onBlur={() => this.toogleSearch(false)}
-            className="searchbar"
-            placeholder="Search for something..."
-          />
         </div>
         <div className="rightInfos">
           <div className="rightProfileHolder" onClick={this.toggleNotificationPopup}>
@@ -130,7 +143,7 @@ class Navigation extends Component {
             {this.showPopup(this.state.showNotification)}
           </div>
           <span onClick={() => this.goTo("settings")} className="fas fa-cog navigationRightInfos" />
-          <span onClick={this.props.toogleChat} className="fas fa-comments navigationRightInfos" />
+          <span onClick={this.props.toggleChat} className="fas fa-comments navigationRightInfos" />
         </div>
       </div>
     );

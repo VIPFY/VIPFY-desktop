@@ -128,7 +128,7 @@ label{
     justify-content: space-between;
     background-color: #fff !important;
     box-shadow: 0 0 10px #e8e8e8;
-    margin-left: $sidebar-width;
+    margin-left: 3rem;
     position: relative;
     z-index: 200;
 }
@@ -227,10 +227,10 @@ label{
 }
 
 .mainPosition {
-    position: absolute;
+    /*position: absolute;
     top: 3em;
-    left: 15em;
-    width: calc(100% - 15em);
+    left: 3rem;
+    width: calc(100% - 15em);*/
     height: calc(100vh - 3em);
 }
 
@@ -327,10 +327,13 @@ label{
     font-size: 1.2em;
 }
 .fullWorking{
-    height: calc(100vh - 4rem);
+    height: calc(100vh - 3rem);
     /*background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);*/
     background-color: $fullWorking-background;
     overflow-y: scroll;
+    margin-left: 3rem;
+}
+.SidebarOpen{
     margin-left: $sidebar-width;
 }
 .backgroundLogo{
@@ -931,4 +934,134 @@ label{
 .notificationPopupScroller {
     max-height: 15rem;
     overflow-y: auto;
+}
+.dashboardWorking {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.welcomeTile{
+    margin: 2.5%;
+    width: 25%;
+    min-width: 10rem;
+    max-width: 15rem;
+    min-height: 20rem;
+    background-color: #333 !important;
+    color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+}
+.welcomeIcon {
+    text-align: center;
+    width: 100%;
+    color: #ffc247;
+    font-size: 4rem;
+    line-height: 6rem !important;
+}
+.welcomeText {
+    display: block;
+    padding: 2rem;
+    padding-top: 0;
+}
+.welcomeSentence {
+    padding: 1rem;
+    bottom: 0px;
+    position: absolute;
+    text-align: center;
+    width: calc(100% - 2rem);
+}
+.appsTile {
+    min-width: 60%;
+    max-width: calc(92.5% - 15rem);
+    margin: 2.5%;
+    margin-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    align-items: flex-start;
+}
+.logoAppsTile {
+    margin: 1rem;
+    min-height: 8rem;
+    min-width: 8rem;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: white;
+    border-radius: 0.2rem;
+    box-shadow: 0 0 4rem #f0f3ff;
+    cursor: pointer;
+    position: relative;
+}
+.logoAppsTile:hover{
+    background-color: #f8f9fa;
+}
+.nameAppsTile {
+    position: absolute;
+    bottom: -1rem;
+    width: 100%;
+    text-align: center;
+    font-size: 0.8rem;
+}
+.serviceTile {
+    min-width: 5rem;
+    max-width: 15rem;
+    margin: 2.5%;
+    background-color: white;
+    width: 25%;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+}
+.serviceTileHeader {
+    background-color: #ffc247 !important;
+    padding: 2rem;
+    min-height: 6rem;
+}
+.serviceTileHeaderText {
+    font-weight: bold;
+    color: white;
+    font-size: 1.25rem;
+}
+.serviceUserHeader {
+    margin-top: -1.6rem;
+    border-bottom: 0.5rem solid transparent;
+}
+.serviceUserIconBackground {
+    margin-left: 1rem;
+    float: left;
+    margin-right: 0.5rem;
+}
+.serviceUserIcon {
+    width: 3rem;
+    border-radius: 2rem;
+    border: 0.2rem solid white;
+}
+.serviceUserName {
+    font-size: 0.8rem;
+    display: block;
+    line-height: 2rem;
+    color: white;
+    font-weight: bold;
+}
+.serviceTime {
+    font-size: 0.6rem;
+}
+.serviceText {
+    padding: 1rem;
+}
+.barIcon {
+    margin: 1rem;
+    cursor: pointer;
+}
+.leftNavigation{
+    display: flex;
+}
+.sidebar-small {
+    position: fixed;
+    background-color: #333;
+    width: 3rem;
+    height: 100vh;
+    z-index: 300;
 }

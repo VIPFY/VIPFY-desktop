@@ -19,6 +19,7 @@ export type WebViewProps = {
   app: string;
   client: ApolloClient;
   chatopen: boolean;
+  sidebaropen: boolean;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -155,11 +156,25 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   }
 
   render() {
+    let cssClass = "fullWorking";
+    if (this.props.chatopen) {
+      cssClass += " chatopen";
+    }
+    if (this.props.sidebaropen) {
+      cssClass += " SidebarOpen";
+    }
+    let cssClassWeb = "mainPosition";
+    if (this.props.chatopen) {
+      cssClass += " chatopen";
+    }
+    if (this.props.sidebaropen) {
+      cssClass += " SidebarOpen";
+    }
     return (
-      <div className="fullWorking">
+      <div className={cssClass}>
         <div
           id="loadingScreen"
-          className={this.props.chatopen ? "mainPosition chatopenWeb" : "mainPosition"}
+          className={cssClassWeb}
           style={{ display: this.state.showLoadingScreen ? "block" : "none" }}>
           <div className="loadingTextBlock">
             <div className="centerText inspirationalText">
@@ -174,7 +189,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           id="webview"
           preload="./preload-launcher.js"
           webpreferences="webSecurity=no"
-          className={this.props.chatopen ? "mainPosition chatopenWeb" : "mainPosition"}
+          className={cssClassWeb}
           src={this.state.setUrl}
           partition="persist:services"
           onDidNavigate={e => this.onDidNavigate(e.target.src)}

@@ -25,12 +25,14 @@ export type AreaProps = {
 export type AreaState = {
   app: string;
   chatopen: boolean;
+  sidebaropen: boolean;
 };
 
 class Area extends Component<AreaProps, AreaState> {
   state: AreaState = {
     app: "vipfy",
-    chatopen: true
+    chatopen: false,
+    sidebaropen: true
   };
 
   setapp = appname => {
@@ -39,8 +41,12 @@ class Area extends Component<AreaProps, AreaState> {
     this.props.history.push("/area/webview");
   };
 
-  toogleChat = () => {
+  toggleChat = () => {
     this.setState({ chatopen: !this.state.chatopen });
+  };
+
+  toggleSidebar = () => {
+    this.setState({ sidebaropen: !this.state.sidebaropen });
   };
 
   loggedIn = async () => {
@@ -63,13 +69,24 @@ class Area extends Component<AreaProps, AreaState> {
       console.log("AREA", this.props);
       return (
         <div className="area">
-          <Route render={props => <Sidebar setapp={this.setapp} {...this.props} {...props} />} />
+          <Route
+            render={props => (
+              <Sidebar
+                sidebaropen={this.state.sidebaropen}
+                setapp={this.setapp}
+                {...this.props}
+                {...props}
+              />
+            )}
+          />
           <Route
             render={props => (
               <Navigation
                 chatopen={this.state.chatopen}
                 setapp={this.setapp}
-                toogleChat={this.toogleChat}
+                toggleChat={this.toggleChat}
+                toggleSidebar={this.toggleSidebar}
+                sidebaropen={this.state.sidebaropen}
                 {...this.props}
                 {...props}
               />
@@ -84,6 +101,7 @@ class Area extends Component<AreaProps, AreaState> {
             render={props => (
               <Dashboard
                 chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
                 {...props}
                 setapp={this.setapp}
                 {...this.props}
@@ -94,29 +112,60 @@ class Area extends Component<AreaProps, AreaState> {
             exact
             path="/area/webview"
             render={props => (
-              <Webview chatopen={this.state.chatopen} app={this.state.app} {...props} />
+              <Webview
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                app={this.state.app}
+                {...props}
+              />
             )}
           />
           <Route
             exact
             path="/area/settings"
-            render={props => <Settings chatopen={this.state.chatopen} {...props} {...this.props} />}
+            render={props => (
+              <Settings
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
+            )}
           />
           <Route
             exact
             path="/area/billing"
-            render={props => <Billing chatopen={this.state.chatopen} {...props} {...this.props} />}
+            render={props => (
+              <Billing
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
+            )}
           />
           <Route
             exact
             path="/area/advisor"
-            render={props => <Advisor chatopen={this.state.chatopen} {...props} {...this.props} />}
+            render={props => (
+              <Advisor
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
+            )}
           />
           <Route
             exact
             path="/area/marketplace"
             render={props => (
-              <Marketplace chatopen={this.state.chatopen} {...props} {...this.props} />
+              <Marketplace
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
             )}
           />
           <Route
@@ -124,6 +173,7 @@ class Area extends Component<AreaProps, AreaState> {
             render={props => (
               <AppPage
                 chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
                 setapp={this.setapp}
                 match={this.match}
                 {...this.props}
