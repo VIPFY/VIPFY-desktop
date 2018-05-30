@@ -156,7 +156,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   }
 
   render() {
-    let cssClass = "fullWorking";
+    let cssClass = "marginLeft";
     if (this.props.chatopen) {
       cssClass += " chatopen";
     }

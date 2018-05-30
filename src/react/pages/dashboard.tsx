@@ -115,6 +115,12 @@ class Dashboard extends Component {
             Register on vipfy.com to get our newsletter and always be up to date!
           </div>
         </div>
+        <div className="informationTile">
+          <div className="informationTileHeader">
+            <span className="informationTileHeaderText">Visitors on your site</span>
+          </div>
+          <div className="informationText">Increase by 10% compared to last month</div>
+        </div>
         {/*
           <div className="welcomeHolder">
             <div className="welcomeImage" style={{ backgroundImage: `url(${bI})` }} />

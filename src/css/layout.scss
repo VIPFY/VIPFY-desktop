@@ -1,4 +1,5 @@
 @import './constants.scss';
+@import './creditCards.scss';
 
 @keyframes buttonMove{
     from {left:0px}
@@ -331,6 +332,9 @@ label{
     /*background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);*/
     background-color: $fullWorking-background;
     overflow-y: scroll;
+    margin-left: 3rem;
+}
+.marginLeft{
     margin-left: 3rem;
 }
 .SidebarOpen{
@@ -1064,4 +1068,117 @@ label{
     width: 3rem;
     height: 100vh;
     z-index: 300;
+}
+.informationTile {
+    min-width: 5rem;
+    max-width: 15rem;
+    margin: 2.5%;
+    background-color: #547fff;
+    width: 25%;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    color: white;
+}
+.informationTileHeader {
+    padding: 2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.informationText {
+    padding: 1rem;
+    bottom: 0;
+    position: absolute;
+}
+.currentPaymentHolder {
+    width: 40%;
+}
+.nextPaymentHolder {
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    margin: 2rem;
+}
+.nextPaymentChart {
+    width: 100%;
+    height: 10rem;
+}
+.historyPaymentHolder {
+    width: 60%;
+}
+.billingStreamChart {
+    height: 20rem;
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    margin: 2rem;
+}
+.paymentDataHolder {
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    margin: 2rem;
+}
+.paymentCreditCardLabel {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+.paymentAddressLabel {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+.paymentAddressName {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: bold;
+    padding-left: 2rem;
+}
+.paymentAddressStreet {
+    display: block;
+    font-size: 0.9rem;
+    line-height: 2rem;
+    font-weight: bold;
+    padding-left: 2rem;
+}
+span.paymentAddressCity {
+    display: block;
+    font-size: 0.9rem;
+    padding-left: 2rem;
+}
+span.paymentAddressEMail {
+    display: block;
+    font-size: 0.9rem;
+    padding-left: 2rem;
+}
+span.paymentAddressPhone {
+    display: block;
+    font-size: 0.9rem;
+    padding-left: 2rem;
+}
+.paymentDataChangeButton {
+    background-color: #547fff;
+    color: #fff;
+    font-weight: bold;
+    line-height: 2rem;
+    font-size: 1.2rem;
+    text-align: center;
+    background-image: linear-gradient(to right, rgba(255,255,255,0.15), transparent);
+    cursor: pointer;
+}
+.billingHistoryInvoices{
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    margin: 2rem;
 }
