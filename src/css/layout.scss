@@ -1182,3 +1182,30 @@ span.paymentAddressPhone {
     position: relative;
     margin: 2rem;
 }
+.informationGraph {
+    max-width: 30rem;
+    margin: 2.5%;
+    background-color: #fff;
+    width: 50%;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    color: #333;
+}
+.informationGraphHeader {
+    font-size: 1.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+.informationGraphHeader {
+    font-size: 1.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+.informationGraphContent {
+    width: 100%;
+    height: 15rem;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}

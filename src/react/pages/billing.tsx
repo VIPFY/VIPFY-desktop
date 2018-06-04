@@ -17,7 +17,7 @@ class Billing extends Component {
       <div className={cssClass}>
         <div className="currentPaymentHolder">
           <div className="nextPaymentHolder">
-            <span className="nextPaymentTitle">Next sheduled bill on 6-28-18: approx. 200 $</span>
+            <span className="nextPaymentTitle">Next sheduled bill on 6-28-18: approx. 215 $</span>
             <div className="nextPaymentChart">
               <BillNext />
             </div>

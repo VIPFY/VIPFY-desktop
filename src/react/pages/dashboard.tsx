@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import { Link } from "react-router-dom";
+import PipedriveGraph from "../graphs/pipedrivegraph";
 
 class Dashboard extends Component {
   state = {
@@ -120,6 +121,14 @@ class Dashboard extends Component {
             <span className="informationTileHeaderText">Visitors on your site</span>
           </div>
           <div className="informationText">Increase by 10% compared to last month</div>
+        </div>
+        <div className="informationGraph">
+          <div className="informationGraphHeader">
+            <span className="informationGraphHeaderText">Pipedrive conversion rate</span>
+          </div>
+          <div className="informationGraphContent">
+            <PipedriveGraph />
+          </div>
         </div>
         {/*
           <div className="welcomeHolder">
