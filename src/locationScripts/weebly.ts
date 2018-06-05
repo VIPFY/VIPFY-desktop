@@ -45,13 +45,5 @@ function modifyAll() {
 
 function login() {
   let ipcRenderer = require("electron").ipcRenderer;
-  ipcRenderer.sendToHost("getLoginData", 2);
-  ipcRenderer.on("loginData", function(e, key) {
-    let email = key.email;
-    let password = key.password;
-    document.querySelector<HTMLInputElement>("input[name='user']")!.value = email;
-    document.querySelector<HTMLInputElement>("input[name='pass']")!.value = password;
-    document.querySelector<HTMLInputElement>("input[name='rememberme']")!.checked = true;
-    document.querySelector<HTMLInputElement>("button[type='submit']")!.click();
-  });
+  ipcRenderer.sendToHost("getLoginLink", 2);
 }

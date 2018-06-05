@@ -58,14 +58,14 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       case "google apps":
         return "https://docs.google.com";
       case "weebly":
-        return "https://www.weebly.com/login"
+        return "https://www.weebly.com/login";
       case "slack":
         return "https://slack.com";
       case "dropbox":
-        return "https://www.dropbox.com/login"
-        //return "http://dev.vipfy.com:7000/";
+        return "https://www.dropbox.com/login";
+      //return "http://dev.vipfy.com:7000/";
       case "moo":
-        return "https://www.moo.com/uk/account/signin.php"
+        return "https://www.moo.com/uk/account/signin.php";
       default:
         return "/area/dashboard?error=unknownapp";
     }
@@ -153,6 +153,39 @@ export class Webview extends Component<WebViewProps, WebViewState> {
             window.alert("invalid licence");
           }
           e.target.send("loginData", key);
+        });
+    } else if (e.channel === "getLoginLink") {
+      this.props.client
+        .query({
+          query: gql`
+            {
+              fetchLicencesByApp(appid: 2) {
+                boughtplanid {
+                  id
+                }
+              }
+            }
+          `
+        })
+        .then(result => {
+          console.log("FETCH LICENCES", result)
+          let licence = result.data.fetchLicencesByApp[0].boughtplanid.id;
+
+          this.props.client
+            .query({
+              query: gql`
+                {
+                  createLoginLink(boughtplanid: ${licence}) {
+                    loginLink
+                  }
+                }
+              `
+            })
+            .then(result => {
+              console.log("LOGIN LINK", result)
+              let link = result.data.createLoginLink.loginLink;
+              this.setState({ setUrl: link });
+            });
         });
     }
   }

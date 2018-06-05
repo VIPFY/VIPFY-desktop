@@ -17,6 +17,7 @@ const secure = SERVER_NAME == "vipfy.com" || SERVER_NAME == "dev.vipfy.com" ? "s
 const cache = new InMemoryCache();
 const httpLink = createHttpLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
+  //uri: `https://us-central1-vipfy-148316.cloudfunctions.net/backend/graphql`,
   credentials: "same-origin"
 });
 
