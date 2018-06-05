@@ -212,29 +212,21 @@ class Advisor extends Component {
       case 2:
         return (
           <div className="advisorInputHolder">
-            <label className="advisorInputHeading">
-              How many employess do you have?
-            </label>
+            <label className="advisorInputHeading">How many employess do you have?</label>
             <div className="advisorOptionHolder">
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseNumberEmployees("0-5")}>
-                0-5
+              <div className="advisorOption" onClick={() => this.chooseNumberEmployees("1-10")}>
+                1-10
+              </div>
+              <div className="advisorOption" onClick={() => this.chooseNumberEmployees("11-50")}>
+                11-50
+              </div>
+              <div className="advisorOption" onClick={() => this.chooseNumberEmployees("51-200")}>
+                51-200
               </div>
               <div
                 className="advisorOption"
-                onClick={() => this.chooseNumberEmployees("6-10")}>
-                6-10
-              </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseNumberEmployees("11-20")}>
-                11-20
-              </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseNumberEmployees("21 or more")}>
-                21 or more
+                onClick={() => this.chooseNumberEmployees("201 or more")}>
+                201 or more
               </div>
             </div>
             <div className="advisorSkip button" onClick={() => this.nextStep()}>
@@ -245,28 +237,18 @@ class Advisor extends Component {
       case 3:
         return (
           <div className="advisorInputHolder">
-            <label className="advisorInputHeading">
-              In what industry is your company working
-            </label>
+            <label className="advisorInputHeading">In what industry is your company working</label>
             <div className="advisorOptionHolder">
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseIndustry("Service")}>
+              <div className="advisorOption" onClick={() => this.chooseIndustry("Service")}>
                 Service
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseIndustry("Online")}>
+              <div className="advisorOption" onClick={() => this.chooseIndustry("Online")}>
                 Online
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseIndustry("Production")}>
+              <div className="advisorOption" onClick={() => this.chooseIndustry("Production")}>
                 Production
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseIndustry("Other")}>
+              <div className="advisorOption" onClick={() => this.chooseIndustry("Other")}>
                 Other
               </div>
             </div>
@@ -278,28 +260,18 @@ class Advisor extends Component {
       case 4:
         return (
           <div className="advisorInputHolder">
-            <label className="advisorInputHeading">
-              How old is your company?
-            </label>
+            <label className="advisorInputHeading">How old is your company?</label>
             <div className="advisorOptionHolder">
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseCompanyAge("< 3")}>
+              <div className="advisorOption" onClick={() => this.chooseCompanyAge("< 3")}>
                 {"< 3"}
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseCompanyAge("3 - 5")}>
+              <div className="advisorOption" onClick={() => this.chooseCompanyAge("3 - 5")}>
                 {"3 - 5"}
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseCompanyAge("6 - 10")}>
+              <div className="advisorOption" onClick={() => this.chooseCompanyAge("6 - 10")}>
                 {"6 - 10"}
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseCompanyAge("> 10")}>
+              <div className="advisorOption" onClick={() => this.chooseCompanyAge("> 10")}>
                 {"> 10"}
               </div>
             </div>
@@ -315,9 +287,7 @@ class Advisor extends Component {
               How much revenue did you generate last year
             </label>
             <div className="advisorOptionHolder">
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseRevenue("< 100,000$")}>
+              <div className="advisorOption" onClick={() => this.chooseRevenue("< 100,000$")}>
                 {"< 100,000$"}
               </div>
               <div
@@ -330,9 +300,7 @@ class Advisor extends Component {
                 onClick={() => this.chooseRevenue("500,001$ - 1,000,000$")}>
                 {"500,001$ - 1,000,000$"}
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseRevenue("> 1,000,000$")}>
+              <div className="advisorOption" onClick={() => this.chooseRevenue("> 1,000,000$")}>
                 {"> 1,000,000$"}
               </div>
             </div>
@@ -348,24 +316,16 @@ class Advisor extends Component {
               To set up a suitable user-interface: How old are you?
             </label>
             <div className="advisorOptionHolder">
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseAge("< 20")}>
+              <div className="advisorOption" onClick={() => this.chooseAge("< 20")}>
                 {"< 20"}
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseAge("20 - 35")}>
+              <div className="advisorOption" onClick={() => this.chooseAge("20 - 35")}>
                 {"20 - 35"}
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseAge("36 - 50")}>
+              <div className="advisorOption" onClick={() => this.chooseAge("36 - 50")}>
                 {"36 - 50"}
               </div>
-              <div
-                className="advisorOption"
-                onClick={() => this.chooseAge("> 50")}>
+              <div className="advisorOption" onClick={() => this.chooseAge("> 50")}>
                 {"> 50"}
               </div>
             </div>
@@ -398,9 +358,7 @@ class Advisor extends Component {
   showLeave(step) {
     if (step > 1) {
       return (
-        <div
-          className="goToMarketplace button"
-          onClick={() => this.goToMarketplace()}>
+        <div className="goToMarketplace button" onClick={() => this.goToMarketplace()}>
           Skip Advisor and look around in the marketplace
         </div>
       );
