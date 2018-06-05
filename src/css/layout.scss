@@ -1089,7 +1089,7 @@ label{
 .informationText {
     padding: 1rem;
     bottom: 0;
-    position: absolute;
+    /*position: absolute;*/
 }
 .currentPaymentHolder {
     width: 40%;
@@ -1208,4 +1208,150 @@ span.paymentAddressPhone {
     position: relative;
     display: flex;
     justify-content: center;
+}
+.appBreadCromp {
+    margin-bottom: 1.5rem;
+    font-size: 0.7rem;
+}
+.appBreadCrompNoLink {
+    color: #798892;
+    margin-bottom: 1.5rem;
+}
+.appBreadCrompLink {
+    font-weight: 600;
+    cursor: pointer;
+}
+.appHeader {
+    display: flex;
+    height: 20rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+.appHeaderGallery {
+    width: calc(100% - 15rem);
+    background-size: cover;
+    background-position: center;
+}
+.appHeaderInfos {
+    width: 15rem;
+    background-color: white;
+    position: relative;
+}
+.appHeaderStars {
+    line-height: 2em;
+    padding: 1rem;
+}
+.appHeaderName {
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding-top: 0rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    text-transform: uppercase;
+}
+.appHeaderType {
+    color: #798892;
+    padding-left: 1rem;
+    font-weight: 400;
+    text-transform: capitalize;
+}
+.appHeaderPriceHolder {
+    position: absolute;
+    bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    width: calc(100% - 2rem);
+}
+.appHeaderSelectDepartment {
+    position: relative;
+    padding: 0.5rem;
+    background-color: #e9ecef;
+    cursor: pointer;
+    font-size: 0.8rem;
+    border-radius: .25rem;
+    border: 1px solid #e9ecef;
+    margin-top: 0.25rem;
+}
+.appHeaderSelectDepartmentOptionHolder {
+    position: absolute;
+    display: none;
+}
+.appHeaderBuyButton {
+    position: relative;
+    padding: 0.5rem;
+    background-color: #495057;
+    cursor: pointer;
+    font-size: 0.8rem;
+    border-radius: .25rem;
+    border: 1px solid #32373b;
+    margin-top: 0.25rem;
+    color: white;
+    font-weight: bold;
+}
+.appHeaderSelectPlan {
+    position: relative;
+    padding: 0.5rem;
+    background-color: #e9ecef;
+    cursor: pointer;
+    font-size: 0.8rem;
+    border-radius: .25rem;
+    border: 1px solid #e9ecef;
+    margin-top: 0.25rem;
+}
+.appHeaderSelectPlanOptionHolder {
+    position: absolute;
+    display: none;
+}
+.caretApp{
+    margin-left: 1rem;
+}
+.appHeader {
+    display: flex;
+    height: 20rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+.appDescrition {
+    background-color: white;
+    border-radius: 0.25rem;
+    display: flex;
+    min-height: 15rem;
+    padding: 1rem;
+}
+.appDescriptionThird {
+    width: 30%;
+    padding: 1rem;
+}
+.appDescriptionHeading {
+    font-size: 1.15rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.appDescriptionLink{
+    cursor: pointer;
+    text-decoration: underline;
+}
+.appHeading {
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 3rem;
+}
+.rcLogoAppsTile {
+    margin: 1rem;
+    min-height: 4rem;
+    min-width: 4rem;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: white;
+    border-radius: 0.2rem;
+    box-shadow: 0 0 1rem #f0f3ff;
+    cursor: pointer;
+    position: relative;
 }

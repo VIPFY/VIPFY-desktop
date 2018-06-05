@@ -2,12 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import { graphql, compose } from "react-apollo";
 
-import {
-  fetchAppById,
-  fetchReviews,
-  fetchPlans,
-  fetchRecommendedApps
-} from "../queries/products";
+import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "../queries/products";
 import { fetchLicences } from "../queries/auth";
 import { buyPlan } from "../mutations/products";
 
@@ -48,10 +43,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     try {
       await this.props.buyPlan({
         variables: { planid, amount },
-        refetchQueries: [
-          { query: fetchLicences },
-          { query: fetchRecommendedApps }
-        ]
+        refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
       });
       this.props.history.push("/area/dashboard"); //todo: this doesn't update the dashboard and navigation
     } catch (err) {
@@ -120,16 +112,10 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     if (appDetails.images) {
       return appDetails.images.map((image, index) => {
         return (
-          <div
-            key={index}
-            className={
-              "galleryImage " + this.showBig(this.state.bigImage, index)
-            }>
+          <div key={index} className={"galleryImage " + this.showBig(this.state.bigImage, index)}>
             <img
               className={"galleryView"}
-              src={`https://storage.googleapis.com/vipfy-imagestore-01/${
-                appDetails.name
-              }/${image}`}
+              src={`https://storage.googleapis.com/vipfy-imagestore-01/${appDetails.name}/${image}`}
               alt={appDetails.name}
               onClick={() => this.changeBig(index)}
             />
@@ -169,14 +155,10 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     switch (nosp.length) {
       case 0: // Kein nosp => add licences from plan and return
         calculatedprice +=
-          Math.ceil((usercount - calculateduseralready) / plan.numlicences) *
-          plan.price;
+          Math.ceil((usercount - calculateduseralready) / plan.numlicences) * plan.price;
         return calculatedprice;
       case 1: // genau ein nosp
-        return (
-          calculatedprice +
-          this.calculatepartsum(nosp[0], calculateduseralready, usercount)
-        );
+        return calculatedprice + this.calculatepartsum(nosp[0], calculateduseralready, usercount);
 
       default:
         // More than one nonoptionalsubplan
@@ -198,8 +180,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     let i = 0;
     if (plans) {
       plans.forEach(plan => {
-        let totalprice =
-          this.state.totalprice[i] || this.calculatepartsum(plan, 0, usercount);
+        let totalprice = this.state.totalprice[i] || this.calculatepartsum(plan, 0, usercount);
         plandivs.push(
           <div key={`plan-${i}`} className="planSingleHolder">
             <div className="planHeader">
@@ -213,9 +194,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               <span>Add Features</span>
               {this.printOptionalPlans(plan.subplans, plan.numlicences, i)}
             </div>
-            <div
-              className="planCosts"
-              onClick={() => this.buyApp(plan.id, usercount)}>
+            <div className="planCosts" onClick={() => this.buyApp(plan.id, usercount)}>
               {totalprice} {plan.currency}/month
             </div>
           </div>
@@ -257,9 +236,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                     <input
                       className="billCheckBox"
                       type="checkbox"
-                      onChange={e =>
-                        this.changeCheckbox(e, i, plans[i], plancounter)
-                      }
+                      onChange={e => this.changeCheckbox(e, i, plans[i], plancounter)}
                     />
                     <span className="billTextPlan">{plans[i].name}</span>
                   </div>
@@ -274,9 +251,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                     <input
                       className="billInput"
                       value={optionalSliders[plancounter][i]}
-                      onChange={e =>
-                        this.optionalSliderChange(e, i, plans[i], plancounter)
-                      }
+                      onChange={e => this.optionalSliderChange(e, i, plans[i], plancounter)}
                     />
                     <span className="billTextPlan">{plans[i].name}</span>
                   </div>
@@ -291,8 +266,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                     <span className="billTextPlan">{plans[i].name}</span>
                     <span>
                       {" "}
-                      for {this.state.numberEmployees - mainplanlicences}{" "}
-                      additional users
+                      for {this.state.numberEmployees - mainplanlicences} additional users
                     </span>
                   </div>
                   {/*<div className="billprice">
@@ -306,11 +280,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             <div key={"opt-" + i} className="billPos">
               <div className="billTextOptional">
                 <span className="billTextPlan">{plans[i].name}</span>
-                <span>
-                  {" "}
-                  for {this.state.numberEmployees - mainplanlicences} additional
-                  users
-                </span>
+                <span> for {this.state.numberEmployees - mainplanlicences} additional users</span>
               </div>
               {/*<div className="billprice">
                 {plans[i].price*Math.ceil((this.state.numberEmployees-mainplanlicences)/plans[i].numlicences)} {plans[i].currency}
@@ -357,43 +327,13 @@ class AppPage extends Component<AppPageProps, AppPageState> {
 
     //total - oldcost | Calc new Cost | total + newcost | saveeverything
 
-    console.log(
-      "SLIDERCHANGE1",
-      id,
-      totalprice[plancounter],
-      optionalCosts[plancounter],
-      id
-    );
-    totalprice[plancounter] =
-      totalprice[plancounter] - optionalCosts[plancounter][id];
-    console.log(
-      "SLIDERCHANGE2",
-      id,
-      totalprice[plancounter],
-      optionalCosts[plancounter],
-      id
-    );
-    optionalCosts[plancounter][id] = this.calculatepartsum(
-      plan,
-      0,
-      event.target.value
-    );
-    console.log(
-      "SLIDERCHANGE3",
-      id,
-      totalprice[plancounter],
-      optionalCosts[plancounter],
-      id
-    );
-    totalprice[plancounter] =
-      totalprice[plancounter] + optionalCosts[plancounter][id];
-    console.log(
-      "SLIDERCHANGE4",
-      id,
-      totalprice,
-      optionalCosts[plancounter],
-      id
-    );
+    console.log("SLIDERCHANGE1", id, totalprice[plancounter], optionalCosts[plancounter], id);
+    totalprice[plancounter] = totalprice[plancounter] - optionalCosts[plancounter][id];
+    console.log("SLIDERCHANGE2", id, totalprice[plancounter], optionalCosts[plancounter], id);
+    optionalCosts[plancounter][id] = this.calculatepartsum(plan, 0, event.target.value);
+    console.log("SLIDERCHANGE3", id, totalprice[plancounter], optionalCosts[plancounter], id);
+    totalprice[plancounter] = totalprice[plancounter] + optionalCosts[plancounter][id];
+    console.log("SLIDERCHANGE4", id, totalprice, optionalCosts[plancounter], id);
 
     this.setState({ optionalSliders: optionalSliders });
     this.setState({ optionalCosts: optionalCosts });
@@ -444,39 +384,17 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     }
 
     console.log("COSTSA", totalprice);
-    console.log(
-      "COSTS",
-      optionalCosts[plancounter],
-      id,
-      totalprice[plancounter]
-    );
-    totalprice[plancounter] =
-      totalprice[plancounter] - optionalCosts[plancounter][id];
-    console.log(
-      "COSTS",
-      optionalCosts[plancounter][id],
-      id,
-      totalprice[plancounter]
-    );
+    console.log("COSTS", optionalCosts[plancounter], id, totalprice[plancounter]);
+    totalprice[plancounter] = totalprice[plancounter] - optionalCosts[plancounter][id];
+    console.log("COSTS", optionalCosts[plancounter][id], id, totalprice[plancounter]);
     optionalCosts[plancounter][id] = this.calculatepartsum(
       plan,
       0,
       optionalSliders[plancounter][id] * this.state.numberEmployees
     );
-    console.log(
-      "COSTS",
-      optionalCosts[plancounter],
-      id,
-      totalprice[plancounter]
-    );
-    totalprice[plancounter] =
-      totalprice[plancounter] + optionalCosts[plancounter][id];
-    console.log(
-      "COSTS",
-      optionalCosts[plancounter],
-      id,
-      totalprice[plancounter]
-    );
+    console.log("COSTS", optionalCosts[plancounter], id, totalprice[plancounter]);
+    totalprice[plancounter] = totalprice[plancounter] + optionalCosts[plancounter][id];
+    console.log("COSTS", optionalCosts[plancounter], id, totalprice[plancounter]);
 
     this.setState({ optionalSliders: optionalSliders });
     this.setState({ optionalCosts: optionalCosts });
@@ -505,11 +423,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
       checkboxes[i].forEach(function(checkbox, index) {
         console.log("ITERATOR", totalprice, index);
         if (checkbox[i] == true) {
-          let partprice = that.calculatepartsum(
-            plan.subplans[index],
-            0,
-            event.target.value
-          );
+          let partprice = that.calculatepartsum(plan.subplans[index], 0, event.target.value);
           optionalCosts[i][index] = partprice;
         }
       });
@@ -537,10 +451,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
       console.log("REVIEWS", reviewData);
       reviewData.forEach(review => {
         reviewDivs.push(
-          <div
-            key={`review-${i}`}
-            className="detail-comment"
-            style={{ marginTop: "0px" }}>
+          <div key={`review-${i}`} className="detail-comment" style={{ marginTop: "0px" }}>
             <div className="rating">{this.showStars(review.stars)}</div>
             <span className="detail-comment-author">
               by{" "}
@@ -550,8 +461,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             </span>
             <p className="detail-comment-text">{review.reviewtext}</p>
             <span className="detail-comment-date">
-              {review.reviewdate.split(" ")[1]}{" "}
-              {review.reviewdate.split(" ")[2]}{" "}
+              {review.reviewdate.split(" ")[1]} {review.reviewdate.split(" ")[2]}{" "}
               {review.reviewdate.split(" ")[3]}
             </span>
           </div>
@@ -561,6 +471,10 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     }
 
     return reviewDivs;
+  }
+
+  goTo() {
+    this.props.history.push("/area/marketplace");
   }
 
   render() {
@@ -578,7 +492,106 @@ class AppPage extends Component<AppPageProps, AppPageState> {
       let appDetails = this.props.product.fetchAppById;
       return (
         <div className={cssClass}>
-          <div className="appHeaderHolder">
+          <div className="appBreadCromp">
+            <span className="appBreadCrompNoLink">YOU ARE HERE > </span>
+            <span className="appBreadCrompLink" onClick={() => this.goTo()}>
+              Marketplace
+            </span>
+            <span className="appBreadCrompNoLink"> > </span>
+            <span className="appBreadCrompLink">{appDetails.name}</span>
+          </div>
+          <div className="appHeader">
+            {console.log(
+              "Bildlink",
+              `https://storage.googleapis.com/vipfy-imagestore-01/${appDetails.name}/${
+                appDetails.images[0]
+              }`
+            )}
+            <div
+              className="appHeaderGallery"
+              style={{
+                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/${
+                  appDetails.name
+                }/${appDetails.images[0]})`
+              }}
+            />
+            <div className="appHeaderInfos">
+              <div className="appHeaderStars">{this.showStars(appDetails.avgstars)}</div>
+              <div className="appHeaderName">{appDetails.name}</div>
+              <div className="appHeaderType">{appDetails.features.type}</div>
+              <div className="appHeaderPriceHolder">
+                <div className="appHeaderPriceText">Buy for</div>
+                <div className="appHeaderSelectDepartment">
+                  <span className="appHeaderSelectDepartmentText">
+                    everyone at Vipfy<span className="fas fa-caret-down caretApp" />
+                  </span>
+                  <div className="appHeaderSelectDepartmentOptionHolder">
+                    <span className="appHeaderSelectDepartmentOption">me</span>
+                    <span className="appHeaderSelectDepartmentOption">everyone at Vipfy</span>
+                  </div>
+                </div>
+                <div className="appHeaderSelectPlan">
+                  <span className="appHeaderSelectPlanText">
+                    {this.props.productPlans.fetchPlans[0].name}
+                    <span className="fas fa-caret-down caretApp" />
+                  </span>
+                  <div className="appHeaderSelectPlanOptionHolder">
+                    <span className="appHeaderSelectPlanOption">Pipedrive Pro</span>
+                    <span className="appHeaderSelectPlanOption">Pipedrive Basic</span>
+                  </div>
+                </div>
+                <div
+                  className="appHeaderBuyButton"
+                  onClick={() =>
+                    this.buyApp(
+                      this.props.productPlans.fetchPlans[0].id,
+                      this.state.numberEmployees
+                    )
+                  }>
+                  Subscribe now for{" "}
+                  {this.calculatepartsum(
+                    this.props.productPlans.fetchPlans[0],
+                    0,
+                    this.state.numberEmployees
+                  )}
+                  $
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="appHeading">Service Details</div>
+          <div className="appDescrition">
+            <div className="appDescriptionThird">
+              <span className="appDescriptionHeading">Description</span>
+              <p
+                className="appDescriptionText"
+                dangerouslySetInnerHTML={{ __html: appDetails.description }}
+              />
+            </div>
+            <div className="appDescriptionThird">
+              <span className="appDescriptionHeading">Developer</span>
+              {appDetails ? (
+                <span>
+                  <p className="appDescriptionText">{appDetails.developername}</p>
+                  <p
+                    className="appDescriptionLink"
+                    onClick={() => this.openExternal(appDetails.website)}>
+                    Service Website
+                  </p>
+                </span>
+              ) : (
+                ""
+              )}
+              <span className="appDescriptionHeading">Support</span>
+            </div>
+            <div className="appDescriptionThird">
+              <span className="appDescriptionHeading">Report</span>
+              <p className="appDescriptionText">Flag as not working</p>
+              <p className="appDescriptionText">Flag as inappropriate</p>
+            </div>
+          </div>
+
+          {/*<div className="appHeaderHolder">
             <div
               className="appLogoLarge"
               style={{
@@ -588,19 +601,19 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               }}
             />
             <div className="appHeaderShortHolder">
-              <div
-                className="appHeaderLink"
-                onClick={() => this.openExternal(appDetails.website)}>
+              <div className="appHeaderLink" onClick={() => this.openExternal(appDetails.website)}>
                 Website
               </div>
-              <div className="appHeaderStars">
-                {this.showStars(appDetails.avgstars)}
-              </div>
-              <div className="appHeaderImportantLink"
+              <div className="appHeaderStars">{this.showStars(appDetails.avgstars)}</div>
+              <div
+                className="appHeaderImportantLink"
                 onClick={() => {
-                  document.getElementById("planNumberSelectorLabel")!.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
-                }}
-              >Buy now</div>
+                  document
+                    .getElementById("planNumberSelectorLabel")!
+                    .scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+                }}>
+                Buy now
+              </div>
             </div>
           </div>
           <div className="appGallery">{this.showgal(appDetails)}</div>
@@ -609,13 +622,12 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             <p dangerouslySetInnerHTML={{ __html: appDetails.description }} />
             <div
               className={
-                "detail-fulldescription-showmore secondary-button " +
-                this.showfulldesc(false)
+                "detail-fulldescription-showmore secondary-button " + this.showfulldesc(false)
               }
               onClick={() => this.toggledescbutton()}>
               Show more
             </div>
-          </div>
+            </div>*/}
           <div className="planSectionHolder">
             <div className="planNumberSelector">
               <label className="planNumberSelectorLabel" id="planNumberSelectorLabel">
@@ -632,10 +644,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               className="planHolder"
               /*style={{width: this.props.productPlans.fetchPlans ? this.props.productPlans.fetchPlans.length * 22 +"em" : 0 * 22 +"em"}}*/
             >
-              {this.showPlans(
-                this.props.productPlans.fetchPlans,
-                this.state.numberEmployees
-              )}
+              {this.showPlans(this.props.productPlans.fetchPlans, this.state.numberEmployees)}
             </div>
             {/*</div>*/}
           </div>
@@ -644,9 +653,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             <div className="detail-comments-holder">
               <div className="detail-comments-oversizeholder">
                 <div className="detail-comments-stars">
-                  <div className="detail-comments-stars-bignum">
-                    {appDetails.avgstars}
-                  </div>
+                  <div className="detail-comments-stars-bignum">{appDetails.avgstars}</div>
                   <div className="detail-comments-stars-holder">
                     {this.showStars(appDetails.avgstars)}
                   </div>
@@ -657,7 +664,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               </div>
             </div>
           </div>
-          <div className="detail-informations">
+          {/*<div className="detail-informations">
             <div className="detail-information-holder">
               <h3>Developer</h3>
               {appDetails ? (
@@ -677,7 +684,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               <p>Flag as not working</p>
               <p>Flag as inappropriate</p>
             </div>
-          </div>
+          </div>*/}
         </div>
       );
     }

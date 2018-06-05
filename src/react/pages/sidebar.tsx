@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Component } from "react";
-import s from "../../css/Sidebar.scss";
 
 export type SidebarProps = {
   history: any[];
   setapp: any;
   licences: any;
   sidebaropen: boolean;
+  logMeOut: any;
 };
 
 export type SidebarState = {
@@ -25,11 +25,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
 
   showApps(licences, bool) {
     let appLogos: JSX.Element[] = [];
-    console.log("SHOWAPPS", licences, bool);
     if (licences) {
       let i = 0;
       licences.forEach(licence => {
-        console.log("L", licence);
         appLogos.push(
           <li
             className="sidebar-link"
@@ -58,7 +56,6 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
   }
 
   render() {
-    console.log("NAVI", this.props);
     if (!this.props.sidebaropen) {
       return (
         <div className="sidebar-small">
@@ -82,7 +79,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
               <span className="fas fa-shopping-cart sidebar-icons" />
             </li>
             {this.showApps(this.props.licences.fetchLicences, false)}
-            <li className="sidebar-link sidebar-link-important">
+            <li
+              className="sidebar-link sidebar-link-important"
+              onClick={() => this.props.logMeOut()}>
               <span className="fas fa-sign-out-alt sidebar-icons" />
             </li>
           </ul>
@@ -116,7 +115,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
               <span className="sidebar-link-caption">Marketplace</span>
             </li>
             {this.showApps(this.props.licences.fetchLicences, true)}
-            <li className="sidebar-link sidebar-link-important">
+            <li
+              className="sidebar-link sidebar-link-important"
+              onClick={() => this.props.logMeOut()}>
               <span className="fas fa-sign-out-alt sidebar-icons" />
               <span className="sidebar-link-caption">Logout</span>
             </li>

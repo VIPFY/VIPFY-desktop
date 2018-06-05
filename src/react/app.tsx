@@ -35,7 +35,7 @@ export type AppState = {
   admin: boolean;
   employees: number;
   profilepicture: string;
-  error: string|null;
+  error: string | null;
 };
 
 class App extends Component<AppProps, AppState> {
