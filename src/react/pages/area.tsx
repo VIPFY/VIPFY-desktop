@@ -20,6 +20,7 @@ export type AreaProps = {
   history: any[];
   me: any;
   fetchLicences: any;
+  logMeOut: any;
 };
 
 export type AreaState = {

@@ -13,7 +13,7 @@ class Dashboard extends Component {
   }
 
   goTo(view) {
-    let gotoview = "/area/" + view;
+    let gotoview = "/area" + view;
     this.props.history.push(gotoview);
   }
 
@@ -44,7 +44,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    console.log(this.props.rcApps);
+    console.log("RC", this.props.rcApps);
     let bI = this.props.profilepicture;
     let cssClass = "fullWorking dashboardWorking";
     if (this.props.chatopen) {
@@ -118,9 +118,27 @@ class Dashboard extends Component {
         </div>
         <div className="informationTile">
           <div className="informationTileHeader">
-            <span className="informationTileHeaderText">Visitors on your site</span>
+            <span className="informationTileHeaderText">
+              We believe you also need these services
+            </span>
           </div>
-          <div className="informationText">Increase by 10% compared to last month</div>
+          <div className="informationText">
+            {this.props.rcApps.loading
+              ? "Loading Apps..."
+              : this.props.rcApps.fetchRecommendedApps.map(app => (
+                  <div
+                    key={app.id}
+                    className="rcLogoAppsTile"
+                    onClick={() => this.goTo(`/marketplace/${app.id}`)}
+                    style={{
+                      backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
+                        app.logo
+                      })`
+                    }}>
+                    <span className="nameAppsTile">{app.name}</span>
+                  </div>
+                ))}
+          </div>
         </div>
         <div className="informationGraph">
           <div className="informationGraphHeader">
