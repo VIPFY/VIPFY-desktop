@@ -17,6 +17,10 @@
       require("./locationScripts/wrike.ts")();
     } else if (hostMatches(".*\.?google.com")) {
       require("./locationScripts/googledocs.ts")();
+    } else if (hostMatches(".*\.?weebly.com")) {
+      require("./locationScripts/weebly.ts")();
+    } else if (hostMatches(".*\.?moo.com")) {
+      require("./locationScripts/moo.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
