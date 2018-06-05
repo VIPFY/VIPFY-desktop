@@ -488,7 +488,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
       cssClass += " SidebarOpen";
     }
 
-    if (this.props.product.fetchAppById) {
+    if (this.props.product.fetchAppById && !this.props.productPlans.loading) {
       let appDetails = this.props.product.fetchAppById;
       return (
         <div className={cssClass}>
