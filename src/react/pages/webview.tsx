@@ -58,12 +58,14 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       case "google apps":
         return "https://docs.google.com";
       case "weebly":
-        return "https://weebly.com";
+        return "https://www.weebly.com/login"
       case "slack":
         return "https://slack.com";
       case "dropbox":
-        return "https://www.dropbox.com/login";
-      //return "http://dev.vipfy.com:7000/";
+        return "https://www.dropbox.com/login"
+        //return "http://dev.vipfy.com:7000/";
+      case "moo":
+        return "https://www.moo.com/uk/account/signin.php"
       default:
         return "/area/dashboard?error=unknownapp";
     }
