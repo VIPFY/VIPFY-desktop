@@ -566,10 +566,18 @@ class AppPage extends Component<AppPageProps, AppPageState> {
   render() {
     console.log("AppPage", this);
 
+    let cssClass = "fullWorking paddingPage";
+    if (this.props.chatopen) {
+      cssClass += " chatopen";
+    }
+    if (this.props.sidebaropen) {
+      cssClass += " SidebarOpen";
+    }
+
     if (this.props.product.fetchAppById) {
       let appDetails = this.props.product.fetchAppById;
       return (
-        <div className="fullWorking paddingPage">
+        <div className={cssClass}>
           <div className="appHeaderHolder">
             <div
               className="appLogoLarge"

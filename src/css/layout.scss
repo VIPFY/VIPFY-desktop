@@ -1,3 +1,6 @@
+@import './constants.scss';
+@import './creditCards.scss';
+
 @keyframes buttonMove{
     from {left:0px}
     to {left:-1000px}
@@ -11,7 +14,7 @@
     width: 100%;
     height: 100vh;
     color: #333;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 .fullSize{
     width: 100%;
@@ -118,12 +121,17 @@ label{
     opacity: 1;
 }
 .navigation{
-    background-color: #333;
-    background: linear-gradient(#333 0%, #222 50%);
-    height: 4em;
-    color: white;
+    /*background-color: #333;
+    background: linear-gradient(#333 0%, #222 50%);*/
+    height: 3em;
+    /*color: white;*/
     display: flex;
     justify-content: space-between;
+    background-color: #fff !important;
+    box-shadow: 0 0 10px #e8e8e8;
+    margin-left: 3rem;
+    position: relative;
+    z-index: 200;
 }
 .navigationButton{
     font-size: 2em;
@@ -135,32 +143,34 @@ label{
     color: #771a1c;
     background-color: white;
 }
-.searchbar{
-    font-size: 1em;
-    line-height: 1em;
+.searchbar {
+    font-size: 0.8rem;
+    line-height: 1rem;
     padding: 5px;
     border: 0px;
     font-family: 'Quicksand', sans-serif;
     outline: none !important;
     height: 1.5em;
+    background-color: transparent;
 }
-.searchbarHolder{
-    line-height: 4em;
+.searchbarHolder {
+    line-height: 2em;
     display: flex;
     align-items: center;
+    margin: 0.5rem;
+    margin-left: 1rem;
 }
-.searchbarButton{
+.searchbarButton {
     display: inline;
-    font-size: 1.5em;
+    font-size: 1rem;
     padding: 5px;
     outline: none;
     cursor: pointer;
-    height: 1em;
     line-height: 1em;
+    transform: rotateY(180deg);
 }
-.searchbarButton:hover{
-    color: #771a1c;
-    background-color: white;
+.searchbarFocus{
+    background-color: #f5f5f5;
 }
 .navigationButtonHolder{
     display: flex;
@@ -218,11 +228,11 @@ label{
 }
 
 .mainPosition {
-    position:absolute;
-    top:4em;
-    left:0;
-    width:100%;
-    height:calc(100vh - 4em);
+    /*position: absolute;
+    top: 3em;
+    left: 3rem;
+    width: calc(100% - 15em);*/
+    height: calc(100vh - 3em);
 }
 
 #loadingScreen {
@@ -253,22 +263,25 @@ label{
     margin: 2em;
 }
 .useableAppsTitle{
-    width: 10em;
-    height: 10em;
+    width: 20em;
+    height: 20em;
     display: flex;
     text-align: center;
     align-items: center;
-    border: 5px solid #333;
+    /*border: 5px solid #333;*/
 }
 .useableAppsLogo{
-    width: 10em;
-    height: 10em;
-    border: 5px solid #333;
+    width: 20em;
+    height: 20em;
+    /*border: 5px solid #333;*/
     cursor: pointer;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     position: relative;
+    background-position: center;
+    border-radius: 0.3rem;
+    box-shadow: 0 0 10px #e8e8e8;
 }
 .recommendedApps{
     display: flex;
@@ -315,9 +328,17 @@ label{
     font-size: 1.2em;
 }
 .fullWorking{
-    height: calc(100vh - 4rem);
-    background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);
+    height: calc(100vh - 3rem);
+    /*background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);*/
+    background-color: $fullWorking-background;
     overflow-y: scroll;
+    margin-left: 3rem;
+}
+.marginLeft{
+    margin-left: 3rem;
+}
+.SidebarOpen{
+    margin-left: $sidebar-width;
 }
 .backgroundLogo{
     background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%)
@@ -730,3 +751,461 @@ label{
     font-family: 'Quicksand', sans-serif;
 
 */
+
+.sidebar{
+    width:  $sidebar-width;
+    height: 100vh;
+    position: fixed;
+    background-color: $sidebar-background;
+    z-index: 300;
+}
+.sidebar-logo{
+    background-image: $app-logo;
+    margin: 0.5rem;
+    height: 2rem;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.sidebar-link-holder {
+    color: white;
+    padding-top: 2em;
+    -webkit-margin-before: 0em;
+    -webkit-padding-start: 0em;
+    -webkit-margin-after: 0em;
+}
+.sidebar-link {
+    list-style: none;
+    cursor: pointer;
+}
+.sidebar-link:hover {
+    background-color: #111;
+}
+.sidebar-link {
+    list-style: none;
+    padding: 0.5rem;
+    padding-left: 1rem;
+    display: flex;
+}
+.sidebar-link-important{
+    margin-top: 1.5rem;
+    margin-bottom: 1.5em;
+}
+.sidebar-link-caption{
+    padding-left: 1em;
+}
+.service-logo-small {
+    height: 1em;
+    width: 1em;
+    padding: 0rem !important;
+    background-size: contain;
+    background-repeat: no-repeat;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    background-position: center;
+}
+.sidebar-icons{
+    width: 1em;
+    text-align: center;
+}
+.chatBar {
+    width: 15rem;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    z-index: 300;
+    background-color: #333;
+    height: 100vh;
+}
+.chatopen{
+    margin-right: 15rem;
+}
+.chatopenWeb{
+    width: calc(100% - 30rem);
+}
+.navigationRightInfos{
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    margin: 0.25rem;
+    cursor: pointer;
+}
+.rightProfileHolder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    float: left;
+    cursor: pointer;
+    margin: 0.5rem;
+    position: relative;
+}
+.rightProfileImage {
+    height: 2rem;
+    margin-right: 0.5rem;
+    border-radius: 1rem;
+    background-color: #eee;
+}
+.rightProfileFirstName {
+    font-size: 0.8rem;
+    padding-right: 0.2rem;
+    padding-top: 0.2rem;
+}
+.rightProfileLastName {
+    font-size: 0.9rem;
+    padding-top: 0.1rem;
+    font-weight: bold;
+}
+.rightProfileNotifications {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    background-color: #ffc247;
+    color: white;
+    font-weight: 700;
+    height: 1.55rem;
+    line-height: 1.55rem;
+    width: 1.55rem;
+    text-align: center;
+    border-radius: 2rem;
+}
+.rightProfileCaret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: middle;
+    border-top: 0.3rem dashed;
+    border-left: 0.3rem solid transparent;
+    border-right: 0.3rem solid transparent;
+    margin-left: 0.3rem;
+}
+.notificationPopup{
+    position: absolute;
+    z-index: 1000;
+    min-width: 15rem;
+    background-color: white;
+    top: 2.5rem;
+    right: 0;
+    margin: 0.125rem 0 0;
+    background-clip: padding-box;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.175);
+    cursor: default;
+}
+.notificationPopupFooter {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0,0,0,0.03);
+}
+.notificationPopupHeader {
+    padding: 0.75rem 1.25rem;
+    margin: 0;
+    background-color: rgba(0,0,0,0.03);
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+.notificationItem {
+    padding: 0.75rem 1.25rem;
+    position: relative;
+    margin-bottom: -1px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.notificationIcon {
+    color: #3abf94 !important;
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+    width: 2rem;
+    text-align: center;
+}
+.notificationText {
+    margin: 0;
+    font-size: 0.75rem;
+    width: calc(100% - 2.5rem);
+}
+.notificationTime {
+    width: calc(100% - 2.5rem);
+    margin-left: 2.5rem;
+    font-size: 0.6rem;
+}
+.notificationPopupScroller {
+    max-height: 15rem;
+    overflow-y: auto;
+}
+.dashboardWorking {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.welcomeTile{
+    margin: 2.5%;
+    width: 25%;
+    min-width: 10rem;
+    max-width: 15rem;
+    min-height: 20rem;
+    background-color: #333 !important;
+    color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+}
+.welcomeIcon {
+    text-align: center;
+    width: 100%;
+    color: #ffc247;
+    font-size: 4rem;
+    line-height: 6rem !important;
+}
+.welcomeText {
+    display: block;
+    padding: 2rem;
+    padding-top: 0;
+}
+.welcomeSentence {
+    padding: 1rem;
+    bottom: 0px;
+    position: absolute;
+    text-align: center;
+    width: calc(100% - 2rem);
+}
+.appsTile {
+    min-width: 60%;
+    max-width: calc(92.5% - 15rem);
+    margin: 2.5%;
+    margin-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    align-items: flex-start;
+}
+.logoAppsTile {
+    margin: 1rem;
+    min-height: 8rem;
+    min-width: 8rem;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: white;
+    border-radius: 0.2rem;
+    box-shadow: 0 0 4rem #f0f3ff;
+    cursor: pointer;
+    position: relative;
+}
+.logoAppsTile:hover{
+    background-color: #f8f9fa;
+}
+.nameAppsTile {
+    position: absolute;
+    bottom: -1rem;
+    width: 100%;
+    text-align: center;
+    font-size: 0.8rem;
+}
+.serviceTile {
+    min-width: 5rem;
+    max-width: 15rem;
+    margin: 2.5%;
+    background-color: white;
+    width: 25%;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+}
+.serviceTileHeader {
+    background-color: #ffc247 !important;
+    padding: 2rem;
+    min-height: 6rem;
+}
+.serviceTileHeaderText {
+    font-weight: bold;
+    color: white;
+    font-size: 1.25rem;
+}
+.serviceUserHeader {
+    margin-top: -1.6rem;
+    border-bottom: 0.5rem solid transparent;
+}
+.serviceUserIconBackground {
+    margin-left: 1rem;
+    float: left;
+    margin-right: 0.5rem;
+}
+.serviceUserIcon {
+    width: 3rem;
+    border-radius: 2rem;
+    border: 0.2rem solid white;
+}
+.serviceUserName {
+    font-size: 0.8rem;
+    display: block;
+    line-height: 2rem;
+    color: white;
+    font-weight: bold;
+}
+.serviceTime {
+    font-size: 0.6rem;
+}
+.serviceText {
+    padding: 1rem;
+}
+.barIcon {
+    margin: 1rem;
+    cursor: pointer;
+}
+.leftNavigation{
+    display: flex;
+}
+.sidebar-small {
+    position: fixed;
+    background-color: #333;
+    width: 3rem;
+    height: 100vh;
+    z-index: 300;
+}
+.informationTile {
+    min-width: 5rem;
+    max-width: 15rem;
+    margin: 2.5%;
+    background-color: #547fff;
+    width: 25%;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    color: white;
+}
+.informationTileHeader {
+    padding: 2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.informationText {
+    padding: 1rem;
+    bottom: 0;
+    position: absolute;
+}
+.currentPaymentHolder {
+    width: 40%;
+}
+.nextPaymentHolder {
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    margin: 2rem;
+}
+.nextPaymentChart {
+    width: 100%;
+    height: 10rem;
+}
+.historyPaymentHolder {
+    width: 60%;
+}
+.billingStreamChart {
+    height: 20rem;
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    margin: 2rem;
+}
+.paymentDataHolder {
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    margin: 2rem;
+}
+.paymentCreditCardLabel {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+.paymentAddressLabel {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+.paymentAddressName {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: bold;
+    padding-left: 2rem;
+}
+.paymentAddressStreet {
+    display: block;
+    font-size: 0.9rem;
+    line-height: 2rem;
+    font-weight: bold;
+    padding-left: 2rem;
+}
+span.paymentAddressCity {
+    display: block;
+    font-size: 0.9rem;
+    padding-left: 2rem;
+}
+span.paymentAddressEMail {
+    display: block;
+    font-size: 0.9rem;
+    padding-left: 2rem;
+}
+span.paymentAddressPhone {
+    display: block;
+    font-size: 0.9rem;
+    padding-left: 2rem;
+}
+.paymentDataChangeButton {
+    background-color: #547fff;
+    color: #fff;
+    font-weight: bold;
+    line-height: 2rem;
+    font-size: 1.2rem;
+    text-align: center;
+    background-image: linear-gradient(to right, rgba(255,255,255,0.15), transparent);
+    cursor: pointer;
+}
+.billingHistoryInvoices{
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    margin: 2rem;
+}
+.informationGraph {
+    max-width: 30rem;
+    margin: 2.5%;
+    background-color: #fff;
+    width: 50%;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
+    color: #333;
+}
+.informationGraphHeader {
+    font-size: 1.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+.informationGraphHeader {
+    font-size: 1.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+.informationGraphContent {
+    width: 100%;
+    height: 15rem;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}

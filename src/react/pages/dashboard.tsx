@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import { Link } from "react-router-dom";
+import PipedriveGraph from "../graphs/pipedrivegraph";
 
 class Dashboard extends Component {
   state = {
@@ -17,7 +18,7 @@ class Dashboard extends Component {
   }
 
   showApps(licences) {
-    let appLogos = [];
+    let appLogos: JSX.Element[] = [];
     console.log("SHOWAPPS", licences);
     if (licences) {
       let i = 0;
@@ -25,19 +26,15 @@ class Dashboard extends Component {
         console.log("L", licence);
         appLogos.push(
           <div
-            className="useableAppsLogo"
+            className="logoAppsTile"
             key={`useableLogo-${i}`}
-            onClick={() =>
-              this.setApp(licence.boughtplanid.planid.appid.name.toLowerCase())
-            }
+            onClick={() => this.setApp(licence.boughtplanid.planid.appid.name.toLowerCase())}
             style={{
               backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
                 licence.boughtplanid.planid.appid.logo
               })`
             }}>
-            <span className="useableServiceName">
-              {licence.boughtplanid.planid.appid.name}
-            </span>
+            <span className="nameAppsTile">{licence.boughtplanid.planid.appid.name}</span>
           </div>
         );
         i++;
@@ -49,15 +46,20 @@ class Dashboard extends Component {
   render() {
     console.log(this.props.rcApps);
     let bI = this.props.profilepicture;
+    let cssClass = "fullWorking dashboardWorking";
+    if (this.props.chatopen) {
+      cssClass += " chatopen";
+    }
+    if (this.props.sidebaropen) {
+      cssClass += " SidebarOpen";
+    }
     if (this.state.recommended) {
       return (
-        <div className="fullWorking">
+        <div className={cssClass}>
           <div className="centralize backgroundLogo">
             <div className="loginHolder">
               <div className="recommendedApps">
-                <div className="recommendedAppsTitle">
-                  We believe you need these services
-                </div>
+                <div className="recommendedAppsTitle">We believe you need these services</div>
                 <div
                   className="recommendedAppsLogo"
                   onClick={() => this.BuyApp("pipedrive")}
@@ -83,52 +85,84 @@ class Dashboard extends Component {
       );
     }
     return (
-      <div className="fullWorking">
-        <div className="welcomeHolder">
-          <div
-            className="welcomeImage"
-            style={{ backgroundImage: `url(${bI})` }}
-          />
-          <div className="welcomeMessage">
-            <span>
-              Welcome back, {this.props.firstname} {this.props.lastname}
+      <div className={cssClass}>
+        <div className="welcomeTile">
+          <span className="fas fa-child welcomeIcon" />
+          <span className="welcomeText">
+            Welcome back, {this.props.firstname} {this.props.lastname}
+          </span>
+          <div className="welcomeSentence">
+            <i className="fas fa-quote-left" />
+            <span className="welcomeSentenceText"> Did you know that grass is green? </span>
+            <i className="fas fa-quote-right" />
+          </div>
+        </div>
+        <div className="appsTile">{this.showApps(this.props.licences.fetchLicences)}</div>
+        <div className="serviceTile">
+          <div className="serviceTileHeader">
+            <span className="serviceTileHeaderText">Follow our alpha-progress!</span>
+          </div>
+          <div className="serviceUserHeader">
+            <span className="serviceUserIconBackground">
+              <img
+                className="serviceUserIcon"
+                src="https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg"
+              />
             </span>
+            <span className="serviceUserName">Nils Vossebein</span>
+            <span className="serviceTime">30mins ago</span>
+          </div>
+          <div className="serviceText">
+            Register on vipfy.com to get our newsletter and always be up to date!
           </div>
         </div>
+        <div className="informationTile">
+          <div className="informationTileHeader">
+            <span className="informationTileHeaderText">Visitors on your site</span>
+          </div>
+          <div className="informationText">Increase by 10% compared to last month</div>
+        </div>
+        <div className="informationGraph">
+          <div className="informationGraphHeader">
+            <span className="informationGraphHeaderText">Pipedrive conversion rate</span>
+          </div>
+          <div className="informationGraphContent">
+            <PipedriveGraph />
+          </div>
+        </div>
+        {/*
+          <div className="welcomeHolder">
+            <div className="welcomeImage" style={{ backgroundImage: `url(${bI})` }} />
+            <div className="welcomeMessage">
+              <span>
+                Welcome back, {this.props.firstname} {this.props.lastname}
+              </span>
+            </div>
+          </div>
 
-        <div className="useableApps">
-          <div className="useableAppsTitle">
-            Just click on a service to start
+          <div className="useableApps">
+            <div className="useableAppsTitle">Just click on a service to start</div>
+            {this.showApps(this.props.licences.fetchLicences)}
           </div>
-          {/*<div className="useableAppsLogo" onClick={() => (this.setApp("pipedrive"))}
-            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"}}>
-            <span className="useableServiceName">Pipedrive</span>
+          <div className="recommendedApps">
+            <div className="recommendedAppsTitle">We believe you also need these services</div>
+            {this.props.rcApps.loading
+              ? "Loading Apps..."
+              : this.props.rcApps.fetchRecommendedApps.map(app => (
+                  <div
+                    key={app.id}
+                    className="recommendedAppsLogo"
+                    onClick={() => this.goTo(`marketplace/${app.id}`)}
+                    style={{
+                      backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
+                        app.logo
+                      })`
+                    }}>
+                    <span className="recommendedServiceName">{app.name}</span>
+                  </div>
+                ))}
           </div>
-          <div className="useableAppsLogo" onClick={() => (this.setApp("slack"))}
-            style={{backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/slack.svg)"}}>
-            <span className="useableServiceName">Slack</span>
-    </div>*/}
-          {this.showApps(this.props.licences.fetchLicences)}
-        </div>
-        <div className="recommendedApps">
-          <div className="recommendedAppsTitle">
-            We believe you also need these services
-          </div>
-          {this.props.rcApps.loading
-            ? "Loading Apps..."
-            : this.props.rcApps.fetchRecommendedApps.map(app => (
-                <div key={app.id}
-                  className="recommendedAppsLogo"
-                  onClick={() => this.goTo(`marketplace/${app.id}`)}
-                  style={{
-                    backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
-                      app.logo
-                    })`
-                  }}>
-                  <span className="recommendedServiceName">{app.name}</span>
-                </div>
-              ))}
-        </div>
+        */}
       </div>
     );
   }

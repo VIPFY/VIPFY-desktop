@@ -7,6 +7,8 @@ import { fetchRecommendedApps } from "../queries/products";
 
 import Dashboard from "./dashboard";
 import Navigation from "./navigation";
+import Sidebar from "./sidebar";
+import Chat from "./chat";
 import Webview from "./webview";
 import Settings from "./settings";
 import Marketplace from "./marketplace";
@@ -22,17 +24,29 @@ export type AreaProps = {
 
 export type AreaState = {
   app: string;
+  chatopen: boolean;
+  sidebaropen: boolean;
 };
 
 class Area extends Component<AreaProps, AreaState> {
   state: AreaState = {
-    app: "vipfy"
+    app: "vipfy",
+    chatopen: false,
+    sidebaropen: true
   };
 
   setapp = appname => {
     console.log(appname);
     this.setState({ app: appname });
     this.props.history.push("/area/webview");
+  };
+
+  toggleChat = () => {
+    this.setState({ chatopen: !this.state.chatopen });
+  };
+
+  toggleSidebar = () => {
+    this.setState({ sidebaropen: !this.state.sidebaropen });
   };
 
   loggedIn = async () => {
@@ -57,45 +71,109 @@ class Area extends Component<AreaProps, AreaState> {
         <div className="area">
           <Route
             render={props => (
-              <Navigation setapp={this.setapp} {...this.props} {...props} />
+              <Sidebar
+                sidebaropen={this.state.sidebaropen}
+                setapp={this.setapp}
+                {...this.props}
+                {...props}
+              />
             )}
+          />
+          <Route
+            render={props => (
+              <Navigation
+                chatopen={this.state.chatopen}
+                setapp={this.setapp}
+                toggleChat={this.toggleChat}
+                toggleSidebar={this.toggleSidebar}
+                sidebaropen={this.state.sidebaropen}
+                {...this.props}
+                {...props}
+              />
+            )}
+          />
+          <Route
+            render={props => <Chat chatopen={this.state.chatopen} {...this.props} {...props} />}
           />
           <Route
             exact
             path="/area/dashboard"
             render={props => (
-              <Dashboard {...props} setapp={this.setapp} {...this.props} />
+              <Dashboard
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                setapp={this.setapp}
+                {...this.props}
+              />
             )}
           />
           <Route
             exact
             path="/area/webview"
-            render={props => <Webview app={this.state.app} {...props} />}
+            render={props => (
+              <Webview
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                app={this.state.app}
+                {...props}
+              />
+            )}
           />
           <Route
             exact
             path="/area/settings"
-            render={props => <Settings {...props} {...this.props} />}
+            render={props => (
+              <Settings
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
+            )}
           />
           <Route
             exact
             path="/area/billing"
-            render={props => <Billing {...props} {...this.props} />}
+            render={props => (
+              <Billing
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
+            )}
           />
           <Route
             exact
             path="/area/advisor"
-            render={props => <Advisor {...props} {...this.props} />}
+            render={props => (
+              <Advisor
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
+            )}
           />
           <Route
             exact
             path="/area/marketplace"
-            render={props => <Marketplace {...props} {...this.props} />}
+            render={props => (
+              <Marketplace
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
+            )}
           />
           <Route
             path="/area/marketplace/:appid"
             render={props => (
               <AppPage
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
                 setapp={this.setapp}
                 match={this.match}
                 {...this.props}
