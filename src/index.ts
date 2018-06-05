@@ -1,8 +1,9 @@
-import { app, BrowserWindow, autoUpdater, dialog } from "electron";
+import { app, BrowserWindow, autoUpdater, dialog, protocol } from "electron";
 import installExtension, {
   REACT_DEVELOPER_TOOLS
 } from "electron-devtools-installer";
 import { enableLiveReload } from "electron-compile";
+import path = require("path");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -53,6 +54,17 @@ function initUpdates() {
 
 const createWindow = async () => {
   //initUpdates();
+
+  protocol.registerFileProtocol("vipfy", (request, callback) => {
+    //const url = request.url.substr(8)
+    //callback({path: path.normalize(`${__dirname}/${url}`)})
+    console.log(`redirecting to ${app.getAppPath()}/src/todo.html`)
+    callback({path: path.normalize(`${app.getAppPath()}/src/todo.html`)});
+  }, (error) => {
+    if (error) {
+      console.error("Failed to register vipfy protocol");
+    }
+  })
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
