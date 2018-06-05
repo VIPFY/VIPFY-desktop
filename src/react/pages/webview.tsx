@@ -113,7 +113,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
 
   maybeHideLoadingScreen(): void {
     let loginPageRegex =
-      "^https://(www.)?dropbox.com/?(/login.*|/logout|/plans.*)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login";
+      "^https://(www.)?dropbox.com/?(/login.*|/logout|/plans.*)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login|^https://www.weebly.com/login";
     if (new RegExp(loginPageRegex).test(this.state.currentUrl)) {
       console.log("Not hiding loading screen for " + this.state.currentUrl);
       return;
