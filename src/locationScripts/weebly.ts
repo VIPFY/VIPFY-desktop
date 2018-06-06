@@ -5,9 +5,8 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
-
 function onLoad() {
-  if (window.location.pathname == "/login") {
+  if (window.location.pathname == "/login" || window.location.href.indexOf("atlassian.com") !== -1) {
     login();
   }
 }
@@ -16,7 +15,7 @@ function onReady() {
   con.log(window.location.pathname);
 
   setInterval(modifyAll, 100);
-    /*modifySettings();
+  /*modifySettings();
     let url = location.href;
     document.body.addEventListener('click', ()=>{
         requestAnimationFrame(()=>{
@@ -27,7 +26,6 @@ function onReady() {
 }
 
 function modifyAll() {
-
   //the following two should apply equally to most instances, but there are occasional exceptions
   /*redirectLinks("#dialog/tier-plan-standalone", todoPath);
   redirectLinksByQuery("a.tierChangeStandaloneModal", todoPath);
@@ -41,9 +39,29 @@ function modifyAll() {
   hideByQuery('a[href="/settings/sso"]', true);*/
 }
 
-
-
 function login() {
+  //clear cookies
+  /*(function() {
+    var cookies = document.cookie.split("; ");
+    for (var c = 0; c < cookies.length; c++) {
+      var d = window.location.hostname.split(".");
+      while (d.length > 0) {
+        var cookieBase =
+          encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) +
+          "=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=" +
+          d.join(".") +
+          " ;path=";
+        var p = location.pathname.split("/");
+        document.cookie = cookieBase + "/";
+        while (p.length > 0) {
+          document.cookie = cookieBase + p.join("/");
+          p.pop();
+        }
+        d.shift();
+      }
+    }
+  })();*/
+
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginLink", 2);
 }

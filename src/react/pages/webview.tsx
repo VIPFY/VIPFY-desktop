@@ -2,7 +2,8 @@ import * as React from "react";
 import { Component } from "react";
 import { Link } from "react-router-dom";
 import WebView = require("react-electron-web-view");
-const { shell } = require("electron");
+const { shell, remote } = require("electron");
+const { session } = remote
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
@@ -158,38 +159,39 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           e.target.send("loginData", key);
         });
     } else if (e.channel === "getLoginLink") {
-      this.props.client
-        .query({
-          query: gql`
-            {
-              fetchLicencesByApp(appid: 2) {
-                boughtplanid {
-                  id
-                }
-              }
-            }
-          `
-        })
-        .then(result => {
-          console.log("FETCH LICENCES", result)
-          let licence = result.data.fetchLicencesByApp[0].boughtplanid.id;
-
-          this.props.client
-            .query({
-              query: gql`
-                {
-                  createLoginLink(boughtplanid: ${licence}) {
-                    loginLink
+        this.props.client
+          .query({
+            query: gql`
+              {
+                fetchLicencesByApp(appid: 2) {
+                  boughtplanid {
+                    id
                   }
                 }
-              `
-            })
-            .then(result => {
-              console.log("LOGIN LINK", result)
-              let link = result.data.createLoginLink.loginLink;
-              this.setState({ setUrl: link });
-            });
-        });
+              }
+            `
+          })
+          .then(result => {
+            console.log("FETCH LICENCES", result)
+            let licence = result.data.fetchLicencesByApp[0].boughtplanid.id;
+
+            this.props.client
+              .query({
+                query: gql`
+                  {
+                    createLoginLink(boughtplanid: ${licence}) {
+                      loginLink
+                    }
+                  }
+                `,
+                fetchPolicy: "no-cache"
+              })
+              .then(result => {
+                console.log("LOGIN LINK", result)
+                let link = result.data.createLoginLink.loginLink;
+                this.setState({ setUrl: link });
+              });
+          });
     }
   }
 
@@ -208,6 +210,11 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     if (this.props.sidebaropen) {
       cssClass += " SidebarOpen";
     }
+
+    if(this.state.setUrl != this.state.currentUrl && this.state.setUrl === "https://www.weebly.com/login") {
+      session.fromPartition("services").clearStorageData({origin: "https://www.weebly.com"}, () => console.log("cleared cookies"));
+    }
+
     return (
       <div className={cssClass}>
         <div
