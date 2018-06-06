@@ -47,6 +47,9 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       showLoadingScreen: false,
       t: performance.now()
     };
+    /*if(this.state.setUrl.startsWith("https://www.weebly.com")) {
+
+    }*/
   }
 
   private static appToUrl(app: string): string {
@@ -226,7 +229,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           webpreferences="webSecurity=no"
           className={cssClassWeb}
           src={this.state.setUrl}
-          partition="persist:services"
+          partition="services"
           onDidNavigate={e => this.onDidNavigate(e.target.src)}
           style={{ visibility: this.state.showLoadingScreen ? "hidden" : "visible" }}
           onDidFailLoad={(code, desc, url, isMain) => {
