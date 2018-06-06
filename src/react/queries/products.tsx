@@ -7,6 +7,7 @@ export const fetchApps = gql`
       teaserdescription
       name
       logo
+      icon
     }
   }
 `;

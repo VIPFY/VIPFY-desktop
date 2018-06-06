@@ -36,8 +36,8 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             <span
               className="service-logo-small"
               style={{
-                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
-                  licence.boughtplanid.planid.appid.logo
+                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                  licence.boughtplanid.planid.appid.icon
                 })`
               }}
             />

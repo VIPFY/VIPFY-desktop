@@ -29,8 +29,8 @@ class Navigation extends Component {
             className="appLogo"
             onClick={() => this.setApp(licence.boughtplanid.planid.appid.name.toLowerCase())}
             style={{
-              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
-                licence.boughtplanid.planid.appid.logo
+              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                licence.boughtplanid.planid.appid.icon
               })`
             }}
           />

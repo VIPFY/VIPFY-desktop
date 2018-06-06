@@ -15,11 +15,13 @@ export const fetchLicences = gql`
 query fetchLicences {
   fetchLicences {
     boughtplanid{
+      id
       planid{
         appid{
           id
           name
           logo
+          icon
         }
       }
     }
