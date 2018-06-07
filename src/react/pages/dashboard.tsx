@@ -8,8 +8,8 @@ class Dashboard extends Component {
     recommended: false
   };
 
-  setApp(appname) {
-    this.props.setapp(appname);
+  setApp(boughtplan: number) {
+    this.props.setapp(boughtplan);
   }
 
   goTo(view) {
@@ -28,7 +28,7 @@ class Dashboard extends Component {
           <div
             className="logoAppsTile"
             key={`useableLogo-${i}`}
-            onClick={() => this.setApp(licence.boughtplanid.planid.appid.name.toLowerCase())}
+            onClick={() => this.setApp(licence.boughtplanid.id)}
             style={{
               backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
                 licence.boughtplanid.planid.appid.logo

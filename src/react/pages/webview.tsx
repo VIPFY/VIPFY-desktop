@@ -3,7 +3,7 @@ import { Component } from "react";
 import { Link } from "react-router-dom";
 import WebView = require("react-electron-web-view");
 const { shell, remote } = require("electron");
-const { session } = remote
+const { session } = remote;
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
@@ -14,10 +14,13 @@ export type WebViewState = {
   legalText: string;
   showLoadingScreen: boolean;
   t: number;
+  planId: number;
+  previousPlanId: number;
+  unitId: number;
 };
 
 export type WebViewProps = {
-  app: string;
+  app: number;
   client: ApolloClient;
   chatopen: boolean;
   sidebaropen: boolean;
@@ -27,7 +30,7 @@ export type WebViewProps = {
 // TODO: move TODO page to web so webSecurity=no is no longer nessesary
 
 export class Webview extends Component<WebViewProps, WebViewState> {
-  static defaultProps = { app: "vipfy" };
+  static defaultProps = { app: -1 };
 
   static loadingQuotes = [
     "Loading",
@@ -38,19 +41,19 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     "Just a second"
   ];
 
-  constructor(props) {
+  constructor(props: WebViewProps) {
     super(props);
     this.state = {
-      setUrl: Webview.appToUrl(props.app), //passed prop as initial value
-      currentUrl: Webview.appToUrl(props.app), //passed prop as initial value
+      setUrl: "vipfy://blank",
+      currentUrl: "vipfy://blank",
       inspirationalText: "Loading",
       legalText: "Legal Text",
       showLoadingScreen: false,
-      t: performance.now()
+      t: performance.now(),
+      planId: props.app,
+      previousPlanId: -1,
+      unitId: -1
     };
-    /*if(this.state.setUrl.startsWith("https://www.weebly.com")) {
-
-    }*/
   }
 
   private static appToUrl(app: string): string {
@@ -79,7 +82,69 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     nextProps: WebViewProps,
     prevState: WebViewState
   ): WebViewState | null {
-    return { ...prevState, setUrl: Webview.appToUrl(nextProps.app) };
+    if (nextProps.app !== prevState.planId) {
+      return {
+        ...prevState,
+        previousPlanId: prevState.planId,
+        planId: nextProps.app,
+        showLoadingScreen: true
+      };
+    } else {
+      return prevState;
+    }
+  }
+
+  componentDidMount() {
+    // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
+    this.switchApp();
+  }
+
+  componentDidUpdate(prevProps: WebViewProps, prevState: WebViewState) {
+    if (this.state.previousPlanId !== this.state.planId) {
+      // At this point, we're in the "commit" phase, so it's safe to load the new data.
+      this.switchApp();
+    }
+  }
+
+  private async switchApp(): Promise<void> {
+    let result = await this.props.client.query({
+      query: gql`
+      {
+        fetchLicences(boughtplanid: ${this.state.planId}) {
+          agreed
+          disabled
+          key
+          boughtplanid {
+            id,
+            planid {
+              appid {
+                id,
+                loginurl
+              }
+            }
+          }
+          unitid {
+            id
+          }
+        }
+      }
+      `,
+      networkPolicy: "network-only"
+    });
+    console.log("APP DATA", result)
+    let licence = result.data.fetchLicences[0];
+    if (licence.unitid.id !== this.state.unitId) {
+      await new Promise((resolve, reject) => {
+        session.fromPartition("services").clearStorageData({}, () => {
+          resolve();
+        });
+      });
+    }
+    this.setState({
+      setUrl: licence.boughtplanid.planid.appid.loginurl,
+      previousPlanId: this.state.planId,
+      unitId: licence.unitid.id
+    });
   }
 
   onDidNavigate(url: string): void {
@@ -135,63 +200,41 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     }
   }
 
-  onIpcMessage(e): void {
+  async onIpcMessage(e): Promise<void> {
     console.log("onIpcMessage", e);
     if (e.channel === "getLoginData") {
       let app = e.args[0];
-      this.props.client
-        .query({
-          query: gql`
+      let result = await this.props.client.query({
+        query: gql`
           {
-            fetchLicencesByApp(appid: ${app}) {
+            fetchLicences(boughtplanid: ${this.state.planId}) {
                 key
             }
           }
         `
-        })
-        .then(result => {
-          console.log("LICENCE", result);
-          let key = result.data.fetchLicencesByApp[0].key;
-          console.log("chosen key", key);
-          if (key === null) {
-            window.alert("invalid licence");
-          }
-          e.target.send("loginData", key);
-        });
+      });
+      console.log("LICENCE", result);
+      let key = result.data.fetchLicences[0].key;
+      console.log("chosen key", key);
+      if (key === null) {
+        window.alert("invalid licence");
+      }
+      e.target.send("loginData", key);
     } else if (e.channel === "getLoginLink") {
-        this.props.client
-          .query({
-            query: gql`
-              {
-                fetchLicencesByApp(appid: 2) {
-                  boughtplanid {
-                    id
-                  }
-                }
-              }
-            `
-          })
-          .then(result => {
-            console.log("FETCH LICENCES", result)
-            let licence = result.data.fetchLicencesByApp[0].boughtplanid.id;
-
-            this.props.client
-              .query({
-                query: gql`
+      let licence = this.state.planId;
+      let result = await this.props.client.query({
+        query: gql`
                   {
                     createLoginLink(boughtplanid: ${licence}) {
                       loginLink
                     }
                   }
                 `,
-                fetchPolicy: "no-cache"
-              })
-              .then(result => {
-                console.log("LOGIN LINK", result)
-                let link = result.data.createLoginLink.loginLink;
-                this.setState({ setUrl: link });
-              });
-          });
+        fetchPolicy: "no-cache"
+      });
+      console.log("LOGIN LINK", result);
+      let link = result.data.createLoginLink.loginLink;
+      this.setState({ setUrl: link });
     }
   }
 
@@ -211,8 +254,16 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       cssClass += " SidebarOpen";
     }
 
-    if(this.state.setUrl != this.state.currentUrl && this.state.setUrl === "https://www.weebly.com/login") {
-      session.fromPartition("services").clearStorageData({origin: "https://www.weebly.com"}, () => console.log("cleared cookies"));
+    // this is a workaround for a weebly bug. Remove when no longer nessesary
+    if (
+      this.state.setUrl != this.state.currentUrl &&
+      this.state.setUrl === "https://www.weebly.com/login"
+    ) {
+      session
+        .fromPartition("services")
+        .clearStorageData({ origin: "https://www.weebly.com" }, () =>
+          console.log("cleared cookies")
+        );
     }
 
     return (

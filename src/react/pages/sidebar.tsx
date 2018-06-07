@@ -3,7 +3,7 @@ import { Component } from "react";
 
 export type SidebarProps = {
   history: any[];
-  setapp: any;
+  setapp: (boughtplan: number) => void;
   licences: any;
   sidebaropen: boolean;
   logMeOut: any;
@@ -14,8 +14,8 @@ export type SidebarState = {
 };
 
 class Sidebar extends Component<SidebarProps, SidebarState> {
-  setApp(appname) {
-    this.props.setapp(appname);
+  setApp(boughtplan: number) {
+    this.props.setapp(boughtplan);
   }
 
   goTo(view) {
@@ -32,7 +32,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
           <li
             className="sidebar-link"
             key={`ServiceLogo-${i}`}
-            onClick={() => this.setApp(licence.boughtplanid.planid.appid.name.toLowerCase())}>
+            onClick={() => this.setApp(licence.boughtplanid.id)}>
             <span
               className="service-logo-small"
               style={{

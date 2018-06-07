@@ -7,8 +7,8 @@ class Navigation extends Component {
     searchFocus: false
   };
 
-  setApp(appname) {
-    this.props.setapp(appname);
+  setApp(boughtplan: number) {
+    this.props.setapp(boughtplan);
   }
 
   goTo(view) {
@@ -27,7 +27,7 @@ class Navigation extends Component {
           <div
             key={`AppLogo-${i}`}
             className="appLogo"
-            onClick={() => this.setApp(licence.boughtplanid.planid.appid.name.toLowerCase())}
+            onClick={() => this.setApp(licence.boughtplanid.id)}
             style={{
               backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
                 licence.boughtplanid.planid.appid.icon

@@ -24,21 +24,21 @@ export type AreaProps = {
 };
 
 export type AreaState = {
-  app: string;
+  app: number;
   chatopen: boolean;
   sidebaropen: boolean;
 };
 
 class Area extends Component<AreaProps, AreaState> {
   state: AreaState = {
-    app: "vipfy",
+    app: -1,
     chatopen: false,
     sidebaropen: true
   };
 
-  setapp = appname => {
-    console.log(appname);
-    this.setState({ app: appname });
+  setapp = (boughtplan: number) => {
+    console.log("SetApp to boughtplan ", boughtplan);
+    this.setState({ app: boughtplan });
     this.props.history.push("/area/webview");
   };
 
