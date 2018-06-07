@@ -2,7 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 import { withRouter, Redirect } from "react-router";
-import { graphql, compose } from "react-apollo";
+import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 import { signInUser } from "./mutations/auth";
@@ -26,6 +26,7 @@ export type AppProps = {
   history: any[];
   signIn: any;
   signUp: any;
+  client: any;
 };
 
 export type AppState = {
@@ -51,6 +52,7 @@ class App extends Component<AppProps, AppState> {
 
   logMeOut = () => {
     this.setState({ login: false });
+    this.props.client.cache.reset(); //clear graphql cache
     localStorage.setItem("token", "");
     localStorage.setItem("refreshToken", "");
     this.props.history.push("/");
@@ -160,4 +162,4 @@ export default compose(
   graphql(SignUp, {
     name: "signUp"
   })
-)(withRouter(App, history));
+)(withApollo(withRouter(App, history)));

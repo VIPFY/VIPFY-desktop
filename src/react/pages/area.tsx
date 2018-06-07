@@ -20,7 +20,7 @@ export type AreaProps = {
   history: any[];
   me: any;
   fetchLicences: any;
-  logMeOut: any;
+  logMeOut: () => void;
 };
 
 export type AreaState = {
@@ -58,10 +58,10 @@ class Area extends Component<AreaProps, AreaState> {
       }
     } catch (err) {
       console.log("ErrorLI", err);
-      this.props.history.push("/");
+      this.props.logMeOut();
       return false;
     }
-    this.props.history.push("/");
+    this.props.logMeOut();
     return false;
   };
 

@@ -6,7 +6,7 @@ export type SidebarProps = {
   setapp: (boughtplan: number) => void;
   licences: any;
   sidebaropen: boolean;
-  logMeOut: any;
+  logMeOut: () => void;
 };
 
 export type SidebarState = {
