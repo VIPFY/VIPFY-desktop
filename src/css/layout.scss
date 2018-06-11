@@ -1233,6 +1233,7 @@ span.paymentAddressPhone {
     width: calc(100% - 15rem);
     background-size: cover;
     background-position: center;
+    position: relative;
 }
 .appHeaderInfos {
     width: 15rem;
@@ -1354,4 +1355,62 @@ span.paymentAddressPhone {
     box-shadow: 0 0 1rem #f0f3ff;
     cursor: pointer;
     position: relative;
+}
+.galleryDots {
+    position: absolute;
+    width: 100%;
+    bottom: 0.25rem;
+    height: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.gallyDot {
+  height: 0.75rem;
+  width: 0.75rem;
+  border-radius: 1rem;
+  background-color: rgba(255,255,255,0.3);
+  margin-left: 0.1rem;
+  margin-right: 0.1rem;
+  border: 1px solid rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+.gallyDot:hover{
+  background-color: rgba(255,255,255,0.5);
+}
+.gallyDotActive{
+  background-color: rgba(255,255,255,0.5);
+}
+.galleryLeft {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 15%;
+    line-height: 20rem;
+    padding-left: 1rem;
+    background-image: linear-gradient(to left, transparent 0%, #333 100%);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    opacity: 0.5;
+}
+.galleryRight {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    width: 15%;
+    line-height: 20rem;
+    padding-right: 1rem;
+    text-align: right;
+    background-image: linear-gradient(to right, transparent 0%, #333 100%);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    opacity: 0.5;
+}
+.galleryLeft:hover{
+    opacity: 1;
+}
+.galleryRight:hover{
+    opacity: 1;
 }

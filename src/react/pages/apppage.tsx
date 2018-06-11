@@ -25,6 +25,7 @@ export type AppPageState = {
   checkboxes: any[][];
   totalprice: any[];
   mainprice: any[];
+  imageindex: number;
 };
 
 class AppPage extends Component<AppPageProps, AppPageState> {
@@ -36,7 +37,8 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     optionalCosts: [[]],
     checkboxes: [[]],
     totalprice: [],
-    mainprice: []
+    mainprice: [],
+    imageindex: 0
   };
 
   buyApp = async (planid, amount) => {
@@ -477,6 +479,35 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     this.props.history.push("/area/marketplace");
   }
 
+  gallerymove(option, direct, length) {
+    if (option === 1) {
+      this.setState({ imageindex: direct });
+    } else {
+      if (direct === 0) {
+        this.setState(prevState => ({ imageindex: (((prevState.imageindex - 1) % length)+length)%length }));
+        console.log("IMAGEID", this.state.imageindex)
+      } else {
+        this.setState(prevState => ({ imageindex: (prevState.imageindex + 1) % length }));
+      }
+    }
+  }
+
+  showgallerydots(imagecount, active) {
+    console.log(imagecount);
+    let dots: JSX.Element[] = [];
+
+    for (let index = 0; index < imagecount; index++) {
+      dots.push(
+        <span
+          key={`gDot-${index}`}
+          className={active === index ? "gallyDot gallyDotActive" : "gallyDot"}
+          onClick={() => this.gallerymove(1, index, imagecount)}
+        />
+      );
+    }
+    return dots;
+  }
+
   render() {
     console.log("AppPage", this);
 
@@ -504,7 +535,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             {console.log(
               "Bildlink",
               `https://storage.googleapis.com/vipfy-imagestore-01/${appDetails.name}/${
-                appDetails.images[0]
+                appDetails.images[this.state.imageindex]
               }`
             )}
             <div
@@ -512,9 +543,24 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               style={{
                 backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/${
                   appDetails.name
-                }/${appDetails.images[0]})`
-              }}
-            />
+                }/${appDetails.images[this.state.imageindex]})`
+              }}>
+              <div className="galleryDots">
+                {this.showgallerydots(appDetails.images.length, this.state.imageindex)}
+              </div>
+              <div
+                className="galleryLeft"
+                onClick={() => this.gallerymove(0, 0, appDetails.images.length)}
+              >
+              <span className="fas fa-angle-left" />
+              </div>
+              <div
+                className="galleryRight"
+                onClick={() => this.gallerymove(0, 1, appDetails.images.length)}
+              >
+              <span className="fas fa-angle-right" />
+              </div>
+            </div>
             <div className="appHeaderInfos">
               <div className="appHeaderStars">{this.showStars(appDetails.avgstars)}</div>
               <div className="appHeaderName">{appDetails.name}</div>
