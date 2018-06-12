@@ -844,6 +844,7 @@ label{
 }
 .rightProfileImage {
     height: 2rem;
+    width: 2rem;
     margin-right: 0.5rem;
     border-radius: 1rem;
     background-color: #eee;
@@ -1413,4 +1414,99 @@ span.paymentAddressPhone {
 }
 .galleryRight:hover{
     opacity: 1;
+}
+.UMS {
+    max-width: 60rem;
+    margin: auto;
+    margin-top: 5rem;
+}
+.departmentHolder {
+    display: flex;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.departmentIcon {
+    height: 3rem;
+    width: 3rem;
+    background-color: #547fff;
+    text-align: center;
+    line-height: 3rem;
+    font-weight: bold;
+    color: white;
+}
+.departmentName {
+    width: 8.75rem;
+    line-height: 3rem;
+    padding-left: 0.25rem;
+    border-bottom: 1px solid #333;
+    height: calc(3rem - 2px);
+    border-top: 1px solid #333;
+}
+.employeeHolder {
+    border: 1px solid #333;
+    width: calc(100% - 13rem);
+    height: calc(3rem - 2px);
+    display: flex;
+}
+.serviceHolder {
+    border: 1px solid #333;
+    border-top: 0px;
+    width: calc(100% - 13rem);
+    height: calc(3rem - 1px);
+    display: flex;
+    align-items: center;
+}
+.addEmployee {
+    margin: 0.5rem;
+    height: calc(2rem - 2px);
+    width: 2rem;
+    text-align: center;
+    background-color: #ffc247;
+    line-height: 2rem !important;
+    cursor: pointer;
+}
+.employeeName {
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+.employeeTags {
+    font-size: 0.75rem;
+}
+.employee {
+    width: 9rem;
+    margin-top: 0.5rem;
+}
+.addHolderAll{
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+.addEmployeeHolder {
+    position: relative;
+}
+.addHolderAll {
+    width: 11rem;
+    height: auto;
+    background-color: white;
+    position: absolute;
+    z-index: 1000;
+    min-width: 15rem;
+    background-color: white;
+    top: 2.5rem;
+    margin: 0.125rem 0 0;
+    background-clip: padding-box;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+    cursor: default;
+}
+.addItem {
+    height: 2rem;
+    margin: 0.5rem;
+}
+.addName {
+    line-height: 2rem;
+}
+.addHolderAllNone {
+    display: none;
 }
