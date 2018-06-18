@@ -73,6 +73,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             <li className="sidebar-link" onClick={() => this.goTo("billing")}>
               <span className="fas fa-dollar-sign sidebar-icons" />
             </li>
+            <li className="sidebar-link" onClick={() => this.goTo("team")}>
+              <span className="fas fa-users-cog sidebar-icons" />
+            </li>
             <li
               className="sidebar-link sidebar-link-important"
               onClick={() => this.goTo("marketplace")}>
@@ -107,6 +110,10 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             <li className="sidebar-link" onClick={() => this.goTo("billing")}>
               <span className="fas fa-dollar-sign sidebar-icons" />
               <span className="sidebar-link-caption">Billing</span>
+            </li>
+            <li className="sidebar-link" onClick={() => this.goTo("team")}>
+              <span className="fas fa-users-cog sidebar-icons" />
+              <span className="sidebar-link-caption">Teams</span>
             </li>
             <li
               className="sidebar-link sidebar-link-important"

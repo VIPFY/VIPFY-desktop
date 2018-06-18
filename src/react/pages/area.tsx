@@ -15,6 +15,7 @@ import Marketplace from "./marketplace";
 import AppPage from "./apppage";
 import Billing from "./billing";
 import Advisor from "./advisor";
+import Team from "./team";
 
 export type AreaProps = {
   history: any[];
@@ -50,7 +51,7 @@ class Area extends Component<AreaProps, AreaState> {
     this.setState({ sidebaropen: !this.state.sidebaropen });
   };
 
-  loggedIn = async () => {
+  /* loggedIn = async () => {
     try {
       const res = await this.props.me.refetch();
       if (res) {
@@ -63,6 +64,9 @@ class Area extends Component<AreaProps, AreaState> {
     }
     this.props.logMeOut();
     return false;
+  };*/
+  loggedIn = () => {
+    return true;
   };
 
   render() {
@@ -126,6 +130,18 @@ class Area extends Component<AreaProps, AreaState> {
             path="/area/settings"
             render={props => (
               <Settings
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/area/team"
+            render={props => (
+              <Team
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
                 {...props}
