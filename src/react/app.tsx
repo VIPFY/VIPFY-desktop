@@ -76,7 +76,7 @@ class App extends Component<AppProps, AppState> {
         this.setState({ firstname: user.firstname });
         this.setState({ lastname: user.lastname });
         this.setState({ admin: user.admin });
-        this.setState({ profilepicture: user.company.profilepicture });
+        this.setState({ profilepicture: user.profilepicture || user.company.profilepicture });
         this.setState({ employees: user.company.employees });
 
         this.props.history.push("/area/dashboard");

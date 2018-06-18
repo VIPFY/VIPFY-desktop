@@ -12,7 +12,8 @@ export const signInUser = gql`
         firstname
         lastname
         admin
-        company{
+        profilepicture
+        company {
           profilepicture
           employees
         }

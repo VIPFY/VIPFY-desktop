@@ -1,10 +1,51 @@
 import * as React from "react";
 import { Component } from "react";
+import { graphql, compose } from "react-apollo";
 import BillHistory from "../graphs/billhistory";
 import BillNext from "../graphs/billnext";
 import Cards from "react-credit-cards";
+import { fetchBills } from "../queries/billing";
+import { downloadBill } from "../mutations/billing";
 
 class Billing extends Component {
+  state = {
+    bills: []
+  };
+
+  componentDidMount() {
+    console.log("DIDMOUNT", this.props);
+  }
+
+  downloadBill = async billid => {
+    try {
+      const res = await this.props.downloadBill({ variables: { billid } });
+      console.log("DOWNLOAD", billid, res);
+    } catch {
+      console.log("NO DOWNLOAD", billid);
+    }
+  };
+
+  showBills(bills) {
+    let billsArray: JSX.Element[] = [];
+    let i = 0;
+    if (bills) {
+      bills.forEach(bill => {
+        {
+          console.log(bill.id);
+        }
+        billsArray.push(
+          <div className="billItem" onClick={() => this.downloadBill(bill.id)} key={`bill-${i}`}>
+            <div className="billTimeDiv">{bill.billtime}</div>
+            <div className="billNameDiv">{bill.billname}</div>
+          </div>
+        );
+        i++;
+      });
+    }
+
+    return billsArray;
+  }
+
   render() {
     let cssClass = "fullWorking dashboardWorking";
     if (this.props.chatopen) {
@@ -13,6 +54,8 @@ class Billing extends Component {
     if (this.props.sidebaropen) {
       cssClass += " SidebarOpen";
     }
+
+    console.log("Billing", this);
     return (
       <div className={cssClass}>
         <div className="currentPaymentHolder">
@@ -56,6 +99,7 @@ class Billing extends Component {
           </div>
           <div className="billingHistoryInvoices">
             <span className="paymentHistoryHeader">History of invoices</span>
+            <div className="billsHolder">{this.showBills(this.props.bills.fetchBills)}</div>
           </div>
         </div>
       </div>
@@ -63,4 +107,11 @@ class Billing extends Component {
   }
 }
 
-export default Billing;
+export default compose(
+  graphql(fetchBills, {
+    name: "bills"
+  }),
+  graphql(downloadBill, {
+    name: "downloadBill"
+  })
+)(Billing);

@@ -1283,11 +1283,11 @@ span.paymentAddressPhone {
 .appHeaderBuyButton {
     position: relative;
     padding: 0.5rem;
-    background-color: #495057;
+    background-color: #3abf94;
     cursor: pointer;
     font-size: 0.8rem;
     border-radius: .25rem;
-    border: 1px solid #32373b;
+    border: 1px solid #3abf94;
     margin-top: 0.25rem;
     color: white;
     font-weight: bold;
@@ -1419,6 +1419,11 @@ span.paymentAddressPhone {
     max-width: 60rem;
     margin: auto;
     margin-top: 5rem;
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 0 4rem #f0f3ff;
+    border-radius: 0.2rem;
+    position: relative;
 }
 .departmentHolder {
     display: flex;
@@ -1439,18 +1444,18 @@ span.paymentAddressPhone {
     width: 8.75rem;
     line-height: 3rem;
     padding-left: 0.25rem;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid #d6dee5;
     height: calc(3rem - 2px);
-    border-top: 1px solid #333;
+    border-top: 1px solid #d6dee5;
 }
 .employeeHolder {
-    border: 1px solid #333;
+    border: 1px solid #d6dee5;
     width: calc(100% - 13rem);
     height: calc(3rem - 2px);
     display: flex;
 }
 .serviceHolder {
-    border: 1px solid #333;
+    border: 1px solid #d6dee5;
     border-top: 0px;
     width: calc(100% - 13rem);
     height: calc(3rem - 1px);
@@ -1462,7 +1467,7 @@ span.paymentAddressPhone {
     height: calc(2rem - 2px);
     width: 2rem;
     text-align: center;
-    background-color: #ffc247;
+    background-color: #e9ecef;
     line-height: 2rem !important;
     cursor: pointer;
 }
