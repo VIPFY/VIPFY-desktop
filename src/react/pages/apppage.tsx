@@ -41,10 +41,10 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     imageindex: 0
   };
 
-  buyApp = async (planid, amount) => {
+  buyApp = async (planIds) => {
     try {
       await this.props.buyPlan({
-        variables: { planid, amount },
+        variables: { planIds },
         refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
       });
       this.props.history.push("/area/dashboard"); //todo: this doesn't update the dashboard and navigation
@@ -196,7 +196,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               <span>Add Features</span>
               {this.printOptionalPlans(plan.subplans, plan.numlicences, i)}
             </div>
-            <div className="planCosts" onClick={() => this.buyApp(plan.id, usercount)}>
+            <div className="planCosts" onClick={() => this.buyApp([plan.id])}>
               {totalprice.toFixed(2)} {plan.currency}/month
             </div>
           </div>
@@ -590,8 +590,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                   className="appHeaderBuyButton"
                   onClick={() =>
                     this.buyApp(
-                      this.props.productPlans.fetchPlans[0].id,
-                      this.state.numberEmployees
+                      [this.props.productPlans.fetchPlans[0].id]
                     )
                   }>
                   Subscribe now for{" "}

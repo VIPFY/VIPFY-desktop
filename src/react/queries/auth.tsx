@@ -12,19 +12,20 @@ export const me = gql`
 `;
 
 export const fetchLicences = gql`
-query fetchLicences {
-  fetchLicences {
-    boughtplanid{
+  query fetchLicences {
+    fetchLicences {
       id
-      planid{
-        appid{
-          id
-          name
-          logo
-          icon
+      boughtplanid {
+        id
+        planid {
+          appid {
+            id
+            name
+            logo
+            icon
+          }
         }
       }
     }
   }
-}
 `;

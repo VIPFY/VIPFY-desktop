@@ -110,7 +110,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     let result = await this.props.client.query({
       query: gql`
       {
-        fetchLicences(boughtplanid: ${this.state.planId}) {
+        fetchLicences(licenceid: ${this.state.planId}) {
           agreed
           disabled
           key
@@ -140,8 +140,12 @@ export class Webview extends Component<WebViewProps, WebViewState> {
         });
       });
     }
+    let loginurl = licence.boughtplanid.planid.appid.loginurl
+    if (licence.key.loginurl) {
+      loginurl = licence.key.loginurl
+    }
     this.setState({
-      setUrl: licence.boughtplanid.planid.appid.loginurl,
+      setUrl: loginurl,
       previousPlanId: this.state.planId,
       unitId: licence.unitid.id
     });
@@ -207,7 +211,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       let result = await this.props.client.query({
         query: gql`
           {
-            fetchLicences(boughtplanid: ${this.state.planId}) {
+            fetchLicences(licenceid: ${this.state.planId}) {
                 key
             }
           }
@@ -225,7 +229,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       let result = await this.props.client.query({
         query: gql`
                   {
-                    createLoginLink(boughtplanid: ${licence}) {
+                    createLoginLink(licenceid: ${licence}) {
                       loginLink
                     }
                   }
