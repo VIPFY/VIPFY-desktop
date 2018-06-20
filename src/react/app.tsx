@@ -33,7 +33,9 @@ export type AppState = {
   login: boolean;
   firstname: string;
   lastname: string;
-  admin: boolean;
+  teams: boolean;
+  billing: boolean;
+  marketplace: boolean;
   employees: number;
   profilepicture: string;
   error: string | null;
@@ -44,7 +46,9 @@ class App extends Component<AppProps, AppState> {
     login: false,
     firstname: "",
     lastname: "",
-    admin: false,
+    teams: false,
+    billing: false,
+    marketplace: false,
     employees: 3,
     profilepicture: "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg",
     error: null
@@ -75,7 +79,9 @@ class App extends Component<AppProps, AppState> {
         this.setState({ login: true });
         this.setState({ firstname: user.firstname });
         this.setState({ lastname: user.lastname });
-        this.setState({ admin: user.admin });
+        this.setState({ teams: user.teams });
+        this.setState({ billing: user.billing });
+        this.setState({ marketplace: user.marketplace });
         this.setState({ profilepicture: user.profilepicture || user.company.profilepicture });
         this.setState({ employees: user.company.employees });
 
@@ -142,7 +148,9 @@ class App extends Component<AppProps, AppState> {
                 firstname={this.state.firstname}
                 lastname={this.state.lastname}
                 profilepicture={this.state.profilepicture}
-                admin={this.state.admin}
+                teams={this.state.teams}
+                billing={this.state.billing}
+                marketplace={this.state.marketplace}
                 employees={this.state.employees}
                 setName={this.setName}
               />

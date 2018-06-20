@@ -55,6 +55,67 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     return appLogos;
   }
 
+  showBilling() {
+    if (this.props.billing) {
+      if (!this.props.sidebaropen) {
+        return (
+          <li className="sidebar-link" onClick={() => this.goTo("billing")}>
+            <span className="fas fa-dollar-sign sidebar-icons" />
+          </li>
+        );
+      } else {
+        return (
+          <li className="sidebar-link" onClick={() => this.goTo("billing")}>
+            <span className="fas fa-dollar-sign sidebar-icons" />
+            <span className="sidebar-link-caption">Billing</span>
+          </li>
+        );
+      }
+    }
+  }
+
+  showTeams() {
+    if (this.props.teams) {
+      if (!this.props.sidebaropen) {
+        return (
+          <li className="sidebar-link" onClick={() => this.goTo("team")}>
+            <span className="fas fa-users-cog sidebar-icons" />
+          </li>
+        );
+      } else {
+        return (
+          <li className="sidebar-link" onClick={() => this.goTo("team")}>
+            <span className="fas fa-users-cog sidebar-icons" />
+            <span className="sidebar-link-caption">Teams</span>
+          </li>
+        );
+      }
+    }
+  }
+
+  showMarketplace() {
+    if (this.props.marketplace) {
+      if (!this.props.sidebaropen) {
+        return (
+          <li
+            className="sidebar-link sidebar-link-important"
+            onClick={() => this.goTo("marketplace")}>
+            <span className="fas fa-shopping-cart sidebar-icons" />
+          </li>
+        );
+      } else {
+        return (
+          <li
+            className="sidebar-link sidebar-link-important"
+            onClick={() => this.goTo("marketplace")}>
+            <span className="fas fa-shopping-cart sidebar-icons" />
+            <span className="sidebar-link-caption">Marketplace</span>
+          </li>
+        );
+      }
+    }
+  }
+
   render() {
     if (!this.props.sidebaropen) {
       return (
@@ -70,17 +131,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             <li className="sidebar-link">
               <span className="fas fa-envelope sidebar-icons" />
             </li>
-            <li className="sidebar-link" onClick={() => this.goTo("billing")}>
-              <span className="fas fa-dollar-sign sidebar-icons" />
-            </li>
-            <li className="sidebar-link" onClick={() => this.goTo("team")}>
-              <span className="fas fa-users-cog sidebar-icons" />
-            </li>
-            <li
-              className="sidebar-link sidebar-link-important"
-              onClick={() => this.goTo("marketplace")}>
-              <span className="fas fa-shopping-cart sidebar-icons" />
-            </li>
+            {this.showBilling()}
+            {this.showTeams()}
+            {this.showMarketplace()}
             {this.showApps(this.props.licences.fetchLicences, false)}
             <li
               className="sidebar-link sidebar-link-important"
@@ -107,20 +160,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
               <span className="fas fa-envelope sidebar-icons" />
               <span className="sidebar-link-caption">Message Center</span>
             </li>
-            <li className="sidebar-link" onClick={() => this.goTo("billing")}>
-              <span className="fas fa-dollar-sign sidebar-icons" />
-              <span className="sidebar-link-caption">Billing</span>
-            </li>
-            <li className="sidebar-link" onClick={() => this.goTo("team")}>
-              <span className="fas fa-users-cog sidebar-icons" />
-              <span className="sidebar-link-caption">Teams</span>
-            </li>
-            <li
-              className="sidebar-link sidebar-link-important"
-              onClick={() => this.goTo("marketplace")}>
-              <span className="fas fa-shopping-cart sidebar-icons" />
-              <span className="sidebar-link-caption">Marketplace</span>
-            </li>
+            {this.showBilling()}
+            {this.showTeams()}
+            {this.showMarketplace()}
             {this.showApps(this.props.licences.fetchLicences, true)}
             <li
               className="sidebar-link sidebar-link-important"

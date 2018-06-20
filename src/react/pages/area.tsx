@@ -208,10 +208,10 @@ class Area extends Component<AreaProps, AreaState> {
 }
 
 export default compose(
-  graphql(me, {
+  /*graphql(me, {
     name: "me",
     options: { fetchPolicy: "network-only" }
-  }),
+  }),*/
   graphql(fetchLicences, {
     name: "licences"
   }),
