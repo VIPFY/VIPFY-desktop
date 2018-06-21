@@ -135,7 +135,12 @@ class Navigation extends Component {
         </div>
         <div className="rightInfos">
           <div className="rightProfileHolder" onClick={this.toggleNotificationPopup}>
-            <img className="rightProfileImage" src={this.props.profilepicture} />
+            <img
+              className="rightProfileImage"
+              src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                this.props.profilepicture
+              }`}
+            />
             <span className="rightProfileFirstName">{this.props.firstname}</span>
             <span className="rightProfileLastName">{this.props.lastname}</span>
             <span className="rightProfileNotifications">5</span>

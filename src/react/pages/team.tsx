@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Component } from "react";
-import { graphql } from "react-apollo";
+import { graphql, compose } from "react-apollo";
 
 import { fetchDepartments } from "../queries/departments";
+import { addCreateEmployee } from "../mutations/auth";
 
 class Team extends Component {
   state = {
@@ -44,7 +45,9 @@ class Team extends Component {
             style={{
               float: "left"
             }}
-            src={employee.profilepicture}
+            src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+              employee.profilepicture
+            }`}
           />
           <div className="employeeName">
             {employee.firstname} {employee.lastname}
@@ -75,7 +78,9 @@ class Team extends Component {
               style={{
                 float: "left"
               }}
-              src={employee.profilepicture}
+              src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                employee.profilepicture
+              }`}
             />
             <span className="addName">
               {employee.firstname} {employee.lastname}
@@ -173,6 +178,14 @@ class Team extends Component {
     return departmentArray;
   }
 
+  addCreateEmployee = async (email, departmentId) => {
+    const res = await this.props.addCreateEmployee({
+      variables: { email, departmentId },
+      refetchQueries: [{ query: fetchDepartments }]
+    });
+    console.log("ADDCREATE", res);
+  };
+
   render() {
     let cssClass = "fullWorking";
     if (this.props.chatopen) {
@@ -186,213 +199,17 @@ class Team extends Component {
     }
     return (
       <div className={cssClass}>
-        <div className="UMS">
-          {this.showDepartments(this.props.departments.fetchDepartments)}
-          {/*}
-          <div className="departmentHolder">
-            <div className="departmentIcon">DE</div>
-            <div className="departmentName">Developer</div>
-            <div className="employeeHolder">
-              <div className="addEmployeeHolder">
-                <div className={this.state.showAdd === 1 ? "addHolderAll" : "addHolderAllNone"}>
-                  <div
-                    className={
-                      this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
-                    }>
-                    <div className="searchbarButton">
-                      <i className="fas fa-search" />
-                    </div>
-                    <input
-                      onFocus={() => this.toggleSearch(true)}
-                      onBlur={() => this.toggleSearch(false)}
-                      className="searchbar"
-                      placeholder="Search for someone..."
-                    />
-                  </div>
-                  <div className="addHolder">
-                    <div className="addItem">
-                      <img
-                        className="rightProfileImage"
-                        style={{
-                          float: "left"
-                        }}
-                        src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png"
-                      />
-                      <span className="addName">Jannis Froese</span>
-                    </div>
-                    <div className="addItem">
-                      <img
-                        className="rightProfileImage"
-                        style={{
-                          float: "left"
-                        }}
-                        src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png"
-                      />
-                      <span className="addName">Markus Müller</span>
-                    </div>
-                  </div>
-                </div>
-                <span className="addEmployee fas fa-user-plus" onClick={() => this.toggleAdd(1)} />
-              </div>
-              <div className="employee">
-                <img
-                  className="rightProfileImage"
-                  style={{
-                    float: "left"
-                  }}
-                  src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png"
-                />
-                <div className="employeeName">Nils Vossebein</div>
-                <div className="employeeTags">
-                  <span className="employeeTag">Senior</span>
-                </div>
-              </div>
-              <div className="employee">
-                <img
-                  className="rightProfileImage"
-                  style={{
-                    float: "left"
-                  }}
-                  src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png"
-                />
-                <div className="employeeName">Pascal Clanget </div>
-                <div className="employeeTags">
-                  <span className="employeeTag">Senior</span>
-                </div>
-              </div>
-            </div>
-            <div className="serviceHolder">
-              <div className="addEmployee">
-                <span className="fas fa-plus" />
-              </div>
-              <div className="employee">
-                <img
-                  className="rightProfileImage"
-                  style={{
-                    float: "left"
-                  }}
-                  src="https://storage.googleapis.com/vipfy-imagestore-01/icons/weebly.jpg"
-                />
-                <div className="employeeName">Weebly </div>
-                <div className="employeeTags">
-                  <span className="employeeTag">Developer</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="departmentHolder">
-            <div className="departmentIcon" style={{ backgroundColor: "#3abf94" }}>
-              MA
-            </div>
-            <div className="departmentName">Marketing</div>
-            <div className="employeeHolder">
-              <div className="addEmployeeHolder">
-                <div className={this.state.showAdd === 3 ? "addHolderAll" : "addHolderAllNone"}>
-                  <div
-                    className={
-                      this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
-                    }>
-                    <div className="searchbarButton">
-                      <i className="fas fa-search" />
-                    </div>
-                    <input
-                      onFocus={() => this.toggleSearch(true)}
-                      onBlur={() => this.toggleSearch(false)}
-                      className="searchbar"
-                      placeholder="Search for someone..."
-                    />
-                  </div>
-                  <div className="addHolder">
-                    <div className="addItem">
-                      <img
-                        className="rightProfileImage"
-                        style={{
-                          float: "left"
-                        }}
-                        src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png"
-                      />
-                      <span className="addName">Jannis Froese</span>
-                    </div>
-                    <div className="addItem">
-                      <img
-                        className="rightProfileImage"
-                        style={{
-                          float: "left"
-                        }}
-                        src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png"
-                      />
-                      <span className="addName">Markus Müller</span>
-                    </div>
-                  </div>
-                </div>
-                <span className="addEmployee fas fa-user-plus" onClick={() => this.toggleAdd(3)} />
-              </div>
-              <div className="employee">
-                <img
-                  className="rightProfileImage"
-                  style={{
-                    float: "left"
-                  }}
-                  src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png"
-                />
-                <div className="employeeName">Markus Müller</div>
-                <div className="employeeTags">
-                  <span className="employeeTag">Senior</span>
-                </div>
-              </div>
-              <div className="employee">
-                <img
-                  className="rightProfileImage"
-                  style={{
-                    float: "left"
-                  }}
-                  src="https://storage.googleapis.com/vipfy-imagestore-01/vipfy-logo.png"
-                />
-                <div className="employeeName">Nils Vossebein</div>
-                <div className="employeeTags">
-                  <span className="employeeTag">Junior</span>
-                </div>
-              </div>
-            </div>
-            <div className="serviceHolder">
-              <div className="addEmployee">
-                <span className="fas fa-plus" />
-              </div>
-              <div className="employee">
-                <img
-                  className="rightProfileImage"
-                  style={{
-                    float: "left"
-                  }}
-                  src="https://storage.googleapis.com/vipfy-imagestore-01/icons/pipedrive.png"
-                />
-                <div className="employeeName">Pipedrive</div>
-                <div className="employeeTags">
-                  <span className="employeeTag">Sales</span>
-                </div>
-              </div>
-              <div className="employee">
-                <img
-                  className="rightProfileImage"
-                  style={{
-                    float: "left"
-                  }}
-                  src="https://storage.googleapis.com/vipfy-imagestore-01/icons/xero.png"
-                />
-                <div className="employeeName">Xero</div>
-                <div className="employeeTags">
-                  <span className="employeeTag">Sales</span>
-                </div>
-              </div>
-            </div>
-          </div>*/}
-        </div>
+        <div className="UMS">{this.showDepartments(this.props.departments.fetchDepartments)}</div>
       </div>
     );
   }
 }
 
-export default graphql(fetchDepartments, {
-  name: "departments"
-})(Team);
+export default compose(
+  graphql(addCreateEmployee, {
+    name: "addCreateEmployee"
+  }),
+  graphql(fetchDepartments, {
+    name: "departments"
+  })
+)(Team);

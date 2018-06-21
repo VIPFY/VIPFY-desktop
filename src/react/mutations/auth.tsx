@@ -23,3 +23,11 @@ export const signInUser = gql`
     }
   }
 `;
+
+export const addCreateEmployee = gql`
+  mutation addCreateEmployee($email: String!, $departmentid: Int!) {
+    addCreateEmployee(email: $email, departmentid: $departmentid) {
+      ok
+    }
+  }
+`;
