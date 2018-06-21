@@ -9,7 +9,8 @@ class Team extends Component {
   state = {
     showAdd: 0,
     searchFocus: false,
-    inputFoucs: false
+    inputFoucs: false,
+    newEmail: ""
   };
 
   toggleSearch = bool => {
@@ -18,6 +19,9 @@ class Team extends Component {
   };
   toggleInput = bool => {
     console.log("FOCUS", bool);
+    if (bool) {
+      this.setState({ newEmail: "" });
+    }
     this.setState({ inputFocus: bool });
   };
 
@@ -92,6 +96,12 @@ class Team extends Component {
     return employeeArray;
   }
 
+  addNewEmail(e) {
+    /*e.preventDefault();*/
+    console.log("ADD", e.target.value);
+    this.setState({ newEmail: e.target.value });
+  }
+
   showDepartments(departments) {
     let lastdepartmentid = 0;
     let departmentArray: JSX.Element[] = [];
@@ -158,8 +168,13 @@ class Team extends Component {
                         onBlur={() => this.toggleInput(false)}
                         className="searchbar"
                         placeholder="Add someone new..."
+                        value={this.state.newEmail}
+                        onChange={e => this.addNewEmail(e)}
                       />
-                      <span className="buttonAddEmployee fas fa-arrow-right" />
+                      <span
+                        className="buttonAddEmployee fas fa-arrow-right"
+                        onClick={() => this.addCreateEmployee(this.state.newEmail, department.id)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -178,9 +193,10 @@ class Team extends Component {
     return departmentArray;
   }
 
-  addCreateEmployee = async (email, departmentId) => {
+  addCreateEmployee = async (email, departmentid) => {
+    console.log("ADDNEW", email, departmentid);
     const res = await this.props.addCreateEmployee({
-      variables: { email, departmentId },
+      variables: { email, departmentid },
       refetchQueries: [{ query: fetchDepartments }]
     });
     console.log("ADDCREATE", res);
