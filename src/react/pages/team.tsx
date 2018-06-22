@@ -3,7 +3,7 @@ import { Component } from "react";
 import { graphql, compose } from "react-apollo";
 
 import { fetchDepartments } from "../queries/departments";
-import { addCreateEmployee } from "../mutations/auth";
+import { addCreateEmployee, addEmployee } from "../mutations/auth";
 
 class Team extends Component {
   state = {
@@ -29,6 +29,7 @@ class Team extends Component {
     if (this.state.showAdd === index) {
       this.setState({ showAdd: 0 });
     } else {
+      this.setState({ newEmail: "" });
       this.setState({ showAdd: index });
     }
   };
@@ -49,9 +50,8 @@ class Team extends Component {
             style={{
               float: "left"
             }}
-            src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-              employee.profilepicture
-            }`}
+            src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${employee.profilepicture ||
+              "9b.jpg"}`}
           />
           <div className="employeeName">
             {employee.firstname} {employee.lastname}
@@ -66,7 +66,7 @@ class Team extends Component {
     return employeeArray;
   }
 
-  showAddEmployees(allEmployees, departmentEmployees) {
+  showAddEmployees(allEmployees, departmentEmployees, departmentid) {
     let employeeArray: JSX.Element[] = [];
     allEmployees.forEach(employee => {
       console.log("AE", employee);
@@ -76,15 +76,17 @@ class Team extends Component {
         })
       ) {
         employeeArray.push(
-          <div key={`allEmpolyee-${employee.employeeid}`} className="addItem">
+          <div
+            key={`allEmpolyee-${employee.employeeid}`}
+            className="addItem"
+            onClick={() => this.addEmployee(employee.employeeid, departmentid)}>
             <img
               className="rightProfileImage"
               style={{
                 float: "left"
               }}
-              src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                employee.profilepicture
-              }`}
+              src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${employee.profilepicture ||
+                "9b.jpg"}`}
             />
             <span className="addName">
               {employee.firstname} {employee.lastname}
@@ -97,8 +99,8 @@ class Team extends Component {
   }
 
   addNewEmail(e) {
-    /*e.preventDefault();*/
-    console.log("ADD", e.target.value);
+    e.preventDefault();
+    //console.log("ADD", e.target.value);
     this.setState({ newEmail: e.target.value });
   }
 
@@ -153,7 +155,7 @@ class Team extends Component {
                     />
                   </div>
                   <div className="addHolder">
-                    {this.showAddEmployees(allEmployees, department.employees)}
+                    {this.showAddEmployees(allEmployees, department.employees, department.id)}
                   </div>
                   <div className="addUser">
                     <div
@@ -199,6 +201,17 @@ class Team extends Component {
       variables: { email, departmentid },
       refetchQueries: [{ query: fetchDepartments }]
     });
+    this.toggleAdd(departmentid);
+    console.log("ADDCREATE", res);
+  };
+
+  addEmployee = async (unitid, departmentid) => {
+    console.log("ADDALREADY", unitid, departmentid);
+    const res = await this.props.addEmployee({
+      variables: { unitid, departmentid },
+      refetchQueries: [{ query: fetchDepartments }]
+    });
+    this.toggleAdd(departmentid);
     console.log("ADDCREATE", res);
   };
 
@@ -224,6 +237,9 @@ class Team extends Component {
 export default compose(
   graphql(addCreateEmployee, {
     name: "addCreateEmployee"
+  }),
+  graphql(addEmployee, {
+    name: "addEmployee"
   }),
   graphql(fetchDepartments, {
     name: "departments"

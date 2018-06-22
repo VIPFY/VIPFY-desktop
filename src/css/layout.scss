@@ -1452,8 +1452,9 @@ span.paymentAddressPhone {
 .employeeHolder {
     border: 1px solid #d6dee5;
     width: calc(100% - 13rem);
-    height: calc(3rem - 2px);
+    min-height: calc(3rem - 2px);
     display: flex;
+    flex-wrap: wrap;
 }
 .serviceHolder {
     border: 1px solid #d6dee5;

@@ -31,3 +31,10 @@ export const addCreateEmployee = gql`
     }
   }
 `;
+export const addEmployee = gql`
+  mutation addEmployee($unitid: Int!, $departmentid: Int!) {
+    addEmployee(unitid: $unitid, departmentid: $departmentid) {
+      ok
+    }
+  }
+`;
