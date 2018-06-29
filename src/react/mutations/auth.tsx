@@ -38,3 +38,19 @@ export const addEmployee = gql`
     }
   }
 `;
+
+export const removeEmployee = gql`
+  mutation removeEmployee($unitid: Int!, $departmentid: Int!) {
+    removeEmployee(unitid: $unitid, departmentid: $departmentid) {
+      ok
+    }
+  }
+`;
+
+export const fireEmployee = gql`
+  mutation fireEmployee($unitid: Int!) {
+    fireEmployee(unitid: $unitid) {
+      ok
+    }
+  }
+`;

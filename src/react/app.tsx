@@ -123,9 +123,13 @@ class App extends Component<AppProps, AppState> {
     this.props.history.push("/area/advisor");
   };
 
+  handleOutside(){
+    console.log("OUTSIDE!!!!")
+  }
+
   render() {
     return (
-      <div className="fullSize">
+      <div className="fullSize" onClick={() => this.handleOutside()}>
         <Switch>
           <Route
             exact

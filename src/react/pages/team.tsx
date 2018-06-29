@@ -2,12 +2,14 @@ import * as React from "react";
 import { Component } from "react";
 import { graphql, compose } from "react-apollo";
 
-import { fetchDepartments } from "../queries/departments";
-import { addCreateEmployee, addEmployee } from "../mutations/auth";
+import { fetchDepartments, fetchDepartmentsData } from "../queries/departments";
+import { addCreateEmployee, addEmployee, removeEmployee, fireEmployee } from "../mutations/auth";
 
 class Team extends Component {
   state = {
     showAdd: 0,
+    showDA: 0,
+    showEI: "",
     searchFocus: false,
     inputFoucs: false,
     newEmail: ""
@@ -19,9 +21,6 @@ class Team extends Component {
   };
   toggleInput = bool => {
     console.log("FOCUS", bool);
-    if (bool) {
-      this.setState({ newEmail: "" });
-    }
     this.setState({ inputFocus: bool });
   };
 
@@ -31,6 +30,22 @@ class Team extends Component {
     } else {
       this.setState({ newEmail: "" });
       this.setState({ showAdd: index });
+    }
+  };
+
+  toggleDA = index => {
+    if (this.state.showDA === index) {
+      this.setState({ showDA: 0 });
+    } else {
+      this.setState({ showDA: index });
+    }
+  };
+
+  toggleEmployeeInfo = (index, did) => {
+    if (this.state.showEI === `${did} ${index}`) {
+      this.setState({ showEI: "" });
+    } else {
+      this.setState({ showEI: `${did} ${index}` });
     }
   };
 
@@ -44,7 +59,10 @@ class Team extends Component {
     employees.forEach(employee => {
       console.log("D", employee);
       employeeArray.push(
-        <div key={`employee-${did}-${employee.employeeid}`} className="employee">
+        <div
+          key={`employee-${did}-${employee.employeeid}`}
+          className="employee"
+          onClick={() => this.toggleEmployeeInfo(employee.employeeid, did)}>
           <img
             className="rightProfileImage"
             style={{
@@ -58,6 +76,21 @@ class Team extends Component {
           </div>
           <div className="employeeTags">
             <span className="employeeTag">{}</span>
+          </div>
+          <div
+            className={
+              this.state.showEI === `${did} ${employee.employeeid}`
+                ? "employeeInfo"
+                : "employeeInfoNone"
+            }>
+            <div
+              className="deleteEmployee"
+              onClick={() => this.removeEmployee(employee.employeeid, did)}>
+              Remove Employee from department
+            </div>
+            <div className="deleteEmployee" onClick={() => this.fireEmployee(employee.employeeid)}>
+              Fire Employee
+            </div>
           </div>
         </div>
       );
@@ -133,7 +166,18 @@ class Team extends Component {
             className="departmentHolder"
             style={{ marginLeft: level + "rem" }}>
             <div className="departmentIcon">{department.department.name.substring(0, 2)}</div>
-            <div className="departmentName">{department.department.name}</div>
+            <div className="departmentName" onClick={() => this.toggleDA(department.id)}>
+              {department.department.name}
+              <span className="fas fa-pencil-alt departmentEdit" />
+              <div
+                className={
+                  this.state.showDA === department.id
+                    ? "departmentAddInfo"
+                    : "departmentAddInfoNone"
+                }>
+                Add new subdepartment
+              </div>
+            </div>
             <div className="employeeHolder">
               <div className="addEmployeeHolder">
                 <div
@@ -195,6 +239,43 @@ class Team extends Component {
     return departmentArray;
   }
 
+  showNewDepartments(departments) {
+    console.log("ABCABC", departments);
+    let lastdepartmentid = 0;
+    let departmentArray: JSX.Element[] = [];
+    let level = 0;
+    if (departments) {
+      departments.forEach(department => {
+        if (department.level === 1) {
+          console.log("PUSH", department.id);
+          departmentArray.push(
+            <div
+              key={`departmentN-${department.id}`}
+              className="departmentHolder"
+              style={{ marginLeft: level - 1 + "rem" }}>
+              <div className="departmentIcon">
+                {department.children_data[0].name.substring(0, 2)}
+              </div>
+              <div className="departmentName" onClick={() => this.toggleDA(department.id)}>
+                {department.children_data[0].name}
+                <span className="fas fa-pencil-alt departmentEdit" />
+                <div
+                  className={
+                    this.state.showDA === department.id
+                      ? "departmentAddInfo"
+                      : "departmentAddInfoNone"
+                  }>
+                  Add new subdepartment
+                </div>
+              </div>
+            </div>
+          );
+        }
+      });
+    }
+    return departmentArray;
+  }
+
   addCreateEmployee = async (email, departmentid) => {
     console.log("ADDNEW", email, departmentid);
     const res = await this.props.addCreateEmployee({
@@ -202,6 +283,7 @@ class Team extends Component {
       refetchQueries: [{ query: fetchDepartments }]
     });
     this.toggleAdd(departmentid);
+    this.setState({ newEmail: "" });
     console.log("ADDCREATE", res);
   };
 
@@ -212,6 +294,26 @@ class Team extends Component {
       refetchQueries: [{ query: fetchDepartments }]
     });
     this.toggleAdd(departmentid);
+    console.log("ADDCREATE", res);
+  };
+
+  removeEmployee = async (unitid, departmentid) => {
+    console.log("RemoveALREADY", unitid, departmentid);
+    const res = await this.props.removeEmployee({
+      variables: { unitid, departmentid },
+      refetchQueries: [{ query: fetchDepartments }]
+    });
+    this.toggleEmployeeInfo(0, 0);
+    console.log("ADDCREATE", res);
+  };
+
+  fireEmployee = async unitid => {
+    console.log("RemoveALREADY", unitid);
+    const res = await this.props.fireEmployee({
+      variables: { unitid },
+      refetchQueries: [{ query: fetchDepartments }]
+    });
+    this.toggleEmployeeInfo(0, 0);
     console.log("ADDCREATE", res);
   };
 
@@ -228,7 +330,10 @@ class Team extends Component {
     }
     return (
       <div className={cssClass}>
-        <div className="UMS">{this.showDepartments(this.props.departments.fetchDepartments)}</div>
+        <div className="UMS">
+          {this.showDepartments(this.props.departments.fetchDepartments)}
+          {this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData)}
+        </div>
       </div>
     );
   }
@@ -241,7 +346,16 @@ export default compose(
   graphql(addEmployee, {
     name: "addEmployee"
   }),
+  graphql(removeEmployee, {
+    name: "removeEmployee"
+  }),
+  graphql(fireEmployee, {
+    name: "fireEmployee"
+  }),
   graphql(fetchDepartments, {
     name: "departments"
+  }),
+  graphql(fetchDepartmentsData, {
+    name: "departmentsdata"
   })
 )(Team);
