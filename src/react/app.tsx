@@ -39,6 +39,7 @@ export type AppState = {
   employees: number;
   profilepicture: string;
   error: string | null;
+  userid: number;
 };
 
 class App extends Component<AppProps, AppState> {
@@ -51,7 +52,8 @@ class App extends Component<AppProps, AppState> {
     marketplace: false,
     employees: 3,
     profilepicture: "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg",
-    error: null
+    error: null,
+    userid: -1,
   };
 
   logMeOut = () => {
@@ -84,6 +86,7 @@ class App extends Component<AppProps, AppState> {
         this.setState({ marketplace: user.marketplace });
         this.setState({ profilepicture: user.profilepicture || user.company.profilepicture });
         this.setState({ employees: user.company.employees });
+        this.setState({ userid: user.id })
 
         this.props.history.push("/area/dashboard");
         return true;
@@ -153,6 +156,7 @@ class App extends Component<AppProps, AppState> {
                 marketplace={this.state.marketplace}
                 employees={this.state.employees}
                 setName={this.setName}
+                userid={this.state.userid}
               />
             )}
           />
