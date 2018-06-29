@@ -16,6 +16,7 @@ import AppPage from "./apppage";
 import Billing from "./billing";
 import Advisor from "./advisor";
 import Team from "./team";
+import MessageCenter from "./messagecenter";
 
 export type AreaProps = {
   history: any[];
@@ -142,6 +143,18 @@ class Area extends Component<AreaProps, AreaState> {
             path="/area/team"
             render={props => (
               <Team
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...props}
+                {...this.props}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/area/messagecenter"
+            render={props => (
+              <MessageCenter
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
                 {...props}

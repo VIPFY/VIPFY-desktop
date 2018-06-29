@@ -128,7 +128,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             <li className="sidebar-link">
               <span className="fas fa-user sidebar-icons" />
             </li>
-            <li className="sidebar-link">
+            <li className="sidebar-link" onClick={() => this.goTo("messagecenter")}>
               <span className="fas fa-envelope sidebar-icons" />
             </li>
             {this.showBilling()}
@@ -156,7 +156,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
               <span className="fas fa-user sidebar-icons" />
               <span className="sidebar-link-caption">Profile</span>
             </li>
-            <li className="sidebar-link">
+            <li className="sidebar-link" onClick={() => this.goTo("messagecenter")}>
               <span className="fas fa-envelope sidebar-icons" />
               <span className="sidebar-link-caption">Message Center</span>
             </li>

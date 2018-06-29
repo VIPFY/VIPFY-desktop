@@ -1,5 +1,5 @@
 import { app, BrowserWindow, autoUpdater, dialog, protocol } from "electron";
-import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
+import installExtension, { REACT_DEVELOPER_TOOLS, APOLLO_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import { enableLiveReload } from "electron-compile";
 import path = require("path");
 
@@ -84,6 +84,7 @@ const createWindow = async () => {
   // Open the DevTools.
   if (isDevMode) {
     await installExtension(REACT_DEVELOPER_TOOLS);
+    await installExtension(APOLLO_DEVELOPER_TOOLS);
     mainWindow.webContents.openDevTools();
   }
 
