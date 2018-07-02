@@ -31,6 +31,31 @@ export const addCreateEmployee = gql`
     }
   }
 `;
+
+export const addSubDepartment = gql`
+  mutation addSubDepartment($name: String!, $departmentid: Int!) {
+    addSubDepartment(name: $name, departmentid: $departmentid) {
+      ok
+    }
+  }
+`;
+
+export const editDepartment = gql`
+  mutation editDepartmentName($departmentid: Int!, $name: String!) {
+    editDepartmentName(departmentid: $departmentid, name: $name) {
+      ok
+    }
+  }
+`;
+
+export const deleteSubDepartment = gql`
+  mutation deleteSubDepartment($departmentid: Int!) {
+    deleteSubDepartment(departmentid: $departmentid) {
+      ok
+    }
+  }
+`;
+
 export const addEmployee = gql`
   mutation addEmployee($unitid: Int!, $departmentid: Int!) {
     addEmployee(unitid: $unitid, departmentid: $departmentid) {

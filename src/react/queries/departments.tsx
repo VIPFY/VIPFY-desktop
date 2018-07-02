@@ -20,12 +20,12 @@ export const fetchDepartments = gql`
   }
 `;
 export const fetchDepartmentsData = gql`
-  query fetchDepartmentsData {
+  {
     fetchDepartmentsData {
-      id
+      parent
       children
       children_data
-      departments {
+      department {
         name
         profilepicture
       }
