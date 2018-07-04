@@ -108,9 +108,9 @@ class Area extends Component<AreaProps, AreaState> {
               <Dashboard
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
-                {...props}
                 setapp={this.setapp}
                 {...this.props}
+                {...props}
               />
             )}
           />
@@ -122,6 +122,7 @@ class Area extends Component<AreaProps, AreaState> {
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
                 app={this.state.app}
+                {...this.props}
                 {...props}
               />
             )}
@@ -133,8 +134,8 @@ class Area extends Component<AreaProps, AreaState> {
               <Settings
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
-                {...props}
                 {...this.props}
+                {...props}
               />
             )}
           />
@@ -145,20 +146,30 @@ class Area extends Component<AreaProps, AreaState> {
               <Team
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
-                {...props}
                 {...this.props}
+                {...props}
               />
             )}
           />
           <Route
-            exact
             path="/area/messagecenter"
             render={props => (
               <MessageCenter
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
-                {...props}
                 {...this.props}
+                {...props}
+              />
+            )}
+          />
+          <Route
+            path="/area/messagecenter/:person"
+            render={props => (
+              <MessageCenter
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...this.props}
+                {...props}
               />
             )}
           />
@@ -169,8 +180,8 @@ class Area extends Component<AreaProps, AreaState> {
               <Billing
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
-                {...props}
                 {...this.props}
+                {...props}
               />
             )}
           />
@@ -181,8 +192,8 @@ class Area extends Component<AreaProps, AreaState> {
               <Advisor
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
-                {...props}
                 {...this.props}
+                {...props}
               />
             )}
           />
@@ -193,8 +204,8 @@ class Area extends Component<AreaProps, AreaState> {
               <Marketplace
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
-                {...props}
                 {...this.props}
+                {...props}
               />
             )}
           />
@@ -205,7 +216,6 @@ class Area extends Component<AreaProps, AreaState> {
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
                 setapp={this.setapp}
-                match={this.match}
                 {...this.props}
                 {...props}
               />
