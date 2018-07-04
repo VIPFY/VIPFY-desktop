@@ -19,3 +19,22 @@ export const fetchDepartments = gql`
     }
   }
 `;
+export const fetchDepartmentsData = gql`
+  {
+    fetchDepartmentsData {
+      parent
+      children
+      children_data
+      department {
+        name
+        profilepicture
+      }
+      employees {
+        firstname
+        lastname
+        profilepicture
+      }
+      level
+    }
+  }
+`;
