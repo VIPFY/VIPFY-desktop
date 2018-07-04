@@ -152,6 +152,7 @@ class Area extends Component<AreaProps, AreaState> {
             )}
           />
           <Route
+            exact
             path="/area/messagecenter"
             render={props => (
               <MessageCenter
