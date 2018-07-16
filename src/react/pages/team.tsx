@@ -3,7 +3,7 @@ import { Component } from "react";
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
 
-import { fetchDepartments, fetchDepartmentsData } from "../queries/departments";
+import { fetchDepartments, fetchDepartmentsData, fetchUnitApps } from "../queries/departments";
 import {
   addCreateEmployee,
   addEmployee,
@@ -18,6 +18,7 @@ class Team extends Component {
   state = {
     showAdd: 0,
     showDA: 0,
+    showPApps: 0,
     showEI: "",
     searchFocus: false,
     inputFoucs: false,
@@ -48,6 +49,15 @@ class Team extends Component {
     } else {
       this.setState({ newDepartment: "" });
       this.setState({ showDA: index });
+    }
+  };
+
+  togglePApps = index => {
+    if (this.state.showPApps === index) {
+      this.setState({ showPApps: 0 });
+    } else {
+      this.setState({ newDepartment: "" });
+      this.setState({ showPApps: index });
     }
   };
 
@@ -314,7 +324,8 @@ class Team extends Component {
                           level: thislevel + 1,
                           children_data: [],
                           department: {
-                            name: element.name
+                            name: element.name,
+                            apps: element.apps
                           }
                         },
                         thislevel + 1
@@ -364,11 +375,136 @@ class Team extends Component {
                 }
               })}
             </div>
+            <div className="serviceHolder">
+              <div className="addEmployeeHolder">
+                <div
+                  className={
+                    this.state.showPApps === department.parent ? "addHolderAll" : "addHolderAllNone"
+                  }>
+                  <div
+                    className={
+                      this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
+                    }>
+                    <div className="searchbarButton">
+                      <i className="fas fa-search" />
+                    </div>
+                    <input
+                      onFocus={() => this.toggleSearch(true)}
+                      onBlur={() => this.toggleSearch(false)}
+                      className="searchbar"
+                      placeholder="Search for an app..."
+                    />
+                  </div>
+                  <div className="addHolder">{this.departmentPossibleApps(department.parent)}</div>
+                </div>
+                <span className="fas fa-plus" onClick={() => this.togglePApps(department.parent)} />
+              </div>
+              {this.departmentapps(department.department.apps, department.parent)}
+            </div>
           </div>
         );
       }
     }
     return departmentArray.concat(subdepartmentArray);
+  }
+
+  departmentapps(apps, departmentid) {
+    let appArray: JSX.Element[] = [];
+    if (apps) {
+      apps.map(app => {
+        appArray.push(
+          <div className="employee" key={`app-${app.id}-${departmentid}`}>
+            <img
+              className="rightProfileImage"
+              style={{
+                float: "left"
+              }}
+              src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.icon ||
+                "21062018-htv58-scarlett-jpeg"}`}
+            />
+            <div className="employeeName">{app.name}</div>
+            <div className="employeeTags">
+              <span className="employeeTag">{}</span>
+            </div>
+          </div>
+        );
+      });
+    }
+    return appArray;
+  }
+
+  departmentPossibleApps(departmentid) {
+    console.log("TESTAPP", departmentid);
+
+    return (
+      <Query query={fetchUnitApps} variables={{ departmentid }}>
+        {({ loading, error, data }) => {
+          if (loading) {
+            return "Loading...";
+          }
+          if (error) {
+            return `Error! ${error.message}`;
+          }
+          console.log("APPS", data);
+
+          let appArray: JSX.Element[] = [];
+
+          if (data.fetchUnitApps) {
+            appArray = data.fetchUnitApps.map((app, key) => (
+              <div className="employee" key={key}>
+                <img
+                  className="rightProfileImage"
+                  style={{
+                    float: "left"
+                  }}
+                  src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.appicon ||
+                    "21062018-htv58-scarlett-jpeg"}`}
+                />
+                <div className="employeeName">{app.appname}</div>
+                <div className="employeeTags">
+                  <span className="employeeTag">{}</span>
+                </div>
+              </div>
+            ));
+          }
+          return appArray;
+        }}
+      </Query>
+    );
+
+    /*console.log("TESTAPP", departmentid);
+    let appArray: JSX.Element[] = [];
+    try {
+      const res = await this.props.fetchunitapps({
+        variables: { departmentid }
+      });
+      console.log("RES");
+      console.log("RES", res);
+    } catch (error) {
+      console.log("ERROR");
+      console.log("ERROR", error);
+    }
+    if (apps) {
+      apps.map(app => {
+        appArray.push(
+          <div className="employee" key={`app-${app.id}-new`}>
+            <img
+              className="rightProfileImage"
+              style={{
+                float: "left"
+              }}
+              src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.icon ||
+                "21062018-htv58-scarlett-jpeg"}`}
+            />
+            <div className="employeeName">{app.name}</div>
+            <div className="employeeTags">
+              <span className="employeeTag">{}</span>
+            </div>
+          </div>
+        );
+      });
+    }*/
+    //return "";
   }
 
   addCreateEmployee = async (email, departmentid) => {

@@ -41,7 +41,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     imageindex: 0
   };
 
-  buyApp = async (planIds) => {
+  buyApp = async planIds => {
     try {
       await this.props.buyPlan({
         variables: { planIds },
@@ -111,19 +111,21 @@ class AppPage extends Component<AppPageProps, AppPageState> {
   }
 
   showgal(appDetails) {
-    if (appDetails.images) {
-      return appDetails.images.map((image, index) => {
-        return (
-          <div key={index} className={"galleryImage " + this.showBig(this.state.bigImage, index)}>
-            <img
-              className={"galleryView"}
-              src={`https://storage.googleapis.com/vipfy-imagestore-01/${appDetails.name}/${image}`}
-              alt={appDetails.name}
-              onClick={() => this.changeBig(index)}
-            />
-          </div>
-        );
-      });
+    if (appDetails) {
+      if (appDetails.images) {
+        return appDetails.images.map((image, index) => {
+          return (
+            <div key={index} className={"galleryImage " + this.showBig(this.state.bigImage, index)}>
+              <img
+                className={"galleryView"}
+                src={`https://storage.googleapis.com/vipfy-imagestore-01/${appDetails.name}/${image}`}
+                alt={appDetails.name}
+                onClick={() => this.changeBig(index)}
+              />
+            </div>
+          );
+        });
+      }
     }
   }
 
@@ -242,7 +244,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                     />
                     <span className="billTextPlan">{plans[i].name}</span>
                   </div>
-                  {/*<div className="billprice">{optionalCosts[plancounter][i]} {plans[i].currency}</div>*/}
                 </div>
               );
               break;
@@ -257,7 +258,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                     />
                     <span className="billTextPlan">{plans[i].name}</span>
                   </div>
-                  {/*<div className="billprice">{optionalCosts[plancounter][i]} {plans[i].currency}</div>*/}
                 </div>
               );
               break;
@@ -271,9 +271,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                       for {this.state.numberEmployees - mainplanlicences} additional users
                     </span>
                   </div>
-                  {/*<div className="billprice">
-                    {plans[i].price*Math.ceil((this.state.numberEmployees-mainplanlicences)/plans[i].numlicences)} {plans[i].currency}
-                  </div>*/}
                 </div>
               );
           }
@@ -284,9 +281,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 <span className="billTextPlan">{plans[i].name}</span>
                 <span> for {this.state.numberEmployees - mainplanlicences} additional users</span>
               </div>
-              {/*<div className="billprice">
-                {plans[i].price*Math.ceil((this.state.numberEmployees-mainplanlicences)/plans[i].numlicences)} {plans[i].currency}
-              </div>*/}
             </div>
           );
         }
@@ -484,8 +478,10 @@ class AppPage extends Component<AppPageProps, AppPageState> {
       this.setState({ imageindex: direct });
     } else {
       if (direct === 0) {
-        this.setState(prevState => ({ imageindex: (((prevState.imageindex - 1) % length)+length)%length }));
-        console.log("IMAGEID", this.state.imageindex)
+        this.setState(prevState => ({
+          imageindex: (((prevState.imageindex - 1) % length) + length) % length
+        }));
+        console.log("IMAGEID", this.state.imageindex);
       } else {
         this.setState(prevState => ({ imageindex: (prevState.imageindex + 1) % length }));
       }
@@ -550,15 +546,13 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               </div>
               <div
                 className="galleryLeft"
-                onClick={() => this.gallerymove(0, 0, appDetails.images.length)}
-              >
-              <span className="fas fa-angle-left" />
+                onClick={() => this.gallerymove(0, 0, appDetails.images.length)}>
+                <span className="fas fa-angle-left" />
               </div>
               <div
                 className="galleryRight"
-                onClick={() => this.gallerymove(0, 1, appDetails.images.length)}
-              >
-              <span className="fas fa-angle-right" />
+                onClick={() => this.gallerymove(0, 1, appDetails.images.length)}>
+                <span className="fas fa-angle-right" />
               </div>
             </div>
             <div className="appHeaderInfos">
@@ -588,11 +582,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 </div>
                 <div
                   className="appHeaderBuyButton"
-                  onClick={() =>
-                    this.buyApp(
-                      [this.props.productPlans.fetchPlans[0].id]
-                    )
-                  }>
+                  onClick={() => this.buyApp([this.props.productPlans.fetchPlans[0].id])}>
                   Subscribe now for{" "}
                   {this.calculatepartsum(
                     this.props.productPlans.fetchPlans[0],
@@ -635,44 +625,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               <p className="appDescriptionText">Flag as inappropriate</p>
             </div>
           </div>
-
-          {/*<div className="appHeaderHolder">
-            <div
-              className="appLogoLarge"
-              style={{
-                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
-                  appDetails.logo
-                })`
-              }}
-            />
-            <div className="appHeaderShortHolder">
-              <div className="appHeaderLink" onClick={() => this.openExternal(appDetails.website)}>
-                Website
-              </div>
-              <div className="appHeaderStars">{this.showStars(appDetails.avgstars)}</div>
-              <div
-                className="appHeaderImportantLink"
-                onClick={() => {
-                  document
-                    .getElementById("planNumberSelectorLabel")!
-                    .scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
-                }}>
-                Buy now
-              </div>
-            </div>
-          </div>
-          <div className="appGallery">{this.showgal(appDetails)}</div>
-          <div className={"detail-fulldescription " + this.showfulldesc(true)}>
-            <h3>Description</h3>
-            <p dangerouslySetInnerHTML={{ __html: appDetails.description }} />
-            <div
-              className={
-                "detail-fulldescription-showmore secondary-button " + this.showfulldesc(false)
-              }
-              onClick={() => this.toggledescbutton()}>
-              Show more
-            </div>
-            </div>*/}
           <div className="planSectionHolder">
             <div className="planNumberSelector">
               <label className="planNumberSelectorLabel" id="planNumberSelectorLabel">
@@ -684,14 +636,9 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 value={this.state.numberEmployees}
               />
             </div>
-            {/*<div className="planScroller">*/}
-            <div
-              className="planHolder"
-              /*style={{width: this.props.productPlans.fetchPlans ? this.props.productPlans.fetchPlans.length * 22 +"em" : 0 * 22 +"em"}}*/
-            >
+            <div className="planHolder">
               {this.showPlans(this.props.productPlans.fetchPlans, this.state.numberEmployees)}
             </div>
-            {/*</div>*/}
           </div>
           <div className="detail-comments">
             <h3 className="detail-comments-heading">Reviews</h3>
@@ -709,27 +656,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               </div>
             </div>
           </div>
-          {/*<div className="detail-informations">
-            <div className="detail-information-holder">
-              <h3>Developer</h3>
-              {appDetails ? (
-                <div>
-                  <p>{appDetails.developername}</p>
-                  <p>{appDetails.developerwebsite}</p>
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
-            <div className="detail-information-holder">
-              <h3>Support</h3>
-            </div>
-            <div className="detail-information-holder">
-              <h3>Report</h3>
-              <p>Flag as not working</p>
-              <p>Flag as inappropriate</p>
-            </div>
-          </div>*/}
         </div>
       );
     }

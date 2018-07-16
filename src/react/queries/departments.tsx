@@ -28,6 +28,7 @@ export const fetchDepartmentsData = gql`
       department {
         name
         profilepicture
+        apps
       }
       employees {
         firstname
@@ -35,6 +36,23 @@ export const fetchDepartmentsData = gql`
         profilepicture
       }
       level
+    }
+  }
+`;
+
+export const fetchUnitApps = gql`
+  query fetchUnitApps($departmentid: Int!) {
+    fetchUnitApps(departmentid: $departmentid) {
+      usedby {
+        id
+      }
+      boughtplan {
+        id
+      }
+      description
+      appname
+      appid
+      appicon
     }
   }
 `;
