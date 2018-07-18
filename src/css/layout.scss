@@ -1562,3 +1562,13 @@ span.paymentAddressPhone {
 #conversationlist {
     list-style: none;
 }
+.PApp {
+    width: 9rem;
+    margin-top: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+.addHolder{
+    max-height: 10rem;
+    overflow-y: scroll;
+}

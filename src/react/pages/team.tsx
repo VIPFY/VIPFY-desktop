@@ -3,6 +3,8 @@ import { Component } from "react";
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
 
+import { fetchLicences } from "../queries/auth";
+
 import { fetchDepartments, fetchDepartmentsData, fetchUnitApps } from "../queries/departments";
 import {
   addCreateEmployee,
@@ -11,7 +13,9 @@ import {
   fireEmployee,
   addSubDepartment,
   editDepartment,
-  deleteSubDepartment
+  deleteSubDepartment,
+  distributeLicenceToDepartment,
+  revokeLicencesFromDepartment
 } from "../mutations/auth";
 
 class Team extends Component {
@@ -24,7 +28,8 @@ class Team extends Component {
     inputFoucs: false,
     newEmail: "",
     newDepartment: "",
-    departmentName: ""
+    departmentName: "",
+    showAppOption: ""
   };
 
   toggleSearch = bool => {
@@ -67,6 +72,15 @@ class Team extends Component {
     } else {
       this.setState({ showEI: `${did} ${index}` });
     }
+  };
+
+  toggleBoughtInfo = (did, index) => {
+    if (this.state.showAppOption === `app-${did}-${index}`) {
+      this.setState({ showAppOption: "" });
+    } else {
+      this.setState({ showAppOption: `app-${did}-${index}` });
+    }
+    console.log("GEÄNDERT", this.state.showAppOption);
   };
 
   showRemainingApps(usedApps) {
@@ -410,10 +424,14 @@ class Team extends Component {
 
   departmentapps(apps, departmentid) {
     let appArray: JSX.Element[] = [];
+    console.log("APO", apps);
     if (apps) {
       apps.map(app => {
         appArray.push(
-          <div className="employee" key={`app-${app.id}-${departmentid}`}>
+          <div
+            className="employee"
+            key={`app-${departmentid}-${app.boughtplanid}`}
+            onClick={() => this.toggleBoughtInfo(departmentid, app.boughtplanid)}>
             <img
               className="rightProfileImage"
               style={{
@@ -425,6 +443,18 @@ class Team extends Component {
             <div className="employeeName">{app.name}</div>
             <div className="employeeTags">
               <span className="employeeTag">{}</span>
+            </div>
+            <div
+              className={
+                this.state.showAppOption === `app-${departmentid}-${app.boughtplanid}`
+                  ? "addHolderAll"
+                  : "addHolderAllNone"
+              }>
+              <div
+                className="addHolder"
+                onClick={() => this.revokeLicencesFromDepartment(departmentid, app.boughtplanid)}>
+                Revoke App from department
+              </div>
             </div>
           </div>
         );
@@ -451,7 +481,12 @@ class Team extends Component {
 
           if (data.fetchUnitApps) {
             appArray = data.fetchUnitApps.map((app, key) => (
-              <div className="employee" key={key}>
+              <div
+                className="PApp"
+                key={key}
+                onClick={() =>
+                  this.distributeLicenceToDepartment(departmentid, app.boughtplan.id, "admin")
+                }>
                 <img
                   className="rightProfileImage"
                   style={{
@@ -460,7 +495,9 @@ class Team extends Component {
                   src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.appicon ||
                     "21062018-htv58-scarlett-jpeg"}`}
                 />
-                <div className="employeeName">{app.appname}</div>
+                <div className="employeeName">
+                  {app.appname} {app.boughtplan.id}
+                </div>
                 <div className="employeeTags">
                   <span className="employeeTag">{}</span>
                 </div>
@@ -557,6 +594,24 @@ class Team extends Component {
     this.toggleDA(departmentid);
     this.setState({ newDepartment: "" });
   };
+
+  distributeLicenceToDepartment = async (departmentid, boughtplanid, licencetype) => {
+    const res = await this.props.distributeLicenceToDepartment({
+      variables: { departmentid, boughtplanid, licencetype },
+      refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }]
+    });
+    this.togglePApps(departmentid);
+  };
+
+  revokeLicencesFromDepartment = async (departmentid, boughtplanid) => {
+    console.log("REVOKE", departmentid, boughtplanid);
+    const res = await this.props.revokeLicencesFromDepartment({
+      variables: { departmentid, boughtplanid },
+      refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }]
+    });
+    this.toggleBoughtInfo(departmentid, boughtplanid);
+  };
+
   deleteDepartment = async departmentid => {
     console.log("DELETE", departmentid);
     const res = await this.props.deleteSubDepartment({
@@ -616,5 +671,11 @@ export default compose(
   }),
   graphql(fetchDepartmentsData, {
     name: "departmentsdata"
+  }),
+  graphql(distributeLicenceToDepartment, {
+    name: "distributeLicenceToDepartment"
+  }),
+  graphql(revokeLicencesFromDepartment, {
+    name: "revokeLicencesFromDepartment"
   })
 )(Team);

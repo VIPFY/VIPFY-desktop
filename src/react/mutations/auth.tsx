@@ -79,3 +79,31 @@ export const fireEmployee = gql`
     }
   }
 `;
+
+export const distributeLicenceToDepartment = gql`
+  mutation distributeLicenceToDepartment(
+    $departmentid: Int!
+    $boughtplanid: Int!
+    $licencetype: String!
+  ) {
+    distributeLicenceToDepartment(
+      departmentid: $departmentid
+      boughtplanid: $boughtplanid
+      licencetype: $licencetype
+    ) {
+      ok
+      error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const revokeLicencesFromDepartment = gql`
+  mutation revokeLicencesFromDepartment($departmentid: Int!, $boughtplanid: Int!) {
+    revokeLicencesFromDepartment(departmentid: $departmentid, boughtplanid: $boughtplanid) {
+      ok
+    }
+  }
+`;
