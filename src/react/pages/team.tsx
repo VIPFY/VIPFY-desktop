@@ -1,11 +1,16 @@
 import * as React from "react";
 import { Component } from "react";
 import { graphql, compose, Query } from "react-apollo";
-import gql from "graphql-tag";
+import DepartmentEdit from "../common/departmentEdit";
+import UserEditTeam from "../common/userEditTeam";
+import AddEmployeeTeam from "../common/addEmployeeTeam";
+import DepartmentLicenceEdit from "../common/departmentLicenceEdit";
+import DepartmentAddApp from "../common/departmentAddApp";
+import Popup from "../common/popup";
 
 import { fetchLicences } from "../queries/auth";
 
-import { fetchDepartments, fetchDepartmentsData, fetchUnitApps } from "../queries/departments";
+import { fetchDepartments, fetchDepartmentsData } from "../queries/departments";
 import {
   addCreateEmployee,
   addEmployee,
@@ -15,6 +20,8 @@ import {
   editDepartment,
   deleteSubDepartment,
   distributeLicenceToDepartment,
+  distributeLicence,
+  revokeLicence,
   revokeLicencesFromDepartment
 } from "../mutations/auth";
 
@@ -28,8 +35,8 @@ class Team extends Component {
     inputFoucs: false,
     newEmail: "",
     newDepartment: "",
-    departmentName: "",
-    showAppOption: ""
+    showAppOption: "",
+    popup: null
   };
 
   toggleSearch = bool => {
@@ -37,6 +44,13 @@ class Team extends Component {
   };
   toggleInput = bool => {
     this.setState({ inputFocus: bool });
+  };
+
+  showPopup = type => {
+    this.setState({ popup: type });
+  };
+  closePopup = () => {
+    this.setState({ popup: null });
   };
 
   toggleAdd = index => {
@@ -80,111 +94,7 @@ class Team extends Component {
     } else {
       this.setState({ showAppOption: `app-${did}-${index}` });
     }
-    console.log("GEÄNDERT", this.state.showAppOption);
   };
-
-  showRemainingApps(usedApps) {
-    return;
-  }
-
-  showEmployees(employees, did) {
-    let employeeArray: JSX.Element[] = [];
-
-    employees.forEach(employee => {
-      employeeArray.push(
-        <div
-          key={`employee-${did}-${employee.employeeid}`}
-          className="employee"
-          onClick={() => this.toggleEmployeeInfo(employee.employeeid, did)}>
-          <img
-            className="rightProfileImage"
-            style={{
-              float: "left"
-            }}
-            src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${employee.profilepicture ||
-              "9b.jpg"}`}
-          />
-          <div className="employeeName">
-            {employee.firstname} {employee.lastname}
-          </div>
-          <div className="employeeTags">
-            <span className="employeeTag">{}</span>
-          </div>
-          <div
-            className={
-              this.state.showEI === `${did} ${employee.employeeid}`
-                ? "employeeInfo"
-                : "employeeInfoNone"
-            }>
-            <div
-              className="deleteEmployee"
-              onClick={() => this.removeEmployee(employee.employeeid, did)}>
-              Remove Employee from department
-            </div>
-            <div className="deleteEmployee" onClick={() => this.fireEmployee(employee.employeeid)}>
-              Fire Employee
-            </div>
-          </div>
-        </div>
-      );
-    });
-
-    return employeeArray;
-  }
-
-  showAddEmployeesNew(departmentEmployees, departmentid) {
-    let employeeArray: JSX.Element[] = [];
-    if (this.props.departments.fetchDepartments) {
-      console.log(
-        "AE",
-        this.props.departments.fetchDepartments[0],
-        departmentEmployees,
-        departmentid
-      );
-      this.props.departments.fetchDepartments[0].employees.forEach(employee => {
-        if (
-          !departmentEmployees.find(function(obj) {
-            return obj.id === employee.employeeid;
-          })
-        ) {
-          employeeArray.push(
-            <div
-              key={`allEmpolyee-${employee.employeeid}`}
-              className="addItem"
-              onClick={() => this.addEmployee(employee.employeeid, departmentid)}>
-              <img
-                className="rightProfileImage"
-                style={{
-                  float: "left"
-                }}
-                src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${employee.profilepicture ||
-                  "9b.jpg"}`}
-              />
-              <span className="addName">
-                {employee.firstname} {employee.lastname}
-              </span>
-            </div>
-          );
-        }
-      });
-    }
-    return employeeArray;
-  }
-
-  addNewEmail(e) {
-    e.preventDefault();
-    this.setState({ newEmail: e.target.value });
-  }
-
-  addNewDepartment(e) {
-    e.preventDefault();
-    this.setState({ newDepartment: e.target.value });
-  }
-
-  editDepartmentName(e) {
-    e.preventDefault();
-    this.setState({ departmentName: e.target.value });
-  }
 
   showNewDepartments(department, thislevel) {
     let lastdepartmentid = 0;
@@ -205,110 +115,38 @@ class Team extends Component {
                 {department.department.name}
                 <span className="fas fa-pencil-alt departmentEdit" />
               </div>
-              <div
-                className={
-                  this.state.showDA === department.parent
-                    ? "departmentAddInfo"
-                    : "departmentAddInfoNone"
-                }>
-                <div
-                  className={
-                    this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
-                  }>
-                  <div className="searchbarButton">
-                    <i className="fas fa-pencil-alt" />
-                  </div>
-                  <input
-                    onFocus={() => this.toggleSearch(true)}
-                    onBlur={() => this.toggleSearch(false)}
-                    className="searchbar"
-                    value={this.state.departmentName || department.department.name}
-                    onChange={e => this.editDepartmentName(e)}
-                  />
-                  <span
-                    className="buttonAddEmployee fas fa-arrow-right"
-                    onClick={() =>
-                      this.editDepartment(this.state.departmentName, department.parent)
-                    }
-                  />
-                </div>
-                <div onClick={() => this.deleteDepartment(department.parent)}>
-                  Delete Department
-                </div>
-                <div className="addUser">
-                  <div
-                    className={
-                      this.state.inputFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
-                    }>
-                    <div className="searchbarButton">
-                      <i className="fas fa-plus" />
-                    </div>
-                    <input
-                      onFocus={() => this.toggleInput(true)}
-                      onBlur={() => this.toggleInput(false)}
-                      className="searchbar"
-                      placeholder="Add new subdepartment..."
-                      value={this.state.newDepartment}
-                      onChange={e => this.addNewDepartment(e)}
-                    />
-                    <span
-                      className="buttonAddEmployee fas fa-arrow-right"
-                      onClick={() =>
-                        this.addSubDepartment(this.state.newDepartment, department.parent)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
+              {this.state.showDA === department.parent ? (
+                <DepartmentEdit
+                  departmentName={department.department.name}
+                  departmentId={department.parent}
+                  editDepartment={this.editDepartment}
+                  deleteDepartment={this.deleteDepartment}
+                  addSubDepartment={this.addSubDepartment}
+                  handleOutside={() => {
+                    this.toggleDA(0);
+                  }}
+                />
+              ) : (
+                ""
+              )}
             </div>
             <div className="employeeHolder">
               <div className="addEmployeeHolder">
-                <div
-                  className={
-                    this.state.showAdd === department.parent ? "addHolderAll" : "addHolderAllNone"
-                  }>
-                  <div
-                    className={
-                      this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
-                    }>
-                    <div className="searchbarButton">
-                      <i className="fas fa-search" />
-                    </div>
-                    <input
-                      onFocus={() => this.toggleSearch(true)}
-                      onBlur={() => this.toggleSearch(false)}
-                      className="searchbar"
-                      placeholder="Search for someone..."
-                    />
-                  </div>
-                  <div className="addHolder">
-                    {this.showAddEmployeesNew(department.children_data, department.parent)}
-                  </div>
-                  <div className="addUser">
-                    <div
-                      className={
-                        this.state.inputFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
-                      }>
-                      <div className="searchbarButton">
-                        <i className="fas fa-user-plus" />
-                      </div>
-                      <input
-                        onFocus={() => this.toggleInput(true)}
-                        onBlur={() => this.toggleInput(false)}
-                        className="searchbar"
-                        placeholder="Add someone new..."
-                        value={this.state.newEmail}
-                        onChange={e => this.addNewEmail(e)}
-                      />
-                      <span
-                        className="buttonAddEmployee fas fa-arrow-right"
-                        onClick={() =>
-                          this.addCreateEmployee(this.state.newEmail, department.parent)
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
+                {this.state.showAdd === department.parent ? (
+                  <AddEmployeeTeam
+                    showAddEmployeesNew={this.showAddEmployeesNew}
+                    addCreateEmployee={this.addCreateEmployee}
+                    departmentId={department.parent}
+                    employees={department.children_data}
+                    fetchDepartments={this.props.departments.fetchDepartments}
+                    addEmployee={this.addEmployee}
+                    handleOutside={() => {
+                      this.toggleAdd(0);
+                    }}
+                  />
+                ) : (
+                  ""
+                )}
                 <span
                   className="addEmployee fas fa-user-plus"
                   onClick={() => this.toggleAdd(department.parent)}
@@ -367,23 +205,21 @@ class Team extends Component {
                       <div className="employeeTags">
                         <span className="employeeTag">{}</span>
                       </div>
-                      <div
-                        className={
-                          this.state.showEI === `${department.parent} ${element.id}`
-                            ? "employeeInfo"
-                            : "employeeInfoNone"
-                        }>
-                        <div
-                          className="deleteEmployee"
-                          onClick={() => this.removeEmployee(element.id, department.parent)}>
-                          Remove Employee from department
-                        </div>
-                        <div
-                          className="deleteEmployee"
-                          onClick={() => this.fireEmployee(element.id)}>
-                          Fire Employee
-                        </div>
-                      </div>
+                      {this.state.showEI === `${department.parent} ${element.id}` ? (
+                        <UserEditTeam
+                          removeEmployee={this.removeEmployee}
+                          unitId={element.id}
+                          departmentId={department.parent}
+                          fireEmployee={this.fireEmployee}
+                          revokeLicence={this.revokeLicence}
+                          distributeLicence={this.distributeLicence}
+                          handleOutside={() => {
+                            this.toggleEmployeeInfo(0, 0);
+                          }}
+                        />
+                      ) : (
+                        ""
+                      )}
                     </div>
                   );
                 }
@@ -391,26 +227,17 @@ class Team extends Component {
             </div>
             <div className="serviceHolder">
               <div className="addEmployeeHolder">
-                <div
-                  className={
-                    this.state.showPApps === department.parent ? "addHolderAll" : "addHolderAllNone"
-                  }>
-                  <div
-                    className={
-                      this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
-                    }>
-                    <div className="searchbarButton">
-                      <i className="fas fa-search" />
-                    </div>
-                    <input
-                      onFocus={() => this.toggleSearch(true)}
-                      onBlur={() => this.toggleSearch(false)}
-                      className="searchbar"
-                      placeholder="Search for an app..."
-                    />
-                  </div>
-                  <div className="addHolder">{this.departmentPossibleApps(department.parent)}</div>
-                </div>
+                {this.state.showPApps === department.parent ? (
+                  <DepartmentAddApp
+                    departmentId={department.parent}
+                    distributeLicenceToDepartment={this.distributeLicenceToDepartment}
+                    handleOutside={() => {
+                      this.togglePApps(0);
+                    }}
+                  />
+                ) : (
+                  ""
+                )}
                 <span className="fas fa-plus" onClick={() => this.togglePApps(department.parent)} />
               </div>
               {this.departmentapps(department.department.apps, department.parent)}
@@ -424,7 +251,6 @@ class Team extends Component {
 
   departmentapps(apps, departmentid) {
     let appArray: JSX.Element[] = [];
-    console.log("APO", apps);
     if (apps) {
       apps.map(app => {
         appArray.push(
@@ -444,104 +270,21 @@ class Team extends Component {
             <div className="employeeTags">
               <span className="employeeTag">{}</span>
             </div>
-            <div
-              className={
-                this.state.showAppOption === `app-${departmentid}-${app.boughtplanid}`
-                  ? "addHolderAll"
-                  : "addHolderAllNone"
-              }>
-              <div
-                className="addHolder"
-                onClick={() => this.revokeLicencesFromDepartment(departmentid, app.boughtplanid)}>
-                Revoke App from department
-              </div>
-            </div>
+            {this.state.showAppOption === `app-${departmentid}-${app.boughtplanid}` ? (
+              <DepartmentLicenceEdit
+                revokeLicencesFromDepartment={this.revokeLicencesFromDepartment}
+                handleOutside={() => {
+                  this.toggleBoughtInfo(0, 0);
+                }}
+              />
+            ) : (
+              ""
+            )}
           </div>
         );
       });
     }
     return appArray;
-  }
-
-  departmentPossibleApps(departmentid) {
-    console.log("TESTAPP", departmentid);
-
-    return (
-      <Query query={fetchUnitApps} variables={{ departmentid }}>
-        {({ loading, error, data }) => {
-          if (loading) {
-            return "Loading...";
-          }
-          if (error) {
-            return `Error! ${error.message}`;
-          }
-          console.log("APPS", data);
-
-          let appArray: JSX.Element[] = [];
-
-          if (data.fetchUnitApps) {
-            appArray = data.fetchUnitApps.map((app, key) => (
-              <div
-                className="PApp"
-                key={key}
-                onClick={() =>
-                  this.distributeLicenceToDepartment(departmentid, app.boughtplan.id, "admin")
-                }>
-                <img
-                  className="rightProfileImage"
-                  style={{
-                    float: "left"
-                  }}
-                  src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.appicon ||
-                    "21062018-htv58-scarlett-jpeg"}`}
-                />
-                <div className="employeeName">
-                  {app.appname} {app.boughtplan.id}
-                </div>
-                <div className="employeeTags">
-                  <span className="employeeTag">{}</span>
-                </div>
-              </div>
-            ));
-          }
-          return appArray;
-        }}
-      </Query>
-    );
-
-    /*console.log("TESTAPP", departmentid);
-    let appArray: JSX.Element[] = [];
-    try {
-      const res = await this.props.fetchunitapps({
-        variables: { departmentid }
-      });
-      console.log("RES");
-      console.log("RES", res);
-    } catch (error) {
-      console.log("ERROR");
-      console.log("ERROR", error);
-    }
-    if (apps) {
-      apps.map(app => {
-        appArray.push(
-          <div className="employee" key={`app-${app.id}-new`}>
-            <img
-              className="rightProfileImage"
-              style={{
-                float: "left"
-              }}
-              src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.icon ||
-                "21062018-htv58-scarlett-jpeg"}`}
-            />
-            <div className="employeeName">{app.name}</div>
-            <div className="employeeTags">
-              <span className="employeeTag">{}</span>
-            </div>
-          </div>
-        );
-      });
-    }*/
-    //return "";
   }
 
   addCreateEmployee = async (email, departmentid) => {
@@ -600,11 +343,29 @@ class Team extends Component {
       variables: { departmentid, boughtplanid, licencetype },
       refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }]
     });
+    console.log("BACK", res);
+    if (res.data.distributeLicenceToDepartment.error) {
+      this.showPopup("NOT ENOUGHT LICENCES");
+    }
     this.togglePApps(departmentid);
+  };
+  distributeLicence = async (boughtplanid, unitid, departmentid) => {
+    const res = await this.props.distributeLicence({
+      variables: { boughtplanid, unitid, departmentid },
+      refetchQueries: [{ query: fetchLicences }]
+    });
+    this.toggleEmployeeInfo(0, 0);
+  };
+
+  revokeLicence = async licenceid => {
+    const res = await this.props.revokeLicence({
+      variables: { licenceid },
+      refetchQueries: [{ query: fetchLicences }]
+    });
+    this.toggleEmployeeInfo(0, 0);
   };
 
   revokeLicencesFromDepartment = async (departmentid, boughtplanid) => {
-    console.log("REVOKE", departmentid, boughtplanid);
     const res = await this.props.revokeLicencesFromDepartment({
       variables: { departmentid, boughtplanid },
       refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }]
@@ -613,7 +374,6 @@ class Team extends Component {
   };
 
   deleteDepartment = async departmentid => {
-    console.log("DELETE", departmentid);
     const res = await this.props.deleteSubDepartment({
       variables: { departmentid },
       refetchQueries: [{ query: fetchDepartmentsData }]
@@ -630,15 +390,14 @@ class Team extends Component {
     if (this.props.sidebaropen) {
       cssClass += " SidebarOpen";
     }
-    console.log("DEPARTMENTS", this.props);
     return (
       <div className={cssClass}>
         <div className="UMS">
-          {/*this.showDepartments(this.props.departments.fetchDepartments)*/}
           {this.props.departmentsdata.fetchDepartmentsData
             ? this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData[0], 2)
             : ""}
         </div>
+        {this.state.popup ? <Popup type={this.state.popup} close={this.closePopup} /> : ""}
       </div>
     );
   }
@@ -674,6 +433,12 @@ export default compose(
   }),
   graphql(distributeLicenceToDepartment, {
     name: "distributeLicenceToDepartment"
+  }),
+  graphql(distributeLicence, {
+    name: "distributeLicence"
+  }),
+  graphql(revokeLicence, {
+    name: "revokeLicence"
   }),
   graphql(revokeLicencesFromDepartment, {
     name: "revokeLicencesFromDepartment"

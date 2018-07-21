@@ -1572,3 +1572,35 @@ span.paymentAddressPhone {
     max-height: 10rem;
     overflow-y: scroll;
 }
+.popupBackground{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.popupFront{
+    background-color: white;
+}
+.subaddholder-holder{
+    position: relative;
+}
+.subaddholder{
+    position: absolute;
+    top: -1rem;
+    left: 15rem;
+    background-color: white;
+    z-index: 1000;
+    min-width: 15rem;
+    margin: 0.125rem 0 0;
+    background-clip: padding-box;
+    border: 1px solid #e9ecef;
+    max-height: 10rem;
+    overflow-y: scroll;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+}

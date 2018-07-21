@@ -107,3 +107,22 @@ export const revokeLicencesFromDepartment = gql`
     }
   }
 `;
+
+export const distributeLicence = gql`
+  mutation distributeLicence($boughtplanid: Int!, $unitid: Int!, $departmentid: Int!) {
+    distributeLicence(boughtplanid: $boughtplanid, unitid: $unitid, departmentid: $departmentid) {
+      ok
+      error {
+        code
+        message
+      }
+    }
+  }
+`;
+export const revokeLicence = gql`
+  mutation revokeLicence($licenceid: Int!) {
+    revokeLicence(licenceid: $licenceid) {
+      ok
+    }
+  }
+`;

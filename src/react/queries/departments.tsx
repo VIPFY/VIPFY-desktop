@@ -56,3 +56,23 @@ export const fetchUnitApps = gql`
     }
   }
 `;
+
+export const fetchUsersOwnLicences = gql`
+  query fetchUsersOwnLicences($unitid: Int!) {
+    fetchUsersOwnLicences(unitid: $unitid) {
+      id
+      boughtplanid {
+        id
+        planid {
+          id
+          appid {
+            id
+            logo
+            name
+            icon
+          }
+        }
+      }
+    }
+  }
+`;

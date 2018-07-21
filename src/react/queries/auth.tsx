@@ -18,6 +18,7 @@ export const fetchLicences = gql`
       boughtplanid {
         id
         planid {
+          id
           appid {
             id
             name

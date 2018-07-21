@@ -53,7 +53,7 @@ class App extends Component<AppProps, AppState> {
     employees: 3,
     profilepicture: "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg",
     error: null,
-    userid: -1,
+    userid: -1
   };
 
   logMeOut = () => {
@@ -86,7 +86,7 @@ class App extends Component<AppProps, AppState> {
         this.setState({ marketplace: user.marketplace });
         this.setState({ profilepicture: user.profilepicture || user.company.profilepicture });
         this.setState({ employees: user.company.employees });
-        this.setState({ userid: user.id })
+        this.setState({ userid: user.id });
 
         this.props.history.push("/area/dashboard");
         return true;
@@ -126,13 +126,9 @@ class App extends Component<AppProps, AppState> {
     this.props.history.push("/area/advisor");
   };
 
-  handleOutside(){
-    console.log("OUTSIDE!!!!")
-  }
-
   render() {
     return (
-      <div className="fullSize" onClick={() => this.handleOutside()}>
+      <div className="fullSize">
         <Switch>
           <Route
             exact
