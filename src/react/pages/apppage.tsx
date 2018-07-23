@@ -6,6 +6,8 @@ import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "..
 import { fetchLicences } from "../queries/auth";
 import { buyPlan } from "../mutations/products";
 
+import AppHeaderInfos from "../common/appHeaderInfos";
+
 export type AppPageProps = {
   employees: number;
   productPlans: any;
@@ -118,7 +120,9 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             <div key={index} className={"galleryImage " + this.showBig(this.state.bigImage, index)}>
               <img
                 className={"galleryView"}
-                src={`https://storage.googleapis.com/vipfy-imagestore-01/${appDetails.name}/${image}`}
+                src={`https://storage.googleapis.com/vipfy-imagestore-01/${
+                  appDetails.name
+                }/${image}`}
                 alt={appDetails.name}
                 onClick={() => this.changeBig(index)}
               />
@@ -130,8 +134,12 @@ class AppPage extends Component<AppPageProps, AppPageState> {
   }
 
   calculatepartsum(plan, useralready, usercount): number {
+    console.log("Calc", plan, useralready, usercount);
     if (!plan) {
       return 0;
+    }
+    if (!plan.numlicences) {
+      return plan.price;
     }
     let calculatedprice = 0;
     let calculateduseralready = useralready;
@@ -528,12 +536,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             <span className="appBreadCrompLink">{appDetails.name}</span>
           </div>
           <div className="appHeader">
-            {console.log(
-              "Bildlink",
-              `https://storage.googleapis.com/vipfy-imagestore-01/${appDetails.name}/${
-                appDetails.images[this.state.imageindex]
-              }`
-            )}
             <div
               className="appHeaderGallery"
               style={{
@@ -555,12 +557,12 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 <span className="fas fa-angle-right" />
               </div>
             </div>
-            <div className="appHeaderInfos">
+            {/*<div className="appHeaderInfos">
               <div className="appHeaderStars">{this.showStars(appDetails.avgstars)}</div>
               <div className="appHeaderName">{appDetails.name}</div>
               <div className="appHeaderType">{appDetails.features.type}</div>
               <div className="appHeaderPriceHolder">
-                <div className="appHeaderPriceText">Buy for</div>
+                <div className="appHeaderPriceText">Buy for <small>(our recommendation)</small></div>
                 <div className="appHeaderSelectDepartment">
                   <span className="appHeaderSelectDepartmentText">
                     everyone at Vipfy<span className="fas fa-caret-down caretApp" />
@@ -592,7 +594,14 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                   $
                 </div>
               </div>
-            </div>
+            </div>*/}
+            <AppHeaderInfos
+              appDetails={appDetails}
+              allPlans={this.props.productPlans.fetchPlans}
+              buyApp={this.buyApp}
+              numberEmployees={this.state.numberEmployees}
+              changeNumberEmployees={this.changeusers}
+            />
           </div>
           <div className="appHeading">Service Details</div>
           <div className="appDescrition">

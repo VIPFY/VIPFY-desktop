@@ -292,6 +292,9 @@ class Team extends Component {
       variables: { email, departmentid },
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
+    if (res.data.addCreateEmployee.error || !res.data.addCreateEmployee.ok) {
+      this.showPopup(res.data.addCreateEmployee.error.message || "Something went really wrong");
+    }
     this.toggleAdd(departmentid);
     this.setState({ newEmail: "" });
   };
@@ -301,6 +304,9 @@ class Team extends Component {
       variables: { unitid, departmentid },
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
+    if (res.data.addEmployee.error || !res.data.addEmployee.ok) {
+      this.showPopup(res.data.addEmployee.error.message || "Something went really wrong");
+    }
     this.toggleAdd(departmentid);
   };
 
@@ -309,6 +315,9 @@ class Team extends Component {
       variables: { unitid, departmentid },
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
+    if (res.data.removeEmployee.error || !res.data.removeEmployee.ok) {
+      this.showPopup(res.data.removeEmployee.error.message || "Something went really wrong");
+    }
     this.toggleEmployeeInfo(0, 0);
   };
 
@@ -317,6 +326,9 @@ class Team extends Component {
       variables: { unitid },
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
+    if (res.data.fireEmployee.error || !res.data.fireEmployee.ok) {
+      this.showPopup(res.data.fireEmployee.error.message || "Something went really wrong");
+    }
     this.toggleEmployeeInfo(0, 0);
   };
 
@@ -325,6 +337,9 @@ class Team extends Component {
       variables: { departmentid, name },
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
+    if (res.data.addSubDepartment.error || !res.data.addSubDepartment.ok) {
+      this.showPopup(res.data.addSubDepartment.error.message || "Something went really wrong");
+    }
     this.toggleDA(departmentid);
     this.setState({ newDepartment: "" });
   };
@@ -334,6 +349,9 @@ class Team extends Component {
       variables: { departmentid, name },
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
+    if (res.data.editDepartment.error || !res.data.editDepartment.ok) {
+      this.showPopup(res.data.editDepartment.error.message || "Something went really wrong");
+    }
     this.toggleDA(departmentid);
     this.setState({ newDepartment: "" });
   };
@@ -343,9 +361,8 @@ class Team extends Component {
       variables: { departmentid, boughtplanid, licencetype },
       refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }]
     });
-    console.log("BACK", res);
-    if (res.data.distributeLicenceToDepartment.error) {
-      this.showPopup("NOT ENOUGHT LICENCES");
+    if (res.data.distributeLicenceToDepartment.error || !res.data.distributeLicenceToDepartment.ok) {
+      this.showPopup(res.data.distributeLicenceToDepartment.error.message || "Something went really wrong");
     }
     this.togglePApps(departmentid);
   };
@@ -354,6 +371,9 @@ class Team extends Component {
       variables: { boughtplanid, unitid, departmentid },
       refetchQueries: [{ query: fetchLicences }]
     });
+    if (res.data.distributeLicence.error || !res.data.distributeLicence.ok) {
+      this.showPopup(res.data.distributeLicence.error.message || "Something went really wrong");
+    }
     this.toggleEmployeeInfo(0, 0);
   };
 
@@ -362,6 +382,9 @@ class Team extends Component {
       variables: { licenceid },
       refetchQueries: [{ query: fetchLicences }]
     });
+    if (res.data.revokeLicence.error || !res.data.revokeLicence.ok) {
+      this.showPopup(res.data.revokeLicence.error.message || "Something went really wrong");
+    }
     this.toggleEmployeeInfo(0, 0);
   };
 
@@ -370,6 +393,9 @@ class Team extends Component {
       variables: { departmentid, boughtplanid },
       refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }]
     });
+    if (res.data.revokeLicencesFromDepartment.error || !res.data.revokeLicencesFromDepartment.ok) {
+      this.showPopup(res.data.revokeLicencesFromDepartment.error.message || "Something went really wrong");
+    }
     this.toggleBoughtInfo(departmentid, boughtplanid);
   };
 
@@ -378,6 +404,9 @@ class Team extends Component {
       variables: { departmentid },
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
+    if (res.data.deleteSubDepartment.error || !res.data.deleteSubDepartment.ok) {
+      this.showPopup(res.data.deleteSubDepartment.error.message || "Something went really wrong");
+    }
     this.toggleDA(0);
     this.setState({ newDepartment: "" });
   };
