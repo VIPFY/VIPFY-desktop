@@ -1,0 +1,78 @@
+$vipfy-red: #c1272d;
+$feedback: rgba(#c1272d, 0.57);
+$hover: #a12a20;
+$deleted-color: #b5a0a7;
+
+@mixin flex-system($align, $justify) {
+  display: flex;
+  align-items: $align;
+  justify-content: $justify;
+}
+
+@mixin vipfy-button($padding:0) {
+  background: $vipfy-red;
+  padding: $padding;
+  color: #eee;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  @include flex-system(center, center)
+
+  i {
+    font-size: 15px;
+    padding-right: 5px;
+  }
+
+  &:active {
+    background: $feedback;
+  }
+
+  &:hover {
+    background: $hover;
+  }
+}
+
+#domains {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1em;
+}
+
+.register-domain {
+  max-width: 130px;
+  align-self: flex-end;
+  @include vipfy-button(5px);
+}
+
+.domain-table {
+  margin-top: 2em;
+}
+
+.domain-header {
+  background-color: #ffeedb;
+  font-weight: bold;
+  @include flex-system(center, space-around)
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.domain-item {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.domain-item-icon {
+  @extend .domain-item;
+  text-align: center;
+  cursor: pointer;
+}
+
+.domain-body {
+
+}
+
+.domain-row {
+  border-bottom: 2px solid #e0e0e0;
+  @include flex-system(center, space-around)
+}

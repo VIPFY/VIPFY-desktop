@@ -12,6 +12,7 @@ export const signInUser = gql`
         firstname
         lastname
         teams
+        domains
         marketplace
         billing
         profilepicture
