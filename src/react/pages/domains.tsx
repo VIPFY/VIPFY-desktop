@@ -3,12 +3,16 @@ import { graphql } from "react-apollo";
 import Popup from "../common/popup";
 import GenericInputField from "../common/genericInputField";
 import { buyPlan } from "../mutations/products";
+import validate from "../common/validation";
 
 interface State {
   showModal: boolean;
 }
 
-interface Props {}
+interface Props {
+  chatopen: string;
+  sidebaropen: string;
+}
 
 interface BodyObj {
   name: string;
@@ -24,9 +28,18 @@ class Domains extends React.Component<Props, State> {
 
   toggle = () => this.setState(prevState => ({ showModal: !prevState.showModal }));
 
-  handleSubmit = value => {
-    console.log(value);
-    this.setState(prevState => ({ showModal: !prevState.showModal }));
+  handleSubmit = async options => {
+    try {
+      await this.props.buyPlan({
+        variables: {
+          planIds: [25],
+          options
+        }
+      });
+      this.setState(prevState => ({ showModal: !prevState.showModal }));
+    } catch (err) {
+      return err;
+    }
   };
 
   render() {
@@ -57,13 +70,28 @@ class Domains extends React.Component<Props, State> {
       fields: [
         {
           name: "domain",
+          label: "Domain",
           placeholder: "Enter Domain",
-          icon: "globe"
+          icon: "globe",
+          check: validate
         },
         {
           name: "shit",
+          label: "Smiley Poo",
           placeholder: "A steaming pile of poo",
           icon: "poo"
+        },
+        {
+          name: "lisa",
+          label: "Lisa Poo",
+          placeholder: "A lisa pile of poo",
+          icon: "thumbs-up"
+        },
+        {
+          name: "haifa",
+          label: "Haifa Poo",
+          placeholder: "A high-fa pile of poo",
+          icon: "smile"
         }
       ],
       handleSubmit: this.handleSubmit
@@ -73,7 +101,7 @@ class Domains extends React.Component<Props, State> {
       <div className={cssClass}>
         <div id="domains">
           <button className="register-domain" type="button" onClick={this.toggle}>
-            <i className="fas fa-plus" />Register New
+            <i className="fas fa-plus" /> Register New
           </button>
 
           <div className="domain-table">
@@ -103,7 +131,8 @@ class Domains extends React.Component<Props, State> {
         {this.state.showModal ? (
           <Popup
             close={this.toggle}
-            modalBody={GenericInputField}
+            popupHeader="Domain Registration"
+            popupBody={GenericInputField}
             bodyProps={compProps}
             onClose={this.toggle}
           />

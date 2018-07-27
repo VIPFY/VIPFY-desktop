@@ -1,7 +1,13 @@
+$vipfy-red: #c1272d;
+$feedback: rgba(#c1272d, 0.57);
+$hover: #a12a20;
+$deleted-color: #b5a0a7;
+
 @import './constants.scss';
 @import './creditCards.scss';
-@import './modal.scss';
+@import './popup.scss';
 @import './domains.scss';
+@import './forms.scss';
 
 @keyframes buttonMove{
     from {left:0px}

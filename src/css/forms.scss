@@ -1,0 +1,64 @@
+@mixin generic-button($color, $color-hover, $color-fb) {
+  cursor: pointer;
+  padding: 7px 15px;
+  background-color: $color;
+  color: #fff;
+  border: none;
+  outline: none;
+
+  span {
+    font-size: 15px;
+  }
+
+  &:hover {
+    background: $color-hover;
+  }
+
+  &:active {
+    background: $color-fb;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background: grey;
+  }
+}
+
+.generic-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100% - 2em);
+}
+
+.generic-input-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: auto;
+  margin-bottom: 2em;
+}
+
+.generic-error {
+  color: red;
+  font-weight: bold;
+  font-style: italic;
+  margin-left: auto;
+}
+
+.generic-error-field {
+  color: red;
+}
+
+.generic-async-error {
+  @extend .generic-error;
+  margin-left: 0;
+  align-self: center;
+}
+
+.generic-cancel {
+  @include generic-button($vipfy-red, $hover, $feedback)
+}
+
+.generic-submit {
+  @include generic-button(rgb(66, 227, 35), rgb(21, 107, 30) ,rgb(137, 230, 100))
+}

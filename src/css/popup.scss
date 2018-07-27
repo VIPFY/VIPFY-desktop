@@ -14,7 +14,6 @@ $modal-wh: 50%;
   justify-content: center;
 }
 
-
 #popup {
   background-color: white;
   width: $modal-wh;
@@ -23,13 +22,19 @@ $modal-wh: 50%;
 
 #popup-header {
   display: flex;
-  flex-direction: row-reverse;
+  background: antiquewhite;
+  border-bottom: 1px solid silver;
+}
+
+#popup-header-text {
+  padding-top: 5px;
+  font-weight: bold;
 }
 
 #popup-close-button {
   cursor: pointer;
   position: relative;
-  left: 17px;
+  left: 698px;
   top: -19px;
   font-size: 15px;
   color: #fff;
