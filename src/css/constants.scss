@@ -2,3 +2,62 @@ $app-logo:                  url(../images/logo-full-aaa-ai.svg);
 $sidebar-background:        #333;
 $sidebar-width:             15em;
 $fullWorking-background:    #f5f5f5;
+$vipfy-red: #c1272d;
+$feedback: rgba(#c1272d, 0.57);
+$hover: #a12a20;
+$deleted-color: #b5a0a7;
+
+@mixin flex-system($align, $justify) {
+  display: flex;
+  align-items: $align;
+  justify-content: $justify;
+}
+
+@mixin vipfy-button($padding:0) {
+  background: $vipfy-red;
+  padding: $padding;
+  color: #eee;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  @include flex-system(center, center)
+
+  i {
+    font-size: 15px;
+    padding-right: 5px;
+  }
+
+  &:active {
+    background: $feedback;
+  }
+
+  &:hover {
+    background: $hover;
+  }
+}
+
+@mixin generic-button($color, $color-hover, $color-fb) {
+  cursor: pointer;
+  padding: 7px 15px;
+  background-color: $color;
+  color: #fff;
+  border: none;
+  outline: none;
+
+  span {
+    font-size: 15px;
+  }
+
+  &:hover {
+    background: $color-hover;
+  }
+
+  &:active {
+    background: $color-fb;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background: grey;
+  }
+}

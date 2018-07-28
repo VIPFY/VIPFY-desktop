@@ -6,8 +6,12 @@ interface Props {
 }
 
 interface State {
-  value: string | number;
-  inputFocus: boolean;
+  values: object;
+  inputFocus: object;
+  required: object;
+  errors: object;
+  validate: object;
+  asyncError: any;
 }
 
 class GenericInputField extends React.Component<Props> {
@@ -16,6 +20,7 @@ class GenericInputField extends React.Component<Props> {
     inputFocus: {},
     required: {},
     errors: {},
+    validate: {},
     asyncError: null
   };
 
@@ -33,27 +38,29 @@ class GenericInputField extends React.Component<Props> {
     this.setState(prevState => ({
       inputFocus: { ...prevState.inputFocus, [name]: false }
     }));
-    if (!/[\d\w]{1,}\.[a-z]{2,}/g.test(this.state.values[name])) {
-      this.setState(prevState => ({
-        errors: { ...prevState.errors, [name]: "Invalid Domain name!" }
-      }));
-    } else {
-      this.setState(prevState => ({
-        errors: { ...prevState.errors, [name]: false }
-      }));
-    }
+    // if (!/[\d\w]{1,}\.[a-z]{2,}/g.test(this.state.values[name])) {
+    //   this.setState(prevState => ({
+    //     errors: { ...prevState.errors, [name]: "Invalid Domain name!" }
+    //   }));
+    // } else {
+    //   this.setState(prevState => ({
+    //     errors: { ...prevState.errors, [name]: false }
+    //   }));
+    // }
   };
 
   handleChange = e => {
-    e.preventDefault();
-    const { name, value } = e.target;
-    this.setState(prevState => ({
-      values: { ...prevState.values, [name]: value }
-    }));
-
-    // if (this.state.values[name].length == 0) {
-    //   this.setState({ required: { [name]: true } });
-    // }
+    const { name, value, type } = e.target;
+    if (type == "checkbox") {
+      this.setState(prevState => ({
+        values: { ...prevState.values, [name]: !prevState.values[name] }
+      }));
+    } else {
+      e.preventDefault();
+      this.setState(prevState => ({
+        values: { ...prevState.values, [name]: value }
+      }));
+    }
   };
 
   onCancel = e => {
@@ -75,7 +82,7 @@ class GenericInputField extends React.Component<Props> {
     const { inputFocus, values, errors } = this.state;
     console.log(this.state);
 
-    return fields.map(({ name, icon, placeholder, label, required }) => (
+    return fields.map(({ name, icon, placeholder, label, required, type, options }) => (
       <div
         key={name}
         className={inputFocus[name] ? "searchbarHolder searchbarFocus" : "searchbarHolder"}>
@@ -85,16 +92,35 @@ class GenericInputField extends React.Component<Props> {
 
         <label className={errors[name] ? "generic-error-field" : ""}>
           {label}
-          <input
-            className="searchbar"
-            name={name}
-            placeholder={placeholder}
-            value={values[name] ? values[name] : ""}
-            onChange={this.handleChange}
-            onFocus={this.highlight}
-            onBlur={this.offlight}
-            required={required}
-          />
+
+          {type == "checkbox" ? (
+            <input type="checkbox" onChange={this.handleChange} name={name} required={required} />
+          ) : type == "select" ? (
+            <select
+              name={name}
+              onChange={this.handleChange}
+              required={required}
+              className="generic-dropdown">
+              <option value=""> </option>
+              {options.map(option => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              className="searchbar"
+              name={name}
+              placeholder={placeholder}
+              type={type}
+              value={values[name] ? values[name] : ""}
+              onChange={this.handleChange}
+              onFocus={this.highlight}
+              onBlur={this.offlight}
+              required={required}
+            />
+          )}
         </label>
 
         {errors[name] ? <span className="generic-error">{errors[name]}</span> : ""}

@@ -1,34 +1,19 @@
-@mixin generic-button($color, $color-hover, $color-fb) {
-  cursor: pointer;
-  padding: 7px 15px;
-  background-color: $color;
-  color: #fff;
-  border: none;
-  outline: none;
-
-  span {
-    font-size: 15px;
-  }
-
-  &:hover {
-    background: $color-hover;
-  }
-
-  &:active {
-    background: $color-fb;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    background: grey;
-  }
-}
+@import "./constants.scss";
 
 .generic-form {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: calc(100% - 2em);
+}
+
+.generic-dropdown {
+  margin-left: 1em;
+  background: $vipfy-red;
+  color: #fff;
+  padding: 5px 0;
+  outline: none;
+  border: none;
 }
 
 .generic-input-buttons {

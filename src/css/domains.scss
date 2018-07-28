@@ -1,31 +1,4 @@
-@mixin flex-system($align, $justify) {
-  display: flex;
-  align-items: $align;
-  justify-content: $justify;
-}
-
-@mixin vipfy-button($padding:0) {
-  background: $vipfy-red;
-  padding: $padding;
-  color: #eee;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  @include flex-system(center, center)
-
-  i {
-    font-size: 15px;
-    padding-right: 5px;
-  }
-
-  &:active {
-    background: $feedback;
-  }
-
-  &:hover {
-    background: $hover;
-  }
-}
+@import "./constants.scss";
 
 #domains {
   display: flex;

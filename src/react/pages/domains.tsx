@@ -3,7 +3,6 @@ import { graphql } from "react-apollo";
 import Popup from "../common/popup";
 import GenericInputField from "../common/genericInputField";
 import { buyPlan } from "../mutations/products";
-import validate from "../common/validation";
 
 interface State {
   showModal: boolean;
@@ -30,12 +29,13 @@ class Domains extends React.Component<Props, State> {
 
   handleSubmit = async options => {
     try {
-      await this.props.buyPlan({
-        variables: {
-          planIds: [25],
-          options
-        }
-      });
+      console.log(options);
+      // await this.props.buyPlan({
+      //   variables: {
+      //     planIds: [25],
+      //     options
+      //   }
+      // });
       this.setState(prevState => ({ showModal: !prevState.showModal }));
     } catch (err) {
       return err;
@@ -71,27 +71,24 @@ class Domains extends React.Component<Props, State> {
         {
           name: "domain",
           label: "Domain",
-          placeholder: "Enter Domain",
+          placeholder: "Enter Domain name",
+          icon: "hdd",
+          type: "text",
+          required: true
+        },
+        {
+          name: "tld",
+          type: "select",
           icon: "globe",
-          check: validate
+          label: "Select Top Level Domain",
+          options: ["com", "net", "org"],
+          required: true
         },
         {
-          name: "shit",
-          label: "Smiley Poo",
-          placeholder: "A steaming pile of poo",
-          icon: "poo"
-        },
-        {
-          name: "lisa",
-          label: "Lisa Poo",
-          placeholder: "A lisa pile of poo",
-          icon: "thumbs-up"
-        },
-        {
-          name: "haifa",
-          label: "Haifa Poo",
-          placeholder: "A high-fa pile of poo",
-          icon: "smile"
+          name: "whoisPrivacy",
+          type: "checkbox",
+          label: "Whois Privacy",
+          icon: "user-secret"
         }
       ],
       handleSubmit: this.handleSubmit

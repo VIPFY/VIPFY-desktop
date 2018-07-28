@@ -124,3 +124,9 @@ export default values => {
 
   return errors;
 };
+
+// if (!/[\d\w]{1,}\.[a-z]{2,}/g.test(this.state.values[name])) {
+//   this.setState(prevState => ({
+//     errors: { ...prevState.errors, [name]: "Invalid Domain name!" }
+//   }));
+// }
