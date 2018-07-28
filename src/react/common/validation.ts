@@ -38,10 +38,6 @@ export default values => {
 
   const passwordFields = ["password", "passwordConfirm"];
 
-  if (!/[\d\w]{1,}\.[a-z]{2,}/g.test(values.domain)) {
-    errors.domain = "Invalid Domain name!";
-  }
-
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
     errors.email = "Invalid email address!";
   }
@@ -125,8 +121,7 @@ export default values => {
   return errors;
 };
 
-// if (!/[\d\w]{1,}\.[a-z]{2,}/g.test(this.state.values[name])) {
-//   this.setState(prevState => ({
-//     errors: { ...prevState.errors, [name]: "Invalid Domain name!" }
-//   }));
-// }
+export const domainValidation = {
+  check: testValue => !/^[a-zA-Z0-9]{1,}$/g.test(testValue),
+  error: "Only characters and numbers allowed!"
+};

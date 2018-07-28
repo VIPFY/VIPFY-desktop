@@ -8,21 +8,25 @@ interface Props {
 interface State {
   values: object;
   inputFocus: object;
-  required: object;
   errors: object;
   validate: object;
   asyncError: any;
 }
 
+const INITIAL_STATE = {
+  values: {},
+  inputFocus: {},
+  errors: {},
+  validate: {},
+  asyncError: null
+};
+
 class GenericInputField extends React.Component<Props> {
-  state = {
-    values: {},
-    inputFocus: {},
-    required: {},
-    errors: {},
-    validate: {},
-    asyncError: null
-  };
+  constructor(props) {
+    super(props);
+    this.genericForm = React.createRef();
+    this.state = INITIAL_STATE;
+  }
 
   highlight = e => {
     e.preventDefault();
@@ -38,18 +42,9 @@ class GenericInputField extends React.Component<Props> {
     this.setState(prevState => ({
       inputFocus: { ...prevState.inputFocus, [name]: false }
     }));
-    // if (!/[\d\w]{1,}\.[a-z]{2,}/g.test(this.state.values[name])) {
-    //   this.setState(prevState => ({
-    //     errors: { ...prevState.errors, [name]: "Invalid Domain name!" }
-    //   }));
-    // } else {
-    //   this.setState(prevState => ({
-    //     errors: { ...prevState.errors, [name]: false }
-    //   }));
-    // }
   };
 
-  handleChange = e => {
+  handleChange = async (e, validation) => {
     const { name, value, type } = e.target;
     if (type == "checkbox") {
       this.setState(prevState => ({
@@ -57,20 +52,42 @@ class GenericInputField extends React.Component<Props> {
       }));
     } else {
       e.preventDefault();
-      this.setState(prevState => ({
+      await this.setState(prevState => ({
         values: { ...prevState.values, [name]: value }
       }));
+
+      if (
+        this.state.values[name].length > 0 &&
+        validation &&
+        validation.check(this.state.values[name])
+      ) {
+        this.setState(prevState => ({
+          errors: { ...prevState.errors, [name]: validation.error }
+        }));
+      } else if (
+        this.genericForm.current.elements[name].required &&
+        this.state.values[name].length < 1
+      ) {
+        this.setState(prevState => ({
+          errors: { ...prevState.errors, [name]: "Required!" }
+        }));
+      } else {
+        this.setState(prevState => ({
+          errors: { ...prevState.errors, [name]: false }
+        }));
+      }
     }
   };
 
   onCancel = e => {
     e.preventDefault();
-    this.setState({ values: {}, inputFocus: {} });
+    this.setState(INITIAL_STATE);
   };
 
   onSubmit = async e => {
     e.preventDefault();
     await this.setState({ asyncError: false });
+
     const throwsError = await this.props.handleSubmit(this.state.values);
 
     if (throwsError) {
@@ -80,9 +97,8 @@ class GenericInputField extends React.Component<Props> {
 
   renderFields = fields => {
     const { inputFocus, values, errors } = this.state;
-    console.log(this.state);
 
-    return fields.map(({ name, icon, placeholder, label, required, type, options }) => (
+    return fields.map(({ name, icon, placeholder, label, required, type, options, validate }) => (
       <div
         key={name}
         className={inputFocus[name] ? "searchbarHolder searchbarFocus" : "searchbarHolder"}>
@@ -98,7 +114,9 @@ class GenericInputField extends React.Component<Props> {
           ) : type == "select" ? (
             <select
               name={name}
+              ref={this.inputField}
               onChange={this.handleChange}
+              value={values[name] ? values[name] : ""}
               required={required}
               className="generic-dropdown">
               <option value=""> </option>
@@ -115,7 +133,7 @@ class GenericInputField extends React.Component<Props> {
               placeholder={placeholder}
               type={type}
               value={values[name] ? values[name] : ""}
-              onChange={this.handleChange}
+              onChange={e => this.handleChange(e, validate)}
               onFocus={this.highlight}
               onBlur={this.offlight}
               required={required}
@@ -132,7 +150,11 @@ class GenericInputField extends React.Component<Props> {
     const { values, errors } = this.state;
 
     return (
-      <form onSubmit={this.onSubmit} className="generic-form">
+      <form
+        onSubmit={this.onSubmit}
+        ref={this.genericForm}
+        className="generic-form"
+        formNoValidate={true}>
         {this.renderFields(this.props.fields)}
         {this.state.asyncError ? (
           <div className="generic-async-error">{this.state.asyncError}</div>

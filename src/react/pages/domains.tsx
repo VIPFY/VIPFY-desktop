@@ -3,6 +3,7 @@ import { graphql } from "react-apollo";
 import Popup from "../common/popup";
 import GenericInputField from "../common/genericInputField";
 import { buyPlan } from "../mutations/products";
+import { domainValidation } from "../common/validation";
 
 interface State {
   showModal: boolean;
@@ -27,15 +28,32 @@ class Domains extends React.Component<Props, State> {
 
   toggle = () => this.setState(prevState => ({ showModal: !prevState.showModal }));
 
-  handleSubmit = async options => {
+  handleSubmit = async ({ domainName, tld, whoisPrivacy }) => {
     try {
-      console.log(options);
-      // await this.props.buyPlan({
-      //   variables: {
-      //     planIds: [25],
-      //     options
-      //   }
-      // });
+      const domain = `${domainName}.${tld}`;
+      const planIds = [25];
+      let options = { domain };
+
+      if (whoisPrivacy) {
+        options.whoisPrivacy = whoisPrivacy;
+        planIds.push(51);
+      }
+
+      switch (tld) {
+        case "org":
+          planIds.push(49);
+          break;
+
+        case "net":
+          planIds.push(50);
+          break;
+
+        default:
+          planIds.push(48);
+      }
+
+      await this.props.buyPlan({ variables: { planIds, options } });
+
       this.setState(prevState => ({ showModal: !prevState.showModal }));
     } catch (err) {
       return err;
@@ -69,11 +87,12 @@ class Domains extends React.Component<Props, State> {
     const compProps = {
       fields: [
         {
-          name: "domain",
+          name: "domainName",
           label: "Domain",
           placeholder: "Enter Domain name",
           icon: "hdd",
           type: "text",
+          validate: domainValidation,
           required: true
         },
         {
