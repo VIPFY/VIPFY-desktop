@@ -6,6 +6,7 @@ const { shell, remote } = require("electron");
 const { session } = remote;
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
+import { fetchLicences } from '../queries/auth';
 
 export type WebViewState = {
   setUrl: string;
@@ -135,6 +136,13 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     });
     console.log("APP DATA", result);
     let licence = result.data.fetchLicences[0];
+
+    if(licence.disabled) {
+      window.alert("This licence is disabled, you cannot use it");
+    } else if (!licence.agreed) {
+      window.alert("you first have to agree to the licence terms. Unfortunately this isn't implemented yet");
+    }
+
     if (licence.unit.id !== this.state.unitId) {
       await new Promise((resolve, reject) => {
         session.fromPartition("services").clearStorageData({}, () => {
