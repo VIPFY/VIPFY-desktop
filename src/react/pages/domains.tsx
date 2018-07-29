@@ -28,12 +28,12 @@ const fetchDomains = gql`
   {
     fetchDomains {
       id
-      options
+      key
       starttime
       endtime
       agreed
+      options
       disabled
-      key
     }
   }
 `;
@@ -52,7 +52,7 @@ class Domains extends React.Component<Props, State> {
       let options = { domain };
 
       if (whoisPrivacy) {
-        options.whoisPrivacy = 1;
+        options.whoisprivacy = 1;
         planIds.push(51);
       }
 
@@ -88,19 +88,15 @@ class Domains extends React.Component<Props, State> {
 
     const headers: string[] = [
       "Domain",
+      "Whois Privacy",
+      "Registration Date",
+      "End Date",
       "Page Views",
       "Page Rank",
       "Connected Apps",
       "Configuration"
     ];
-    const body: BodyObj[] = [
-      {
-        name: "jannis.com",
-        views: 100,
-        rank: 3,
-        apps: ["weebly", "dd24"]
-      }
-    ];
+
     const compProps = {
       fields: [
         {
@@ -140,7 +136,7 @@ class Domains extends React.Component<Props, State> {
           <div className="domain-table">
             <div className="domain-header">
               {headers.map(header => (
-                <span key={header} className="domain-item">
+                <span key={header} className="domain-header-item">
                   {header}
                 </span>
               ))}
@@ -157,17 +153,35 @@ class Domains extends React.Component<Props, State> {
                     return filterError(error);
                   }
 
-                  console.log(data.fetchDomains);
-                  return body.map(row => (
-                    <div key={row.name} className="domain-row">
-                      {Object.values(row).map((item, key) => (
-                        <span key={key} className="domain-item">
-                          {item}
-                        </span>
-                      ))}
-                      <i className="fas fa-sliders-h domain-item-icon" />
-                    </div>
-                  ));
+                  if (data.fetchDomains.length > 0) {
+                    return data.fetchDomains.map(row => {
+                      const { id, agreed, disabled, options, __typename, key, ...domain } = row;
+
+                      return (
+                        <div key={id} className="domain-row">
+                          <span className="domain-item">{key.domain}</span>
+                          <span className="domain-item">
+                            <i
+                              className={`fas fa-${
+                                key.whoisPrivacy ? "check-circle" : "times-circle"
+                              }`}
+                            />
+                          </span>
+                          {Object.values(domain).map((item, key) => (
+                            <span key={key} className="domain-item">
+                              {item}
+                            </span>
+                          ))}
+                          <span className="domain-item">No data</span>
+                          <span className="domain-item">No data</span>
+                          <span className="domain-item">No data</span>
+                          <i className="fas fa-sliders-h domain-item-icon" />
+                        </div>
+                      );
+                    });
+                  } else {
+                    return <span>No Domains registered yet</span>;
+                  }
                 }}
               </Query>
             </div>

@@ -61,8 +61,8 @@ class App extends Component<AppProps, AppState> {
   logMeOut = () => {
     this.setState({ login: false });
     this.props.client.cache.reset(); //clear graphql cache
-    localStorage.setItem("token", "");
-    localStorage.setItem("refreshToken", "");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     this.props.history.push("/");
   };
 
