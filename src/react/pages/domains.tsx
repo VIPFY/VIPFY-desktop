@@ -1,9 +1,12 @@
 import * as React from "react";
-import { graphql } from "react-apollo";
+import { graphql, Query } from "react-apollo";
+import gql from "graphql-tag";
 import Popup from "../common/popup";
 import GenericInputField from "../common/genericInputField";
 import { buyPlan } from "../mutations/products";
 import { domainValidation } from "../common/validation";
+import LoadingDiv from "../common/loadingDiv";
+import { filterError } from "../helpers";
 
 interface State {
   showModal: boolean;
@@ -21,6 +24,20 @@ interface BodyObj {
   apps: string[];
 }
 
+const fetchDomains = gql`
+  {
+    fetchDomains {
+      id
+      options
+      starttime
+      endtime
+      agreed
+      disabled
+      key
+    }
+  }
+`;
+
 class Domains extends React.Component<Props, State> {
   state = {
     showModal: false
@@ -35,7 +52,7 @@ class Domains extends React.Component<Props, State> {
       let options = { domain };
 
       if (whoisPrivacy) {
-        options.whoisPrivacy = whoisPrivacy;
+        options.whoisPrivacy = 1;
         planIds.push(51);
       }
 
@@ -130,16 +147,29 @@ class Domains extends React.Component<Props, State> {
             </div>
 
             <div className="domain-body">
-              {body.map(row => (
-                <div key={row.name} className="domain-row">
-                  {Object.values(row).map((item, key) => (
-                    <span key={key} className="domain-item">
-                      {item}
-                    </span>
-                  ))}
-                  <i className="fas fa-sliders-h domain-item-icon" />
-                </div>
-              ))}
+              <Query query={fetchDomains}>
+                {({ loading, error, data }) => {
+                  if (loading) {
+                    return "Loading...";
+                  }
+
+                  if (error) {
+                    return filterError(error);
+                  }
+
+                  console.log(data.fetchDomains);
+                  return body.map(row => (
+                    <div key={row.name} className="domain-row">
+                      {Object.values(row).map((item, key) => (
+                        <span key={key} className="domain-item">
+                          {item}
+                        </span>
+                      ))}
+                      <i className="fas fa-sliders-h domain-item-icon" />
+                    </div>
+                  ));
+                }}
+              </Query>
             </div>
           </div>
         </div>

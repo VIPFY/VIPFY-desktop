@@ -122,6 +122,6 @@ export default values => {
 };
 
 export const domainValidation = {
-  check: testValue => !/^[a-zA-Z0-9]{1,}$/g.test(testValue),
-  error: "Only characters and numbers allowed!"
+  check: testValue => !/^[a-zA-Z0-9-]{1,}$/g.test(testValue),
+  error: "Only characters and numbers and hyphens allowed!"
 };

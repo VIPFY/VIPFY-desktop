@@ -1,5 +1,6 @@
 import * as React from "react";
 import { filterError } from "../helpers";
+import LoadingDiv from "./loadingDiv";
 
 interface Props {
   fields: object[];
@@ -11,6 +12,7 @@ interface State {
   errors: object;
   validate: object;
   asyncError: any;
+  submitting: boolean;
 }
 
 const INITIAL_STATE = {
@@ -18,7 +20,8 @@ const INITIAL_STATE = {
   inputFocus: {},
   errors: {},
   validate: {},
-  asyncError: null
+  asyncError: null,
+  submitting: false
 };
 
 class GenericInputField extends React.Component<Props> {
@@ -86,12 +89,12 @@ class GenericInputField extends React.Component<Props> {
 
   onSubmit = async e => {
     e.preventDefault();
-    await this.setState({ asyncError: false });
+    await this.setState({ asyncError: false, submitting: true });
 
     const throwsError = await this.props.handleSubmit(this.state.values);
 
     if (throwsError) {
-      this.setState({ asyncError: filterError(throwsError) });
+      this.setState({ asyncError: filterError(throwsError), submitting: false });
     }
   };
 
@@ -147,7 +150,7 @@ class GenericInputField extends React.Component<Props> {
   };
 
   render() {
-    const { values, errors } = this.state;
+    const { values, errors, submitting, asyncError } = this.state;
 
     return (
       <form
@@ -156,8 +159,10 @@ class GenericInputField extends React.Component<Props> {
         className="generic-form"
         formNoValidate={true}>
         {this.renderFields(this.props.fields)}
-        {this.state.asyncError ? (
-          <div className="generic-async-error">{this.state.asyncError}</div>
+        {asyncError ? (
+          <div className="generic-async-error">{asyncError}</div>
+        ) : !asyncError && submitting ? (
+          "Registering Domain... "
         ) : (
           ""
         )}
@@ -170,6 +175,7 @@ class GenericInputField extends React.Component<Props> {
           <button
             type="submit"
             disabled={
+              submitting ||
               Object.keys(values).length === 0 ||
               Object.values(errors).filter(err => err != false).length > 0
             }
