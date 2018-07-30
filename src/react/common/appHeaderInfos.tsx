@@ -2,8 +2,30 @@ import * as React from "react";
 import { Component } from "react";
 
 import { showStars, calculatepartsum } from "../common/functions";
+import ChoosePlanBox from "../common/choosePlanBox";
+import ChooseDepartmentBox from "../common/chooseDepartmentBox";
+
+import { graphql, compose } from "react-apollo";
+import { fetchDepartmentsData } from "../queries/departments";
 
 class AppHeaderInfos extends Component {
+  state = {
+    showReco: 0,
+    choosedPlan: 0,
+    choosedDepartment: 0
+  };
+
+  choosePlan = index => {
+    console.log("CHOOSE");
+    this.setState({ choosedPlan: index });
+    this.setState({ showReco: 0 });
+  };
+
+  changeShowHolder = a => {
+    console.log("CHANGE");
+    this.setState({ showReco: a });
+  };
+
   render() {
     return (
       <div className="appHeaderInfos">
@@ -14,7 +36,14 @@ class AppHeaderInfos extends Component {
           <div className="appHeaderPriceText">
             Buy for <small>(our recommendation)</small>
           </div>
-          <div className="appHeaderSelectDepartment">
+          <ChooseDepartmentBox
+            departments={this.props.departmentsdata.fetchDepartmentsData}
+            showHolder={this.state.showReco}
+            choosedDepartment={this.state.choosedDepartment}
+            changeShowHolder={this.changeShowHolder}
+            handleOutside={() => this.setState({ showReco: 0 })}
+          />
+          {/*<div className="appHeaderSelectDepartment">
             <span className="appHeaderSelectDepartmentText">
               everyone at Vipfy<span className="fas fa-caret-down caretApp" />
             </span>
@@ -22,26 +51,34 @@ class AppHeaderInfos extends Component {
               <span className="appHeaderSelectDepartmentOption">me</span>
               <span className="appHeaderSelectDepartmentOption">everyone at Vipfy</span>
             </div>
-          </div>
-          <div className="appHeaderSelectPlan">
-            <span className="appHeaderSelectPlanText">
-              {this.props.allPlans[0].name}
-              <span className="fas fa-caret-down caretApp" />
-            </span>
-            <div className="appHeaderSelectPlanOptionHolder">
-              <span className="appHeaderSelectPlanOption">Pipedrive Pro</span>
-              <span className="appHeaderSelectPlanOption">Pipedrive Basic</span>
-            </div>
-          </div>
+    </div>*/}
+          <ChoosePlanBox
+            plans={this.props.allPlans}
+            appid={this.props.appDetails.id}
+            choosedPlan={this.state.choosedPlan}
+            choosePlan={this.choosePlan}
+            showHolder={this.state.showReco}
+            changeShowHolder={this.changeShowHolder}
+            handleOutside={() => this.setState({ showReco: 0 })}
+          />
           <div
             className="appHeaderBuyButton"
-            onClick={() => this.props.buyApp([this.props.allPlans[0].id])}>
+            onClick={() => this.props.buyApp([this.props.allPlans[this.state.choosedPlan].id])}>
             Subscribe now for $
-            {calculatepartsum(this.props.allPlans[0], 0, this.props.numberEmployees).toFixed(2)}
+            {calculatepartsum(
+              this.props.allPlans[this.state.choosedPlan],
+              0,
+              this.props.numberEmployees
+            ).toFixed(2)}{" "}
+            p.m.
           </div>
         </div>
       </div>
     );
   }
 }
-export default AppHeaderInfos;
+export default compose(
+  graphql(fetchDepartmentsData, {
+    name: "departmentsdata"
+  })
+)(AppHeaderInfos);

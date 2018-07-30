@@ -5,6 +5,7 @@ import { graphql, compose } from "react-apollo";
 import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "../queries/products";
 import { fetchLicences } from "../queries/auth";
 import { buyPlan } from "../mutations/products";
+import Popup from "../common/popup";
 
 import AppHeaderInfos from "../common/appHeaderInfos";
 
@@ -16,6 +17,7 @@ export type AppPageProps = {
   buyPlan: any;
   match: any;
   history: string[];
+  popup: string;
 };
 
 export type AppPageState = {
@@ -28,6 +30,8 @@ export type AppPageState = {
   totalprice: any[];
   mainprice: any[];
   imageindex: number;
+  pricingperiod: any;
+  features: any[][];
 };
 
 class AppPage extends Component<AppPageProps, AppPageState> {
@@ -40,10 +44,24 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     checkboxes: [[]],
     totalprice: [],
     mainprice: [],
-    imageindex: 0
+    imageindex: 0,
+    pricingperiod: "months",
+    features: [[]],
+    popup: null
   };
 
-  buyApp = async planIds => {
+  showPopup = type => {
+    this.setState({ popup: type });
+  };
+  closePopup = () => {
+    this.setState({ popup: null });
+  };
+
+  buyApp = planIds => {
+    this.showPopup({ type: "Check Buying", acceptFunction: this.buyAppAccepted });
+  };
+
+  buyAppAccepted = async planIds => {
     try {
       await this.props.buyPlan({
         variables: { planIds },
@@ -56,7 +74,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
   };
 
   showStars(stars) {
-    console.log("STARS", stars);
     const starsArray: JSX.Element[] = [];
     if (stars) {
       for (let n = 0; n < 5; n++) {
@@ -134,7 +151,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
   }
 
   calculatepartsum(plan, useralready, usercount): number {
-    console.log("Calc", plan, useralready, usercount);
     if (!plan) {
       return 0;
     }
@@ -187,31 +203,35 @@ class AppPage extends Component<AppPageProps, AppPageState> {
   }
 
   showPlans(plans, usercount) {
-    console.log("Plans", plans);
     let plandivs: JSX.Element[] = [];
     let i = 0;
     if (plans) {
       plans.forEach(plan => {
-        let totalprice = this.state.totalprice[i] || this.calculatepartsum(plan, 0, usercount);
-        plandivs.push(
-          <div key={`plan-${i}`} className="planSingleHolder">
-            <div className="planHeader">
-              <div className="planTitle">{plan.name}</div>
-              <div className="planPrice">
-                <div className="planPriceBefore">starting at</div>
-                {this.calculatepartsum(plan, 0, usercount).toFixed(2)} {plan.currency}/month
+        if (
+          plan.payperiod === null ||
+          Object.keys(plan.payperiod).includes(this.state.pricingperiod)
+        ) {
+          let totalprice = this.state.totalprice[i] || this.calculatepartsum(plan, 0, usercount);
+          plandivs.push(
+            <div key={`plan-${i}`} className="planSingleHolder">
+              <div className="planHeader">
+                <div className="planTitle">{plan.name}</div>
+                <div className="planPrice">
+                  <div className="planPriceBefore">starting at</div>
+                  {this.calculatepartsum(plan, 0, usercount).toFixed(2)} {plan.currency}/month
+                </div>
+              </div>
+              <div className="planAdditionalOptions">
+                <span>Add Features</span>
+                {this.printOptionalPlans(plan.subplans, plan.numlicences, i)}
+              </div>
+              <div className="planCosts" onClick={() => this.buyApp([plan.id])}>
+                {totalprice.toFixed(2)} {plan.currency}/month
               </div>
             </div>
-            <div className="planAdditionalOptions">
-              <span>Add Features</span>
-              {this.printOptionalPlans(plan.subplans, plan.numlicences, i)}
-            </div>
-            <div className="planCosts" onClick={() => this.buyApp([plan.id])}>
-              {totalprice.toFixed(2)} {plan.currency}/month
-            </div>
-          </div>
-        );
-        i++;
+          );
+          i++;
+        }
       });
     }
     return plandivs;
@@ -223,7 +243,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     }
     let OptionalPlans: JSX.Element[] = [];
     let { optionalSliders, optionalCosts } = this.state;
-    console.log("PRINT", this, plancounter);
     for (let i = 0; i < plans.length; i++) {
       if (!optionalSliders[plancounter]) {
         optionalSliders[plancounter] = [];
@@ -302,7 +321,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     let optionalSliders = this.state.optionalSliders;
     let optionalCosts = this.state.optionalCosts;
     let totalprice = this.state.totalprice;
-    console.log("optionalSliderChange", optionalSliders[plancounter], id);
+
     if (!optionalSliders[plancounter]) {
       optionalSliders[plancounter] = [];
     }
@@ -489,15 +508,17 @@ class AppPage extends Component<AppPageProps, AppPageState> {
         this.setState(prevState => ({
           imageindex: (((prevState.imageindex - 1) % length) + length) % length
         }));
-        console.log("IMAGEID", this.state.imageindex);
       } else {
         this.setState(prevState => ({ imageindex: (prevState.imageindex + 1) % length }));
       }
     }
   }
 
+  setPricingPeriod(state) {
+    this.setState({ pricingperiod: state });
+  }
+
   showgallerydots(imagecount, active) {
-    console.log(imagecount);
     let dots: JSX.Element[] = [];
 
     for (let index = 0; index < imagecount; index++) {
@@ -512,9 +533,113 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     return dots;
   }
 
-  render() {
-    console.log("AppPage", this);
+  showNewPlans(features, plans, employees) {
+    if (!plans) {
+      return "";
+    }
+    let planfeatures: JSX.Element[] = [];
+    let printfeatures: JSX.Element[] = [];
+    let plandivs: JSX.Element[] = [];
+    let i = 0;
 
+    features.planfeatures.forEach(element => {
+      let e = {};
+      e.name = element;
+      e.listing = [];
+      planfeatures.push(e);
+    });
+
+    plans.forEach(plan => {
+      if (
+        plan.payperiod === null ||
+        Object.keys(plan.payperiod).includes(this.state.pricingperiod)
+      ) {
+        let totalprice = this.state.totalprice[i] || this.calculatepartsum(plan, 0, employees);
+        plandivs.push(
+          <div key={`plan-${i}`} className="planSingleHolder">
+            <div className="planHeader">
+              <div className="planTitle">{plan.name}</div>
+              <div className="planPrice">
+                {this.calculatepartsum(plan, 0, employees).toFixed(2) === "0.00"
+                  ? "Free"
+                  : `$${this.calculatepartsum(plan, 0, employees).toFixed(2)} p.m.`}
+              </div>
+            </div>
+            <div className="planCosts" onClick={() => this.buyApp([plan.id])}>
+              Select
+            </div>
+          </div>
+        );
+        planfeatures.forEach(feature => {
+          let f = null;
+          if (plan.features) {
+            f = plan.features.find(function(e) {
+              return e.section === feature.name;
+            });
+          }
+          if (f) {
+            feature.listing.push(f.features);
+          } else {
+            feature.listing.push(null);
+          }
+        });
+        i++;
+      }
+    });
+
+    planfeatures.forEach((section, index) => {
+      let fArray: JSX.Element[] = [];
+      let ii = 0;
+      if (section.listing) {
+        section.listing.forEach((fea, k) => {
+          if (fea) {
+            let feaArray: JSX.Element[] = [];
+            fea.forEach((feat, fid) => {
+              feaArray.push(
+                <div key={`pF-${k}-${fid}`} className="pFeature">
+                  {feat.name}
+                </div>
+              );
+            });
+
+            fea[0]
+              ? fArray.push(
+                  <div key={`PF-${k}`} className="planFeature">
+                    {feaArray}
+                  </div>
+                )
+              : fArray.push(<div key={`PF-${k}`} className="planFeature" />);
+          } else {
+            fArray.push(<div key={`PF-${k}`} className="planFeature" />);
+          }
+          ii++;
+        });
+      } else {
+        fArray.push(<div key={`PF-${k}`} className="planFeature" />);
+      }
+      printfeatures.push(
+        <div key={index}>
+          {section.name === "important" ? (
+            ""
+          ) : (
+            <div className="planFeatureHeader">{section.name}</div>
+          )}
+          <div className="planFeatureHolder">{fArray}</div>
+        </div>
+      );
+    });
+
+    //Add Header
+
+    return (
+      <div className="planMasterHolder">
+        <div className="planHeaderHolder">{plandivs}</div>
+        <div>{printfeatures}</div>
+      </div>
+    );
+  }
+
+  render() {
     let cssClass = "fullWorking paddingPage";
     if (this.props.chatopen) {
       cssClass += " chatopen";
@@ -557,44 +682,6 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 <span className="fas fa-angle-right" />
               </div>
             </div>
-            {/*<div className="appHeaderInfos">
-              <div className="appHeaderStars">{this.showStars(appDetails.avgstars)}</div>
-              <div className="appHeaderName">{appDetails.name}</div>
-              <div className="appHeaderType">{appDetails.features.type}</div>
-              <div className="appHeaderPriceHolder">
-                <div className="appHeaderPriceText">Buy for <small>(our recommendation)</small></div>
-                <div className="appHeaderSelectDepartment">
-                  <span className="appHeaderSelectDepartmentText">
-                    everyone at Vipfy<span className="fas fa-caret-down caretApp" />
-                  </span>
-                  <div className="appHeaderSelectDepartmentOptionHolder">
-                    <span className="appHeaderSelectDepartmentOption">me</span>
-                    <span className="appHeaderSelectDepartmentOption">everyone at Vipfy</span>
-                  </div>
-                </div>
-                <div className="appHeaderSelectPlan">
-                  <span className="appHeaderSelectPlanText">
-                    {this.props.productPlans.fetchPlans[0].name}
-                    <span className="fas fa-caret-down caretApp" />
-                  </span>
-                  <div className="appHeaderSelectPlanOptionHolder">
-                    <span className="appHeaderSelectPlanOption">Pipedrive Pro</span>
-                    <span className="appHeaderSelectPlanOption">Pipedrive Basic</span>
-                  </div>
-                </div>
-                <div
-                  className="appHeaderBuyButton"
-                  onClick={() => this.buyApp([this.props.productPlans.fetchPlans[0].id])}>
-                  Subscribe now for{" "}
-                  {this.calculatepartsum(
-                    this.props.productPlans.fetchPlans[0],
-                    0,
-                    this.state.numberEmployees
-                  ).toFixed(2)}
-                  $
-                </div>
-              </div>
-            </div>*/}
             <AppHeaderInfos
               appDetails={appDetails}
               allPlans={this.props.productPlans.fetchPlans}
@@ -635,18 +722,29 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             </div>
           </div>
           <div className="planSectionHolder">
-            <div className="planNumberSelector">
-              <label className="planNumberSelectorLabel" id="planNumberSelectorLabel">
-                Number Employees
-              </label>
-              <input
-                className="planNumberSelectorInput"
-                onChange={e => this.changeusers(e)}
-                value={this.state.numberEmployees}
-              />
-            </div>
+            {this.props.product.fetchAppById.features.monthly &&
+            this.props.product.fetchAppById.features.yearly ? (
+              <div className="periodSwitch">
+                <span
+                  className={this.state.pricingperiod === "months" ? "Selected" : "NonSelected"}
+                  onClick={() => this.setPricingPeriod("months")}>
+                  Monthly
+                </span>
+                <span
+                  className={this.state.pricingperiod === "years" ? "Selected" : "NonSelected"}
+                  onClick={() => this.setPricingPeriod("years")}>
+                  Yearly
+                </span>
+              </div>
+            ) : (
+              ""
+            )}
             <div className="planHolder">
-              {this.showPlans(this.props.productPlans.fetchPlans, this.state.numberEmployees)}
+              {this.showNewPlans(
+                appDetails.features,
+                this.props.productPlans.fetchPlans,
+                this.state.numberEmployees
+              )}
             </div>
           </div>
           <div className="detail-comments">
@@ -665,6 +763,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               </div>
             </div>
           </div>
+          {this.state.popup ? <Popup type={this.state.popup} close={this.closePopup} /> : ""}
         </div>
       );
     }
