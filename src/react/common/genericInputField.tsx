@@ -4,6 +4,7 @@ import LoadingDiv from "./loadingDiv";
 
 interface Props {
   fields: object[];
+  submittingMessage: string;
 }
 
 interface State {
@@ -162,7 +163,7 @@ class GenericInputField extends React.Component<Props> {
         {asyncError ? (
           <div className="generic-async-error">{asyncError}</div>
         ) : !asyncError && submitting ? (
-          "Registering Domain... "
+          this.props.submittingMessage
         ) : (
           ""
         )}

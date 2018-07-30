@@ -1,48 +1,54 @@
 $modal-z: 1000;
 $modal-wh: 50%;
 
-#overlay{
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.8);
-  z-index: $modal-z;
-  display: flex;
+#overlay {
   align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  height: 100vh;
   justify-content: center;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  z-index: $modal-z;
 }
 
 #popup {
-  background-color: white;
-  width: $modal-wh;
+  background-color: #fff;
   height: $modal-wh;
+  position: relative;
+  width: $modal-wh;
 }
 
 #popup-header {
-  display: flex;
   background: antiquewhite;
   border-bottom: 1px solid silver;
+  display: flex;
 }
 
 #popup-header-text {
-  padding-top: 5px;
   font-weight: bold;
+  padding-top: 5px;
 }
 
 #popup-close-button {
-  cursor: pointer;
-  position: relative;
-  left: 698px;
-  top: -19px;
-  font-size: 15px;
-  color: #fff;
   background-color: #082e44;
-  width: 30px;
-  height: 30px;
   border-radius: 30px;
-  line-height: 35px;
-  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  font-size: 15px;
   font-weight: bold;
+  height: 30px;
+  line-height: 35px;
+  position: absolute;
+  right: -1rem;
+  text-align: center;
+  top: -1rem;
+  width: 30px;
+}
+
+.popup-error {
+  margin-top: 5rem;
+  text-align: center;
 }

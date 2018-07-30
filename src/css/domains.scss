@@ -3,14 +3,15 @@
 #domains {
   display: flex;
   flex-direction: column;
-  width: 100%;
   padding: 1em;
+  width: 100%;
 }
 
 .register-domain {
-  max-width: 130px;
-  align-self: flex-end;
   @include vipfy-button(5px);
+  align-self: flex-end;
+  max-width: 130px;
+  min-height: 26px;
 }
 
 .domain-table {
@@ -18,20 +19,24 @@
 }
 
 .domain-header {
-  background-color: #ffeedb;
-  font-weight: bold;
   @include flex-system(center, space-around)
+  background-color: #ffeedb;
   border-bottom: 2px solid #e0e0e0;
+  font-weight: bold;
 
-  span:nth-child(2) {
-    text-align: center
+  span {
+    &:nth-child(2) {
+      text-align: center;
+    }
   }
 }
 
 .domain-header-item {
+  max-width: 170px;
+  overflow: hidden;
+  padding-left: 10px;
+  padding-right: 10px;
   width: 100%;
-  padding-left: 15px;
-  padding-right: 15px;
 }
 
 .domain-row {
@@ -53,10 +58,6 @@
 
 .domain-item-icon {
   @extend .domain-item;
-  text-align: center;
   cursor: pointer;
-}
-
-.domain-body {
-
+  text-align: center;
 }

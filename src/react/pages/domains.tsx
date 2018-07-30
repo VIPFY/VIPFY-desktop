@@ -1,5 +1,5 @@
 import * as React from "react";
-import { graphql, Query } from "react-apollo";
+import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
 import Popup from "../common/popup";
 import GenericInputField from "../common/genericInputField";
@@ -10,6 +10,7 @@ import { filterError } from "../helpers";
 
 interface State {
   showModal: boolean;
+  error: string;
 }
 
 interface Props {
@@ -38,9 +39,24 @@ const fetchDomains = gql`
   }
 `;
 
+const getOneTimePassword = gql`
+  mutation {
+    getDD24Login {
+      code
+      description
+      cid
+      onetimepassword
+      loginuri
+    }
+  }
+`;
+
+const errorComp = ({ error }) => <div className="popup-error">{error}</div>;
+
 class Domains extends React.Component<Props, State> {
   state = {
-    showModal: false
+    showModal: false,
+    error: ""
   };
 
   toggle = () => this.setState(prevState => ({ showModal: !prevState.showModal }));
@@ -77,11 +93,24 @@ class Domains extends React.Component<Props, State> {
     }
   };
 
+  getDD24Login = async () => {
+    try {
+      const res = await this.props.getOneTimePassword({
+        refetchQueries: [{ query: fetchDomains }]
+      });
+
+      console.log(res);
+    } catch (err) {
+      this.setState({ error: filterError(err), showModal: true });
+    }
+  };
+
   render() {
     let cssClass = "fullWorking dashboardWorking";
     if (this.props.chatopen) {
       cssClass += " chatopen";
     }
+
     if (this.props.sidebaropen) {
       cssClass += " SidebarOpen";
     }
@@ -123,7 +152,8 @@ class Domains extends React.Component<Props, State> {
           icon: "user-secret"
         }
       ],
-      handleSubmit: this.handleSubmit
+      handleSubmit: this.handleSubmit,
+      submittingMessage: "Registering Domain... "
     };
 
     return (
@@ -175,7 +205,10 @@ class Domains extends React.Component<Props, State> {
                           <span className="domain-item">No data</span>
                           <span className="domain-item">No data</span>
                           <span className="domain-item">No data</span>
-                          <i className="fas fa-sliders-h domain-item-icon" />
+                          <i
+                            className="fas fa-sliders-h domain-item-icon"
+                            onClick={this.getDD24Login}
+                          />
                         </div>
                       );
                     });
@@ -189,13 +222,21 @@ class Domains extends React.Component<Props, State> {
         </div>
 
         {this.state.showModal ? (
-          <Popup
-            close={this.toggle}
-            popupHeader="Domain Registration"
-            popupBody={GenericInputField}
-            bodyProps={compProps}
-            onClose={this.toggle}
-          />
+          !this.state.error ? (
+            <Popup
+              popupHeader="Domain Registration"
+              popupBody={GenericInputField}
+              bodyProps={compProps}
+              onClose={this.toggle}
+            />
+          ) : (
+            <Popup
+              popupHeader="Error"
+              popupBody={errorComp}
+              bodyProps={{ error: this.state.error }}
+              onClose={this.toggle}
+            />
+          )
         ) : (
           ""
         )}
@@ -204,4 +245,7 @@ class Domains extends React.Component<Props, State> {
   }
 }
 
-export default graphql(buyPlan, { name: "buyPlan" })(Domains);
+export default compose(
+  graphql(buyPlan, { name: "buyPlan" }),
+  graphql(getOneTimePassword, { name: "getOneTimePassword" })
+)(Domains);

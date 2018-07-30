@@ -27,7 +27,7 @@ class Popup extends React.Component<Props> {
   }
 
   render() {
-    const { popupBody, bodyProps, popupHeader, close } = this.props;
+    const { popupBody, bodyProps, popupHeader, onClose } = this.props;
     const PopupBody = popupBody;
 
     return (
@@ -35,7 +35,7 @@ class Popup extends React.Component<Props> {
         <div id="popup">
           <div id="popup-header">
             <div id="popup-header-text">{popupHeader}</div>
-            <div id="popup-close-button" onClick={close}>
+            <div id="popup-close-button" onClick={onClose}>
               <i className="fas fa-times" />
             </div>
           </div>
