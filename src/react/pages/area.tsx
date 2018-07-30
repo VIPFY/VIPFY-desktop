@@ -17,6 +17,7 @@ import Billing from "./billing";
 import Advisor from "./advisor";
 import Team from "./team";
 import MessageCenter from "./messagecenter";
+import Domains from "./domains";
 
 export type AreaProps = {
   history: any[];
@@ -191,6 +192,18 @@ class Area extends Component<AreaProps, AreaState> {
             path="/area/advisor"
             render={props => (
               <Advisor
+                chatopen={this.state.chatopen}
+                sidebaropen={this.state.sidebaropen}
+                {...this.props}
+                {...props}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/area/domains"
+            render={props => (
+              <Domains
                 chatopen={this.state.chatopen}
                 sidebaropen={this.state.sidebaropen}
                 {...this.props}

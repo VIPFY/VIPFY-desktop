@@ -6,6 +6,7 @@ const { shell, remote } = require("electron");
 const { session } = remote;
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
+import { fetchLicences } from '../queries/auth';
 
 export type WebViewState = {
   setUrl: string;
@@ -111,19 +112,21 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       query: gql`
       {
         fetchLicences(licenceid: ${this.state.planId}) {
+          id
           agreed
           disabled
           key
-          boughtplanid {
+          boughtPlan: boughtplanid {
             id,
-            planid {
-              appid {
+            plan: planid {
+              id
+              app: appid {
                 id,
                 loginurl
               }
             }
           }
-          unitid {
+          unit: unitid {
             id
           }
         }
@@ -131,23 +134,30 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       `,
       networkPolicy: "network-only"
     });
-    console.log("APP DATA", result)
+    console.log("APP DATA", result);
     let licence = result.data.fetchLicences[0];
-    if (licence.unitid.id !== this.state.unitId) {
+
+    if(licence.disabled) {
+      window.alert("This licence is disabled, you cannot use it");
+    } else if (!licence.agreed) {
+      window.alert("you first have to agree to the licence terms. Unfortunately this isn't implemented yet");
+    }
+
+    if (licence.unit.id !== this.state.unitId) {
       await new Promise((resolve, reject) => {
         session.fromPartition("services").clearStorageData({}, () => {
           resolve();
         });
       });
     }
-    let loginurl = licence.boughtplanid.planid.appid.loginurl
+    let loginurl = licence.boughtPlan.plan.app.loginurl;
     if (licence.key.loginurl) {
-      loginurl = licence.key.loginurl
+      loginurl = licence.key.loginurl;
     }
     this.setState({
       setUrl: loginurl,
       previousPlanId: this.state.planId,
-      unitId: licence.unitid.id
+      unitId: licence.unit.id
     });
   }
 

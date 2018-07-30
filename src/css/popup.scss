@@ -1,0 +1,48 @@
+$modal-z: 1000;
+$modal-wh: 50%;
+
+#overlay{
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: $modal-z;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#popup {
+  background-color: white;
+  width: $modal-wh;
+  height: $modal-wh;
+}
+
+#popup-header {
+  display: flex;
+  background: antiquewhite;
+  border-bottom: 1px solid silver;
+}
+
+#popup-header-text {
+  padding-top: 5px;
+  font-weight: bold;
+}
+
+#popup-close-button {
+  cursor: pointer;
+  position: relative;
+  left: 698px;
+  top: -19px;
+  font-size: 15px;
+  color: #fff;
+  background-color: #082e44;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  line-height: 35px;
+  text-align: center;
+  font-weight: bold;
+}

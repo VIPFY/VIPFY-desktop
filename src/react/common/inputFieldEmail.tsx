@@ -3,7 +3,7 @@ import { Component } from "react";
 
 class InputFieldEmail extends Component {
   state = {
-    inputFoucs: false,
+    inputFocus: false,
     newEmail: ""
   };
 

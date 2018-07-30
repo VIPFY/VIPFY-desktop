@@ -34,10 +34,7 @@ class Login extends Component {
   }
 
   login = async () => {
-    const ok = await this.props.login(
-      this.emailInput.value,
-      this.passInput.value
-    );
+    const ok = await this.props.login(this.emailInput.value, this.passInput.value);
 
     if (ok === true) {
       await this.setState({ loginMove: true });
@@ -46,9 +43,7 @@ class Login extends Component {
     }
   };
 
-  forgetClick() {
-    this.setState({ forgotMove: true });
-  }
+  forgetClick = () => this.setState({ forgotMove: true });
 
   handleEnter(e, field, force) {
     if (field === 3 && (force || e.key === "Enter")) {
@@ -133,9 +128,7 @@ class Login extends Component {
             </div>
             <div
               className={
-                this.state.errorbool === false
-                  ? "formError noError"
-                  : "formError oneError"
+                this.state.errorbool === false ? "formError noError" : "formError oneError"
               }>
               {this.state.error}
             </div>
@@ -162,31 +155,21 @@ class Login extends Component {
             <div className="buttonHolder">
               <div
                 className={
-                  this.state.forgotMove
-                    ? "buttonForgot button buttonMoved"
-                    : "buttonForgot button"
+                  this.state.forgotMove ? "buttonForgot button buttonMoved" : "buttonForgot button"
                 }
                 onClick={this.forgetClick.bind(this)}>
-                <span className={this.state.forgotMove ? "buttonMove" : ""}>
-                  Forgot Password
-                </span>
+                <span className={this.state.forgotMove ? "buttonMove" : ""}>Forgot Password</span>
               </div>
               <div
                 className={
-                  this.state.loginMove
-                    ? "buttonLogin button buttonMoved"
-                    : "buttonLogin button"
+                  this.state.loginMove ? "buttonLogin button buttonMoved" : "buttonLogin button"
                 }
                 onClick={this.loginClick.bind(this)}>
-                <span className={this.state.loginMove ? "buttonMove" : ""}>
-                  Login
-                </span>
+                <span className={this.state.loginMove ? "buttonMove" : ""}>Login</span>
               </div>
             </div>
           </div>
-          <div
-            className="newUserButton button"
-            onClick={() => this.changeLogin(false)}>
+          <div className="newUserButton button" onClick={() => this.changeLogin(false)}>
             Register Now
           </div>
         </div>
@@ -194,18 +177,14 @@ class Login extends Component {
     } else {
       return (
         <div className="centralize backgroundLogo">
-          <div
-            className="newUserButton button"
-            onClick={() => this.changeLogin(true)}>
+          <div className="newUserButton button" onClick={() => this.changeLogin(true)}>
             Already registered? Login Now
           </div>
           <div className="loginHolder">
             <div className="formHeading">Please register</div>
             <div
               className={
-                this.state.errorbool === false
-                  ? "formError noError"
-                  : "formError oneError"
+                this.state.errorbool === false ? "formError noError" : "formError oneError"
               }>
               {this.state.error}
             </div>
@@ -222,14 +201,10 @@ class Login extends Component {
             <div className="buttonHolder">
               <div
                 className={
-                  this.state.registerMove
-                    ? "buttonLogin button buttonMoved"
-                    : "buttonLogin button"
+                  this.state.registerMove ? "buttonLogin button buttonMoved" : "buttonLogin button"
                 }
                 onClick={() => this.registerClick()}>
-                <span className={this.state.registerMove ? "buttonMove" : ""}>
-                  Register
-                </span>
+                <span className={this.state.registerMove ? "buttonMove" : ""}>Register</span>
               </div>
               <div className="registerInfo">
                 <label>
@@ -242,7 +217,7 @@ class Login extends Component {
                       }))
                     }
                   />
-                  I agree to receive updates from<br/>Vipfy. I can revoke this at any time.
+                  I agree to receive updates from<br />Vipfy. I can revoke this at any time.
                 </label>
               </div>
             </div>

@@ -1,0 +1,62 @@
+@import './constants.scss';
+
+#domains {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1em;
+}
+
+.register-domain {
+  max-width: 130px;
+  align-self: flex-end;
+  @include vipfy-button(5px);
+}
+
+.domain-table {
+  margin-top: 2em;
+}
+
+.domain-header {
+  background-color: #ffeedb;
+  font-weight: bold;
+  @include flex-system(center, space-around)
+  border-bottom: 2px solid #e0e0e0;
+
+  span:nth-child(2) {
+    text-align: center
+  }
+}
+
+.domain-header-item {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.domain-row {
+  @extend .domain-header;
+  background-color: #fff;
+  font-weight: normal;
+  min-height: 3em;
+
+  &:hover {
+    background: #ffeedf;
+  }
+}
+
+.domain-item {
+  @extend .domain-header-item;
+
+}
+
+
+.domain-item-icon {
+  @extend .domain-item;
+  text-align: center;
+  cursor: pointer;
+}
+
+.domain-body {
+
+}

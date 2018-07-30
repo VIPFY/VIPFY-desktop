@@ -116,6 +116,17 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     }
   }
 
+  showDomains = () => {
+    if (this.props.domains) {
+      return (
+        <li className="sidebar-link sidebar-link-important" onClick={() => this.goTo("domains")}>
+          <i className="fas fa-code sidebar-icons" />
+          {this.props.sidebaropen ? <span className="sidebar-link-caption">Domains</span> : ""}
+        </li>
+      );
+    }
+  };
+
   render() {
     if (!this.props.sidebaropen) {
       return (
@@ -134,6 +145,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             {this.showBilling()}
             {this.showTeams()}
             {this.showMarketplace()}
+            {this.showDomains()}
             {this.showApps(this.props.licences.fetchLicences, false)}
             <li
               className="sidebar-link sidebar-link-important"
@@ -163,6 +175,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             {this.showBilling()}
             {this.showTeams()}
             {this.showMarketplace()}
+            {this.showDomains()}
             {this.showApps(this.props.licences.fetchLicences, true)}
             <li
               className="sidebar-link sidebar-link-important"

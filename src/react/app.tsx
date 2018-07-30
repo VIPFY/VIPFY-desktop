@@ -35,6 +35,7 @@ export type AppState = {
   lastname: string;
   teams: boolean;
   billing: boolean;
+  domains: boolean;
   marketplace: boolean;
   employees: number;
   profilepicture: string;
@@ -49,6 +50,7 @@ class App extends Component<AppProps, AppState> {
     lastname: "",
     teams: false,
     billing: false,
+    domains: false,
     marketplace: false,
     employees: 3,
     profilepicture: "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg",
@@ -59,15 +61,14 @@ class App extends Component<AppProps, AppState> {
   logMeOut = () => {
     this.setState({ login: false });
     this.props.client.cache.reset(); //clear graphql cache
-    localStorage.setItem("token", "");
-    localStorage.setItem("refreshToken", "");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     this.props.history.push("/");
   };
 
   setName = (firstname, lastname) => {
     console.log("SETNAME", firstname, lastname);
-    this.setState({ firstname: firstname });
-    this.setState({ lastname: lastname });
+    this.setState({ firstname, lastname });
   };
 
   logMeIn = async (email, password) => {
@@ -75,18 +76,17 @@ class App extends Component<AppProps, AppState> {
       const res = await this.props.signIn({ variables: { email, password } });
       const { ok, token, refreshToken, user } = res.data.signIn;
       if (ok) {
+        const { id, firstname, lastname, teams, billing, domains, marketplace } = user;
         console.log("SIGNIN", user);
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
         this.setState({ login: true });
-        this.setState({ firstname: user.firstname });
-        this.setState({ lastname: user.lastname });
-        this.setState({ teams: user.teams });
-        this.setState({ billing: user.billing });
-        this.setState({ marketplace: user.marketplace });
+        this.setState({ firstname });
+        this.setState({ lastname });
+        this.setState({ teams, billing, domains, marketplace });
         this.setState({ profilepicture: user.profilepicture || user.company.profilepicture });
         this.setState({ employees: user.company.employees });
-        this.setState({ userid: user.id });
+        this.setState({ userid: id });
 
         this.props.history.push("/area/dashboard");
         return true;
@@ -127,6 +127,7 @@ class App extends Component<AppProps, AppState> {
   };
 
   render() {
+    const {error, login, ...userData} = this.state
     return (
       <div className="fullSize">
         <Switch>
@@ -137,7 +138,7 @@ class App extends Component<AppProps, AppState> {
               <Login
                 login={this.logMeIn}
                 register={this.registerMe}
-                error={this.state.error}
+                error={error}
                 {...props}
               />
             )}
@@ -147,16 +148,18 @@ class App extends Component<AppProps, AppState> {
             render={props => (
               <Area
                 logMeOut={this.logMeOut}
+                setName={this.setName}
                 {...props}
-                firstname={this.state.firstname}
+                {...userData}
+                {/* firstname={this.state.firstname}
                 lastname={this.state.lastname}
                 profilepicture={this.state.profilepicture}
                 teams={this.state.teams}
                 billing={this.state.billing}
+                domains={this.state.domains}
                 marketplace={this.state.marketplace}
                 employees={this.state.employees}
-                setName={this.setName}
-                userid={this.state.userid}
+                userid={this.state.userid} */}
               />
             )}
           />
