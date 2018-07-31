@@ -8,24 +8,6 @@ interface Props {
 }
 
 class Popup extends React.Component<Props> {
-  keyboardListener = event => {
-    if (event.key === "Escape" || event.keyCode === 27) {
-      this.props.onClose();
-    }
-  };
-
-  componentDidMount() {
-    if (this.props.onClose) {
-      window.addEventListener("keydown", this.keyboardListener, true);
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.props.onClose) {
-      window.removeEventListener("keydown", this.keyboardListener, true);
-    }
-  }
-
   render() {
     const { popupBody, bodyProps, popupHeader, onClose } = this.props;
     const PopupBody = popupBody;

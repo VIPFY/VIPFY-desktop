@@ -170,7 +170,7 @@ class GenericInputField extends React.Component<Props> {
 
         <div className="generic-input-buttons">
           <button type="button" className="generic-cancel" onClick={this.onCancel}>
-            <span className="fas fa-trash-alt" /> Cancel
+            <span className="fas fa-trash-alt" /> Reset
           </button>
 
           <button

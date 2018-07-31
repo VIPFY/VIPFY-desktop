@@ -69,23 +69,31 @@ class Domains extends React.Component<Props, State> {
 
       if (whoisPrivacy) {
         options.whoisprivacy = 1;
-        planIds.push(51);
       }
 
+      /* tslint:disable */
       switch (tld) {
         case "org":
           planIds.push(49);
+          if (whoisPrivacy) planIds.push(53);
+
           break;
 
         case "net":
           planIds.push(50);
+          if (whoisPrivacy) planIds.push(52);
           break;
 
         default:
           planIds.push(48);
+          if (whoisPrivacy) planIds.push(51);
       }
+      /* tslint:enable */
 
-      await this.props.buyPlan({ variables: { planIds, options } });
+      await this.props.buyPlan({
+        variables: { planIds, options },
+        refetchQueries: [{ query: fetchDomains }]
+      });
 
       this.setState(prevState => ({ showModal: !prevState.showModal }));
     } catch (err) {
@@ -95,9 +103,7 @@ class Domains extends React.Component<Props, State> {
 
   getDD24Login = async () => {
     try {
-      const res = await this.props.getOneTimePassword({
-        refetchQueries: [{ query: fetchDomains }]
-      });
+      const res = await this.props.getOneTimePassword();
 
       console.log(res);
     } catch (err) {
@@ -120,6 +126,7 @@ class Domains extends React.Component<Props, State> {
       "Whois Privacy",
       "Registration Date",
       "End Date",
+      "Renewal",
       "Page Views",
       "Page Rank",
       "Connected Apps",
@@ -166,7 +173,7 @@ class Domains extends React.Component<Props, State> {
           <div className="domain-table">
             <div className="domain-header">
               {headers.map(header => (
-                <span key={header} className="domain-header-item">
+                <span key={header} className="domain-item">
                   {header}
                 </span>
               ))}
@@ -189,7 +196,7 @@ class Domains extends React.Component<Props, State> {
 
                       return (
                         <div key={id} className="domain-row">
-                          <span className="domain-item">{key.domain}</span>
+                          <span className="domain-item domain-name">{key.domain}</span>
                           <span className="domain-item">
                             <i
                               className={`fas fa-${
@@ -202,6 +209,7 @@ class Domains extends React.Component<Props, State> {
                               {item}
                             </span>
                           ))}
+                          <span className="domain-item">{key.renewal ? "Auto" : "Expire"}</span>
                           <span className="domain-item">No data</span>
                           <span className="domain-item">No data</span>
                           <span className="domain-item">No data</span>

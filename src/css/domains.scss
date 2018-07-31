@@ -1,4 +1,5 @@
 @import './constants.scss';
+$text-width: 100%;
 
 #domains {
   display: flex;
@@ -15,6 +16,8 @@
 }
 
 .domain-table {
+  display: flex;
+  flex-direction: column;
   margin-top: 2em;
 }
 
@@ -28,15 +31,24 @@
     &:nth-child(2) {
       text-align: center;
     }
+
+    &:first-child {
+      min-width: 120px;
+
+      &:hover {
+        overflow: visible;
+      }
+    }
   }
 }
 
-.domain-header-item {
+.domain-item {
   max-width: 170px;
   overflow: hidden;
   padding-left: 10px;
   padding-right: 10px;
-  width: 100%;
+  text-overflow: ellipsis;
+  width: $text-width;
 }
 
 .domain-row {
@@ -44,20 +56,32 @@
   background-color: #fff;
   font-weight: normal;
   min-height: 3em;
+  transition: 0.3s;
 
   &:hover {
     background: #ffeedf;
   }
 }
 
-.domain-item {
-  @extend .domain-header-item;
-
-}
-
-
 .domain-item-icon {
   @extend .domain-item;
   cursor: pointer;
   text-align: center;
+}
+
+@media(max-width: 1080px) {
+  .domain-table {
+    flex-direction: row;
+  }
+
+  .domain-header,
+  .domain-row {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  .domain-item {
+    padding-bottom: 1em;
+    text-align: center;
+  }
 }
