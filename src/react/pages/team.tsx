@@ -361,8 +361,13 @@ class Team extends Component {
       variables: { departmentid, boughtplanid, licencetype },
       refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }]
     });
-    if (res.data.distributeLicenceToDepartment.error || !res.data.distributeLicenceToDepartment.ok) {
-      this.showPopup(res.data.distributeLicenceToDepartment.error.message || "Something went really wrong");
+    if (
+      res.data.distributeLicenceToDepartment.error ||
+      !res.data.distributeLicenceToDepartment.ok
+    ) {
+      this.showPopup(
+        res.data.distributeLicenceToDepartment.error.message || "Something went really wrong"
+      );
     }
     this.togglePApps(departmentid);
   };
@@ -394,7 +399,9 @@ class Team extends Component {
       refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }]
     });
     if (res.data.revokeLicencesFromDepartment.error || !res.data.revokeLicencesFromDepartment.ok) {
-      this.showPopup(res.data.revokeLicencesFromDepartment.error.message || "Something went really wrong");
+      this.showPopup(
+        res.data.revokeLicencesFromDepartment.error.message || "Something went really wrong"
+      );
     }
     this.toggleBoughtInfo(departmentid, boughtplanid);
   };
@@ -426,7 +433,16 @@ class Team extends Component {
             ? this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData[0], 2)
             : ""}
         </div>
-        {this.state.popup ? <Popup type={this.state.popup} close={this.closePopup} /> : ""}
+        {this.state.popup ? (
+          <Popup
+            popupHeader="Check Order"
+            popupBody={<div>{this.state.popup}</div>}
+            bodyProps={}
+            onClose={this.closePopup}
+          />
+        ) : (
+          ""
+        )}
       </div>
     );
   }

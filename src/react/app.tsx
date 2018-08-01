@@ -127,7 +127,7 @@ class App extends Component<AppProps, AppState> {
   };
 
   render() {
-    const {error, login, ...userData} = this.state
+    const { error, login, ...userData } = this.state;
     return (
       <div className="fullSize">
         <Switch>
@@ -135,32 +135,13 @@ class App extends Component<AppProps, AppState> {
             exact
             path="/"
             render={props => (
-              <Login
-                login={this.logMeIn}
-                register={this.registerMe}
-                error={error}
-                {...props}
-              />
+              <Login login={this.logMeIn} register={this.registerMe} error={error} {...props} />
             )}
           />
           <Route
             path="/area"
             render={props => (
-              <Area
-                logMeOut={this.logMeOut}
-                setName={this.setName}
-                {...props}
-                {...userData}
-                {/* firstname={this.state.firstname}
-                lastname={this.state.lastname}
-                profilepicture={this.state.profilepicture}
-                teams={this.state.teams}
-                billing={this.state.billing}
-                domains={this.state.domains}
-                marketplace={this.state.marketplace}
-                employees={this.state.employees}
-                userid={this.state.userid} */}
-              />
+              <Area logMeOut={this.logMeOut} setName={this.setName} {...props} {...userData} />
             )}
           />
           <Route component={Bug} />

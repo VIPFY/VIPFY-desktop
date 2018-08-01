@@ -6,6 +6,7 @@ import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "..
 import { fetchLicences } from "../queries/auth";
 import { buyPlan } from "../mutations/products";
 import Popup from "../common/popup";
+import checkOrder from "../popups/checkorder";
 
 import AppHeaderInfos from "../common/appHeaderInfos";
 
@@ -17,7 +18,6 @@ export type AppPageProps = {
   buyPlan: any;
   match: any;
   history: string[];
-  popup: string;
 };
 
 export type AppPageState = {
@@ -32,6 +32,7 @@ export type AppPageState = {
   imageindex: number;
   pricingperiod: any;
   features: any[][];
+  popup: string;
 };
 
 class AppPage extends Component<AppPageProps, AppPageState> {
@@ -57,8 +58,13 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     this.setState({ popup: null });
   };
 
-  buyApp = planIds => {
-    this.showPopup({ type: "Check Buying", acceptFunction: this.buyAppAccepted });
+  buyApp = (plans, selecteddepartment) => {
+    this.showPopup({
+      type: "Check Buying",
+      acceptFunction: this.buyAppAccepted,
+      plans: plans,
+      selecteddepartment
+    });
   };
 
   buyAppAccepted = async planIds => {
@@ -67,7 +73,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
         variables: { planIds },
         refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
       });
-      this.props.history.push("/area/dashboard"); //todo: this doesn't update the dashboard and navigation
+      this.props.history.push("/area/dashboard");
     } catch (err) {
       console.log(err);
     }
@@ -763,7 +769,16 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               </div>
             </div>
           </div>
-          {this.state.popup ? <Popup type={this.state.popup} close={this.closePopup} /> : ""}
+          {this.state.popup ? (
+            <Popup
+              popupHeader="Check Order"
+              popupBody={checkOrder}
+              bodyProps={this.state.popup}
+              onClose={this.closePopup}
+            />
+          ) : (
+            ""
+          )}
         </div>
       );
     }
