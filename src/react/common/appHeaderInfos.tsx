@@ -16,13 +16,11 @@ class AppHeaderInfos extends Component {
   };
 
   choosePlan = index => {
-    console.log("CHOOSE");
     this.setState({ choosedPlan: index });
     this.setState({ showReco: 0 });
   };
 
   changeShowHolder = a => {
-    console.log("CHANGE");
     this.setState({ showReco: a });
   };
 
@@ -63,7 +61,12 @@ class AppHeaderInfos extends Component {
           />
           <div
             className="appHeaderBuyButton"
-            onClick={() => this.props.buyApp([this.props.allPlans[this.state.choosedPlan].id])}>
+            onClick={() =>
+              this.props.buyApp(
+                [this.props.allPlans[this.state.choosedPlan]],
+                this.props.departmentsdata.fetchDepartmentsData[this.state.choosedDepartment]
+              )
+            }>
             Subscribe now for $
             {calculatepartsum(
               this.props.allPlans[this.state.choosedPlan],

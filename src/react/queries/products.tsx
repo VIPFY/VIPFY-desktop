@@ -67,6 +67,7 @@ export const fetchPlans = gql`
         options
         features
         name
+        options
       }
       features
       name

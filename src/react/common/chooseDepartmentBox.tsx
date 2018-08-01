@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Component } from "react";
-import onClickOutside from "react-onclickoutside";
 
 class ChooseDepartmentBox extends Component {
   state = {};
 
   handleClickOutside = () => {
+    console.log("OUTSIDEDEPARTMENT");
     this.props.handleOutside();
   };
 
@@ -38,4 +38,4 @@ class ChooseDepartmentBox extends Component {
     );
   }
 }
-export default onClickOutside(ChooseDepartmentBox);
+export default ChooseDepartmentBox;

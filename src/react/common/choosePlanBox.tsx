@@ -8,6 +8,9 @@ class ChoosePlanBox extends Component {
   handleClickOutside = () => {
     this.props.handleOutside();
   };
+  choosePlan(key) {
+    this.props.choosePlan(key);
+  }
 
   render() {
     let planArray: JSX.Element[] = [];
@@ -18,7 +21,12 @@ class ChoosePlanBox extends Component {
         periodtext = plan.payperiod.years ? "(yearly)" : "(monthly)";
       }
       planArray.push(
-        <div className="PlanC" key={key} onClick={() => this.props.choosePlan(key)}>
+        <div
+          className="PlanC"
+          key={key}
+          onClick={() => {
+            this.choosePlan(key);
+          }}>
           {plan.name} {periodtext}
         </div>
       );
