@@ -6,7 +6,6 @@ const { shell, remote } = require("electron");
 const { session } = remote;
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
-import { fetchLicences } from '../queries/auth';
 
 export type WebViewState = {
   setUrl: string;
@@ -55,28 +54,6 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       previousPlanId: -1,
       unitId: -1
     };
-  }
-
-  private static appToUrl(app: string): string {
-    switch (app) {
-      case "vipfy":
-        return "https://vipfy.com";
-      case "pipedrive":
-        return "https://app.pipedrive.com/auth/login";
-      case "google apps":
-        return "https://docs.google.com";
-      case "weebly":
-        return "https://www.weebly.com/login";
-      case "slack":
-        return "https://slack.com";
-      case "dropbox":
-        return "https://www.dropbox.com/login";
-      //return "http://dev.vipfy.com:7000/";
-      case "moo":
-        return "https://www.moo.com/uk/account/signin.php";
-      default:
-        return "/area/dashboard?error=unknownapp";
-    }
   }
 
   static getDerivedStateFromProps(
