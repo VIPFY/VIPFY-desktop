@@ -18,9 +18,6 @@ const QUERY_GROUPS = gql`
         sendtime
         sender {
           id
-          firstname
-          lastname
-          profilepicture
         }
       }
       memberships {
@@ -48,9 +45,6 @@ const QUERY_DIALOG = gql`
       modifiedat
       sender {
         id
-        firstname
-        lastname
-        profilepicture
       }
     }
   }
@@ -75,10 +69,80 @@ const MUTATION_SENDMESSAGE = gql`
   }
 `;
 
-function InlineUser(props: { unitid: number }): JSX.Element {
-  //Optimization opportunity: try fetchFragment first, since the user data is almost always already in cache
+/**
+ * Prints a user name.
+ *
+ * userid is the currently logged in user, can be passed through from the app
+ * unitid is the id of the username to be displayed
+ *
+ * @returns {JSX.Element}
+ */
+function UserName(props: { unitid: number | null; userid: number; short?: boolean }): JSX.Element {
+  const { unitid, userid } = props;
+  const short = props.short === undefined ? false : props.short;
+  if (unitid === null || unitid === undefined) {
+    return <span>System</span>;
+  }
+  if (unitid == userid) {
+    return <span>You</span>;
+  }
   return (
-    <Query query={QUERY_USER} variables={{ userid: props.unitid }}>
+    <Query query={QUERY_USER} variables={{ userid: unitid }}>
+      {({ loading, error, data }) => {
+        if (loading) {
+          return <span />;
+        }
+        if (error) {
+          return <span>(can't fetch user data)</span>;
+        }
+
+        const userData = data.fetchPublicUser;
+        if (short) {
+          return <span>{userData.firstname}</span>;
+        } else {
+          return (
+            <span>
+              {userData.firstname} {userData.lastname}
+            </span>
+          );
+        }
+      }}
+    </Query>
+  );
+}
+
+function UserPicture(props: { unitid: number | null; userid: number; size: string }): JSX.Element {
+  const { unitid, userid, size } = props;
+  let style = {};
+  if (size == "inline") {
+    style = {
+      height: "1em",
+      width: "1em",
+      marginRight: "0.2em",
+      borderRadius: "0.5em",
+      backgroundColor: "#eee"
+    };
+  } else if (size == "twolines") {
+    style = {
+      height: "2em",
+      width: "2em",
+      marginRight: "0.5em",
+      borderRadius: "1em",
+      backgroundColor: "#eee"
+    };
+  } else if (size == "tiny") {
+    style = {
+      height: "0.5rem",
+      width: "0.5rem",
+      borderRadius: "0.25rem",
+      backgroundColor: "#eee"
+    };
+  }
+  if (unitid === null || unitid === undefined) {
+    return <span />;
+  }
+  return (
+    <Query query={QUERY_USER} variables={{ userid: unitid }}>
       {({ loading, error, data }) => {
         if (loading) {
           return <span />;
@@ -92,39 +156,40 @@ function InlineUser(props: { unitid: number }): JSX.Element {
           ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
             user.profilepicture
           : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
-        return (
-          <span>
-            <img
-              src={picture}
-              style={{
-                height: "1em",
-                width: "1em",
-                marginRight: "0.2em",
-                borderRadius: "0.5em",
-                backgroundColor: "#eee"
-              }}
-            />
-            {user.firstname} {user.lastname}
-          </span>
-        );
+        return <img src={picture} style={style} />;
       }}
     </Query>
   );
 }
 
+function InlineUser(props: {
+  unitid: number | null;
+  userid: number;
+  short?: boolean;
+}): JSX.Element {
+  //Optimization opportunity: try fetchFragment first, since the user data is almost always already in cache
+  return (
+    <span>
+      <UserPicture {...props} unitid={props.unitid} size="inline" />
+      <UserName {...props} unitid={props.unitid} />
+    </span>
+  );
+}
+
 function Message(props: { message: any; userid: number }): JSX.Element {
-  const { message, userid } = props;
-  const isMe = message.sender && message.sender.id == userid;
+  const { message } = props;
+  if (message === null || message == undefined) {
+    return <span />;
+  }
   const isSystem = !message.sender;
-  const senderName = isMe ? "You" : isSystem ? "System" : message.sender.firstname;
-  let messagetext = <div dangerouslySetInnerHTML={{__html: message.messagetext}} />;
+  let messagetext = <span dangerouslySetInnerHTML={{ __html: message.messagetext }} />;
   if (isSystem) {
     let desc = message.payload.systemmessage;
     switch (desc.type) {
       case "groupcreated":
         messagetext = (
           <span>
-            Group created by <InlineUser unitid={desc.actor} />
+            Group created by <InlineUser {...props} unitid={desc.actor} />
           </span>
         );
         break;
@@ -132,17 +197,47 @@ function Message(props: { message: any; userid: number }): JSX.Element {
         messagetext = <span />;
     }
   }
+  return messagetext;
+}
+
+function MessageReadIndicators(props: {
+  messageid: number;
+  groupid: number;
+  userid: number;
+}): JSX.Element {
   return (
-    <div>
-      {senderName}: {messagetext}
-    </div>
+    <Query query={QUERY_GROUPS}>
+      {({ loading, error, data }) => {
+        if (loading) {
+          return <span />;
+        }
+        if (error) {
+          return <span />;
+        }
+
+        const group = data.fetchGroups.find(group => group.id == props.groupid);
+        const users = group.memberships
+          .filter(membership => membership.lastreadmessageid == props.messageid)
+          .map(membership => membership.unitid.id);
+        return users.map(unitid => (
+          <span
+            key={`read${props.messageid}u${unitid}g${props.groupid}`}
+            style={{ display: "flex" }}>
+            <UserPicture {...props} unitid={unitid} size="inline" />
+          </span>
+        ));
+      }}
+    </Query>
   );
 }
 
-class MessageCenter extends Component {
+class MessageCenter extends Component<
+  { userid: number; match: any; chatopen: boolean; sidebaropen: boolean },
+  {}
+> {
   state = {};
 
-  Conversation(props: any): JSX.Element {
+  Conversation(props: { groupid: number; userid: number }): JSX.Element {
     console.log("CONVERSATION", props);
     console.log(this);
 
@@ -168,19 +263,25 @@ class MessageCenter extends Component {
                 listStyle: "none"
               }}>
               {data.fetchDialog.map(message => {
-                const picture =
-                  message.sender && message.sender.profilepicture
-                    ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
-                      message.sender.profilepicture
-                    : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
                 const isMe = message.sender && message.sender.id == props.userid;
                 return (
                   <li style={{ paddingBottom: "10px" }} key={"conversationKey" + message.id}>
                     <div style={{ width: "400px", marginLeft: isMe ? "auto" : 0, display: "flex" }}>
-                      <img className="rightProfileImage" src={picture} />
+                      <UserPicture
+                        {...props}
+                        unitid={message.sender ? message.sender.id : undefined}
+                        size="twolines"
+                      />
                       <div>
-                        <Message {...props} message={message} />
+                        <UserName
+                          {...props}
+                          unitid={message.sender ? message.sender.id : undefined}
+                          short={true}
+                        />: <Message {...props} message={message} />
                       </div>
+                    </div>
+                    <div style={{ marginLeft: "auto", width: "2em" }}>
+                      <MessageReadIndicators {...props} messageid={message.id} />
                     </div>
                   </li>
                 );
@@ -278,20 +379,12 @@ class MessageCenter extends Component {
                     const groupname = group.name
                       ? group.name
                       : grouppartners.map(p => `${p.firstname} ${p.lastname}`).join(", ");
-                    const messagetext = group.lastmessage ? group.lastmessage.messagetext : "";
                     const picture: string = group.image
                       ? group.image
                       : grouppartners.length == 1
                         ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
                           grouppartners[0].profilepicture
                         : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
-                    const senderName = group.lastmessage
-                      ? group.lastmessage.sender
-                        ? group.lastmessage.sender.id == this.props.userid
-                          ? "You"
-                          : group.lastmessage.sender.firstname
-                        : "System"
-                      : "";
                     return (
                       <Link
                         to={`/area/messagecenter/${group.id}`}
@@ -328,7 +421,15 @@ class MessageCenter extends Component {
                                 overflow: "hidden",
                                 textOverflow: "ellipsis"
                               }}>
-                              {senderName}: {messagetext}
+                              <InlineUser
+                                {...this.props}
+                                unitid={
+                                  group.lastmessage && group.lastmessage.sender
+                                    ? group.lastmessage.sender.id
+                                    : undefined
+                                }
+                                short={true}
+                              />: <Message {...this.props} message={group.lastmessage} />
                             </div>
                           </div>
                         </li>
@@ -340,18 +441,16 @@ class MessageCenter extends Component {
             }}
           </Query>
         </div>
-        <div>
-          <div
-            style={{
-              height: "100%",
-              width: "100%",
-              border: "1px solid rgba(0,0,0,0.2)",
-              margin: "10px 10px 10px 0",
-              overflow: "auto"
-            }}>
-            <this.Conversation groupid={groupid} {...this.props} />
-            <this.NewMessage groupid={groupid} {...this.props} />
-          </div>
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            border: "1px solid rgba(0,0,0,0.2)",
+            margin: "10px 10px 10px 0",
+            overflow: "auto"
+          }}>
+          <this.Conversation groupid={groupid} {...this.props} />
+          <this.NewMessage groupid={groupid} {...this.props} />
         </div>
       </div>
     );
