@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Component } from "react";
 import { graphql, compose } from "react-apollo";
 import BillHistory from "../graphs/billhistory";
 import BillNext from "../graphs/billnext";
@@ -7,14 +6,16 @@ import Cards from "react-credit-cards";
 import { fetchBills } from "../queries/billing";
 import { downloadBill } from "../mutations/billing";
 
-class Billing extends Component {
+interface Props {}
+
+interface State {
+  bills: any[];
+}
+
+class Billing extends React.Component<Props, State> {
   state = {
     bills: []
   };
-
-  componentDidMount() {
-    console.log("DIDMOUNT", this.props);
-  }
 
   downloadBill = async billid => {
     try {
@@ -55,7 +56,6 @@ class Billing extends Component {
       cssClass += " SidebarOpen";
     }
 
-    console.log("Billing", this);
     return (
       <div className={cssClass}>
         <div className="currentPaymentHolder">
@@ -89,7 +89,7 @@ class Billing extends Component {
             </div>
           </div>
           <div className="paymentDataHolder">
-            <div className="paymentDataChangeButton">Change Payment Data</div>
+            <div className="paymentDataChangeButton">Add Payment Data</div>
           </div>
         </div>
         <div className="historyPaymentHolder">

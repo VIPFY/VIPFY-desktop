@@ -2,29 +2,46 @@ import * as React from "react";
 import { Component } from "react";
 
 class ChooseDepartmentBox extends Component {
-  state = {};
+  state = {
+    value: "me"
+  };
 
   handleClickOutside = () => {
     console.log("OUTSIDEDEPARTMENT");
     this.props.handleOutside();
   };
 
+  showoptions(departments) {
+    if (departments) {
+      let departmentArray: JSX.Element[] = [];
+
+      departments.forEach((element, key) => {
+        departmentArray.push(
+          <option className="PlanD" key={key}>
+            {element.department.name}
+          </option>
+        );
+      });
+      return departmentArray;
+    }
+  }
+
+  selectDepartment = e => {
+    this.setState({ value: e.target.value });
+  };
+
   render() {
     console.log("DEPT", this.props);
-    let departmentArray: JSX.Element[] = [];
 
-    /*this.props.departmentsdata.forEach((department, key) => {
-      departmentArray.push(
-        <div className="PlanD" key={key} onClick={() => this.props.chooseDepartment(key)}>
-          {department.name}
-        </div>
-      );
-    });*/
     return (
       <div className="appHeaderSelectPlan">
-        <div onClick={() => this.props.changeShowHolder(1)}>
+        <select onChange={this.selectDepartment} value={this.state.value}>
+          <option>me</option>
+          {this.showoptions(this.props.departments)}
+        </select>
+        {/*<div onClick={() => this.props.changeShowHolder(1)}>
           <span className="appHeaderSelectPlanText">
-            {/*<this.props.departments[this.props.choosedDepartment]*/}
+            {/*<this.props.departments[this.props.choosedDepartment]}
             me
             <span className="fas fa-caret-down caretApp" />
           </span>

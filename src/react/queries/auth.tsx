@@ -3,10 +3,20 @@ import gql from "graphql-tag";
 export const me = gql`
   query Me {
     me {
-      id
       emails
+      id
       firstname
       lastname
+      teams
+      domains
+      marketplace
+      billing
+      profilepicture
+      company {
+        profilepicture
+        employees
+        name
+      }
     }
   }
 `;

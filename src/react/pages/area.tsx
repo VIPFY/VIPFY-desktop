@@ -53,194 +53,170 @@ class Area extends Component<AreaProps, AreaState> {
     this.setState({ sidebaropen: !this.state.sidebaropen });
   };
 
-  /* loggedIn = async () => {
-    try {
-      const res = await this.props.me.refetch();
-      if (res) {
-        return true;
-      }
-    } catch (err) {
-      console.log("ErrorLI", err);
-      this.props.logMeOut();
-      return false;
-    }
-    this.props.logMeOut();
-    return false;
-  };*/
-  loggedIn = () => {
-    return true;
-  };
-
   render() {
-    if (this.loggedIn()) {
-      console.log("AREA", this.props);
-      return (
-        <div className="area">
-          <Route
-            render={props => (
-              <Sidebar
-                sidebaropen={this.state.sidebaropen}
-                setapp={this.setapp}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            render={props => (
-              <Navigation
-                chatopen={this.state.chatopen}
-                setapp={this.setapp}
-                toggleChat={this.toggleChat}
-                toggleSidebar={this.toggleSidebar}
-                sidebaropen={this.state.sidebaropen}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            render={props => <Chat chatopen={this.state.chatopen} {...this.props} {...props} />}
-          />
-          <Route
-            exact
-            path="/area/dashboard"
-            render={props => (
-              <Dashboard
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                setapp={this.setapp}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/area/webview"
-            render={props => (
-              <Webview
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                app={this.state.app}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/area/settings"
-            render={props => (
-              <Settings
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/area/team"
-            render={props => (
-              <Team
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/area/messagecenter"
-            render={props => (
-              <MessageCenter
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            path="/area/messagecenter/:person"
-            render={props => (
-              <MessageCenter
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/area/billing"
-            render={props => (
-              <Billing
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/area/advisor"
-            render={props => (
-              <Advisor
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/area/domains"
-            render={props => (
-              <Domains
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/area/marketplace"
-            render={props => (
-              <Marketplace
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            path="/area/marketplace/:appid"
-            render={props => (
-              <AppPage
-                chatopen={this.state.chatopen}
-                sidebaropen={this.state.sidebaropen}
-                setapp={this.setapp}
-                {...this.props}
-                {...props}
-              />
-            )}
-          />
-        </div>
-      );
-    } else {
-      console.log("AREA FALSE");
-      return "";
-    }
+    return (
+      <div className="area">
+        <Route
+          render={props => (
+            <Sidebar
+              sidebaropen={this.state.sidebaropen}
+              setapp={this.setapp}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          render={props => (
+            <Navigation
+              chatopen={this.state.chatopen}
+              setapp={this.setapp}
+              toggleChat={this.toggleChat}
+              toggleSidebar={this.toggleSidebar}
+              sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          render={props => <Chat chatopen={this.state.chatopen} {...this.props} {...props} />}
+        />
+        <Route
+          exact
+          path="/area/dashboard"
+          render={props => (
+            <Dashboard
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              setapp={this.setapp}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/webview"
+          render={props => (
+            <Webview
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              app={this.state.app}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/settings"
+          render={props => (
+            <Settings
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/team"
+          render={props => (
+            <Team
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/messagecenter"
+          render={props => (
+            <MessageCenter
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          path="/area/messagecenter/:person"
+          render={props => (
+            <MessageCenter
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/billing"
+          render={props => (
+            <Billing
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/advisor"
+          render={props => (
+            <Advisor
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/domains"
+          render={props => (
+            <Domains
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/marketplace"
+          render={props => (
+            <Marketplace
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          path="/area/marketplace/:appid"
+          render={props => (
+            <AppPage
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              setapp={this.setapp}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+      </div>
+    );
   }
 }
 

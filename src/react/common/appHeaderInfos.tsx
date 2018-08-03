@@ -25,6 +25,7 @@ class AppHeaderInfos extends Component {
   };
 
   render() {
+    console.log("DD", this.props.departmentsdata);
     return (
       <div className="appHeaderInfos">
         <div className="appHeaderStars">{showStars(this.props.appDetails.avgstars)}</div>
