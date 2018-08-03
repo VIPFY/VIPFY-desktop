@@ -300,7 +300,12 @@ class MessageCenter extends Component<
       return <span />;
     }
     return (
-      <Mutation mutation={MUTATION_SENDMESSAGE}>
+      <Mutation
+        mutation={MUTATION_SENDMESSAGE}
+        refetchQueries={[
+          { query: QUERY_DIALOG, variables: { groupid: props.groupid } },
+          { query: QUERY_GROUPS }
+        ]}>
         {(sendMessage, { data }) => (
           <div>
             <form
