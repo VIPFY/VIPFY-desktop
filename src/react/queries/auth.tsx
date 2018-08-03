@@ -13,6 +13,9 @@ export const me = gql`
       billing
       profilepicture
       company {
+        unit: unitid {
+          id
+        }
         profilepicture
         employees
         name

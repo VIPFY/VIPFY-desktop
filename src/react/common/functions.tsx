@@ -74,3 +74,18 @@ export function calculatepartsum(plan, useralready, usercount): number {
       return calculatedprice + minnosp;
   }
 }
+
+export const filterError = error => {
+  console.log(error);
+  if (error.networkError) {
+    return "Sorry, something went wrong.";
+  } else if (error.graphQLErrors) {
+    return error.graphQLErrors["0"].message;
+  } else {
+    return error.message;
+  }
+};
+
+export const AppContext = React.createContext();
+
+export const ErrorComp = ({ error }) => <div className="generic-error">{error}</div>;

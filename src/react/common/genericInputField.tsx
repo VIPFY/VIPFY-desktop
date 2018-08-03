@@ -1,5 +1,5 @@
 import * as React from "react";
-import { filterError } from "../helpers";
+import { filterError } from "./functions";
 import LoadingDiv from "./loadingDiv";
 
 interface Props {
@@ -145,7 +145,7 @@ class GenericInputField extends React.Component<Props> {
           )}
         </label>
 
-        {errors[name] ? <span className="generic-error">{errors[name]}</span> : ""}
+        {errors[name] ? <span className="generic-input-error">{errors[name]}</span> : ""}
       </div>
     ));
   };

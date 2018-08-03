@@ -17,6 +17,9 @@ export const signInUser = gql`
         billing
         profilepicture
         company {
+          unit: unitid {
+            id
+          }
           profilepicture
           employees
           name

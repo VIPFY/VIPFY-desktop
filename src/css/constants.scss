@@ -1,26 +1,26 @@
-$app-logo:                  url(../images/logo-full-aaa-ai.svg);
+$app-logo:                  url('../images/logo-full-aaa-ai.svg');
 $sidebar-background:        #333;
 $sidebar-width:             15em;
-$fullWorking-background:    #f5f5f5;
+$fullworking-background:    #f5f5f5;
 $vipfy-red: #c1272d;
 $feedback: rgba(#c1272d, 0.57);
-$hover: #a12a20;
+$hover: #88221a;
 $deleted-color: #b5a0a7;
 
 @mixin flex-system($align, $justify) {
-  display: flex;
   align-items: $align;
+  display: flex;
   justify-content: $justify;
 }
 
-@mixin vipfy-button($padding:0) {
+@mixin vipfy-button($padding: 0) {
+  @include flex-system(center, center)
   background: $vipfy-red;
-  padding: $padding;
+  border: 0;
   color: #eee;
   cursor: pointer;
-  border: none;
   outline: none;
-  @include flex-system(center, center)
+  padding: $padding;
 
   i {
     font-size: 15px;
@@ -37,12 +37,12 @@ $deleted-color: #b5a0a7;
 }
 
 @mixin generic-button($color, $color-hover, $color-fb) {
-  cursor: pointer;
-  padding: 7px 15px;
   background-color: $color;
+  border: 0;
   color: #fff;
-  border: none;
+  cursor: pointer;
   outline: none;
+  padding: 7px 15px;
 
   span {
     font-size: 15px;
@@ -57,7 +57,7 @@ $deleted-color: #b5a0a7;
   }
 
   &:disabled {
-    cursor: not-allowed;
     background: grey;
+    cursor: not-allowed;
   }
 }

@@ -7,12 +7,12 @@ import gql from "graphql-tag";
 
 import { signInUser } from "./mutations/auth";
 import { me } from "./queries/auth";
-import { filterError } from "./helpers";
+import { filterError } from "./common/functions";
 
 import Login from "./pages/login";
 import Area from "./pages/area";
 import Bug from "./pages/bug";
-import { AppContext } from "./common/generalFunctions";
+import { AppContext } from "./common/functions";
 
 const SignUp = gql`
   mutation signUp($email: String!, $newsletter: Boolean!) {
@@ -56,7 +56,7 @@ class App extends Component<AppProps, AppState> {
     domains: false,
     marketplace: false,
     employees: 3,
-    profilepicture: "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg",
+    profilepicture: "artist.jpg",
     error: null,
     userid: -1,
     company: null
@@ -104,10 +104,7 @@ class App extends Component<AppProps, AppState> {
     //this.props.history.push("/");
   };
 
-  setName = (firstname, lastname) => {
-    console.log("SETNAME", firstname, lastname);
-    this.setState({ firstname, lastname });
-  };
+  setName = (firstname, lastname) => this.setState({ firstname, lastname });
 
   logMeIn = async (email, password) => {
     try {

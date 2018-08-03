@@ -3,7 +3,7 @@ import { Component } from "react";
 
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
-import { AppContext } from "../common/generalFunctions";
+import { AppContext } from "../common/functions";
 
 class CheckOrder extends Component {
   state = {};

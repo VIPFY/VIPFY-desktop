@@ -1,8 +1,11 @@
 import * as React from "react";
 import { graphql, compose } from "react-apollo";
+import Cards from "react-credit-cards";
 import BillHistory from "../graphs/billhistory";
 import BillNext from "../graphs/billnext";
-import Cards from "react-credit-cards";
+import Popup from "../common/popup";
+import StripeForm from "../components/StripeForm";
+import { ErrorComp } from "../common/functions";
 import { fetchBills } from "../queries/billing";
 import { downloadBill } from "../mutations/billing";
 
@@ -10,12 +13,18 @@ interface Props {}
 
 interface State {
   bills: any[];
+  showPopup: boolean;
+  error: string;
 }
 
 class Billing extends React.Component<Props, State> {
   state = {
-    bills: []
+    bills: [],
+    showPopup: false,
+    error: ""
   };
+
+  toggle = () => this.setState(prevState => ({ showPopup: !prevState.showPopup }));
 
   downloadBill = async billid => {
     try {
@@ -89,7 +98,9 @@ class Billing extends React.Component<Props, State> {
             </div>
           </div>
           <div className="paymentDataHolder">
-            <div className="paymentDataChangeButton">Add Payment Data</div>
+            <button className="paymentDataChangeButton" onClick={this.toggle}>
+              Add Payment Data
+            </button>
           </div>
         </div>
         <div className="historyPaymentHolder">
@@ -102,6 +113,26 @@ class Billing extends React.Component<Props, State> {
             <div className="billsHolder">{this.showBills(this.props.bills.fetchBills)}</div>
           </div>
         </div>
+
+        {this.state.showPopup ? (
+          !this.state.error ? (
+            <Popup
+              popupHeader="Enter your credentials"
+              popupBody={StripeForm}
+              bodyProps={{ close: this.toggle, departmentid: this.props.company.unit.id }}
+              onClose={this.toggle}
+            />
+          ) : (
+            <Popup
+              popupHeader="Error"
+              popupBody={ErrorComp}
+              bodyProps={{ error: this.state.error }}
+              onClose={this.toggle}
+            />
+          )
+        ) : (
+          ""
+        )}
       </div>
     );
   }
