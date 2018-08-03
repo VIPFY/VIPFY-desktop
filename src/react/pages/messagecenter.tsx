@@ -3,6 +3,9 @@ import { Component } from "react";
 import { Query, Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
+import InlineUser from "../components/InlineUser";
+import UserPicture from "../components/UserPicture";
+import UserName from "../components/UserName";
 
 const QUERY_GROUPS = gql`
   {
@@ -50,17 +53,6 @@ const QUERY_DIALOG = gql`
   }
 `;
 
-const QUERY_USER = gql`
-  query fetchPublicUser($userid: ID!) {
-    fetchPublicUser(userid: $userid) {
-      id
-      firstname
-      lastname
-      profilepicture
-    }
-  }
-`;
-
 const MUTATION_SENDMESSAGE = gql`
   mutation sendMessage($groupid: ID!, $message: String!) {
     sendMessage(groupid: $groupid, message: $message) {
@@ -68,113 +60,6 @@ const MUTATION_SENDMESSAGE = gql`
     }
   }
 `;
-
-/**
- * Prints a user name.
- *
- * userid is the currently logged in user, can be passed through from the app
- * unitid is the id of the username to be displayed
- *
- * @returns {JSX.Element}
- */
-function UserName(props: { unitid: number | null; userid: number; short?: boolean }): JSX.Element {
-  const { unitid, userid } = props;
-  const short = props.short === undefined ? false : props.short;
-  if (unitid === null || unitid === undefined) {
-    return <span>System</span>;
-  }
-  if (unitid == userid) {
-    return <span>You</span>;
-  }
-  return (
-    <Query query={QUERY_USER} variables={{ userid: unitid }}>
-      {({ loading, error, data }) => {
-        if (loading) {
-          return <span />;
-        }
-        if (error) {
-          return <span>(can't fetch user data)</span>;
-        }
-
-        const userData = data.fetchPublicUser;
-        if (short) {
-          return <span>{userData.firstname}</span>;
-        } else {
-          return (
-            <span>
-              {userData.firstname} {userData.lastname}
-            </span>
-          );
-        }
-      }}
-    </Query>
-  );
-}
-
-function UserPicture(props: { unitid: number | null; userid: number; size: string }): JSX.Element {
-  const { unitid, userid, size } = props;
-  let style = {};
-  if (size == "inline") {
-    style = {
-      height: "1em",
-      width: "1em",
-      marginRight: "0.2em",
-      borderRadius: "0.5em",
-      backgroundColor: "#eee"
-    };
-  } else if (size == "twolines") {
-    style = {
-      height: "2em",
-      width: "2em",
-      marginRight: "0.5em",
-      borderRadius: "1em",
-      backgroundColor: "#eee"
-    };
-  } else if (size == "tiny") {
-    style = {
-      height: "0.5rem",
-      width: "0.5rem",
-      borderRadius: "0.25rem",
-      backgroundColor: "#eee"
-    };
-  }
-  if (unitid === null || unitid === undefined) {
-    return <span />;
-  }
-  return (
-    <Query query={QUERY_USER} variables={{ userid: unitid }}>
-      {({ loading, error, data }) => {
-        if (loading) {
-          return <span />;
-        }
-        if (error) {
-          return <span>(can't fetch user data)</span>;
-        }
-
-        const user = data.fetchPublicUser;
-        const picture = user.profilepicture
-          ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
-            user.profilepicture
-          : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
-        return <img src={picture} style={style} />;
-      }}
-    </Query>
-  );
-}
-
-function InlineUser(props: {
-  unitid: number | null;
-  userid: number;
-  short?: boolean;
-}): JSX.Element {
-  //Optimization opportunity: try fetchFragment first, since the user data is almost always already in cache
-  return (
-    <span>
-      <UserPicture {...props} unitid={props.unitid} size="inline" />
-      <UserName {...props} unitid={props.unitid} />
-    </span>
-  );
-}
 
 function Message(props: { message: any; userid: number }): JSX.Element {
   const { message } = props;
