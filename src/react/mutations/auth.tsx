@@ -19,6 +19,7 @@ export const signInUser = gql`
         company {
           profilepicture
           employees
+          name
         }
       }
     }

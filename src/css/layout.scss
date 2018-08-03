@@ -1624,3 +1624,16 @@ span.paymentAddressPhone {
     text-align: center;
     line-height: 2rem;
 }
+select{
+    background-color: transparent;
+    border: none;
+    width: 100%;
+    color: #333;
+    font-family: Quicksand;
+}
+select:focus{
+    outline: none;
+}
+option{
+    border: none;
+}

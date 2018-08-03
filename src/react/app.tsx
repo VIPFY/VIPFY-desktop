@@ -6,11 +6,13 @@ import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 import { signInUser } from "./mutations/auth";
+import { me } from "./queries/auth";
 import { filterError } from "./helpers";
 
 import Login from "./pages/login";
 import Area from "./pages/area";
 import Bug from "./pages/bug";
+import { AppContext } from "./common/generalFunctions";
 
 const SignUp = gql`
   mutation signUp($email: String!, $newsletter: Boolean!) {
@@ -41,6 +43,7 @@ export type AppState = {
   profilepicture: string;
   error: string | null;
   userid: number;
+  company: any;
 };
 
 class App extends Component<AppProps, AppState> {
@@ -55,15 +58,50 @@ class App extends Component<AppProps, AppState> {
     employees: 3,
     profilepicture: "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg",
     error: null,
-    userid: -1
+    userid: -1,
+    company: null
   };
+
+  moveTo(path) {
+    console.log("THIS", this, path);
+    if (!(this.props.history.location.pathname === path)) {
+      console.log("PUSH", this.props.history.location.pathname, path);
+      this.props.history.push(path);
+    }
+  }
+
+  relogmein() {
+    if (this.props.me.error) {
+      this.logMeOut();
+    } else if (this.props.me.me) {
+      const {
+        firstname,
+        lastname,
+        teams,
+        billing,
+        domains,
+        marketplace,
+        company,
+        profilepicture,
+        id
+      } = this.props.me.me;
+      this.setState({ login: true });
+      this.setState({ firstname });
+      this.setState({ lastname });
+      this.setState({ teams, billing, domains, marketplace });
+      this.setState({ profilepicture: profilepicture || company.profilepicture });
+      this.setState({ employees: company.employees });
+      this.setState({ userid: id, company });
+    }
+  }
 
   logMeOut = () => {
     this.setState({ login: false });
     this.props.client.cache.reset(); //clear graphql cache
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
-    this.props.history.push("/");
+    this.moveTo("/");
+    //this.props.history.push("/");
   };
 
   setName = (firstname, lastname) => {
@@ -74,6 +112,7 @@ class App extends Component<AppProps, AppState> {
   logMeIn = async (email, password) => {
     try {
       const res = await this.props.signIn({ variables: { email, password } });
+      console.log("LOGOIN", res.data.signIn);
       const { ok, token, refreshToken, user } = res.data.signIn;
       if (ok) {
         const { id, firstname, lastname, teams, billing, domains, marketplace } = user;
@@ -86,9 +125,9 @@ class App extends Component<AppProps, AppState> {
         this.setState({ teams, billing, domains, marketplace });
         this.setState({ profilepicture: user.profilepicture || user.company.profilepicture });
         this.setState({ employees: user.company.employees });
-        this.setState({ userid: id });
+        this.setState({ userid: id, company: user.company });
 
-        this.props.history.push("/area/dashboard");
+        this.moveTo("/area/dashboard");
         return true;
       }
     } catch (err) {
@@ -122,14 +161,19 @@ class App extends Component<AppProps, AppState> {
       this.setState({ error: filterError(err) });
       console.log("LoginError", err);
     }
-
-    this.props.history.push("/area/advisor");
+    this.moveTo("/area/advisor");
   };
 
   render() {
     const { error, login, ...userData } = this.state;
+    if (
+      (!login || !localStorage.getItem("token")) &&
+      !(this.props.history.location.pathname === "/")
+    ) {
+      this.relogmein();
+    }
     return (
-      <div className="fullSize">
+      <AppContext.Provider value={this.state} className="fullSize">
         <Switch>
           <Route
             exact
@@ -146,12 +190,16 @@ class App extends Component<AppProps, AppState> {
           />
           <Route component={Bug} />
         </Switch>
-      </div>
+      </AppContext.Provider>
     );
   }
 }
 
 export default compose(
+  graphql(me, {
+    name: "me",
+    options: { fetchPolicy: "network-only" }
+  }),
   graphql(signInUser, {
     name: "signIn"
   }),
