@@ -1,11 +1,5 @@
 @import './constants.scss';
 
-.generic-error {
-  color: red;
-  margin-top: 1rem;
-  text-align: center;
-}
-
 .generic-form {
   display: flex;
   flex-direction: column;
@@ -20,6 +14,7 @@
   margin-left: 1em;
   outline: none;
   padding: 5px 0;
+  width: 30%;
 }
 
 .generic-input-buttons {
@@ -27,6 +22,12 @@
   justify-content: space-around;
   margin-bottom: 2em;
   margin-top: auto;
+}
+
+.generic-error {
+  color: red;
+  margin-top: 3rem;
+  text-align: center;
 }
 
 .generic-input-error {
@@ -54,18 +55,21 @@
   @include generic-button(rgb(97, 203, 40), rgb(21, 107, 30), rgb(137, 230, 100))
 }
 
-.card-data {
-  display: flex;
-  flex-flow: column;
-
-  div {
-    &:last-child {
-      margin-top: 5rem;
-    }
-  }
+.generic-submitting {
+  margin-top: 3rem;
+  text-align: center;
 }
 
 .generic-searchbar {
-  @extend searchbarHolder;
+  align-items: center;
+  display: flex;
+  line-height: 2em;
 
+  &:focus {
+    background-color: #f5f5f5;
+  }
+}
+
+.card-element {
+  margin-left: 4px;
 }

@@ -147,7 +147,7 @@ class Domains extends React.Component<Props, State> {
           name: "tld",
           type: "select",
           icon: "globe",
-          label: "Select Top Level Domain",
+          label: "Select TLD",
           options: ["com", "net", "org"],
           required: true
         },

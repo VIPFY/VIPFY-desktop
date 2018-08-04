@@ -16,12 +16,24 @@ class StripeBody extends React.Component {
   state = {
     firstName: "",
     lastName: "",
-    error: ""
+    error: "",
+    complete: false,
+    submitting: false
   };
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
 
-  submit = async (e, addCard) => {
+  handleCard = ({ error, complete }) => {
+    if (error) {
+      this.setState({ error: error.message });
+    } else {
+      this.setState({ error: "" });
+    }
+
+    this.setState({ complete });
+  };
+
+  handleSubmit = async (e, addCard) => {
     e.preventDefault();
     await this.setState({ error: "" });
     const { firstName, lastName } = this.state;
@@ -32,14 +44,19 @@ class StripeBody extends React.Component {
 
     const name = `${firstName} $lastName`;
     let { token } = await this.props.stripe.createToken({ name });
-    addCard({ variables: { data: token, id: this.props.departmentid } });
+    this.setState({ submitting: true });
+    await addCard({ variables: { data: token, id: this.props.departmentid } });
   };
 
   render() {
+    const { firstName, lastName, complete, error, submitting } = this.state;
     return (
-      <Mutation mutation={addPayment}>
-        {(addCard, { loading, error }) => (
-          <form className="card-data">
+      <Mutation
+        mutation={addPayment}
+        onError={error => this.setState({ error: filterError(error), submitting: false })}
+        onCompleted={() => this.setState({ submitting: false })}>
+        {(addCard, { loading }) => (
+          <form className="generic-form" onSubmit={e => this.handleSubmit(e, addCard)}>
             <p>Please enter your card data:</p>
             <div className="generic-searchbar">
               <div className="searchbarButton">
@@ -48,14 +65,15 @@ class StripeBody extends React.Component {
               <input
                 name="firstName"
                 className="searchbar"
+                autocomplete={true}
                 disabled={loading}
                 placeholder="First Name"
-                value={this.state.firstName}
+                value={firstName}
                 onChange={this.handleChange}
               />
             </div>
 
-            <div className="generic-searchbar" style={{ marginBottom: "5px" }}>
+            <div className="generic-searchbar" style={{ marginBottom: "8px" }}>
               <div className="searchbarButton">
                 <i className="fas fa-user" />
               </div>
@@ -64,24 +82,28 @@ class StripeBody extends React.Component {
                 className="searchbar"
                 disabled={loading}
                 placeholder="Last Name"
-                value={this.state.lastName}
+                value={lastName}
                 onChange={this.handleChange}
               />
             </div>
-
-            <CardElement className="card-element" />
-            {error ? <ErrorComp error={filterError(error)} /> : ""}
-            {this.state.error ? <ErrorComp error={this.state.error} /> : ""}
+            <div className="card-element">
+              <CardElement onChange={this.handleCard} />
+            </div>
+            {/* {error ? <ErrorComp error={filterError(error)} /> : ""} */}
+            {submitting ? (
+              <div className="generic-submitting">Submitting Credit Card information...</div>
+            ) : error ? (
+              <ErrorComp error={error} />
+            ) : (
+              ""
+            )}
 
             <div className="generic-input-buttons">
               <button disabled={loading} className="generic-cancel" onClick={this.props.close}>
                 Cancel
               </button>
 
-              <button
-                disabled={loading}
-                className="generic-submit"
-                onClick={e => this.submit(e, addCard)}>
+              <button disabled={loading || !complete} className="generic-submit" type="submit">
                 Submit
               </button>
             </div>
