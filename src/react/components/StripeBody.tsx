@@ -18,7 +18,8 @@ class StripeBody extends React.Component {
     lastName: "",
     error: "",
     complete: false,
-    submitting: false
+    submitting: false,
+    success: ""
   };
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
@@ -42,30 +43,67 @@ class StripeBody extends React.Component {
       return;
     }
 
-    const name = `${firstName} $lastName`;
+    const name = `${firstName} ${lastName}`;
     let { token } = await this.props.stripe.createToken({ name });
     this.setState({ submitting: true });
     await addCard({ variables: { data: token, id: this.props.departmentid } });
   };
 
+  handleSuccess = data => {
+    this.setState({ success: "Credit Card successfully added", submitting: false });
+
+    if (data.addPaymentData.ok) {
+      setTimeout(() => this.props.close(), 700);
+    } else {
+      this.setState({ error: "Sorry, something went wrong!" });
+    }
+  };
+
   render() {
-    const { firstName, lastName, complete, error, submitting } = this.state;
+    const { firstName, lastName, complete, error, submitting, success } = this.state;
+    const inputFields = [
+      { name: "firstName", placeholder: "First Name", value: firstName },
+      {
+        name: "lastName",
+        placeholder: "Last Name",
+        value: lastName,
+        style: { marginBottom: "8px" }
+      }
+    ];
+
     return (
       <Mutation
         mutation={addPayment}
         onError={error => this.setState({ error: filterError(error), submitting: false })}
-        onCompleted={() => this.setState({ submitting: false })}>
+        onCompleted={this.handleSuccess}>
         {(addCard, { loading }) => (
           <form className="generic-form" onSubmit={e => this.handleSubmit(e, addCard)}>
             <p>Please enter your card data:</p>
-            <div className="generic-searchbar">
+
+            {inputFields.map(({ name, placeholder, value, style }) => (
+              <div className="generic-searchbar" style={style} key={name}>
+                <div className="searchbarButton">
+                  <i className="fas fa-user" />
+                </div>
+                <input
+                  name={name}
+                  className="searchbar"
+                  autoComplete="on"
+                  disabled={loading}
+                  placeholder={placeholder}
+                  value={value}
+                  onChange={this.handleChange}
+                />
+              </div>
+            ))}
+            {/* <div className="generic-searchbar">
               <div className="searchbarButton">
                 <i className="fas fa-user" />
               </div>
               <input
                 name="firstName"
                 className="searchbar"
-                autocomplete={true}
+                autoComplete="on"
                 disabled={loading}
                 placeholder="First Name"
                 value={firstName}
@@ -80,30 +118,40 @@ class StripeBody extends React.Component {
               <input
                 name="lastName"
                 className="searchbar"
+                autoComplete="on"
                 disabled={loading}
                 placeholder="Last Name"
                 value={lastName}
                 onChange={this.handleChange}
               />
-            </div>
+            </div> */}
+
             <div className="card-element">
               <CardElement onChange={this.handleCard} />
             </div>
-            {/* {error ? <ErrorComp error={filterError(error)} /> : ""} */}
+
             {submitting ? (
               <div className="generic-submitting">Submitting Credit Card information...</div>
             ) : error ? (
               <ErrorComp error={error} />
+            ) : success ? (
+              <div className="generic-submitting">{success}</div>
             ) : (
               ""
             )}
 
             <div className="generic-input-buttons">
-              <button disabled={loading} className="generic-cancel" onClick={this.props.close}>
+              <button
+                disabled={loading || success}
+                className="generic-cancel"
+                onClick={this.props.close}>
                 Cancel
               </button>
 
-              <button disabled={loading || !complete} className="generic-submit" type="submit">
+              <button
+                disabled={loading || !complete || success}
+                className="generic-submit"
+                type="submit">
                 Submit
               </button>
             </div>
