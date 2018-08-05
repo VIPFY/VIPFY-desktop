@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import InlineUser from "../components/InlineUser";
 import UserPicture from "../components/UserPicture";
 import UserName from "../components/UserName";
+import { JsxJoin } from "../common/functions";
 
 const QUERY_GROUPS = gql`
   {
@@ -27,9 +28,6 @@ const QUERY_GROUPS = gql`
         id
         unitid {
           id
-          firstname
-          lastname
-          profilepicture
         }
         lastreadmessageid
       }
@@ -267,8 +265,8 @@ class MessageCenter extends Component<
                       .map(membership => membership.unitid)
                       .filter(unit => unit.id != this.props.userid);
                     const groupname = group.name
-                      ? group.name
-                      : grouppartners.map(p => `${p.firstname} ${p.lastname}`).join(", ");
+                      ? <span>group.name</span>
+                      : JsxJoin(grouppartners.map(p => <UserName {...this.props} unitid={p.id}/>), <span>, </span>);
                     const picture: string = group.image
                       ? group.image
                       : grouppartners.length == 1
@@ -342,6 +340,15 @@ class MessageCenter extends Component<
           <this.Conversation groupid={groupid} {...this.props} />
           <this.NewMessage groupid={groupid} {...this.props} />
         </div>
+        <div
+          style={{
+            background: "rgba(0,0,0,0.2)",
+            height: "100%",
+            width: "500px",
+            padding: "5px",
+            margin: "10px"
+          }}
+        />
       </div>
     );
   }
