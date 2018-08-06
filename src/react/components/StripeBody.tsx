@@ -2,6 +2,8 @@ import * as React from "react";
 import { CardElement, injectStripe } from "react-stripe-elements";
 import gql from "graphql-tag";
 import { Mutation } from "react-apollo";
+
+import LoadingDiv from "../components/LoadingDiv";
 import { filterError, ErrorComp } from "../common/functions";
 
 const addPayment = gql`
@@ -12,7 +14,20 @@ const addPayment = gql`
   }
 `;
 
-class StripeBody extends React.Component {
+interface State {
+  firstName: string;
+  lastName: string;
+  error: string;
+  complete: boolean;
+  submitting: boolean;
+  success: string;
+}
+
+interface Props {
+  close: function;
+}
+
+class StripeBody extends React.Component<Props, State> {
   state = {
     firstName: "",
     lastName: "",
@@ -39,14 +54,17 @@ class StripeBody extends React.Component {
     await this.setState({ error: "" });
     const { firstName, lastName } = this.state;
     if (firstName.length < 2 || lastName.length < 2) {
-      this.setState({ error: "Please enter a First and Last Name" });
-      return;
+      return this.setState({ error: "Please enter a First and Last Name" });
     }
 
     const name = `${firstName} ${lastName}`;
-    let { token } = await this.props.stripe.createToken({ name });
+    let { token, error } = await this.props.stripe.createToken({ name });
+    if (error) {
+      return this.setState({ error: error.message });
+    }
+
     this.setState({ submitting: true });
-    await addCard({ variables: { data: token, id: this.props.departmentid } });
+    await addCard({ variables: { data: res.token, id: this.props.departmentid } });
   };
 
   handleSuccess = data => {
@@ -96,42 +114,13 @@ class StripeBody extends React.Component {
                 />
               </div>
             ))}
-            {/* <div className="generic-searchbar">
-              <div className="searchbarButton">
-                <i className="fas fa-user" />
-              </div>
-              <input
-                name="firstName"
-                className="searchbar"
-                autoComplete="on"
-                disabled={loading}
-                placeholder="First Name"
-                value={firstName}
-                onChange={this.handleChange}
-              />
-            </div>
-
-            <div className="generic-searchbar" style={{ marginBottom: "8px" }}>
-              <div className="searchbarButton">
-                <i className="fas fa-user" />
-              </div>
-              <input
-                name="lastName"
-                className="searchbar"
-                autoComplete="on"
-                disabled={loading}
-                placeholder="Last Name"
-                value={lastName}
-                onChange={this.handleChange}
-              />
-            </div> */}
 
             <div className="card-element">
               <CardElement onChange={this.handleCard} />
             </div>
 
             {submitting ? (
-              <div className="generic-submitting">Submitting Credit Card information...</div>
+              <LoadingDiv text="Submitting Credit Card information..." />
             ) : error ? (
               <ErrorComp error={error} />
             ) : success ? (

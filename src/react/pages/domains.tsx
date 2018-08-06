@@ -1,12 +1,12 @@
 import * as React from "react";
 import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
-import Popup from "../common/popup";
+import Popup from "../components/Popup";
 import GenericInputField from "../common/genericInputField";
 import { ErrorComp } from "../common/functions";
 import { buyPlan } from "../mutations/products";
 import { domainValidation } from "../common/validation";
-import LoadingDiv from "../common/loadingDiv";
+import LoadingDiv from "../components/LoadingDiv";
 import { filterError } from "../common/functions";
 
 interface State {

@@ -70,7 +70,7 @@ class App extends Component<AppProps, AppState> {
     }
   }
 
-  relogmein() {
+  relogMeIn() {
     if (this.props.me.error) {
       this.logMeOut();
     } else if (this.props.me.me) {
@@ -163,11 +163,8 @@ class App extends Component<AppProps, AppState> {
 
   render() {
     const { error, login, ...userData } = this.state;
-    if (
-      (!login || !localStorage.getItem("token")) &&
-      !(this.props.history.location.pathname === "/")
-    ) {
-      this.relogmein();
+    if (!login || !localStorage.getItem("token")) {
+      this.relogMeIn();
     }
     return (
       <AppContext.Provider value={this.state} className="fullSize">

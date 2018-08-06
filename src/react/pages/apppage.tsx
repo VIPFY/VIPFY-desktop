@@ -5,7 +5,7 @@ import { graphql, compose } from "react-apollo";
 import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "../queries/products";
 import { fetchLicences } from "../queries/auth";
 import { buyPlan } from "../mutations/products";
-import Popup from "../common/popup";
+import Popup from "../components/Popup";
 import checkOrder from "../popups/checkorder";
 
 import AppHeaderInfos from "../common/appHeaderInfos";

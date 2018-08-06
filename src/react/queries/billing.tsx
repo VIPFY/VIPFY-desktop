@@ -9,3 +9,9 @@ export const fetchBills = gql`
     }
   }
 `;
+
+export const fetchCards = gql`
+  {
+    fetchPaymentData
+  }
+`;
