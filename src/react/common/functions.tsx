@@ -89,3 +89,13 @@ export const filterError = error => {
 export const AppContext = React.createContext();
 
 export const ErrorComp = ({ error }) => <div className="generic-error">{error}</div>;
+
+export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element ) => {
+  let r: JSX.Element[] = [];
+  for(let element of list) {
+    r.push(element);
+    r.push(seperator);
+  }
+  r.pop();
+  return r;
+}
