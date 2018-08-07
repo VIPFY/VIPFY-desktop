@@ -9,3 +9,16 @@ export const fetchBills = gql`
     }
   }
 `;
+
+export const fetchCards = gql`
+  {
+    fetchPaymentData {
+      id
+      brand
+      exp_month
+      exp_year
+      last4
+      name
+    }
+  }
+`;

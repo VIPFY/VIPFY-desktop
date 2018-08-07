@@ -7,12 +7,13 @@ import gql from "graphql-tag";
 
 import { signInUser } from "./mutations/auth";
 import { me } from "./queries/auth";
+import { AppContext } from "./common/functions";
 import { filterError } from "./common/functions";
 
-import Login from "./pages/login";
 import Area from "./pages/area";
 import Bug from "./pages/bug";
-import { AppContext } from "./common/functions";
+import LoadingDiv from "./components/LoadingDiv";
+import Login from "./pages/login";
 
 const SignUp = gql`
   mutation signUp($email: String!, $newsletter: Boolean!) {
@@ -63,15 +64,18 @@ class App extends Component<AppProps, AppState> {
     moveTo: path => this.moveTo(path)
   };
 
+  componentDidMount() {
+    this.props.logoutFunction(this.logMeOut);
+  }
+
   moveTo = path => {
     console.log("THIS", this, path);
     if (!(this.props.history.location.pathname === path)) {
-      console.log("PUSH", this.props.history.location.pathname, path);
       this.props.history.push(path);
     }
   };
 
-  relogmein() {
+  relogMeIn() {
     if (this.props.me.error) {
       this.logMeOut();
     } else if (this.props.me.me) {
@@ -93,6 +97,10 @@ class App extends Component<AppProps, AppState> {
       this.setState({ profilepicture: profilepicture || company.profilepicture });
       this.setState({ employees: company.employees });
       this.setState({ userid: id, company });
+
+      if (this.props.history.location.pathname === "/") {
+        this.moveTo("/area/dashboard");
+      }
     }
   }
 
@@ -164,12 +172,15 @@ class App extends Component<AppProps, AppState> {
 
   render() {
     const { error, login, ...userData } = this.state;
-    if (
-      (!login || !localStorage.getItem("token")) &&
-      !(this.props.history.location.pathname === "/")
-    ) {
-      this.relogmein();
+
+    if (this.props.me.loading) {
+      return <LoadingDiv text="Preparing Vipfy for you" />;
     }
+
+    if (!login && localStorage.getItem("token")) {
+      this.relogMeIn();
+    }
+
     return (
       <AppContext.Provider value={this.state} className="fullSize">
         <Switch>

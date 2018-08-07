@@ -9,7 +9,13 @@ import * as React from "react";
 import { Elements, StripeProvider } from "react-stripe-elements";
 import StripeBody from "./StripeBody";
 
-class StripeForm extends React.Component {
+interface State {
+  stripe: object;
+}
+
+interface Props {}
+
+class StripeForm extends React.Component<Props, State> {
   state = {
     stripe: null
   };

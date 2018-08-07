@@ -6,6 +6,7 @@ import { forEach } from "async";
 import { STATUS_CODES } from "http";
 import { ProvidedNonNullArguments } from "graphql/validation/rules/ProvidedNonNullArguments";
 import { AppContext } from "../common/functions";
+import GenericInputFields from "../components/GenericInputFields";
 
 const CreateCompany = gql`
   mutation createCompany($name: String!) {

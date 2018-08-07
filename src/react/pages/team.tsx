@@ -6,7 +6,7 @@ import UserEditTeam from "../common/userEditTeam";
 import AddEmployeeTeam from "../common/addEmployeeTeam";
 import DepartmentLicenceEdit from "../common/departmentLicenceEdit";
 import DepartmentAddApp from "../common/departmentAddApp";
-import Popup from "../common/popup";
+import Popup from "../components/Popup";
 
 import { fetchLicences } from "../queries/auth";
 

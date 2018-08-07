@@ -1,36 +1,55 @@
 import * as React from "react";
 import { graphql, compose } from "react-apollo";
-import Cards from "react-credit-cards";
+
 import BillHistory from "../graphs/billhistory";
 import BillNext from "../graphs/billnext";
-import Popup from "../common/popup";
+import CreditCard from "../components/CreditCard";
+import CreditCardSelector from "../components/CreditCardSelector";
+import LoadingDiv from "../components/LoadingDiv";
 import StripeForm from "../components/StripeForm";
+import Popup from "../components/Popup";
+
 import { ErrorComp } from "../common/functions";
-import { fetchBills } from "../queries/billing";
+import { fetchBills, fetchCards } from "../queries/billing";
 import { downloadBill } from "../mutations/billing";
 
 interface Props {}
 
 interface State {
   bills: any[];
-  showPopup: boolean;
+  popup: object;
   error: string;
 }
 
 class Billing extends React.Component<Props, State> {
   state = {
     bills: [],
-    showPopup: false,
+    popup: {
+      show: false,
+      header: "",
+      body: null,
+      props: {}
+    },
     error: ""
   };
 
-  toggle = () => this.setState(prevState => ({ showPopup: !prevState.showPopup }));
+  toggle = (body = null, props = {}, header = "") => {
+    this.setState(prevState => ({ popup: { show: !prevState.popup.show, body, props, header } }));
+  };
 
   downloadBill = async billid => {
     try {
       const res = await this.props.downloadBill({ variables: { billid } });
       console.log("DOWNLOAD", billid, res);
     } catch {
+      this.setState({
+        popup: {
+          show: true,
+          header: "Error!",
+          body: ErrorComp,
+          props: { error: "Download not possible!" }
+        }
+      });
       console.log("NO DOWNLOAD", billid);
     }
   };
@@ -57,13 +76,22 @@ class Billing extends React.Component<Props, State> {
   }
 
   render() {
+    const { chatopen, sidebaropen, cards, bills } = this.props;
+
     let cssClass = "fullWorking dashboardWorking";
-    if (this.props.chatopen) {
+    if (chatopen) {
       cssClass += " chatopen";
     }
-    if (this.props.sidebaropen) {
+    if (sidebaropen) {
       cssClass += " SidebarOpen";
     }
+
+    if (cards.loading || bills.loading) {
+      return <LoadingDiv text="Fetching bills..." />;
+    }
+
+    const normalizedCards = cards.fetchPaymentData.map(card => card);
+    const mainCard = normalizedCards.shift();
 
     return (
       <div className={cssClass}>
@@ -74,19 +102,27 @@ class Billing extends React.Component<Props, State> {
               <BillNext />
             </div>
           </div>
+
           <div className="paymentDataHolder">
             <div className="paymentDataCard">
               <label className="paymentCreditCardLabel">Current Credit Card</label>
-              <Cards
-                number="************4242"
-                name="John Doe"
-                expiry="12/21"
-                cvc="123"
-                preview={true}
-                issuer="mastercard"
-              />
+              <CreditCard {...mainCard} />
+              <div className="credit-card-change-button">
+                <button
+                  className="payment-data-change-button"
+                  onClick={() =>
+                    this.toggle(
+                      CreditCardSelector,
+                      { close: this.toggle, cards: normalizedCards },
+                      "Change default Card"
+                    )
+                  }>
+                  Change default Card
+                </button>
+              </div>
             </div>
           </div>
+
           <div className="paymentDataHolder">
             <div className="paymentDataAddress">
               <label className="paymentAddressLabel">Current Payment Address</label>
@@ -98,7 +134,15 @@ class Billing extends React.Component<Props, State> {
             </div>
           </div>
           <div className="paymentDataHolder">
-            <button className="paymentDataChangeButton" onClick={this.toggle}>
+            <button
+              className="payment-data-change-button"
+              onClick={() =>
+                this.toggle(
+                  StripeForm,
+                  { close: this.toggle, departmentid: this.props.company.unit.id },
+                  "Add another Card"
+                )
+              }>
               Add Payment Data
             </button>
           </div>
@@ -110,26 +154,17 @@ class Billing extends React.Component<Props, State> {
           </div>
           <div className="billingHistoryInvoices">
             <span className="paymentHistoryHeader">History of invoices</span>
-            <div className="billsHolder">{this.showBills(this.props.bills.fetchBills)}</div>
+            <div className="billsHolder">{this.showBills(bills.fetchBills)}</div>
           </div>
         </div>
 
-        {this.state.showPopup ? (
-          !this.state.error ? (
-            <Popup
-              popupHeader="Enter your credentials"
-              popupBody={StripeForm}
-              bodyProps={{ close: this.toggle, departmentid: this.props.company.unit.id }}
-              onClose={this.toggle}
-            />
-          ) : (
-            <Popup
-              popupHeader="Error"
-              popupBody={ErrorComp}
-              bodyProps={{ error: this.state.error }}
-              onClose={this.toggle}
-            />
-          )
+        {this.state.popup.show ? (
+          <Popup
+            popupHeader={this.state.popup.header}
+            popupBody={this.state.popup.body}
+            bodyProps={this.state.popup.props}
+            onClose={this.toggle}
+          />
         ) : (
           ""
         )}
@@ -144,5 +179,8 @@ export default compose(
   }),
   graphql(downloadBill, {
     name: "downloadBill"
+  }),
+  graphql(fetchCards, {
+    name: "cards"
   })
 )(Billing);

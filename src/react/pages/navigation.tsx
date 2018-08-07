@@ -96,7 +96,7 @@ class Navigation extends Component {
   }
 
   toggleNotificationPopup = () => {
-    this.setState({ showNotification: !this.state.showNotification });
+    this.setState(prevState => ({ showNotification: !prevState.showNotification }));
   };
 
   toggleSearch = bool => {
