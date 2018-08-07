@@ -68,9 +68,7 @@ class App extends Component<AppProps, AppState> {
   }
 
   moveTo(path) {
-    console.log("THIS", this, path);
     if (!(this.props.history.location.pathname === path)) {
-      console.log("PUSH", this.props.history.location.pathname, path);
       this.props.history.push(path);
     }
   }
