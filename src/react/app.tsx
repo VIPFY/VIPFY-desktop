@@ -59,16 +59,17 @@ class App extends Component<AppProps, AppState> {
     profilepicture: "artist.jpg",
     error: null,
     userid: -1,
-    company: null
+    company: null,
+    moveTo: path => this.moveTo(path)
   };
 
-  moveTo(path) {
+  moveTo = path => {
     console.log("THIS", this, path);
     if (!(this.props.history.location.pathname === path)) {
       console.log("PUSH", this.props.history.location.pathname, path);
       this.props.history.push(path);
     }
-  }
+  };
 
   relogmein() {
     if (this.props.me.error) {

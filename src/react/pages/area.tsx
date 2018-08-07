@@ -52,32 +52,47 @@ class Area extends Component<AreaProps, AreaState> {
   toggleSidebar = () => {
     this.setState({ sidebaropen: !this.state.sidebaropen });
   };
+  setSidebar = value => {
+    this.setState({ sidebaropen: value });
+  };
 
   render() {
     return (
       <div className="area">
         <Route
-          render={props => (
-            <Sidebar
-              sidebaropen={this.state.sidebaropen}
-              setapp={this.setapp}
-              {...this.props}
-              {...props}
-            />
-          )}
+          render={props => {
+            if (!props.location.pathname.includes("advisor")) {
+              return (
+                <Sidebar
+                  sidebaropen={this.state.sidebaropen}
+                  setapp={this.setapp}
+                  {...this.props}
+                  {...props}
+                />
+              );
+            } else {
+              return "";
+            }
+          }}
         />
         <Route
-          render={props => (
-            <Navigation
-              chatopen={this.state.chatopen}
-              setapp={this.setapp}
-              toggleChat={this.toggleChat}
-              toggleSidebar={this.toggleSidebar}
-              sidebaropen={this.state.sidebaropen}
-              {...this.props}
-              {...props}
-            />
-          )}
+          render={props => {
+            if (!props.location.pathname.includes("advisor")) {
+              return (
+                <Navigation
+                  chatopen={this.state.chatopen}
+                  setapp={this.setapp}
+                  toggleChat={this.toggleChat}
+                  toggleSidebar={this.toggleSidebar}
+                  sidebaropen={this.state.sidebaropen}
+                  {...this.props}
+                  {...props}
+                />
+              );
+            } else {
+              return "";
+            }
+          }}
         />
         <Route
           render={props => <Chat chatopen={this.state.chatopen} {...this.props} {...props} />}
@@ -174,6 +189,20 @@ class Area extends Component<AreaProps, AreaState> {
             <Advisor
               chatopen={this.state.chatopen}
               sidebaropen={this.state.sidebaropen}
+              setSidebar={this.setSidebar}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/advisor/:typeid"
+          render={props => (
+            <Advisor
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              setSidebar={this.setSidebar}
               {...this.props}
               {...props}
             />
