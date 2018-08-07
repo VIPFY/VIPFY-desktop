@@ -1,5 +1,5 @@
 import * as React from "react";
-import { filterError } from "./functions";
+import { filterError } from "../common/functions";
 import LoadingDiv from "./loadingDiv";
 
 interface Props {
