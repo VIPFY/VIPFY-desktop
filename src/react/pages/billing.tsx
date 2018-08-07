@@ -3,7 +3,8 @@ import { graphql, compose } from "react-apollo";
 
 import BillHistory from "../graphs/billhistory";
 import BillNext from "../graphs/billnext";
-import CreditCards from "../components/CreditCards";
+import CreditCard from "../components/CreditCard";
+import CreditCardSelector from "../components/CreditCardSelector";
 import LoadingDiv from "../components/LoadingDiv";
 import StripeForm from "../components/StripeForm";
 import Popup from "../components/Popup";
@@ -89,6 +90,9 @@ class Billing extends React.Component<Props, State> {
       return <LoadingDiv text="Fetching bills..." />;
     }
 
+    const normalizedCards = cards.fetchPaymentData.map(card => card);
+    const mainCard = normalizedCards.shift();
+
     return (
       <div className={cssClass}>
         <div className="currentPaymentHolder">
@@ -99,7 +103,25 @@ class Billing extends React.Component<Props, State> {
             </div>
           </div>
 
-          <CreditCards cards={cards.fetchPaymentData} />
+          <div className="paymentDataHolder">
+            <div className="paymentDataCard">
+              <label className="paymentCreditCardLabel">Current Credit Card</label>
+              <CreditCard {...mainCard} />
+              <div className="credit-card-change-button">
+                <button
+                  className="payment-data-change-button"
+                  onClick={() =>
+                    this.toggle(
+                      CreditCardSelector,
+                      { close: this.toggle, cards: normalizedCards },
+                      "Change default Card"
+                    )
+                  }>
+                  Change default Card
+                </button>
+              </div>
+            </div>
+          </div>
 
           <div className="paymentDataHolder">
             <div className="paymentDataAddress">
@@ -117,10 +139,7 @@ class Billing extends React.Component<Props, State> {
               onClick={() =>
                 this.toggle(
                   StripeForm,
-                  {
-                    close: this.toggle,
-                    departmentid: this.props.company.unit.id
-                  },
+                  { close: this.toggle, departmentid: this.props.company.unit.id },
                   "Add another Card"
                 )
               }>

@@ -7,26 +7,22 @@ interface Props {
   onClose: function;
 }
 
-class Popup extends React.Component<Props> {
-  render() {
-    const { popupBody, bodyProps, popupHeader, onClose } = this.props;
-    const PopupBody = popupBody;
+export default props => {
+  const { popupBody, bodyProps, popupHeader, onClose } = props;
+  const PopupBody = popupBody;
 
-    return (
-      <div id="overlay">
-        <div id="popup">
-          <div id="popup-header">
-            <div id="popup-header-text">{popupHeader}</div>
-            <div id="popup-close-button" onClick={onClose}>
-              <i className="fas fa-times" />
-            </div>
+  return (
+    <div id="overlay">
+      <div id="popup">
+        <div id="popup-header">
+          <div id="popup-header-text">{popupHeader}</div>
+          <div id="popup-close-button" onClick={onClose}>
+            <i className="fas fa-times" />
           </div>
-
-          <PopupBody {...bodyProps} />
         </div>
-      </div>
-    );
-  }
-}
 
-export default Popup;
+        <PopupBody {...bodyProps} />
+      </div>
+    </div>
+  );
+};

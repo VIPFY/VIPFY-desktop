@@ -8,7 +8,6 @@ import { onError } from "apollo-link-error";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
-
 const SERVER_NAME = process.env.SERVER_NAME || "dev.vipfy.com";
 const SERVER_PORT = process.env.SERVER_PORT || 4000;
 // eslint-disable-next-line
@@ -32,7 +31,9 @@ const middlewareLink = setContext(() => ({
 // Refresh the tokens after the user makes a request
 const afterwareLink = new ApolloLink((operation, forward) => {
   return forward(operation).map(response => {
-    const { response: { headers } } = operation.getContext();
+    const {
+      response: { headers }
+    } = operation.getContext();
     if (headers) {
       const token = headers.get("x-token");
       const refreshToken = headers.get("x-refresh-token");
@@ -50,11 +51,6 @@ const afterwareLink = new ApolloLink((operation, forward) => {
   });
 });
 
-// Concatenate the created middle- and afterware together
-const httpLinkWithMiddleware = afterwareLink.concat(
-  middlewareLink.concat(httpLink)
-);
-
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
 const wsLink = new WebSocketLink({
   uri: `ws${secure}://${SERVER_NAME}:${SERVER_PORT}/subscriptions`,
@@ -67,20 +63,38 @@ const wsLink = new WebSocketLink({
   }
 });
 
-const errorLink = onError(({ graphqlErrors, networkError }) => {
-  if (!secure) {
-    if (graphqlErrors) {
-      graphqlErrors.map(({ message, locations, path }) =>
-        console.log(
-          `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-        )
+// We pass our logout function here to catch malfunctioning tokens and log the
+// User out in case
+let logout = () => {
+  return;
+};
+
+export const setLogoutFunction = logoutFunc => {
+  logout = logoutFunc;
+};
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.map(({ message, locations, path }) => {
+      if (message == "Not authenticated!" || message == "Cannot read property 'user' of null") {
+        logout();
+      }
+
+      return console.log(
+        `[GraphQLError]: Message: ${message}, Location: ${locations}, Path: ${path}`
       );
-    }
-    if (networkError) {
-      console.log(`[Network error]: ${networkError}`);
-    }
+    });
+  }
+
+  if (networkError) {
+    console.log(`[Network error]: ${networkError}`);
   }
 });
+
+// Concatenate the created middle- and afterware together
+const httpLinkWithMiddleware = errorLink.concat(
+  afterwareLink.concat(middlewareLink.concat(httpLink))
+);
 
 // Split the links, so that each can be used for the defined operation
 const link = split(

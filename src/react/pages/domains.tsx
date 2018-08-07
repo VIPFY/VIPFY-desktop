@@ -3,10 +3,10 @@ import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
 import Popup from "../components/Popup";
 import GenericInputField from "../common/genericInputField";
+import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp } from "../common/functions";
 import { buyPlan } from "../mutations/products";
 import { domainValidation } from "../common/validation";
-import LoadingDiv from "../components/LoadingDiv";
 import { filterError } from "../common/functions";
 
 interface State {
@@ -132,7 +132,7 @@ class Domains extends React.Component<Props, State> {
       "Configuration"
     ];
 
-    const compProps = {
+    const compProps: { fields: object[]; handleSubmit: Function; submittingMessage: string } = {
       fields: [
         {
           name: "domainName",
@@ -159,7 +159,7 @@ class Domains extends React.Component<Props, State> {
         }
       ],
       handleSubmit: this.handleSubmit,
-      submittingMessage: "Registering Domain... "
+      submittingMessage: <LoadingDiv text="Registering Domain... " />
     };
 
     return (
@@ -182,7 +182,7 @@ class Domains extends React.Component<Props, State> {
               <Query query={fetchDomains}>
                 {({ loading, error, data }) => {
                   if (loading) {
-                    return "Loading...";
+                    return <LoadingDiv text="Loading..." />;
                   }
 
                   if (error) {

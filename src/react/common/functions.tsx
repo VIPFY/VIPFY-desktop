@@ -76,7 +76,6 @@ export function calculatepartsum(plan, useralready, usercount): number {
 }
 
 export const filterError = error => {
-  console.log(error);
   if (error.networkError) {
     return "Sorry, something went wrong.";
   } else if (error.graphQLErrors) {
@@ -90,12 +89,12 @@ export const AppContext = React.createContext();
 
 export const ErrorComp = ({ error }) => <div className="generic-error">{error}</div>;
 
-export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element ) => {
+export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element) => {
   let r: JSX.Element[] = [];
-  for(let element of list) {
+  for (let element of list) {
     r.push(element);
     r.push(seperator);
   }
   r.pop();
   return r;
-}
+};
