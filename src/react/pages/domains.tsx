@@ -2,7 +2,7 @@ import * as React from "react";
 import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
 import Popup from "../components/Popup";
-import GenericInputField from "../common/genericInputField";
+import GenericInputFields from "../components/genericInputFields";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp } from "../common/functions";
 import { buyPlan } from "../mutations/products";
@@ -232,7 +232,7 @@ class Domains extends React.Component<Props, State> {
           !this.state.error ? (
             <Popup
               popupHeader="Domain Registration"
-              popupBody={GenericInputField}
+              popupBody={GenericInputFields}
               bodyProps={compProps}
               onClose={this.toggle}
             />
