@@ -152,6 +152,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
               onClick={() => this.props.logMeOut()}>
               <span className="fas fa-sign-out-alt sidebar-icons" />
             </li>
+            <li className="sidebar-link" onClick={() => this.goTo("advisor")}>
+              <span className="fas fa-envelope sidebar-icons" />
+            </li>
           </ul>
         </div>
       );
@@ -182,6 +185,10 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
               onClick={() => this.props.logMeOut()}>
               <span className="fas fa-sign-out-alt sidebar-icons" />
               <span className="sidebar-link-caption">Logout</span>
+            </li>
+            <li className="sidebar-link" onClick={() => this.goTo("advisor")}>
+              <span className="fas fa-envelope sidebar-icons" />
+              <span className="sidebar-link-caption">advisor</span>
             </li>
           </ul>
         </div>

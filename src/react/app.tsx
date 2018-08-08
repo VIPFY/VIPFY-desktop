@@ -60,18 +60,20 @@ class App extends Component<AppProps, AppState> {
     profilepicture: "artist.jpg",
     error: null,
     userid: -1,
-    company: null
+    company: null,
+    moveTo: path => this.moveTo(path)
   };
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
   }
 
-  moveTo(path) {
+  moveTo = path => {
+    console.log("THIS", this, path);
     if (!(this.props.history.location.pathname === path)) {
       this.props.history.push(path);
     }
-  }
+  };
 
   relogMeIn() {
     if (this.props.me.error) {
