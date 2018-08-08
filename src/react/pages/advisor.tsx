@@ -2,11 +2,9 @@ import * as React from "react";
 import { Component } from "react";
 import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
-import { forEach } from "async";
-import { STATUS_CODES } from "http";
-import { ProvidedNonNullArguments } from "graphql/validation/rules/ProvidedNonNullArguments";
 import { AppContext } from "../common/functions";
-import GenericInputFields from "../components/GenericInputFields";
+import GenericInputField from "../components/GenericInputField";
+import AdvisorSidebar from "../components/AdvisorSidebar";
 
 const CreateCompany = gql`
   mutation createCompany($name: String!) {
@@ -39,8 +37,23 @@ class Advisor extends Component {
     advisorStage: 1,
     companystatistic: {},
     industry: "",
-    subindustry: ""
+    subindustry: "",
+    companyname: null,
+    focus: 0,
+    tabActive:1
   };
+
+  componentDidMount(){
+    if (this.props.match.params){
+    switch (this.props.match.params.typeid){
+    case "personfacts":
+      this.setState({advisorStage: 2})
+    break;
+    default:
+    this.setState({advisorStage: 1})
+    }
+    }
+  }
 
   goToMarketplace() {
     this.setStatisticData(this.state.companystatistic);
@@ -553,44 +566,143 @@ class Advisor extends Component {
     }
   }
 
-  showExistingCompany() {
-    return (
-      <div>
-        <div className="inputBox">
-          <span className="inputBoxTitle">Address</span>
-          <input
-            className="inputBoxField"
-            placeholder=""
-            value="COMPANY NAME"
-            disabled
-            style={{ backgroundColor: "white" }}
-          />
-          <input className="inputBoxField" placeholder="Second Line" />
-          <input className="inputBoxField" placeholder="Street" />
-          <input className="inputBoxField" placeholder="City" />
-          <input className="inputBoxField" placeholder="State" />
-          <input className="inputBoxField" placeholder="Country" />
-        </div>
-        <div className="inputBox">
-          <span className="inputBoxTitle">Revenue</span>
-          <input className="inputBoxField" placeholder="This year" />
-          <input className="inputBoxField" placeholder="Last year" />
-        </div>
-        <div className="inputBox">
-          <span className="inputBoxTitle">Number of Employees</span>
-          <input className="inputBoxField" placeholder="Number of Employees" />
-        </div>
-      </div>
-    );
+  updateState = (key, value) => {
+    console.log("SUBMIT", key value);
+    this.setState({key: value})
+  };
+
+  onEnter = async (fieldid) => {
+    console.log("ONENTER", fieldid)
+    await this.setState({focus: fieldid})
   }
 
-  showCompanyFacts(value) {
+  showRevenue(tabActive){
+    switch(tabActive){
+      case 1:
+      return(<div className="inputBox">
+      <span className="inputBoxTitle">Revenue</span>
+      <GenericInputField
+        fieldClass="inputBoxField"
+        divClass="inputBoxHolder"
+        placeholder="This year"
+        onBlur={(value) => this.setState({"thisYearRevenue": value})}
+        inputType="currency"
+        symbol="$"
+        symbolClass="inputBoxSymbol"
+        focus={this.state.focus === 7}
+        onEnter={()=>this.onEnter(8)}
+        onClick={()=>this.onEnter(7)}
+        />
+        <GenericInputField
+        fieldClass="inputBoxField"
+        divClass="inputBoxHolder"
+        placeholder="Last year"
+        onBlur={(value) => this.setState({"lastYearRevenue": value})}
+        inputType="currency"
+        symbol="$"
+        symbolClass="inputBoxSymbol"
+        focus={this.state.focus === 8}
+        onEnter={()=>this.onEnter(9)}
+        onClick={()=>this.onEnter(8)}
+        />
+    </div>)
+      case 2:
+      return(
+    <div className="inputBox">
+          <span className="inputBoxTitle">Expected Revenue</span>
+          <GenericInputField
+            fieldClass="inputBoxField"
+            divClass="inputBoxHolder"
+            placeholder="This year"
+            onBlur={(value) => this.setState({"thisYearExpectedRevenue": value})}
+            inputType="currency"
+            symbol="$"
+            symbolClass="inputBoxSymbol"
+            focus={this.state.focus === 7}
+            onEnter={()=>this.onEnter(8)}
+            onClick={()=>this.onEnter(7)}
+            />
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass="inputBoxHolder"
+            placeholder="Next year"
+            onBlur={(value) => this.setState({"nextYearExpectedRevenue": value})}
+            inputType="currency"
+            symbol="$"
+            symbolClass="inputBoxSymbol"
+            focus={this.state.focus === 8}
+            onEnter={()=>this.onEnter(9)}
+            onClick={()=>this.onEnter(8)}
+            />
+        </div>
+       )
+        case 3:
+        return(<div className="inputBox">
+        <span className="inputBoxTitle">Expected Revenue in first year of selling</span>
+        <GenericInputField
+          fieldClass="inputBoxField"
+          divClass="inputBoxHolder"
+          placeholder="This year"
+          onBlur={(value) => this.setState({"firstYearExpectedRevenue": value})}
+          inputType="currency"
+          symbol="$"
+          symbolClass="inputBoxSymbol"
+          focus={this.state.focus === 7}
+          onEnter={()=>this.onEnter(8)}
+          onClick={()=>this.onEnter(7)}
+          />
+          </div>)
+    }
+  }
+
+  showStart(tabActive){
+    if (tabActive===3) {
+      return(
+      <div className="inputBox">
+          <span className="inputBoxTitle">Expected year of market entry</span>
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass="inputBoxHolder"
+            placeholder="2019"
+            onBlur={(value) => this.setState({"expectedYearOfMarketEntry": value})}
+            inputType="number"
+            focus={this.state.focus === 8}
+            onEnter={()=>this.onEnter(9)}
+            onClick={()=>this.onEnter(8)}
+            />
+        </div>)
+    }
+  }
+
+  changeTab(tabid){
+    console.log("CHANGE", tabid)
+    this.setState({tabActive: tabid})
+  }
+
+  showCompanyFacts(value, state) {
+    console.log("STAGE", this.state)
     return (
       <div className="optionsFormularBlock">
-        <div>
+        <div style={{width: "100%"}}>
           <div className="inputBox">
             <span className="inputBoxTitle">Company Name</span>
-            <input className="inputBoxField" placeholder="Example Inc" />
+            {state.tabActive===1?<GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="Example Inc"
+            onBlur={(value) => this.setState({"companyname": value})}
+            focus={this.state.focus===0}
+            onEnter={()=>this.onEnter(2)}
+            onClick={()=>this.onEnter(0)}
+            />: <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="Example Inc"
+            onBlur={(value) => this.setState({"companyname": value})}
+            focus={this.state.focus===0}
+            onEnter={()=>this.onEnter(1)}
+            onClick={()=>this.onEnter(0)}
+            />}
           </div>
           <div className="inputBox">
             <span className="inputBoxTitle">Industry</span>
@@ -627,11 +739,91 @@ class Advisor extends Component {
           </div>
           {this.showSubIndustry(this.state.industry)}
           <div className="tabBox">
-            <div className="tab tabActive">Existing Company</div>
-            <div className="tab">Production phase</div>
-            <div className="tab">Idea phase</div>
+            <div className={this.state.tabActive===1?"tab tabActive": "tab"} onClick={() => this.changeTab(1)}>Existing Company</div>
+            <div className={this.state.tabActive===2?"tab tabActive": "tab"} onClick={() => this.changeTab(2)}>Implementation phase</div>
+            <div className={this.state.tabActive===3?"tab tabActive": "tab"} onClick={() => this.changeTab(3)}>Idea phase</div>
           </div>
-          {this.showExistingCompany()}
+          <div>
+        <div className="inputBox">
+          <span className="inputBoxTitle">Address</span>
+          {state.tabActive===1?<input
+            className="inputBoxField"
+            placeholder=""
+            value={state.companyname || "Please add company name above"}
+            disabled
+            style={{ backgroundColor: "white" }}
+          />:
+          <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="First Line"
+            onBlur={(value) => this.setState({"addressFirstLine": value})}
+            focus={this.state.focus===1}
+            onEnter={()=>this.onEnter(2)}
+            onClick={()=>this.onEnter(1)}
+            />}
+          <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="Second Line"
+            onBlur={(value) => this.setState({"addressSecondLine": value})}
+            focus={this.state.focus===2}
+            onEnter={()=>this.onEnter(3)}
+            onClick={()=>this.onEnter(2)}
+            />
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="Street"
+            onBlur={(value) => this.setState({"addressStreet": value})}
+            focus={this.state.focus===3}
+            onEnter={()=>this.onEnter(4)}
+            onClick={()=>this.onEnter(3)}
+            />
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="City"
+            onBlur={(value) => this.setState({"addressCity": value})}
+            focus={this.state.focus===4}
+            onEnter={()=>this.onEnter(5)}
+            onClick={()=>this.onEnter(4)}
+            />
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="State"
+            onBlur={(value) => this.setState({"addressState": value})}
+            focus={this.state.focus===5}
+            onEnter={()=>this.onEnter(6)}
+            onClick={()=>this.onEnter(5)}
+            />
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="Country"
+            onBlur={(value) => this.setState({"addressCountry": value})}
+            focus={this.state.focus===6}
+            onEnter={()=>this.onEnter(7)}
+            onClick={()=>this.onEnter(6)}
+            />
+        </div>
+        {this.showRevenue(this.state.tabActive)}
+        {this.showStart(this.state.tabActive)}
+        <div className="inputBox">
+          <span className="inputBoxTitle">Number of Employees</span>
+          <GenericInputField
+            fieldClass="inputBoxField"
+            divClass="inputBoxHolder"
+            placeholder="Number of Employees"
+            onBlur={(value) => this.setState({"numberOfEmployees": value})}
+            inputType="number"
+            focus={this.state.focus === 9}
+            onClick={()=>this.onEnter(9)}
+            onEnter={() => value.moveTo("/area/advisor/personfacts")}
+            />
+        </div>
+      </div>
           <div className="advisorBottomPageButtonsHolder">
             <button
               className="advisorBottomPageButtonNext"
@@ -644,7 +836,9 @@ class Advisor extends Component {
     );
   }
 
-  showExplainBlock() {
+  showExplainBlock(stage) {
+    switch(stage) {
+      case 1:
     return (
       <div className="optionsExplainBlock">
         <div className="optionsExplainTextHolder">
@@ -657,7 +851,48 @@ class Advisor extends Component {
         </div>
       </div>
     );
+    case 2:
+    return (
+      <div className="optionsExplainBlock">
+        <div className="optionsExplainTextHolder">
+          <i className="far fa-user optionsExplainIconHolder" />
+          <span className="optionsExplainHeading">Tell us a bit about yourself</span>
+          <p>
+            We use this information to set up your VIPFY-Account, find the best fitting services for
+            you and provide generel data to the service Providers.
+          </p>
+        </div>
+      </div>
+    );
   }
+  }
+
+  /*editPart(state, value){
+    switch(state.advisorStage){
+      case 1: return(this.showCompanyFacts(value, state))
+      case 2: return(this.showYourFacts(value, state))
+    }
+  }*/
+
+  /*showYourFacts(value, state){
+    return (
+      <div className="optionsFormularBlock">
+        <div style={{width: "100%"}}>
+          <div className="inputBox">
+          <span className="inputBoxTitle">Your Name</span>
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="Your Name"
+            onBlur={(value) => this.setState({"adminname": value})}
+            focus={this.state.focus===0}
+            onEnter={()=>this.onEnter(1)}
+            onClick={()=>this.onEnter(0)}
+            />
+          </div>
+        </div>
+      </div>)
+  }*/
 
   render() {
     return (
@@ -666,148 +901,13 @@ class Advisor extends Component {
           console.log("ADVISOR", this.props, value);
           return (
             <div className="optionsHolder">
-              <div className="optionsSidebar">
-                <div className="journeyHolder">
-                  <div className="journeyHeader">Your journey to your own company</div>
-                  <div
-                    className="journeyCircle"
-                    style={{
-                      position: "absolute",
-                      top: "4rem",
-                      left: "0rem"
-                    }}>
-                    Facts about your company
-                  </div>
-                  <span
-                    style={{
-                      display: "block",
-                      position: "absolute",
-                      height: "1rem",
-                      width: "5.5rem",
-                      left: "3.5rem",
-                      borderBottom: "dotted white",
-                      borderLeft: "dotted white",
-                      top: "11rem",
-                      borderRadius: "0rem 1rem"
-                    }}
-                  />
-                  <div
-                    className="journeyCircle"
-                    style={{
-                      position: "absolute",
-                      top: "9rem",
-                      left: "9rem"
-                    }}
-                    onClick={() => value.moveTo("/area/advisor/personfacts")}>
-                    Facts about you
-                  </div>
-                  <span
-                    style={{
-                      display: "block",
-                      position: "absolute",
-                      height: "4rem",
-                      width: "4.5rem",
-                      left: "8rem",
-                      borderBottom: "dotted white",
-                      borderRight: "dotted white",
-                      top: "16rem",
-                      borderRadius: "4rem 0rem"
-                    }}
-                  />
-                  <div
-                    className="journeyCircle"
-                    style={{
-                      position: "absolute",
-                      top: "17rem",
-                      left: "1rem"
-                    }}>
-                    Company Settings
-                  </div>
-                  <span
-                    style={{
-                      display: "block",
-                      position: "absolute",
-                      height: "4rem",
-                      width: "2.5rem",
-                      left: "4.5rem",
-                      borderBottom: "dotted white",
-                      borderLeft: "dotted white",
-                      top: "24rem",
-                      borderRadius: "0rem 2.5rem"
-                    }}
-                  />
-                  <div
-                    className="journeyCircle"
-                    style={{
-                      position: "absolute",
-                      top: "25rem",
-                      left: "7rem"
-                    }}>
-                    Your Account Settings
-                  </div>
-                  <span
-                    style={{
-                      display: "block",
-                      position: "absolute",
-                      height: "5rem",
-                      width: "3.5rem",
-                      left: "7rem",
-                      borderBottom: "dotted white",
-                      borderRight: "dotted white",
-                      top: "32rem",
-                      borderRadius: "3.5rem 0rem"
-                    }}
-                  />
-                  <div
-                    className="journeyCircle"
-                    style={{
-                      position: "absolute",
-                      top: "34rem",
-                      left: "0rem"
-                    }}>
-                    Service Settings
-                  </div>
-                  <span
-                    style={{
-                      display: "block",
-                      position: "absolute",
-                      height: "4rem",
-                      width: "5.5rem",
-                      left: "3.5rem",
-                      borderBottom: "dotted white",
-                      borderLeft: "dotted white",
-                      top: "41rem",
-                      borderRadius: "0rem 4rem"
-                    }}
-                  />
-                  <span
-                    style={{
-                      display: "block",
-                      position: "absolute",
-                      height: "33rem",
-                      width: "0.5rem",
-                      left: "16rem",
-                      borderBottom: "dotted white",
-                      borderRight: "dotted white",
-                      borderTop: "dotted white",
-                      top: "12rem",
-                      borderRadius: "0rem 40rem 40rem 0rem"
-                    }}
-                  />
-                  <div
-                    className="journeyCircle"
-                    style={{
-                      position: "absolute",
-                      top: "42rem",
-                      left: "9rem"
-                    }}
-                    onClick={() => value.moveTo("/area/marketplace")}>
-                    Marketplace
-                  </div>
-                </div>
-              </div>
-              {this.showCompanyFacts(value)}
-              {this.showExplainBlock()}
+              <AdvisorSidebar
+              value = {value}
+              stage = {this.state.advisorStage}
+              />
+              {/*this.editPart(this.state, value)*/}
+              {this.showCompanyFacts(value, this.state)}
+              {this.showExplainBlock(this.state.advisorStage)}
             </div>
           );
         }}

@@ -1749,6 +1749,19 @@ option{
     cursor: pointer;
     padding: 0.25rem;
 }
+.journeyDoneCircle{
+    width: 6rem;
+    border: solid white;
+    border-radius: 50%;
+    text-align: center;
+    color: black;
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.25rem;
+    background-color: #1CA543;
+}
 .journeyCircle:hover{
     background-color: #3389BF;
 }
@@ -1775,4 +1788,18 @@ option{
     font-size: 1rem;
     font-family: 'Montserrat', sans-serif;
     cursor: pointer;
+}
+.inputBoxHolder{
+    display: flex;
+    align-items: center;
+}
+.inputBoxSymbol {
+    padding-right: 0.25rem;
+    color: #357AA5;
+}
+.inputBoxError {
+    font-size: 0.5rem;
+    position: absolute;
+    right: 0;
+    color: #A52C2C;
 }
