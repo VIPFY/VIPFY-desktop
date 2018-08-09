@@ -38,7 +38,9 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     "Constructing Pylons",
     "Loading",
     "Did you know that Vipfy is cool",
-    "Just a second"
+    "Just a second",
+    "Vipfy loves you",
+    "Almost there"
   ];
 
   constructor(props: WebViewProps) {
@@ -114,10 +116,12 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     console.log("APP DATA", result);
     let licence = result.data.fetchLicences[0];
 
-    if(licence.disabled) {
+    if (licence.disabled) {
       window.alert("This licence is disabled, you cannot use it");
     } else if (!licence.agreed) {
-      window.alert("you first have to agree to the licence terms. Unfortunately this isn't implemented yet");
+      window.alert(
+        "You first have to agree to the licence terms. Unfortunately this isn't implemented yet"
+      );
     }
 
     if (licence.unit.id !== this.state.unitId) {
@@ -129,6 +133,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     }
     let loginurl = licence.boughtPlan.plan.app.loginurl;
     if (licence.key.loginurl) {
+      console.log(licence.key.loginurl);
       loginurl = licence.key.loginurl;
     }
     this.setState({
@@ -172,10 +177,12 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   }
 
   maybeHideLoadingScreen(): void {
-    let loginPageRegex =
-      "^https://(www.)?dropbox.com/?(/login.*|/logout|/plans.*)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login|^https://www.weebly.com/login";
+    let loginPageRegex = `^https://(www.)?dropbox.com/?(/login.*|/logout|/plans.*)?$|
+    ^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login|
+    ^https://www.weebly.com/login`;
+
     if (new RegExp(loginPageRegex).test(this.state.currentUrl)) {
-      console.log("Not hiding loading screen for " + this.state.currentUrl);
+      console.log(`Not hiding loading screen for ${this.state.currentUrl}`);
       return;
     }
     this.hideLoadingScreen();
@@ -205,7 +212,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
         `
       });
       console.log("LICENCE", result);
-      let key = result.data.fetchLicences[0].key;
+      let { key } = result.data.fetchLicences[0];
       console.log("chosen key", key);
       if (key === null) {
         window.alert("invalid licence");
@@ -292,12 +299,8 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           onWillNavigate={e => console.log("WillNavigate", e)}
           onDidStartLoading={e => console.log("DidStartLoading", e)}
           onDidStartNavigation={e => console.log("DidStartNavigation", e)}
-          onDidFinishLoad={e => {
-            console.log("DidFinishLoad", e);
-          }}
-          onDidStopLoading={e => {
-            console.log("DidStopLoading", e);
-          }}
+          onDidFinishLoad={e => console.log("DidFinishLoad", e)}
+          onDidStopLoading={e => console.log("DidStopLoading", e)}
           onDomReady={e => {
             console.log("DomReady", e);
             this.maybeHideLoadingScreen();
@@ -305,12 +308,8 @@ export class Webview extends Component<WebViewProps, WebViewState> {
             //  e.target.openDevTools();
             //}
           }}
-          onDialog={e => {
-            console.log("Dialog", e);
-          }}
-          onIpcMessage={e => {
-            this.onIpcMessage(e);
-          }}
+          onDialog={e => console.log("Dialog", e)}
+          onIpcMessage={e => this.onIpcMessage(e)}
         />
       </div>
     );

@@ -12,7 +12,7 @@ class Login extends Component {
     newsletter: false
   };
 
-  componentWillMount() {
+  componentDidMount() {
     if (this.props.location.state) {
       if (this.props.location.state.loginError) {
         this.setState({
@@ -29,16 +29,13 @@ class Login extends Component {
     this.handleEnter(null, null, true);
   }
 
-  loginClick() {
-    this.handleEnter(null, null, true);
-  }
+  loginClick = () => this.handleEnter(null, null, true);
 
   login = async () => {
+    await this.setState({ errorbool: false, error: "No error" });
     const ok = await this.props.login(this.emailInput.value, this.passInput.value);
 
-    if (ok === true) {
-      await this.setState({ loginMove: true });
-    } else {
+    if (ok !== true) {
       this.setState({ errorbool: true, error: ok });
     }
   };
@@ -64,7 +61,8 @@ class Login extends Component {
     if (force || e.key === "Enter") {
       let email = this.emailInput.value;
       let pass = this.passInput.value;
-      this.state.errorbool = false;
+      this.setState({ errorbool: false });
+
       if (email.includes("@") && email.includes(".") && !(pass === "")) {
         //Email Basic Check and Password not empty -> Check
         this.login();
@@ -101,21 +99,14 @@ class Login extends Component {
     }
   }
 
-  changeLogin(bool) {
-    this.state.errorbool = false;
-    this.setState({ registerMove: false });
-    this.setState({ forgotMove: false });
-    this.setState({ login: bool });
-  }
+  changeLogin = bool =>
+    this.setState({ registerMove: false, errorbool: false, forgotMove: false, login: bool });
 
-  registerClick() {
-    this.handleEnter(null, 3, true);
-  }
+  registerClick = () => this.handleEnter(null, 3, true);
 
   register() {
     this.setState({ registerMove: true });
     this.props.register(this.registerInput.value, this.state.newsletter);
-    console.log("REGISTER");
   }
 
   render() {
@@ -157,14 +148,14 @@ class Login extends Component {
                 className={
                   this.state.forgotMove ? "buttonForgot button buttonMoved" : "buttonForgot button"
                 }
-                onClick={this.forgetClick.bind(this)}>
+                onClick={this.forgetClick}>
                 <span className={this.state.forgotMove ? "buttonMove" : ""}>Forgot Password</span>
               </div>
               <div
                 className={
                   this.state.loginMove ? "buttonLogin button buttonMoved" : "buttonLogin button"
                 }
-                onClick={this.loginClick.bind(this)}>
+                onClick={this.loginClick}>
                 <span className={this.state.loginMove ? "buttonMove" : ""}>Login</span>
               </div>
             </div>

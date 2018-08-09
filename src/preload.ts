@@ -11,16 +11,18 @@
       require("./locationScripts/vipfy.ts")();
     } else if (hostMatches("(www.)?dropbox.com")) {
       require("./locationScripts/dropbox.ts")();
-    } else if (hostMatches(".*\.?pipedrive.com")) {
+    } else if (hostMatches(".*.?pipedrive.com")) {
       require("./locationScripts/pipedrive.ts")();
-    } else if (hostMatches(".*\.?wrike.com")) {
+    } else if (hostMatches(".*.?wrike.com")) {
       require("./locationScripts/wrike.ts")();
-    } else if (hostMatches(".*\.?google.com")) {
+    } else if (hostMatches(".*.?google.com")) {
       require("./locationScripts/googledocs.ts")();
-    } else if (hostMatches(".*\.?weebly.com")) {
+    } else if (hostMatches(".*.?weebly.com")) {
       require("./locationScripts/weebly.ts")();
-    } else if (hostMatches(".*\.?moo.com")) {
+    } else if (hostMatches(".*.?moo.com")) {
       require("./locationScripts/moo.ts")();
+    } else if (hostMatches(".*.?domaindiscount24.com")) {
+      require("./locationScripts/dd24.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
