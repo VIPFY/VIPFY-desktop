@@ -25,7 +25,7 @@ const INITIAL_STATE = {
   submitting: false
 };
 
-class GenericInputFields extends React.Component<Props> {
+class GenericInputForm extends React.Component<Props> {
   constructor(props) {
     super(props);
     this.genericForm = React.createRef();
@@ -188,4 +188,4 @@ class GenericInputFields extends React.Component<Props> {
     );
   }
 }
-export default GenericInputFields;
+export default GenericInputForm;
