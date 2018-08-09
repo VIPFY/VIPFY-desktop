@@ -395,6 +395,15 @@ class Advisor extends Component {
     this.setState({ subindustry: e });
     console.log("SETI", this.state);
   }
+  setEducation(e){
+    this.setState({ education: e });
+    console.log("SETI", this.state);
+  }
+
+  setJobCategory(e){
+    this.setState({ jobCategory: e });
+    console.log("SETI", this.state);
+  }
 
   showSubIndustry(industryid: String) {
     const subIndustries = {
@@ -647,30 +656,58 @@ class Advisor extends Component {
           inputType="currency"
           symbol="$"
           symbolClass="inputBoxSymbol"
-          focus={this.state.focus === 7}
-          onEnter={()=>this.onEnter(8)}
-          onClick={()=>this.onEnter(7)}
+          focus={this.state.focus === 8}
+          onEnter={()=>this.onEnter(9)}
+          onClick={()=>this.onEnter(8)}
           />
           </div>)
     }
   }
 
   showStart(tabActive){
-    if (tabActive===3) {
-      return(
-      <div className="inputBox">
-          <span className="inputBoxTitle">Expected year of market entry</span>
-            <GenericInputField
-            fieldClass="inputBoxField"
-            divClass="inputBoxHolder"
-            placeholder="2019"
-            onBlur={(value) => this.setState({"expectedYearOfMarketEntry": value})}
-            inputType="number"
-            focus={this.state.focus === 8}
-            onEnter={()=>this.onEnter(9)}
-            onClick={()=>this.onEnter(8)}
-            />
-        </div>)
+    switch (tabActive){
+      case 1: return(
+        <div className="inputBox">
+            <span className="inputBoxTitle">Founding year of company</span>
+              <GenericInputField
+              fieldClass="inputBoxField"
+              divClass="inputBoxHolder"
+              placeholder="2018"
+              onBlur={(value) => this.setState({"foundingYearOfCompany": value})}
+              inputType="number"
+              focus={this.state.focus === 9}
+              onEnter={()=>this.onEnter(10)}
+              onClick={()=>this.onEnter(9)}
+              />
+          </div>)
+      case 2: return(
+        <div className="inputBox">
+            <span className="inputBoxTitle">Founding year of company</span>
+              <GenericInputField
+              fieldClass="inputBoxField"
+              divClass="inputBoxHolder"
+              placeholder="2018"
+              onBlur={(value) => this.setState({"foundingYearOfCompany": value})}
+              inputType="number"
+              focus={this.state.focus === 9}
+              onEnter={()=>this.onEnter(10)}
+              onClick={()=>this.onEnter(9)}
+              />
+          </div>)
+      case 3: return(
+        <div className="inputBox">
+            <span className="inputBoxTitle">Expected year of market entry</span>
+              <GenericInputField
+              fieldClass="inputBoxField"
+              divClass="inputBoxHolder"
+              placeholder="2019"
+              onBlur={(value) => this.setState({"expectedYearOfMarketEntry": value})}
+              inputType="number"
+              focus={this.state.focus === 9}
+              onEnter={()=>this.onEnter(10)}
+              onClick={()=>this.onEnter(9)}
+              />
+          </div>)
     }
   }
 
@@ -818,8 +855,8 @@ class Advisor extends Component {
             placeholder="Number of Employees"
             onBlur={(value) => this.setState({"numberOfEmployees": value})}
             inputType="number"
-            focus={this.state.focus === 9}
-            onClick={()=>this.onEnter(9)}
+            focus={this.state.focus === 10}
+            onClick={()=>this.onEnter(10)}
             onEnter={() => value.moveTo("/area/advisor/personfacts")}
             />
         </div>
@@ -828,7 +865,7 @@ class Advisor extends Component {
             <button
               className="advisorBottomPageButtonNext"
               onClick={() => value.moveTo("/area/advisor/personfacts")}>
-              Next
+              Save and go to the next and last page
             </button>
           </div>
         </div>
@@ -846,7 +883,7 @@ class Advisor extends Component {
           <span className="optionsExplainHeading">Tell us a bit about your Company</span>
           <p>
             We use this information to set up your VIPFY-Account, find the best fitting services for
-            you and provide generel data to the service Providers.
+            you and provide generel data to the service Providers. Most informationen is not mandatory but they will give you an better experience on VIPFY.
           </p>
         </div>
       </div>
@@ -859,7 +896,7 @@ class Advisor extends Component {
           <span className="optionsExplainHeading">Tell us a bit about yourself</span>
           <p>
             We use this information to set up your VIPFY-Account, find the best fitting services for
-            you and provide generel data to the service Providers.
+            you and provide generel data to the service Providers. Most informationen is not mandatory but they will give you an better experience on VIPFY.
           </p>
         </div>
       </div>
@@ -867,14 +904,14 @@ class Advisor extends Component {
   }
   }
 
-  /*editPart(state, value){
+  editPart(state, value){
     switch(state.advisorStage){
       case 1: return(this.showCompanyFacts(value, state))
       case 2: return(this.showYourFacts(value, state))
     }
-  }*/
+  }
 
-  /*showYourFacts(value, state){
+  showYourFacts(value, state){
     return (
       <div className="optionsFormularBlock">
         <div style={{width: "100%"}}>
@@ -890,9 +927,255 @@ class Advisor extends Component {
             onClick={()=>this.onEnter(0)}
             />
           </div>
+          <div className="inputBox">
+          <span className="inputBoxTitle">Your Age</span>
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="Your Age"
+            onBlur={(value) => this.setState({"adminage": value})}
+            focus={this.state.focus===1}
+            onEnter={()=>this.onEnter(2)}
+            onClick={()=>this.onEnter(1)}
+            />
+          </div>
+          <div className="inputBox">
+            <span className="inputBoxTitle">Education</span>
+            <select
+              placeholder="Select Education"
+              onChange={e => this.setEducation(e.target.value)}
+              defaultValue="">
+              <option value="" disabled hidden>
+                Please choose your highest Education
+              </option>
+              <option value="highschool">
+              Highschool or equivalent
+              </option>
+              <option value="college">
+              College or equivalent
+              </option>
+              <option value="associate‎">
+              Associate or equivalent
+              </option>
+              <option value="bachelor">
+              Bachelor or equivalent
+              </option>
+              <option value="master">
+              Master or equivalent
+              </option>
+              <option value="phd">
+              PHD or other doctoral degree or equivalent
+              </option>
+              </select>
+              </div>
+
+              <div className="inputBox">
+            <span className="inputBoxTitle">Job Category</span>
+            <select
+              placeholder="Select Job Category"
+              onChange={e => this.setJobCategory(e.target.value)}
+              defaultValue="">
+              <option value="" disabled hidden>
+                Please choose your Job Category
+              </option>
+              <option value="accounting">
+              Accounting
+              </option>
+              <option value="adminClerical">
+              Admin & Clerical
+              </option>
+              <option value="automotive">
+              Automotive
+              </option>
+              <option value="banking">
+              Banking
+              </option>
+              <option value="biotech">
+              Biotech
+              </option>
+              <option value="broadcastJournalism">
+              Broadcast - Journalism
+              </option>
+              <option value="businessDevelopment">
+              Business Development
+              </option>
+              <option value="construction">
+              Construction
+              </option>
+              <option value="consultant">
+              Consultant
+              </option>
+              <option value="customerService">
+              Customer Service
+              </option>
+              <option value="design">
+              Design
+              </option>
+              <option value="distributionShipping">
+              Distribution - Shipping
+              </option>
+              <option value="educationTeaching">
+              Education - Teaching
+              </option>
+              <option value="engineering">
+              Engineering
+              </option>
+              <option value="entryLevelNewGrad">
+              Entry Level - New Grad
+              </option>
+              <option value="executive">
+              Executive
+              </option>
+              <option value="facilities">
+              Facilities
+              </option>
+              <option value="finance">
+              Finance
+              </option>
+              <option value="franchise">
+              Franchise
+              </option>
+              <option value="generalBusiness">
+              General Business
+              </option>
+              <option value="generalLabor">
+              General Labor
+              </option>
+              <option value="government">
+              Government
+              </option>
+              <option value="grocery">
+              Grocery
+              </option>
+              <option value="healthCare">
+              Health Care
+              </option>
+              <option value="hotelHospitality">
+              Hotel - Hospitality
+              </option>
+              <option value="humanResources">
+              Human Resources
+              </option>
+              <option value="informationTechnology">
+              Information Technology
+              </option>
+              <option value="installationMaintRepair">
+              Installation - Maint - Repair
+              </option>
+              <option value="insurance">
+              Insurance
+              </option>
+              <option value="inventory">
+              Inventory
+              </option>
+              <option value="legal">
+              Legal
+              </option>
+              <option value="legalAdmin">
+              Legal Admin
+              </option>
+              <option value="management">
+              Management
+              </option>
+              <option value="manufacturing">
+              Manufacturing
+              </option>
+              <option value="marketing">
+              Marketing
+              </option>
+              <option value="mediaJournalismNewspaper">
+              Media - Journalism - Newspaper
+              </option>
+              <option value="nonprofitSocialServices">
+              Nonprofit - Social Services
+              </option>
+              <option value="nurse">
+              Nurse
+              </option>
+              <option value="other">
+              Other
+              </option>
+              <option value="pharmaceutical">
+              Pharmaceutical
+              </option>
+              <option value="professionalServices">
+              Professional Services
+              </option>
+              <option value="purchasingProcurement">
+              Purchasing - Procurement
+              </option>
+              <option value="qAQualityControl">
+              QA - Quality Control
+              </option>
+              <option value="realEstate">
+              Real Estate
+              </option>
+              <option value="research">
+              Research
+              </option>
+              <option value="restaurantFoodService">
+              Restaurant - Food Service
+              </option>
+              <option value="retail">
+              Retail
+              </option>
+              <option value="sales">
+              Sales
+              </option>
+              <option value="science">
+              Science
+              </option>
+              <option value="skilledLaborTrades">
+              Skilled Labor - Trades
+              </option>
+              <option value="strategyPlanning">
+              Strategy - Planning
+              </option>
+              <option value="supplyChain">
+              Supply Chain
+              </option>
+              <option value="telecommunications">
+              Telecommunications
+              </option>
+              <option value="training">
+              Training
+              </option>
+              <option value="transportation">
+              Transportation
+              </option>
+              <option value="warehouse">
+              Warehouse
+              </option>
+              </select>
+              </div>
+
+              <div className="inputBox">
+          <span className="inputBoxTitle">Your workexperience in this job</span>
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="Your workexperience in this job"
+            onBlur={(value) => this.setState({"workexperience": value})}
+            focus={this.state.focus===2}
+            onEnter={()=>this.onEnter(3)}
+            onClick={()=>this.onEnter(2)}
+            />
+          </div>
+          <div className="advisorBottomPageButtonsHolder">
+            <button
+              className="advisorBottomPageButtonNext"
+              onClick={() => value.moveTo("/area/advisor/personfacts")}>
+              Save and edit your settings
+            </button>
+            <button
+              className="advisorBottomPageButtonNext"
+              onClick={() => value.moveTo("/area/advisor/personfacts")}>
+              Save and go to your dashboard
+            </button>
+          </div>
         </div>
       </div>)
-  }*/
+  }
 
   render() {
     return (
@@ -905,8 +1188,8 @@ class Advisor extends Component {
               value = {value}
               stage = {this.state.advisorStage}
               />
-              {/*this.editPart(this.state, value)*/}
-              {this.showCompanyFacts(value, this.state)}
+              {this.editPart(this.state, value)}
+              {/*this.showCompanyFacts(value, this.state)*/}
               {this.showExplainBlock(this.state.advisorStage)}
             </div>
           );
