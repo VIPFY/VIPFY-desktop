@@ -1,3 +1,4 @@
+import { ipcRenderer } from "electron";
 import { con, todoPath, hideByQuery, redirectLinks, redirectLinksByQuery } from "./utils/util";
 
 module.exports = function() {
@@ -40,7 +41,6 @@ function modifyAll() {
 }
 
 function login() {
-  let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 4);
   ipcRenderer.on("loginData", function(e, key) {
     let email = key.email;

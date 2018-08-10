@@ -1,6 +1,7 @@
 import * as React from "react";
 import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
+import { Link } from "react-router-dom";
 import Popup from "../components/Popup";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
@@ -36,18 +37,6 @@ const fetchDomains = gql`
       agreed
       options
       disabled
-    }
-  }
-`;
-
-const getOneTimePassword = gql`
-  mutation {
-    getDD24Login {
-      code
-      description
-      cid
-      onetimepassword
-      loginuri
     }
   }
 `;
@@ -97,16 +86,6 @@ class Domains extends React.Component<Props, State> {
       this.setState(prevState => ({ showModal: !prevState.showModal }));
     } catch (err) {
       return err;
-    }
-  };
-
-  getDD24Login = async () => {
-    try {
-      const res = await this.props.getOneTimePassword();
-
-      console.log(res);
-    } catch (err) {
-      this.setState({ error: filterError(err), showModal: true });
     }
   };
 
@@ -214,7 +193,7 @@ class Domains extends React.Component<Props, State> {
                           <span className="domain-item">No data</span>
                           <i
                             className="fas fa-sliders-h domain-item-icon"
-                            onClick={this.getDD24Login}
+                            onClick={() => this.props.setDomain(id, key.domain)}
                           />
                         </div>
                       );
@@ -252,7 +231,4 @@ class Domains extends React.Component<Props, State> {
   }
 }
 
-export default compose(
-  graphql(buyPlan, { name: "buyPlan" }),
-  graphql(getOneTimePassword, { name: "getOneTimePassword" })
-)(Domains);
+export default graphql(buyPlan, { name: "buyPlan" })(Domains);

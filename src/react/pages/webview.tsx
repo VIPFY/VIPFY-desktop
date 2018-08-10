@@ -1,11 +1,12 @@
 import * as React from "react";
-import { Component } from "react";
 import { Link } from "react-router-dom";
 import WebView = require("react-electron-web-view");
 const { shell, remote } = require("electron");
 const { session } = remote;
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
+
+import LoadingDiv from "../components/LoadingDiv";
 
 export type WebViewState = {
   setUrl: string;
@@ -29,14 +30,13 @@ export type WebViewProps = {
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
 // TODO: move TODO page to web so webSecurity=no is no longer nessesary
 
-export class Webview extends Component<WebViewProps, WebViewState> {
+export class Webview extends React.Component<WebViewProps, WebViewState> {
   static defaultProps = { app: -1 };
 
   static loadingQuotes = [
-    "Loading",
+    "Loading...",
     "Connecting to the World",
     "Constructing Pylons",
-    "Loading",
     "Did you know that Vipfy is cool",
     "Just a second",
     "Vipfy loves you",
@@ -48,7 +48,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     this.state = {
       setUrl: "vipfy://blank",
       currentUrl: "vipfy://blank",
-      inspirationalText: "Loading",
+      inspirationalText: "Loading...",
       legalText: "Legal Text",
       showLoadingScreen: false,
       t: performance.now(),
@@ -177,9 +177,14 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   }
 
   maybeHideLoadingScreen(): void {
-    let loginPageRegex = `^https://(www.)?dropbox.com/?(/login.*|/logout|/plans.*)?$|
-    ^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login|
-    ^https://www.weebly.com/login`;
+    const loginPages = [
+      "^https://(www.)?dropbox.com/?(/login.*|/logout|/plans.*)?$",
+      "^https://app.pipedrive.com/auth/login",
+      "^https://www.wrike.com/login",
+      "^https://www.weebly.com/login",
+      "^https://login.domaindiscount24.com/(login|dashboard)"
+    ];
+    let loginPageRegex = loginPages.join("|");
 
     if (new RegExp(loginPageRegex).test(this.state.currentUrl)) {
       console.log(`Not hiding loading screen for ${this.state.currentUrl}`);
@@ -233,6 +238,10 @@ export class Webview extends Component<WebViewProps, WebViewState> {
       console.log("LOGIN LINK", result);
       let link = result.data.createLoginLink.loginLink;
       this.setState({ setUrl: link });
+    } else if (e.channel == "getCustomerData" && e.args[0] == 11) {
+      console.log("Props:", this.props);
+      console.log("State:", this.state);
+      e.target.send("customerData", { name: this.props.company.name, domain: this.props.domain });
     }
   }
 
@@ -266,19 +275,11 @@ export class Webview extends Component<WebViewProps, WebViewState> {
 
     return (
       <div className={cssClass}>
-        <div
-          id="loadingScreen"
-          className={cssClassWeb}
-          style={{ display: this.state.showLoadingScreen ? "block" : "none" }}>
-          <div className="loadingTextBlock">
-            <div className="centerText inspirationalText">
-              <div>{this.state.inspirationalText}</div>
-            </div>
-            <div className="centerText legalText">
-              <div>{this.state.legalText}</div>
-            </div>
-          </div>
-        </div>
+        {this.state.showLoadingScreen ? (
+          <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} />
+        ) : (
+          ""
+        )}
         <WebView
           id="webview"
           preload="./preload-launcher.js"

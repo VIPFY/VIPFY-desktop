@@ -1,5 +1,5 @@
-import path from "path";
-import electron from "electron";
+const path = require("path");
+const electron = require("electron");
 export const con = electron.remote.getGlobal("console");
 const app = electron.remote.app;
 export const appPath = app.getAppPath();
@@ -25,4 +25,9 @@ export function redirectLinksByQuery(query: string, targetUrl: string): void {
   for (let i = 0; i < elements.length; i++) {
     elements[i].href = targetUrl;
   }
+}
+
+export function deleteElement(selector: string): void {
+  const element = document.querySelector(selector);
+  element.parentNode.removeChild(element);
 }

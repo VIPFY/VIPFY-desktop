@@ -5,19 +5,19 @@ import { graphql, compose } from "react-apollo";
 import { me, fetchLicences } from "../queries/auth";
 import { fetchRecommendedApps } from "../queries/products";
 
-import Dashboard from "./dashboard";
-import Navigation from "./navigation";
-import Sidebar from "./sidebar";
-import Chat from "./chat";
-import Webview from "./webview";
-import Settings from "./settings";
-import Marketplace from "./marketplace";
+import Advisor from "./advisor";
 import AppPage from "./apppage";
 import Billing from "./billing";
-import Advisor from "./advisor";
-import Team from "./team";
-import MessageCenter from "./messagecenter";
+import Chat from "./chat";
+import Dashboard from "./dashboard";
 import Domains from "./domains";
+import Marketplace from "./marketplace";
+import MessageCenter from "./messagecenter";
+import Navigation from "./navigation";
+import Settings from "./settings";
+import Sidebar from "./sidebar";
+import Team from "./team";
+import Webview from "./webview";
 
 export type AreaProps = {
   history: any[];
@@ -36,25 +36,26 @@ class Area extends Component<AreaProps, AreaState> {
   state: AreaState = {
     app: -1,
     chatopen: false,
-    sidebaropen: true
+    sidebaropen: true,
+    domain: ""
   };
 
-  setapp = (boughtplan: number) => {
+  setApp = (boughtplan: number) => {
     console.log("SetApp to boughtplan ", boughtplan);
     this.setState({ app: boughtplan });
     this.props.history.push("/area/webview");
   };
 
-  toggleChat = () => {
-    this.setState({ chatopen: !this.state.chatopen });
+  setDomain = (boughtplan: number, domain: string) => {
+    this.setState({ app: boughtplan, domain });
+    this.props.history.push("/area/webview");
   };
 
-  toggleSidebar = () => {
-    this.setState({ sidebaropen: !this.state.sidebaropen });
-  };
-  setSidebar = value => {
-    this.setState({ sidebaropen: value });
-  };
+  toggleChat = () => this.setState({ chatopen: !this.state.chatopen });
+
+  toggleSidebar = () => this.setState({ sidebaropen: !this.state.sidebaropen });
+
+  setSidebar = value => this.setState({ sidebaropen: value });
 
   render() {
     return (
@@ -65,7 +66,7 @@ class Area extends Component<AreaProps, AreaState> {
               return (
                 <Sidebar
                   sidebaropen={this.state.sidebaropen}
-                  setapp={this.setapp}
+                  setApp={this.setApp}
                   {...this.props}
                   {...props}
                 />
@@ -81,7 +82,7 @@ class Area extends Component<AreaProps, AreaState> {
               return (
                 <Navigation
                   chatopen={this.state.chatopen}
-                  setapp={this.setapp}
+                  setApp={this.setApp}
                   toggleChat={this.toggleChat}
                   toggleSidebar={this.toggleSidebar}
                   sidebaropen={this.state.sidebaropen}
@@ -104,7 +105,7 @@ class Area extends Component<AreaProps, AreaState> {
             <Dashboard
               chatopen={this.state.chatopen}
               sidebaropen={this.state.sidebaropen}
-              setapp={this.setapp}
+              setApp={this.setApp}
               {...this.props}
               {...props}
             />
@@ -113,15 +114,7 @@ class Area extends Component<AreaProps, AreaState> {
         <Route
           exact
           path="/area/webview"
-          render={props => (
-            <Webview
-              chatopen={this.state.chatopen}
-              sidebaropen={this.state.sidebaropen}
-              app={this.state.app}
-              {...this.props}
-              {...props}
-            />
-          )}
+          render={props => <Webview {...this.state} {...this.props} {...props} />}
         />
         <Route
           exact
@@ -215,6 +208,7 @@ class Area extends Component<AreaProps, AreaState> {
             <Domains
               chatopen={this.state.chatopen}
               sidebaropen={this.state.sidebaropen}
+              setDomain={this.setDomain}
               {...this.props}
               {...props}
             />
@@ -238,7 +232,7 @@ class Area extends Component<AreaProps, AreaState> {
             <AppPage
               chatopen={this.state.chatopen}
               sidebaropen={this.state.sidebaropen}
-              setapp={this.setapp}
+              setApp={this.setApp}
               {...this.props}
               {...props}
             />
