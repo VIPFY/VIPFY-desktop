@@ -13,10 +13,12 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+const { pathname } = window.location;
+
 //TODO: Change Links to template Strings with proper domains
 
 function onLoad() {
-  if (window.location.pathname == "/login") {
+  if (pathname == "/login") {
     login();
   }
 }
@@ -34,34 +36,49 @@ function login() {
   });
 }
 
+/*
+ * Delete Warenkorb, Account Settings, Logout, redirect from any routes the customer
+ * shouldn't see and also redirect several buttons like transfer and renewal
+ */
 function onReady() {
-  const { pathname } = window.location;
-  deleteElement("div#sidebar-wrapper");
-  deleteElement("ul.nav.navbar-nav");
-  console.log(window.location.pathname);
+  document.querySelector("div#mainwrapper").style.paddingLeft = "0";
+
+  // Remove the link from the dd24 logo
+  const dummyLogo = document.createElement("div");
+  dummyLogo.className = "navbar-brand";
+  document.querySelector("div.navbar-header").appendChild(dummyLogo);
+
+  const elementsToRemove = [
+    "a.navbar-brand[href='/']",
+    "div#sidebar-wrapper",
+    "ul.nav.navbar-nav",
+    "a[href='/cart/show']"
+  ];
+  elementsToRemove.forEach(element => deleteElement(element));
+
+  if (
+    !(
+      pathname.includes("/domain/config") ||
+      pathname == "/login" ||
+      pathname == "/account/settings/language"
+    )
+  ) {
+    window.location =
+      "https://login.domaindiscount24.com/domain/config/dnssettings/domain/gh05d.de";
+  }
+
   ipcRenderer.sendToHost("getCustomerData", 11);
   ipcRenderer.on("customerData", function(e, data) {
-    if (
-      !(
-        pathname.includes("/domain/config") ||
-        pathname == "/login" ||
-        pathname == "/account/settings/language"
-      )
-    ) {
-      window.location =
-        "https://login.domaindiscount24.com/domain/config/dnssettings/domain/gh05d.de";
-    }
-    document.querySelector("div#mainwrapper").style.paddingLeft = "0";
-    document.querySelector("span.visible-md-inline.visible-lg-inline.visible-xl-inline").innerHTML =
-      data.name;
-    deleteElement("a[href='/account/resetpw']");
-    deleteElement("a[href='/account/paymentmethods']");
-    const annoyingElement = document.querySelectorAll("ul.dropdown-menu")[10].children[4];
-    annoyingElement.parentNode.removeChild(annoyingElement);
-    deleteElement("a[href='/logout']");
-    deleteElement("a[href='/account/settings/userdata']");
+    // Exchange the account number of dd24 with the Users company and remove the
+    // Menu which contains options to change account settings
+    const nameHolder = document.querySelector("li.dropdown:last-child");
+    nameHolder.removeChild(nameHolder.children[1]);
+    nameHolder.children[0].children[1].innerHTML = data.name;
+    nameHolder.children[0].style = "cursor: default";
+    nameHolder.children[0].href = "";
+    nameHolder.children[0].class = "";
 
-    if (window.location.pathname.includes("/domain/config/general/domain/gh05d.de")) {
+    if (pathname.includes("/domain/config/general/domain/gh05d.de")) {
       const fields = document.querySelectorAll("div.col-md-12");
 
       fields[0].parentNode.removeChild(fields[0]);
@@ -70,33 +87,32 @@ function onReady() {
       fields[1].childNodes[1].childNodes[3].style.display = "block";
       fields[1].childNodes[1].removeChild(fields[1].childNodes[1].childNodes[1]);
 
-      //TODO: Change to Vipfy Weiterleitung
-      deleteElement("a[href='/domain/requestauthcode/gh05d.de']");
+      // Replace the buttons
+      // TODO: Add internal links
+      const dummyAuth = document.createElement("div");
+      const dummySpan = document.createElement("span");
+      dummySpan.className = "fa fa-arrow-right";
+      dummySpan.innerHTML = " Request Authcode";
+
+      dummyAuth.className = "btn btn-default btn-sm enhancedModalOpener";
+      dummyAuth.id = "request_authcode";
+      dummyAuth.style = "cursor: pointer";
+      dummyAuth.appendChild(dummySpan);
+
+      const daddies = document.querySelectorAll(
+        "div.form-group.has-feedback.text-center.inputhelper"
+      );
+
+      daddies[0].appendChild(dummyAuth);
+      deleteElement("a#request_authcode");
+
+      const dummyPush = dummyAuth.cloneNode();
+      const dummySpanClone = dummySpan.cloneNode();
+      dummySpanClone.innerHTML = " Domainpush";
+      dummyPush.appendChild(dummySpanClone);
+
+      daddies[1].appendChild(dummyPush);
       deleteElement("a[href='/domain/push/gh05d.de']");
     }
   });
-
-  // setInterval(modifyAll, 100);
-  /*modifySettings();
-    let url = location.href;
-    document.body.addEventListener('click', ()=>{
-        requestAnimationFrame(()=>{
-          url!==location.href&&modifySettings();
-          url = location.href;
-        });
-    }, true);*/
-}
-
-function modifyAll() {
-  //the following two should apply equally to most instances, but there are occasional exceptions
-  // redirectLinks("#dialog/tier-plan-standalone", todoPath);
-  // redirectLinksByQuery("a.tierChangeStandaloneModal", todoPath);
-  //
-  // hideByQuery("#email", true);
-  // hideByQuery('a[href="#password"]', true);
-  // hideByQuery('a[href="/settings/billing"]', true);
-  // hideByQuery('a[href="/settings/change_billing"]', true);
-  // hideByQuery('a[href="https://vipfy-test.pipedrive.com/users/add"]', false);
-  // hideByQuery('input[name="user[email]"]', true);
-  // hideByQuery('a[href="/settings/sso"]', true);
 }
