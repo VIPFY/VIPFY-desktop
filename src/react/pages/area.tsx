@@ -30,6 +30,7 @@ export type AreaState = {
   app: number;
   chatopen: boolean;
   sidebaropen: boolean;
+  domain: string;
 };
 
 class Area extends Component<AreaProps, AreaState> {
@@ -203,7 +204,20 @@ class Area extends Component<AreaProps, AreaState> {
         />
         <Route
           exact
-          path="/area/domains"
+          path="/area/domains/"
+          render={props => (
+            <Domains
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              setDomain={this.setDomain}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/area/domains/:domain"
           render={props => (
             <Domains
               chatopen={this.state.chatopen}

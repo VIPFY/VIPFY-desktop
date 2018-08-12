@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export default ({ text, legalText = "Vipfy loves you" }) => (
+export default ({ text = "Vipfy loves you", legalText = "Legal legal legal" }) => (
   <div id="loadingScreen" className="mainPosition" style={{ display: "block" }}>
     <div className="loadingTextBlock">
       <div className="centerText inspirationalText">

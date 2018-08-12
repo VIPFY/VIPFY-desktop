@@ -80,6 +80,17 @@ label {
     display: flex;
     justify-content: space-between;
 }
+
+.naked-button {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  outline: inherit;
+  padding: 0;
+}
+
 .buttonForgot{
     font-size: 0.5em;
     margin-top: 1.2em;

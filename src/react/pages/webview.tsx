@@ -145,9 +145,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   onDidNavigate(url: string): void {
     console.log("DidNavigate", url);
-    this.setState({
-      currentUrl: url
-    });
+    this.setState({ currentUrl: url });
     this.showLoadingScreen();
   }
 
@@ -156,9 +154,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (!event.isMainFrame) {
       return;
     }
-    this.setState({
-      currentUrl: event.url
-    });
+    this.setState({ currentUrl: event.url });
   }
 
   hideLoadingScreen(): void {
@@ -205,43 +201,73 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   async onIpcMessage(e): Promise<void> {
     console.log("onIpcMessage", e);
-    if (e.channel === "getLoginData") {
-      let app = e.args[0];
-      let result = await this.props.client.query({
-        query: gql`
+
+    switch (e.channel) {
+      case "getLoginData":
+        {
+          let app = e.args[0];
+          let result = await this.props.client.query({
+            query: gql`
           {
             fetchLicences(licenceid: ${this.state.planId}) {
-                key
+              key
             }
           }
-        `
-      });
-      console.log("LICENCE", result);
-      let { key } = result.data.fetchLicences[0];
-      console.log("chosen key", key);
-      if (key === null) {
-        window.alert("invalid licence");
-      }
-      e.target.send("loginData", key);
-    } else if (e.channel === "getLoginLink") {
-      let licence = this.state.planId;
-      let result = await this.props.client.query({
-        query: gql`
-                  {
-                    createLoginLink(licenceid: ${licence}) {
-                      loginLink
-                    }
-                  }
-                `,
-        fetchPolicy: "no-cache"
-      });
-      console.log("LOGIN LINK", result);
-      let link = result.data.createLoginLink.loginLink;
-      this.setState({ setUrl: link });
-    } else if (e.channel == "getCustomerData" && e.args[0] == 11) {
-      console.log("Props:", this.props);
-      console.log("State:", this.state);
-      e.target.send("customerData", { name: this.props.company.name, domain: this.props.domain });
+          `
+          });
+
+          console.log("LICENCE", result);
+          let { key } = result.data.fetchLicences[0];
+          console.log("chosen key", key);
+          if (key === null) {
+            window.alert("invalid licence");
+          }
+          e.target.send("loginData", key);
+        }
+        break;
+
+      case "getLoginData":
+        {
+          let licence = this.state.planId;
+          let result = await this.props.client.query({
+            query: gql`
+          {
+            createLoginLink(licenceid: ${licence}) {
+              loginLink
+            }
+          }
+          `,
+            fetchPolicy: "no-cache"
+          });
+          console.log("LOGIN LINK", result);
+          let link = result.data.createLoginLink.loginLink;
+          this.setState({ setUrl: link });
+        }
+        break;
+
+      case "getCustomerData":
+        {
+          e.target.send("customerData", {
+            name: this.props.company.name,
+            domain: this.props.domain
+          });
+        }
+        break;
+
+      case "requestAuthcode":
+        {
+          this.props.history.push(`/area/domains/${this.props.domain}`);
+        }
+        break;
+
+      case "requestPush":
+        {
+          this.props.history.push(`/area/domains/${this.props.domain}`);
+        }
+        break;
+
+      default:
+        console.log("No case applied", e.channel);
     }
   }
 
@@ -305,9 +331,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           onDomReady={e => {
             console.log("DomReady", e);
             this.maybeHideLoadingScreen();
-            //if(!e.target.isDevToolsOpened()) {
-            //  e.target.openDevTools();
-            //}
+            if (!e.target.isDevToolsOpened()) {
+              e.target.openDevTools();
+            }
           }}
           onDialog={e => console.log("Dialog", e)}
           onIpcMessage={e => this.onIpcMessage(e)}

@@ -1,12 +1,5 @@
 import { ipcRenderer } from "electron";
-import {
-  con,
-  todoPath,
-  hideByQuery,
-  redirectLinks,
-  redirectLinksByQuery,
-  deleteElement
-} from "./utils/util";
+import { deleteElement } from "./utils/util";
 
 module.exports = function() {
   window.addEventListener("DOMContentLoaded", onReady);
@@ -14,8 +7,6 @@ module.exports = function() {
 };
 
 const { pathname } = window.location;
-
-//TODO: Change Links to template Strings with proper domains
 
 function onLoad() {
   if (pathname == "/login") {
@@ -56,19 +47,21 @@ function onReady() {
   ];
   elementsToRemove.forEach(element => deleteElement(element));
 
-  if (
-    !(
-      pathname.includes("/domain/config") ||
-      pathname == "/login" ||
-      pathname == "/account/settings/language"
-    )
-  ) {
-    window.location =
-      "https://login.domaindiscount24.com/domain/config/dnssettings/domain/gh05d.de";
-  }
-
   ipcRenderer.sendToHost("getCustomerData", 11);
   ipcRenderer.on("customerData", function(e, data) {
+    // TODO: Replace with data.domain
+    const domain = "gh05d.de";
+    if (
+      !(
+        pathname.includes("/domain/config") ||
+        pathname == "/login" ||
+        pathname == "/account/settings/language"
+      ) ||
+      pathname == `/domain/requestauthcode/${domain}`
+    ) {
+      window.location = `https://login.domaindiscount24.com/domain/config/dnssettings/domain/${domain}`;
+    }
+
     // Exchange the account number of dd24 with the Users company and remove the
     // Menu which contains options to change account settings
     const nameHolder = document.querySelector("li.dropdown:last-child");
@@ -78,7 +71,7 @@ function onReady() {
     nameHolder.children[0].href = "";
     nameHolder.children[0].class = "";
 
-    if (pathname.includes("/domain/config/general/domain/gh05d.de")) {
+    if (pathname.includes(`/domain/config/general/domain/${domain}`)) {
       const fields = document.querySelectorAll("div.col-md-12");
 
       fields[0].parentNode.removeChild(fields[0]);
@@ -87,32 +80,17 @@ function onReady() {
       fields[1].childNodes[1].childNodes[3].style.display = "block";
       fields[1].childNodes[1].removeChild(fields[1].childNodes[1].childNodes[1]);
 
-      // Replace the buttons
-      // TODO: Add internal links
-      const dummyAuth = document.createElement("div");
-      const dummySpan = document.createElement("span");
-      dummySpan.className = "fa fa-arrow-right";
-      dummySpan.innerHTML = " Request Authcode";
-
-      dummyAuth.className = "btn btn-default btn-sm enhancedModalOpener";
-      dummyAuth.id = "request_authcode";
-      dummyAuth.style = "cursor: pointer";
-      dummyAuth.appendChild(dummySpan);
-
+      // Workaround because the notification doesn't properly show at the moment
       const daddies = document.querySelectorAll(
         "div.form-group.has-feedback.text-center.inputhelper"
       );
-
-      daddies[0].appendChild(dummyAuth);
-      deleteElement("a#request_authcode");
-
-      const dummyPush = dummyAuth.cloneNode();
-      const dummySpanClone = dummySpan.cloneNode();
-      dummySpanClone.innerHTML = " Domainpush";
-      dummyPush.appendChild(dummySpanClone);
-
-      daddies[1].appendChild(dummyPush);
-      deleteElement("a[href='/domain/push/gh05d.de']");
+      daddies[0].dataset.openinmodal = 1;
+      daddies[0].dataset.modalclass = "flexible";
+      daddies[0].onclick = function() {
+        document.querySelector("div.modal-loading.clearfix").innerHTML =
+          "The authcode for the domain was sent to your email address";
+        document.querySelector("h1.modal-title").innerHTML = domain;
+      };
     }
   });
 }
