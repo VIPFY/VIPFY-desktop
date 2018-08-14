@@ -6,12 +6,12 @@ import { HashRouter as Router } from "react-router-dom";
 import { ApolloProvider } from "react-apollo";
 
 import App from "./app";
-import client from "./networkInterface";
+import client, { setLogoutFunction } from "./networkInterface";
 
 const Application = () => (
   <ApolloProvider client={client}>
     <Router>
-      <App />
+      <App logoutFunction={setLogoutFunction} />
     </Router>
   </ApolloProvider>
 );

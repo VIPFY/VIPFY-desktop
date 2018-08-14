@@ -1,5 +1,5 @@
 import * as React from "react";
-import { filterError } from "./functions";
+import { filterError } from "../common/functions";
 import LoadingDiv from "./loadingDiv";
 
 interface Props {
@@ -25,7 +25,7 @@ const INITIAL_STATE = {
   submitting: false
 };
 
-class GenericInputField extends React.Component<Props> {
+class GenericInputForm extends React.Component<Props> {
   constructor(props) {
     super(props);
     this.genericForm = React.createRef();
@@ -188,4 +188,4 @@ class GenericInputField extends React.Component<Props> {
     );
   }
 }
-export default GenericInputField;
+export default GenericInputForm;

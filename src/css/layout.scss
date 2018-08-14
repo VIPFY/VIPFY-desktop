@@ -1642,3 +1642,164 @@ select:focus{
 option{
     border: none;
 }
+.optionsHolder{
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+.optionsSidebar{
+    width: 20rem;
+    background-color: #357AA5;
+    overflow: auto;
+}
+.optionsExplainBlock {
+    width: calc(50% - 10rem);
+    display: flex;
+    align-items: center;
+    background-color: #eee;
+}
+.optionsFormularBlock {
+    width: calc(50% - 10rem);
+    display: flex;
+    align-items: center;
+}
+.optionsExplainTextHolder{
+    margin: 5rem;
+}
+.optionsExplainIconHolder{
+    font-size: 5rem;
+    color: #357AA5;
+}
+.optionsExplainHeading{
+    line-height: 5rem;
+    font-size: 2rem;
+    margin-left: 1rem;
+    color: #357AA5;
+    font-weight: bold;
+}
+.inputBox {
+    padding: 0.25rem;
+    background-color: white;
+    border: 1px solid #aaa;
+    min-width: 15rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin: 2rem;
+}
+.inputBoxTitle {
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+}
+.inputBoxField {
+    width: 100%;
+    border: 0px;
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.5rem;
+    color: #357AA5;
+}
+.inputBoxField:focus{
+    outline: none;
+}
+.tabBox {
+    padding: 0.25rem;
+    min-width: 15rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin: 2rem;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+.tab {
+    padding: 0.25rem;
+    background-color: #aaa;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    cursor: pointer;
+    text-align: center;
+}
+.tab:hover{
+    background-color: #3389BF;
+}
+.tabActive{
+    background-color: #357AA5;
+    color: white;
+}
+.journeyHolder {
+    position: relative;
+    margin: 2rem;
+}
+.journeyHeader{
+    color: white;
+    font-size: 1.25rem;
+    text-align: center;
+}
+.journeyCircle{
+    width: 6rem;
+    border: solid white;
+    border-radius: 50%;
+    text-align: center;
+    color: white;
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+.journeyDoneCircle{
+    width: 6rem;
+    border: solid white;
+    border-radius: 50%;
+    text-align: center;
+    color: black;
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.25rem;
+    background-color: #1CA543;
+}
+.journeyCircle:hover{
+    background-color: #3389BF;
+}
+.journeyLeftBottomLine{
+    display: block;
+    position: absolute;
+    height: 2rem;
+    width: 6.5rem;
+    left: 3rem;
+    border-bottom: dotted white;
+    top: 9rem;
+    border-radius: 0rem 1rem;
+}
+.advisorBottomPageButtonsHolder {
+    display: flex;
+    justify-content: space-around;
+}
+.advisorBottomPageButtonNext {
+    border: none;
+    background: none;
+    background-color: #357AA5;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+}
+.inputBoxHolder{
+    display: flex;
+    align-items: center;
+}
+.inputBoxSymbol {
+    padding-right: 0.25rem;
+    color: #357AA5;
+}
+.inputBoxError {
+    font-size: 0.5rem;
+    position: absolute;
+    right: 0;
+    color: #A52C2C;
+}
