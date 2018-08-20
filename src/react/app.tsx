@@ -91,8 +91,7 @@ class App extends Component<AppProps, AppState> {
         id
       } = this.props.me.me;
       this.setState({ login: true });
-      this.setState({ firstname });
-      this.setState({ lastname });
+      this.setState({ firstname, lastname });
       this.setState({ teams, billing, domains, marketplace });
       this.setState({ profilepicture: profilepicture || company.profilepicture });
       this.setState({ employees: company.employees });
@@ -118,30 +117,26 @@ class App extends Component<AppProps, AppState> {
   logMeIn = async (email, password) => {
     try {
       const res = await this.props.signIn({ variables: { email, password } });
-      console.log("LOGOIN", res.data.signIn);
       const { ok, token, refreshToken, user } = res.data.signIn;
+
       if (ok) {
         const { id, firstname, lastname, teams, billing, domains, marketplace } = user;
-        console.log("SIGNIN", user);
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
         this.setState({ login: true });
-        this.setState({ firstname });
-        this.setState({ lastname });
+        this.setState({ firstname, lastname });
         this.setState({ teams, billing, domains, marketplace });
         this.setState({ profilepicture: user.profilepicture || user.company.profilepicture });
         this.setState({ employees: user.company.employees });
         this.setState({ userid: id, company: user.company });
 
         this.moveTo("/area/dashboard");
-        return true;
       }
     } catch (err) {
-      this.setState({ login: false });
+      this.setState({ login: false, error: filterError(err) });
       localStorage.setItem("token", "");
       localStorage.setItem("refreshToken", "");
       console.log("LoginError", err);
-      this.setState({ error: filterError(err) });
 
       return filterError(err);
     }

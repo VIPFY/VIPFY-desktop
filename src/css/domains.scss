@@ -28,7 +28,8 @@ $text-width: 100%;
   font-weight: bold;
 
   span {
-    &:nth-child(2) {
+    &:nth-child(2),
+    &:nth-child(5)  {
       text-align: center;
     }
 
@@ -42,13 +43,8 @@ $text-width: 100%;
   }
 }
 
-.domain-item {
-  max-width: 170px;
-  overflow: hidden;
-  padding-left: 10px;
-  padding-right: 10px;
-  text-overflow: ellipsis;
-  width: $text-width;
+.domain-table-body {
+  overflow-y: auto;
 }
 
 .domain-row {
@@ -61,6 +57,15 @@ $text-width: 100%;
   &:hover {
     background: #ffeedf;
   }
+}
+
+.domain-item {
+  max-width: 170px;
+  overflow: hidden;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-overflow: ellipsis;
+  width: $text-width;
 }
 
 .domain-item-icon {

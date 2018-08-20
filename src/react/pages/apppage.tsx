@@ -547,7 +547,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     let printfeatures: JSX.Element[] = [];
     let plandivs: JSX.Element[] = [];
     let i = 0;
-
+    console.log(features);
     features.planfeatures.forEach(element => {
       let e = {};
       e.name = element;

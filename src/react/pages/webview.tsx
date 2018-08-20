@@ -1,11 +1,12 @@
 import * as React from "react";
-import { Component } from "react";
 import { Link } from "react-router-dom";
 import WebView = require("react-electron-web-view");
 const { shell, remote } = require("electron");
 const { session } = remote;
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
+
+import LoadingDiv from "../components/LoadingDiv";
 
 export type WebViewState = {
   setUrl: string;
@@ -29,16 +30,17 @@ export type WebViewProps = {
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
 // TODO: move TODO page to web so webSecurity=no is no longer nessesary
 
-export class Webview extends Component<WebViewProps, WebViewState> {
+export class Webview extends React.Component<WebViewProps, WebViewState> {
   static defaultProps = { app: -1 };
 
   static loadingQuotes = [
-    "Loading",
+    "Loading...",
     "Connecting to the World",
     "Constructing Pylons",
-    "Loading",
     "Did you know that Vipfy is cool",
-    "Just a second"
+    "Just a second",
+    "Vipfy loves you",
+    "Almost there"
   ];
 
   constructor(props: WebViewProps) {
@@ -46,7 +48,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     this.state = {
       setUrl: "vipfy://blank",
       currentUrl: "vipfy://blank",
-      inspirationalText: "Loading",
+      inspirationalText: "Loading...",
       legalText: "Legal Text",
       showLoadingScreen: false,
       t: performance.now(),
@@ -114,10 +116,12 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     console.log("APP DATA", result);
     let licence = result.data.fetchLicences[0];
 
-    if(licence.disabled) {
+    if (licence.disabled) {
       window.alert("This licence is disabled, you cannot use it");
     } else if (!licence.agreed) {
-      window.alert("you first have to agree to the licence terms. Unfortunately this isn't implemented yet");
+      window.alert(
+        "You first have to agree to the licence terms. Unfortunately this isn't implemented yet"
+      );
     }
 
     if (licence.unit.id !== this.state.unitId) {
@@ -129,6 +133,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     }
     let loginurl = licence.boughtPlan.plan.app.loginurl;
     if (licence.key.loginurl) {
+      console.log(licence.key.loginurl);
       loginurl = licence.key.loginurl;
     }
     this.setState({
@@ -140,9 +145,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
 
   onDidNavigate(url: string): void {
     console.log("DidNavigate", url);
-    this.setState({
-      currentUrl: url
-    });
+    this.setState({ currentUrl: url });
     this.showLoadingScreen();
   }
 
@@ -151,9 +154,7 @@ export class Webview extends Component<WebViewProps, WebViewState> {
     if (!event.isMainFrame) {
       return;
     }
-    this.setState({
-      currentUrl: event.url
-    });
+    this.setState({ currentUrl: event.url });
   }
 
   hideLoadingScreen(): void {
@@ -172,10 +173,17 @@ export class Webview extends Component<WebViewProps, WebViewState> {
   }
 
   maybeHideLoadingScreen(): void {
-    let loginPageRegex =
-      "^https://(www.)?dropbox.com/?(/login.*|/logout|/plans.*)?$|^https://app.pipedrive.com/auth/login|^https://www.wrike.com/login|^https://www.weebly.com/login";
+    const loginPages = [
+      "^https://(www.)?dropbox.com/?(/login.*|/logout|/plans.*)?$",
+      "^https://app.pipedrive.com/auth/login",
+      "^https://www.wrike.com/login",
+      "^https://www.weebly.com/login",
+      "^https://login.domaindiscount24.com/(login|dashboard)"
+    ];
+    let loginPageRegex = loginPages.join("|");
+
     if (new RegExp(loginPageRegex).test(this.state.currentUrl)) {
-      console.log("Not hiding loading screen for " + this.state.currentUrl);
+      console.log(`Not hiding loading screen for ${this.state.currentUrl}`);
       return;
     }
     this.hideLoadingScreen();
@@ -193,39 +201,73 @@ export class Webview extends Component<WebViewProps, WebViewState> {
 
   async onIpcMessage(e): Promise<void> {
     console.log("onIpcMessage", e);
-    if (e.channel === "getLoginData") {
-      let app = e.args[0];
-      let result = await this.props.client.query({
-        query: gql`
+
+    switch (e.channel) {
+      case "getLoginData":
+        {
+          let app = e.args[0];
+          let result = await this.props.client.query({
+            query: gql`
           {
             fetchLicences(licenceid: ${this.state.planId}) {
-                key
+              key
             }
           }
-        `
-      });
-      console.log("LICENCE", result);
-      let key = result.data.fetchLicences[0].key;
-      console.log("chosen key", key);
-      if (key === null) {
-        window.alert("invalid licence");
-      }
-      e.target.send("loginData", key);
-    } else if (e.channel === "getLoginLink") {
-      let licence = this.state.planId;
-      let result = await this.props.client.query({
-        query: gql`
-                  {
-                    createLoginLink(licenceid: ${licence}) {
-                      loginLink
-                    }
-                  }
-                `,
-        fetchPolicy: "no-cache"
-      });
-      console.log("LOGIN LINK", result);
-      let link = result.data.createLoginLink.loginLink;
-      this.setState({ setUrl: link });
+          `
+          });
+
+          console.log("LICENCE", result);
+          let { key } = result.data.fetchLicences[0];
+          console.log("chosen key", key);
+          if (key === null) {
+            window.alert("invalid licence");
+          }
+          e.target.send("loginData", key);
+        }
+        break;
+
+      case "getLoginData":
+        {
+          let licence = this.state.planId;
+          let result = await this.props.client.query({
+            query: gql`
+          {
+            createLoginLink(licenceid: ${licence}) {
+              loginLink
+            }
+          }
+          `,
+            fetchPolicy: "no-cache"
+          });
+          console.log("LOGIN LINK", result);
+          let link = result.data.createLoginLink.loginLink;
+          this.setState({ setUrl: link });
+        }
+        break;
+
+      case "getCustomerData":
+        {
+          e.target.send("customerData", {
+            name: this.props.company.name,
+            domain: this.props.domain
+          });
+        }
+        break;
+
+      case "requestAuthcode":
+        {
+          this.props.history.push(`/area/domains/${this.props.domain}`);
+        }
+        break;
+
+      case "requestPush":
+        {
+          this.props.history.push(`/area/domains/${this.props.domain}`);
+        }
+        break;
+
+      default:
+        console.log("No case applied", e.channel);
     }
   }
 
@@ -259,19 +301,11 @@ export class Webview extends Component<WebViewProps, WebViewState> {
 
     return (
       <div className={cssClass}>
-        <div
-          id="loadingScreen"
-          className={cssClassWeb}
-          style={{ display: this.state.showLoadingScreen ? "block" : "none" }}>
-          <div className="loadingTextBlock">
-            <div className="centerText inspirationalText">
-              <div>{this.state.inspirationalText}</div>
-            </div>
-            <div className="centerText legalText">
-              <div>{this.state.legalText}</div>
-            </div>
-          </div>
-        </div>
+        {this.state.showLoadingScreen ? (
+          <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} />
+        ) : (
+          ""
+        )}
         <WebView
           id="webview"
           preload="./preload-launcher.js"
@@ -292,25 +326,17 @@ export class Webview extends Component<WebViewProps, WebViewState> {
           onWillNavigate={e => console.log("WillNavigate", e)}
           onDidStartLoading={e => console.log("DidStartLoading", e)}
           onDidStartNavigation={e => console.log("DidStartNavigation", e)}
-          onDidFinishLoad={e => {
-            console.log("DidFinishLoad", e);
-          }}
-          onDidStopLoading={e => {
-            console.log("DidStopLoading", e);
-          }}
+          onDidFinishLoad={e => console.log("DidFinishLoad", e)}
+          onDidStopLoading={e => console.log("DidStopLoading", e)}
           onDomReady={e => {
             console.log("DomReady", e);
             this.maybeHideLoadingScreen();
-            //if(!e.target.isDevToolsOpened()) {
-            //  e.target.openDevTools();
-            //}
+            if (!e.target.isDevToolsOpened()) {
+              e.target.openDevTools();
+            }
           }}
-          onDialog={e => {
-            console.log("Dialog", e);
-          }}
-          onIpcMessage={e => {
-            this.onIpcMessage(e);
-          }}
+          onDialog={e => console.log("Dialog", e)}
+          onIpcMessage={e => this.onIpcMessage(e)}
         />
       </div>
     );

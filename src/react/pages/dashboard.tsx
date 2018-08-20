@@ -9,7 +9,7 @@ class Dashboard extends Component {
   };
 
   setApp(licence: number) {
-    this.props.setapp(licence);
+    this.props.setApp(licence);
   }
 
   goTo(view) {

@@ -83,11 +83,6 @@ class GenericInputForm extends React.Component<Props> {
     }
   };
 
-  onCancel = e => {
-    e.preventDefault();
-    this.setState(INITIAL_STATE);
-  };
-
   onSubmit = async e => {
     e.preventDefault();
     await this.setState({ asyncError: false, submitting: true });
@@ -169,8 +164,8 @@ class GenericInputForm extends React.Component<Props> {
         )}
 
         <div className="generic-input-buttons">
-          <button type="button" className="generic-cancel" onClick={this.onCancel}>
-            <span className="fas fa-trash-alt" /> Reset
+          <button type="button" className="generic-cancel" onClick={this.props.onClose}>
+            <i className="fas fa-long-arrow-alt-left" /> Cancel
           </button>
 
           <button
@@ -181,7 +176,7 @@ class GenericInputForm extends React.Component<Props> {
               Object.values(errors).filter(err => err != false).length > 0
             }
             className="generic-submit">
-            <span className="fas fa-check-circle" /> Submit
+            <i className="fas fa-check-circle" /> Submit
           </button>
         </div>
       </form>

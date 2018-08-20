@@ -21,7 +21,7 @@ export default props => {
           </div>
         </div>
 
-        <PopupBody {...bodyProps} />
+        <PopupBody {...bodyProps} onClose={onClose} />
       </div>
     </div>
   );

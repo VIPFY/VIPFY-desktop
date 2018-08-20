@@ -8,7 +8,7 @@ class Navigation extends Component {
   };
 
   setApp(boughtplan: number) {
-    this.props.setapp(boughtplan);
+    this.props.setApp(boughtplan);
   }
 
   goTo(view) {

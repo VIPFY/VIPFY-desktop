@@ -1,6 +1,7 @@
 import * as React from "react";
 import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
+import { Link } from "react-router-dom";
 import Popup from "../components/Popup";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
@@ -10,7 +11,8 @@ import { domainValidation } from "../common/validation";
 import { filterError } from "../common/functions";
 
 interface State {
-  showModal: boolean;
+  popup: object;
+  updating: boolean;
   error: string;
 }
 
@@ -40,25 +42,30 @@ const fetchDomains = gql`
   }
 `;
 
-const getOneTimePassword = gql`
-  mutation {
-    getDD24Login {
-      code
-      description
-      cid
-      onetimepassword
-      loginuri
+const updateDomain = gql`
+  mutation UpdateDomain($data: DD24!, $id: Int!) {
+    updateDomain(domainData: $data, licenceid: $id) {
+      ok
     }
   }
 `;
 
-class Domains extends React.Component<Props, State> {
-  state = {
-    showModal: false,
-    error: ""
-  };
+const INITIAL_STATE = {
+  popup: {
+    show: false,
+    header: "",
+    body: <div>No content</div>,
+    props: {}
+  },
+  updating: false,
+  error: ""
+};
 
-  toggle = () => this.setState(prevState => ({ showModal: !prevState.showModal }));
+class Domains extends React.Component<Props, State> {
+  state = INITIAL_STATE;
+
+  toggle = () =>
+    this.setState(prevState => ({ ...INITIAL_STATE, popup: { show: !prevState.popup.show } }));
 
   handleSubmit = async ({ domainName, tld, whoisPrivacy }) => {
     try {
@@ -67,7 +74,7 @@ class Domains extends React.Component<Props, State> {
       let options = { domain };
 
       if (whoisPrivacy) {
-        options.whoisprivacy = 1;
+        options.whoisPrivacy = 1;
       }
 
       /* tslint:disable */
@@ -94,20 +101,125 @@ class Domains extends React.Component<Props, State> {
         refetchQueries: [{ query: fetchDomains }]
       });
 
-      this.setState(prevState => ({ showModal: !prevState.showModal }));
+      this.setState(INITIAL_STATE);
     } catch (err) {
       return err;
     }
   };
 
-  getDD24Login = async () => {
+  updateDomain = async (key, updateField, id) => {
     try {
-      const res = await this.props.getOneTimePassword();
+      const { domain, cid } = key;
+      await this.props.updateDomain({
+        variables: {
+          data: { domain, cid, [Object.keys(updateField)[0]]: Object.values(updateField)[0] },
+          id
+        },
+        optimisticResponse: {
+          __typename: "Mutation",
+          updateDomain: {
+            __typename: "Licence",
+            ok: true,
+            data: { domain, cid, [Object.keys(updateField)[0]]: Object.values(updateField)[0] },
+            id
+          }
+        },
+        update: (proxy, { data: { updateDomain } }) => {
+          // Read the data from our cache for this query.
+          const data = proxy.readQuery({ query: fetchDomains });
+          const updatedDomains = data.fetchDomains.map(domain => {
+            if (domain.id == id) {
+              const updatedDomain = domain;
+              updatedDomain.key = {
+                ...domain.key,
+                // Selecting once sets the domain to autodelete after renewal
+                [Object.keys(updateField)[0]]:
+                  Object.values(updateField)[0] == "ONCE" ||
+                  Object.values(updateField)[0] == "AUTODELETE"
+                    ? "0"
+                    : "1"
+              };
 
-      console.log(res);
+              return updatedDomain;
+            }
+            return domain;
+          });
+          data.fetchDomains = updatedDomains;
+          // Write our data back to the cache.
+          proxy.writeQuery({ query: fetchDomains, data });
+        }
+      });
+
+      this.setState(INITIAL_STATE);
     } catch (err) {
-      this.setState({ error: filterError(err), showModal: true });
+      this.renderPopup("Error", ErrorComp, { error: filterError(err) });
     }
+  };
+
+  toggleOption = (key, type, id) => {
+    let fields;
+    let handleSubmit;
+    let header;
+
+    if (type == "whois") {
+      header = "Change Whois Privacy";
+      fields = [
+        {
+          name: "whoisPrivacy",
+          type: "checkbox",
+          label: `Do you want to ${
+            !key.whoisPrivacy || key.whoisPrivacy == 0 ? "buy" : "cancel the"
+          } Whois Privacy for ${key.domain}${key.whoisPrivacy == 0 ? " for 5.99 $" : ""}?`,
+          icon: "user-secret"
+        }
+      ];
+      handleSubmit = values => {
+        if (values.whoisPrivacy) {
+          this.updateDomain(
+            key,
+            {
+              whoisPrivacy: key.whoisPrivacy == 1 ? 0 : 1
+            },
+            id
+          );
+        }
+      };
+    } else {
+      header = "Update Renewalmode";
+      fields = [
+        {
+          name: "renewalmode",
+          type: "select",
+          label: `Select Renewalmode for ${key.domain}`,
+          icon: "globe",
+          options: ["autorenew", "once", "autodelete"],
+          required: true
+        }
+      ];
+      handleSubmit = values => {
+        this.updateDomain(
+          key,
+          {
+            renewalmode: values.renewalmode.toUpperCase()
+          },
+          id
+        );
+      };
+    }
+
+    const properties: { fields: object[]; handleSubmit: Function; submittingMessage: string } = {
+      fields,
+      handleSubmit,
+      submittingMessage: (
+        <LoadingDiv text={`Updating ${type == "whois" ? "Whois Privacy" : "Renewalmode"}... `} />
+      )
+    };
+
+    this.renderPopup(header, GenericInputForm, properties);
+  };
+
+  renderPopup = (header, body, props) => {
+    this.setState({ popup: { show: true, header, body, props } });
   };
 
   render() {
@@ -132,7 +244,7 @@ class Domains extends React.Component<Props, State> {
       "Configuration"
     ];
 
-    const compProps: { fields: object[]; handleSubmit: Function; submittingMessage: string } = {
+    const regProps: { fields: object[]; handleSubmit: Function; submittingMessage: string } = {
       fields: [
         {
           name: "domainName",
@@ -165,7 +277,10 @@ class Domains extends React.Component<Props, State> {
     return (
       <div className={cssClass}>
         <div id="domains">
-          <button className="register-domain" type="button" onClick={this.toggle}>
+          <button
+            className="register-domain"
+            type="button"
+            onClick={() => this.renderPopup("Domain Registration", GenericInputForm, regProps)}>
             <i className="fas fa-plus" /> Register New
           </button>
 
@@ -178,7 +293,7 @@ class Domains extends React.Component<Props, State> {
               ))}
             </div>
 
-            <div className="domain-body">
+            <div className="domain-table-body">
               <Query query={fetchDomains}>
                 {({ loading, error, data }) => {
                   if (loading) {
@@ -196,10 +311,12 @@ class Domains extends React.Component<Props, State> {
                       return (
                         <div key={id} className="domain-row">
                           <span className="domain-item domain-name">{key.domain}</span>
-                          <span className="domain-item">
+                          <span
+                            className="domain-item-icon"
+                            onClick={() => this.toggleOption(key, "whois", id)}>
                             <i
                               className={`fas fa-${
-                                key.whoisPrivacy ? "check-circle" : "times-circle"
+                                key.whoisPrivacy == 1 ? "check-circle" : "times-circle"
                               }`}
                             />
                           </span>
@@ -208,13 +325,21 @@ class Domains extends React.Component<Props, State> {
                               {item}
                             </span>
                           ))}
-                          <span className="domain-item">{key.renewal ? "Auto" : "Expire"}</span>
+                          <span
+                            className="domain-item-icon"
+                            onClick={() => this.toggleOption(key, "renewalmode", id)}>
+                            <i
+                              className={`fas fa-${
+                                key.renewalmode == "1" ? "check-circle" : "times-circle"
+                              }`}
+                            />
+                          </span>
                           <span className="domain-item">No data</span>
                           <span className="domain-item">No data</span>
                           <span className="domain-item">No data</span>
                           <i
                             className="fas fa-sliders-h domain-item-icon"
-                            onClick={this.getDD24Login}
+                            onClick={() => this.props.setDomain(id, key.domain)}
                           />
                         </div>
                       );
@@ -228,22 +353,13 @@ class Domains extends React.Component<Props, State> {
           </div>
         </div>
 
-        {this.state.showModal ? (
-          !this.state.error ? (
-            <Popup
-              popupHeader="Domain Registration"
-              popupBody={GenericInputForm}
-              bodyProps={compProps}
-              onClose={this.toggle}
-            />
-          ) : (
-            <Popup
-              popupHeader="Error"
-              popupBody={ErrorComp}
-              bodyProps={{ error: this.state.error }}
-              onClose={this.toggle}
-            />
-          )
+        {this.state.popup.show ? (
+          <Popup
+            popupHeader={this.state.popup.header}
+            popupBody={this.state.popup.body}
+            bodyProps={this.state.popup.props}
+            onClose={this.toggle}
+          />
         ) : (
           ""
         )}
@@ -254,5 +370,5 @@ class Domains extends React.Component<Props, State> {
 
 export default compose(
   graphql(buyPlan, { name: "buyPlan" }),
-  graphql(getOneTimePassword, { name: "getOneTimePassword" })
+  graphql(updateDomain, { name: "updateDomain" })
 )(Domains);

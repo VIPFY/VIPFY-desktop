@@ -3,7 +3,7 @@ import { Component } from "react";
 
 export type SidebarProps = {
   history: any[];
-  setapp: (licence: number) => void;
+  setApp: (licence: number) => void;
   licences: any;
   sidebaropen: boolean;
   logMeOut: () => void;
@@ -15,7 +15,7 @@ export type SidebarState = {
 
 class Sidebar extends Component<SidebarProps, SidebarState> {
   setApp(licence: number) {
-    this.props.setapp(licence);
+    this.props.setApp(licence);
   }
 
   goTo(view) {
