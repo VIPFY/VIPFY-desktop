@@ -39,6 +39,12 @@ class Area extends Component<AreaProps, AreaState> {
     sidebaropen: true
   };
 
+  componentDidMount() {
+    require("electron").ipcRenderer.on('change-page', (event, page) => {
+      this.props.history.push(page);
+    })
+  }
+
   setapp = (boughtplan: number) => {
     console.log("SetApp to boughtplan ", boughtplan);
     this.setState({ app: boughtplan });
@@ -227,6 +233,18 @@ class Area extends Component<AreaProps, AreaState> {
             <Marketplace
               chatopen={this.state.chatopen}
               sidebaropen={this.state.sidebaropen}
+              {...this.props}
+              {...props}
+            />
+          )}
+        />
+        <Route
+          path="/area/marketplace/:appid/:action"
+          render={props => (
+            <AppPage
+              chatopen={this.state.chatopen}
+              sidebaropen={this.state.sidebaropen}
+              setapp={this.setapp}
               {...this.props}
               {...props}
             />

@@ -3,7 +3,7 @@ import electron = require("electron")
 export const con = electron.remote.getGlobal("console");
 const app = electron.remote.app;
 export const appPath = app.getAppPath();
-export const todoPath = "file://" + path.join(appPath, "src", "todo.html");
+export const todoPath = "vipfy://todo/"; //"file://" + path.join(appPath, "src", "todo.html");
 
 export function hideByQuery(query: string, parent: boolean): void {
   let elements = document.querySelectorAll<HTMLElement>(query);

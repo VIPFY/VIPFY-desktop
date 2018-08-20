@@ -29,8 +29,8 @@ function onReady() {
 function modifyAll() {
 
   //the following two should apply equally to most instances, but there are occasional exceptions
-  redirectLinks("#dialog/tier-plan-standalone", todoPath);
-  redirectLinksByQuery("a.tierChangeStandaloneModal", todoPath);
+  redirectLinks("#dialog/tier-plan-standalone", "vipfy://marketplace/4/changeplan/");
+  redirectLinksByQuery("a.tierChangeStandaloneModal", "vipfy://marketplace/4/changeplan/");
 
   hideByQuery("#email", true);
   hideByQuery('a[href="#password"]', true);
