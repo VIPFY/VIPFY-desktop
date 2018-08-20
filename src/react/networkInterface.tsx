@@ -76,7 +76,7 @@ export const setLogoutFunction = logoutFunc => {
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.map(({ message, locations, path }) => {
-      if (message == "Not authenticated!" || message == "Cannot read property 'user' of null") {
+      if (message == "Not authenticated!" || message == "Cannot read property 'user' of null" || message == "Couldn't find user in database!") {
         logout();
       }
 
