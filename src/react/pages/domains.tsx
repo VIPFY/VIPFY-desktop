@@ -132,10 +132,12 @@ class Domains extends React.Component<Props, State> {
               const updatedDomain = domain;
               updatedDomain.key = {
                 ...domain.key,
+                // Selecting once sets the domain to autodelete after renewal
                 [Object.keys(updateField)[0]]:
-                  Object.values(updateField)[0] == "ONCE"
-                    ? "AUTODELETE"
-                    : Object.values(updateField)[0]
+                  Object.values(updateField)[0] == "ONCE" ||
+                  Object.values(updateField)[0] == "AUTODELETE"
+                    ? "0"
+                    : "1"
               };
 
               return updatedDomain;
@@ -155,20 +157,22 @@ class Domains extends React.Component<Props, State> {
   };
 
   toggleOption = (key, type, id) => {
-    let field;
+    let fields;
     let handleSubmit;
     let header;
 
     if (type == "whois") {
       header = "Change Whois Privacy";
-      field = {
-        name: "whoisPrivacy",
-        type: "checkbox",
-        label: `Do you want to ${key.whoisPrivacy == 0 ? "buy" : "cancel the"} Whois Privacy for ${
-          key.domain
-        }?`,
-        icon: "user-secret"
-      };
+      fields = [
+        {
+          name: "whoisPrivacy",
+          type: "checkbox",
+          label: `Do you want to ${
+            !key.whoisPrivacy || key.whoisPrivacy == 0 ? "buy" : "cancel the"
+          } Whois Privacy for ${key.domain}${key.whoisPrivacy == 0 ? " for 5.99 $" : ""}?`,
+          icon: "user-secret"
+        }
+      ];
       handleSubmit = values => {
         if (values.whoisPrivacy) {
           this.updateDomain(
@@ -182,14 +186,16 @@ class Domains extends React.Component<Props, State> {
       };
     } else {
       header = "Update Renewalmode";
-      field = {
-        name: "renewalmode",
-        type: "select",
-        label: `Select Renewalmode for ${key.domain}`,
-        icon: "globe",
-        options: ["autorenew", "once", "autodelete"],
-        required: true
-      };
+      fields = [
+        {
+          name: "renewalmode",
+          type: "select",
+          label: `Select Renewalmode for ${key.domain}`,
+          icon: "globe",
+          options: ["autorenew", "once", "autodelete"],
+          required: true
+        }
+      ];
       handleSubmit = values => {
         this.updateDomain(
           key,
@@ -202,7 +208,7 @@ class Domains extends React.Component<Props, State> {
     }
 
     const properties: { fields: object[]; handleSubmit: Function; submittingMessage: string } = {
-      fields: [field],
+      fields,
       handleSubmit,
       submittingMessage: (
         <LoadingDiv text={`Updating ${type == "whois" ? "Whois Privacy" : "Renewalmode"}... `} />
@@ -256,6 +262,12 @@ class Domains extends React.Component<Props, State> {
           label: "Select TLD",
           options: ["com", "net", "org"],
           required: true
+        },
+        {
+          name: "whoisPrivacy",
+          type: "checkbox",
+          label: "Whois Privacy",
+          icon: "user-secret"
         }
       ],
       handleSubmit: this.handleSubmit,
@@ -281,7 +293,7 @@ class Domains extends React.Component<Props, State> {
               ))}
             </div>
 
-            <div className="domain-body">
+            <div className="domain-table-body">
               <Query query={fetchDomains}>
                 {({ loading, error, data }) => {
                   if (loading) {
@@ -300,8 +312,7 @@ class Domains extends React.Component<Props, State> {
                         <div key={id} className="domain-row">
                           <span className="domain-item domain-name">{key.domain}</span>
                           <span
-                            className="domain-item"
-                            style={{ cursor: "pointer" }}
+                            className="domain-item-icon"
                             onClick={() => this.toggleOption(key, "whois", id)}>
                             <i
                               className={`fas fa-${
@@ -315,10 +326,13 @@ class Domains extends React.Component<Props, State> {
                             </span>
                           ))}
                           <span
-                            className="domain-item"
-                            style={{ cursor: "pointer" }}
+                            className="domain-item-icon"
                             onClick={() => this.toggleOption(key, "renewalmode", id)}>
-                            {key.renewalmode}
+                            <i
+                              className={`fas fa-${
+                                key.renewalmode == "1" ? "check-circle" : "times-circle"
+                              }`}
+                            />
                           </span>
                           <span className="domain-item">No data</span>
                           <span className="domain-item">No data</span>
