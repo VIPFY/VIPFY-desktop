@@ -14,7 +14,6 @@ class ChoosePlanBox extends Component {
 
   render() {
     let planArray: JSX.Element[] = [];
-
     this.props.plans.forEach((plan, key) => {
       let periodtext = "";
       if (plan.payperiod) {
@@ -35,7 +34,7 @@ class ChoosePlanBox extends Component {
       <div className="appHeaderSelectPlan">
         <div onClick={() => this.props.changeShowHolder(2)}>
           <span className="appHeaderSelectPlanText">
-            {this.props.plans[this.props.choosedPlan].name}
+            {this.props.plans[this.props.chosenPlan].name}
             <span className="fas fa-caret-down caretApp" />
           </span>
         </div>

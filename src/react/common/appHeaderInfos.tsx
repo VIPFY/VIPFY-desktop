@@ -1,28 +1,26 @@
 import * as React from "react";
-import { Component } from "react";
-
-import { showStars, calculatepartsum } from "../common/functions";
+import { graphql, compose } from "react-apollo";
 import ChoosePlanBox from "../common/choosePlanBox";
 import ChooseDepartmentBox from "../common/chooseDepartmentBox";
-
-import { graphql, compose } from "react-apollo";
+import { showStars, calculatepartsum } from "../common/functions";
 import { fetchDepartmentsData } from "../queries/departments";
 
-class AppHeaderInfos extends Component {
+export type State = {
+  showRecord: number;
+  chosenPlan: number;
+  chosenDepartment: number;
+};
+
+class AppHeaderInfos extends React.Component<State> {
   state = {
-    showReco: 0,
-    choosedPlan: 0,
-    choosedDepartment: 0
+    showRecord: 0,
+    chosenPlan: 0,
+    chosenDepartment: 0
   };
 
-  choosePlan = index => {
-    this.setState({ choosedPlan: index });
-    this.setState({ showReco: 0 });
-  };
+  choosePlan = index => this.setState({ chosenPlan: index, showRecord: 0 });
 
-  changeShowHolder = a => {
-    this.setState({ showReco: a });
-  };
+  changeShowHolder = a => this.setState({ showRecord: a });
 
   render() {
     console.log("DD", this.props.departmentsdata);
@@ -37,10 +35,10 @@ class AppHeaderInfos extends Component {
           </div>
           <ChooseDepartmentBox
             departments={this.props.departmentsdata.fetchDepartmentsData}
-            showHolder={this.state.showReco}
-            choosedDepartment={this.state.choosedDepartment}
+            showHolder={this.state.showRecord}
+            chosenDepartment={this.state.chosenDepartment}
             changeShowHolder={this.changeShowHolder}
-            handleOutside={() => this.setState({ showReco: 0 })}
+            handleOutside={() => this.setState({ showRecord: 0 })}
           />
           {/*<div className="appHeaderSelectDepartment">
             <span className="appHeaderSelectDepartmentText">
@@ -54,23 +52,23 @@ class AppHeaderInfos extends Component {
           <ChoosePlanBox
             plans={this.props.allPlans}
             appid={this.props.appDetails.id}
-            choosedPlan={this.state.choosedPlan}
+            chosenPlan={this.state.chosenPlan}
             choosePlan={this.choosePlan}
-            showHolder={this.state.showReco}
+            showHolder={this.state.showRecord}
             changeShowHolder={this.changeShowHolder}
-            handleOutside={() => this.setState({ showReco: 0 })}
+            handleOutside={() => this.setState({ showRecord: 0 })}
           />
           <div
             className="appHeaderBuyButton"
             onClick={() =>
               this.props.buyApp(
-                [this.props.allPlans[this.state.choosedPlan]],
-                this.props.departmentsdata.fetchDepartmentsData[this.state.choosedDepartment]
+                [this.props.allPlans[this.state.chosenPlan]],
+                this.props.departmentsdata.fetchDepartmentsData[this.state.chosenDepartment]
               )
             }>
             Subscribe now for $
             {calculatepartsum(
-              this.props.allPlans[this.state.choosedPlan],
+              this.props.allPlans[this.state.chosenPlan],
               0,
               this.props.numberEmployees
             ).toFixed(2)}{" "}

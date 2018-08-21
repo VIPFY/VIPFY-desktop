@@ -7,6 +7,7 @@ import AddEmployeeTeam from "../common/addEmployeeTeam";
 import DepartmentLicenceEdit from "../common/departmentLicenceEdit";
 import DepartmentAddApp from "../common/departmentAddApp";
 import Popup from "../components/Popup";
+import { ErrorComp } from "../common/functions";
 
 import { fetchLicences } from "../queries/auth";
 
@@ -36,22 +37,17 @@ class Team extends Component {
     newEmail: "",
     newDepartment: "",
     showAppOption: "",
-    popup: null
+    popup: null,
+    popupProps: null
   };
 
-  toggleSearch = bool => {
-    this.setState({ searchFocus: bool });
-  };
-  toggleInput = bool => {
-    this.setState({ inputFocus: bool });
-  };
+  toggleSearch = bool => this.setState({ searchFocus: bool });
 
-  showPopup = type => {
-    this.setState({ popup: type });
-  };
-  closePopup = () => {
-    this.setState({ popup: null });
-  };
+  toggleInput = bool => this.setState({ inputFocus: bool });
+
+  showPopup = error => this.setState({ popup: true, popupProps: { error } });
+
+  closePopup = () => this.setState({ popup: null });
 
   toggleAdd = index => {
     if (this.state.showAdd === index) {
@@ -272,6 +268,8 @@ class Team extends Component {
             </div>
             {this.state.showAppOption === `app-${departmentid}-${app.boughtplanid}` ? (
               <DepartmentLicenceEdit
+                departmentid={departmentid}
+                boughtplanid={app.boughtplanid}
                 revokeLicencesFromDepartment={this.revokeLicencesFromDepartment}
                 handleOutside={() => {
                   this.toggleBoughtInfo(0, 0);
@@ -436,8 +434,8 @@ class Team extends Component {
         {this.state.popup ? (
           <Popup
             popupHeader="Check Order"
-            popupBody={<div>{this.state.popup}</div>}
-            bodyProps={}
+            popupBody={ErrorComp}
+            bodyProps={this.state.popupProps}
             onClose={this.closePopup}
           />
         ) : (

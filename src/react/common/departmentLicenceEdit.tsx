@@ -12,11 +12,17 @@ class DepartmentLicenceEdit extends Component {
       <div className="addHolderAll">
         <div
           className="addHolder"
-          onClick={() => this.props.revokeLicencesFromDepartment(departmentid, app.boughtplanid)}>
+          onClick={() =>
+            this.props.revokeLicencesFromDepartment(
+              this.props.departmentid,
+              this.props.boughtplanid
+            )
+          }>
           Revoke App from department
         </div>
       </div>
     );
   }
 }
+
 export default onClickOutside(DepartmentLicenceEdit);
