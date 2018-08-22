@@ -47,7 +47,7 @@ class Area extends Component<AreaProps, AreaState> {
     });
   }
 
-  setapp = (boughtplan: number) => {
+  setApp = (boughtplan: number) => {
     console.log("SetApp to boughtplan ", boughtplan);
     this.setState({ app: boughtplan });
     this.props.history.push("/area/webview");
@@ -252,7 +252,7 @@ class Area extends Component<AreaProps, AreaState> {
             <AppPage
               chatopen={this.state.chatopen}
               sidebaropen={this.state.sidebaropen}
-              setapp={this.setapp}
+              setApp={this.setApp}
               {...this.props}
               {...props}
             />
