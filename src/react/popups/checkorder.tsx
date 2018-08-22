@@ -47,15 +47,18 @@ class CheckOrder extends Component {
                   query {
                     fetchBillingAddresses {
                       id
-                      unitid {
-                        id
-                        payingoptions
-                      }
                       address
                       country
                       description
                       priority
                       tags
+                    }
+                    fetchPaymentData {
+                      name
+                      last4
+                      brand
+                      exp_month
+                      exp_year
                     }
                   }
                 `}>
@@ -76,7 +79,9 @@ class CheckOrder extends Component {
                         <div>{data.fetchBillingAddresses[0].address.city}</div>
                         <div>{data.fetchBillingAddresses[0].address.zip}</div>
                         <div>
-                          {data.fetchBillingAddresses[0].unitid.payingoptions[0].cardnumber}
+                          {/*data.fetchBillingAddresses[0].unitid.payingoptions[0].cardnumber*/}
+                          <span>{data.fetchPaymentData[0].name}</span>
+                          <span>{data.fetchPaymentData[0].last4}</span>
                         </div>
                       </div>
                     );
@@ -87,7 +92,10 @@ class CheckOrder extends Component {
               </Query>
             </div>
             <div className="checkOrderHolderPart">
-              Buy for everyone in {this.props.selecteddepartment.department.name}
+              Buy for everyone in{" "}
+              {this.props.selecteddepartment.department
+                ? this.props.selecteddepartment.department.name
+                : this.props.selecteddepartment}
             </div>
             <div className="checkOrderHolderLawBox">
               {this.props.plans[0].appid.options ? (
