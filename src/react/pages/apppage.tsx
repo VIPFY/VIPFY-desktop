@@ -224,7 +224,8 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 <div className="planTitle">{plan.name}</div>
                 <div className="planPrice">
                   <div className="planPriceBefore">starting at</div>
-                  {this.calculatepartsum(plan, 0, usercount).toFixed(2)} {plan.currency}/month
+                  {this.calculatepartsum(plan, 0, usercount).toFixed(2)} {plan.currency}
+                  /month
                 </div>
               </div>
               <div className="planAdditionalOptions">
@@ -232,7 +233,8 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 {this.printOptionalPlans(plan.subplans, plan.numlicences, i)}
               </div>
               <div className="planCosts" onClick={() => this.buyApp([plan.id])}>
-                {totalprice.toFixed(2)} {plan.currency}/month
+                {totalprice.toFixed(2)} {plan.currency}
+                /month
               </div>
             </div>
           );
@@ -574,7 +576,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                   : `$${this.calculatepartsum(plan, 0, employees).toFixed(2)} p.m.`}
               </div>
             </div>
-            <div className="planCosts" onClick={() => this.buyApp([plan.id])}>
+            <div className="planCosts" onClick={() => this.buyApp([plan], "me")}>
               Select
             </div>
           </div>

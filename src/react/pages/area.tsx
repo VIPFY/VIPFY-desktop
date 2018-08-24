@@ -48,7 +48,7 @@ class Area extends Component<AreaProps, AreaState> {
     });
   }
 
-  setapp = (boughtplan: number) => {
+  setApp = (boughtplan: number) => {
     console.log("SetApp to boughtplan ", boughtplan);
     this.setState({ app: boughtplan });
     this.props.history.push("/area/webview");
