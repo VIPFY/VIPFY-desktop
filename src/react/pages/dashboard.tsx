@@ -57,7 +57,7 @@ class Dashboard extends Component {
       return (
         <div className={cssClass}>
           <div className="centralize backgroundLogo">
-            <div className="loginHolder">
+            <div className="login-holder">
               <div className="recommendedApps">
                 <div className="recommendedAppsTitle">We believe you need these services</div>
                 <div

@@ -54,7 +54,7 @@ const INITIAL_STATE = {
   popup: {
     show: false,
     header: "",
-    body: <div>No content</div>,
+    body: () => <div>No content</div>,
     props: {}
   },
   updating: false,

@@ -1,10 +1,8 @@
 import { ApolloLink, Observable } from "apollo-link";
 import { print } from "graphql/language/printer";
-import has from "lodash/has";
 
 const throwServerError = (response, result, message) => {
   const error = new Error(message);
-
   error.response = response;
   error.statusCode = response.status;
   error.result = result;
@@ -84,22 +82,33 @@ export default ({ uri, includeExtensions, ...requestOptions } = {}) => {
           throw parseError;
         }
 
-        const myHeaders = {
-          accept: "*/*"
-        };
+        const myHeaders = { accept: "*/*" };
 
-        if (has(variables, "file")) {
+        const { file, file2, files } = variables;
+
+        if (file || files || file2) {
           const stringBody = serializedBody;
           serializedBody = new FormData();
           serializedBody.append("operations", stringBody);
-          serializedBody.append("file", variables.file);
+
+          if (file) {
+            serializedBody.append("file", file);
+          }
+          if (file2) {
+            serializedBody.append("file2", file2);
+          }
+          if (files) {
+            files.forEach(fi => serializedBody.append("files", fi));
+          }
         } else {
           myHeaders["content-type"] = "application/json";
         }
 
         let options = fetchOptions;
-        if (requestOptions.fetchOptions)
+        if (requestOptions.fetchOptions) {
           options = { ...requestOptions.fetchOptions, ...options };
+        }
+
         const fetcherOptions = {
           method: "POST",
           ...options,
@@ -107,9 +116,13 @@ export default ({ uri, includeExtensions, ...requestOptions } = {}) => {
           body: serializedBody
         };
 
-        if (requestOptions.credentials)
+        if (requestOptions.credentials) {
           fetcherOptions.credentials = requestOptions.credentials;
-        if (credentials) fetcherOptions.credentials = credentials;
+        }
+
+        if (credentials) {
+          fetcherOptions.credentials = credentials;
+        }
 
         if (requestOptions.headers) {
           fetcherOptions.headers = {
@@ -117,8 +130,10 @@ export default ({ uri, includeExtensions, ...requestOptions } = {}) => {
             ...requestOptions.headers
           };
         }
-        if (headers)
+
+        if (headers) {
           fetcherOptions.headers = { ...fetcherOptions.headers, ...headers };
+        }
 
         fetcher(contextURI || uri, fetcherOptions)
           // attach the raw response to the context for usage
@@ -135,7 +150,10 @@ export default ({ uri, includeExtensions, ...requestOptions } = {}) => {
           })
           .catch(err => {
             // fetch was cancelled so its already been cleaned up in the unsubscribe
-            if (err.name === "AbortError") return;
+            if (err.name === "AbortError") {
+              return;
+            }
+
             observer.error(err);
           });
 

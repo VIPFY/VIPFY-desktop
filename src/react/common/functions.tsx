@@ -89,7 +89,9 @@ export const AppContext = React.createContext();
 
 export const ErrorComp = ({ error }) => <div className="generic-error">{error}</div>;
 
-export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element ): JSX.Element[] => {
+export const concatName = (first, middle, last) => `${first} ${middle ? middle : ""} ${last}`;
+
+export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Element[] => {
   let r: JSX.Element[] = [];
   for (let element of list) {
     r.push(element);

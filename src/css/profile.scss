@@ -1,0 +1,84 @@
+$border: 1px solid #005;
+$shadow-color: #f0f3ff;
+@mixin toggle {
+  overflow: hidden;
+  transition: max-height 0.6s ease-in-out;
+}
+
+#profile-page {
+  display: flex;
+  flex-flow: column;
+  padding: 2rem;
+  width: 100%;
+
+  .profile-page-item {
+    background: #fff;
+    box-shadow: 0 0 4rem $shadow-color;
+    margin: 1rem 0;
+  }
+
+  #personal-information {
+    display: grid;
+    grid-template-areas:
+      'header header'
+      'pic information ';
+    grid-template-columns: 2fr 7fr;
+  }
+
+  .header {
+    border-bottom: $border;
+    cursor: pointer;
+    font-weight: bold;
+    grid-area: header;
+    padding: 0.5rem 0;
+    text-align: center;
+  }
+
+  .pic-holder {
+    display: block;
+    grid-area: pic;
+    margin: 0 auto;
+
+    .pic {
+      background-color: #eee;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 1rem 0;
+      width: 5rem;
+    }
+  }
+
+  .information {
+    border-left: $border;
+    grid-area: information;
+
+    ul {
+      list-style: none;
+
+      li {
+        display: flex;
+        justify-content: flex-end;
+        margin: 0.2rem 0;
+
+        label {
+          flex: 1;
+          padding-right: 0.3rem;
+        }
+
+        span {
+          flex: 4;
+        }
+      }
+    }
+  }
+}
+
+.in {
+  @include toggle;
+  max-height: 20rem;
+}
+
+.out {
+  @include toggle;
+  max-height: 0;
+}

@@ -167,7 +167,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
               <span className="fas fa-home sidebar-icons" />
               <span className="sidebar-link-caption">Dashboard</span>
             </li>
-            <li className="sidebar-link">
+            <li className="sidebar-link" onClick={() => this.goTo("profile")}>
               <span className="fas fa-user sidebar-icons" />
               <span className="sidebar-link-caption">Profile</span>
             </li>

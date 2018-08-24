@@ -177,7 +177,7 @@ class App extends Component<AppProps, AppState> {
     }
 
     return (
-      <AppContext.Provider value={this.state} className="fullSize">
+      <AppContext.Provider value={this.state} className="full-size">
         <Switch>
           <Route
             exact

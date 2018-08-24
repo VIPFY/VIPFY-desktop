@@ -4,81 +4,80 @@
 @import './domains.scss';
 @import './forms.scss';
 @import './messages.scss';
+@import './profile.scss';
 
-@keyframes buttonMove{
-    from {left:0px}
-    to {left:-1000px}
-}
-/*@keyframes buttonMove{
-    from {transform: perspective(300px) rotateY(0deg)}
-    to {transform: perspective(300px) rotateY(-90deg)}
-}*/
-
-#App{
-    width: 100%;
-    height: 100vh;
-    color: #333;
-    font-family: 'Montserrat', sans-serif;
+@keyframes button-move {
+  from {left: 0}
+  to {left: -1000px}
 }
 
-.fullSize{
-    width: 100%;
-    height: 100%;
+#App {
+  color: #333;
+  font-family: 'Montserrat', sans-serif;
+  height: 100vh;
+  width: 100%;
 }
 
-.centralize{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    flex-flow: column;
+.full-size {
+  height: 100%;
+  width: 100%;
 }
 
-.loginHolder{
-    font-size: 1.5em;
-    padding: 1em;
-    border: 1px solid #771a1c;
-    background-image: url(../images/vipfy-logo_hell.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: rgba(255,255,255,0.7);
-    box-shadow: inset 2px 2px 10px 2px #aaa;
-    width: 25rem;
+.centralize {
+  align-items: center;
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.login-holder {
+  background-color: rgba(255, 255, 255, 0.7);
+  background-image: url('../images/vipfy-logo_hell.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: 1px solid #771a1c;
+  box-shadow: inset 2px 2px 10px 2px #aaa;
+  font-size: 1.5em;
+  padding: 1em;
+  width: 25rem;
 }
 
 label {
-    font-weight: 300;
-    display: block;
+  display: block;
+  font-weight: 300;
 }
 
-.formHeading {
-    font-weight: 500;
-    line-height: 2em;
-    text-align: center;
-    text-shadow: 0px 0px 5px white;
+.form-heading {
+  font-weight: 500;
+  line-height: 2em;
+  text-align: center;
+  text-shadow: 0 0 5px white;
 }
 
-.inputField{
-    font-weight: 500;
-    font-size: 0.75em;
-    font-style: italic;
-    margin-bottom: 0.6em;
-    border: 0;
-    width: 20em;
-    background-color: rgba(255,255,255,0.7);
-    border: 1px solid #aaa;
-    padding: 5px;
-}
-.inputField:focus{
-    outline: 0;
+.inputField {
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid #aaa;
+  border: 0;
+  font-size: 0.75em;
+  font-style: italic;
+  font-weight: 500;
+  margin-bottom: 0.6em;
+  padding: 5px;
+  width: 20em;
+
+  &:focus {
     border-bottom: 2px solid #771a1c !important;
+    outline: 0;
     padding-bottom: 4px !important;
+  }
 }
-.buttonHolder{
-    display: flex;
-    justify-content: space-between;
+
+.button-holder {
+  display: flex;
+  justify-content: space-between;
 }
 
 .naked-button {
@@ -91,56 +90,65 @@ label {
   padding: 0;
 }
 
-.buttonForgot{
-    font-size: 0.5em;
-    margin-top: 1.2em;
+.button-forgot {
+  font-size: 0.5em;
+  margin-top: 1.2em;
 }
-.button{
-    text-decoration: underline;
-    color: #771a1c;
-    cursor: pointer;
-    padding-left: 2px;
-    padding-right: 2px;
-    position: relative;
-    overflow: hidden;
-    transition-duration: 0.2s;
-    transition-timing-function: ease-in-out;
+
+.button {
+  color: #771a1c;
+  cursor: pointer;
+  overflow: hidden;
+  padding-left: 2px;
+  padding-right: 2px;
+  position: relative;
+  text-decoration: underline;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
 }
-.button > span{
-    display: block;
-    transform-origin: -30px;
-}
-.button:hover{
+
+.button > span {
+  display: block;
+  transform-origin: -30px;
+
+  &:hover {
     box-shadow: inset 2px 2px 10px 2px #888;
+  }
 }
-.buttonMoved{
-    box-shadow: inset 2px 2px 10px 2px #888;
+
+.button-moved {
+  box-shadow: inset 2px 2px 10px 2px #888;
 }
-.buttonMove{
-    position: relative;
-    animation-name: buttonMove;
-    animation-duration: 2s;
-    animation-fill-mode: both;
-    animation-timing-function: ease-in;
+
+.button-move {
+  animation-duration: 2s;
+  animation-fill-mode: both;
+  animation-name: button-move;
+  animation-timing-function: ease-in;
+  position: relative;
 }
-.formError{
-    text-align: center;
-    font-size: 0.7em;
-    font-weight: bold;
-    color: white;
-    background-color: #771a1c;
-    line-height: 2em;
+
+.formError {
+  background-color: #771a1c;
+  color: white;
+  font-size: 0.7em;
+  font-weight: bold;
+  line-height: 2em;
+  text-align: center;
 }
-.noError{
-    transition-duration: 0.2s;
-    transition-timing-function: ease-in-out;
-    opacity: 0;
+
+.noError {
+  opacity: 0;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
 }
-.oneError{
-    transition-duration: 0.2s;
-    transition-timing-function: ease-in-out;
-    opacity: 1;
+
+.oneError {
+  opacity: 1;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
 }
+
 .navigation{
     /*background-color: #333;
     background: linear-gradient(#333 0%, #222 50%);*/
