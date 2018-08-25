@@ -223,7 +223,7 @@ class Domains extends React.Component<Props, State> {
   };
 
   render() {
-    let cssClass = "fullWorking dashboardWorking";
+    let cssClass = "full-working dashboard-working";
     if (this.props.chatopen) {
       cssClass += " chatopen";
     }

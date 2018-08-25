@@ -417,7 +417,7 @@ class Team extends Component {
   };
 
   render() {
-    let cssClass = "fullWorking";
+    let cssClass = "full-working";
     if (this.props.chatopen) {
       cssClass += " chatopen";
     }

@@ -46,7 +46,7 @@ class Dashboard extends Component {
   render() {
     console.log("RC", this.props.rcApps);
     let bI = this.props.profilepicture;
-    let cssClass = "fullWorking dashboardWorking";
+    let cssClass = "full-working dashboard-working";
     if (this.props.chatopen) {
       cssClass += " chatopen";
     }
@@ -67,7 +67,7 @@ class Dashboard extends Component {
                     backgroundImage:
                       "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"
                   }}>
-                  <span className="useableServiceName">Pipedrive</span>
+                  <span className="useable-service-name">Pipedrive</span>
                 </div>
                 <div
                   className="recommendedAppsLogo"
@@ -76,7 +76,7 @@ class Dashboard extends Component {
                     backgroundImage:
                       "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/google-apps.svg)"
                   }}>
-                  <span className="useableServiceName">G Suite</span>
+                  <span className="useable-service-name">G Suite</span>
                 </div>
               </div>
             </div>
@@ -176,7 +176,7 @@ class Dashboard extends Component {
                         app.logo
                       })`
                     }}>
-                    <span className="recommendedServiceName">{app.name}</span>
+                    <span className="recommended-service-name">{app.name}</span>
                   </div>
                 ))}
           </div>

@@ -22,7 +22,7 @@ class Profile extends React.Component<State, Props> {
     this.setState(prevState => ({ showPersonalData: !prevState.showPersonalData }));
 
   render() {
-    let cssClass = "fullWorking dashboardWorking";
+    let cssClass = "full-working dashboard-working";
     if (this.props.chatopen) {
       cssClass += " chatopen";
     }

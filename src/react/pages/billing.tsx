@@ -78,7 +78,7 @@ class Billing extends React.Component<Props, State> {
   render() {
     const { chatopen, sidebaropen, cards, bills } = this.props;
 
-    let cssClass = "fullWorking dashboardWorking";
+    let cssClass = "full-working dashboard-working";
     if (chatopen) {
       cssClass += " chatopen";
     }

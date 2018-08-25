@@ -14,16 +14,9 @@ export type SidebarState = {
 };
 
 class Sidebar extends Component<SidebarProps, SidebarState> {
-  setApp(licence: number) {
-    this.props.setApp(licence);
-  }
+  goTo = view => this.props.history.push(`/area/${view}`);
 
-  goTo(view) {
-    let gotoview = "/area/" + view;
-    this.props.history.push(gotoview);
-  }
-
-  showApps(licences, bool) {
+  showApps = licences => {
     let appLogos: JSX.Element[] = [];
     if (licences) {
       let i = 0;
@@ -32,7 +25,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
           <li
             className="sidebar-link"
             key={`ServiceLogo-${i}`}
-            onClick={() => this.setApp(licence.id)}>
+            onClick={() => this.props.setApp(licence.id)}>
             <span
               className="service-logo-small"
               style={{
@@ -41,11 +34,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
                 })`
               }}
             />
-            {bool ? (
-              <span className="sidebar-link-caption">{licence.boughtplanid.planid.appid.name}</span>
-            ) : (
-              ""
-            )}
+            <span className={this.props.sidebaropen ? "sidebar-link-caption" : "show-not"}>
+              {licence.boughtplanid.planid.appid.name}
+            </span>
           </li>
         );
         i++;
@@ -53,147 +44,64 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     }
 
     return appLogos;
-  }
+  };
 
-  showBilling() {
-    if (this.props.billing) {
-      if (!this.props.sidebaropen) {
-        return (
-          <li className="sidebar-link" onClick={() => this.goTo("billing")}>
-            <span className="fas fa-dollar-sign sidebar-icons" />
-          </li>
-        );
-      } else {
-        return (
-          <li className="sidebar-link" onClick={() => this.goTo("billing")}>
-            <span className="fas fa-dollar-sign sidebar-icons" />
-            <span className="sidebar-link-caption">Billing</span>
-          </li>
-        );
-      }
-    }
-  }
-
-  showTeams() {
-    if (this.props.teams) {
-      if (!this.props.sidebaropen) {
-        return (
-          <li className="sidebar-link" onClick={() => this.goTo("team")}>
-            <span className="fas fa-users-cog sidebar-icons" />
-          </li>
-        );
-      } else {
-        return (
-          <li className="sidebar-link" onClick={() => this.goTo("team")}>
-            <span className="fas fa-users-cog sidebar-icons" />
-            <span className="sidebar-link-caption">Teams</span>
-          </li>
-        );
-      }
-    }
-  }
-
-  showMarketplace() {
-    if (this.props.marketplace) {
-      if (!this.props.sidebaropen) {
-        return (
-          <li
-            className="sidebar-link sidebar-link-important"
-            onClick={() => this.goTo("marketplace")}>
-            <span className="fas fa-shopping-cart sidebar-icons" />
-          </li>
-        );
-      } else {
-        return (
-          <li
-            className="sidebar-link sidebar-link-important"
-            onClick={() => this.goTo("marketplace")}>
-            <span className="fas fa-shopping-cart sidebar-icons" />
-            <span className="sidebar-link-caption">Marketplace</span>
-          </li>
-        );
-      }
-    }
-  }
-
-  showDomains = () => {
-    if (this.props.domains) {
+  renderLink = ({ label, location, icon, show, important }: object) => {
+    if (show) {
       return (
-        <li className="sidebar-link sidebar-link-important" onClick={() => this.goTo("domains")}>
-          <i className="fas fa-code sidebar-icons" />
-          {this.props.sidebaropen ? <span className="sidebar-link-caption">Domains</span> : ""}
+        <li
+          className={`sidebar-link ${important ? "sidebar-link-important" : ""}`}
+          onClick={() => this.goTo(location)}>
+          <span className={`fas fa-${icon} sidebar-icons`} />
+          <span className={`${this.props.sidebaropen ? "sidebar-link-caption" : "show-not"}`}>
+            {label}
+          </span>
         </li>
       );
     }
   };
 
   render() {
-    if (!this.props.sidebaropen) {
-      return (
-        <div className="sidebar-small">
-          <div className="sidebar-logo" />
-          <ul className="sidebar-link-holder">
-            <li className="sidebar-link" onClick={() => this.goTo("dashboard")}>
-              <span className="fas fa-home sidebar-icons" />
-            </li>
-            <li className="sidebar-link">
-              <span className="fas fa-user sidebar-icons" />
-            </li>
-            <li className="sidebar-link" onClick={() => this.goTo("messagecenter")}>
-              <span className="fas fa-envelope sidebar-icons" />
-            </li>
-            {this.showBilling()}
-            {this.showTeams()}
-            {this.showMarketplace()}
-            {this.showDomains()}
-            {this.showApps(this.props.licences.fetchLicences, false)}
-            <li
-              className="sidebar-link sidebar-link-important"
-              onClick={() => this.props.logMeOut()}>
-              <span className="fas fa-sign-out-alt sidebar-icons" />
-            </li>
-            <li className="sidebar-link" onClick={() => this.goTo("advisor")}>
-              <span className="fas fa-envelope sidebar-icons" />
-            </li>
-          </ul>
-        </div>
-      );
-    } else {
-      return (
-        <div className="sidebar">
-          <div className="sidebar-logo" />
-          <ul className="sidebar-link-holder">
-            <li className="sidebar-link" onClick={() => this.goTo("dashboard")}>
-              <span className="fas fa-home sidebar-icons" />
-              <span className="sidebar-link-caption">Dashboard</span>
-            </li>
-            <li className="sidebar-link" onClick={() => this.goTo("profile")}>
-              <span className="fas fa-user sidebar-icons" />
-              <span className="sidebar-link-caption">Profile</span>
-            </li>
-            <li className="sidebar-link" onClick={() => this.goTo("messagecenter")}>
-              <span className="fas fa-envelope sidebar-icons" />
-              <span className="sidebar-link-caption">Message Center</span>
-            </li>
-            {this.showBilling()}
-            {this.showTeams()}
-            {this.showMarketplace()}
-            {this.showDomains()}
-            {this.showApps(this.props.licences.fetchLicences, true)}
-            <li
-              className="sidebar-link sidebar-link-important"
-              onClick={() => this.props.logMeOut()}>
-              <span className="fas fa-sign-out-alt sidebar-icons" />
-              <span className="sidebar-link-caption">Logout</span>
-            </li>
-            <li className="sidebar-link" onClick={() => this.goTo("advisor")}>
-              <span className="fas fa-envelope sidebar-icons" />
-              <span className="sidebar-link-caption">advisor</span>
-            </li>
-          </ul>
-        </div>
-      );
-    }
+    const sidebarLinks = [
+      { label: "Dashboard", location: "dashboard", icon: "home", show: true },
+      { label: "Profile", location: "profile", icon: "user", show: true },
+      { label: "Message Center", location: "messagecenter", icon: "envelope", show: true },
+      { label: "Billing", location: "billing", icon: "dollar-sign", show: this.props.billing },
+      { label: "Teams", location: "team", icon: "users-cog", show: this.props.teams },
+      {
+        label: "Marketplace",
+        location: "marketplace",
+        icon: "shopping-cart",
+        show: this.props.marketplace,
+        important: true
+      },
+      {
+        label: "Domains",
+        location: "domains",
+        icon: "code",
+        show: this.props.domains,
+        important: true
+      }
+    ];
+
+    return (
+      <div className={`sidebar${this.props.sidebaropen ? "" : "-small"}`}>
+        <div className="sidebar-logo" />
+        <ul className="sidebar-link-holder">
+          {sidebarLinks.map(link => this.renderLink(link))}
+          {this.showApps(this.props.licences.fetchLicences)}
+
+          <li className="sidebar-link sidebar-link-important" onClick={() => this.props.logMeOut()}>
+            <span className="fas fa-sign-out-alt sidebar-icons" />
+            <span className={`${this.props.sidebaropen ? "sidebar-link-caption" : "show-not"}`}>
+              Logout
+            </span>
+          </li>
+
+          {this.renderLink({ label: "Advisor", location: "advisor", icon: "envelope", show: true })}
+        </ul>
+      </div>
+    );
   }
 }
 

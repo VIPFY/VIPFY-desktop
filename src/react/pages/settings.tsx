@@ -65,7 +65,7 @@ class Settings extends Component {
       ? this.props.profilepicture
       : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
 
-    let cssClass = "fullWorking";
+    let cssClass = "full-working";
     if (this.props.chatopen) {
       cssClass += " chatopen";
     }
