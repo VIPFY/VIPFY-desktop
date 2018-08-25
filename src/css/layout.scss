@@ -305,6 +305,7 @@ label {
     align-items: center;
     /*border: 5px solid #333;*/
 }
+
 .useableAppsLogo{
     width: 20em;
     height: 20em;
@@ -318,12 +319,14 @@ label {
     border-radius: 0.3rem;
     box-shadow: 0 0 10px #e8e8e8;
 }
+
 .recommendedApps{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     margin: 2em;
 }
+
 .recommendedAppsTitle{
     width: 7em;
     height: 7em;

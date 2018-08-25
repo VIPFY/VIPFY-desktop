@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Dropzone from "react-dropzone";
 import { filterError } from "../common/functions";
 import LoadingDiv from "./loadingDiv";
 
@@ -83,6 +84,10 @@ class GenericInputForm extends React.Component<Props> {
     }
   };
 
+  handleDrop = files => {
+    this.setState({ values: { picture: files } });
+  };
+
   onSubmit = async e => {
     e.preventDefault();
     await this.setState({ asyncError: false, submitting: true });
@@ -97,52 +102,153 @@ class GenericInputForm extends React.Component<Props> {
   renderFields = fields => {
     const { inputFocus, values, errors } = this.state;
 
-    return fields.map(({ name, icon, placeholder, label, required, type, options, validate }) => (
-      <div
-        key={name}
-        className={inputFocus[name] ? "searchbarHolder searchbarFocus" : "searchbarHolder"}>
-        <div className="searchbarButton">
-          <i className={`fas fa-${icon}`} />
-        </div>
+    return fields.map(
+      ({ name, icon, multiple, placeholder, label, required, type, options, validate }) => {
+        const field = () => {
+          switch (type) {
+            case "checkbox":
+              {
+                return (
+                  <input
+                    type="checkbox"
+                    onChange={this.handleChange}
+                    name={name}
+                    required={required}
+                  />
+                );
+              }
+              break;
 
-        <label className={errors[name] ? "generic-error-field" : ""}>
-          {label}
+            case "select":
+              {
+                return (
+                  <select
+                    name={name}
+                    ref={this.inputField}
+                    onChange={this.handleChange}
+                    value={values[name] ? values[name] : ""}
+                    required={required}
+                    className="generic-dropdown">
+                    <option value=""> </option>
+                    {options.map(option => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                );
+              }
+              break;
 
-          {type == "checkbox" ? (
-            <input type="checkbox" onChange={this.handleChange} name={name} required={required} />
-          ) : type == "select" ? (
-            <select
-              name={name}
-              ref={this.inputField}
-              onChange={this.handleChange}
-              value={values[name] ? values[name] : ""}
-              required={required}
-              className="generic-dropdown">
-              <option value=""> </option>
-              {options.map(option => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <input
-              className="searchbar"
-              name={name}
-              placeholder={placeholder}
-              type={type}
-              value={values[name] ? values[name] : ""}
-              onChange={e => this.handleChange(e, validate)}
-              onFocus={this.highlight}
-              onBlur={this.offlight}
-              required={required}
-            />
-          )}
-        </label>
+            case "picture":
+              {
+                const renderContent = () => {
+                  if (this.state.values.picture && !multiple) {
+                    return (
+                      <div>
+                        <img
+                          alt={this.state.values.picture.name}
+                          height="150px"
+                          width="150px"
+                          className="img-circle"
+                          src={this.state.values.picture.preview}
+                        />
+                        <p>Click again or drag & drop to change the pic</p>
+                      </div>
+                    );
+                  } else if (
+                    multiple &&
+                    this.state.values.picture &&
+                    Array.isArray(this.state.values.picture)
+                  ) {
+                    return (
+                      <div className="pics-preview">
+                        {this.state.values.picture.map((file, i) => (
+                          <img
+                            key={i}
+                            alt={file.name}
+                            height="50px"
+                            width="50px"
+                            src={file.preview}
+                          />
+                        ))}
+                        <p>Click again to change the pictures to upload</p>
+                      </div>
+                    );
+                  } else if (multiple) {
+                    return <label>Please select several pictures for upload</label>;
+                  } else {
+                    return <label>Drag and Drop a picture or click here</label>;
+                  }
+                };
 
-        {errors[name] ? <span className="generic-input-error">{errors[name]}</span> : ""}
-      </div>
-    ));
+                if (this.state.submitting) {
+                  return;
+                }
+
+                return (
+                  <Dropzone
+                    name={name}
+                    activeClassName="dropzone-active"
+                    accept="image/*"
+                    type="file"
+                    multiple={multiple ? true : false}
+                    className={this.state.values.picture ? "dropzone-preview" : "dropzone"}
+                    onDrop={
+                      multiple
+                        ? filesToUpload => this.handleDrop(filesToUpload)
+                        : ([fileToUpload]) => this.handleDrop(fileToUpload)
+                    }>
+                    {renderContent()}
+                  </Dropzone>
+                );
+              }
+              break;
+
+            default: {
+              return (
+                <input
+                  className="searchbar"
+                  name={name}
+                  placeholder={placeholder}
+                  type={type}
+                  value={values[name] ? values[name] : ""}
+                  onChange={e => this.handleChange(e, validate)}
+                  onFocus={this.highlight}
+                  onBlur={this.offlight}
+                  required={required}
+                />
+              );
+            }
+          }
+        };
+
+        const picCheck = type == "picture";
+        return (
+          <div
+            key={name}
+            className={inputFocus[name] ? "searchbarHolder searchbarFocus" : "searchbarHolder"}>
+            {picCheck ? (
+              ""
+            ) : (
+              <div className="searchbarButton">
+                <i className={`fas fa-${icon}`} />
+              </div>
+            )}
+
+            <label
+              className={errors[name] ? "generic-error-field" : ""}
+              style={picCheck ? { width: "100%" } : {}}>
+              {picCheck ? "" : label}
+
+              {field()}
+            </label>
+
+            {errors[name] ? <span className="generic-input-error">{errors[name]}</span> : ""}
+          </div>
+        );
+      }
+    );
   };
 
   render() {
@@ -164,7 +270,11 @@ class GenericInputForm extends React.Component<Props> {
         )}
 
         <div className="generic-input-buttons">
-          <button type="button" className="generic-cancel" onClick={this.props.onClose}>
+          <button
+            type="button"
+            disabled={this.state.submitting}
+            className="generic-cancel"
+            onClick={this.props.onClose}>
             <i className="fas fa-long-arrow-alt-left" /> Cancel
           </button>
 

@@ -16,7 +16,7 @@ import MessageCenter from "./messagecenter";
 import Navigation from "./navigation";
 import Profile from "./profile";
 import Settings from "./settings";
-import Sidebar from "./sidebar";
+import Sidebar from "../components/Sidebar";
 import Team from "./team";
 import Webview from "./webview";
 

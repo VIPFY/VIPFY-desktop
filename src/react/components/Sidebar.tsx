@@ -50,6 +50,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     if (show) {
       return (
         <li
+          key={location}
           className={`sidebar-link ${important ? "sidebar-link-important" : ""}`}
           onClick={() => this.goTo(location)}>
           <span className={`fas fa-${icon} sidebar-icons`} />

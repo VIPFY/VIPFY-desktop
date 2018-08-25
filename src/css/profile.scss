@@ -1,6 +1,7 @@
 $border: 1px solid #005;
 $shadow-color: #f0f3ff;
-@mixin toggle {
+@mixin toggleHeight($height) {
+  max-height: $height;
   overflow: hidden;
   transition: max-height 0.6s ease-in-out;
 }
@@ -35,8 +36,11 @@ $shadow-color: #f0f3ff;
   }
 
   .pic-holder {
-    display: block;
+    align-items: center;
+    display: flex;
+    flex-flow: column;
     grid-area: pic;
+    justify-content: center;
     margin: 0 auto;
 
     .pic {
@@ -45,6 +49,10 @@ $shadow-color: #f0f3ff;
       cursor: pointer;
       margin: 1rem 0;
       width: 5rem;
+    }
+
+    div {
+      font-size: 0.8rem;
     }
   }
 
@@ -74,11 +82,9 @@ $shadow-color: #f0f3ff;
 }
 
 .in {
-  @include toggle;
-  max-height: 20rem;
+  @include toggleHeight(20rem);
 }
 
 .out {
-  @include toggle;
-  max-height: 0;
+  @include toggleHeight(0);
 }
