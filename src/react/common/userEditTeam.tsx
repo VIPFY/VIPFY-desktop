@@ -39,7 +39,7 @@ handleClickOutside = () => {
               appArray = data.fetchUsersOwnLicences.map((licence, key) => (
                 <div className="PApp" key={key}>
                   <img
-                    className="rightProfileImage"
+                    className="right-profile-image"
                     style={{
                       float: "left"
                     }}
@@ -82,7 +82,7 @@ handleClickOutside = () => {
                         this.props.distributeLicence(app.boughtplan.id, this.props.unitId, this.props.departmentId)
                       }>
                       <img
-                        className="rightProfileImage"
+                        className="right-profile-image"
                         style={{
                           float: "left"
                         }}

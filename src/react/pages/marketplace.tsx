@@ -48,14 +48,7 @@ class Marketplace extends Component {
   }
 
   render() {
-    let cssClass = "full-working";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
-    }
-    if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
-    }
-    return <div className={cssClass}>{this.renderLoading(this.props.products.allApps)}</div>;
+    return this.renderLoading(this.props.products.allApps);
   }
 }
 

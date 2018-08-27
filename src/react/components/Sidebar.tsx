@@ -5,7 +5,7 @@ export type SidebarProps = {
   history: any[];
   setApp: (licence: number) => void;
   licences: any;
-  sidebaropen: boolean;
+  sideBarOpen: boolean;
   logMeOut: () => void;
 };
 
@@ -34,7 +34,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
                 })`
               }}
             />
-            <span className={this.props.sidebaropen ? "sidebar-link-caption" : "show-not"}>
+            <span className={this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}>
               {licence.boughtplanid.planid.appid.name}
             </span>
           </li>
@@ -54,7 +54,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
           className={`sidebar-link ${important ? "sidebar-link-important" : ""}`}
           onClick={() => this.goTo(location)}>
           <span className={`fas fa-${icon} sidebar-icons`} />
-          <span className={`${this.props.sidebaropen ? "sidebar-link-caption" : "show-not"}`}>
+          <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
             {label}
           </span>
         </li>
@@ -86,7 +86,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     ];
 
     return (
-      <div className={`sidebar${this.props.sidebaropen ? "" : "-small"}`}>
+      <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
         <div className="sidebar-logo" />
         <ul className="sidebar-link-holder">
           {sidebarLinks.map(link => this.renderLink(link))}
@@ -94,7 +94,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
 
           <li className="sidebar-link sidebar-link-important" onClick={() => this.props.logMeOut()}>
             <span className="fas fa-sign-out-alt sidebar-icons" />
-            <span className={`${this.props.sidebaropen ? "sidebar-link-caption" : "show-not"}`}>
+            <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
               Logout
             </span>
           </li>

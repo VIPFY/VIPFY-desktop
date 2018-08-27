@@ -48,6 +48,11 @@
   margin-left: 0;
 }
 
+.generic-async-success {
+  @extend .generic-async-error;
+  color: green;
+}
+
 .generic-cancel {
   @include generic-button($vipfy-red, $hover, $feedback)
 }

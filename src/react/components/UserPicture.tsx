@@ -39,9 +39,11 @@ export default function UserPicture(props: { unitid: number | null; size: string
       backgroundColor: "#eee"
     };
   }
+
   if (unitid === null || unitid === undefined) {
     return <span />;
   }
+
   return (
     <Query query={QUERY_USER} variables={{ userid: unitid }}>
       {({ loading, error, data }) => {

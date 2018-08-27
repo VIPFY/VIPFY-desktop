@@ -46,38 +46,30 @@ class Dashboard extends Component {
   render() {
     console.log("RC", this.props.rcApps);
     let bI = this.props.profilepicture;
-    let cssClass = "full-working dashboard-working";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
-    }
-    if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
-    }
+
     if (this.state.recommended) {
       return (
-        <div className={cssClass}>
-          <div className="centralize backgroundLogo">
-            <div className="login-holder">
-              <div className="recommendedApps">
-                <div className="recommendedAppsTitle">We believe you need these services</div>
-                <div
-                  className="recommendedAppsLogo"
-                  onClick={() => this.BuyApp("pipedrive")}
-                  style={{
-                    backgroundImage:
-                      "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"
-                  }}>
-                  <span className="useable-service-name">Pipedrive</span>
-                </div>
-                <div
-                  className="recommendedAppsLogo"
-                  onClick={() => this.BuyApp("google apps")}
-                  style={{
-                    backgroundImage:
-                      "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/google-apps.svg)"
-                  }}>
-                  <span className="useable-service-name">G Suite</span>
-                </div>
+        <div className="centralize backgroundLogo">
+          <div className="login-holder">
+            <div className="recommendedApps">
+              <div className="recommendedAppsTitle">We believe you need these services</div>
+              <div
+                className="recommendedAppsLogo"
+                onClick={() => this.BuyApp("pipedrive")}
+                style={{
+                  backgroundImage:
+                    "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"
+                }}>
+                <span className="useable-service-name">Pipedrive</span>
+              </div>
+              <div
+                className="recommendedAppsLogo"
+                onClick={() => this.BuyApp("google apps")}
+                style={{
+                  backgroundImage:
+                    "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/google-apps.svg)"
+                }}>
+                <span className="useable-service-name">G Suite</span>
               </div>
             </div>
           </div>
@@ -85,7 +77,7 @@ class Dashboard extends Component {
       );
     }
     return (
-      <div className={cssClass}>
+      <div className="dashboard-working">
         <div className="welcomeTile">
           <span className="fas fa-child welcomeIcon" />
           <span className="welcomeText">

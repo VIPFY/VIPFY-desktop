@@ -65,15 +65,8 @@ class Settings extends Component {
       ? this.props.profilepicture
       : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
 
-    let cssClass = "full-working";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
-    }
-    if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
-    }
     return (
-      <div className={cssClass}>
+      <div>
         <div className="welcomeHolder">
           <div className="welcomeImage" style={{ backgroundImage: `url(${bI})` }} />
           <div className="welcomeMessage">

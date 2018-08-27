@@ -5,7 +5,7 @@ $text-width: 100%;
   display: flex;
   flex-direction: column;
   padding: 1em;
-  width: 100%;
+  width: 95%;
 }
 
 .register-domain {
@@ -19,6 +19,10 @@ $text-width: 100%;
   display: flex;
   flex-direction: column;
   margin-top: 2em;
+
+  &-body {
+    overflow-y: auto;
+  }
 }
 
 .domain-header {
@@ -43,10 +47,6 @@ $text-width: 100%;
   }
 }
 
-.domain-table-body {
-  overflow-y: auto;
-}
-
 .domain-row {
   @extend .domain-header;
   background-color: #fff;
@@ -66,13 +66,14 @@ $text-width: 100%;
   padding-right: 10px;
   text-overflow: ellipsis;
   width: $text-width;
+
+  &-item-icon {
+    @extend .domain-item;
+    cursor: pointer;
+    text-align: center;
+  }
 }
 
-.domain-item-icon {
-  @extend .domain-item;
-  cursor: pointer;
-  text-align: center;
-}
 
 @media(max-width: 1080px) {
   .domain-table {

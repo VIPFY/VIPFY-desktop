@@ -188,7 +188,7 @@ class Team extends Component {
                       key={`empolyee-${element.id}`}
                       onClick={() => this.toggleEmployeeInfo(element.id, department.parent)}>
                       <img
-                        className="rightProfileImage"
+                        className="right-profile-image"
                         style={{
                           float: "left"
                         }}
@@ -255,7 +255,7 @@ class Team extends Component {
             key={`app-${departmentid}-${app.boughtplanid}`}
             onClick={() => this.toggleBoughtInfo(departmentid, app.boughtplanid)}>
             <img
-              className="rightProfileImage"
+              className="right-profile-image"
               style={{
                 float: "left"
               }}
@@ -417,15 +417,8 @@ class Team extends Component {
   };
 
   render() {
-    let cssClass = "full-working";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
-    }
-    if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
-    }
     return (
-      <div className={cssClass}>
+      <div>
         <div className="UMS">
           {this.props.departmentsdata.fetchDepartmentsData
             ? this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData[0], 2)

@@ -84,18 +84,21 @@ class GenericInputForm extends React.Component<Props> {
     }
   };
 
-  handleDrop = files => {
-    this.setState({ values: { picture: files } });
-  };
+  handleDrop = files => this.setState({ values: { picture: files } });
 
   onSubmit = async e => {
     e.preventDefault();
+    const overlay = document.getElementById("overlay");
+    overlay.style.display = "none";
     await this.setState({ asyncError: false, submitting: true });
 
     const throwsError = await this.props.handleSubmit(this.state.values);
+    overlay.style.display = "";
 
     if (throwsError) {
       this.setState({ asyncError: filterError(throwsError), submitting: false });
+    } else {
+      this.props.onClose();
     }
   };
 
@@ -252,7 +255,7 @@ class GenericInputForm extends React.Component<Props> {
   };
 
   render() {
-    const { values, errors, submitting, asyncError } = this.state;
+    const { values, errors, submitting, asyncError, successMessage } = this.state;
 
     return (
       <form
@@ -272,7 +275,7 @@ class GenericInputForm extends React.Component<Props> {
         <div className="generic-input-buttons">
           <button
             type="button"
-            disabled={this.state.submitting}
+            disabled={submitting || successMessage}
             className="generic-cancel"
             onClick={this.props.onClose}>
             <i className="fas fa-long-arrow-alt-left" /> Cancel
@@ -281,6 +284,7 @@ class GenericInputForm extends React.Component<Props> {
           <button
             type="submit"
             disabled={
+              successMessage ||
               submitting ||
               Object.keys(values).length === 0 ||
               Object.values(errors).filter(err => err != false).length > 0

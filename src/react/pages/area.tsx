@@ -29,16 +29,16 @@ export type AreaProps = {
 
 export type AreaState = {
   app: number;
-  chatopen: boolean;
-  sidebaropen: boolean;
+  chatOpen: boolean;
+  sideBarOpen: boolean;
   domain: string;
 };
 
 class Area extends Component<AreaProps, AreaState> {
   state: AreaState = {
     app: -1,
-    chatopen: false,
-    sidebaropen: true,
+    chatOpen: false,
+    sideBarOpen: true,
     domain: ""
   };
 
@@ -59,13 +59,15 @@ class Area extends Component<AreaProps, AreaState> {
     this.props.history.push("/area/webview");
   };
 
-  toggleChat = () => this.setState({ chatopen: !this.state.chatopen });
+  toggleChat = () => this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
 
-  toggleSidebar = () => this.setState({ sidebaropen: !this.state.sidebaropen });
+  toggleSidebar = () => this.setState(prevState => ({ sideBarOpen: !prevState.sideBarOpen }));
 
-  setSidebar = value => this.setState({ sidebaropen: value });
+  setSidebar = value => this.setState({ sideBarOpen: value });
 
   render() {
+    const { sideBarOpen, chatOpen } = this.state;
+
     const routes = [
       { path: "dashboard", component: Dashboard },
       { path: "settings", component: Settings },
@@ -88,7 +90,7 @@ class Area extends Component<AreaProps, AreaState> {
             if (!props.location.pathname.includes("advisor")) {
               return (
                 <Sidebar
-                  sidebaropen={this.state.sidebaropen}
+                  sideBarOpen={sideBarOpen}
                   setApp={this.setApp}
                   {...this.props}
                   {...props}
@@ -104,11 +106,11 @@ class Area extends Component<AreaProps, AreaState> {
             if (!props.location.pathname.includes("advisor")) {
               return (
                 <Navigation
-                  chatopen={this.state.chatopen}
+                  chatOpen={chatOpen}
+                  sideBarOpen={sideBarOpen}
                   setApp={this.setApp}
                   toggleChat={this.toggleChat}
                   toggleSidebar={this.toggleSidebar}
-                  sidebaropen={this.state.sidebaropen}
                   {...this.props}
                   {...props}
                 />
@@ -118,9 +120,7 @@ class Area extends Component<AreaProps, AreaState> {
             }
           }}
         />
-        <Route
-          render={props => <Chat chatopen={this.state.chatopen} {...this.props} {...props} />}
-        />
+        <Route render={props => <Chat chatOpen={chatOpen} {...this.props} {...props} />} />
 
         <Route
           exact
@@ -137,13 +137,16 @@ class Area extends Component<AreaProps, AreaState> {
               exact
               path={`/area/${path}`}
               render={props => (
-                <RouteComponent
-                  chatopen={this.state.chatopen}
-                  sidebaropen={this.state.sidebaropen}
-                  setApp={this.setApp}
-                  {...this.props}
-                  {...props}
-                />
+                <div
+                  className={`${
+                    !props.location.pathname.includes("advisor") ? "full-working" : ""
+                  } ${chatOpen ? "chat-open" : ""} ${
+                    sideBarOpen && !props.location.pathname.includes("advisor")
+                      ? "side-bar-open"
+                      : ""
+                  }`}>
+                  <RouteComponent setApp={this.setApp} {...this.props} {...props} />
+                </div>
               )}
             />
           );
@@ -153,13 +156,12 @@ class Area extends Component<AreaProps, AreaState> {
           exact
           path="/area/domains/"
           render={props => (
-            <Domains
-              chatopen={this.state.chatopen}
-              sidebaropen={this.state.sidebaropen}
-              setDomain={this.setDomain}
-              {...this.props}
-              {...props}
-            />
+            <div
+              className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                sideBarOpen ? "side-bar-open" : ""
+              }`}>
+              <Domains setDomain={this.setDomain} {...this.props} {...props} />
+            </div>
           )}
         />
 
@@ -167,13 +169,12 @@ class Area extends Component<AreaProps, AreaState> {
           exact
           path="/area/domains/:domain"
           render={props => (
-            <Domains
-              chatopen={this.state.chatopen}
-              sidebaropen={this.state.sidebaropen}
-              setDomain={this.setDomain}
-              {...this.props}
-              {...props}
-            />
+            <div
+              className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                sideBarOpen ? "side-bar-open" : ""
+              }`}>
+              <Domains setDomain={this.setDomain} {...this.props} {...props} />
+            </div>
           )}
         />
       </div>

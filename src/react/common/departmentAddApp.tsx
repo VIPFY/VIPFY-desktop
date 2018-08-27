@@ -55,7 +55,7 @@ class DepartmentAddApp extends Component {
                       )
                     }>
                     <img
-                      className="rightProfileImage"
+                      className="right-profile-image"
                       style={{
                         float: "left"
                       }}

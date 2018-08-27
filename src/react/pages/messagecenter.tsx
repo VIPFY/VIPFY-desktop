@@ -115,7 +115,7 @@ function MessageReadIndicators(props: {
 }
 
 class MessageCenter extends Component<
-  { userid: number; match: any; chatopen: boolean; sidebaropen: boolean },
+  { userid: number; match: any; chatOpen: boolean; sidebaropen: boolean },
   {}
 > {
   state = {};
@@ -176,7 +176,7 @@ class MessageCenter extends Component<
     );
   }
 
-  NewMessage(props: { userid: number, groupid: number }): JSX.Element {
+  NewMessage(props: { userid: number; groupid: number }): JSX.Element {
     let input;
 
     if (props.groupid === undefined || props.groupid === null) {
@@ -212,7 +212,7 @@ class MessageCenter extends Component<
     );
   }
 
-  ConversationList(props: { userid: number}): JSX.Element {
+  ConversationList(props: { userid: number }): JSX.Element {
     return (
       <Query query={QUERY_GROUPS} pollInterval={5000}>
         {({ loading, error, data }) => {
@@ -267,7 +267,7 @@ class MessageCenter extends Component<
                     key={`groupListKey${group.id}`}>
                     <li style={{ width: "200px", display: "flex", paddingBottom: "10px" }}>
                       <img
-                        className="rightProfileImage"
+                        className="right-profile-image"
                         src={picture}
                         style={{
                           height: "32px",
@@ -319,17 +319,10 @@ class MessageCenter extends Component<
   }
 
   render() {
-    let cssClass = "";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
-    }
-    if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
-    }
     console.log("MESSAGE CENTER", this);
     const groupid = this.props.match.params.person;
     return (
-      <div className={cssClass} style={{ height: "calc(100% - 4em)", display: "flex" }}>
+      <div style={{ height: "calc(100% - 4em)", display: "flex" }}>
         <div
           style={{
             background: "rgba(0,0,0,0.2)",

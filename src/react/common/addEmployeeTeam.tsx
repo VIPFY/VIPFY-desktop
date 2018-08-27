@@ -39,7 +39,7 @@ class AddEmployeeTeam extends Component {
               className="addItem"
               onClick={() => this.props.addEmployee(employee.employeeid, departmentid)}>
               <img
-                className="rightProfileImage"
+                className="right-profile-image"
                 style={{
                   float: "left"
                 }}

@@ -12,6 +12,7 @@ import { filterError } from "./common/functions";
 
 import Area from "./pages/area";
 import Bug from "./pages/bug";
+import Popup from "./components/Popup";
 import LoadingDiv from "./components/LoadingDiv";
 import Login from "./pages/login";
 
@@ -35,7 +36,10 @@ export type AppProps = {
 export type AppState = {
   login: boolean;
   firstname: string;
+  middlename: string;
   lastname: string;
+  birthday: string;
+  language: string;
   teams: boolean;
   billing: boolean;
   domains: boolean;
@@ -45,13 +49,27 @@ export type AppState = {
   error: string | null;
   userid: number;
   company: any;
+  popup: object;
+  moveTo: Function;
+  updateUser: Function;
+  showPopup: Function;
+};
+
+const INITIAL_POPUP = {
+  show: false,
+  header: "",
+  body: () => <div>No content</div>,
+  props: {}
 };
 
 class App extends Component<AppProps, AppState> {
   state: AppState = {
     login: false,
     firstname: "",
+    middlename: "",
     lastname: "",
+    birthday: "",
+    language: "",
     teams: false,
     billing: false,
     domains: false,
@@ -61,12 +79,21 @@ class App extends Component<AppProps, AppState> {
     error: null,
     userid: -1,
     company: null,
-    moveTo: path => this.moveTo(path)
+    popup: INITIAL_POPUP,
+    moveTo: path => this.moveTo(path),
+    updateUser: (name, value) => this.setState({ [name]: value }),
+    showPopup: data => this.renderPopup(data)
   };
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
   }
+
+  renderPopup = ({ header, body, props }) => {
+    this.setState({ popup: { show: true, header, body, props } });
+  };
+
+  closePopup = () => this.setState({ popup: INITIAL_POPUP });
 
   moveTo = path => {
     console.log("THIS", this, path);
@@ -79,23 +106,10 @@ class App extends Component<AppProps, AppState> {
     if (this.props.me.error) {
       this.logMeOut();
     } else if (this.props.me.me) {
-      const {
-        firstname,
-        lastname,
-        teams,
-        billing,
-        domains,
-        marketplace,
-        company,
-        profilepicture,
-        id
-      } = this.props.me.me;
-      this.setState({ login: true });
-      this.setState({ firstname, lastname });
-      this.setState({ teams, billing, domains, marketplace });
-      this.setState({ profilepicture: profilepicture || company.profilepicture });
-      this.setState({ employees: company.employees });
-      this.setState({ userid: id, company });
+      const { company, profilepicture, id, ...userData } = this.props.me.me;
+      this.setState({ login: true, profilepicture: profilepicture || company.profilepicture });
+      this.setState({ employees: company.employees, userid: id, company });
+      this.setState({ ...userData });
 
       if (this.props.history.location.pathname === "/") {
         this.moveTo("/area/dashboard");
@@ -167,7 +181,7 @@ class App extends Component<AppProps, AppState> {
 
   render() {
     const { error, login, ...userData } = this.state;
-
+    console.log(this.state);
     if (this.props.me.loading) {
       return <LoadingDiv text="Preparing Vipfy for you" />;
     }
@@ -194,6 +208,17 @@ class App extends Component<AppProps, AppState> {
           />
           <Route component={Bug} />
         </Switch>
+
+        {this.state.popup.show ? (
+          <Popup
+            popupHeader={this.state.popup.header}
+            popupBody={this.state.popup.body}
+            bodyProps={this.state.popup.props}
+            onClose={this.closePopup}
+          />
+        ) : (
+          ""
+        )}
       </AppContext.Provider>
     );
   }
