@@ -28,6 +28,10 @@
   color: red;
   margin-top: 3rem;
   text-align: center;
+
+  &-field {
+    color: red;
+  }
 }
 
 .generic-input-error {
@@ -37,14 +41,16 @@
   margin-left: auto;
 }
 
-.generic-error-field {
-  color: red;
-}
 
 .generic-async-error {
   @extend .generic-error;
   align-self: center;
   margin-left: 0;
+}
+
+.generic-async-success {
+  @extend .generic-async-error;
+  color: green;
 }
 
 .generic-cancel {
@@ -72,4 +78,30 @@
 
 .card-element {
   margin-left: 4px;
+}
+
+.dropzone {
+  border-color: rgb(102, 102, 102);
+  border-radius: 5px;
+  border-style: dashed;
+  border-width: 2px;
+  cursor: pointer;
+  float: none;
+  height: 200px;
+  margin: 0 auto;
+  width: 200px;
+
+  &:hover,
+  &-active {
+    border-style: solid;
+  }
+
+  &-preview {
+    @extend .dropzone;
+    border-style: none;
+
+    &:hover {
+      border-style: none;
+    }
+  }
 }

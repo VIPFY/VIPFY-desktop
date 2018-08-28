@@ -108,6 +108,7 @@
     "react-apollo": "^2.1.4",
     "react-credit-cards": "^0.7.0",
     "react-dom": "^16.3.2",
+    "react-dropzone": "^5.0.1",
     "react-electron-web-view": "^2.0.1",
     "react-hot-loader": "^4.1.2",
     "react-onclickoutside": "^6.7.1",

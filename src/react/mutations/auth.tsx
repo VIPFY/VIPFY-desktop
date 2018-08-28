@@ -124,9 +124,18 @@ export const distributeLicence = gql`
     }
   }
 `;
+
 export const revokeLicence = gql`
   mutation revokeLicence($licenceid: Int!) {
     revokeLicence(licenceid: $licenceid) {
+      ok
+    }
+  }
+`;
+
+export const updateUser = gql`
+  mutation UpdateUser($user: UserInput!, $file: File) {
+    updateUser(user: $user, file: $file) {
       ok
     }
   }

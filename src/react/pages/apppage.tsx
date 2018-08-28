@@ -651,12 +651,12 @@ class AppPage extends Component<AppPageProps, AppPageState> {
   }
 
   render() {
-    let cssClass = "fullWorking paddingPage";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
+    let cssClass = "full-working paddingPage";
+    if (this.props.chat-open) {
+      cssClass += " chat-open";
     }
     if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
+      cssClass += " side-bar-open";
     }
 
     if (this.props.product.fetchAppById && !this.props.productPlans.loading) {

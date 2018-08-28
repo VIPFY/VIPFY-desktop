@@ -2,7 +2,6 @@ import * as React from "react";
 import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
-import Popup from "../components/Popup";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp } from "../common/functions";
@@ -10,16 +9,7 @@ import { buyPlan } from "../mutations/products";
 import { domainValidation } from "../common/validation";
 import { filterError } from "../common/functions";
 
-interface State {
-  popup: object;
-  updating: boolean;
-  error: string;
-}
-
-interface Props {
-  chatopen: string;
-  sidebaropen: string;
-}
+interface Props {}
 
 interface BodyObj {
   name: string;
@@ -50,23 +40,7 @@ const updateDomain = gql`
   }
 `;
 
-const INITIAL_STATE = {
-  popup: {
-    show: false,
-    header: "",
-    body: <div>No content</div>,
-    props: {}
-  },
-  updating: false,
-  error: ""
-};
-
-class Domains extends React.Component<Props, State> {
-  state = INITIAL_STATE;
-
-  toggle = () =>
-    this.setState(prevState => ({ ...INITIAL_STATE, popup: { show: !prevState.popup.show } }));
-
+class Domains extends React.Component<Props> {
   handleSubmit = async ({ domainName, tld, whoisPrivacy }) => {
     try {
       const domain = `${domainName}.${tld}`;
@@ -100,8 +74,6 @@ class Domains extends React.Component<Props, State> {
         variables: { planIds, options },
         refetchQueries: [{ query: fetchDomains }]
       });
-
-      this.setState(INITIAL_STATE);
     } catch (err) {
       return err;
     }
@@ -149,14 +121,12 @@ class Domains extends React.Component<Props, State> {
           proxy.writeQuery({ query: fetchDomains, data });
         }
       });
-
-      this.setState(INITIAL_STATE);
     } catch (err) {
-      this.renderPopup("Error", ErrorComp, { error: filterError(err) });
+      return filterError(err);
     }
   };
 
-  toggleOption = (key, type, id) => {
+  toggleOption = (key, type, id, renderPopup) => {
     let fields;
     let handleSubmit;
     let header;
@@ -215,21 +185,17 @@ class Domains extends React.Component<Props, State> {
       )
     };
 
-    this.renderPopup(header, GenericInputForm, properties);
-  };
-
-  renderPopup = (header, body, props) => {
-    this.setState({ popup: { show: true, header, body, props } });
+    renderPopup(header, GenericInputForm, properties);
   };
 
   render() {
-    let cssClass = "fullWorking dashboardWorking";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
+    let cssClass = "full-working dashboard-working";
+    if (this.props.chat - open) {
+      cssClass += " chat-open";
     }
 
     if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
+      cssClass += " side-bar-open";
     }
 
     const headers: string[] = [
@@ -274,95 +240,88 @@ class Domains extends React.Component<Props, State> {
       submittingMessage: <LoadingDiv text="Registering Domain... " />
     };
 
+    const domainPopup = {
+      header: "Domain Registration",
+      body: GenericInputForm,
+      props: regProps
+    };
+
     return (
-      <div className={cssClass}>
-        <div id="domains">
-          <button
-            className="register-domain"
-            type="button"
-            onClick={() => this.renderPopup("Domain Registration", GenericInputForm, regProps)}>
-            <i className="fas fa-plus" /> Register New
-          </button>
+      <div id="domains">
+        <button
+          className="register-domain"
+          type="button"
+          onClick={() => this.props.showPopup(domainPopup)}>
+          <i className="fas fa-plus" /> Register New
+        </button>
 
-          <div className="domain-table">
-            <div className="domain-header">
-              {headers.map(header => (
-                <span key={header} className="domain-item">
-                  {header}
-                </span>
-              ))}
-            </div>
+        <div className="domain-table">
+          <div className="domain-header">
+            {headers.map(header => (
+              <span key={header} className="domain-item">
+                {header}
+              </span>
+            ))}
+          </div>
 
-            <div className="domain-table-body">
-              <Query query={fetchDomains}>
-                {({ loading, error, data }) => {
-                  if (loading) {
-                    return <LoadingDiv text="Loading..." />;
-                  }
+          <div className="domain-table-body">
+            <Query query={fetchDomains}>
+              {({ loading, error, data }) => {
+                if (loading) {
+                  return <LoadingDiv text="Loading..." />;
+                }
 
-                  if (error) {
-                    return filterError(error);
-                  }
+                if (error) {
+                  return filterError(error);
+                }
 
-                  if (data.fetchDomains.length > 0) {
-                    return data.fetchDomains.map(row => {
-                      const { id, agreed, disabled, options, __typename, key, ...domain } = row;
+                if (data.fetchDomains.length > 0) {
+                  return data.fetchDomains.map(row => {
+                    const { id, agreed, disabled, options, __typename, key, ...domain } = row;
 
-                      return (
-                        <div key={id} className="domain-row">
-                          <span className="domain-item domain-name">{key.domain}</span>
-                          <span
-                            className="domain-item-icon"
-                            onClick={() => this.toggleOption(key, "whois", id)}>
-                            <i
-                              className={`fas fa-${
-                                key.whoisPrivacy == 1 ? "check-circle" : "times-circle"
-                              }`}
-                            />
-                          </span>
-                          {Object.values(domain).map((item, key) => (
-                            <span key={key} className="domain-item">
-                              {item}
-                            </span>
-                          ))}
-                          <span
-                            className="domain-item-icon"
-                            onClick={() => this.toggleOption(key, "renewalmode", id)}>
-                            <i
-                              className={`fas fa-${
-                                key.renewalmode == "1" ? "check-circle" : "times-circle"
-                              }`}
-                            />
-                          </span>
-                          <span className="domain-item">No data</span>
-                          <span className="domain-item">No data</span>
-                          <span className="domain-item">No data</span>
+                    return (
+                      <div key={id} className="domain-row">
+                        <span className="domain-item domain-name">{key.domain}</span>
+                        <span
+                          className="domain-item-icon"
+                          onClick={() => this.toggleOption(key, "whois", id, showPopup)}>
                           <i
-                            className="fas fa-sliders-h domain-item-icon"
-                            onClick={() => this.props.setDomain(id, key.domain)}
+                            className={`fas fa-${
+                              key.whoisPrivacy == 1 ? "check-circle" : "times-circle"
+                            }`}
                           />
-                        </div>
-                      );
-                    });
-                  } else {
-                    return <span>No Domains registered yet</span>;
-                  }
-                }}
-              </Query>
-            </div>
+                        </span>
+                        {Object.values(domain).map((item, key) => (
+                          <span key={key} className="domain-item">
+                            {item}
+                          </span>
+                        ))}
+                        <span
+                          className="domain-item-icon"
+                          onClick={() => this.toggleOption(key, "renewalmode", id)}>
+                          <i
+                            className={`fas fa-${
+                              key.renewalmode == "1" ? "check-circle" : "times-circle"
+                            }`}
+                          />
+                        </span>
+                        <span className="domain-item">No data</span>
+                        <span className="domain-item">No data</span>
+                        <span className="domain-item">No data</span>
+                        <i
+                          className="fas fa-sliders-h domain-item-icon"
+                          onClick={() => this.props.setDomain(id, key.domain)}
+                        />
+                      </div>
+                    );
+                  });
+                } else {
+                  return <span>No Domains registered yet</span>;
+                }
+              }}
+            </Query>
           </div>
         </div>
-
-        {this.state.popup.show ? (
-          <Popup
-            popupHeader={this.state.popup.header}
-            popupBody={this.state.popup.body}
-            bodyProps={this.state.popup.props}
-            onClose={this.toggle}
-          />
-        ) : (
-          ""
-        )}
       </div>
     );
   }

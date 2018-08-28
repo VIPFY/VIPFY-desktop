@@ -113,8 +113,8 @@ class Login extends Component {
     if (this.state.login) {
       return (
         <div className="centralize backgroundLogo">
-          <div className="loginHolder">
-            <div className="formHeading" onDoubleClick={() => this.cheat()}>
+          <div className="login-holder">
+            <div className="form-heading" onDoubleClick={() => this.cheat()}>
               Please log in
             </div>
             <div
@@ -143,20 +143,20 @@ class Login extends Component {
                 this.passInput = input;
               }}
             />
-            <div className="buttonHolder">
+            <div className="button-holder">
               <div
                 className={
-                  this.state.forgotMove ? "buttonForgot button buttonMoved" : "buttonForgot button"
+                  this.state.forgotMove ? "button-forgot button button-moved" : "button-forgot button"
                 }
                 onClick={this.forgetClick}>
-                <span className={this.state.forgotMove ? "buttonMove" : ""}>Forgot Password</span>
+                <span className={this.state.forgotMove ? "button-move" : ""}>Forgot Password</span>
               </div>
               <div
                 className={
-                  this.state.loginMove ? "buttonLogin button buttonMoved" : "buttonLogin button"
+                  this.state.loginMove ? "buttonLogin button button-moved" : "buttonLogin button"
                 }
                 onClick={this.loginClick}>
-                <span className={this.state.loginMove ? "buttonMove" : ""}>Login</span>
+                <span className={this.state.loginMove ? "button-move" : ""}>Login</span>
               </div>
             </div>
           </div>
@@ -171,8 +171,8 @@ class Login extends Component {
           <div className="newUserButton button" onClick={() => this.changeLogin(true)}>
             Already registered? Login Now
           </div>
-          <div className="loginHolder">
-            <div className="formHeading">Please register</div>
+          <div className="login-holder">
+            <div className="form-heading">Please register</div>
             <div
               className={
                 this.state.errorbool === false ? "formError noError" : "formError oneError"
@@ -189,13 +189,13 @@ class Login extends Component {
                 this.registerInput = input;
               }}
             />
-            <div className="buttonHolder">
+            <div className="button-holder">
               <div
                 className={
-                  this.state.registerMove ? "buttonLogin button buttonMoved" : "buttonLogin button"
+                  this.state.registerMove ? "buttonLogin button button-moved" : "buttonLogin button"
                 }
                 onClick={() => this.registerClick()}>
-                <span className={this.state.registerMove ? "buttonMove" : ""}>Register</span>
+                <span className={this.state.registerMove ? "button-move" : ""}>Register</span>
               </div>
               <div className="registerInfo">
                 <label>

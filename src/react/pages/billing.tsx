@@ -76,15 +76,7 @@ class Billing extends React.Component<Props, State> {
   }
 
   render() {
-    const { chatopen, sidebaropen, cards, bills } = this.props;
-
-    let cssClass = "fullWorking dashboardWorking";
-    if (chatopen) {
-      cssClass += " chatopen";
-    }
-    if (sidebaropen) {
-      cssClass += " SidebarOpen";
-    }
+    const { cards, bills } = this.props;
 
     if (cards.loading || bills.loading) {
       return <LoadingDiv text="Fetching bills..." />;
@@ -94,7 +86,7 @@ class Billing extends React.Component<Props, State> {
     const mainCard = normalizedCards.shift();
 
     return (
-      <div className={cssClass}>
+      <div className="dashboard-working">
         <div className="currentPaymentHolder">
           <div className="nextPaymentHolder">
             <span className="nextPaymentTitle">Next sheduled bill on 6-28-18: approx. 215 $</span>

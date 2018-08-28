@@ -5,6 +5,7 @@ import gql from "graphql-tag";
 import { AppContext } from "../common/functions";
 import GenericInputField from "../components/GenericInputField";
 import AdvisorSidebar from "../components/AdvisorSidebar";
+import { updateUser } from "../mutations/auth"
 
 const CreateCompany = gql`
   mutation createCompany($name: String!) {
@@ -24,14 +25,6 @@ const updateStatisticData = gql`
   }
 `;
 
-const updateUser = gql`
-  mutation updateUser($user: UserInput!) {
-    updateUser(user: $user) {
-      ok
-    }
-  }
-`;
-
 class Advisor extends Component {
   state = {
     advisorStage: 1,
@@ -40,12 +33,12 @@ class Advisor extends Component {
     subindustry: "",
     companyname: null,
     focus: 0,
-    tabActive:1
+    tabActive: 1
   };
 
-  componentDidMount(){
-    if (this.props.match.params){
-    switch (this.props.match.params.typeid){
+  componentDidMount() {
+    if (this.props.match.params) {
+    switch (this.props.match.params.typeid) {
     case "personfacts":
       this.setState({advisorStage: 2})
     break;

@@ -4,7 +4,7 @@ interface Props {
   popupBody: any;
   popupHeader: string;
   bodyProps: object;
-  onClose: function;
+  onClose: Function;
 }
 
 export default props => {

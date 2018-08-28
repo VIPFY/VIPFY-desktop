@@ -23,8 +23,8 @@ export type WebViewState = {
 export type WebViewProps = {
   app: number;
   client: ApolloClient;
-  chatopen: boolean;
-  sidebaropen: boolean;
+  chatOpen: boolean;
+  sidebBarOpen: boolean;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -273,18 +273,18 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   render() {
     let cssClass = "marginLeft";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
+    if (this.props.chatOpen) {
+      cssClass += " chat-open";
     }
-    if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
+    if (this.props.sideBarOpen) {
+      cssClass += " side-bar-open";
     }
     let cssClassWeb = "mainPosition";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
+    if (this.props.chatOpen) {
+      cssClass += " chat-open";
     }
-    if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
+    if (this.props.sideBarOpen) {
+      cssClass += " side-bar-open";
     }
 
     // this is a workaround for a weebly bug. Remove when no longer nessesary

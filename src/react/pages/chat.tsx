@@ -3,7 +3,7 @@ import { Component } from "react";
 
 class Chat extends Component {
   render() {
-    if (this.props.chatopen) {
+    if (this.props.chatOpen) {
       return <div className="chatBar"> Chat</div>;
     } else {
       return "";

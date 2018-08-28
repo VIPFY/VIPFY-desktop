@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Component } from "react";
+import { AppContext } from "../common/functions";
 
 class Navigation extends Component {
   state = {
@@ -99,23 +100,14 @@ class Navigation extends Component {
     this.setState(prevState => ({ showNotification: !prevState.showNotification }));
   };
 
-  toggleSearch = bool => {
-    console.log("FOCUS", bool);
-    this.setState({ searchFocus: bool });
-  };
+  toggleSearch = bool => this.setState({ searchFocus: bool });
 
   render() {
     console.log("NAVI", this.props);
-
-    let cssClass = "navigation";
-    if (this.props.chatopen) {
-      cssClass += " chatopen";
-    }
-    if (this.props.sidebaropen) {
-      cssClass += " SidebarOpen";
-    }
     return (
-      <div className={cssClass}>
+      <div
+        className={`navigation ${this.props.chatOpen ? "chat-open" : ""}
+        ${this.props.sideBarOpen ? "side-bar-open" : ""}`}>
         <div className="leftNavigation">
           <span onClick={this.props.toggleSidebar} className="fas fa-bars barIcon" />
           <div
@@ -133,22 +125,31 @@ class Navigation extends Component {
             />
           </div>
         </div>
-        <div className="rightInfos">
-          <div className="rightProfileHolder" onClick={this.toggleNotificationPopup}>
+
+        <div className="right-infos">
+          <div className="right-profile-holder" onClick={this.toggleNotificationPopup}>
             <img
-              className="rightProfileImage"
+              className="right-profile-image"
               src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
                 this.props.profilepicture
               }`}
             />
-            <span className="rightProfileFirstName">{this.props.firstname}</span>
-            <span className="rightProfileLastName">{this.props.lastname}</span>
-            <span className="rightProfileNotifications">5</span>
-            <span className="rightProfileCaret" />
+            <span className="right-profile-first-name">{this.props.firstname}</span>
+            <span className="right-profile-last-name">{this.props.lastname}</span>
+            <span className="right-profile-notifications">5</span>
+            <span className="right-profile-caret" />
             {this.showPopup(this.state.showNotification)}
           </div>
-          <span onClick={() => this.goTo("settings")} className="fas fa-cog navigationRightInfos" />
-          <span onClick={this.props.toggleChat} className="fas fa-comments navigationRightInfos" />
+
+          <span
+            onClick={() => this.goTo("settings")}
+            className="fas fa-cog navigation-right-infos"
+          />
+
+          <span
+            onClick={this.props.toggleChat}
+            className="fas fa-comments navigation-right-infos"
+          />
         </div>
       </div>
     );

@@ -4,7 +4,11 @@ export const me = gql`
   query Me {
     me {
       emails
+      createdate
       id
+      title
+      birthday
+      language
       firstname
       lastname
       teams
