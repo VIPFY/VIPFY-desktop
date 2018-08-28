@@ -79,8 +79,8 @@ class Area extends Component<AreaProps, AreaState> {
       { path: "advisor", component: Advisor },
       { path: "advisor/:typeid", component: Advisor },
       { path: "marketplace", component: Marketplace },
-      { path: "marketplace/:appid/", component: Marketplace },
-      { path: "marketplace/:appid/:action", component: Marketplace }
+      { path: "marketplace/:appid/", component: AppPage },
+      { path: "marketplace/:appid/:action", component: AppPage }
     ];
 
     return (
