@@ -395,12 +395,12 @@ class Advisor extends Component {
     this.setState({ subindustry: e });
     console.log("SETI", this.state);
   }
-  setEducation(e){
+  setEducation(e) {
     this.setState({ education: e });
     console.log("SETI", this.state);
   }
 
-  setJobCategory(e){
+  setJobCategory(e) {
     this.setState({ jobCategory: e });
     console.log("SETI", this.state);
   }
@@ -864,13 +864,30 @@ class Advisor extends Component {
           <div className="advisorBottomPageButtonsHolder">
             <button
               className="advisorBottomPageButtonNext"
-              onClick={() => value.moveTo("/area/advisor/personfacts")}>
+              onClick={() => this.saveFacts(value)}>
               Save and go to the next and last page
             </button>
           </div>
         </div>
       </div>
     );
+  }
+
+  saveFacts = async value => {
+    console.log("SaveFacts", this);
+    try {
+      const res = await this.props.cc({ variables:  {name: this.state.companyname}  });
+      const { ok, token, refreshToken } = res.data.createCompany;
+      console.log(res.data.createCompany);
+      localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
+
+
+      value.moveTo("/area/advisor/personfacts")
+    } catch (err) {
+      console.log("ERROR SAVE", err);
+      return;
+    }
   }
 
   showExplainBlock(stage) {
