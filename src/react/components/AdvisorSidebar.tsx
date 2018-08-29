@@ -42,7 +42,7 @@ class AdvisorSidebar extends Component {
             onClick={() => value.moveTo("/area/advisor/personfacts")}>
             Facts about you
           </div>
-          <span
+          {/*<span
             style={{
               display: "block",
               position: "absolute",
@@ -120,7 +120,7 @@ class AdvisorSidebar extends Component {
               top: "41rem",
               borderRadius: "0rem 4rem"
             }}
-          />
+          />*/}
           <span
             style={{
               display: "block",
