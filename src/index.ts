@@ -55,12 +55,15 @@ const vipfyHandler = (request, callback) => {
 
   if(url.startsWith("todo")) {
     callback({path: path.normalize(`${app.getAppPath()}/src/todo.html`)});
+    return;
+  } else if (url.startsWith("blank")) {
+    callback({path: path.normalize(`${app.getAppPath()}/src/blank.html`)});
+    return;
   } else if(url.startsWith("marketplace/")) {
     mainWindow.webContents.send("change-page", `/area/${url}`);
   }
 
-  console.log(`redirecting to ${app.getAppPath()}/src/todo.html`)
-  callback({path: path.normalize(`${app.getAppPath()}/src/todo.html`)});
+  callback({path: path.normalize(`${app.getAppPath()}/src/blank.html`)});
 };
 
 const createWindow = async () => {
