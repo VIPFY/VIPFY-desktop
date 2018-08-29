@@ -1,11 +1,30 @@
 import * as React from "react";
-import { Component } from "react";
-import { AppContext } from "../common/functions";
+import * as ReactDOM from "react-dom";
+import gql from "graphql-tag";
+import { Query } from "react-apollo";
+import Notification from "../components/Notification";
+import { FETCH_NOTIFICATIONS } from "../queries/notification";
 
-class Navigation extends Component {
+interface State {
+  searchFokus: boolean;
+  showNotification: boolean;
+}
+
+const NOTIFICATION_SUBSCRIPTION = gql`
+  subscription onNewNotification($receiver: Int!) {
+    newNotification(receiver: $receiver) {
+      id
+      sendtime
+      message
+      icon
+    }
+  }
+`;
+
+class Navigation extends React.Component<State> {
   state = {
-    showNotification: false,
-    searchFocus: false
+    searchFocus: false,
+    showNotification: false
   };
 
   setApp(boughtplan: number) {
@@ -17,84 +36,29 @@ class Navigation extends Component {
     this.props.history.push(gotoview);
   }
 
-  showApps(licences) {
-    let appLogos: JSX.Element[] = [];
-    console.log("SHOWAPPS", licences);
-    if (licences) {
-      let i = 0;
-      licences.forEach(licence => {
-        console.log("L", licence);
-        appLogos.push(
-          <div
-            key={`AppLogo-${i}`}
-            className="appLogo"
-            onClick={() => this.setApp(licence.boughtplanid.id)}
-            style={{
-              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                licence.boughtplanid.planid.appid.icon
-              })`
-            }}
-          />
-        );
-        i++;
-      });
+  listenKeyboard = e => {
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.setState({ showNotification: false });
     }
+  };
 
-    return appLogos;
+  componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
+    document.addEventListener("click", this.handleClickOutside, true);
   }
 
-  showPopup(showPopup) {
-    if (showPopup) {
-      return (
-        <div className="notificationPopup">
-          <div className="notificationPopupHeader">You have 5 notifications</div>
-          <div className="notificationPopupScroller">
-            <div className="notificationItem">
-              <span className="fas fa-clipboard-check notificationIcon" />
-              <p className="notificationText">Moo successfully installed</p>
-              <div className="notificationTime">2 mins ago</div>
-            </div>
-            <div className="notificationItem">
-              <span className="fas fa-clipboard-check notificationIcon" />
-              <p className="notificationText">Moo successfully installed</p>
-              <div className="notificationTime">2 mins ago</div>
-            </div>
-            <div className="notificationItem">
-              <span className="fas fa-clipboard-check notificationIcon" />
-              <p className="notificationText">Moo successfully installed</p>
-              <div className="notificationTime">2 mins ago</div>
-            </div>
-            <div className="notificationItem">
-              <span className="fas fa-clipboard-check notificationIcon" />
-              <p className="notificationText">Moo successfully installed</p>
-              <div className="notificationTime">2 mins ago</div>
-            </div>
-            <div className="notificationItem">
-              <span className="fas fa-clipboard-check notificationIcon" />
-              <p className="notificationText">Moo successfully installed</p>
-              <div className="notificationTime">2 mins ago</div>
-            </div>
-            <div className="notificationItem">
-              <span className="fas fa-clipboard-check notificationIcon" />
-              <p className="notificationText">Moo successfully installed</p>
-              <div className="notificationTime">2 mins ago</div>
-            </div>
-            <div className="notificationItem">
-              <span className="fas fa-clipboard-check notificationIcon" />
-              <p className="notificationText">Moo successfully installed</p>
-              <div className="notificationTime">2 mins ago</div>
-            </div>
-          </div>
-          <div className="notificationPopupFooter">
-            <span>Synced at: </span>
-            <span className="fas fa-sync" />
-          </div>
-        </div>
-      );
-    } else {
-      return "";
-    }
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+    document.removeEventListener("click", this.handleClickOutside, true);
   }
+
+  handleClickOutside = e => {
+    const domNode = ReactDOM.findDOMNode(this);
+
+    if (!domNode || !domNode.contains(e.target)) {
+      this.setState({ showNotification: false });
+    }
+  };
 
   toggleNotificationPopup = () => {
     this.setState(prevState => ({ showNotification: !prevState.showNotification }));
@@ -103,7 +67,6 @@ class Navigation extends Component {
   toggleSearch = bool => this.setState({ searchFocus: bool });
 
   render() {
-    console.log("NAVI", this.props);
     return (
       <div
         className={`navigation ${this.props.chatOpen ? "chat-open" : ""}
@@ -127,19 +90,32 @@ class Navigation extends Component {
         </div>
 
         <div className="right-infos">
-          <div className="right-profile-holder" onClick={this.toggleNotificationPopup}>
-            <img
-              className="right-profile-image"
-              src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                this.props.profilepicture
-              }`}
-            />
-            <span className="right-profile-first-name">{this.props.firstname}</span>
-            <span className="right-profile-last-name">{this.props.lastname}</span>
-            <span className="right-profile-notifications">5</span>
-            <span className="right-profile-caret" />
-            {this.showPopup(this.state.showNotification)}
-          </div>
+          <Query
+            query={FETCH_NOTIFICATIONS}
+            pollInterval={600000}
+            variables={{ receiver: this.props.userid }}>
+            {res => (
+              <div className="right-profile-holder">
+                <img
+                  className="right-profile-image"
+                  src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                    this.props.profilepicture
+                  }`}
+                />
+                <span className="right-profile-first-name">{this.props.firstname}</span>
+                <span className="right-profile-last-name">{this.props.lastname}</span>
+
+                <span onClick={this.toggleNotificationPopup} className="right-profile-holder">
+                  <span className="right-profile-notifications">
+                    {res.loading ? 0 : res.data.fetchNotifications.length}
+                  </span>
+                  <span className="right-profile-caret" />
+                </span>
+
+                {this.state.showNotification ? <Notification {...res} /> : ""}
+              </div>
+            )}
+          </Query>
 
           <span
             onClick={() => this.goTo("settings")}

@@ -89,11 +89,9 @@ class GenericInputForm extends React.Component<Props> {
   onSubmit = async e => {
     e.preventDefault();
     const overlay = document.getElementById("overlay");
-    overlay.style.display = "none";
     await this.setState({ asyncError: false, submitting: true });
 
     const throwsError = await this.props.handleSubmit(this.state.values);
-    overlay.style.display = "";
 
     if (throwsError) {
       this.setState({ asyncError: filterError(throwsError), submitting: false });
