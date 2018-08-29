@@ -46,7 +46,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   constructor(props: WebViewProps) {
     super(props);
     this.state = {
-      setUrl: "vipfy://blank",
+      setUrl: "",
       currentUrl: "vipfy://blank",
       inspirationalText: "Loading...",
       legalText: "Legal Text",
@@ -75,6 +75,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   componentDidMount() {
+    console.log("webview mounted");
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
     this.switchApp();
   }
@@ -87,6 +88,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   private async switchApp(): Promise<void> {
+    console.log("switchApp", this.state.planId);
     let result = await this.props.client.query({
       query: gql`
       {
@@ -298,6 +300,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           console.log("cleared cookies")
         );
     }
+
+    console.log("setUrl", this.state.setUrl);
 
     return (
       <div className={cssClass}>
