@@ -1751,6 +1751,7 @@ option{
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     margin: 2rem;
+    position: relative;
 }
 .inputBoxTitle {
     font-size: 0.75rem;
@@ -1868,4 +1869,15 @@ option{
     position: absolute;
     right: 0;
     color: #A52C2C;
+}
+.inputBoxAdvisorError {
+    color: #A52C2C;
+    border: solid 1px #A52C2C;
+    left: calc(100% + 1rem);
+    position: absolute;
+    top: 1.25rem;
+    width: 16em;
+    text-align: center;
+    padding: 0.25rem;
+    background-color: white;
 }
