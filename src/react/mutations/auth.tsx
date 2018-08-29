@@ -134,8 +134,8 @@ export const revokeLicence = gql`
 `;
 
 export const updateUser = gql`
-  mutation UpdateUser($user: UserInput!, $file: File) {
-    updateUser(user: $user, file: $file) {
+  mutation UpdateUser($user: UserInput!) {
+    updateUser(user: $user) {
       ok
     }
   }

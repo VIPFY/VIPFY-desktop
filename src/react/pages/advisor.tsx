@@ -18,12 +18,21 @@ const CreateCompany = gql`
 `;
 
 const updateStatisticData = gql`
-  mutation updateStatisticData($data: StatisticData!) {
+  mutation updateStatisticData($data: JSON!) {
     updateStatisticData(data: $data) {
       ok
     }
   }
 `;
+
+const createAdress = gql`
+mutation createAddress($addressData: AddressInput!, $department: Boolean) {
+  createAddress(addressData: $addressData, department: $department) {
+    ok
+  }
+}
+`;
+
 
 class Advisor extends Component {
   state = {
@@ -33,7 +42,26 @@ class Advisor extends Component {
     subindustry: "",
     companyname: null,
     focus: 0,
-    tabActive: 1
+    tabActive: 1,
+    noCompanyName: false,
+    thisYearRevenue: null,
+    lastYearRevenue: null,
+    thisYearExpectedRevenue: null,
+    nextYearExpectedRevenue: null,
+    foundingYearOfCompany: null,
+    expectedYearOfMarketEntry: null,
+    numberOfEmployees: null,
+    addressCountry: null,
+    addressState: null,
+    addressCity: null,
+    addressStreet: null,
+    addressSecondLine: null,
+    addressFirstLine: null,
+    adminname: null,
+    adminage: null,
+    education: null,
+    jobCategory: null,
+    workexperience: null
   };
 
   componentDidMount() {
@@ -388,12 +416,12 @@ class Advisor extends Component {
     this.setState({ subindustry: e });
     console.log("SETI", this.state);
   }
-  setEducation(e){
+  setEducation(e) {
     this.setState({ education: e });
     console.log("SETI", this.state);
   }
 
-  setJobCategory(e){
+  setJobCategory(e) {
     this.setState({ jobCategory: e });
     console.log("SETI", this.state);
   }
@@ -733,6 +761,7 @@ class Advisor extends Component {
             onEnter={()=>this.onEnter(1)}
             onClick={()=>this.onEnter(0)}
             />}
+            {this.state.noCompanyName ? <span className="inputBoxAdvisorError">Please insert a company name.</span> : ""}
           </div>
           <div className="inputBox">
             <span className="inputBoxTitle">Industry</span>
@@ -857,13 +886,47 @@ class Advisor extends Component {
           <div className="advisorBottomPageButtonsHolder">
             <button
               className="advisorBottomPageButtonNext"
-              onClick={() => value.moveTo("/area/advisor/personfacts")}>
+              onClick={() => this.saveFacts(value)}>
               Save and go to the next and last page
             </button>
           </div>
         </div>
       </div>
     );
+  }
+
+  saveFacts = async value => {
+    console.log("SaveFacts", this);
+
+    //Check if companyname is set
+    if (!this.state.companyname) {
+      this.setState({noCompanyName: true})
+      return
+    }
+    const statisticdata = {
+      industry: this.state.industry, subindustry: this.state.subindustry, thisYearRevenue: this.state.thisYearRevenue, lastYearRevenue: this.state.lastYearRevenue,
+      thisYearExpectedRevenue: this.state.thisYearExpectedRevenue, nextYearExpectedRevenue: this.state.nextYearExpectedRevenue,foundingYearOfCompany: this.state.foundingYearOfCompany
+      expectedYearOfMarketEntry: this.state.expectedYearOfMarketEntry, numberOfEmployees: this.state.numberOfEmployees}
+
+      console.log("STATDATA", statisticdata)
+
+    try {
+      const res = await this.props.cc({ variables:  {name: this.state.companyname}  });
+      const { ok, token, refreshToken } = res.data.createCompany;
+      console.log(res.data.createCompany);
+      localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      const res2 = await this.props.cA({ variables: {addressData: {country: this.state.addressCountry, state: this.state.addressState, city: this.state.addressCity, street: this.state.addressStreet, tags: ["main"]}, department: true}});
+
+      const res3 = await this.props.uSD({ variables: {data: {...statisticdata} }});
+
+
+      value.moveTo("/area/advisor/personfacts")
+    } catch (err) {
+      console.log("ERROR SAVE", err);
+      return;
+    }
   }
 
   showExplainBlock(stage) {
@@ -1155,19 +1218,56 @@ class Advisor extends Component {
             />
           </div>
           <div className="advisorBottomPageButtonsHolder">
-            <button
+            {/*<button
               className="advisorBottomPageButtonNext"
               onClick={() => value.moveTo("/area/advisor/personfacts")}>
               Save and edit your settings
-            </button>
+            </button>*/}
             <button
               className="advisorBottomPageButtonNext"
-              onClick={() => value.moveTo("/area/advisor/personfacts")}>
+              onClick={() => this.saveUserFacts(value)}>
               Save and go to your dashboard
             </button>
           </div>
         </div>
       </div>)
+  }
+
+  saveUserFacts = async (value) => {
+    let user = {};
+      if (this.state.adminname) {
+      if (this.state.adminname != "") {
+        let nameArray = [];
+        nameArray = this.state.adminname.split(" ");
+        if (nameArray.length === 1) {
+          user = { lastname: nameArray[0] };
+        } else if (nameArray.length === 2) {
+          user = { firstname: nameArray[0], lastname: nameArray[1] };
+        } else {
+          let middleArray = nameArray.slice(0);
+          middleArray.pop();
+          middleArray.shift();
+          user = {
+            firstname: nameArray[0],
+            middlename: middleArray.join(" "),
+            lastname: nameArray[nameArray.length - 1]
+          };
+        }
+      }
+    }
+
+    user = {...user, statisticdata: {age: this.state.adminage, education: this.state.education, jobCategory: this.state.jobCategory, workexperience: this.state.workexperience}}
+
+    console.log("USER", user)
+    try {
+
+      const res = this.props.uU({variables: {user}})
+
+      value.moveTo("/area/dashboard")
+    } catch (err) {
+      console.log("ERROR SAVE", err);
+      return;
+    }
   }
 
   render() {
@@ -1201,5 +1301,8 @@ export default compose(
   }),
   graphql(updateUser, {
     name: "uU"
+  }),
+  graphql(createAdress, {
+    name: "cA"
   })
 )(Advisor);

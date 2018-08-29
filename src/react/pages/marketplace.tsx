@@ -19,7 +19,7 @@ class Marketplace extends Component {
   }
 
   openAppDetails(id) {
-    this.props.history.push(`/area/marketplace/${id}`);
+    this.props.history.push(`/area/marketplace/${id}/`);
   }
 
   renderAppCard(appDetails) {
