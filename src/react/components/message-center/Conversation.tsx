@@ -1,11 +1,21 @@
 import * as React from "react";
 import { Query, Mutation, Subscription } from "react-apollo";
 import gql from "graphql-tag";
+
 import Message from "./Message";
 import MessageReadIndicators from "./MessageReadIndicators";
 import UserPicture from "../UserPicture";
 import UserName from "../UserName";
+import LoadingDiv from "../LoadingDiv";
+
 import { QUERY_DIALOG } from "./common";
+
+interface Props {
+  groupid: number;
+  userid: number;
+  subscribeToMore: Function;
+  fetchDialog: object[];
+}
 
 const MESSAGE_SUBSCRIPTION = gql`
   subscription onNewMessage($groupid: ID!) {
@@ -23,144 +33,87 @@ const MESSAGE_SUBSCRIPTION = gql`
   }
 `;
 
-class Conversation extends React.Component<{ groupid: number; userid: number }, {}> {
-  // componentWillMount() {
-  //   this.props.data.subscribeToMore({
-  //     document: MESSAGE_SUBSCRIPTION,
-  //     variables: {
-  //       groupid: this.props.groupid
-  //     },
-  //     updateQuery: (prev, { subscriptionData }) => {
-  //       if (!subscriptionData.data) {
-  //         return prev;
-  //       }
-  //
-  //       const newMessage = subscriptionData.data.messageAdded;
-  //       console.log(prev);
-  //       if (!prev.channel.messages.find((msg) => msg.groupid == newMessage.groupid)) {
-  //         return Object.assign({}, prev, {
-  //
-  //         })
-  //       }
-  //     }
-  //   });
-  // }
+class Conversation extends React.Component<Props, {}> {
+  componentDidMount() {
+    this.props.subscribeToMore({
+      document: MESSAGE_SUBSCRIPTION,
+      variables: {
+        groupid: this.props.groupid
+      },
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data || subscriptionData.error) {
+          console.log(subscriptionData);
+          return prev;
+        }
 
-  // componentDidMount() {
-  //   this.props.subscribeToNewMessages();
-  // }
+        const newMessage = subscriptionData.data.newMessage;
+        if (!prev.fetchDialog.find(msg => msg.id == newMessage.id)) {
+          return { ...prev, fetchDialog: [...prev.fetchDialog, newMessage] };
+        }
+      }
+    });
+  }
 
   render() {
-    if (this.props.groupid === undefined || this.props.groupid === null) {
-      return <span>Select a conversation on the left to view it here</span>;
-    }
-
     return (
-      <Query query={QUERY_DIALOG} variables={{ groupid: this.props.groupid }}>
-        {({ loading, error, data, subscribeToMore }) => {
-          if (loading) {
-            return "Loading...";
-          }
-
-          if (error) {
-            return "Error loading messages";
-          }
-
-          {
-            /* const subscribeToNewMessages = () =>
-            subscribeToMore({
-              document: MESSAGE_SUBSCRIPTION,
-              variables = { groupid: this.props.groupid },
-              updateQuery: (prev, { subscriptionData }) => {
-                if (!subscriptionData.data) return prev;
-                const newMessage = subscriptionData.data.newMessage;
-                console.log("--prev-->", prev);
-                console.log("sub-->", subscriptionData);
-                return Object.assign({}, prev, {});
-              }
-            }); */
-          }
+      <ol className="conversation-list-main">
+        {this.props.fetchDialog.map(message => {
+          const isMe = message.sender && message.sender.id == this.props.userid;
 
           return (
-            <ol
-              style={{
-                height: "auto",
-                width: "100%",
-                padding: 0,
-                listStyle: "none"
-              }}>
-              {data.fetchDialog.map(message => {
-                const isMe = message.sender && message.sender.id == this.props.userid;
-                return (
-                  <li style={{ paddingBottom: "10px" }} key={"conversationKey" + message.id}>
-                    <div style={{ width: "400px", marginLeft: isMe ? "auto" : 0, display: "flex" }}>
-                      <UserPicture
-                        {...this.props}
-                        unitid={message.sender ? message.sender.id : undefined}
-                        size="twolines"
-                      />
-                      <div>
-                        <UserName
-                          {...this.props}
-                          unitid={message.sender ? message.sender.id : undefined}
-                          short={true}
-                        />: <Message {...this.props} message={message} />
-                      </div>
-                    </div>
+            <li className="conversation-list-main-item" key={"conversationKey" + message.id}>
+              <div
+                className="conversation-list-main-item-content"
+                style={{ marginLeft: isMe ? "auto" : 0 }}>
+                <UserPicture
+                  {...this.props}
+                  unitid={message.sender ? message.sender.id : undefined}
+                  size="twolines"
+                />
 
-                    <div style={{ marginLeft: "auto", width: "2em" }}>
-                      <MessageReadIndicators {...this.props} messageid={message.id} />
-                    </div>
-                  </li>
-                );
-              })}
-              {/* <Subscription
-                  subscription={MESSAGE_SUBSCRIPTION}
-                  variables={{ groupid: this.props.groupid }}>
-                  {zeugs => {
-                    console.log(zeugs);
-                    const { data, loading, error } = zeugs;
-                    console.log("---->", data);
-                    console.info("--error->", error);
-                    if (data) {
-                      return (
-                        <li style={{ paddingBottom: "10px" }} key={"conversationKey" + message.id}>
-                          <div
-                            style={{
-                              width: "400px",
-                              marginLeft: isMe ? "auto" : 0,
-                              display: "flex"
-                            }}>
-                            <UserPicture
-                              {...this.props}
-                              unitid={message.sender ? message.sender.id : undefined}
-                              size="twolines"
-                            />
-                            <div>
-                              <UserName
-                                {...this.props}
-                                unitid={message.sender ? message.sender.id : undefined}
-                                short={true}
-                              />: <Message {...this.props} message={message} />
-                            </div>
-                          </div>
+                <div className="name-holder">
+                  <UserName
+                    {...this.props}
+                    unitid={message.sender ? message.sender.id : undefined}
+                    short={true}
+                  />
+                  <Message {...this.props} message={message} />
+                </div>
+              </div>
 
-                          <div style={{ marginLeft: "auto", width: "2em" }}>
-                            <MessageReadIndicators {...this.props} messageid={message.id} />
-                          </div>
-                        </li>
-                      );
-                    } else {
-                      return "";
-                    }
-                  }}
-                </Subscription> */}
-            </ol>
+              <div className="conversation-list-main-item-read">
+                <MessageReadIndicators {...this.props} messageid={message.id} />
+              </div>
+            </li>
           );
-        }}
-      </Query>
+        })}
+      </ol>
     );
   }
 }
 
-export default Conversation;
+export default (props: { groupid: number; userid: number }): JSX.Element => {
+  const { groupid } = props;
+
+  if (groupid === undefined || groupid === null) {
+    return <span>Select a conversation on the left to view it here</span>;
+  }
+
+  return (
+    <Query query={QUERY_DIALOG} variables={{ groupid }}>
+      {({ loading, error, data: { fetchDialog }, subscribeToMore }) => {
+        if (loading) {
+          return <LoadingDiv text="Fetching conversation..." />;
+        }
+
+        if (error) {
+          return "Error loading messages";
+        }
+
+        return (
+          <Conversation {...props} fetchDialog={fetchDialog} subscribeToMore={subscribeToMore} />
+        );
+      }}
+    </Query>
+  );
+};

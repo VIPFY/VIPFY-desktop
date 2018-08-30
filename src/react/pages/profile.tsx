@@ -5,10 +5,8 @@ import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
 import { me } from "../queries/auth";
 import { filterError, concatName } from "../common/functions";
-// import PROFILE_PICS from "../common/constants";
+import userPicFolder from "../common/constants";
 import Dropzone from "react-dropzone";
-
-const PROFILE_PICS = "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/";
 
 interface State {
   showPersonalData: boolean;
@@ -22,7 +20,7 @@ const updatePic = gql`
   }
 `;
 
-class Profile extends React.Component<State, Props> {
+class Profile extends React.Component<Props, State> {
   state = {
     showPersonalData: true
   };
@@ -91,7 +89,7 @@ class Profile extends React.Component<State, Props> {
 
           <div className={`pic-holder ${this.state.showPersonalData ? "in" : "out"}`}>
             <img
-              src={`${PROFILE_PICS}${profilepicture ? profilepicture : "default.png"} `}
+              src={`${userPicFolder}${profilepicture ? profilepicture : "default.png"} `}
               className="pic"
               alt="Picture of you"
               onClick={() => this.props.showPopup(picPopup)}

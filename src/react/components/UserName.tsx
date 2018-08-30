@@ -24,7 +24,7 @@ export default function UserName(props: {
     return <span>System</span>;
   }
   if (unitid == userid) {
-    return <span>You</span>;
+    return <span className="user-name">You</span>;
   }
   return (
     <Query query={QUERY_USER} variables={{ userid: unitid }}>
@@ -37,15 +37,11 @@ export default function UserName(props: {
         }
 
         const userData = data.fetchPublicUser;
-        if (short) {
-          return <span>{userData.firstname}</span>;
-        } else {
-          return (
-            <span>
-              {userData.firstname} {userData.lastname}
-            </span>
-          );
-        }
+        return (
+          <span className="user-name">
+            {short ? userData.firstname : `${userData.firstname} ${userData.lastname}`}
+          </span>
+        );
       }}
     </Query>
   );

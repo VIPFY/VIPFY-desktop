@@ -1,18 +1,21 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import { Link } from "react-router-dom";
+
+import LoadingDiv from "../LoadingDiv";
 import Message from "./Message";
 import UserName from "../UserName";
 import InlineUser from "../InlineUser";
 import { QUERY_GROUPS } from "./common";
 import { JsxJoin } from "../../common/functions";
+import { unitPicFolder, defaultPic } from "../../common/constants";
 
 export default (props: { userid: number }): JSX.Element => {
   return (
     <Query query={QUERY_GROUPS}>
       {({ loading, error, data }) => {
         if (loading) {
-          return "Loading...";
+          return <LoadingDiv text="Fetching conversations..." />;
         }
         if (error) {
           return "Error loading Message List";
@@ -30,13 +33,7 @@ export default (props: { userid: number }): JSX.Element => {
         });
 
         return (
-          <ul
-            id="conversationlist"
-            style={{
-              height: "100%",
-              width: "100%",
-              padding: 0
-            }}>
+          <ul className="conversation-list">
             {fetchGroups.map(group => {
               const grouppartners = group.memberships
                 .map(membership => membership.unitid)
@@ -49,48 +46,23 @@ export default (props: { userid: number }): JSX.Element => {
                   <span>, </span>
                 )
               );
+
               const picture: string = group.image
                 ? group.image
-                : grouppartners.length == 1
-                  ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
-                    grouppartners[0].profilepicture
-                  : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
+                : grouppartners.length == 1 && grouppartners[0].profilepicture
+                  ? unitPicFolder + grouppartners[0].profilepicture
+                  : defaultPic;
+
               return (
                 <Link
+                  className="conversation-list-link"
                   to={`/area/messagecenter/${group.id}`}
-                  style={{ textDecoration: "none", color: "black" }}
                   key={`groupListKey${group.id}`}>
-                  <li style={{ width: "200px", display: "flex", paddingBottom: "10px" }}>
-                    <img
-                      className="right-profile-image"
-                      src={picture}
-                      style={{
-                        height: "32px",
-                        width: "32px",
-                        marginRight: "0.5rem",
-                        borderRadius: "16px",
-                        backgroundColor: "#eee"
-                      }}
-                    />
+                  <li className="conversation-list-item">
+                    <img className="conversation-list-pic" src={picture} />
                     <div>
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          whiteSpace: "nowrap",
-                          width: "170px",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis"
-                        }}>
-                        {groupname}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "80%",
-                          whiteSpace: "nowrap",
-                          width: "170px",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis"
-                        }}>
+                      <div className="conversation-list-item-heading">{groupname}</div>
+                      <div className="conversation-list-item-text">
                         <InlineUser
                           {...props}
                           unitid={

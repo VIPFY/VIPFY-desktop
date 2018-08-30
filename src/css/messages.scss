@@ -1,7 +1,0 @@
-@import './constants.scss';
-
-.button-start-conv {
-  @include vipfy-button(5px);
-  max-width: 130px;
-  min-height: 26px;
-}

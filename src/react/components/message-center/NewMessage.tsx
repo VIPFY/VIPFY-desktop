@@ -1,35 +1,68 @@
 import * as React from "react";
-import { Mutation } from "react-apollo";
-import { QUERY_DIALOG, QUERY_GROUPS, MUTATION_SENDMESSAGE } from "./common";
+import { graphql } from "react-apollo";
+import { QUERY_DIALOG, MUTATION_SENDMESSAGE } from "./common";
 
-export default (props: { userid: number; groupid: number }): JSX.Element => {
-  let input;
+interface Props {
+  userid: number;
+  groupid: number;
+}
 
-  if (props.groupid === undefined || props.groupid === null) {
-    return <span />;
+class NewMessage extends React.Component<Props> {
+  state = {
+    value: ""
+  };
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
   }
 
-  return (
-    <Mutation mutation={MUTATION_SENDMESSAGE} refetchQueries={[]}>
-      {(sendMessage, { data }) => (
-        <div>
-          <form
-            onSubmit={e => {
-              e.preventDefault();
-              sendMessage({ variables: { message: input.value, groupid: props.groupid } });
-              input.value = "";
-            }}>
-            <textarea
-              rows={4}
-              cols={50}
-              ref={node => {
-                input = node;
-              }}
-            />
-            <button type="submit">Send Message</button>
-          </form>
-        </div>
-      )}
-    </Mutation>
-  );
-};
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+  }
+
+  listenKeyboard = e => {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      this.handleSubmit(e);
+    }
+  };
+
+  handleChange = e => {
+    e.preventDefault();
+    this.setState({ value: e.target.value });
+  };
+
+  handleSubmit = async e => {
+    try {
+      e.preventDefault();
+      this.props.sendMessage({
+        variables: { message: this.state.value, groupid: this.props.groupid }
+      });
+
+      this.setState({ value: "" });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  render() {
+    const { groupid } = this.props;
+
+    if (groupid === undefined || groupid === null) {
+      return <span />;
+    }
+
+    return (
+      <div>
+        <form onSubmit={this.handleSubmit} className="conversation-form">
+          <textarea rows={4} cols={50} onChange={this.handleChange} value={this.state.value} />
+          <button className="button-message" type="submit">
+            <i className="fa fa-paper-plane" />
+            Send Message
+          </button>
+        </form>
+      </div>
+    );
+  }
+}
+
+export default graphql(MUTATION_SENDMESSAGE, { name: "sendMessage" })(NewMessage);

@@ -6,6 +6,7 @@ import LoadingDiv from "./loadingDiv";
 interface Props {
   fields: object[];
   submittingMessage: string;
+  runInBackground: boolean;
 }
 
 interface State {
@@ -26,7 +27,7 @@ const INITIAL_STATE = {
   submitting: false
 };
 
-class GenericInputForm extends React.Component<Props> {
+class GenericInputForm extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.genericForm = React.createRef();
@@ -91,9 +92,16 @@ class GenericInputForm extends React.Component<Props> {
     const overlay = document.getElementById("overlay");
     await this.setState({ asyncError: false, submitting: true });
 
+    if (this.props.runInBackground) {
+      document.querySelector("#overlay").style.display = "none";
+    }
+
     const throwsError = await this.props.handleSubmit(this.state.values);
 
     if (throwsError) {
+      if (this.props.runInBackground) {
+        document.querySelector("#overlay").style.display = "flex";
+      }
       this.setState({ asyncError: filterError(throwsError), submitting: false });
     } else {
       this.props.onClose();

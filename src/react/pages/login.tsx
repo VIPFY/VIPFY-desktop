@@ -160,7 +160,7 @@ class Login extends Component {
               </div>
             </div>
           </div>
-          <div className="newUserButton button" onClick={() => this.changeLogin(false)}>
+          <div className="button-new-user button" onClick={() => this.changeLogin(false)}>
             Register Now
           </div>
         </div>
@@ -168,7 +168,7 @@ class Login extends Component {
     } else {
       return (
         <div className="centralize backgroundLogo">
-          <div className="newUserButton button" onClick={() => this.changeLogin(true)}>
+          <div className="button-new-user button" onClick={() => this.changeLogin(true)}>
             Already registered? Login Now
           </div>
           <div className="login-holder">

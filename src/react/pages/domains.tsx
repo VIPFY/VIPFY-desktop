@@ -237,7 +237,8 @@ class Domains extends React.Component<Props> {
         }
       ],
       handleSubmit: this.handleSubmit,
-      submittingMessage: <LoadingDiv text="Registering Domain... " />
+      submittingMessage: <LoadingDiv text="Registering Domain... " />,
+      runInBackground: true
     };
 
     const domainPopup = {

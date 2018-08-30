@@ -1,7 +1,8 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import { graphql, compose } from "react-apollo";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
+import { filterError, ErrorComp } from "../common/functions";
 
 const READ_NOTIFICATION = gql`
   mutation onReadNotification($id: Int!) {
@@ -9,9 +10,31 @@ const READ_NOTIFICATION = gql`
   }
 `;
 
+const READ_ALL_NOTIFICATIONS = gql`
+  mutation onReadAllNotifications {
+    readAllNotifications
+  }
+`;
+
 class Notification extends React.Component {
+  state = {
+    loading: false,
+    error: ""
+  };
+
+  fetchNotifications = async () => {
+    try {
+      await this.setState({ loading: true, error: "" });
+      await this.props.refetch();
+      await this.setState({ loading: false });
+    } catch (err) {
+      await this.setState({ loading: false, error: filterError(err) });
+    }
+  };
+
   markAsRead = async id => {
     try {
+      await this.setState({ loading: true });
       await this.props.readNotification({
         variables: { id },
         optimisticResponse: {
@@ -36,12 +59,44 @@ class Notification extends React.Component {
           proxy.writeQuery({ query: FETCH_NOTIFICATIONS, data });
         }
       });
+      await this.setState({ loading: false });
     } catch (err) {
-      console.log(err);
+      await this.setState({ loading: false, error: filterError(err) });
+    }
+  };
+
+  markAllAsRead = async () => {
+    try {
+      await this.setState({ loading: true });
+
+      await this.props.readAll({
+        optimisticResponse: {
+          __typename: "Mutation",
+          readAllNotifications: {
+            __typename: "Notification"
+          }
+        },
+        update: proxy => {
+          // Read the data from our cache for this query.
+          const data = proxy.readQuery({ query: FETCH_NOTIFICATIONS });
+
+          data.fetchNotifications = [];
+          // Write our data back to the cache.
+          proxy.writeQuery({ query: FETCH_NOTIFICATIONS, data });
+        }
+      });
+
+      await this.setState({ loading: false });
+    } catch (err) {
+      await this.setState({ loading: false, error: filterError(err) });
     }
   };
 
   renderNotifications(notifications) {
+    if (this.state.error) {
+      return <ErrorComp error={this.state.error} />;
+    }
+
     return notifications.map(({ message, icon, sendtime, id }) => (
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notificationIcon`} />
@@ -52,8 +107,7 @@ class Notification extends React.Component {
   }
 
   render() {
-    const { data, refetch } = this.props;
-
+    const { data } = this.props;
     const dataLength = data.fetchNotifications.length;
     const dataExists = dataLength > 0;
 
@@ -71,11 +125,26 @@ class Notification extends React.Component {
 
         <div className="notificationPopupFooter">
           <span>Synced at: </span>
-          <span style={{ cursor: "pointer" }} className="fas fa-sync" onClick={() => refetch()} />
+          <button
+            className={`button-sync ${this.state.loading ? "spinner" : ""}`}
+            type="button"
+            onClick={this.fetchNotifications}>
+            <i className="fas fa-sync" />
+          </button>
+        </div>
+
+        <div className="notificationPopupFooter">
+          <span>Read All</span>
+          <button className="button-sync" type="button" onClick={this.markAllAsRead}>
+            <i className="fas fa-check" />
+          </button>
         </div>
       </div>
     );
   }
 }
 
-export default graphql(READ_NOTIFICATION, { name: "readNotification" })(Notification);
+export default compose(
+  graphql(READ_NOTIFICATION, { name: "readNotification" }),
+  graphql(READ_ALL_NOTIFICATIONS, { name: "readAll" })
+)(Notification);
