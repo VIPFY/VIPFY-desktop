@@ -1,8 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
-import { LoadingDiv } from "./LoadingDiv";
-import { filterError } from "../common/functions";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 
 const READ_NOTIFICATION = gql`
@@ -54,15 +52,7 @@ class Notification extends React.Component {
   }
 
   render() {
-    const { loading, error, data, refetch } = this.props;
-
-    if (loading) {
-      return <LoadingDiv text="Fetching Notifications..." />;
-    }
-
-    if (error) {
-      return filterError(error);
-    }
+    const { data, refetch } = this.props;
 
     const dataLength = data.fetchNotifications.length;
     const dataExists = dataLength > 0;

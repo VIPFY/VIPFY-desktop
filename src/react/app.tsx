@@ -102,20 +102,20 @@ class App extends Component<AppProps, AppState> {
     }
   };
 
-  relogMeIn() {
+  relogMeIn = async () => {
     if (this.props.me.error) {
       this.logMeOut();
     } else if (this.props.me.me) {
       const { company, profilepicture, id, ...userData } = this.props.me.me;
       this.setState({ login: true, profilepicture: profilepicture || company.profilepicture });
       this.setState({ employees: company.employees, userid: id, company });
-      this.setState({ ...userData });
+      await this.setState({ ...userData });
 
       if (this.props.history.location.pathname === "/") {
         this.moveTo("/area/dashboard");
       }
     }
-  }
+  };
 
   logMeOut = () => {
     this.setState({ login: false });
@@ -181,13 +181,14 @@ class App extends Component<AppProps, AppState> {
 
   render() {
     const { error, login, ...userData } = this.state;
-    console.log(this.state);
+
     if (this.props.me.loading) {
       return <LoadingDiv text="Preparing Vipfy for you" />;
     }
 
     if (!login && localStorage.getItem("token")) {
       this.relogMeIn();
+      return <LoadingDiv text="Preparing Vipfy for you" />;
     }
 
     return (

@@ -1,9 +1,10 @@
 import * as React from "react";
 import { Component } from "react";
 import { Route } from "react-router-dom";
-import { graphql, compose } from "react-apollo";
+import { graphql, compose, Query } from "react-apollo";
 import { me, fetchLicences } from "../queries/auth";
 import { fetchRecommendedApps } from "../queries/products";
+import { FETCH_NOTIFICATIONS } from "../queries/notification";
 
 import Advisor from "./advisor";
 import AppPage from "./apppage";
@@ -101,19 +102,28 @@ class Area extends Component<AreaProps, AreaState> {
             }
           }}
         />
+
         <Route
           render={props => {
             if (!props.location.pathname.includes("advisor")) {
               return (
-                <Navigation
-                  chatOpen={chatOpen}
-                  sideBarOpen={sideBarOpen}
-                  setApp={this.setApp}
-                  toggleChat={this.toggleChat}
-                  toggleSidebar={this.toggleSidebar}
-                  {...this.props}
-                  {...props}
-                />
+                <Query
+                  query={FETCH_NOTIFICATIONS}
+                  pollInterval={600000}
+                  variables={{ receiver: this.props.userid }}>
+                  {res => (
+                    <Navigation
+                      chatOpen={chatOpen}
+                      sideBarOpen={sideBarOpen}
+                      setApp={this.setApp}
+                      toggleChat={this.toggleChat}
+                      toggleSidebar={this.toggleSidebar}
+                      {...this.props}
+                      {...props}
+                      {...res}
+                    />
+                  )}
+                </Query>
               );
             } else {
               return "";

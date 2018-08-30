@@ -1,9 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import gql from "graphql-tag";
-import { Query } from "react-apollo";
 import Notification from "../components/Notification";
-import { FETCH_NOTIFICATIONS } from "../queries/notification";
+import { filterError } from "../common/functions";
 
 interface State {
   searchFokus: boolean;
@@ -45,6 +44,21 @@ class Navigation extends React.Component<State> {
   componentDidMount() {
     window.addEventListener("keydown", this.listenKeyboard, true);
     document.addEventListener("click", this.handleClickOutside, true);
+
+    this.props.subscribeToMore({
+      document: NOTIFICATION_SUBSCRIPTION,
+      variables: { receiver: this.props.userid },
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data || subscriptionData.error) {
+          console.log(subscriptionData);
+          return prev;
+        }
+
+        return Object.assign({}, prev, {
+          fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
+        });
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -67,6 +81,9 @@ class Navigation extends React.Component<State> {
   toggleSearch = bool => this.setState({ searchFocus: bool });
 
   render() {
+    if (this.props.loading) {
+      return "Initialising Navigation...";
+    }
     return (
       <div
         className={`navigation ${this.props.chatOpen ? "chat-open" : ""}
@@ -90,32 +107,29 @@ class Navigation extends React.Component<State> {
         </div>
 
         <div className="right-infos">
-          <Query
-            query={FETCH_NOTIFICATIONS}
-            pollInterval={600000}
-            variables={{ receiver: this.props.userid }}>
-            {res => (
-              <div className="right-profile-holder">
-                <img
-                  className="right-profile-image"
-                  src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                    this.props.profilepicture
-                  }`}
-                />
-                <span className="right-profile-first-name">{this.props.firstname}</span>
-                <span className="right-profile-last-name">{this.props.lastname}</span>
+          <div className="right-profile-holder">
+            <img
+              className="right-profile-image"
+              src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                this.props.profilepicture
+              }`}
+            />
+            <span className="right-profile-first-name">{this.props.firstname}</span>
+            <span className="right-profile-last-name">{this.props.lastname}</span>
 
-                <span onClick={this.toggleNotificationPopup} className="right-profile-holder">
-                  <span className="right-profile-notifications">
-                    {res.loading ? 0 : res.data.fetchNotifications.length}
-                  </span>
-                  <span className="right-profile-caret" />
-                </span>
+            <span onClick={this.toggleNotificationPopup} className="right-profile-holder">
+              <span className="right-profile-notifications">
+                {this.props.loading ? 0 : this.props.data.fetchNotifications.length}
+              </span>
+              <span className="right-profile-caret" />
+            </span>
 
-                {this.state.showNotification ? <Notification {...res} /> : ""}
-              </div>
+            {this.state.showNotification ? (
+              <Notification data={this.props.data} refetch={this.props.refetch} />
+            ) : (
+              ""
             )}
-          </Query>
+          </div>
 
           <span
             onClick={() => this.goTo("settings")}
