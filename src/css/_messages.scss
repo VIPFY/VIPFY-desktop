@@ -92,9 +92,16 @@
 
   &-form {
     display: flex;
-    flex-flow: column nowrap;
+    flex-flow: row nowrap;
 
     textarea {
+      margin-bottom: 1em;
+      width: 90%;
+    }
+
+    button {
+      @include vipfy-button;
+      width: 10%;
       margin-bottom: 1em;
     }
   }

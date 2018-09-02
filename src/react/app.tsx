@@ -96,7 +96,6 @@ class App extends Component<AppProps, AppState> {
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
 
   moveTo = path => {
-    console.log("THIS", this, path);
     if (!(this.props.history.location.pathname === path)) {
       this.props.history.push(path);
     }

@@ -93,9 +93,13 @@ export const concatName = (first, middle, last) => `${first} ${middle ? middle :
 
 export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Element[] => {
   let r: JSX.Element[] = [];
+  let key = 0;
   for (let element of list) {
     r.push(element);
-    r.push(seperator);
+    //TODO: Fix missing divider
+    const clonedSeperator = React.cloneElement(seperator, { key }, seperator.children);
+    r.push(clonedSeperator);
+    key++;
   }
   r.pop();
   return r;

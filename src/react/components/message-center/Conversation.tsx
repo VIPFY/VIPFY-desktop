@@ -9,6 +9,7 @@ import UserName from "../UserName";
 import LoadingDiv from "../LoadingDiv";
 
 import { QUERY_DIALOG } from "./common";
+import { ErrorComp } from "../../common/functions";
 
 interface Props {
   groupid: number;
@@ -100,14 +101,14 @@ export default (props: { groupid: number; userid: number }): JSX.Element => {
   }
 
   return (
-    <Query query={QUERY_DIALOG} variables={{ groupid }}>
+    <Query query={QUERY_DIALOG} variables={{ groupid, limit: 25 }}>
       {({ loading, error, data: { fetchDialog }, subscribeToMore }) => {
         if (loading) {
           return <LoadingDiv text="Fetching conversation..." />;
         }
 
         if (error) {
-          return "Error loading messages";
+          return <ErrorComp error="Error loading messages" />;
         }
 
         return (

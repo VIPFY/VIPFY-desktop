@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const QUERY_DIALOG = gql`
-  query fetchDialog($groupid: ID!) {
-    fetchDialog(groupid: $groupid) {
+  query fetchDialog($groupid: ID!, $limit: Int, $offset: Int) {
+    fetchDialog(groupid: $groupid, offset: $offset, limit: $limit) {
       id
       sendtime
       messagetext

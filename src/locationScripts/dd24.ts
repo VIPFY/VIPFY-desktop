@@ -19,6 +19,7 @@ function login() {
   ipcRenderer.on("loginData", function(e, key) {
     let email = key.cid;
     let password = key.password;
+
     document.querySelector<HTMLInputElement>("input[name='_username']")!.value = email;
     document.querySelector<HTMLInputElement>("input[name='_password']")!.value = password;
     document.querySelector<HTMLInputElement>("button[type='submit']")!.click();

@@ -186,13 +186,13 @@ label {
 }
 
 .centerText {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .inspirationalText {
-    color: rgb(141, 0, 0);
-    font-size: 1.5rem;
+  color: rgb(141, 0, 0);
+  font-size: 1.5rem;
 }
 
 .legalText {
@@ -211,6 +211,12 @@ label {
     left: 3rem;
     width: calc(100% - 15em);*/
     height: calc(100vh - 3em);
+}
+
+.pic-and-name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #loadingScreen {
@@ -841,6 +847,11 @@ label {
 
 .chat-open {
   margin-right: 15rem;
+}
+
+.right-infos {
+  display: flex;
+  flex-flow: row nowrap;
 }
 
 .navigation-right-infos{

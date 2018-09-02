@@ -5,7 +5,7 @@ import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
 import { me } from "../queries/auth";
 import { filterError, concatName } from "../common/functions";
-import userPicFolder from "../common/constants";
+import { unitPicFolder } from "../common/constants";
 import Dropzone from "react-dropzone";
 
 interface State {
@@ -89,7 +89,7 @@ class Profile extends React.Component<Props, State> {
 
           <div className={`pic-holder ${this.state.showPersonalData ? "in" : "out"}`}>
             <img
-              src={`${userPicFolder}${profilepicture ? profilepicture : "default.png"} `}
+              src={`${unitPicFolder}${profilepicture ? profilepicture : "default.png"} `}
               className="pic"
               alt="Picture of you"
               onClick={() => this.props.showPopup(picPopup)}

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { graphql } from "react-apollo";
-import { QUERY_DIALOG, MUTATION_SENDMESSAGE } from "./common";
+import { MUTATION_SENDMESSAGE } from "./common";
 
 interface Props {
   userid: number;
@@ -57,7 +57,6 @@ class NewMessage extends React.Component<Props> {
           <textarea rows={4} cols={50} onChange={this.handleChange} value={this.state.value} />
           <button className="button-message" type="submit">
             <i className="fa fa-paper-plane" />
-            Send Message
           </button>
         </form>
       </div>
