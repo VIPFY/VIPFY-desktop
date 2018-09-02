@@ -37,9 +37,9 @@ class Login extends Component {
 
     if (ok !== true) {
       this.setState({ errorbool: true, error: ok });
+    } else {
+      this.props.moveTo("/area/dashboard");
     }
-
-    this.props.moveTo("/area/dashboard");
   };
 
   forgetClick = () => this.setState({ forgotMove: true });

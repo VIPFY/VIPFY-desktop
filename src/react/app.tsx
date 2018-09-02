@@ -2,13 +2,13 @@ import * as React from "react";
 import { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 import { withRouter, Redirect } from "react-router";
-import { graphql, compose, withApollo, Query } from "react-apollo";
+import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 import { signInUser } from "./mutations/auth";
 import { me } from "./queries/auth";
 import { AppContext } from "./common/functions";
-import { filterError, ErrorComp } from "./common/functions";
+import { filterError } from "./common/functions";
 
 import Area from "./pages/area";
 import Bug from "./pages/bug";

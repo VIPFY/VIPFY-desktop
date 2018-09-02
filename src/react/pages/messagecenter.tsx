@@ -6,7 +6,6 @@ import Conversation from "../components/message-center/Conversation";
 import ConversationList from "../components/message-center/ConversationList";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
-import NewMessage from "../components/message-center/NewMessage";
 
 import { filterError, concatName } from "../common/functions";
 
@@ -43,12 +42,6 @@ const FETCH_EMPLOYEES = gql`
 `;
 
 class MessageCenter extends React.Component<Props> {
-  handleScroll = () => {
-    if (this.scroller && this.scroller.scrollTop < 200) {
-      console.log("Refetch!");
-    }
-  };
-
   startNewChat = async ({ receiver, ...rights }) => {
     const defaultrights = ["speak", "upload", "highlight"];
     Object.keys(rights).forEach(right => {
@@ -128,16 +121,7 @@ class MessageCenter extends React.Component<Props> {
           <ConversationList {...this.props} />
         </div>
 
-        <div
-          className="conversation"
-          ref={scroller => {
-            this.scroller = scroller;
-          }}
-          onScroll={this.handleScroll}>
-          <NewMessage {...this.props} groupid={groupid} />
-          <Conversation {...this.props} groupid={groupid} />
-        </div>
-
+        <Conversation {...this.props} groupid={groupid} />
         <div className="system-messages" />
       </div>
     );
