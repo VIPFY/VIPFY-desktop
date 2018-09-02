@@ -2,13 +2,13 @@ import * as React from "react";
 import { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 import { withRouter, Redirect } from "react-router";
-import { graphql, compose, withApollo } from "react-apollo";
+import { graphql, compose, withApollo, Query } from "react-apollo";
 import gql from "graphql-tag";
 
 import { signInUser } from "./mutations/auth";
 import { me } from "./queries/auth";
 import { AppContext } from "./common/functions";
-import { filterError } from "./common/functions";
+import { filterError, ErrorComp } from "./common/functions";
 
 import Area from "./pages/area";
 import Bug from "./pages/bug";
@@ -85,9 +85,13 @@ class App extends Component<AppProps, AppState> {
     showPopup: data => this.renderPopup(data)
   };
 
-  componentDidMount() {
-    this.props.logoutFunction(this.logMeOut);
-  }
+  componentDidMount = async () => {
+    await this.props.logoutFunction(this.logMeOut);
+
+    if (!this.state.login && localStorage.getItem("token")) {
+      await this.relogMeIn();
+    }
+  };
 
   renderPopup = ({ header, body, props }) => {
     this.setState({ popup: { show: true, header, body, props } });
@@ -136,14 +140,13 @@ class App extends Component<AppProps, AppState> {
         const { id, firstname, lastname, teams, billing, domains, marketplace } = user;
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
-        this.setState({ login: true });
-        this.setState({ firstname, lastname });
+        this.setState({ login: true, firstname, lastname });
         this.setState({ teams, billing, domains, marketplace });
         this.setState({ profilepicture: user.profilepicture || user.company.profilepicture });
         this.setState({ employees: user.company.employees });
         this.setState({ userid: id, company: user.company });
 
-        this.moveTo("/area/dashboard");
+        return true;
       }
     } catch (err) {
       this.setState({ login: false, error: filterError(err) });
@@ -169,24 +172,18 @@ class App extends Component<AppProps, AppState> {
         this.setState({ login: true });
       }
     } catch (err) {
-      this.setState({ login: false });
+      this.setState({ login: false, error: filterError(err) });
       localStorage.setItem("token", "");
       localStorage.setItem("refreshToken", "");
-      this.setState({ error: filterError(err) });
       console.log("LoginError", err);
     }
     this.moveTo("/area/advisor");
   };
 
   render() {
-    const { error, login, ...userData } = this.state;
+    const { error, ...userData } = this.state;
 
     if (this.props.me.loading) {
-      return <LoadingDiv text="Preparing Vipfy for you" />;
-    }
-
-    if (!login && localStorage.getItem("token")) {
-      this.relogMeIn();
       return <LoadingDiv text="Preparing Vipfy for you" />;
     }
 
@@ -197,7 +194,13 @@ class App extends Component<AppProps, AppState> {
             exact
             path="/"
             render={props => (
-              <Login login={this.logMeIn} register={this.registerMe} error={error} {...props} />
+              <Login
+                login={this.logMeIn}
+                moveTo={this.moveTo}
+                register={this.registerMe}
+                error={error}
+                {...props}
+              />
             )}
           />
           <Route
