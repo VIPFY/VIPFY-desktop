@@ -1,6 +1,8 @@
 import * as React from "react";
 import { graphql } from "react-apollo";
-import { QUERY_DIALOG, MUTATION_SENDMESSAGE } from "./common";
+import { MUTATION_SENDMESSAGE } from "./common";
+
+import FileUpload from "./FileUpload";
 
 interface Props {
   userid: number;
@@ -32,35 +34,32 @@ class NewMessage extends React.Component<Props> {
   };
 
   handleSubmit = async e => {
-    try {
-      e.preventDefault();
-      this.props.sendMessage({
-        variables: { message: this.state.value, groupid: this.props.groupid }
-      });
-
-      this.setState({ value: "" });
-    } catch (err) {
-      console.log(err);
-    }
+    e.preventDefault();
+    console.log(e.target.value);
+    // try {
+    //   e.preventDefault();
+    //   this.props.sendMessage({
+    //     variables: { message: this.state.value, groupid: this.props.groupid }
+    //   });
+    //
+    //   this.setState({ value: "" });
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   render() {
-    const { groupid } = this.props;
-
-    if (groupid === undefined || groupid === null) {
+    if (this.props.groupid === undefined || this.props.groupid === null) {
       return <span />;
     }
 
     return (
-      <div>
-        <form onSubmit={this.handleSubmit} className="conversation-form">
-          <textarea rows={4} cols={50} onChange={this.handleChange} value={this.state.value} />
-          <button className="button-message" type="submit">
-            <i className="fa fa-paper-plane" />
-            Send Message
-          </button>
-        </form>
-      </div>
+      <form onSubmit={this.handleSubmit} className="conversation-form">
+        <textarea rows={4} cols={50} onChange={this.handleChange} value={this.state.value} />
+        <button className="button-message" type="button">
+          <i className="fa fa-paper-plane" />
+        </button>
+      </form>
     );
   }
 }

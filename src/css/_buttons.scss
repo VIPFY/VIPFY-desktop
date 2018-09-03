@@ -43,11 +43,6 @@
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
 
-  &-message {
-    @include vipfy-button(5px);
-    max-width: 10rem;
-  }
-
   &-forgot {
     font-size: 0.5em;
     margin-top: 1.2em;

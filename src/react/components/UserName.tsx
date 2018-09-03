@@ -7,7 +7,8 @@ import { QUERY_USER } from "../queries/user";
  *
  * @param userid is the currently logged in user, can be passed through from the app
  * @param unitid is the id of the username to be displayed
- * @param short wheter to choose a shorter represenation (e.g. first name only). defaults to false
+ * @param short whether to choose a shorter represenation (e.g. first name only). defaults to false
+ * @param sendtime the time the message was sent to display
  *
  * @example <UserName {...props} unitid={22} short={true} />
  *
@@ -17,21 +18,31 @@ export default function UserName(props: {
   unitid: number | null;
   userid: number;
   short?: boolean;
+  sendtime: string;
 }): JSX.Element {
-  const { unitid, userid } = props;
+  const { unitid, userid, sendtime } = props;
   const short = props.short === undefined ? false : props.short;
+  const date = sendtime ? new Date(sendtime) : null;
+
   if (unitid === null || unitid === undefined) {
     return <span>System</span>;
   }
+
   if (unitid == userid) {
-    return <span className="user-name">You</span>;
+    return (
+      <span className="user-name">
+        You <span className="date">{date ? date.toUTCString() : ""}</span>
+      </span>
+    );
   }
+
   return (
     <Query query={QUERY_USER} variables={{ userid: unitid }}>
       {({ loading, error, data }) => {
         if (loading) {
           return <span />;
         }
+
         if (error) {
           return <span>(can't fetch user data)</span>;
         }
@@ -39,7 +50,8 @@ export default function UserName(props: {
         const userData = data.fetchPublicUser;
         return (
           <span className="user-name">
-            {short ? userData.firstname : `${userData.firstname} ${userData.lastname}`}
+            {short ? userData.firstname : `${userData.firstname} ${userData.lastname}`}{" "}
+            <span className="date">{date ? date.toUTCString() : ""}</span>
           </span>
         );
       }}

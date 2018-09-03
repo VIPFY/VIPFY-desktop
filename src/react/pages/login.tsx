@@ -37,6 +37,8 @@ class Login extends Component {
 
     if (ok !== true) {
       this.setState({ errorbool: true, error: ok });
+    } else {
+      this.props.moveTo("/area/dashboard");
     }
   };
 
@@ -146,7 +148,9 @@ class Login extends Component {
             <div className="button-holder">
               <div
                 className={
-                  this.state.forgotMove ? "button-forgot button button-moved" : "button-forgot button"
+                  this.state.forgotMove
+                    ? "button-forgot button button-moved"
+                    : "button-forgot button"
                 }
                 onClick={this.forgetClick}>
                 <span className={this.state.forgotMove ? "button-move" : ""}>Forgot Password</span>

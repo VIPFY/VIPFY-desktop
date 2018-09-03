@@ -98,7 +98,7 @@ class Dashboard extends Component {
             <span className="serviceUserIconBackground">
               <img
                 className="serviceUserIcon"
-                src="https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg"
+                src="https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/artist.jpg"
               />
             </span>
             <span className="serviceUserName">Nils Vossebein</span>

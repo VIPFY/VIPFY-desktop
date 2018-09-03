@@ -63,7 +63,7 @@ class Settings extends Component {
   render() {
     let bI = this.props.profilepicture
       ? this.props.profilepicture
-      : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
+      : "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/artist.jpg";
 
     return (
       <div>

@@ -149,6 +149,27 @@ class GenericInputForm extends React.Component<Props, State> {
               }
               break;
 
+            case "selectObject":
+              {
+                return (
+                  <select
+                    name={name}
+                    ref={this.inputField}
+                    onChange={this.handleChange}
+                    value={values[name] ? values[name] : ""}
+                    required={required}
+                    className="generic-dropdown">
+                    <option value=""> </option>
+                    {options.map(({ name, value }, key) => (
+                      <option key={key} value={value}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                );
+              }
+              break;
+
             case "picture":
               {
                 const renderContent = () => {

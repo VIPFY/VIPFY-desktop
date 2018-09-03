@@ -71,7 +71,7 @@
 
   &-list-main {
     height: auto;
-    width: 100%;
+    margin-bottom: 2.85rem;
     padding: 0;
     list-style: none;
 
@@ -92,10 +92,18 @@
 
   &-form {
     display: flex;
-    flex-flow: column nowrap;
+    flex-flow: row nowrap;
+    position: fixed;
+    bottom: 1.85rem;
 
     textarea {
-      margin-bottom: 1em;
+      width: 90%;
+      resize: vertical;
+    }
+
+    button {
+      @include vipfy-button;
+      width: 10%;
     }
   }
 }
@@ -116,4 +124,8 @@
 .user-name {
   font-style: italic;
   font-weight: bold;
+}
+
+.date {
+  font-size: 0.5rem;
 }

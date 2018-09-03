@@ -108,14 +108,19 @@ class Navigation extends React.Component<State> {
 
         <div className="right-infos">
           <div className="right-profile-holder">
-            <img
-              className="right-profile-image"
-              src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                this.props.profilepicture
-              }`}
-            />
-            <span className="right-profile-first-name">{this.props.firstname}</span>
-            <span className="right-profile-last-name">{this.props.lastname}</span>
+            <div className="pic-and-name" onClick={() => this.goTo("profile")}>
+              <img
+                className="right-profile-image"
+                src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                  this.props.profilepicture
+                }`}
+              />
+
+              <div className="name-holder">
+                <span className="right-profile-first-name">{this.props.firstname}</span>
+                <span className="right-profile-last-name">{this.props.lastname}</span>
+              </div>
+            </div>
 
             <span onClick={this.toggleNotificationPopup} className="right-profile-holder">
               <span className="right-profile-notifications">
