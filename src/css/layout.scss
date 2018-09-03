@@ -1826,3 +1826,11 @@ option{
     padding: 0.25rem;
     background-color: white;
 }
+.checkOrderHolder{
+    display: grid;
+    grid-template-columns: 20% 80%;
+}
+.lawbox{
+    overflow-y: scroll;
+    height: 20rem;
+}
