@@ -7,7 +7,10 @@ import { AppContext } from "../common/functions";
 import WebView = require("react-electron-web-view");
 
 class CheckOrder extends Component {
-  state = {};
+  state = {
+    tosOpen: false,
+    ppOpen: false
+  };
 
   handleClickOutside = () => {
     this.props.handleOutside();
@@ -26,21 +29,48 @@ class CheckOrder extends Component {
     return PI;
   }
 
+  setTos(bool) {
+    this.setState({ ppOpen: false });
+    this.setState({ tosOpen: bool });
+  }
+
+  setPP(bool) {
+    this.setState({ ppOpen: bool });
+    this.setState({ tosOpen: false });
+  }
+
   showagb(options) {
     if (options.agb) {
-      return (
-        <div className="lawbox">
-          <h1>Terms of Service</h1>
-          <div dangerouslySetInnerHTML={{ __html: options.agb }} />
-        </div>
-      );
+      if (this.state.tosOpen) {
+        return (
+          <div className="lawbox" onClick={() => this.setTos(false)}>
+            <h1>Terms of Service</h1>
+            <div dangerouslySetInnerHTML={{ __html: options.agb }} />
+          </div>
+        );
+      } else {
+        return <div onClick={() => this.setTos(true)}>Show Terms of Service</div>;
+      }
     } else {
       return <span>No Terms of Service knwon</span>;
     }
   }
 
   showprivacy(options) {
-    return <span>{options.privacy}</span>;
+    if (options.privacy) {
+      if (this.state.ppOpen) {
+        return (
+          <div className="lawbox" onClick={() => this.setPP(false)}>
+            <h1>Privacy Policy</h1>
+            <div dangerouslySetInnerHTML={{ __html: options.privacy }} />
+          </div>
+        );
+      } else {
+        return <div onClick={() => this.setPP(true)}>Show Privacy Policy</div>;
+      }
+    } else {
+      return <span>No Privacy Policy known</span>;
+    }
   }
 
   render() {
@@ -81,11 +111,11 @@ class CheckOrder extends Component {
                       return "Error loading messages";
                     }
 
-                    console.log("RETURN BILLING A", data);
+                    console.log("RETURN BILLING A", data, value);
                     if (data.fetchBillingAddresses) {
                       return (
                         <div>
-                          <div>{value.company.name}</div>
+                          {value.company ? <div>{value.company.name}</div> : "No Name"}
                           <div>{data.fetchBillingAddresses[0].address.street}</div>
                           <div>{data.fetchBillingAddresses[0].address.city}</div>
                           <div>{data.fetchBillingAddresses[0].address.zip}</div>

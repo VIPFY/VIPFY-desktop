@@ -87,10 +87,6 @@ class App extends Component<AppProps, AppState> {
 
   componentDidMount = async () => {
     await this.props.logoutFunction(this.logMeOut);
-
-    if (!this.state.login && localStorage.getItem("token")) {
-      await this.relogMeIn();
-    }
   };
 
   renderPopup = ({ header, body, props }) => {
@@ -185,6 +181,9 @@ class App extends Component<AppProps, AppState> {
 
     if (this.props.me.loading) {
       return <LoadingDiv text="Preparing Vipfy for you" />;
+    }
+    if (!this.state.login && localStorage.getItem("token")) {
+      this.relogMeIn();
     }
 
     return (

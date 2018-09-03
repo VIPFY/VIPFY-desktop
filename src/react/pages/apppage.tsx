@@ -68,6 +68,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
   };
 
   buyAppAccepted = async planIds => {
+    console.log("ACBuy", planIds);
     try {
       await this.props.buyPlan({
         variables: { planIds },
@@ -652,7 +653,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
 
   render() {
     let cssClass = "full-working paddingPage";
-    if (this.props.chat-open) {
+    if (this.props.chat - open) {
       cssClass += " chat-open";
     }
     if (this.props.sidebaropen) {
