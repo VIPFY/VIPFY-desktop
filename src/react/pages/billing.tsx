@@ -78,6 +78,10 @@ class Billing extends React.Component<Props, State> {
   render() {
     const { cards, bills } = this.props;
 
+    if (cards && bills) {
+      return <div>No Billing Data to find</div>;
+    }
+
     if (cards.loading || bills.loading) {
       return <LoadingDiv text="Fetching bills..." />;
     }

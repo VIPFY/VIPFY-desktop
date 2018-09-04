@@ -1337,7 +1337,8 @@ span.paymentAddressPhone {
 .appHeaderBuyButton {
     position: relative;
     padding: 0.5rem;
-    background-color: #3abf94;
+    /*background-color: #3abf94;*/
+    background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
     cursor: pointer;
     font-size: 0.8rem;
     border-radius: .25rem;
@@ -1855,9 +1856,175 @@ option{
 }
 .checkOrderHolder{
     display: grid;
-    grid-template-columns: 20% 80%;
+    grid-template-columns: 20% 75%;
+    margin: 1rem;
+    grid-column-gap: 5%;
+    height: calc(100% - 2rem);
+    position: relative;
 }
 .lawbox{
     overflow-y: scroll;
     height: 20rem;
+}
+.productPlanName{
+    text-align: center;
+}
+.check {
+    cursor: pointer;
+    /*position: relative;
+    margin: auto;*/
+    float: left;
+    width: 18px;
+    height: 18px;
+    -webkit-tap-highlight-color: transparent;
+    transform: translate3d(0, 0, 0);
+  }
+  .check:before {
+    content: "";
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(34,50,84,0.03);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .check svg {
+    position: relative;
+    z-index: 1;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke: #c8ccd4;
+    stroke-width: 1.5;
+    transform: translate3d(0, 0, 0);
+    transition: all 0.2s ease;
+  }
+  .check svg path {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 0;
+  }
+  .check svg polyline {
+    stroke-dasharray: 22;
+    stroke-dashoffset: 66;
+  }
+  .check:hover:before {
+    opacity: 1;
+  }
+  .check:hover svg {
+    stroke: #117f91;
+  }
+  .cbx:checked + .check svg {
+    stroke: #117f91;
+  }
+  .cbx:checked + .check svg path {
+    stroke-dashoffset: 60;
+    transition: all 0.3s linear;
+  }
+  .cbx:checked + .check svg polyline {
+    stroke-dashoffset: 42;
+    transition: all 0.2s linear;
+    transition-delay: 0.15s;
+  }
+  .lawlink{
+      cursor: pointer;
+      background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+        margin: 0.5rem;
+    padding: 0.5rem;
+    color: white;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .lawholder{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .lawheading{
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: block;
+  }
+  .agreementBox{
+      display: flex;
+      align-items: center;
+      position: relative;
+  }
+  .agreementSentence{
+    font-size: 0.8rem;
+    margin-left: 0.4rem;
+  }
+  .checkOrderHolderButton{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+  .checkoutButton{
+    cursor: pointer;
+    background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+    margin: 0.5rem;
+    padding: 0.5rem;
+    color: white;
+    border-radius: 3px;
+    display: inline-block;
+    border: none;
+  }
+  .cancelButton{
+    cursor: pointer;
+    background-image: linear-gradient(to right, #c73544 0%, #991b78 100%);
+    margin: 0.5rem;
+    padding: 0.5rem;
+    color: white;
+    border-radius: 3px;
+    display: inline-block;
+    border: none;
+  }
+  .agreementError{
+    position: absolute;
+    bottom: -1.75rem;
+    border: 1px solid #c73544;
+    padding: 0.1rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+    border-radius: 3px;
+  }
+  .agreementError:before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 1px;
+    top: -9px;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 9px solid #c73544;
+    border-radius: 3px;
+}
+.agreementError:after {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 2px;
+    top: -7px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 8px solid white;
+    border-radius: 3px;
+}
+.orderHeading{
+    margin-bottom: 0.5rem;
+}
+.orderCompanyName{
+    font-weight: bold;
+}
+.orderAddressLine{
+    font-size: 0.9rem;
+}
+.orderAddressHolder{
+    margin: 0.5rem;
+}
+.productAppName{
+    text-align: center;
 }

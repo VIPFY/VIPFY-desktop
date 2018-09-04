@@ -1,4 +1,4 @@
-$modal-z: 1000;
+$modal-z: 10000;
 $modal-wh: 50%;
 
 #overlay {
@@ -19,12 +19,26 @@ $modal-wh: 50%;
   height: $modal-wh;
   position: relative;
   width: $modal-wh;
+  border-radius: 3px;
 }
 
 #popup-header {
-  background: antiquewhite;
+  /*background: antiquewhite;
   border-bottom: 1px solid silver;
+  position: relative;
+  top: -2rem;
+  color: white;
   display: flex;
+  position: relative;*/
+  position: absolute;
+    width: 100%;
+    top: -2.2rem;
+    color: white;
+    display: flex;
+    padding-bottom: 0.2rem;
+    border-bottom: 0.2rem solid;
+    border-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+    border-image-slice: 1;
 }
 
 #popup-header-text {
@@ -33,17 +47,20 @@ $modal-wh: 50%;
 }
 
 #popup-close-button {
-  background-color: #082e44;
-  border-radius: 30px;
+  /*background-color: #082e44;
+  border-radius: 30px;*/
   color: #fff;
   cursor: pointer;
   font-size: 15px;
   font-weight: bold;
   height: 30px;
-  line-height: 35px;
+  /*line-height: 35px;*/
+  line-height: 30px;
   position: absolute;
-  right: -1rem;
+  /*right: -1rem;*/
   text-align: center;
-  top: -1rem;
+  /*top: -1rem;*/
   width: 30px;
+  right: 0rem;
+  top: 0rem
 }

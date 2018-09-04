@@ -67,11 +67,11 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     });
   };
 
-  buyAppAccepted = async planIds => {
-    console.log("ACBuy", planIds);
+  buyAppAccepted = async (planIds, options) => {
+    console.log("ACBuy", planIds, options);
     try {
       await this.props.buyPlan({
-        variables: { planIds },
+        variables: { planIds, options },
         refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
       });
       this.props.history.push("/area/dashboard");
@@ -98,7 +98,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
         }
       }
     } else {
-      starsArray.push(<div>No Reviews yet</div>);
+      starsArray.push(<div key="star0">No Reviews yet</div>);
     }
     return starsArray;
   }

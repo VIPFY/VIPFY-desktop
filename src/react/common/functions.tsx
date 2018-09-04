@@ -18,7 +18,7 @@ export function showStars(stars) {
       }
     }
   } else {
-    starsArray.push(<div>No Reviews yet</div>);
+    starsArray.push(<div key="star0">No Reviews yet</div>);
   }
   return starsArray;
 }
