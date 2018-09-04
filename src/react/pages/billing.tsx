@@ -77,8 +77,8 @@ class Billing extends React.Component<Props, State> {
 
   render() {
     const { cards, bills } = this.props;
-
-    if (cards && bills) {
+    console.log("Billing", cards, bills);
+    if (cards || bills) {
       return <div>No Billing Data to find</div>;
     }
 
@@ -86,8 +86,12 @@ class Billing extends React.Component<Props, State> {
       return <LoadingDiv text="Fetching bills..." />;
     }
 
-    const normalizedCards = cards.fetchPaymentData.map(card => card);
-    const mainCard = normalizedCards.shift();
+    const paymentData = cards.fetchPaymentData;
+    let mainCard = [];
+    if (paymentData) {
+      const normalizedCards = paymentData.map(card => card);
+      mainCard = normalizedCards.shift();
+    }
 
     return (
       <div className="dashboard-working">
