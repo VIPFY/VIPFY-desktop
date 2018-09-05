@@ -14,7 +14,8 @@ class CheckOrder extends Component {
     agreement: false,
     agreementError: false,
     featurenumbers: [],
-    totalprice: null
+    totalprice: null,
+    dataconnections: {}
   };
 
   openExternal(url) {
@@ -245,7 +246,7 @@ class CheckOrder extends Component {
     }
   }
 
-  accept(plan) {
+  accept(plan, planInputs, value, addresses) {
     if (this.state.agreement) {
       this.setState({ agreementError: false });
       let index = 0;
@@ -253,23 +254,91 @@ class CheckOrder extends Component {
       if (plan.features && plan.features[0].features) {
         plan.features[0].features.forEach(feature => {
           if (feature.addable) {
+            console.log("MATH", feature, this.state.featurenumbers[index] , (this.state.featurenumbers[index]||feature.number) - feature.number, (this.state.featurenumbers[index]||feature.number - feature.number) / feature.amountper)
             featureoptions[feature.key] = {amount: Math.ceil(
-              (this.state.featurenumbers[index]||feature.number - feature.number) / feature.amountper
-            ), value: this.state.featurenumbers[index]||feature.number}
+              ((this.state.featurenumbers[index]||feature.number) - feature.number) / feature.amountper
+            ), value: ((this.state.featurenumbers[index]||feature.number)-0)}
             index++;
+          } else {
+            featureoptions[feature.key] = {amount: 0, value: feature.number}
           }
         })
       }
-      console.log("FO", plan.id, featureoptions, this.state.totalprice|| plan.price, {})
+      let planInputsSending = {}
+      planInputs.forEach(input => {
+        switch(input.name){
+          case "companyname":
+          planInputsSending["companyname"] = value.company.name
+          break;
+          case "companyaddress":
+          planInputsSending["companyaddress"] = {street: addresses[0].address.street, city: addresses[0].address.city, zip: addresses[0].address.zip}
+          break;
+          case "domains":
+          if (this.state.dataconnections["domains"]) {
+          planInputsSending["domains"] = [{domain: this.state.dataconnections["domains"]}]}
+          else {planInputsSending["domains"] = []}
+          break;
+        }
+      })
 
-      this.props.acceptFunction(plan.id, featureoptions, this.state.totalprice || plan.price, {});
+      console.log("FO", plan.id, featureoptions, this.state.totalprice|| plan.price, planInputsSending)
+
+      this.props.acceptFunction(plan.id, featureoptions, this.state.totalprice || plan.price, planInputsSending);
     } else {
       this.setState({ agreementError: true });
     }
   }
 
+  changeSelect(key, value) {
+    console.log("ChangeSelect", key, value)
+    let d = this.state.dataconnections
+    d[key] = value
+    this.setState({dataconnections: d})
+  }
+
+  showDataConnection(plan, inputs, value){
+    console.log("SDC", plan, inputs, value)
+    let DCArray: JSX.Element[] = []
+    inputs.forEach((dc,key) => {
+
+      if (dc.type === "domain"){
+
+        DCArray.push(<Query key={key}
+          query={gql`query {
+            fetchDomains{
+            id
+            key
+          }}`}>
+          {({ loading, error, data }) => {
+            if (loading) {
+              return <span>"Fetching invoice data..."</span>;
+            }
+            if (error) {
+              return <span>"Error loading messages"</span>;
+            }
+
+            {console.log("DO",data.fetchDomains)}
+
+            let possibleDomains: JSX.Element[] = [];
+            possibleDomains.push(<option key="DNCAD" value={}>Do not connect any domain</option>)
+            data.fetchDomains.forEach((domain,key) => {
+              possibleDomains.push(<option key={key}>{domain.key.domain}</option>)
+            })
+        return (
+        <select onChange={(e) => this.changeSelect("domains", e.target.value)}>{possibleDomains}</select>
+      )}}</Query>)
+      }
+    })
+    console.log(DCArray)
+    return (<div><h5>Select the domain you want to connect</h5>
+      {DCArray}</div>)
+  }
+
   render() {
     console.log("POPUP", this.props);
+
+    let planInputs = null
+    let billingAddresses = null
     return (
       <AppContext.Consumer>
         {value => (
@@ -308,7 +377,8 @@ class CheckOrder extends Component {
                     if (error) {
                       return "Error loading messages";
                     }
-
+                    planInputs = data.fetchPlanInputs;
+                    billingAddresses=data.fetchBillingAddresses;
                     console.log("RETURN BILLING A", data, value);
                     if (data.fetchBillingAddresses) {
                       return (
@@ -342,6 +412,7 @@ class CheckOrder extends Component {
                             </div>
                           </div>
                           {this.showOrder(this.props.plan)}
+                          {this.showDataConnection(this.props.plan, data.fetchPlanInputs, value)}
                         </div>
                       );
                     } else {
@@ -387,8 +458,8 @@ class CheckOrder extends Component {
                 <button className="cancelButton" onClick={() => this.props.onClose()}>
                   Cancel
                 </button>
-                <button className="checkoutButton" onClick={() => this.accept(this.props.plan)}>
-                  Checkout
+                <button className="checkoutButton" onClick={() => this.accept(this.props.plan, planInputs, value, billingAddresses)}>
+                  Checkout for ${this.state.totalprice || this.props.plan.price}/mo
                 </button>
               </div>
             </div>
