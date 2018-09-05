@@ -7,7 +7,7 @@
 @import './messages.scss';
 @import './profile.scss';
 
-/*::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 0.5em;
   background: #aaa;
 }
@@ -21,7 +21,7 @@
   background-color: lighten($vipfy-red, 10);
   outline: 1px solid slategrey;
   border-radius: 10px;
-}*/
+}
 
 #App {
   color: #333;

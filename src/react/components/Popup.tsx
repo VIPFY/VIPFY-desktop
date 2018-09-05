@@ -1,28 +1,37 @@
 import * as React from "react";
 
-interface Props {
+export default (props: {
   popupBody: any;
   popupHeader: string;
   bodyProps: object;
-  onClose: Function;
-}
-
-export default props => {
-  const { popupBody, bodyProps, popupHeader, onClose } = props;
+  onClose: any;
+  type: string;
+}): JSX.Element => {
+  const { popupBody, bodyProps, popupHeader, onClose, type } = props;
   const PopupBody = popupBody;
 
-  return (
-    <div id="overlay">
-      <div id="popup">
-        <div id="popup-header">
-          <div id="popup-header-text">{popupHeader}</div>
-          <div id="popup-close-button" onClick={onClose}>
-            <i className="fas fa-times" />
-          </div>
+  if (type == "pic") {
+    return (
+      <div id="overlay" onClick={onClose}>
+        <div id="popup-pic">
+          <PopupBody {...bodyProps} onClose={onClose} />
         </div>
-
-        <PopupBody {...bodyProps} onClose={onClose} />
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div id="overlay">
+        <div id="popup">
+          <div id="popup-header">
+            <div id="popup-header-text">{popupHeader}</div>
+            <div id="popup-close-button" onClick={onClose}>
+              <i className="fas fa-times" />
+            </div>
+          </div>
+
+          <PopupBody {...bodyProps} onClose={onClose} />
+        </div>
+      </div>
+    );
+  }
 };

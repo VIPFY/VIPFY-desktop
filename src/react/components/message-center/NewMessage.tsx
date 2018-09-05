@@ -35,17 +35,16 @@ class NewMessage extends React.Component<Props> {
 
   handleSubmit = async e => {
     e.preventDefault();
-    console.log(e.target.value);
-    // try {
-    //   e.preventDefault();
-    //   this.props.sendMessage({
-    //     variables: { message: this.state.value, groupid: this.props.groupid }
-    //   });
-    //
-    //   this.setState({ value: "" });
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    try {
+      e.preventDefault();
+      this.props.sendMessage({
+        variables: { message: this.state.value, groupid: this.props.groupid }
+      });
+
+      this.setState({ value: "" });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   render() {
@@ -56,7 +55,7 @@ class NewMessage extends React.Component<Props> {
     return (
       <form onSubmit={this.handleSubmit} className="conversation-form">
         <textarea rows={4} cols={50} onChange={this.handleChange} value={this.state.value} />
-        <button className="button-message" type="button">
+        <button className="button-message" type="submit">
           <i className="fa fa-paper-plane" />
         </button>
       </form>

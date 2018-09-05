@@ -23,6 +23,8 @@ interface Props {
 
 interface State {
   hasMoreItems: boolean;
+  isFetching: boolean;
+  cursor: number;
 }
 
 const MESSAGE_SUBSCRIPTION = gql`
@@ -46,10 +48,16 @@ const LIMIT = 25;
 
 class Conversation extends React.Component<Props, State> {
   state = {
-    hasMoreItems: true
+    hasMoreItems: true,
+    isFetching: false,
+    cursor: 0
   };
 
-  componentDidMount() {
+  componentDidMount = async () => {
+    // Set the cursor for pagination to the last element of the fetched Messages
+    const messages = this.props.fetchDialog;
+    await this.setState({ cursor: messages[messages.length - 1].sendtime });
+
     this.props.subscribeToMore({
       document: MESSAGE_SUBSCRIPTION,
       variables: {
@@ -67,7 +75,7 @@ class Conversation extends React.Component<Props, State> {
         }
       }
     });
-  }
+  };
 
   // Avoid the Scrollbar from going to the bottom when fetching new Messages
   componentWillReceiveProps({ fetchDialog: newMessages }) {
@@ -89,14 +97,16 @@ class Conversation extends React.Component<Props, State> {
 
   handleScroll = () => {
     if (
+      !this.state.isFetching &&
       this.scroller &&
       this.scroller.scrollTop < 100 &&
       this.state.hasMoreItems &&
       this.props.fetchDialog.length >= LIMIT
     ) {
+      this.setState(() => ({ isFetching: true }));
       this.props.fetchMore({
         variables: {
-          offset: this.props.fetchDialog.length,
+          cursor: this.state.cursor,
           groupid: this.props.groupid,
           limit: LIMIT
         },
@@ -108,6 +118,13 @@ class Conversation extends React.Component<Props, State> {
           if (fetchMoreResult.fetchDialog.length < LIMIT) {
             this.setState({ hasMoreItems: false });
           }
+
+          this.setState(() => ({
+            isFetching: false,
+            cursor: fetchMoreResult.fetchDialog[fetchMoreResult.fetchDialog.length - 1].sendtime
+          }));
+
+          console.log(fetchMoreResult.fetchDialog);
 
           return {
             ...previousResult,
@@ -127,8 +144,8 @@ class Conversation extends React.Component<Props, State> {
         }}
         onScroll={this.handleScroll}>
         <NewMessage groupid={this.props.groupid} />
-        <FileUpload disableClick={true}>
-          <ol className="conversation-list-main">
+        <ol className="conversation-list-main">
+          <FileUpload disableClick={true} groupid={this.props.groupid}>
             {this.props.fetchDialog
               .slice()
               .reverse()
@@ -163,8 +180,8 @@ class Conversation extends React.Component<Props, State> {
                   </li>
                 );
               })}
-          </ol>
-        </FileUpload>
+          </FileUpload>
+        </ol>
       </div>
     );
   }

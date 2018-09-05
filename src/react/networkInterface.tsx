@@ -110,7 +110,7 @@ const link = split(
 );
 
 // const link = ApolloLink.from([wsLink, httpLinkWithMiddleware, errorLink]);
-//Create a client to use Apollo for communication with GraphQL
+// Create a client to use Apollo for communication with GraphQL
 export default new ApolloClient({
   link,
   cache

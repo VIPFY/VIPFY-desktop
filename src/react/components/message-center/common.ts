@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const QUERY_DIALOG = gql`
-  query fetchDialog($groupid: ID!, $limit: Int, $offset: Int) {
-    fetchDialog(groupid: $groupid, offset: $offset, limit: $limit) {
+  query fetchDialog($groupid: ID!, $limit: Int, $cursor: String) {
+    fetchDialog(groupid: $groupid, cursor: $cursor, limit: $limit) {
       id
       sendtime
       messagetext
@@ -44,8 +44,8 @@ export const QUERY_GROUPS = gql`
 `;
 
 export const MUTATION_SENDMESSAGE = gql`
-  mutation sendMessage($groupid: ID!, $message: String!) {
-    sendMessage(groupid: $groupid, message: $message) {
+  mutation sendMessage($groupid: ID!, $message: String, $file: File) {
+    sendMessage(groupid: $groupid, message: $message, file: $file) {
       ok
     }
   }
