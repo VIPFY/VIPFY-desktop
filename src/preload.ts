@@ -23,6 +23,8 @@
       require("./locationScripts/moo.ts")();
     } else if (hostMatches(".*.?domaindiscount24.com")) {
       require("./locationScripts/dd24.ts")();
+    } else if (hostMatches(".*.?sendgrid.com")) {
+      require("./locationScripts/sendgrid.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
