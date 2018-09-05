@@ -2030,13 +2030,13 @@ h1{
       color: #20BAA9;
     }
   }
-  
+
   .price-table-wrapper{
     text-align: center;
     margin-top: 1.5rem;
     display: grid;
     grid-template-columns: repeat(5, max-content);
-    
+
     .featured-table{
       box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
       h2{
@@ -2044,7 +2044,7 @@ h1{
       color: white;
       }
     }
-    
+
     .pricing-table{
       display: inline-block;
       border: 1px solid #C8C8C8;
@@ -2052,7 +2052,7 @@ h1{
       background: white;
       margin: 1rem;
       transition: all 0.3s ease-in-out;
-      
+
       &__header{
         padding: 1rem;
         font-size: 1rem;
@@ -2081,7 +2081,7 @@ h1{
         transition: all 0.3s ease-in-out;
         cursor: pointer;
         line-height: 1rem;
-        
+
         &:before{
             position: absolute;
             left: -20%;
@@ -2094,7 +2094,7 @@ h1{
             opacity: .3;
             transition: all 0.3s ease-in-out;
         }
-        
+
          &:after{
             position: absolute;
     content: '>';
@@ -2108,7 +2108,7 @@ h1{
     font-family: "Lato";
     line-height: 1rem;
           }
-        
+
         &:hover{
           background: #117f91;
         }
@@ -2122,7 +2122,7 @@ h1{
           list-style: none;
           display: flex;
           justify-content: center;
-          
+
           &:last-child{
             border: none;
           }
@@ -2154,11 +2154,11 @@ h1{
           }
         }
       }
-      
+
       &:hover{
         box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
         cursor: pointer;
-        
+
         .pricing-table__button{
           padding-left: 0;
           padding-right: 35px;
@@ -2175,8 +2175,6 @@ h1{
       }
     }
   }
-
-
   .checkOrderHolder{
     display: grid;
     grid-template-columns: 20% 75%;

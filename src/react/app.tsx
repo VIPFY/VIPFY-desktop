@@ -85,12 +85,12 @@ class App extends Component<AppProps, AppState> {
     showPopup: data => this.renderPopup(data)
   };
 
-  componentDidMount = async () => {
-    await this.props.logoutFunction(this.logMeOut);
+  componentDidMount = () => {
+    this.props.logoutFunction(this.logMeOut);
   };
 
-  renderPopup = ({ header, body, props }) => {
-    this.setState({ popup: { show: true, header, body, props } });
+  renderPopup = ({ header, body, props, type }) => {
+    this.setState({ popup: { show: true, header, body, props, type } });
   };
 
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
@@ -182,6 +182,7 @@ class App extends Component<AppProps, AppState> {
     if (this.props.me.loading) {
       return <LoadingDiv text="Preparing Vipfy for you" />;
     }
+
     if (!this.state.login && localStorage.getItem("token")) {
       this.relogMeIn();
     }
@@ -217,6 +218,7 @@ class App extends Component<AppProps, AppState> {
             popupBody={this.state.popup.body}
             bodyProps={this.state.popup.props}
             onClose={this.closePopup}
+            type={this.state.popup.type}
           />
         ) : (
           ""
