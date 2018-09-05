@@ -7,6 +7,8 @@ import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 import LoadingDiv from "../components/LoadingDiv";
+import { STATUS_CODES } from "http";
+import checkOrder from "../popups/checkorder";
 
 export type WebViewState = {
   setUrl: string;
@@ -342,6 +344,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           onDialog={e => console.log("Dialog", e)}
           onIpcMessage={e => this.onIpcMessage(e)}
         />
+        {this.state.popup ? (
+          <Popup
+            popupHeader={this.state.popupHeader}
+            popupBody={checkOrder}
+            bodyProps={this.state.popup}
+            onClose={this.closePopup}
+          />
+        ) : (
+          ""
+        )}
       </div>
     );
   }
