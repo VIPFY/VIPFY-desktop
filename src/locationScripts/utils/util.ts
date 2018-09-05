@@ -4,6 +4,7 @@ export const con = electron.remote.getGlobal("console");
 const app = electron.remote.app;
 export const appPath = app.getAppPath();
 export const todoPath = "vipfy://todo/"; //"file://" + path.join(appPath, "src", "todo.html");
+export let support = false;
 
 export function hideByQuery(query: string, parent: boolean): void {
   let elements = document.querySelectorAll<HTMLElement>(query);
@@ -30,4 +31,9 @@ export function redirectLinksByQuery(query: string, targetUrl: string): void {
 export function deleteElement(selector: string): void {
   const element = document.querySelector(selector);
   element.parentNode.removeChild(element);
+}
+
+export function supportKeyCode(event) {
+    let key = event.which || event.keyCode;
+    if (key==121) { support = !support; }
 }
