@@ -879,7 +879,7 @@ class Advisor extends Component {
             inputType="number"
             focus={this.state.focus === 10}
             onClick={()=>this.onEnter(10)}
-            onEnter={() => value.moveTo("/area/advisor/personfacts")}
+            onEnter={() => this.saveFacts(value)}
             />
         </div>
       </div>
@@ -1213,7 +1213,7 @@ class Advisor extends Component {
             placeholder="Your workexperience in this job"
             onBlur={(value) => this.setState({"workexperience": value})}
             focus={this.state.focus===2}
-            onEnter={()=>this.onEnter(3)}
+            onEnter={() => this.saveUserFacts(value)}
             onClick={()=>this.onEnter(2)}
             />
           </div>

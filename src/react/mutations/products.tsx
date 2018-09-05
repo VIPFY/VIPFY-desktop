@@ -7,3 +7,11 @@ export const buyPlan = gql`
     }
   }
 `;
+
+export const agreeToLicence = gql`
+  mutation agreeToLicence($licenceid: ID!) {
+    agreeToLicence(licenceid: $licenceid) {
+      ok
+    }
+  }
+`;
