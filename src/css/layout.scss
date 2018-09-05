@@ -1858,14 +1858,6 @@ option{
     padding: 0.25rem;
     background-color: white;
 }
-.checkOrderHolder{
-    display: grid;
-    grid-template-columns: 20% 75%;
-    margin: 1rem;
-    grid-column-gap: 5%;
-    height: calc(100% - 2rem);
-    position: relative;
-}
 .lawbox{
     overflow-y: scroll;
     height: 20rem;
@@ -2029,9 +2021,6 @@ option{
 .orderAddressHolder{
     margin: 0.5rem;
 }
-.productAppName{
-    text-align: center;
-}
 h1{
     text-align: center;
     font-size: 25px;
@@ -2186,3 +2175,39 @@ h1{
       }
     }
   }
+
+
+  .checkOrderHolder{
+    display: grid;
+    grid-template-columns: 20% 75%;
+    margin: 1rem;
+    grid-column-gap: 5%;
+    height: calc(100% - 2rem);
+    position: relative;
+
+    .checkOrderFeatures{
+        .productInfoHolder{
+            text-align: center;
+
+            .productPlanName{
+                font-size: 0.9rem;
+                font-weight: bold;
+            }
+        }
+        .featureList{
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            
+            li{
+                margin-bottom: 0.5rem;
+            }
+
+            .Pvalue{
+                font-weight: bold;
+            }
+        }
+    }
+}
