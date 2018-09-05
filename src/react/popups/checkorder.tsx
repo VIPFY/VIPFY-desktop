@@ -22,24 +22,19 @@ class CheckOrder extends Component {
     this.props.handleOutside();
   };
 
-  showProductInfos(plans) {
-    let PI: JSX.Element[] = [];
-    plans.forEach((element, index) => {
-      console.log("EL", element);
-      PI.push(
-        <div key={`PI-${index}`} className="productInfoHolder">
-          <div className="productIcon">
-            <img
-              src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${element.appid.icon}`}
-              style={{ width: "100%" }}
-            />
-          </div>
-          <div className="productAppName">{element.appid.name}</div>
-          <div className="productPlanName">{element.name}</div>
+  showProductInfos(plan) {
+    return (
+      <div className="productInfoHolder">
+        <div className="productIcon">
+          <img
+            src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${plan.appid.icon}`}
+            style={{ width: "100%" }}
+          />
         </div>
-      );
-    });
-    return PI;
+        <div className="productAppName">{plan.appid.name}</div>
+        <div className="productPlanName">{plan.name}</div>
+      </div>
+    );
   }
 
   setTos(bool) {
@@ -127,7 +122,7 @@ class CheckOrder extends Component {
       <AppContext.Consumer>
         {value => (
           <div className="checkOrderHolder">
-            <div className="checkOrderFeatures">{this.showProductInfos(this.props.plans)}</div>
+            <div className="checkOrderFeatures">{this.showProductInfos(this.props.plan)}</div>
             {console.log("CONSUMER", value)}
             <div>
               <div className="checkOrderHolderPart">
@@ -149,7 +144,7 @@ class CheckOrder extends Component {
                         exp_month
                         exp_year
                       }
-                      fetchPlanInputs(planid: ${this.props.plans[0].id})
+                      fetchPlanInputs(planid: ${this.props.plan.id})
                     }
                   `}>
                   {({ loading, error, data }) => {
@@ -185,7 +180,7 @@ class CheckOrder extends Component {
                           </div>
                           <div className="orderPlanOverview">
                             Select Department
-                            {console.log("data", this.props.plans, this.props.selecteddepartment)}
+                            {console.log("data", this.props.plan)}
                           </div>
                           <div>
                             {/*data.fetchBillingAddresses[0].unitid.payingoptions[0].cardnumber*/}
@@ -202,14 +197,14 @@ class CheckOrder extends Component {
               </div>
               <div className="checkOrderHolderPart">
                 Buy for everyone in{" "}
-                {this.props.selecteddepartment.department
+                {/*this.props.selecteddepartment.department
                   ? this.props.selecteddepartment.department.name
-                  : this.props.selecteddepartment}
+                : this.props.selecteddepartment*/}
               </div>
               <div className="checkOrderHolderLawBox">
-                {this.props.plans[0].appid.options ? (
+                {this.props.plan.appid.options ? (
                   <div>
-                    {this.showNeededCheckIns(this.props.plans[0].appid.options)}
+                    {this.showNeededCheckIns(this.props.plan.appid.options)}
                     <div className="agreementBox">
                       <input
                         type="checkbox"
@@ -226,7 +221,7 @@ class CheckOrder extends Component {
                       </label>
                       <span className="agreementSentence">
                         I agree to the above conditions and to our Terms of Service and Privacy
-                        agreement regarding {this.props.plans[0].appid.name}
+                        agreement regarding {this.props.plan.appid.name}
                       </span>
                       {this.state.agreementError ? (
                         <div className="agreementError">Please agree to the agreements.</div>
@@ -245,9 +240,7 @@ class CheckOrder extends Component {
                 <button className="cancelButton" onClick={() => this.props.onClose()}>
                   Cancel
                 </button>
-                <button
-                  className="checkoutButton"
-                  onClick={() => this.accept(this.props.plans[0].id)}>
+                <button className="checkoutButton" onClick={() => this.accept(this.props.plan.id)}>
                   Checkout
                 </button>
               </div>
