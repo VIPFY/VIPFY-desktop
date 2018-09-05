@@ -20,64 +20,63 @@ $modal-wh: 50%;
   position: relative;
   width: $modal-wh;
   border-radius: 3px;
-}
 
-#popup-header {
-  /*background: antiquewhite;
-  border-bottom: 1px solid silver;
-  position: relative;
-  top: -2rem;
-  color: white;
-  display: flex;
-  position: relative;*/
-  position: absolute;
+  &-header {
+    /*background: antiquewhite;
+    border-bottom: 1px solid silver;
+    position: relative;
+    top: -2rem;
+    color: white;
+    display: flex;
+    position: relative;*/
+    position: absolute;
     width: 100%;
     top: -2.2rem;
-    color: white;
+    color: #fff;
     display: flex;
     padding-bottom: 0.2rem;
     border-bottom: 0.2rem solid;
     border-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
     border-image-slice: 1;
-}
 
     &-text {
       font-weight: bold;
       padding-top: 5px;
     }
+
+    &-close-button {
+      background-color: #082e44;
+      border-radius: 30px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+      height: 30px;
+      line-height: 35px;
+      position: absolute;
+      right: -1rem;
+      text-align: center;
+      top: -1rem;
+      width: 30px;
+    }
   }
 
   &-close-button {
-    background-color: #082e44;
-    border-radius: 30px;
+    /*background-color: #082e44;
+    border-radius: 30px;*/
     color: #fff;
     cursor: pointer;
     font-size: 15px;
     font-weight: bold;
     height: 30px;
-    line-height: 35px;
+    /*line-height: 35px;*/
+    line-height: 30px;
     position: absolute;
-    right: -1rem;
+    /*right: -1rem;*/
     text-align: center;
-    top: -1rem;
+    /*top: -1rem;*/
     width: 30px;
+    right: 0;
+    top: 0;
   }
-
-#popup-close-button {
-  /*background-color: #082e44;
-  border-radius: 30px;*/
-  color: #fff;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  height: 30px;
-  /*line-height: 35px;*/
-  line-height: 30px;
-  position: absolute;
-  /*right: -1rem;*/
-  text-align: center;
-  /*top: -1rem;*/
-  width: 30px;
-  right: 0rem;
-  top: 0rem
 }
