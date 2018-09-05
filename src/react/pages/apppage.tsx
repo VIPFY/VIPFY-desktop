@@ -58,20 +58,19 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     this.setState({ popup: null });
   };
 
-  buyApp = (plans, selecteddepartment) => {
+  buyApp = plan => {
     this.showPopup({
       type: "Check Buying",
       acceptFunction: this.buyAppAccepted,
-      plans: plans,
-      selecteddepartment
+      plan
     });
   };
 
-  buyAppAccepted = async planIds => {
-    console.log("ACBuy", planIds);
+  buyAppAccepted = async (planIds, options) => {
+    console.log("ACBuy", planIds, options);
     try {
       await this.props.buyPlan({
-        variables: { planIds },
+        variables: { planIds, options },
         refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
       });
       this.props.history.push("/area/dashboard");
@@ -98,7 +97,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
         }
       }
     } else {
-      starsArray.push(<div>No Reviews yet</div>);
+      starsArray.push(<div key="star0">No Reviews yet</div>);
     }
     return starsArray;
   }
@@ -651,8 +650,53 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     );
   }
 
+  showPrices(plans) {
+    let priceBoxes: JSX.Element[] = [];
+
+    plans.forEach((plan, key) => {
+      console.log("PLAN", plan);
+
+      let featureArray: JSX.Element[] = [];
+
+      if (plan.features) {
+        plan.features[0].features.forEach((feature, fkey) => {
+          let value: JSX.Element = <span />;
+          if (feature.includedvalue) {
+            value = (
+              <div className="PextraHolder">
+                <div className="PIvalue">{feature.includedvalue}</div>
+                <div className="PEvalue">{feature.value}</div>
+              </div>
+            );
+          } else {
+            value = <div className="Pvalue">{feature.value}</div>;
+          }
+          featureArray.push(
+            <li key={fkey}>
+              <div className="Pcaption">{feature.precaption}</div>
+              {value}
+              <div className="Pcaption">{feature.aftercaption}</div>
+            </li>
+          );
+        });
+      }
+
+      priceBoxes.push(
+        <div key={key} onClick={() => this.buyApp(plan)} className="pricing-table">
+          <h2 className="pricing-table__header">- {plan.name} -</h2>
+          <h5 className="pricing-table__starting">starting at</h5>
+          <h3 className="pricing-table__price">${plan.price}</h3>
+          <a className="pricing-table__button">Subscribe Now!</a>
+          <ul className="pricing-table__list">{featureArray}</ul>
+        </div>
+      );
+    });
+
+    return <div className="price-table-wrapper">{priceBoxes}</div>;
+  }
+
   render() {
-    let cssClass = "full-working paddingPage";
+    let cssClass = "paddingPage";
     if (this.props.chat - open) {
       cssClass += " chat-open";
     }
@@ -734,7 +778,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
             </div>
           </div>
           <div className="planSectionHolder">
-            {this.props.product.fetchAppById.features.monthly &&
+            {/*this.props.product.fetchAppById.features.monthly &&
             this.props.product.fetchAppById.features.yearly ? (
               <div className="periodSwitch">
                 <span
@@ -750,13 +794,14 @@ class AppPage extends Component<AppPageProps, AppPageState> {
               </div>
             ) : (
               ""
-            )}
+            )*/}
             <div className="planHolder">
-              {this.showNewPlans(
+              {/*this.showNewPlans(
                 appDetails.features,
                 this.props.productPlans.fetchPlans,
                 this.state.numberEmployees
-              )}
+              )*/}
+              {this.showPrices(this.props.productPlans.fetchPlans)}
             </div>
           </div>
           <div className="detail-comments">

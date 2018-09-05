@@ -68,6 +68,8 @@ export const fetchPlans = gql`
         features
         name
         options
+        logo
+        icon
       }
       features
       name

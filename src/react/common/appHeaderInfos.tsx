@@ -31,15 +31,15 @@ class AppHeaderInfos extends React.Component<State> {
         <div className="appHeaderType">{this.props.appDetails.features.type}</div>
         <div className="appHeaderPriceHolder">
           <div className="appHeaderPriceText">
-            Buy for <small>(our recommendation)</small>
+            <small>Our recommendation for you</small>
           </div>
-          <ChooseDepartmentBox
+          {/*<ChooseDepartmentBox
             departments={this.props.departmentsdata.fetchDepartmentsData}
             showHolder={this.state.showRecord}
             chosenDepartment={this.state.chosenDepartment}
             changeShowHolder={this.changeShowHolder}
             handleOutside={() => this.setState({ showRecord: 0 })}
-          />
+          />*/}
           {/*<div className="appHeaderSelectDepartment">
             <span className="appHeaderSelectDepartmentText">
               everyone at Vipfy<span className="fas fa-caret-down caretApp" />
@@ -60,19 +60,11 @@ class AppHeaderInfos extends React.Component<State> {
           />
           <div
             className="appHeaderBuyButton"
-            onClick={() =>
-              this.props.buyApp(
-                [this.props.allPlans[this.state.chosenPlan]],
-                this.props.departmentsdata.fetchDepartmentsData[this.state.chosenDepartment]
-              )
-            }>
-            Subscribe now for $
-            {calculatepartsum(
-              this.props.allPlans[this.state.chosenPlan],
-              0,
-              this.props.numberEmployees
-            ).toFixed(2)}{" "}
-            p.m.
+            onClick={() => this.props.buyApp(this.props.allPlans[this.state.chosenPlan])}>
+            {console.log("PRICE", this.props.allPlans[this.state.chosenPlan].price)}
+            {this.props.allPlans[this.state.chosenPlan].price == 0
+              ? "Start for free!"
+              : `Starting at $${this.props.allPlans[this.state.chosenPlan].price}/mo`}
           </div>
         </div>
       </div>
