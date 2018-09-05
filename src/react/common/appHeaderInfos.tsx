@@ -61,7 +61,7 @@ class AppHeaderInfos extends React.Component<State> {
           <div
             className="appHeaderBuyButton"
             onClick={() => this.props.buyApp(this.props.allPlans[this.state.chosenPlan])}>
-            {console.log("PRICE", this.props.allPlans[this.state.chosenPlan].price)}
+            {console.log("PRICE", this.props.allPlans)}
             {this.props.allPlans[this.state.chosenPlan].price == 0
               ? "Start for free!"
               : `Starting at $${this.props.allPlans[this.state.chosenPlan].price}/mo`}

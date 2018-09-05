@@ -658,7 +658,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
 
       let featureArray: JSX.Element[] = [];
 
-      if (plan.features) {
+      if (plan.features && plan.features[0].features) {
         plan.features[0].features.forEach((feature, fkey) => {
           let value: JSX.Element = <span />;
           if (feature.includedvalue) {
