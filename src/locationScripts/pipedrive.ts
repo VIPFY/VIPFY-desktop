@@ -1,6 +1,13 @@
 import { ipcRenderer } from "electron";
 import { con, todoPath, hideByQuery, redirectLinks, redirectLinksByQuery, support, supportKeyCode } from "./utils/util";
 
+
+let hideKeyArray: Array<string> = ["#username", 'input[name="user[email]"]', "#email"];
+let hideHRefArray: Array<string> = ['#email-sync"]', '/settings/calendar-sync"]', '#gsync"]', '#files"]', '#mailchimp"]',
+  '#password"]', '/settings/login-verification"]', '/users/add"]', '/settings/users"]', '/settings/users"]', '/mail"]',
+   '/auth/logout"]', '/users/index"]', '/settings/invites"]', '/settings/change_billing"]', '/settings/billing"]', '/settings/sso"]' ];
+
+
 module.exports = function() {
   window.addEventListener("DOMContentLoaded", onReady);
   window.addEventListener("load", onLoad);
@@ -40,66 +47,34 @@ function modifyAll() {
     // TODO something does not work on some sites with this link   href="vipfy://marketplace/4/changeplan/"
     redirectLinksByQuery("a.tierChangeStandaloneModal", "vipfy://marketplace/4/changeplan/");
     redirectLinks("#dialog/tier-plan-standalone", "vipfy://marketplace/4/changeplan/");
+    //hide upgrade plan if redirect is impossible
+    hideByQuery('a[data-tracking-component-code="upgradePlan_link"]', true);
+
+    hideByQuery('div[class="iamClient__GettingStartedV2 iamClient__GettingStartedV2--open iam___Sidebar___3k0hd3k0 iam___GSPanel___1VdeC1Vd"]', true);
 
    //Settings
     //hide user settings
-    hideByQuery("#username", true);
-    hideByQuery('input[name="user[email]"]', true);
-    hideByQuery("#email", true);
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('#google"]')), true);
-    hideByQuery('a[href="#google"]', true);
+    for (let entry of hideKeyArray) {
+      console.log("hide: " + entry); // 1, "string", false
+      hideByQuery(entry, true);
+    }
 
-    //hide connections
+    //hide administration, navigation
+    //hide menu
+    //hide billing
+    for (let entry of hideHRefArray) {
+      console.log("hide: " + entry); // 1, "string", false
+      hideByQuery('a[href="https://'.concat(window.location.host.concat(entry)), true);
+      hideByQuery('a[href="' + entry, true);
+    }
+    /*/hide connections
     //hide Space TODO hideByQuery('<div class="vertical-nav__item vertical-nav__item--category">                  Verbindungen                </div>', false);
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('#email-sync"]')), true);
-    hideByQuery('a[href="#email-sync"]', true);
-
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('/settings/calendar-sync"]')), true);
-    hideByQuery('a[href="/settings/calendar-sync"]', true);
-
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('#gsync"]')), true);
-    hideByQuery('a[href="#gsync"]', true);
-
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('#files"]')), true);
-    hideByQuery('a[href="#files"]', true);
-
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('#mailchimp"]')), true);
-    hideByQuery('a[href="#mailchimp"]', true);
 
     //hide security
     //hide space TODO hideByQuery('<div class="vertical-nav__item vertical-nav__item--category">                  Einstellungen               </div>', true);
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('#password"]')), true);
-    hideByQuery('a[href="#password"]', true);
 
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('/settings/login-verification"]')), true);
-    hideByQuery('a[href="/settings/login-verification"]', true);
 
-    //administration
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('/users/add"]')), true);
-    hideByQuery('a[href="/users/add"]', true);
 
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('/settings/users"]')), true);
-    hideByQuery('a[href="/settings/users"]', true);
-
-   //hide navigation
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('/mail"]')), true);
-    hideByQuery('a[href="/mail"]', true);
-
-   //hide menu
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('/auth/logout"]')), true);
-    hideByQuery('a[href="/auth/logout"]', true);
-
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('/users/index"]')), true);
-    hideByQuery('a[href="/users/index"]', true);
-
-    hideByQuery('a[href="https://'.concat(window.location.host.concat('/settings/invites"]')), true);
-    hideByQuery('a[href="/settings/invites"]', true);
-
-    hideByQuery('a[href="/settings/change_billing"]', true);
-    hideByQuery('a[href="/settings/billing"]', true);
-    hideByQuery('a[href="/settings/sso"]', true);
-    //hide upgrade plan if redirect is impossible
-    hideByQuery('a[data-tracking-component-code="upgradePlan_link"]', true);
    }
 }
 
