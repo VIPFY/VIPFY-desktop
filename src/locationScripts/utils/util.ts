@@ -33,8 +33,17 @@ export function deleteElement(selector: string): void {
   element.parentNode.removeChild(element);
 }
 
-export function supportKeyCode(event) {
+/*export function supportKeyCode(event) {
     //TODO add event listener for F10 to disable hidden fields and redirects
     let key = event.which || event.keyCode;
     if (key==121) { support = !support; }
+
 }
+
+class EventHandler {
+    static RegisterKeyPress(input: string){
+        document.getElementById(input).addListener("keypress", (e: KeyboardEvent) =>{
+           supportKeyCode(e.keyCode);
+        }
+    }
+}*/
