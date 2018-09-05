@@ -180,7 +180,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       "^https://app.pipedrive.com/auth/login",
       "^https://www.wrike.com/login",
       "^https://www.weebly.com/login",
-      "^https://login.domaindiscount24.com/(login|dashboard)"
+      "^https://login.domaindiscount24.com/(login|dashboard)",
+      "^https://.*?sendgrid.com/login"
     ];
     let loginPageRegex = loginPages.join("|");
 
