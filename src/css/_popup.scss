@@ -16,7 +16,7 @@ $modal-wh: 50%;
 
 #popup {
   background-color: #fff;
-  height: $modal-wh;
+  min-height: $modal-wh;
   position: relative;
   width: $modal-wh;
   border-radius: 3px;

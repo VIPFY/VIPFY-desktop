@@ -5,13 +5,16 @@ import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { AppContext } from "../common/functions";
 import WebView = require("react-electron-web-view");
+import CreditCard from "../components/CreditCard";
 
 class CheckOrder extends Component {
   state = {
     tosOpen: false,
     ppOpen: false,
     agreement: false,
-    agreementError: false
+    agreementError: false,
+    featurenumbers: [],
+    totalprice: null
   };
 
   openExternal(url) {
@@ -22,7 +25,141 @@ class CheckOrder extends Component {
     this.props.handleOutside();
   };
 
-  showProductInfos(plan) {
+  changeOption(index, value, plan) {
+    console.log("VALUE", index, value);
+    console.log("FNB", this.state.featurenumbers);
+    let fn = this.state.featurenumbers;
+    fn[index] = value;
+    this.setState({ featurenumbers: fn });
+    console.log("FNA", this.state.featurenumbers);
+    this.calculateTotalPrice(plan, this.state.featurenumbers)
+  }
+
+  showaddedprice(index, price, amountper, includedamount) {
+    console.log("SAP", index, price, amountper, includedamount, this.state.featurenumbers);
+    if (!this.state.featurenumbers[index]) {
+      return <div className="addedprice">Included</div>;
+    } else if (this.state.featurenumbers[index] <= includedamount) {
+      return <div className="addedprice">Included</div>;
+    } else {
+      let amount = Math.ceil((this.state.featurenumbers[index] - includedamount) / amountper);
+      let addedprice = amount * price;
+      return (
+        <div className="addedprice">
+          ${addedprice}
+          /month
+        </div>
+      );
+    }
+  }
+
+  calculateTotalPrice(plan, featurenumbers) {
+    let totalamount = plan.price;
+    let index = 0;
+
+    if (plan.features && plan.features[0].features) {
+      plan.features[0].features.forEach(feature => {
+        if (feature.addable) {
+          if (this.state.featurenumbers && this.state.featurenumbers[index]) {
+            let amount = Math.ceil(
+              (this.state.featurenumbers[index] - feature.number) / feature.amountper
+            );
+            console.log("AMOUNT", index, amount);
+            let addedprice = amount * feature.price;
+            totalamount += addedprice;
+          }
+          index++;
+        }
+      });
+      this.setState({totalprice: totalamount})
+    }
+  }
+
+  showOrder(plan) {
+    let featureArray: JSX.Element[] = [];
+    let boption = false;
+    let index = 0;
+
+    if (plan.features && plan.features[0].features) {
+      plan.features[0].features.forEach((feature, fkey) => {
+        if (feature.addable) {
+          boption = true;
+          let i = index;
+          let value: JSX.Element = <span />;
+          if (feature.includedvalue) {
+            value = <div className="Pvalue">{feature.number}</div>;
+          } else {
+            value = <div className="Pvalue">{feature.value}</div>;
+          }
+          console.log("FNI", index, this.state.featurenumbers[index]);
+          featureArray.push(
+            <li key={fkey}>
+              <div>
+                <div className="Pcaption">{feature.precaption}</div>
+                <input
+                  className="inputNew"
+                  value={this.state.featurenumbers[i] || feature.number}
+                  onChange={e => this.changeOption(i, e.target.value, plan)}
+                />
+                <div className="Pcaption">{feature.aftercaption}</div>
+              </div>
+              {this.showaddedprice(i, feature.price, feature.amountper, feature.number)}
+            </li>
+          );
+          index++;
+        }
+      });
+    }
+
+    return (
+      <div className="orderSelect">
+        <div className="OHeading">
+          <div>
+            {this.props.plan.name}
+            -Plan of {this.props.plan.appid.name}
+          </div>
+          {this.props.plan.price == 0 ? (
+            <div className="addedprice">Free</div>
+          ) : (
+            <div className="addedprice">
+              ${this.props.plan.price}
+              /month
+            </div>
+          )}
+        </div>
+        {boption ? <div className="OOptions">Options</div> : ""}
+        <ul className="featureBuy">{featureArray}</ul>
+        <div className="totalprice">
+          ${this.state.totalprice || plan.price}
+          /month
+        </div>
+      </div>
+    );
+  }
+
+  showProductInfos(featurenumbers, plan) {
+    let featureArray: JSX.Element[] = [];
+    let index = 0;
+
+    if (plan.features && plan.features[0].features) {
+      plan.features[0].features.forEach((feature, fkey) => {
+        let value: JSX.Element = <span />;
+        if (feature.addable) {
+          value = <div className="Pvalue">{featurenumbers[index] || feature.number}</div>;
+          index++;
+        } else {
+          value = <div className="Pvalue">{feature.value}</div>;
+        }
+        featureArray.push(
+          <li key={fkey}>
+            <div className="Pcaption">{feature.precaption}</div>
+            {value}
+            <div className="Pcaption">{feature.aftercaption}</div>
+          </li>
+        );
+      });
+    }
+
     return (
       <div className="productInfoHolder">
         <div className="productIcon">
@@ -33,6 +170,7 @@ class CheckOrder extends Component {
         </div>
         <div className="productAppName">{plan.appid.name}</div>
         <div className="productPlanName">{plan.name}</div>
+        <ul className="featureList">{featureArray}</ul>
       </div>
     );
   }
@@ -107,10 +245,24 @@ class CheckOrder extends Component {
     }
   }
 
-  accept(id) {
+  accept(plan) {
     if (this.state.agreement) {
       this.setState({ agreementError: false });
-      this.props.acceptFunction(id);
+      let index = 0;
+      let featureoptions = {}
+      if (plan.features && plan.features[0].features) {
+        plan.features[0].features.forEach(feature => {
+          if (feature.addable) {
+            featureoptions[feature.key] = {amount: Math.ceil(
+              (this.state.featurenumbers[index]||feature.number - feature.number) / feature.amountper
+            ), value: this.state.featurenumbers[index]||feature.number}
+            index++;
+          }
+        })
+      }
+      console.log("FO", plan.id, featureoptions, this.state.totalprice|| plan.price, {})
+
+      this.props.acceptFunction(plan.id, featureoptions, this.state.totalprice || plan.price, {});
     } else {
       this.setState({ agreementError: true });
     }
@@ -122,9 +274,11 @@ class CheckOrder extends Component {
       <AppContext.Consumer>
         {value => (
           <div className="checkOrderHolder">
-            <div className="checkOrderFeatures">{this.showProductInfos(this.props.plan)}</div>
+            <div className="checkOrderFeatures">
+              {this.showProductInfos(this.state.featurenumbers, this.props.plan)}
+            </div>
             {console.log("CONSUMER", value)}
-            <div>
+            <div className="checkOrderMain">
               <div className="checkOrderHolderPart">
                 <Query
                   query={gql`
@@ -167,26 +321,27 @@ class CheckOrder extends Component {
                           ) : (
                             "Myself"
                           )}
-                          <div className="orderAddressHolder">
-                            <div className="orderAddressLine">
-                              {data.fetchBillingAddresses[0].address.street}
+                          <div className="orderInformationHolder">
+                            <div className="orderAddressHolder">
+                              <div className="orderAddressLine">
+                                {data.fetchBillingAddresses[0].address.street}
+                              </div>
+                              <div className="orderAddressLine">
+                                {data.fetchBillingAddresses[0].address.city}
+                              </div>
+                              <div className="orderAddressLine">
+                                {data.fetchBillingAddresses[0].address.zip}
+                              </div>
+                              <div className="changeInformation">
+                                <span>Change Address</span><span>Change Payment</div>
+                              </div>
                             </div>
-                            <div className="orderAddressLine">
-                              {data.fetchBillingAddresses[0].address.city}
-                            </div>
-                            <div className="orderAddressLine">
-                              {data.fetchBillingAddresses[0].address.zip}
+                            <div className="orderCardHolder">
+                            {data.fetchPaymentData?
+                              <CreditCard {data.fetchPaymentData[0]} />: ""}
                             </div>
                           </div>
-                          <div className="orderPlanOverview">
-                            Select Department
-                            {console.log("data", this.props.plan)}
-                          </div>
-                          <div>
-                            {/*data.fetchBillingAddresses[0].unitid.payingoptions[0].cardnumber*/}
-                            <span>{data.fetchPaymentData[0].name}</span>
-                            <span>{data.fetchPaymentData[0].last4}</span>
-                          </div>
+                          {this.showOrder(this.props.plan)}
                         </div>
                       );
                     } else {
@@ -194,12 +349,6 @@ class CheckOrder extends Component {
                     }
                   }}
                 </Query>
-              </div>
-              <div className="checkOrderHolderPart">
-                Buy for everyone in{" "}
-                {/*this.props.selecteddepartment.department
-                  ? this.props.selecteddepartment.department.name
-                : this.props.selecteddepartment*/}
               </div>
               <div className="checkOrderHolderLawBox">
                 {this.props.plan.appid.options ? (
@@ -220,7 +369,7 @@ class CheckOrder extends Component {
                         </svg>
                       </label>
                       <span className="agreementSentence">
-                        I agree to the above conditions and to our Terms of Service and Privacy
+                        I agree to the above third party agreements and to our Terms of Service and Privacy
                         agreement regarding {this.props.plan.appid.name}
                       </span>
                       {this.state.agreementError ? (
@@ -229,8 +378,6 @@ class CheckOrder extends Component {
                         ""
                       )}
                     </div>
-                    {/*this.showagb(this.props.plans[0].appid.options)*/}
-                    {/*this.showprivacy(this.props.plans[0].appid.options)*/}
                   </div>
                 ) : (
                   ""
@@ -240,7 +387,7 @@ class CheckOrder extends Component {
                 <button className="cancelButton" onClick={() => this.props.onClose()}>
                   Cancel
                 </button>
-                <button className="checkoutButton" onClick={() => this.accept(this.props.plan.id)}>
+                <button className="checkoutButton" onClick={() => this.accept(this.props.plan)}>
                   Checkout
                 </button>
               </div>

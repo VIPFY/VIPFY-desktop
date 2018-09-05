@@ -66,11 +66,11 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     });
   };
 
-  buyAppAccepted = async (planIds, options) => {
-    console.log("ACBuy", planIds, options);
+  buyAppAccepted = async (planId, features, price, planinputs) => {
+    console.log("ACBuy", planId, features, price, planinputs);
     try {
       await this.props.buyPlan({
-        variables: { planIds, options },
+        variables: { planId, features, price, planinputs },
         refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
       });
       this.props.history.push("/area/dashboard");
