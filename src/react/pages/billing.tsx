@@ -10,7 +10,7 @@ import StripeForm from "../components/StripeForm";
 import Popup from "../components/Popup";
 
 import { ErrorComp } from "../common/functions";
-import { fetchBills, fetchCards } from "../queries/billing";
+import { fetchBills, fetchCards, fetchBillingAddresses } from "../queries/billing";
 import { downloadBill } from "../mutations/billing";
 
 interface Props {}
@@ -59,9 +59,7 @@ class Billing extends React.Component<Props, State> {
     let i = 0;
     if (bills) {
       bills.forEach(bill => {
-        {
           console.log("BillId", bill);
-        }
         if (bill) {
         billsArray.push(
           <div className="billItem" onClick={() => this.downloadBill(bill.id)} key={`bill-${i}`}>
@@ -78,23 +76,25 @@ class Billing extends React.Component<Props, State> {
   }
 
   render() {
-    const { cards, bills } = this.props;
+    const { cards, bills, addresses } = this.props;
     console.log("Billing", cards, bills);
     if !(cards || bills) {
       return <div>No Billing Data to find</div>;
     }
 
-    if (cards.loading || bills.loading) {
+    if (cards.loading || bills.loading || addresses.loading) {
       return <LoadingDiv text="Fetching bills..." />;
     }
 
     const paymentData = cards.fetchPaymentData;
+    const billingAddress = addresses.fetchBillingAddresses[0]
     let mainCard
+
     if (paymentData.length > 0) {
       const normalizedCards = paymentData.map(card => card);
       mainCard = normalizedCards.shift();
     }
-
+console.log("props", this.props)
     return (
       <div className="dashboard-working">
         <div className="currentPaymentHolder">
@@ -128,10 +128,10 @@ class Billing extends React.Component<Props, State> {
           <div className="paymentDataHolder">
             <div className="paymentDataAddress">
               <label className="paymentAddressLabel">Current Payment Address</label>
-              <span className="paymentAddressName">Vipfy GMBH</span>
-              <span className="paymentAddressStreet">Vipfy Street 2</span>
-              <span className="paymentAddressCity">123456 Saarbruecken, Germany</span>
-              <span className="paymentAddressEMail">e-mail: email@example.com</span>
+              <span className="paymentAddressName">{this.props.company.name}</span>
+              <span className="paymentAddressStreet">{billingAddress.address.street}</span>
+              <span className="paymentAddressCity">{`${billingAddress.address.zip} ${billingAddress.address.city}, ${billingAddress.country}`}</span>
+              <span className="paymentAddressEMail">{`e-mail: ${this.props.emails[0].email}`}</span>
               <span className="paymentAddressPhone">phone: (+49) 012 123456789</span>
             </div>
           </div>
@@ -149,6 +149,7 @@ class Billing extends React.Component<Props, State> {
             </button>
           </div>
         </div>
+
         <div className="historyPaymentHolder">
           <div className="billingStreamChart">
             <span className="paymentHistoryHeader">Payment History</span>
@@ -156,7 +157,9 @@ class Billing extends React.Component<Props, State> {
           </div>
           <div className="billingHistoryInvoices">
             <span className="paymentHistoryHeader">History of invoices</span>
-            <div className="billsHolder">{/*this.showBills(bills.fetchBills)*/}</div>
+            <div className="billsHolder">
+              {bills.fetchBills.length > 0 ?this.showBills(bills.fetchBills): "No Invoices yet"}
+            </div>
           </div>
         </div>
 
@@ -184,5 +187,8 @@ export default compose(
   }),
   graphql(fetchCards, {
     name: "cards"
-  })
+  }),
+graphql(fetchBillingAddresses, {
+  name: "addresses"
+})
 )(Billing);

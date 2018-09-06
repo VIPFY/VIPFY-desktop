@@ -22,3 +22,16 @@ export const fetchCards = gql`
     }
   }
 `;
+
+export const fetchBillingAddresses = gql`
+  query {
+    fetchBillingAddresses {
+      id
+      address
+      country
+      description
+      priority
+      tags
+    }
+  }
+`;
