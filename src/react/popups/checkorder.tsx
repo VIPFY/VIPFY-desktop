@@ -1,12 +1,11 @@
 import * as React from "react";
-import { Component } from "react";
 
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { AppContext } from "../common/functions";
 import WebView = require("react-electron-web-view");
 
-class CheckOrder extends Component {
+class CheckOrder extends React.Component {
   state = {
     tosOpen: false,
     ppOpen: false,
@@ -152,15 +151,15 @@ class CheckOrder extends Component {
                       return "Fetching invoice data...";
                     }
                     if (error) {
-                      return "Error loading messages";
+                      return "Error loading Billing Data";
                     }
 
                     console.log("RETURN BILLING A", data, value);
-                    if (data.fetchBillingAddresses) {
+                    if (data.fetchBillingAddresses && data.fetchBillingAddresses.length >= 1) {
                       return (
                         <div>
                           <div className="orderHeading">
-                            I ({value.firstname} {value.lastname}) order in behalf of:
+                            I ({`${value.firstname} ${value.lastname}`}) order in behalf of:
                           </div>
                           {value.company ? (
                             <div className="orderCompanyName">{value.company.name}</div>
@@ -184,13 +183,19 @@ class CheckOrder extends Component {
                           </div>
                           <div>
                             {/*data.fetchBillingAddresses[0].unitid.payingoptions[0].cardnumber*/}
-                            <span>{data.fetchPaymentData[0].name}</span>
-                            <span>{data.fetchPaymentData[0].last4}</span>
+                            {data.fetchPaymentData.length > 0 ? (
+                              <div>
+                                <span>{data.fetchPaymentData[0].name}</span>
+                                <span>{data.fetchPaymentData[0].last4}</span>
+                              </div>
+                            ) : (
+                              <div>Please add a Card to your Account</div>
+                            )}
                           </div>
                         </div>
                       );
                     } else {
-                      return <div>PLEASE ADD BILLING ADDRESS</div>;
+                      return <div>PLEASE ADD A BILLING ADDRESS</div>;
                     }
                   }}
                 </Query>

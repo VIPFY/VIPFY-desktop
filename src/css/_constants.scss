@@ -2,9 +2,13 @@ $app-logo:                  url('../images/logo-full-aaa-ai.svg');
 $sidebar-background:        #333;
 $sidebar-width:             15em;
 $fullworking-background:    #f5f5f5;
-$vipfy-red: #c1272d;
-$feedback: rgba(#c1272d, 0.57);
-$hover: #88221a;
+$vipfy-primary-color: #117f91;
+$vipfy-primary: linear-gradient(to right, #20baa9 0%, #117f91 100%);
+$vipfy-secondary: linear-gradient(to right, #c73544 0%, #991b78 100%);
+$feedback: rgba(#20baa9, 0.57);
+$feedback-secondary: rgba(#c73544, 0.57);
+$hover: #117f91;
+$hover-secondary: #991b78;
 $deleted-color: #b5a0a7;
 
 @mixin flex-system($align, $justify) {
@@ -15,7 +19,7 @@ $deleted-color: #b5a0a7;
 
 @mixin vipfy-button($padding: 0) {
   @include flex-system(center, center)
-  background: $vipfy-red;
+  background: $vipfy-primary;
   border: 0;
   color: #eee;
   cursor: pointer;
@@ -37,7 +41,7 @@ $deleted-color: #b5a0a7;
 }
 
 @mixin generic-button($color, $color-hover, $color-fb) {
-  background-color: $color;
+  background: $color;
   border: 0;
   color: #fff;
   cursor: pointer;

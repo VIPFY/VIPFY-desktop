@@ -13,39 +13,12 @@ import { QUERY_USER } from "../queries/user";
  * @returns {JSX.Element}
  */
 export default function UserPicture(props: { unitid: number | null; size: string }): JSX.Element {
-  const { unitid, size } = props;
-  let style = {};
-  if (size == "inline") {
-    style = {
-      height: "1em",
-      width: "1em",
-      marginRight: "0.2em",
-      borderRadius: "0.5em",
-      backgroundColor: "#eee"
-    };
-  } else if (size == "twolines") {
-    style = {
-      height: "2em",
-      width: "2em",
-      marginRight: "0.5em",
-      borderRadius: "1em",
-      backgroundColor: "#eee"
-    };
-  } else if (size == "tiny") {
-    style = {
-      height: "0.5rem",
-      width: "0.5rem",
-      borderRadius: "0.25rem",
-      backgroundColor: "#eee"
-    };
-  }
-
-  if (unitid === null || unitid === undefined) {
+  if (props.unitid === null || props.unitid === undefined) {
     return <span />;
   }
 
   return (
-    <Query query={QUERY_USER} variables={{ userid: unitid }}>
+    <Query query={QUERY_USER} variables={{ userid: props.unitid }}>
       {({ loading, error, data }) => {
         if (loading) {
           return <span />;
@@ -59,7 +32,7 @@ export default function UserPicture(props: { unitid: number | null; size: string
           ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
             user.profilepicture
           : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
-        return <img src={picture} style={style} />;
+        return <img src={picture} className={props.size} />;
       }}
     </Query>
   );

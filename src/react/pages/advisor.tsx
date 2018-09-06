@@ -25,7 +25,7 @@ const updateStatisticData = gql`
   }
 `;
 
-const createAdress = gql`
+const createAddress = gql`
 mutation createAddress($addressData: AddressInput!, $department: Boolean) {
   createAddress(addressData: $addressData, department: $department) {
     ok
@@ -1302,7 +1302,7 @@ export default compose(
   graphql(updateUser, {
     name: "uU"
   }),
-  graphql(createAdress, {
+  graphql(createAddress, {
     name: "cA"
   })
 )(Advisor);

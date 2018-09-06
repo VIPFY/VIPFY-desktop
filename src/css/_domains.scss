@@ -1,4 +1,4 @@
-$text-width: 100%;
+$text-width: 5rem;
 
 #domains {
   display: flex;
@@ -10,7 +10,7 @@ $text-width: 100%;
 .register-domain {
   @include vipfy-button(5px);
   align-self: flex-end;
-  max-width: 130px;
+  max-width: 8rem;
   min-height: 26px;
 }
 
@@ -25,7 +25,7 @@ $text-width: 100%;
 }
 
 .domain-header {
-  @include flex-system(center, space-around)
+  @include flex-system(center, space-between)
   background-color: #ffeedb;
   border-bottom: 2px solid #e0e0e0;
   font-weight: bold;
@@ -38,6 +38,7 @@ $text-width: 100%;
 
     &:first-child {
       min-width: 120px;
+      padding-left: 0;
 
       &:hover {
         overflow: visible;
@@ -59,20 +60,18 @@ $text-width: 100%;
 }
 
 .domain-item {
-  max-width: 170px;
   overflow: hidden;
   padding-left: 10px;
   padding-right: 10px;
   text-overflow: ellipsis;
   width: $text-width;
 
-  &-item-icon {
+  &-icon {
     @extend .domain-item;
     cursor: pointer;
     text-align: center;
   }
 }
-
 
 @media(max-width: 1080px) {
   .domain-table {

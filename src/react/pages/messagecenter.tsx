@@ -7,6 +7,7 @@ import ConversationList from "../components/message-center/ConversationList";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
 
+import { QUERY_GROUPS } from "../components/message-center/common";
 import { filterError, concatName } from "../common/functions";
 
 interface Props {
@@ -51,11 +52,13 @@ class MessageCenter extends React.Component<Props> {
     });
 
     try {
-      const group = await this.props.startConversation({
-        variables: { receiver, defaultrights }
+      const res = await this.props.startConversation({
+        variables: { receiver, defaultrights },
+        refetchQueries: [{ query: QUERY_GROUPS }]
       });
-      console.log(group);
-      this.props.moveTo(`/area/messagecenter/${group.id}`);
+      const { id } = res.data.startConversation.messagegroup;
+
+      this.props.moveTo(`/area/messagecenter/${id}`);
     } catch (err) {
       return err;
     }

@@ -30,9 +30,13 @@
     }
 
     &-item {
-      width: 200px;
+      width: 100%;
       display: flex;
       padding-bottom: 10px;
+
+      &:hover {
+        background: $vipfy-primary;
+      }
 
       &-heading {
         font-weight: 600;
@@ -117,9 +121,32 @@
   padding: 5px;
 }
 
+.tiny {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: #eee;
+}
+
+.inline {
+  height: 1em;
+  width: 1em;
+  margin-right: 0.2em;
+  border-radius: 0.5em;
+  background-color: #eee;
+ }
+
+.twolines {
+  height: 2em;
+  width: 2em;
+  border-radius: 1em;
+  background-color: #eee;
+}
+
 .name-holder {
   display: flex;
   flex-direction: column;
+  margin-left: 0.5rem;
 }
 
 .user-name {

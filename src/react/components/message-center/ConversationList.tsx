@@ -46,6 +46,7 @@ export default (props: { userid: number }): JSX.Element => {
                   <span>, </span>
                 )
               );
+              const date = group.foundingdate ? new Date(group.foundingdate) : null;
 
               const picture: string = group.image
                 ? group.image
@@ -63,6 +64,7 @@ export default (props: { userid: number }): JSX.Element => {
                     <div>
                       <div className="conversation-list-item-heading">{groupname}</div>
                       <div className="conversation-list-item-text">
+                        <div className="date">{date ? date.toUTCString() : ""}</div>
                         <InlineUser
                           {...props}
                           unitid={

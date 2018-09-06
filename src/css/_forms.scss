@@ -6,13 +6,17 @@
 }
 
 .generic-dropdown {
-  background: $vipfy-red;
+  background: $vipfy-primary;
   border: 0;
   color: #fff;
   margin-left: 1em;
   outline: none;
   padding: 5px 0;
   width: 30%;
+
+  option {
+    color: $vipfy-primary-color;
+  }
 }
 
 .generic-input-buttons {
@@ -48,15 +52,15 @@
 
 .generic-async-success {
   @extend .generic-async-error;
-  color: green;
+  color: $vipfy-primary;
 }
 
 .generic-cancel {
-  @include generic-button($vipfy-red, $hover, $feedback)
+  @include generic-button($vipfy-secondary, $hover-secondary, $feedback-secondary)
 }
 
 .generic-submit {
-  @include generic-button(rgb(97, 203, 40), rgb(21, 107, 30), rgb(137, 230, 100))
+  @include generic-button($vipfy-primary, $hover, $feedback)
 }
 
 .generic-submitting {

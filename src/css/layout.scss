@@ -18,7 +18,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: lighten($vipfy-red, 10);
+  background: $vipfy-primary;
   outline: 1px solid slategrey;
   border-radius: 10px;
 }
@@ -979,7 +979,7 @@ label {
   }
 
   &:active {
-    background: lighten($vipfy-red, 20);
+    background: $vipfy-primary;
   }
 }
 

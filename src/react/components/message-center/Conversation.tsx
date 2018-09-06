@@ -151,6 +151,7 @@ class Conversation extends React.Component<Props, State> {
               .reverse()
               .map(message => {
                 const isMe = message.sender && message.sender.id == this.props.userid;
+                const date = message.sendtime ? new Date(message.sendtime) : null;
 
                 return (
                   <li className="conversation-list-main-item" key={"conversationKey" + message.id}>
@@ -164,12 +165,14 @@ class Conversation extends React.Component<Props, State> {
                       />
 
                       <div className="name-holder">
-                        <UserName
-                          {...this.props}
-                          sendtime={message.sendtime}
-                          unitid={message.sender ? message.sender.id : undefined}
-                          short={true}
-                        />
+                        <span>
+                          <UserName
+                            {...this.props}
+                            unitid={message.sender ? message.sender.id : undefined}
+                            short={true}
+                          />&nbsp;
+                          <span className="date">{date ? date.toUTCString() : ""}</span>
+                        </span>
                         <Message {...this.props} message={message} />
                       </div>
                     </div>
