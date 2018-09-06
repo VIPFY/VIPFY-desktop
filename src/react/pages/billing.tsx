@@ -60,8 +60,9 @@ class Billing extends React.Component<Props, State> {
     if (bills) {
       bills.forEach(bill => {
         {
-          console.log(bill.id);
+          console.log("BillId", bill);
         }
+        if (bill) {
         billsArray.push(
           <div className="billItem" onClick={() => this.downloadBill(bill.id)} key={`bill-${i}`}>
             <div className="billTimeDiv">{bill.billtime}</div>
@@ -69,6 +70,7 @@ class Billing extends React.Component<Props, State> {
           </div>
         );
         i++;
+      }
       });
     }
 
@@ -78,7 +80,7 @@ class Billing extends React.Component<Props, State> {
   render() {
     const { cards, bills } = this.props;
     console.log("Billing", cards, bills);
-    if (cards || bills) {
+    if !(cards || bills) {
       return <div>No Billing Data to find</div>;
     }
 
@@ -87,8 +89,8 @@ class Billing extends React.Component<Props, State> {
     }
 
     const paymentData = cards.fetchPaymentData;
-    let mainCard = [];
-    if (paymentData) {
+    let mainCard
+    if (paymentData.length > 0) {
       const normalizedCards = paymentData.map(card => card);
       mainCard = normalizedCards.shift();
     }
@@ -106,7 +108,7 @@ class Billing extends React.Component<Props, State> {
           <div className="paymentDataHolder">
             <div className="paymentDataCard">
               <label className="paymentCreditCardLabel">Current Credit Card</label>
-              <CreditCard {...mainCard} />
+              {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
               <div className="credit-card-change-button">
                 <button
                   className="payment-data-change-button"
@@ -154,7 +156,7 @@ class Billing extends React.Component<Props, State> {
           </div>
           <div className="billingHistoryInvoices">
             <span className="paymentHistoryHeader">History of invoices</span>
-            <div className="billsHolder">{this.showBills(bills.fetchBills)}</div>
+            <div className="billsHolder">{/*this.showBills(bills.fetchBills)*/}</div>
           </div>
         </div>
 

@@ -7,7 +7,7 @@
 @import './messages.scss';
 @import './profile.scss';
 
-::-webkit-scrollbar {
+/*::-webkit-scrollbar {
   width: 0.5em;
   background: #aaa;
 }
@@ -21,7 +21,7 @@
   background: $vipfy-primary;
   outline: 1px solid slategrey;
   border-radius: 10px;
-}
+}*/
 
 #App {
   color: #333;
@@ -1858,14 +1858,6 @@ option{
     padding: 0.25rem;
     background-color: white;
 }
-.checkOrderHolder{
-    display: grid;
-    grid-template-columns: 20% 75%;
-    margin: 1rem;
-    grid-column-gap: 5%;
-    height: calc(100% - 2rem);
-    position: relative;
-}
 .lawbox{
     overflow-y: scroll;
     height: 20rem;
@@ -1933,13 +1925,16 @@ option{
     transition-delay: 0.15s;
   }
   .lawlink{
-      cursor: pointer;
-      background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
-        margin: 0.5rem;
-    padding: 0.5rem;
+    cursor: pointer;
+    background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+    margin: 0.2rem;
+    padding: 0.2rem;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
     color: white;
     border-radius: 3px;
     display: inline-block;
+    font-size: 0.8rem;
   }
   .lawholder{
     margin-top: 1rem;
@@ -1958,11 +1953,6 @@ option{
   .agreementSentence{
     font-size: 0.8rem;
     margin-left: 0.4rem;
-  }
-  .checkOrderHolderButton{
-    position: absolute;
-    bottom: 0;
-    right: 0;
   }
   .checkoutButton{
     cursor: pointer;
@@ -2028,9 +2018,6 @@ option{
 }
 .orderAddressHolder{
     margin: 0.5rem;
-}
-.productAppName{
-    text-align: center;
 }
 h1{
     text-align: center;
@@ -2131,8 +2118,8 @@ h1{
           padding: 1rem;
           border-bottom: 1px solid #C8C8C8 ;
           list-style: none;
-          display: flex;
-          justify-content: center;
+          /*display: flex;
+          justify-content: center;*/
 
           &:last-child{
             border: none;
@@ -2154,7 +2141,7 @@ h1{
                 font-size: 0.9rem;
     font-weight: bold;
     position: relative;
-    top: -0.5rem;
+    top: -0.25rem;
               }
               .PEvalue{
                 font-size: 0.9rem;
@@ -2186,3 +2173,112 @@ h1{
       }
     }
   }
+  .checkOrderHolder{
+    display: grid;
+    grid-template-columns: 20% 75%;
+    margin: 1rem;
+    grid-column-gap: 5%;
+    height: calc(100% - 2rem);
+    position: relative;
+
+    .checkOrderFeatures{
+        .productInfoHolder{
+            text-align: center;
+
+            .productPlanName{
+                font-size: 0.9rem;
+                font-weight: bold;
+            }
+        }
+        .featureList{
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            
+            li{
+                margin-bottom: 0.5rem;
+            }
+
+            .Pvalue{
+                font-weight: bold;
+            }
+        }
+    }
+
+    .checkOrderMain{
+        position: relative;
+
+        .checkOrderHolderButton{
+            text-align: right;
+          }
+    }
+}
+
+.orderSelect{
+    border-top: 1px solid black;
+    padding-top: 0.5rem;
+
+    .OHeading{
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .OOptions{
+        margin-top: 0.5rem;
+        font-weight: bold;
+    }
+
+    .featureBuy{
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        
+        li{
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+
+            .Pcaption{
+                float: left;
+            }
+            .inputNew{
+                width: 4rem;
+                border: none;
+                border-bottom: 1px solid #20BAA9;
+                text-align: center;
+                font-family: 'Montserrat', sans-serif !important;
+                margin-left: 0.5rem;
+            }
+        }
+    }
+    .totalprice{
+        border-top: 1px solid black;
+        text-align: right;
+        padding-top: 0.25rem;
+        font-weight: bold;
+    }
+}
+.orderInformationHolder{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+.changeInformation{
+    span{
+        font-size: 0.7rem;
+        text-decoration: underline;
+        margin: 0.2rem;
+    }
+}
+.acceptLicenceHolder{
+    padding: 3rem;
+    .checkOrderHolderButton{
+        position: absolute;
+        right: 3rem;
+    }
+}

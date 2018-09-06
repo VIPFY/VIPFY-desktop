@@ -11,6 +11,12 @@ $hover: #117f91;
 $hover-secondary: #991b78;
 $deleted-color: #b5a0a7;
 
+$rccs-size: 10rem;
+$rccs-name-font-size: 0.8rem;
+$rccs-number-font-size: 0.8rem;
+$rccs-expiry-font-size:0.6rem;
+$rccs-valid-font-size: 0.4rem;
+
 @mixin flex-system($align, $justify) {
   align-items: $align;
   display: flex;

@@ -66,11 +66,11 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     });
   };
 
-  buyAppAccepted = async (planIds, options) => {
-    console.log("ACBuy", planIds, options);
+  buyAppAccepted = async (planid, features, price, planinputs) => {
+    console.log("ACBuy", planid, features, price, planinputs);
     try {
       await this.props.buyPlan({
-        variables: { planIds, options },
+        variables: { planid, features, price, planinputs },
         refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
       });
       this.props.history.push("/area/dashboard");
@@ -658,7 +658,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
 
       let featureArray: JSX.Element[] = [];
 
-      if (plan.features) {
+      if (plan.features && plan.features[0].features) {
         plan.features[0].features.forEach((feature, fkey) => {
           let value: JSX.Element = <span />;
           if (feature.includedvalue) {

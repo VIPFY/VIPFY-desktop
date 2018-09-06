@@ -7,6 +7,9 @@ import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 import LoadingDiv from "../components/LoadingDiv";
+import { STATUS_CODES } from "http";
+import Popup from "../components/Popup";
+import AcceptLicence from "../popups/acceptLicence";
 
 export type WebViewState = {
   setUrl: string;
@@ -54,7 +57,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       t: performance.now(),
       planId: props.app,
       previousPlanId: -1,
-      unitId: -1
+      unitId: -1,
+      popup: null
     };
   }
 
@@ -82,10 +86,37 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   componentDidUpdate(prevProps: WebViewProps, prevState: WebViewState) {
     if (this.state.previousPlanId !== this.state.planId) {
+      console.log("CHECK", this.state.previousPlanId, this.state.planId);
       // At this point, we're in the "commit" phase, so it's safe to load the new data.
       this.switchApp();
     }
   }
+
+  showPopup = type => {
+    this.setState({ popup: type });
+  };
+  closePopup = () => {
+    this.setState({ popup: null });
+  };
+
+  acceptFunction = async () => {
+    console.log("ACCEPTED LICENCE", this.state.planId)
+    try {
+    await this.props.client.mutate({
+      mutation: gql`mutation agreeToLicence($licenceid: ID!) {
+        agreeToLicence(licenceid: $licenceid) {
+          ok
+        }
+      }`,
+      variables: {licenceid: this.state.planId}
+    })
+    this.closePopup()
+    this.setState({previousPlanId: -1})
+    this.switchApp();
+  } catch (err) {
+    console.log(err)
+    }
+  };
 
   private async switchApp(): Promise<void> {
     console.log("switchApp", this.state.planId);
@@ -104,6 +135,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
               app: appid {
                 id,
                 loginurl
+                options
+                name
               }
             }
           }
@@ -113,17 +146,29 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         }
       }
       `,
-      networkPolicy: "network-only"
+      fetchPolicy: "network-only"
     });
     console.log("APP DATA", result);
     let licence = result.data.fetchLicences[0];
-
-    if (licence.disabled) {
+    if (!licence) { return }
+    if (licence && licence.disabled) {
       window.alert("This licence is disabled, you cannot use it");
-    } else if (!licence.agreed) {
-      window.alert(
+    } else if (licence && !licence.agreed) {
+      this.setState({
+        previousPlanId: this.state.planId
+      });
+
+      this.showPopup({
+        type: "Accept Licences",
+        id: this.state.planId
+        neededCheckIns: licence.boughtPlan.plan.app.options,
+        appname: licence.boughtPlan.plan.app.name
+        acceptFunction: this.acceptFunction,
+      });
+      return
+      /*window.alert(
         "You first have to agree to the licence terms. Unfortunately this isn't implemented yet"
-      );
+      );*/
     }
 
     if (licence.unit.id !== this.state.unitId) {
@@ -134,7 +179,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       });
     }
     let loginurl = licence.boughtPlan.plan.app.loginurl;
-    if (licence.key.loginurl) {
+    if (licence.key && licence.key.loginurl) {
       console.log(licence.key.loginurl);
       loginurl = licence.key.loginurl;
     }
@@ -180,7 +225,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       "^https://app.pipedrive.com/auth/login",
       "^https://www.wrike.com/login",
       "^https://www.weebly.com/login",
-      "^https://login.domaindiscount24.com/(login|dashboard)"
+      "^https://login.domaindiscount24.com/(login|dashboard)",
+      "^https://.*?sendgrid.com/login"
     ];
     let loginPageRegex = loginPages.join("|");
 
@@ -342,6 +388,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           onDialog={e => console.log("Dialog", e)}
           onIpcMessage={e => this.onIpcMessage(e)}
         />
+        {this.state.popup ? (
+          <Popup
+            popupHeader={this.state.popup.type}
+            popupBody={AcceptLicence}
+            bodyProps={this.state.popup}
+            onClose={this.closePopup}
+          />
+        ) : (
+          ""
+        )}
       </div>
     );
   }

@@ -64,7 +64,7 @@ class StripeBody extends React.Component<Props, State> {
     }
 
     this.setState({ submitting: true });
-    await addCard({ variables: { data: res.token, id: this.props.departmentid } });
+    await addCard({ variables: { data: token, id: this.props.departmentid } });
   };
 
   handleSuccess = data => {
