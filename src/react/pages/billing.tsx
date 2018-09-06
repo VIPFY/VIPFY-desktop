@@ -90,7 +90,7 @@ class Billing extends React.Component<Props, State> {
     const billingAddress = addresses.fetchBillingAddresses[0]
     let mainCard
 
-    if (paymentData.length > 0) {
+    if (paymentData && paymentData.length > 0) {
       const normalizedCards = paymentData.map(card => card);
       mainCard = normalizedCards.shift();
     }
@@ -126,14 +126,14 @@ console.log("props", this.props)
           </div>
 
           <div className="paymentDataHolder">
-            <div className="paymentDataAddress">
-              <label className="paymentAddressLabel">Current Payment Address</label>
+          { billingAddress ?   <div className="paymentDataAddress">
+            <label className="paymentAddressLabel">Current Payment Address</label>
               <span className="paymentAddressName">{this.props.company.name}</span>
               <span className="paymentAddressStreet">{billingAddress.address.street}</span>
               <span className="paymentAddressCity">{`${billingAddress.address.zip} ${billingAddress.address.city}, ${billingAddress.country}`}</span>
               <span className="paymentAddressEMail">{`e-mail: ${this.props.emails[0].email}`}</span>
               <span className="paymentAddressPhone">phone: (+49) 012 123456789</span>
-            </div>
+            </div>: "No address specified yet"}
           </div>
           <div className="paymentDataHolder">
             <button
@@ -158,7 +158,7 @@ console.log("props", this.props)
           <div className="billingHistoryInvoices">
             <span className="paymentHistoryHeader">History of invoices</span>
             <div className="billsHolder">
-              {bills.fetchBills.length > 0 ?this.showBills(bills.fetchBills): "No Invoices yet"}
+              {bills.fetchBills && bills.fetchBills.length > 0 ?this.showBills(bills.fetchBills): "No Invoices yet"}
             </div>
           </div>
         </div>
