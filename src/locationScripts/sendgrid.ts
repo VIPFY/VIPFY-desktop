@@ -38,5 +38,7 @@ function modifyAll() {
     hideByQuery('a[href="https://app.sendgrid.com/settings/account"]', true);
     hideByQuery('a[href="https://app.sendgrid.com/settings/teammates"]', true);
     hideByQuery('a[href="https://app.sendgrid.com/settings/auth"]', true);
+    hideByQuery('a[href="https://sendgrid.com/docs/User_Guide/Marketing_Campaigns/index.html"]', true);
+    hideByQuery('li[data-logout="logout"]', false);
   }
 }
