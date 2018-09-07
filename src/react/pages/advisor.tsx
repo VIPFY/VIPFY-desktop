@@ -54,6 +54,7 @@ class Advisor extends Component {
     addressCountry: null,
     addressState: null,
     addressCity: null,
+    addressZip: null,
     addressStreet: null,
     addressSecondLine: null,
     addressFirstLine: null,
@@ -619,9 +620,9 @@ class Advisor extends Component {
         inputType="currency"
         symbol="$"
         symbolClass="inputBoxSymbol"
-        focus={this.state.focus === 7}
-        onEnter={()=>this.onEnter(8)}
-        onClick={()=>this.onEnter(7)}
+        focus={this.state.focus === 8}
+        onEnter={()=>this.onEnter(9)}
+        onClick={()=>this.onEnter(8)}
         />
         <GenericInputField
         fieldClass="inputBoxField"
@@ -631,9 +632,9 @@ class Advisor extends Component {
         inputType="currency"
         symbol="$"
         symbolClass="inputBoxSymbol"
-        focus={this.state.focus === 8}
-        onEnter={()=>this.onEnter(9)}
-        onClick={()=>this.onEnter(8)}
+        focus={this.state.focus === 9}
+        onEnter={()=>this.onEnter(10)}
+        onClick={()=>this.onEnter(9)}
         />
     </div>)
       case 2:
@@ -648,9 +649,9 @@ class Advisor extends Component {
             inputType="currency"
             symbol="$"
             symbolClass="inputBoxSymbol"
-            focus={this.state.focus === 7}
-            onEnter={()=>this.onEnter(8)}
-            onClick={()=>this.onEnter(7)}
+            focus={this.state.focus === 8}
+            onEnter={()=>this.onEnter(9)}
+            onClick={()=>this.onEnter(8)}
             />
             <GenericInputField
             fieldClass="inputBoxField"
@@ -660,9 +661,9 @@ class Advisor extends Component {
             inputType="currency"
             symbol="$"
             symbolClass="inputBoxSymbol"
-            focus={this.state.focus === 8}
-            onEnter={()=>this.onEnter(9)}
-            onClick={()=>this.onEnter(8)}
+            focus={this.state.focus === 9}
+            onEnter={()=>this.onEnter(10)}
+            onClick={()=>this.onEnter(9)}
             />
         </div>
        )
@@ -677,9 +678,9 @@ class Advisor extends Component {
           inputType="currency"
           symbol="$"
           symbolClass="inputBoxSymbol"
-          focus={this.state.focus === 8}
-          onEnter={()=>this.onEnter(9)}
-          onClick={()=>this.onEnter(8)}
+          focus={this.state.focus === 9}
+          onEnter={()=>this.onEnter(10)}
+          onClick={()=>this.onEnter(9)}
           />
           </div>)
     }
@@ -696,9 +697,9 @@ class Advisor extends Component {
               placeholder="2018"
               onBlur={(value) => this.setState({"foundingYearOfCompany": value})}
               inputType="number"
-              focus={this.state.focus === 9}
-              onEnter={()=>this.onEnter(10)}
-              onClick={()=>this.onEnter(9)}
+              focus={this.state.focus === 10}
+              onEnter={()=>this.onEnter(11)}
+              onClick={()=>this.onEnter(10)}
               />
           </div>)
       case 2: return(
@@ -710,9 +711,9 @@ class Advisor extends Component {
               placeholder="2018"
               onBlur={(value) => this.setState({"foundingYearOfCompany": value})}
               inputType="number"
-              focus={this.state.focus === 9}
-              onEnter={()=>this.onEnter(10)}
-              onClick={()=>this.onEnter(9)}
+              focus={this.state.focus === 10}
+              onEnter={()=>this.onEnter(11)}
+              onClick={()=>this.onEnter(10)}
               />
           </div>)
       case 3: return(
@@ -724,9 +725,9 @@ class Advisor extends Component {
               placeholder="2019"
               onBlur={(value) => this.setState({"expectedYearOfMarketEntry": value})}
               inputType="number"
-              focus={this.state.focus === 9}
-              onEnter={()=>this.onEnter(10)}
-              onClick={()=>this.onEnter(9)}
+              focus={this.state.focus === 10}
+              onEnter={()=>this.onEnter(11)}
+              onClick={()=>this.onEnter(10)}
               />
           </div>)
     }
@@ -851,8 +852,8 @@ class Advisor extends Component {
             <GenericInputField
             fieldClass="inputBoxField"
             divClass=""
-            placeholder="State"
-            onBlur={(value) => this.setState({"addressState": value})}
+            placeholder="Zip"
+            onBlur={(value) => this.setState({"addressZip": value})}
             focus={this.state.focus===5}
             onEnter={()=>this.onEnter(6)}
             onClick={()=>this.onEnter(5)}
@@ -860,11 +861,20 @@ class Advisor extends Component {
             <GenericInputField
             fieldClass="inputBoxField"
             divClass=""
-            placeholder="Country"
-            onBlur={(value) => this.setState({"addressCountry": value})}
+            placeholder="State"
+            onBlur={(value) => this.setState({"addressState": value})}
             focus={this.state.focus===6}
             onEnter={()=>this.onEnter(7)}
             onClick={()=>this.onEnter(6)}
+            />
+            <GenericInputField
+            fieldClass="inputBoxField"
+            divClass=""
+            placeholder="Country"
+            onBlur={(value) => this.setState({"addressCountry": value})}
+            focus={this.state.focus===7}
+            onEnter={()=>this.onEnter(8)}
+            onClick={()=>this.onEnter(7)}
             />
         </div>
         {this.showRevenue(this.state.tabActive)}
@@ -877,8 +887,8 @@ class Advisor extends Component {
             placeholder="Number of Employees"
             onBlur={(value) => this.setState({"numberOfEmployees": value})}
             inputType="number"
-            focus={this.state.focus === 10}
-            onClick={()=>this.onEnter(10)}
+            focus={this.state.focus === 11}
+            onClick={()=>this.onEnter(11)}
             onEnter={() => this.saveFacts(value)}
             />
         </div>
@@ -917,7 +927,7 @@ class Advisor extends Component {
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", refreshToken);
 
-      const res2 = await this.props.cA({ variables: {addressData: {country: this.state.addressCountry, state: this.state.addressState, city: this.state.addressCity, street: this.state.addressStreet, tags: ["main"]}, department: true}});
+      const res2 = await this.props.cA({ variables: {addressData: {country: this.state.addressCountry, state: this.state.addressState, city: this.state.addressCity, zip: this.state.addressZip, street: this.state.addressStreet, tags: ["main"]}, department: true}});
 
       const res3 = await this.props.uSD({ variables: {data: {...statisticdata} }});
 
