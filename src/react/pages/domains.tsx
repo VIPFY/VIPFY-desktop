@@ -185,18 +185,17 @@ class Domains extends React.Component<Props> {
       )
     };
 
-    renderPopup(header, GenericInputForm, properties);
+    const popup = {
+      header,
+      body: GenericInputForm,
+      props: properties
+    };
+
+    renderPopup(popup);
   };
 
   render() {
-    let cssClass = "full-working dashboard-working";
-    if (this.props.chat - open) {
-      cssClass += " chat-open";
-    }
-
-    if (this.props.sidebaropen) {
-      cssClass += " side-bar-open";
-    }
+    const { showPopup } = this.props;
 
     const headers: string[] = [
       "Domain",
@@ -299,7 +298,7 @@ class Domains extends React.Component<Props> {
                         ))}
                         <span
                           className="domain-item-icon"
-                          onClick={() => this.toggleOption(key, "renewalmode", id)}>
+                          onClick={() => this.toggleOption(key, "renewalmode", id, showPopup)}>
                           <i
                             className={`fas fa-${
                               key.renewalmode == "1" ? "check-circle" : "times-circle"

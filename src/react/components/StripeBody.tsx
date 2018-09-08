@@ -124,22 +124,22 @@ class StripeBody extends React.Component<Props, State> {
             ) : error ? (
               <ErrorComp error={error} />
             ) : success ? (
-              <div className="generic-submitting">{success}</div>
+              <div className="generic-submit-buttonting">{success}</div>
             ) : (
               ""
             )}
 
-            <div className="generic-input-buttons">
+            <div className="generic-button-holder">
               <button
                 disabled={loading || success}
-                className="generic-cancel"
+                className="generic-cancel-button"
                 onClick={this.props.close}>
                 Cancel
               </button>
 
               <button
                 disabled={loading || !complete || success}
-                className="generic-submit"
+                className="generic-submit-button"
                 type="submit">
                 Submit
               </button>

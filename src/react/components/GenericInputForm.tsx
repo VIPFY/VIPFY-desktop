@@ -299,11 +299,11 @@ class GenericInputForm extends React.Component<Props, State> {
           ""
         )}
 
-        <div className="generic-input-buttons">
+        <div className="generic-button-holder">
           <button
             type="button"
             disabled={submitting || successMessage}
-            className="generic-cancel"
+            className="generic-cancel-button"
             onClick={this.props.onClose}>
             <i className="fas fa-long-arrow-alt-left" /> Cancel
           </button>
@@ -316,7 +316,7 @@ class GenericInputForm extends React.Component<Props, State> {
               Object.keys(values).length === 0 ||
               Object.values(errors).filter(err => err != false).length > 0
             }
-            className="generic-submit">
+            className="generic-submit-button">
             <i className="fas fa-check-circle" /> Submit
           </button>
         </div>
