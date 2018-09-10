@@ -4,12 +4,12 @@ import { Component } from "react";
 class GenericInputField extends Component {
   state = {
     inputFocus: false,
-    value: "",
+    value: this.props.default || "",
     error: null
   };
 
   componentDidUpdate() {
-    console.log("DIDUPDATE", this.props.placeholder, this.props.focus);
+    //console.log("DIDUPDATE", this.props.placeholder, this.props.focus);
     if (this.props.focus) {
       this.nameInput.focus();
     }
@@ -40,7 +40,7 @@ class GenericInputField extends Component {
     }
   }
   handleEnter(e) {
-    console.log("ENTER");
+    //console.log("ENTER");
     if (e.key === "Enter" && this.props.onEnter) {
       this.props.onEnter();
     }

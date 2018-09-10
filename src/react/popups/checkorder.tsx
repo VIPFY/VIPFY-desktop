@@ -300,7 +300,7 @@ class CheckOrder extends React.Component {
     let DCArray: JSX.Element[] = []
     inputs.forEach((dc,key) => {
 
-      if (dc.type === "domain"){
+      if (dc.type === "domainname"){
 
         DCArray.push(<Query key={key}
           query={gql`query {

@@ -8,6 +8,7 @@ import DepartmentLicenceEdit from "../common/departmentLicenceEdit";
 import DepartmentAddApp from "../common/departmentAddApp";
 import Popup from "../components/Popup";
 import { ErrorComp } from "../common/functions";
+import AddEmployee from "../popups/addEmployee"
 import { AppContext } from "../common/functions";
 
 import { fetchLicences } from "../queries/auth";
@@ -46,14 +47,21 @@ class Team extends Component {
     showAppOption: "",
     popup: null,
     popupProps: null,
-    update: 0
+    popupBody: null
+    update: 0,
+    popupHeading: ""
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
 
   toggleInput = bool => this.setState({ inputFocus: bool });
 
-  showPopup = error => this.setState({ popup: true, popupProps: { error } });
+  showPopup = error =>
+    this.setState({ popup: true, popupProps: { error }, popupBody:  ErrorComp, popupHeading: "Please check"  });
+
+  addEmployeeP = (did) =>
+  this.setState({ popup: true, popupProps: { acceptFunction: this.addEmployeeAccept, did: did },
+    popupBody:  AddEmployee, popupHeading: "Add Employee"  });
 
   closePopup = () => this.setState({ popup: null });
 
@@ -83,6 +91,18 @@ class Team extends Component {
       this.setState({ showPApps: index });
     }
   };
+
+  addEmployeeAccept = async(email, departmentid) => {
+    const res = await this.props.addCreateEmployee({
+      variables: { email, departmentid },
+      refetchQueries: [{ query: fetchDepartmentsData }]
+    });
+    if (res.data.addCreateEmployee.error || !res.data.addCreateEmployee.ok) {
+      this.showPopup(res.data.addCreateEmployee.error.message || "Something went really wrong");
+    }
+    console.log("NEW EMPLOYEE", email, did)
+    this.closePopup();
+  }
 
   toggleEmployeeInfo = (index, did) => {
     if (this.state.showEI === `${did} ${index}`) {
@@ -547,55 +567,58 @@ class Team extends Component {
                     : ""}
                 </div>
                 <div className="availableApps">
-                  <Query
-                    query={fetchUnitApps}
-                    variables={{ departmentid: value.company.unit.id }}
-                    fetchPolicy="network-only">
-                    {({ loading, error, data }) => {
-                      if (loading) {
-                        return "Loading...";
-                      }
-                      if (error) {
-                        return `Error! ${error.message}`;
-                      }
+                  <div className="infoHolder" onClick={() => this.addEmployeeP(value.company.unit.id)}>Add Employee</div>
+                  <div className="appHolder">
+                    <Query
+                      query={fetchUnitApps}
+                      variables={{ departmentid: value.company.unit.id }}
+                      fetchPolicy="network-only">
+                      {({ loading, error, data }) => {
+                        if (loading) {
+                          return "Loading...";
+                        }
+                        if (error) {
+                          return `Error! ${error.message}`;
+                        }
 
-                      let appArray: JSX.Element[] = [];
+                        let appArray: JSX.Element[] = [];
 
-                      if (data.fetchUnitApps) {
-                        appArray = data.fetchUnitApps.map((app, key) => (
-                          <div
-                            draggable
-                            className="PApp"
-                            onDragStart={ev => this.onDragStart(ev, app.boughtplan.id)}
-                            key={key}
-                            /*onClick={() =>
+                        if (data.fetchUnitApps) {
+                          appArray = data.fetchUnitApps.map((app, key) => (
+                            <div
+                              draggable
+                              className="PApp"
+                              onDragStart={ev => this.onDragStart(ev, app.boughtplan.id)}
+                              key={key}
+                              /*onClick={() =>
                               this.props.distributeLicence(
                                 app.boughtplan.id,
                                 this.props.unitId,
                                 this.props.departmentId
                               )
                             }*/
-                          >
-                            <img
-                              className="right-profile-image"
-                              style={{
-                                float: "left"
-                              }}
-                              src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.appicon ||
-                                "21062018-htv58-scarlett-jpeg"}`}
-                            />
-                            <div className="employeeName">
-                              {app.appname} {app.boughtplan.id}
+                            >
+                              <img
+                                className="right-profile-image"
+                                style={{
+                                  float: "left"
+                                }}
+                                src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.appicon ||
+                                  "21062018-htv58-scarlett-jpeg"}`}
+                              />
+                              <div className="employeeName">
+                                {app.appname} {app.boughtplan.id}
+                              </div>
+                              <div className="employeeTags">
+                                <span className="employeeTag">{}</span>
+                              </div>
                             </div>
-                            <div className="employeeTags">
-                              <span className="employeeTag">{}</span>
-                            </div>
-                          </div>
-                        ));
-                      }
-                      return appArray;
-                    }}
-                  </Query>
+                          ));
+                        }
+                        return appArray;
+                      }}
+                    </Query>
+                  </div>
                 </div>
                 {/*<div className="UMS">
                   {this.props.departmentsdata.fetchDepartmentsData
@@ -604,8 +627,8 @@ class Team extends Component {
                   </div>*/}
                 {this.state.popup ? (
                   <Popup
-                    popupHeader="Check Order"
-                    popupBody={ErrorComp}
+                    popupHeader={this.state.popupHeading}
+                    popupBody={this.state.popupBody}
                     bodyProps={this.state.popupProps}
                     onClose={this.closePopup}
                   />
