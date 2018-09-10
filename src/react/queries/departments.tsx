@@ -31,6 +31,7 @@ export const fetchDepartmentsData = gql`
         apps
       }
       employees {
+        id
         firstname
         lastname
         profilepicture
