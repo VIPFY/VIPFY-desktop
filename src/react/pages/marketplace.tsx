@@ -29,7 +29,7 @@ class Marketplace extends Component {
         key={appDetails.id}
         onClick={() => this.openAppDetails(appDetails.id)}>
         <div
-          className="appThumbnailLogo"
+          className="app-thumbnail-logo"
           style={{
             backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
               appDetails.logo

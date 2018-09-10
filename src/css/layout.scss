@@ -2,6 +2,7 @@
 @import './buttons.scss';
 @import './forms.scss';
 @import './popup.scss';
+@import './app-accordion.scss';
 @import './creditCards.scss';
 @import './domains.scss';
 @import './messages.scss';
@@ -443,28 +444,31 @@ label {
 }
 
 .appThumbnail{
-    width: 20%;
-    margin: 2.5%;
-    background-color: white;
-    box-shadow: 2px 2px 10px #ddd;
-    cursor: pointer;
-}
+  width: 20%;
+  margin: 2.5%;
+  background-color: white;
+  box-shadow: 2px 2px 10px #ddd;
+  cursor: pointer;
 
-.appThumbnail:hover {
+  &:hover {
     box-shadow: 2px 2px 10px #771a1c;
+  }
 }
 
-.appThumbnailLogo {
-    width: 90%;
-    height: 4em;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    margin: 5%;
+
+.app-thumbnail-logo {
+  width: 90%;
+  height: 4em;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin: 5%;
 }
+
 .caption{
     margin: 5%;
 }
+
 .appdiscripton {
     max-height: 6em;
     overflow: hidden;
@@ -2196,7 +2200,7 @@ h1{
             margin: 0;
             font-size: 0.9rem;
             margin-top: 1rem;
-            
+
             li{
                 margin-bottom: 0.5rem;
             }
@@ -2225,55 +2229,55 @@ h1{
         justify-content: space-between;
     }
 
-    .OOptions{
-        margin-top: 0.5rem;
-        font-weight: bold;
-    }
+  .OOptions{
+      margin-top: 0.5rem;
+      font-weight: bold;
+  }
 
-    .featureBuy{
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        font-size: 0.9rem;
-        margin-top: 1rem;
-        
-        li{
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
+  .featureBuy{
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.9rem;
+      margin-top: 1rem;
 
-            .Pcaption{
-                float: left;
-            }
-            .inputNew{
-                width: 4rem;
-                border: none;
-                border-bottom: 1px solid #20BAA9;
-                text-align: center;
-                font-family: 'Montserrat', sans-serif !important;
-                margin-left: 0.5rem;
-            }
-        }
-    }
-    .totalprice{
-        border-top: 1px solid black;
-        text-align: right;
-        padding-top: 0.25rem;
-        font-weight: bold;
-    }
+      li{
+          margin-bottom: 0.5rem;
+          display: flex;
+          justify-content: space-between;
+
+          .Pcaption{
+              float: left;
+          }
+          .inputNew{
+              width: 4rem;
+              border: none;
+              border-bottom: 1px solid #20BAA9;
+              text-align: center;
+              font-family: 'Montserrat', sans-serif !important;
+              margin-left: 0.5rem;
+          }
+      }
+  }
+  .totalprice{
+      border-top: 1px solid black;
+      text-align: right;
+      padding-top: 0.25rem;
+      font-weight: bold;
+  }
 }
 .orderInformationHolder{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  align-items: center;
 }
 .changeInformation{
-    span{
-        font-size: 0.7rem;
-        text-decoration: underline;
-        margin: 0.2rem;
-    }
+  span{
+      font-size: 0.7rem;
+      text-decoration: underline;
+      margin: 0.2rem;
+  }
 }
 .acceptLicenceHolder{
     padding: 3rem;

@@ -16,13 +16,14 @@ $shadow-color: #f0f3ff;
     background: #fff;
     box-shadow: 0 0 4rem $shadow-color;
     margin: 1rem 0;
+    width: 860px;
   }
 
-  #personal-information {
+  .item-information {
     display: grid;
     grid-template-areas:
       'header header'
-      'pic information ';
+      'pic information';
     grid-template-columns: 2fr 7fr;
   }
 
@@ -54,6 +55,11 @@ $shadow-color: #f0f3ff;
     div {
       font-size: 0.8rem;
     }
+  }
+
+  .app-list {
+    display: flex;
+    flex-flow: column;
   }
 
   .information {

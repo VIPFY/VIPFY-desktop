@@ -19,12 +19,11 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
   showApps = licences => {
     let appLogos: JSX.Element[] = [];
     if (licences) {
-      let i = 0;
-      licences.forEach(licence => {
+      licences.forEach((licence, key) => {
         appLogos.push(
           <li
             className="sidebar-link"
-            key={`ServiceLogo-${i}`}
+            key={`ServiceLogo-${key}`}
             onClick={() => this.props.setApp(licence.id)}>
             <span
               className="service-logo-small"
@@ -39,7 +38,6 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             </span>
           </li>
         );
-        i++;
       });
     }
 

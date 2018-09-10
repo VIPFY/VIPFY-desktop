@@ -16,7 +16,19 @@ const READ_ALL_NOTIFICATIONS = gql`
   }
 `;
 
-class Notification extends React.Component {
+interface Props {
+  data: any;
+  refetch: Function;
+  readNotification: Function;
+  readAll: Function;
+}
+
+interface State {
+  loading: boolean;
+  error: string;
+}
+
+class Notification extends React.Component<Props, State> {
   state = {
     loading: false,
     error: ""
@@ -45,7 +57,7 @@ class Notification extends React.Component {
             ok: true
           }
         },
-        update: (proxy, { data: { readNotification } }) => {
+        update: proxy => {
           // Read the data from our cache for this query.
           const data = proxy.readQuery({ query: FETCH_NOTIFICATIONS });
           const updatedNotifications = data.fetchNotifications.filter(notification => {

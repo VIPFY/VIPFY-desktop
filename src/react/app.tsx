@@ -1,8 +1,6 @@
 import * as React from "react";
-import { Component } from "react";
-import { Route, Switch } from "react-router-dom";
-import { withRouter, Redirect } from "react-router";
-import { graphql, compose, withApollo } from "react-apollo";
+import { withRouter } from "react-router";
+import { graphql, Query, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 import { signInUser } from "./mutations/auth";
@@ -11,7 +9,6 @@ import { AppContext } from "./common/functions";
 import { filterError } from "./common/functions";
 
 import Area from "./pages/area";
-import Bug from "./pages/bug";
 import Popup from "./components/Popup";
 import LoadingDiv from "./components/LoadingDiv";
 import Login from "./pages/login";
@@ -26,14 +23,19 @@ const SignUp = gql`
   }
 `;
 
-export type AppProps = {
-  history: any[];
+interface AppProps {
+  client: any;
+  history: any;
+  logoutFunction: Function;
+  me: any;
+  relogMeIn: Function;
+  logMeIn: Function;
+  logMeOut: Function;
   signIn: any;
   signUp: any;
-  client: any;
-};
+}
 
-export type AppState = {
+interface AppState {
   login: boolean;
   firstname: string;
   middlename: string;
@@ -45,6 +47,7 @@ export type AppState = {
   domains: boolean;
   marketplace: boolean;
   employees: number;
+  createdate: string;
   profilepicture: string;
   error: string | null;
   userid: number;
@@ -53,16 +56,23 @@ export type AppState = {
   moveTo: Function;
   updateUser: Function;
   showPopup: Function;
-};
+}
 
-const INITIAL_POPUP = {
+const INITIAL_POPUP: {
+  show: boolean;
+  header: string;
+  body: any;
+  props: any;
+  type: string;
+} = {
   show: false,
   header: "",
   body: () => <div>No content</div>,
-  props: {}
+  props: {},
+  type: ""
 };
 
-class App extends Component<AppProps, AppState> {
+class App extends React.Component<AppProps, AppState> {
   state: AppState = {
     login: false,
     firstname: "",
@@ -73,6 +83,7 @@ class App extends Component<AppProps, AppState> {
     teams: false,
     billing: false,
     domains: false,
+    createdate: "",
     marketplace: false,
     employees: 3,
     profilepicture: "artist.jpg",
@@ -80,14 +91,13 @@ class App extends Component<AppProps, AppState> {
     userid: -1,
     company: null,
     popup: INITIAL_POPUP,
-    moveTo: path => this.moveTo(path),
     updateUser: (name, value) => this.setState({ [name]: value }),
     showPopup: data => this.renderPopup(data)
   };
 
-  componentDidMount = () => {
+  componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
-  };
+  }
 
   renderPopup = ({ header, body, props, type }) => {
     this.setState({ popup: { show: true, header, body, props, type } });
@@ -95,24 +105,20 @@ class App extends Component<AppProps, AppState> {
 
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
 
-  moveTo = path => {
-    if (!(this.props.history.location.pathname === path)) {
-      this.props.history.push(path);
-    }
-  };
-
-  relogMeIn = async () => {
-    if (this.props.me.error) {
+  relogMeIn = async data => {
+    if (localStorage.getItem("token")) {
+      const { company, profilepicture, id, ...userData } = data;
+      await this.setState({
+        login: true,
+        employees: company.employees,
+        userid: id,
+        company,
+        profilepicture: profilepicture || company.profilepicture,
+        ...userData
+      });
+      console.log("RELOGIN Done", this.state.login);
+    } else {
       this.logMeOut();
-    } else if (this.props.me.me) {
-      const { company, profilepicture, id, ...userData } = this.props.me.me;
-      this.setState({ login: true, profilepicture: profilepicture || company.profilepicture });
-      this.setState({ employees: company.employees, userid: id, company });
-      await this.setState({ ...userData });
-
-      if (this.props.history.location.pathname === "/") {
-        this.moveTo("/area/dashboard");
-      }
     }
   };
 
@@ -121,11 +127,8 @@ class App extends Component<AppProps, AppState> {
     this.props.client.cache.reset(); //clear graphql cache
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
-    this.moveTo("/");
-    //this.props.history.push("/");
+    this.props.history.push("/area/dashboard");
   };
-
-  setName = (firstname, lastname) => this.setState({ firstname, lastname });
 
   logMeIn = async (email, password) => {
     try {
@@ -133,15 +136,17 @@ class App extends Component<AppProps, AppState> {
       const { ok, token, refreshToken, user } = res.data.signIn;
 
       if (ok) {
-        const { id, firstname, lastname, teams, billing, domains, marketplace } = user;
+        const { id, company, profilepicture, ...userData } = user;
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
-        this.setState({ login: true, firstname, lastname });
-        this.setState({ teams, billing, domains, marketplace });
-        this.setState({ profilepicture: user.profilepicture || user.company.profilepicture });
-        this.setState({ employees: user.company.employees });
-        this.setState({ userid: id, company: user.company });
-
+        await this.setState({
+          login: true,
+          userid: id,
+          company,
+          employees: company.employees,
+          profilepicture: profilepicture || company.profilepicture,
+          ...userData
+        });
         return true;
       }
     } catch (err) {
@@ -152,8 +157,6 @@ class App extends Component<AppProps, AppState> {
 
       return filterError(err);
     }
-
-    //this.props.history.push("/area/advisor")
   };
 
   registerMe = async (email, newsletter) => {
@@ -167,51 +170,60 @@ class App extends Component<AppProps, AppState> {
         console.log("TOKEN", res.data);
         this.setState({ login: true });
       }
+      this.props.history.push("/area/advisor");
     } catch (err) {
       this.setState({ login: false, error: filterError(err) });
       localStorage.setItem("token", "");
       localStorage.setItem("refreshToken", "");
       console.log("LoginError", err);
     }
-    this.moveTo("/area/advisor");
+  };
+
+  renderComponents = () => {
+    if (!this.state.login && localStorage.getItem("token")) {
+      return (
+        <Query query={me} fetchPolicy="network-only">
+          {({ data: { me }, loading, error }) => {
+            if (loading) {
+              return <LoadingDiv text="Preparing Vipfy for you" />;
+            }
+
+            if (error) {
+              this.props.client.cache.reset(); //clear graphql cache
+
+              return (
+                <Login
+                  login={this.logMeIn}
+                  moveTo={this.moveTo}
+                  register={this.registerMe}
+                  error={filterError(error)}
+                />
+              );
+            }
+
+            return <Area logMeOut={this.logMeOut} reLogIn={this.relogMeIn} userData={me} />;
+          }}
+        </Query>
+      );
+    } else if (this.state.login && localStorage.getItem("token")) {
+      return <Area logMeOut={this.logMeOut} {...this.state} />;
+    } else {
+      return (
+        <Login
+          login={this.logMeIn}
+          moveTo={this.moveTo}
+          register={this.registerMe}
+          error={this.state.error}
+        />
+      );
+    }
   };
 
   render() {
-    const { error, ...userData } = this.state;
-
-    if (this.props.me.loading) {
-      return <LoadingDiv text="Preparing Vipfy for you" />;
-    }
-
-    if (!this.state.login && localStorage.getItem("token")) {
-      this.relogMeIn();
-    }
-
+    console.log("RENDER");
     return (
       <AppContext.Provider value={this.state} className="full-size">
-        <Switch>
-          <Route
-            exact
-            path="/"
-            render={props => (
-              <Login
-                login={this.logMeIn}
-                moveTo={this.moveTo}
-                register={this.registerMe}
-                error={error}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            path="/area"
-            render={props => (
-              <Area logMeOut={this.logMeOut} setName={this.setName} {...props} {...userData} />
-            )}
-          />
-          <Route component={Bug} />
-        </Switch>
-
+        {this.renderComponents()}
         {this.state.popup.show ? (
           <Popup
             popupHeader={this.state.popup.header}
@@ -229,14 +241,10 @@ class App extends Component<AppProps, AppState> {
 }
 
 export default compose(
-  graphql(me, {
-    name: "me",
-    options: { fetchPolicy: "network-only" }
-  }),
   graphql(signInUser, {
     name: "signIn"
   }),
   graphql(SignUp, {
     name: "signUp"
   })
-)(withApollo(withRouter(App, history)));
+)(withApollo(withRouter(App)));

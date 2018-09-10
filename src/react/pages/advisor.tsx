@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Component } from "react";
 import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
 import { AppContext } from "../common/functions";
@@ -33,8 +32,7 @@ mutation createAddress($addressData: AddressInput!, $department: Boolean) {
 }
 `;
 
-
-class Advisor extends Component {
+class Advisor extends React.Component {
   state = {
     advisorStage: 1,
     companystatistic: {},
@@ -138,7 +136,7 @@ class Advisor extends Component {
 
   setUserData = async user => {
     try {
-      console.log("USERUPDATE", this, user);
+      console.info("USERUPDATE", this, user);
       const res = await this.props.uU({ variables: { user } });
       console.log("RES UP", res, this);
       const { ok } = res.data.updateUser;
@@ -932,7 +930,7 @@ class Advisor extends Component {
       const res3 = await this.props.uSD({ variables: {data: {...statisticdata} }});
 
 
-      value.moveTo("/area/advisor/personfacts")
+      this.props.moveTo("/area/advisor/personfacts")
     } catch (err) {
       console.log("ERROR SAVE", err);
       return;
@@ -949,7 +947,7 @@ class Advisor extends Component {
           <span className="optionsExplainHeading">Tell us a bit about your Company</span>
           <p>
             We use this information to set up your VIPFY-Account, find the best fitting services for
-            you and provide generel data to the service Providers. Most informationen is not mandatory but they will give you an better experience on VIPFY.
+            you and provide general data to the service Providers. Most informationen is not mandatory but they will give you an better experience on VIPFY.
           </p>
         </div>
       </div>
@@ -962,7 +960,7 @@ class Advisor extends Component {
           <span className="optionsExplainHeading">Tell us a bit about yourself</span>
           <p>
             We use this information to set up your VIPFY-Account, find the best fitting services for
-            you and provide generel data to the service Providers. Most informationen is not mandatory but they will give you an better experience on VIPFY.
+            you and provide general data to the service Providers. Most informationen is not mandatory but they will give you an better experience on VIPFY.
           </p>
         </div>
       </div>
@@ -1270,10 +1268,9 @@ class Advisor extends Component {
 
     console.log("USER", user)
     try {
-
       const res = this.props.uU({variables: {user}})
 
-      value.moveTo("/area/dashboard")
+      this.props.moveTo("/area/dashboard")
     } catch (err) {
       console.log("ERROR SAVE", err);
       return;
@@ -1288,7 +1285,7 @@ class Advisor extends Component {
           return (
             <div className="optionsHolder">
               <AdvisorSidebar
-              value = {value}
+              moveTo = {this.props.moveTo}
               stage = {this.state.advisorStage}
               />
               {this.editPart(this.state, value)}

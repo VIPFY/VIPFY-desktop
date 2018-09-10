@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const me = gql`
-  query Me {
+  {
     me {
       emails
       createdate
@@ -29,7 +29,7 @@ export const me = gql`
 `;
 
 export const fetchLicences = gql`
-  query fetchLicences {
+  query onFetchLicence {
     fetchLicences {
       id
       boughtplanid {
@@ -41,6 +41,7 @@ export const fetchLicences = gql`
             name
             logo
             icon
+            teaserdescription
           }
         }
       }

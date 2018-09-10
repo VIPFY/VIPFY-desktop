@@ -1,33 +1,38 @@
 import * as React from "react";
-import { Component } from "react";
-import { Link } from "react-router-dom";
 import PipedriveGraph from "../graphs/pipedrivegraph";
+import LoadingDiv from "../components/LoadingDiv";
+import { filterError } from "../common/functions";
 
-class Dashboard extends Component {
+interface Props {
+  firstname: string;
+  history: any;
+  lastname: string;
+  rcApps: any;
+  setApp: Function;
+}
+
+interface State {
+  recommended: boolean;
+}
+
+class Dashboard extends React.Component<Props, State> {
   state = {
     recommended: false
   };
 
-  setApp(licence: number) {
-    this.props.setApp(licence);
-  }
+  setApp = (licence: number) => this.props.setApp(licence);
 
-  goTo(view) {
-    let gotoview = "/area" + view;
-    this.props.history.push(gotoview);
-  }
+  goTo = view => this.props.history.push(`/area${view}`);
 
   showApps(licences) {
     let appLogos: JSX.Element[] = [];
-    console.log("SHOWAPPS", licences);
+
     if (licences) {
-      let i = 0;
-      licences.forEach(licence => {
-        console.log("L", licence);
+      licences.forEach((licence, key) => {
         appLogos.push(
           <div
             className="logoAppsTile"
-            key={`useableLogo-${i}`}
+            key={`useableLogo-${key}`}
             onClick={() => this.setApp(licence.id)}
             style={{
               backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
@@ -37,15 +42,22 @@ class Dashboard extends Component {
             <span className="nameAppsTile">{licence.boughtplanid.planid.appid.name}</span>
           </div>
         );
-        i++;
       });
     }
     return appLogos;
   }
 
   render() {
-    console.log("RC", this.props.rcApps);
-    let bI = this.props.profilepicture;
+    const { rcApps } = this.props;
+    console.log("RC", rcApps);
+    // let bI = this.props.profilepicture;
+    if (rcApps.loading) {
+      return <LoadingDiv text="Fetching Recommendations..." />;
+    }
+
+    if (rcApps.error) {
+      return filterError(rcApps.error);
+    }
 
     if (this.state.recommended) {
       return (
@@ -55,7 +67,6 @@ class Dashboard extends Component {
               <div className="recommendedAppsTitle">We believe you need these services</div>
               <div
                 className="recommendedAppsLogo"
-                onClick={() => this.BuyApp("pipedrive")}
                 style={{
                   backgroundImage:
                     "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/pipedrive.png)"
@@ -64,7 +75,6 @@ class Dashboard extends Component {
               </div>
               <div
                 className="recommendedAppsLogo"
-                onClick={() => this.BuyApp("google apps")}
                 style={{
                   backgroundImage:
                     "url(https://storage.googleapis.com/vipfy-imagestore-01/logos/google-apps.svg)"
@@ -76,6 +86,7 @@ class Dashboard extends Component {
         </div>
       );
     }
+
     return (
       <div className="dashboard-working">
         <div className="welcomeTile">
@@ -115,21 +126,19 @@ class Dashboard extends Component {
             </span>
           </div>
           <div className="informationText">
-            {this.props.rcApps.loading
-              ? "Loading Apps..."
-              : this.props.rcApps.fetchRecommendedApps.map(app => (
-                  <div
-                    key={app.id}
-                    className="rcLogoAppsTile"
-                    onClick={() => this.goTo(`/marketplace/${app.id}`)}
-                    style={{
-                      backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
-                        app.logo
-                      })`
-                    }}>
-                    <span className="nameAppsTile">{app.name}</span>
-                  </div>
-                ))}
+            {rcApps.fetchRecommendedApps.map(app => (
+              <div
+                key={app.id}
+                className="rcLogoAppsTile"
+                onClick={() => this.goTo(`/marketplace/${app.id}`)}
+                style={{
+                  backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
+                    app.logo
+                  })`
+                }}>
+                <span className="nameAppsTile">{app.name}</span>
+              </div>
+            ))}
           </div>
         </div>
         <div className="informationGraph">

@@ -1,10 +1,8 @@
 import * as React from "react";
-import { Component } from "react";
 import { Route } from "react-router-dom";
+import { withRouter } from "react-router";
+
 import { graphql, compose, Query } from "react-apollo";
-import { me, fetchLicences } from "../queries/auth";
-import { fetchRecommendedApps } from "../queries/products";
-import { FETCH_NOTIFICATIONS } from "../queries/notification";
 
 import Advisor from "./advisor";
 import AppPage from "./apppage";
@@ -21,21 +19,29 @@ import Sidebar from "../components/Sidebar";
 import Team from "./team";
 import Webview from "./webview";
 
-export type AreaProps = {
-  history: any[];
-  me: any;
-  fetchLicences: any;
-  logMeOut: () => void;
-};
+import { fetchLicences } from "../queries/auth";
+import { fetchRecommendedApps } from "../queries/products";
+import { FETCH_NOTIFICATIONS } from "../queries/notification";
 
-export type AreaState = {
+interface AreaProps {
+  history: any[];
+  fetchLicences: any;
+  login: boolean;
+  logMeOut: () => void;
+  reLogIn: Function;
+  location: any;
+  userData: any;
+  userid: number;
+}
+
+interface AreaState {
   app: number;
   chatOpen: boolean;
   sideBarOpen: boolean;
   domain: string;
-};
+}
 
-class Area extends Component<AreaProps, AreaState> {
+class Area extends React.Component<AreaProps, AreaState> {
   state: AreaState = {
     app: -1,
     chatOpen: false,
@@ -43,11 +49,21 @@ class Area extends Component<AreaProps, AreaState> {
     domain: ""
   };
 
-  componentDidMount() {
+  componentDidMount = async () => {
     require("electron").ipcRenderer.on("change-page", (event, page) => {
       this.props.history.push(page);
     });
-  }
+
+    if (!this.props.login) {
+      await this.props.reLogIn(this.props.userData);
+    }
+  };
+
+  moveTo = path => {
+    if (!(this.props.location.pathname === path)) {
+      this.props.history.push(path);
+    }
+  };
 
   setApp = (boughtplan: number) => {
     console.log("SetApp to boughtplan ", boughtplan);
@@ -60,15 +76,15 @@ class Area extends Component<AreaProps, AreaState> {
     this.props.history.push("/area/webview");
   };
 
+  setSidebar = value => this.setState({ sideBarOpen: value });
+
   toggleChat = () => this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
 
   toggleSidebar = () => this.setState(prevState => ({ sideBarOpen: !prevState.sideBarOpen }));
 
-  setSidebar = value => this.setState({ sideBarOpen: value });
-
   render() {
     const { sideBarOpen, chatOpen } = this.state;
-
+    console.log(this.props);
     const routes = [
       { path: "dashboard", component: Dashboard },
       { path: "settings", component: Settings },
@@ -88,7 +104,7 @@ class Area extends Component<AreaProps, AreaState> {
       <div className="area">
         <Route
           render={props => {
-            if (!props.location.pathname.includes("advisor")) {
+            if (!this.props.location.pathname.includes("advisor")) {
               return (
                 <Sidebar
                   sideBarOpen={sideBarOpen}
@@ -105,7 +121,7 @@ class Area extends Component<AreaProps, AreaState> {
 
         <Route
           render={props => {
-            if (!props.location.pathname.includes("advisor")) {
+            if (!this.props.location.pathname.includes("advisor")) {
               return (
                 <Query
                   query={FETCH_NOTIFICATIONS}
@@ -149,13 +165,18 @@ class Area extends Component<AreaProps, AreaState> {
               render={props => (
                 <div
                   className={`${
-                    !props.location.pathname.includes("advisor") ? "full-working" : ""
+                    !this.props.location.pathname.includes("advisor") ? "full-working" : ""
                   } ${chatOpen ? "chat-open" : ""} ${
                     sideBarOpen && !props.location.pathname.includes("advisor")
                       ? "side-bar-open"
                       : ""
                   }`}>
-                  <RouteComponent setApp={this.setApp} {...this.props} {...props} />
+                  <RouteComponent
+                    setApp={this.setApp}
+                    {...this.props}
+                    {...props}
+                    moveTo={this.moveTo}
+                  />
                 </div>
               )}
             />
@@ -193,14 +214,10 @@ class Area extends Component<AreaProps, AreaState> {
 }
 
 export default compose(
-  // graphql(me, {
-  //   name: "me",
-  //   options: { fetchPolicy: "network-only" }
-  // }),
   graphql(fetchLicences, {
     name: "licences"
   }),
   graphql(fetchRecommendedApps, {
     name: "rcApps"
   })
-)(Area);
+)(withRouter(Area));
