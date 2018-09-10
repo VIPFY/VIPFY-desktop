@@ -88,6 +88,8 @@
     "@types/electron-devtools-installer": "^2.0.2",
     "@types/react": "^16.3.14",
     "@types/react-dom": "^16.0.5",
+    "@types/react-router": "^4.0.30",
+    "@types/react-router-dom": "^4.3.0",
     "apollo-cache-inmemory": "^1.2.1",
     "apollo-client": "^2.3.1",
     "apollo-link-context": "^1.0.8",

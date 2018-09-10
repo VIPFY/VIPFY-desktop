@@ -1,12 +1,12 @@
 import * as React from "react";
 import * as Dropzone from "react-dropzone";
 import { filterError } from "../common/functions";
-import LoadingDiv from "./loadingDiv";
 
 interface Props {
   fields: object[];
   submittingMessage: string;
   runInBackground: boolean;
+  onClose: Function;
 }
 
 interface State {
@@ -89,7 +89,6 @@ class GenericInputForm extends React.Component<Props, State> {
 
   onSubmit = async e => {
     e.preventDefault();
-    const overlay = document.getElementById("overlay");
     await this.setState({ asyncError: false, submitting: true });
 
     if (this.props.runInBackground) {

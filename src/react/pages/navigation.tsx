@@ -4,11 +4,6 @@ import gql from "graphql-tag";
 import Notification from "../components/Notification";
 import { filterError } from "../common/functions";
 
-interface State {
-  searchFokus: boolean;
-  showNotification: boolean;
-}
-
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification($receiver: Int!) {
     newNotification(receiver: $receiver) {
@@ -20,20 +15,36 @@ const NOTIFICATION_SUBSCRIPTION = gql`
   }
 `;
 
-class Navigation extends React.Component<State> {
+interface Props {
+  chatOpen: boolean;
+  firstname: string;
+  history: Function;
+  lastname: string;
+  data: any;
+  error: any;
+  loading: boolean;
+  profilepicture: string;
+  setApp: Function;
+  sideBarOpen: boolean;
+  subscribeToMore: Function;
+  toggleSidebar: Function;
+  userid: number;
+}
+
+interface State {
+  searchFocus: boolean;
+  showNotification: boolean;
+}
+
+class Navigation extends React.Component<Props, State> {
   state = {
     searchFocus: false,
     showNotification: false
   };
 
-  setApp(boughtplan: number) {
-    this.props.setApp(boughtplan);
-  }
+  setApp = (boughtplan: number) => this.props.setApp(boughtplan);
 
-  goTo(view) {
-    let gotoview = "/area/" + view;
-    this.props.history.push(gotoview);
-  }
+  goTo = view => this.props.history.push(`/area/${view}`);
 
   listenKeyboard = e => {
     if (e.key === "Escape" || e.keyCode === 27) {
@@ -44,7 +55,7 @@ class Navigation extends React.Component<State> {
   componentDidMount() {
     window.addEventListener("keydown", this.listenKeyboard, true);
     document.addEventListener("click", this.handleClickOutside, true);
-
+    console.log(this.props);
     this.props.subscribeToMore({
       document: NOTIFICATION_SUBSCRIPTION,
       variables: { receiver: this.props.userid },
@@ -78,18 +89,25 @@ class Navigation extends React.Component<State> {
     this.setState(prevState => ({ showNotification: !prevState.showNotification }));
   };
 
-  toggleSearch = bool => this.setState({ searchFocus: bool });
+  toggleSearch = searchFocus => this.setState({ searchFocus });
 
   render() {
-    if (this.props.loading) {
+    const { chatOpen, sideBarOpen, data, error, loading, toggleSidebar } = this.props;
+
+    if (loading) {
       return "Initialising Navigation...";
     }
+
+    if (error) {
+      return filterError(error);
+    }
+
     return (
       <div
-        className={`navigation ${this.props.chatOpen ? "chat-open" : ""}
-        ${this.props.sideBarOpen ? "side-bar-open" : ""}`}>
+        className={`navigation ${chatOpen ? "chat-open" : ""}
+        ${sideBarOpen ? "side-bar-open" : ""}`}>
         <div className="leftNavigation">
-          <span onClick={this.props.toggleSidebar} className="fas fa-bars barIcon" />
+          <span onClick={toggleSidebar} className="fas fa-bars barIcon" />
           <div
             className={
               this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
@@ -124,13 +142,13 @@ class Navigation extends React.Component<State> {
 
             <span onClick={this.toggleNotificationPopup} className="right-profile-holder">
               <span className="right-profile-notifications">
-                {this.props.loading ? 0 : this.props.data.fetchNotifications.length}
+                {!loading && !data && !data.fetchNotifications ? 0 : data.fetchNotifications.length}
               </span>
               <span className="right-profile-caret" />
             </span>
 
             {this.state.showNotification ? (
-              <Notification data={this.props.data} refetch={this.props.refetch} />
+              <Notification data={data} refetch={this.props.refetch} />
             ) : (
               ""
             )}

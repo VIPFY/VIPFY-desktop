@@ -7,15 +7,17 @@ export const signInUser = gql`
       token
       refreshToken
       user {
-        emails
         id
         firstname
         lastname
+        language
+        birthday
         teams
         domains
         marketplace
         billing
         profilepicture
+        createdate
         company {
           unit: unitid {
             id

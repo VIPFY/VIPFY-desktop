@@ -1,21 +1,16 @@
 import * as React from "react";
 import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
-import { Link } from "react-router-dom";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
-import { ErrorComp } from "../common/functions";
 import { buyPlan } from "../mutations/products";
 import { domainValidation } from "../common/validation";
 import { filterError } from "../common/functions";
 
-interface Props {}
-
-interface BodyObj {
-  name: string;
-  views: number;
-  rank: number;
-  apps: string[];
+interface Props {
+  buyPlan: Function;
+  updateDomain: Function;
+  handleSubmit: Function;
 }
 
 const fetchDomains = gql`

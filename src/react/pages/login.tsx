@@ -1,7 +1,22 @@
 import * as React from "react";
-import { Component } from "react";
 
-class Login extends Component {
+interface Props {
+  error: string;
+  register: Function;
+  login: Function;
+}
+
+interface State {
+  loginMove: boolean;
+  forgotMove: boolean;
+  error: string;
+  errorbool: boolean;
+  focus: number;
+  login: boolean;
+  newsletter: boolean;
+}
+
+class Login extends React.Component<Props, State> {
   state = {
     loginMove: false,
     forgotMove: false,
@@ -13,13 +28,11 @@ class Login extends Component {
   };
 
   componentDidMount() {
-    if (this.props.location.state) {
-      if (this.props.location.state.loginError) {
-        this.setState({
-          error: this.props.location.state.loginError,
-          errorbool: true
-        });
-      }
+    if (this.props.error) {
+      this.setState({
+        error: this.props.error,
+        errorbool: true
+      });
     }
   }
 
@@ -37,8 +50,6 @@ class Login extends Component {
 
     if (ok !== true) {
       this.setState({ errorbool: true, error: ok });
-    } else {
-      this.props.moveTo("/area/dashboard");
     }
   };
 
@@ -48,8 +59,7 @@ class Login extends Component {
     if (field === 3 && (force || e.key === "Enter")) {
       let email = this.registerInput.value;
       if (email.includes("@") && email.includes(".")) {
-        this.register();
-        return;
+        return this.register();
       } else {
         this.registerInput.focus();
         this.setState({
