@@ -4,6 +4,7 @@ interface Props {
   error: string;
   register: Function;
   login: Function;
+  moveTo: Function;
 }
 
 interface State {
@@ -50,6 +51,8 @@ class Login extends React.Component<Props, State> {
 
     if (ok !== true) {
       this.setState({ errorbool: true, error: ok });
+    } else {
+      this.props.moveTo("dashboard");
     }
   };
 

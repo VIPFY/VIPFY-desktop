@@ -28,6 +28,7 @@ interface AppProps {
   history: any;
   logoutFunction: Function;
   me: any;
+  moveTo: Function;
   relogMeIn: Function;
   logMeIn: Function;
   logMeOut: Function;
@@ -49,22 +50,21 @@ interface AppState {
   employees: number;
   createdate: string;
   profilepicture: string;
-  error: string | null;
+  error: string;
   userid: number;
   company: any;
-  popup: object;
-  moveTo: Function;
+  popup: {
+    show: boolean;
+    header: string;
+    body: any;
+    props: any;
+    type: string;
+  };
   updateUser: Function;
   showPopup: Function;
 }
 
-const INITIAL_POPUP: {
-  show: boolean;
-  header: string;
-  body: any;
-  props: any;
-  type: string;
-} = {
+const INITIAL_POPUP = {
   show: false,
   header: "",
   body: () => <div>No content</div>,
@@ -87,7 +87,7 @@ class App extends React.Component<AppProps, AppState> {
     marketplace: false,
     employees: 3,
     profilepicture: "artist.jpg",
-    error: null,
+    error: "",
     userid: -1,
     company: null,
     popup: INITIAL_POPUP,
@@ -127,7 +127,7 @@ class App extends React.Component<AppProps, AppState> {
     this.props.client.cache.reset(); //clear graphql cache
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
-    this.props.history.push("/area/dashboard");
+    this.props.history.push("/");
   };
 
   logMeIn = async (email, password) => {
@@ -147,6 +147,7 @@ class App extends React.Component<AppProps, AppState> {
           profilepicture: profilepicture || company.profilepicture,
           ...userData
         });
+
         return true;
       }
     } catch (err) {
@@ -158,6 +159,8 @@ class App extends React.Component<AppProps, AppState> {
       return filterError(err);
     }
   };
+
+  moveTo = (path: string) => this.props.history.push(`/area/${path}`);
 
   registerMe = async (email, newsletter) => {
     try {
@@ -183,7 +186,7 @@ class App extends React.Component<AppProps, AppState> {
     if (!this.state.login && localStorage.getItem("token")) {
       return (
         <Query query={me} fetchPolicy="network-only">
-          {({ data: { me }, loading, error }) => {
+          {({ data, loading, error }) => {
             if (loading) {
               return <LoadingDiv text="Preparing Vipfy for you" />;
             }
@@ -201,7 +204,7 @@ class App extends React.Component<AppProps, AppState> {
               );
             }
 
-            return <Area logMeOut={this.logMeOut} reLogIn={this.relogMeIn} userData={me} />;
+            return <Area logMeOut={this.logMeOut} reLogIn={this.relogMeIn} userData={data.me} />;
           }}
         </Query>
       );
@@ -220,7 +223,6 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    console.log("RENDER");
     return (
       <AppContext.Provider value={this.state} className="full-size">
         {this.renderComponents()}
