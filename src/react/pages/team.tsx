@@ -8,10 +8,17 @@ import DepartmentLicenceEdit from "../common/departmentLicenceEdit";
 import DepartmentAddApp from "../common/departmentAddApp";
 import Popup from "../components/Popup";
 import { ErrorComp } from "../common/functions";
+import { AppContext } from "../common/functions";
 
 import { fetchLicences } from "../queries/auth";
+import { Query } from "react-apollo";
 
-import { fetchDepartments, fetchDepartmentsData } from "../queries/departments";
+import {
+  fetchDepartments,
+  fetchDepartmentsData,
+  fetchUsersOwnLicences,
+  fetchUnitApps
+} from "../queries/departments";
 import {
   addCreateEmployee,
   addEmployee,
@@ -38,7 +45,8 @@ class Team extends Component {
     newDepartment: "",
     showAppOption: "",
     popup: null,
-    popupProps: null
+    popupProps: null,
+    update: 0
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
@@ -372,12 +380,13 @@ class Team extends Component {
   distributeLicence = async (boughtplanid, unitid, departmentid) => {
     const res = await this.props.distributeLicence({
       variables: { boughtplanid, unitid, departmentid },
-      refetchQueries: [{ query: fetchLicences }]
+      refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
     });
     if (res.data.distributeLicence.error || !res.data.distributeLicence.ok) {
       this.showPopup(res.data.distributeLicence.error.message || "Something went really wrong");
     }
     this.toggleEmployeeInfo(0, 0);
+    this.setState({ update: this.state.update + 1 });
   };
 
   revokeLicence = async licenceid => {
@@ -416,25 +425,200 @@ class Team extends Component {
     this.setState({ newDepartment: "" });
   };
 
+  onDragOver = ev => {
+    ev.preventDefault();
+  };
+
+  onDragStart(ev, id) {
+    console.log("DRAG START", id);
+    ev.dataTransfer.setData("id", id);
+  }
+
+  onDrop = (ev, person, department) => {
+    let id = ev.dataTransfer.getData("id");
+    console.log("DROP", id, person, department);
+    this.distributeLicence(id, person, department);
+    console.log("DROP", id, person, department);
+  };
+
+  showEmployees(data, departmentid, state) {
+    if (data.employees) {
+      let employeeArray: JSX.Element[] = [];
+      data.employees.forEach((person, key) => {
+        employeeArray.push(
+          <div
+            key={key}
+            className="Cemployee"
+            onDragOver={e => this.onDragOver(e)}
+            onDrop={ev => this.onDrop(ev, person.id, departmentid)}>
+            <div className="infoHolder">
+              <div className="picutre">
+                <img
+                  src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                    person.profilepicture
+                  }`}
+                />
+              </div>
+              <div className="namebox">
+                <div className="name">
+                  {person.firstname} {person.lastname}
+                </div>
+                {person.position ? <div className="position">{person.position}</div> : ""}
+              </div>
+            </div>
+            <div className="apps">
+              <Query
+                query={fetchUsersOwnLicences}
+                variables={{ unitid: person.id }}
+                fetchPolicy="network-only">
+                {({ loading, error, data }) => {
+                  if (loading) {
+                    return "Loading...";
+                  }
+                  if (error) {
+                    return `Error! ${error.message}`;
+                  }
+
+                  console.log("DATA", data);
+                  let appArray: JSX.Element[] = [];
+
+                  if (data.fetchUsersOwnLicences) {
+                    if (data.fetchUsersOwnLicences[0]) {
+                      appArray = data.fetchUsersOwnLicences.map((licence, key) => (
+                        <div className="EApp" key={key}>
+                          <img
+                            className="right-profile-image"
+                            style={{
+                              float: "left"
+                            }}
+                            src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
+                              .boughtplanid.planid.appid.icon || "21062018-htv58-scarlett-jpeg"}`}
+                          />
+                          <div className="employeeName">
+                            {licence.boughtplanid.planid.appid.name} {licence.boughtplanid.id}
+                          </div>
+                          <span
+                            className="revokelicence"
+                            onClick={() => this.props.revokeLicence(licence.id)}>
+                            Revoke
+                          </span>
+                        </div>
+                      ));
+                    }
+                  }
+                  return appArray;
+                }}
+              </Query>
+            </div>
+          </div>
+        );
+      });
+      return employeeArray;
+    } else {
+      return <div>No Employees in this company</div>;
+    }
+  }
+
   render() {
     return (
-      <div>
-        <div className="UMS">
-          {this.props.departmentsdata.fetchDepartmentsData
-            ? this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData[0], 2)
-            : ""}
-        </div>
-        {this.state.popup ? (
-          <Popup
-            popupHeader="Check Order"
-            popupBody={ErrorComp}
-            bodyProps={this.state.popupProps}
-            onClose={this.closePopup}
-          />
-        ) : (
-          ""
-        )}
-      </div>
+      <AppContext.Consumer>
+        {value => {
+          console.log("TEAM", value, this.props);
+          if (value.company) {
+            return (
+              <div className="teamHolder">
+                <div className="companyHeader">
+                  <div className="companyLogo">
+                    <img
+                      src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                        value.company.profilepicture
+                      }`}
+                    />
+                  </div>
+                  <div className="companyName">{value.company.name}</div>
+                </div>
+                <div className="companyEmployees">
+                  {this.props.departmentsdata.fetchDepartmentsData
+                    ? this.showEmployees(
+                        this.props.departmentsdata.fetchDepartmentsData[0],
+                        value.company.unit.id,
+                        this.state.update
+                      )
+                    : ""}
+                </div>
+                <div className="availableApps">
+                  <Query
+                    query={fetchUnitApps}
+                    variables={{ departmentid: value.company.unit.id }}
+                    fetchPolicy="network-only">
+                    {({ loading, error, data }) => {
+                      if (loading) {
+                        return "Loading...";
+                      }
+                      if (error) {
+                        return `Error! ${error.message}`;
+                      }
+
+                      let appArray: JSX.Element[] = [];
+
+                      if (data.fetchUnitApps) {
+                        appArray = data.fetchUnitApps.map((app, key) => (
+                          <div
+                            draggable
+                            className="PApp"
+                            onDragStart={ev => this.onDragStart(ev, app.boughtplan.id)}
+                            key={key}
+                            /*onClick={() =>
+                              this.props.distributeLicence(
+                                app.boughtplan.id,
+                                this.props.unitId,
+                                this.props.departmentId
+                              )
+                            }*/
+                          >
+                            <img
+                              className="right-profile-image"
+                              style={{
+                                float: "left"
+                              }}
+                              src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.appicon ||
+                                "21062018-htv58-scarlett-jpeg"}`}
+                            />
+                            <div className="employeeName">
+                              {app.appname} {app.boughtplan.id}
+                            </div>
+                            <div className="employeeTags">
+                              <span className="employeeTag">{}</span>
+                            </div>
+                          </div>
+                        ));
+                      }
+                      return appArray;
+                    }}
+                  </Query>
+                </div>
+                {/*<div className="UMS">
+                  {this.props.departmentsdata.fetchDepartmentsData
+                    ? this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData[0], 2)
+                    : ""}
+                  </div>*/}
+                {this.state.popup ? (
+                  <Popup
+                    popupHeader="Check Order"
+                    popupBody={ErrorComp}
+                    bodyProps={this.state.popupProps}
+                    onClose={this.closePopup}
+                  />
+                ) : (
+                  ""
+                )}
+              </div>
+            );
+          } else {
+            return <div />;
+          }
+        }}
+      </AppContext.Consumer>
     );
   }
 }

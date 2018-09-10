@@ -2282,3 +2282,62 @@ h1{
         right: 3rem;
     }
 }
+.teamHolder{
+    padding: 2rem;
+    .companyHeader{
+        display: flex;
+        justify-content: center;
+        .companyLogo > img{
+            height: 5rem;
+            padding: 2.5rem;
+        }
+        .companyName{
+            line-height: 10rem;
+            font-size: 2rem;
+        }
+    }
+    .companyEmployees{
+        .Cemployee{
+            display: flex;
+            justify-content: start;
+            margin-bottom: 2rem;
+            border: 1px solid #C8C8C8;
+            border-radius: 3px;
+            .infoHolder{
+                width: 10rem;
+    text-align: center;
+    background-color: white;
+    border-radius: 3px;
+    height: 8rem;
+                .picutre{
+                    margin: 0.5rem;
+                    img{
+                        max-height: 5rem;
+                        max-width: 10rem;
+                    }
+                }
+            }
+            .apps{
+                display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 1rem;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: 8rem;
+                .EApp{
+                    width: 9rem;
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+    padding: 0.25rem;
+    margin-right: 0.2rem;
+    .revokelicence{
+        cursor: pointer;
+        font-size: 0.5rem
+    }
+                }
+            }
+        }
+    }
+}
