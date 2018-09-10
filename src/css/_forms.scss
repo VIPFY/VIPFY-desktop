@@ -19,11 +19,19 @@
   }
 }
 
-.generic-input-buttons {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 2em;
-  margin-top: auto;
+.generic-button-holder {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+
+  .generic-cancel-button {
+    @include generic-button($vipfy-secondary, $hover-secondary, $feedback-secondary)
+    margin-right: 1rem;
+  }
+
+  .generic-submit-button {
+    @include generic-button($vipfy-primary, $hover, $feedback)
+  }
 }
 
 .generic-error {
@@ -43,7 +51,6 @@
   margin-left: auto;
 }
 
-
 .generic-async-error {
   @extend .generic-error;
   align-self: center;
@@ -55,15 +62,7 @@
   color: $vipfy-primary;
 }
 
-.generic-cancel {
-  @include generic-button($vipfy-secondary, $hover-secondary, $feedback-secondary)
-}
-
-.generic-submit {
-  @include generic-button($vipfy-primary, $hover, $feedback)
-}
-
-.generic-submitting {
+.generic-submit-buttonting {
   margin-top: 3rem;
   text-align: center;
 }
