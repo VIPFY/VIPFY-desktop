@@ -9,6 +9,7 @@ import DepartmentAddApp from "../common/departmentAddApp";
 import Popup from "../components/Popup";
 import { ErrorComp } from "../common/functions";
 import AddEmployee from "../popups/addEmployee"
+import ShowEmployee from "../popups/showEmployee"
 import { AppContext } from "../common/functions";
 
 import { fetchLicences } from "../queries/auth";
@@ -63,6 +64,11 @@ class Team extends Component {
   this.setState({ popup: true, popupProps: { acceptFunction: this.addEmployeeAccept, did: did },
     popupBody:  AddEmployee, popupHeading: "Add Employee"  });
 
+  showEmployee = (userid, did) => {
+    this.setState({ popup: true, popupProps: { acceptFunction: this.delEmployeeAccept, userid: userid, closePopup: this.closePopup, did: did },
+      popupBody:  ShowEmployee, popupHeading: "Employee"  })
+  }
+
   closePopup = () => this.setState({ popup: null });
 
   toggleAdd = index => {
@@ -92,17 +98,36 @@ class Team extends Component {
     }
   };
 
-  addEmployeeAccept = async(email, departmentid) => {
+  addEmployeeAccept = async (email, departmentid) => {
+    try {
     const res = await this.props.addCreateEmployee({
       variables: { email, departmentid },
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
-    if (res.data.addCreateEmployee.error || !res.data.addCreateEmployee.ok) {
-      this.showPopup(res.data.addCreateEmployee.error.message || "Something went really wrong");
+
+    console.log("NEW EMPLOYEE", email, departmentid)
+    this.closePopup();
+  } catch (err) {
+    console.log("aEA", err)
+      this.showPopup(err.message || "Something went really wrong");
     }
-    console.log("NEW EMPLOYEE", email, did)
+  }
+
+
+  delEmployeeAccept = async(unitid, departmentid) => {
+    try{
+    const res = await this.props.removeEmployee({
+      variables: { unitid, departmentid },
+      refetchQueries: [{ query: fetchDepartmentsData }]
+    });
+    console.log("Del EMPLOYEE", unitid, departmentid)
     this.closePopup();
   }
+  catch (err){
+    console.log("dEA", err)
+      this.showPopup(err.message || "Something went really wrong");
+  }
+}
 
   toggleEmployeeInfo = (index, did) => {
     if (this.state.showEI === `${did} ${index}`) {
@@ -410,14 +435,16 @@ class Team extends Component {
   };
 
   revokeLicence = async licenceid => {
+    console.log("REVOKE", licenceid)
+    try{
     const res = await this.props.revokeLicence({
       variables: { licenceid },
       refetchQueries: [{ query: fetchLicences }]
     });
-    if (res.data.revokeLicence.error || !res.data.revokeLicence.ok) {
-      this.showPopup(res.data.revokeLicence.error.message || "Something went really wrong");
-    }
-    this.toggleEmployeeInfo(0, 0);
+  } catch(err) {
+      this.showPopup(err.message || "Something went really wrong");
+  }
+    //this.toggleEmployeeInfo(0, 0);
   };
 
   revokeLicencesFromDepartment = async (departmentid, boughtplanid) => {
@@ -471,7 +498,7 @@ class Team extends Component {
             className="Cemployee"
             onDragOver={e => this.onDragOver(e)}
             onDrop={ev => this.onDrop(ev, person.id, departmentid)}>
-            <div className="infoHolder">
+            <div className="infoHolder" onClick={() => this.showEmployee(person.id, departmentid)}>
               <div className="picutre">
                 <img
                   src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
@@ -519,7 +546,7 @@ class Team extends Component {
                           </div>
                           <span
                             className="revokelicence"
-                            onClick={() => this.props.revokeLicence(licence.id)}>
+                            onClick={() => this.revokeLicence(licence.id)}>
                             Revoke
                           </span>
                         </div>
@@ -609,9 +636,9 @@ class Team extends Component {
                               <div className="employeeName">
                                 {app.appname} {app.boughtplan.id}
                               </div>
-                              <div className="employeeTags">
-                                <span className="employeeTag">{}</span>
-                              </div>
+                              <span
+                            className="revokelicence">Move to add to user
+                            </span>
                             </div>
                           ));
                         }
