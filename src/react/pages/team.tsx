@@ -637,7 +637,7 @@ class Team extends Component {
                                 {app.appname} {app.boughtplan.id}
                               </div>
                               <span
-                            className="revokelicence">Move to add to user
+                            className="explain">Move to add to user
                             </span>
                             </div>
                           ));
