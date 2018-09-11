@@ -7,6 +7,7 @@ interface Props {
   submittingMessage: string;
   runInBackground: boolean;
   onClose: Function;
+  handleSubmit: Function;
 }
 
 interface State {
@@ -92,18 +93,16 @@ class GenericInputForm extends React.Component<Props, State> {
     await this.setState({ asyncError: false, submitting: true });
 
     if (this.props.runInBackground) {
-      document.querySelector("#overlay").style.display = "none";
-    }
-
-    const throwsError = await this.props.handleSubmit(this.state.values);
-
-    if (throwsError) {
-      if (this.props.runInBackground) {
-        document.querySelector("#overlay").style.display = "flex";
-      }
-      this.setState({ asyncError: filterError(throwsError), submitting: false });
-    } else {
+      this.props.handleSubmit(this.state.values);
       this.props.onClose();
+    } else {
+      const throwsError = await this.props.handleSubmit(this.state.values);
+
+      if (throwsError) {
+        this.setState({ asyncError: filterError(throwsError), submitting: false });
+      } else {
+        this.props.onClose();
+      }
     }
   };
 

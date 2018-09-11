@@ -24,6 +24,10 @@
   border-radius: 10px;
 }*/
 
+.pending {
+  background: #e8c8c8;
+}
+
 #App {
   color: #333;
   font-family: 'Montserrat', sans-serif;
@@ -988,13 +992,18 @@ label {
   }
 }
 
-.notificationIcon {
-    color: #3abf94 !important;
-    margin-right: 0.5rem;
-    font-size: 1.5rem;
-    width: 2rem;
-    text-align: center;
+.bug {
+  color: red;
 }
+
+.notification-icon {
+  color: #3abf94;
+  margin-right: 0.5rem;
+  font-size: 1.5rem;
+  width: 2rem;
+  text-align: center;
+}
+
 .notificationText {
     margin: 0;
     font-size: 0.75rem;
@@ -2347,7 +2356,7 @@ h1{
                         font-size: 0.5rem
                     }
                     img{
-                        user-drag: none; 
+                        user-drag: none;
                         user-select: none;
                         -moz-user-select: none;
                         -webkit-user-drag: none;
@@ -2381,7 +2390,7 @@ h1{
             box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
             text-align: left;
             img{
-                user-drag: none; 
+                user-drag: none;
                 user-select: none;
                 -moz-user-select: none;
                 -webkit-user-drag: none;

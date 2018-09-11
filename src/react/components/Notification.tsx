@@ -111,7 +111,7 @@ class Notification extends React.Component<Props, State> {
 
     return notifications.map(({ message, icon, sendtime, id }) => (
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
-        <span className={`fas fa-${icon} notificationIcon`} />
+        <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
         <p className="notificationText">{message}</p>
         <div className="notificationTime">{sendtime}</div>
       </div>
