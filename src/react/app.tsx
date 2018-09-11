@@ -72,25 +72,29 @@ const INITIAL_POPUP = {
   type: ""
 };
 
+const INITIAL_STATE = {
+  login: false,
+  firstname: "",
+  middlename: "",
+  lastname: "",
+  birthday: "",
+  language: "",
+  teams: false,
+  billing: false,
+  domains: false,
+  createdate: "",
+  marketplace: false,
+  employees: 3,
+  profilepicture: "artist.jpg",
+  error: "",
+  userid: -1,
+  company: null,
+  popup: INITIAL_POPUP
+};
+
 class App extends React.Component<AppProps, AppState> {
   state: AppState = {
-    login: false,
-    firstname: "",
-    middlename: "",
-    lastname: "",
-    birthday: "",
-    language: "",
-    teams: false,
-    billing: false,
-    domains: false,
-    createdate: "",
-    marketplace: false,
-    employees: 3,
-    profilepicture: "artist.jpg",
-    error: "",
-    userid: -1,
-    company: null,
-    popup: INITIAL_POPUP,
+    ...INITIAL_STATE,
     updateUser: (name, value) => this.setState({ [name]: value }),
     showPopup: data => this.renderPopup(data)
   };
@@ -116,14 +120,13 @@ class App extends React.Component<AppProps, AppState> {
         profilepicture: profilepicture || company.profilepicture,
         ...userData
       });
-      console.log("RELOGIN Done", this.state.login);
     } else {
       this.logMeOut();
     }
   };
 
   logMeOut = () => {
-    this.setState({ login: false });
+    this.setState(INITIAL_STATE);
     this.props.client.cache.reset(); //clear graphql cache
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
