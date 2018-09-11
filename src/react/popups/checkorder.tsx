@@ -306,7 +306,7 @@ class CheckOrder extends React.Component {
           query={gql`query {
             fetchDomains{
             id
-            key
+            domainname
           }}`}>
           {({ loading, error, data }) => {
             if (loading) {
@@ -321,7 +321,7 @@ class CheckOrder extends React.Component {
             let possibleDomains: JSX.Element[] = [];
             possibleDomains.push(<option key="DNCAD" value={}>Do not connect any domain</option>)
             data.fetchDomains.forEach((domain,key) => {
-              possibleDomains.push(<option key={key}>{domain.key.domain}</option>)
+              possibleDomains.push(<option key={key}>{domain.domainname}</option>)
             })
         return (
         <select onChange={(e) => this.changeSelect("domains", e.target.value)}>{possibleDomains}</select>
