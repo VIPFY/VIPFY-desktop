@@ -23,18 +23,22 @@ const FETCH_DOMAINS = gql`
       renewaldate
       renewalmode
       whoisprivacy
-      statisticdata
     }
   }
 `;
 
 const REGISTER_DOMAIN = gql`
-mutation onRegisterDomain($domain: DD24!) {
-  registerDomain(domainData: $domain) {
-    ok
+  mutation onRegisterDomain($domain: DD24!) {
+    registerDomain(domainData: $domain) {
+      id
+      domainname
+      createdate
+      renewaldate
+      renewalmode
+      whoisprivacy
+    }
   }
-}
-`
+`;
 
 const UPDATE_DOMAIN = gql`
   mutation UpdateDomain($data: DD24!, $id: Int!) {
@@ -47,11 +51,30 @@ const UPDATE_DOMAIN = gql`
 class Domains extends React.Component<Props> {
   handleSubmit = async ({ domainName, tld, whoisprivacy }) => {
     try {
-      const domain = {domain: `${domainName}.${tld}`, whoisprivacy};
+      const domain = { domain: `${domainName}.${tld}`, whoisprivacy };
 
       await this.props.registerDomain({
         variables: { domain },
-        refetchQueries: [{ query: FETCH_DOMAINS }]
+        optimisticResponse: {
+          __typename: "Mutation",
+          registerDomain: {
+            id: "-1",
+            domainname: `${domainName}.${tld}`,
+            createdate: null,
+            renewaldate: null,
+            renewalmode: "AUTODELETE",
+            whoisprivacy: 0,
+            __typename: "Domain"
+          }
+        },
+        update: (proxy, { data: { registerDomain } }) => {
+          // Read the data from our cache for this query.
+          const cachedData = proxy.readQuery({ query: FETCH_DOMAINS });
+          cachedData.fetchDomains.push(registerDomain);
+          console.log(cachedData);
+          // Write our data back to the cache.
+          proxy.writeQuery({ query: FETCH_DOMAINS, data: cachedData });
+        }
       });
     } catch (err) {
       return err;
@@ -69,7 +92,7 @@ class Domains extends React.Component<Props> {
         optimisticResponse: {
           __typename: "Mutation",
           updateDomain: {
-            __typename: "Licence",
+            __typename: "Domain",
             ok: true,
             data: { domain, cid, [Object.keys(updateField)[0]]: Object.values(updateField)[0] },
             id
@@ -260,45 +283,55 @@ class Domains extends React.Component<Props> {
                 }
 
                 if (data.fetchDomains.length > 0) {
-                  return data.fetchDomains.map(row => {
-                    const { id, domainname, whoisprivacy,renewalmode ...domain } = row;
-
-                    return (
-                      <div key={id} className="domain-row">
-                        <span className="domain-item domain-name">{domainname}</span>
-                        <span
-                          className="domain-item-icon"
-                          onClick={() => this.toggleOption(row, "whois", id, showPopup)}>
-                          <i
-                            className={`fas fa-${
-                              whoisprivacy == 1 ? "check-circle" : "times-circle"
-                            }`}
-                          />
-                        </span>
-                        {Object.values(domain).map((item, key) => (
-                          <span key={key} className="domain-item">
-                            {item}
-                          </span>
-                        ))}
-                        <span
-                          className="domain-item-icon"
-                          onClick={() => this.toggleOption(row, "renewalmode", id, showPopup)}>
-                          <i
-                            className={`fas fa-${
-                              renewalmode == "1" ? "check-circle" : "times-circle"
-                            }`}
-                          />
-                        </span>
-                        <span className="domain-item">No data</span>
-                        <span className="domain-item">No data</span>
-                        <span className="domain-item">No data</span>
+                  return data.fetchDomains.map(domain => (
+                    <div
+                      key={domain.id}
+                      className={`domain-row ${domain.createdate == null ? "pending" : ""}`}>
+                      <span className="domain-item domain-name">{domain.domainname}</span>
+                      <span
+                        className="domain-item-icon"
+                        onClick={() => this.toggleOption(domain, "whois", domain.id, showPopup)}>
                         <i
-                          className="fas fa-sliders-h domain-item-icon"
-                          onClick={() => this.props.setDomain(id, row)}
+                          className={`fas fa-${
+                            domain.whoisprivacy == 1 ? "check-circle" : "times-circle"
+                          }`}
                         />
-                      </div>
-                    );
-                  });
+                      </span>
+
+                      <span className="domain-item">
+                        {domain.createdate == null
+                          ? "Registration"
+                          : new Date(domain.createdate).toDateString()}
+                      </span>
+
+                      <span className="domain-item">
+                        {domain.renewaldate == null
+                          ? "pending"
+                          : new Date(domain.renewaldate).toDateString()}
+                      </span>
+
+                      <span
+                        className="domain-item-icon"
+                        onClick={() =>
+                          this.toggleOption(domain, "renewalmode", domain.id, showPopup)
+                        }>
+                        <i
+                          className={`fas fa-${
+                            domain.renewalmode == "AUTORENEW" ? "check-circle" : "times-circle"
+                          }`}
+                        />
+                      </span>
+
+                      <span className="domain-item">No data</span>
+                      <span className="domain-item">No data</span>
+                      <span className="domain-item">No data</span>
+
+                      <i
+                        className="fas fa-sliders-h domain-item-icon"
+                        onClick={() => this.props.setDomain(domain.id, domain)}
+                      />
+                    </div>
+                  ));
                 } else {
                   return <span>No Domains registered yet</span>;
                 }
