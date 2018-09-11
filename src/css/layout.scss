@@ -987,13 +987,18 @@ label {
   }
 }
 
-.notificationIcon {
-    color: #3abf94 !important;
-    margin-right: 0.5rem;
-    font-size: 1.5rem;
-    width: 2rem;
-    text-align: center;
+.bug {
+  color: red;
 }
+
+.notification-icon {
+  color: #3abf94;
+  margin-right: 0.5rem;
+  font-size: 1.5rem;
+  width: 2rem;
+  text-align: center;
+}
+
 .notificationText {
     margin: 0;
     font-size: 0.75rem;
@@ -2342,7 +2347,7 @@ h1{
                         font-size: 0.5rem
                     }
                     img{
-                        user-drag: none; 
+                        user-drag: none;
                         user-select: none;
                         -moz-user-select: none;
                         -webkit-user-drag: none;
@@ -2390,7 +2395,7 @@ h1{
             margin-right: 0.2rem;
             cursor: move;
             img{
-                user-drag: none; 
+                user-drag: none;
                 user-select: none;
                 -moz-user-select: none;
                 -webkit-user-drag: none;

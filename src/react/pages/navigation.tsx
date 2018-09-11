@@ -18,16 +18,18 @@ const NOTIFICATION_SUBSCRIPTION = gql`
 interface Props {
   chatOpen: boolean;
   firstname: string;
-  history: Function;
+  history: any;
   lastname: string;
   data: any;
   error: any;
   loading: boolean;
   profilepicture: string;
+  refetch: Function;
   setApp: Function;
   sideBarOpen: boolean;
   subscribeToMore: Function;
   toggleSidebar: Function;
+  toggleChat: Function;
   userid: number;
 }
 
@@ -55,7 +57,7 @@ class Navigation extends React.Component<Props, State> {
   componentDidMount() {
     window.addEventListener("keydown", this.listenKeyboard, true);
     document.addEventListener("click", this.handleClickOutside, true);
-    console.log(this.props);
+
     this.props.subscribeToMore({
       document: NOTIFICATION_SUBSCRIPTION,
       variables: { receiver: this.props.userid },

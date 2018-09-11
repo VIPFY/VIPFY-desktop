@@ -3,7 +3,9 @@ import gql from "graphql-tag";
 export const me = gql`
   {
     me {
-      emails
+      emails {
+        email
+      }
       createdate
       id
       title

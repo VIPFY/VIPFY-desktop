@@ -3,31 +3,40 @@ import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
-import { buyPlan } from "../mutations/products";
 import { domainValidation } from "../common/validation";
 import { filterError } from "../common/functions";
 
 interface Props {
-  buyPlan: Function;
+  registerDomain: Function;
   updateDomain: Function;
   handleSubmit: Function;
+  showPopup: Function;
+  setDomain: Function;
 }
 
-const fetchDomains = gql`
+const FETCH_DOMAINS = gql`
   {
     fetchDomains {
       id
-      key
-      starttime
-      endtime
-      agreed
-      options
-      disabled
+      domainname
+      createdate
+      renewaldate
+      renewalmode
+      whoisprivacy
+      statisticdata
     }
   }
 `;
 
-const updateDomain = gql`
+const REGISTER_DOMAIN = gql`
+mutation onRegisterDomain($domain: DD24!) {
+  registerDomain(domainData: $domain) {
+    ok
+  }
+}
+`
+
+const UPDATE_DOMAIN = gql`
   mutation UpdateDomain($data: DD24!, $id: Int!) {
     updateDomain(domainData: $data, licenceid: $id) {
       ok
@@ -36,38 +45,13 @@ const updateDomain = gql`
 `;
 
 class Domains extends React.Component<Props> {
-  handleSubmit = async ({ domainName, tld, whoisPrivacy }) => {
+  handleSubmit = async ({ domainName, tld, whoisprivacy }) => {
     try {
-      const domain = `${domainName}.${tld}`;
-      const planIds = [25];
-      let options = { domain };
+      const domain = {domain: `${domainName}.${tld}`, whoisprivacy};
 
-      if (whoisPrivacy) {
-        options.whoisPrivacy = 1;
-      }
-
-      /* tslint:disable */
-      switch (tld) {
-        case "org":
-          planIds.push(49);
-          if (whoisPrivacy) planIds.push(53);
-
-          break;
-
-        case "net":
-          planIds.push(50);
-          if (whoisPrivacy) planIds.push(52);
-          break;
-
-        default:
-          planIds.push(48);
-          if (whoisPrivacy) planIds.push(51);
-      }
-      /* tslint:enable */
-
-      await this.props.buyPlan({
-        variables: { planIds, options },
-        refetchQueries: [{ query: fetchDomains }]
+      await this.props.registerDomain({
+        variables: { domain },
+        refetchQueries: [{ query: FETCH_DOMAINS }]
       });
     } catch (err) {
       return err;
@@ -93,7 +77,7 @@ class Domains extends React.Component<Props> {
         },
         update: (proxy, { data: { updateDomain } }) => {
           // Read the data from our cache for this query.
-          const data = proxy.readQuery({ query: fetchDomains });
+          const data = proxy.readQuery({ query: FETCH_DOMAINS });
           const updatedDomains = data.fetchDomains.map(domain => {
             if (domain.id == id) {
               const updatedDomain = domain;
@@ -113,7 +97,7 @@ class Domains extends React.Component<Props> {
           });
           data.fetchDomains = updatedDomains;
           // Write our data back to the cache.
-          proxy.writeQuery({ query: fetchDomains, data });
+          proxy.writeQuery({ query: FETCH_DOMAINS, data });
         }
       });
     } catch (err) {
@@ -130,20 +114,20 @@ class Domains extends React.Component<Props> {
       header = "Change Whois Privacy";
       fields = [
         {
-          name: "whoisPrivacy",
+          name: "whoisprivacy",
           type: "checkbox",
           label: `Do you want to ${
-            !key.whoisPrivacy || key.whoisPrivacy == 0 ? "buy" : "cancel the"
-          } Whois Privacy for ${key.domain}${key.whoisPrivacy == 0 ? " for 5.99 $" : ""}?`,
+            !key.whoisprivacy || key.whoisprivacy == 0 ? "buy" : "cancel the"
+          } Whois Privacy for ${key.domainname}${key.whoisprivacy == 0 ? " for 5.99 $" : ""}?`,
           icon: "user-secret"
         }
       ];
       handleSubmit = values => {
-        if (values.whoisPrivacy) {
+        if (values.whoisprivacy) {
           this.updateDomain(
             key,
             {
-              whoisPrivacy: key.whoisPrivacy == 1 ? 0 : 1
+              whoisprivacy: key.whoisprivacy == 1 ? 0 : 1
             },
             id
           );
@@ -155,7 +139,7 @@ class Domains extends React.Component<Props> {
         {
           name: "renewalmode",
           type: "select",
-          label: `Select Renewalmode for ${key.domain}`,
+          label: `Select Renewalmode for ${key.domainname}`,
           icon: "globe",
           options: ["autorenew", "once", "autodelete"],
           required: true
@@ -172,7 +156,7 @@ class Domains extends React.Component<Props> {
       };
     }
 
-    const properties: { fields: object[]; handleSubmit: Function; submittingMessage: string } = {
+    const properties: { fields: object[]; handleSubmit: Function; submittingMessage: any } = {
       fields,
       handleSubmit,
       submittingMessage: (
@@ -204,7 +188,12 @@ class Domains extends React.Component<Props> {
       "Configuration"
     ];
 
-    const regProps: { fields: object[]; handleSubmit: Function; submittingMessage: string } = {
+    const regProps: {
+      fields: object[];
+      handleSubmit: Function;
+      submittingMessage: any;
+      runInBackground: boolean;
+    } = {
       fields: [
         {
           name: "domainName",
@@ -224,7 +213,7 @@ class Domains extends React.Component<Props> {
           required: true
         },
         {
-          name: "whoisPrivacy",
+          name: "whoisprivacy",
           type: "checkbox",
           label: "Whois Privacy",
           icon: "user-secret"
@@ -260,7 +249,7 @@ class Domains extends React.Component<Props> {
           </div>
 
           <div className="domain-table-body">
-            <Query query={fetchDomains}>
+            <Query query={FETCH_DOMAINS}>
               {({ loading, error, data }) => {
                 if (loading) {
                   return <LoadingDiv text="Loading..." />;
@@ -272,17 +261,17 @@ class Domains extends React.Component<Props> {
 
                 if (data.fetchDomains.length > 0) {
                   return data.fetchDomains.map(row => {
-                    const { id, agreed, disabled, options, __typename, key, ...domain } = row;
+                    const { id, domainname, whoisprivacy,renewalmode ...domain } = row;
 
                     return (
                       <div key={id} className="domain-row">
-                        <span className="domain-item domain-name">{key.domain}</span>
+                        <span className="domain-item domain-name">{domainname}</span>
                         <span
                           className="domain-item-icon"
-                          onClick={() => this.toggleOption(key, "whois", id, showPopup)}>
+                          onClick={() => this.toggleOption(row, "whois", id, showPopup)}>
                           <i
                             className={`fas fa-${
-                              key.whoisPrivacy == 1 ? "check-circle" : "times-circle"
+                              whoisprivacy == 1 ? "check-circle" : "times-circle"
                             }`}
                           />
                         </span>
@@ -293,10 +282,10 @@ class Domains extends React.Component<Props> {
                         ))}
                         <span
                           className="domain-item-icon"
-                          onClick={() => this.toggleOption(key, "renewalmode", id, showPopup)}>
+                          onClick={() => this.toggleOption(row, "renewalmode", id, showPopup)}>
                           <i
                             className={`fas fa-${
-                              key.renewalmode == "1" ? "check-circle" : "times-circle"
+                              renewalmode == "1" ? "check-circle" : "times-circle"
                             }`}
                           />
                         </span>
@@ -305,7 +294,7 @@ class Domains extends React.Component<Props> {
                         <span className="domain-item">No data</span>
                         <i
                           className="fas fa-sliders-h domain-item-icon"
-                          onClick={() => this.props.setDomain(id, key.domain)}
+                          onClick={() => this.props.setDomain(id, row)}
                         />
                       </div>
                     );
@@ -323,6 +312,6 @@ class Domains extends React.Component<Props> {
 }
 
 export default compose(
-  graphql(buyPlan, { name: "buyPlan" }),
-  graphql(updateDomain, { name: "updateDomain" })
+  graphql(REGISTER_DOMAIN, { name: "registerDomain" }),
+  graphql(UPDATE_DOMAIN, { name: "updateDomain" })
 )(Domains);
