@@ -138,7 +138,7 @@ class Login extends React.Component<Props, State> {
               }>
               {this.state.error}
             </div>
-            <label>Username:</label>
+            <label>E-mail:</label>
             <input
               className="inputField"
               placeholder="Your E-mail Address"
@@ -196,7 +196,7 @@ class Login extends React.Component<Props, State> {
               }>
               {this.state.error}
             </div>
-            <label>Username:</label>
+            <label>E-mail:</label>
             <input
               className="inputField"
               placeholder="Your E-mail Address"
@@ -225,7 +225,9 @@ class Login extends React.Component<Props, State> {
                       }))
                     }
                   />
-                  I agree to receive updates from<br />Vipfy. I can revoke this at any time.
+                  I agree to receive updates from
+                  <br />
+                  Vipfy. I can revoke this at any time.
                 </label>
               </div>
             </div>

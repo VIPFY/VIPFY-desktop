@@ -437,7 +437,7 @@ class Team extends Component {
     this.setState({addingAppUser: unitid, addingAppName: appname})
     const res = await this.props.distributeLicence({
       variables: { boughtplanid, unitid, departmentid },
-      refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
+      refetchQueries: [{query: fetchLicences}, { query: fetchUsersOwnLicences, variables: { unitid } }]
     });
     if (res.data.distributeLicence.error || !res.data.distributeLicence.ok) {
       this.showPopup(res.data.distributeLicence.error.message || "Something went really wrong");
@@ -455,7 +455,7 @@ class Team extends Component {
     try{
     const res = await this.props.revokeLicence({
       variables: { licenceid },
-      refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
+      refetchQueries: [{query: fetchLicences}, { query: fetchUsersOwnLicences, variables: { unitid } }]
     });
   } catch(err) {
       this.showPopup(err.message || "Something went really wrong");
