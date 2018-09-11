@@ -35,8 +35,8 @@ class Dashboard extends React.Component<Props, State> {
             key={`useableLogo-${key}`}
             onClick={() => this.setApp(licence.id)}
             style={{
-              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
-                licence.boughtplanid.planid.appid.logo
+              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                licence.boughtplanid.planid.appid.icon
               })`
             }}>
             <span className="nameAppsTile">{licence.boughtplanid.planid.appid.name}</span>
@@ -59,7 +59,7 @@ class Dashboard extends React.Component<Props, State> {
       return filterError(rcApps.error);
     }
 
-    if (this.state.recommended) {
+    /*if (this.state.recommended) {
       return (
         <div className="centralize backgroundLogo">
           <div className="login-holder">
@@ -85,11 +85,11 @@ class Dashboard extends React.Component<Props, State> {
           </div>
         </div>
       );
-    }
+    }*/
 
     return (
       <div className="dashboard-working">
-        <div className="welcomeTile">
+        {/*<div className="welcomeTile">
           <span className="fas fa-child welcomeIcon" />
           <span className="welcomeText">
             Welcome back, {this.props.firstname} {this.props.lastname}
@@ -99,9 +99,12 @@ class Dashboard extends React.Component<Props, State> {
             <span className="welcomeSentenceText"> Did you know that grass is green? </span>
             <i className="fas fa-quote-right" />
           </div>
+    </div>*/}
+        <div className="dashboardHeading">
+          <div>My Apps</div>
         </div>
         <div className="appsTile">{this.showApps(this.props.licences.fetchLicences)}</div>
-        <div className="serviceTile">
+        {/*<div className="serviceTile">
           <div className="serviceTileHeader">
             <span className="serviceTileHeaderText">Follow our alpha-progress!</span>
           </div>
@@ -148,7 +151,7 @@ class Dashboard extends React.Component<Props, State> {
           <div className="informationGraphContent">
             <PipedriveGraph />
           </div>
-        </div>
+          </div>*/}
         {/*
           <div className="welcomeHolder">
             <div className="welcomeImage" style={{ backgroundImage: `url(${bI})` }} />
