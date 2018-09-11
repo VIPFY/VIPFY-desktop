@@ -434,12 +434,12 @@ class Team extends Component {
     this.setState({ update: this.state.update + 1 });
   };
 
-  revokeLicence = async licenceid => {
+  revokeLicence = async (licenceid, unitid) => {
     console.log("REVOKE", licenceid)
     try{
     const res = await this.props.revokeLicence({
       variables: { licenceid },
-      refetchQueries: [{ query: fetchLicences }]
+      refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
     });
   } catch(err) {
       this.showPopup(err.message || "Something went really wrong");
@@ -546,7 +546,7 @@ class Team extends Component {
                           </div>
                           <span
                             className="revokelicence"
-                            onClick={() => this.revokeLicence(licence.id)}>
+                            onClick={() => this.revokeLicence(licence.id, person.id)}>
                             Revoke
                           </span>
                         </div>
@@ -593,8 +593,10 @@ class Team extends Component {
                       )
                     : ""}
                 </div>
+                <div className="addEmployeeButton" onClick={() => this.addEmployeeP(value.company.unit.id)}><span
+                  className="fas fa-plus"
+                /> Add Employee</div>
                 <div className="availableApps">
-                  <div className="infoHolder" onClick={() => this.addEmployeeP(value.company.unit.id)}>Add Employee</div>
                   <div className="appHolder">
                     <Query
                       query={fetchUnitApps}
@@ -637,7 +639,7 @@ class Team extends Component {
                                 {app.appname} {app.boughtplan.id}
                               </div>
                               <span
-                            className="revokelicence">Move to add to user
+                            className="explain">Move to add to user
                             </span>
                             </div>
                           ));

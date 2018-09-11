@@ -1016,6 +1016,9 @@ label {
 .dashboard-working {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    height: 100%;
     /*justify-content: space-between;*/
 }
 .welcomeTile{
@@ -1049,7 +1052,7 @@ label {
     text-align: center;
     width: calc(100% - 2rem);
 }
-.appsTile {
+/*.appsTile {
     min-width: 60%;
     max-width: calc(92.5% - 15rem);
     margin: 2.5%;
@@ -1081,7 +1084,7 @@ label {
     width: 100%;
     text-align: center;
     font-size: 0.8rem;
-}
+}*/
 .serviceTile {
     min-width: 5rem;
     max-width: 15rem;
@@ -2342,6 +2345,7 @@ h1{
                     background-color: white;
                     padding: 0.25rem;
                     margin-right: 0.2rem;
+                    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
                     .revokelicence{
                         cursor: pointer;
                         font-size: 0.5rem
@@ -2361,30 +2365,15 @@ h1{
 }
 .teamHolder{
     .availableApps{
-        display: flex;
-        justify-content: start;
-        margin-bottom: 2rem;
-        border: 1px solid #C8C8C8;
-        border-radius: 3px;
-        .infoHolder{
-            width: 10rem;
-            text-align: center;
-            background-color: white;
-            border-radius: 3px;
-            height: 8rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
+        position: fixed;
+        bottom: 0rem;
+        background-color: rgba(0,0,0,0.4);
+        padding: 0.5rem;
         .appHolder{
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-left: 1rem;
             flex-wrap: wrap;
-            flex-direction: column;
-            height: 8rem;
         }
         .PApp{
             width: 9rem;
@@ -2394,6 +2383,7 @@ h1{
             padding: 0.25rem;
             margin-right: 0.2rem;
             cursor: move;
+            box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
             img{
                 user-drag: none;
                 user-select: none;
@@ -2401,6 +2391,9 @@ h1{
                 -webkit-user-drag: none;
                 -webkit-user-select: none;
                 -ms-user-select: none;
+            }
+            .explain{
+                font-size: 0.6rem;
             }
         }
     }
@@ -2433,5 +2426,60 @@ h1{
     div > .inputBoxField{
         border-bottom: 1px solid;
         padding: 0px;
+    }
+}
+.appsTile{
+    max-width: 50rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    .logoAppsTile {
+        margin: 1rem;
+        min-height: 10rem;
+        min-width: 10rem;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        /*background-color: white;*/
+        border-radius: 3px;
+        box-shadow: 0 0 4rem #f0f3ff;
+        cursor: pointer;
+        position: relative;
+        .nameAppsTile {
+            position: absolute;
+            bottom: -1rem;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        &:hover{
+            box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+            background-color: white;
+        }
+    }
+}
+.dashboardHeading{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    div{
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+}
+.addEmployeeButton{
+    background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+    color: white;
+    width: 10rem;
+    text-align: center;
+    border-radius: 3px;
+    height: 2rem;
+    cursor: pointer;
+    line-height: 2rem;
+    margin-bottom: 4rem;
+    &:hover{
+        box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
     }
 }
