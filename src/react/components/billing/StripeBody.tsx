@@ -3,8 +3,9 @@ import { CardElement, injectStripe } from "react-stripe-elements";
 import gql from "graphql-tag";
 import { Mutation } from "react-apollo";
 
-import LoadingDiv from "../components/LoadingDiv";
-import { filterError, ErrorComp } from "../common/functions";
+import LoadingDiv from "../../components/LoadingDiv";
+import { fetchCards } from "../../queries/billing";
+import { filterError, ErrorComp } from "../../common/functions";
 
 const addPayment = gql`
   mutation AddPaymentData($data: JSON, $id: Int!) {
@@ -24,7 +25,7 @@ interface State {
 }
 
 interface Props {
-  close: function;
+  onClose: Function;
 }
 
 class StripeBody extends React.Component<Props, State> {
@@ -59,6 +60,7 @@ class StripeBody extends React.Component<Props, State> {
 
     const name = `${firstName} ${lastName}`;
     let { token, error } = await this.props.stripe.createToken({ name });
+
     if (error) {
       return this.setState({ error: error.message });
     }
@@ -69,9 +71,9 @@ class StripeBody extends React.Component<Props, State> {
 
   handleSuccess = data => {
     this.setState({ success: "Credit Card successfully added", submitting: false });
-
+    console.log("HALLO", data);
     if (data.addPaymentData.ok) {
-      setTimeout(() => this.props.close(), 700);
+      setTimeout(() => this.props.onClose(), 700);
     } else {
       this.setState({ error: "Sorry, something went wrong!" });
     }
@@ -93,7 +95,8 @@ class StripeBody extends React.Component<Props, State> {
       <Mutation
         mutation={addPayment}
         onError={error => this.setState({ error: filterError(error), submitting: false })}
-        onCompleted={this.handleSuccess}>
+        onCompleted={this.handleSuccess}
+        refetchQueries={[{ query: fetchCards }]}>
         {(addCard, { loading }) => (
           <form className="generic-form" onSubmit={e => this.handleSubmit(e, addCard)}>
             <p>Please enter your card data:</p>
@@ -133,7 +136,7 @@ class StripeBody extends React.Component<Props, State> {
               <button
                 disabled={loading || success}
                 className="generic-cancel-button"
-                onClick={this.props.close}>
+                onClick={this.props.onClose}>
                 Cancel
               </button>
 

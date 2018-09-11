@@ -8,6 +8,7 @@ interface Props {
   runInBackground: boolean;
   onClose: Function;
   handleSubmit: Function;
+  handleChange: Function;
 }
 
 interface State {
@@ -101,6 +102,7 @@ class GenericInputForm extends React.Component<Props, State> {
       if (throwsError) {
         this.setState({ asyncError: filterError(throwsError), submitting: false });
       } else {
+        console.log("TEST");
         this.props.onClose();
       }
     }

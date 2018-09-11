@@ -10,7 +10,7 @@ import { Elements, StripeProvider } from "react-stripe-elements";
 import StripeBody from "./StripeBody";
 
 interface State {
-  stripe: object;
+  stripe: any;
 }
 
 interface Props {}

@@ -4,7 +4,7 @@ import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { AppContext } from "../common/functions";
 import WebView = require("react-electron-web-view");
-import CreditCard from "../components/CreditCard";
+import CreditCard from "../components/billing/CreditCard";
 
 class CheckOrder extends React.Component {
   state = {
