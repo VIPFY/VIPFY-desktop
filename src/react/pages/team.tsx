@@ -8,8 +8,9 @@ import DepartmentLicenceEdit from "../common/departmentLicenceEdit";
 import DepartmentAddApp from "../common/departmentAddApp";
 import Popup from "../components/Popup";
 import { ErrorComp } from "../common/functions";
-import AddEmployee from "../popups/addEmployee"
-import ShowEmployee from "../popups/showEmployee"
+import AddEmployee from "../popups/addEmployee";
+import ShowEmployee from "../popups/showEmployee";
+import LoadingPopup from "../popups/loadingPopup"
 import { AppContext } from "../common/functions";
 
 import { fetchLicences } from "../queries/auth";
@@ -50,7 +51,10 @@ class Team extends Component {
     popupProps: null,
     popupBody: null
     update: 0,
-    popupHeading: ""
+    popupHeading: "",
+    addingAppUser: null,
+    addingAppName: null,
+    removeApp: null
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
@@ -67,6 +71,11 @@ class Team extends Component {
   showEmployee = (userid, did) => {
     this.setState({ popup: true, popupProps: { acceptFunction: this.delEmployeeAccept, userid: userid, closePopup: this.closePopup, did: did },
       popupBody:  ShowEmployee, popupHeading: "Employee"  })
+  }
+
+  showLoading = (sentence) =>{
+    this.setState({ popup: true, popupProps: { sentence },
+      popupBody:  LoadingPopup, popupHeading: "Please wait..."  })
   }
 
   closePopup = () => this.setState({ popup: null });
@@ -422,7 +431,10 @@ class Team extends Component {
     }
     this.togglePApps(departmentid);
   };
-  distributeLicence = async (boughtplanid, unitid, departmentid) => {
+  distributeLicence = async (boughtplanid, unitid, departmentid, appname) => {
+    //this.showLoading("We are adding the App to the user account.")
+    console.log("APPNAME", appname)
+    this.setState({addingAppUser: unitid, addingAppName: appname})
     const res = await this.props.distributeLicence({
       variables: { boughtplanid, unitid, departmentid },
       refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
@@ -430,12 +442,16 @@ class Team extends Component {
     if (res.data.distributeLicence.error || !res.data.distributeLicence.ok) {
       this.showPopup(res.data.distributeLicence.error.message || "Something went really wrong");
     }
-    this.toggleEmployeeInfo(0, 0);
-    this.setState({ update: this.state.update + 1 });
+    this.setState({addingAppUser: null, addingAppName: null})
+    //this.closePopup();
+    //this.toggleEmployeeInfo(0, 0);
+    //this.setState({ update: this.state.update + 1 });
   };
 
   revokeLicence = async (licenceid, unitid) => {
     console.log("REVOKE", licenceid)
+    //this.showLoading("We are removing the app from the user account.")
+    this.setState({removeApp: `${unitid}-${licenceid}`})
     try{
     const res = await this.props.revokeLicence({
       variables: { licenceid },
@@ -444,6 +460,8 @@ class Team extends Component {
   } catch(err) {
       this.showPopup(err.message || "Something went really wrong");
   }
+  this.setState({removeApp: null})
+  //this.closePopup();
     //this.toggleEmployeeInfo(0, 0);
   };
 
@@ -461,6 +479,7 @@ class Team extends Component {
   };
 
   deleteDepartment = async departmentid => {
+    this.showLoading("We are removing the app from the user account.")
     const res = await this.props.deleteSubDepartment({
       variables: { departmentid },
       refetchQueries: [{ query: fetchDepartmentsData }]
@@ -468,23 +487,26 @@ class Team extends Component {
     if (res.data.deleteSubDepartment.error || !res.data.deleteSubDepartment.ok) {
       this.showPopup(res.data.deleteSubDepartment.error.message || "Something went really wrong");
     }
-    this.toggleDA(0);
-    this.setState({ newDepartment: "" });
+    this.closePopup();
+    //this.toggleDA(0);
+    //this.setState({ newDepartment: "" });
   };
 
   onDragOver = ev => {
     ev.preventDefault();
   };
 
-  onDragStart(ev, id) {
-    console.log("DRAG START", id);
+  onDragStart(ev, id, app) {
+    console.log("DRAG START", id, app.appname);
     ev.dataTransfer.setData("id", id);
+    ev.dataTransfer.setData("appname", app.appname);
   }
 
   onDrop = (ev, person, department) => {
     let id = ev.dataTransfer.getData("id");
-    console.log("DROP", id, person, department);
-    this.distributeLicence(id, person, department);
+    let appname = ev.dataTransfer.getData("appname");
+    console.log("DROP", id, person, department, appname);
+    this.distributeLicence(id, person, department, appname);
     console.log("DROP", id, person, department);
   };
 
@@ -531,7 +553,25 @@ class Team extends Component {
 
                   if (data.fetchUsersOwnLicences) {
                     if (data.fetchUsersOwnLicences[0]) {
-                      appArray = data.fetchUsersOwnLicences.map((licence, key) => (
+                      data.fetchUsersOwnLicences.forEach((licence, key) => {
+                        if (this.state.removeApp === `${person.id}-${licence.id}`) {
+                          appArray.push(
+                            <div className="EApp" key="newApp">
+                              <div className="spinner right-profile-image">
+          <div className="double-bounce1"></div>
+          <div className="double-bounce2"></div>
+        </div>
+                              <div className="employeeName">
+                              {licence.boughtplanid.planid.appid.name}
+                              </div>
+                              <span
+                            className="revokelicence">
+                            removing...
+                          </span>
+                            </div>)
+                        }
+                        else{
+                          appArray.push(
                         <div className="EApp" key={key}>
                           <img
                             className="right-profile-image"
@@ -550,8 +590,20 @@ class Team extends Component {
                             Revoke
                           </span>
                         </div>
-                      ));
+                      )}});
                     }
+                  }
+                  if (this.state.addingAppUser === person.id) {
+                    appArray.push(
+                    <div className="EApp" key="newApp">
+                      <div className="spinner right-profile-image">
+  <div className="double-bounce1"></div>
+  <div className="double-bounce2"></div>
+</div>
+                      <div className="employeeName">
+                        {this.state.addingAppName}
+                      </div>
+                    </div>)
                   }
                   return appArray;
                 }}
@@ -573,30 +625,9 @@ class Team extends Component {
           console.log("TEAM", value, this.props);
           if (value.company) {
             return (
-              <div className="teamHolder">
-                <div className="companyHeader">
-                  <div className="companyLogo">
-                    <img
-                      src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                        value.company.profilepicture
-                      }`}
-                    />
-                  </div>
-                  <div className="companyName">{value.company.name}</div>
-                </div>
-                <div className="companyEmployees">
-                  {this.props.departmentsdata.fetchDepartmentsData
-                    ? this.showEmployees(
-                        this.props.departmentsdata.fetchDepartmentsData[0],
-                        value.company.unit.id,
-                        this.state.update
-                      )
-                    : ""}
-                </div>
-                <div className="addEmployeeButton" onClick={() => this.addEmployeeP(value.company.unit.id)}><span
-                  className="fas fa-plus"
-                /> Add Employee</div>
+              <div className="teamPageHolder">
                 <div className="availableApps">
+                  <div className="heading">Move app tile to add app to user</div>
                   <div className="appHolder">
                     <Query
                       query={fetchUnitApps}
@@ -617,7 +648,7 @@ class Team extends Component {
                             <div
                               draggable
                               className="PApp"
-                              onDragStart={ev => this.onDragStart(ev, app.boughtplan.id)}
+                              onDragStart={ev => this.onDragStart(ev, app.boughtplan.id,app)}
                               key={key}
                               /*onClick={() =>
                               this.props.distributeLicence(
@@ -649,6 +680,30 @@ class Team extends Component {
                     </Query>
                   </div>
                 </div>
+              <div className="teamHolder">
+                <div className="companyHeader">
+                  <div className="companyLogo">
+                    <img
+                      src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                        value.company.profilepicture
+                      }`}
+                    />
+                  </div>
+                  <div className="companyName">{value.company.name}</div>
+                </div>
+                <div className="companyEmployees">
+                  {this.props.departmentsdata.fetchDepartmentsData
+                    ? this.showEmployees(
+                        this.props.departmentsdata.fetchDepartmentsData[0],
+                        value.company.unit.id,
+                        this.state.update
+                      )
+                    : ""}
+                </div>
+                <div className="addEmployeeButton" onClick={() => this.addEmployeeP(value.company.unit.id)}><span
+                  className="fas fa-plus"
+                /> Add Employee</div>
+                
                 {/*<div className="UMS">
                   {this.props.departmentsdata.fetchDepartmentsData
                     ? this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData[0], 2)
@@ -664,6 +719,7 @@ class Team extends Component {
                 ) : (
                   ""
                 )}
+              </div>
               </div>
             );
           } else {
