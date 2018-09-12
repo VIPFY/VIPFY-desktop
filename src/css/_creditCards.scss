@@ -1,9 +1,9 @@
-$rccs-card-ratio: 1.5858 !default;
+$rccs-card-ratio: 1.5058 !default;
 $rccs-size: 290px !default;
 
-$rccs-name-font-size: 17px !default;
+$rccs-name-font-size: 0.7rem !default;
 $rccs-name-font-family: Consolas, Courier, monospace !default;
-$rccs-number-font-size: 20px !default;
+$rccs-number-font-size: 0.7rem;
 $rccs-number-font-family: Consolas, Courier, monospace !default;
 $rccs-valid-font-size: 10px !default;
 $rccs-expiry-font-size: 16px !default;
@@ -69,11 +69,12 @@ $rccs-visaelectron-logo: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
   width: $rccs-size;
 
   &__card {
+    cursor: pointer;
     height: $rccs-size / $rccs-card-ratio;
     margin: 0 auto;
     position: relative;
     transform-style: preserve-3d;
-    transition: all 0.4s linear;
+    transition: all 0.4s ease-in-out;
     width: $rccs-size;
 
     &--front,
@@ -423,4 +424,28 @@ $rccs-visaelectron-logo: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
   display: flex;
   justify-content: center;
   margin-top: 2rem;
+}
+
+.credit-card-holder {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 2rem;
+  overflow: hidden;
+
+  i {
+    cursor: pointer;
+    margin: auto 0;
+  }
+
+  .hide-card {
+    position: absolute;
+    left: -30rem;
+    transition: left 0.5s ease-in-out;
+  }
+
+  .show-card {
+    position: relative;
+    left: 0;
+    transition: left 1s ease-in-out;
+  }
 }

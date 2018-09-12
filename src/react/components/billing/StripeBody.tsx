@@ -26,6 +26,8 @@ interface State {
 
 interface Props {
   onClose: Function;
+  stripe: any;
+  departmentid: number;
 }
 
 class StripeBody extends React.Component<Props, State> {

@@ -86,10 +86,8 @@ class Billing extends React.Component<Props, State> {
 
     if (paymentData && paymentData.length > 0) {
       normalizedCards = paymentData.map(card => card);
-      mainCard = normalizedCards.shift();
+      mainCard = normalizedCards[0];
     }
-
-    const cardCheck = mainCard && normalizedCards.length > 0;
 
     return (
       <div className="dashboard-working">
@@ -109,7 +107,7 @@ class Billing extends React.Component<Props, State> {
                 <button
                   className="payment-data-change-button"
                   onClick={() => {
-                    if (cardCheck) {
+                    if (normalizedCards.length > 1) {
                       this.props.showPopup({
                         header: "Change default Card",
                         body: CreditCardSelector,
@@ -123,7 +121,7 @@ class Billing extends React.Component<Props, State> {
                       });
                     }
                   }}>
-                  {cardCheck ? "Change default Card" : "Add Credit Card"}
+                  {normalizedCards.length > 1 ? "Change default Card" : "Add Credit Card"}
                 </button>
               </div>
             </div>

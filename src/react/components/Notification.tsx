@@ -26,12 +26,14 @@ interface Props {
 interface State {
   loading: boolean;
   error: string;
+  hover: boolean;
 }
 
 class Notification extends React.Component<Props, State> {
   state = {
     loading: false,
-    error: ""
+    error: "",
+    hover: false
   };
 
   fetchNotifications = async () => {
@@ -43,6 +45,8 @@ class Notification extends React.Component<Props, State> {
       await this.setState({ loading: false, error: filterError(err) });
     }
   };
+
+  toggleHover = () => this.setState(prevState => ({ hover: !prevState.hover }));
 
   markAsRead = async id => {
     try {
@@ -138,10 +142,12 @@ class Notification extends React.Component<Props, State> {
         <div className="notificationPopupFooter">
           <span>Synced at: </span>
           <button
-            className={`button-sync ${this.state.loading ? "spinner" : ""}`}
+            className="naked-button"
             type="button"
-            onClick={this.fetchNotifications}>
-            <i className="fas fa-sync" />
+            onClick={this.fetchNotifications}
+            onMouseEnter={this.toggleHover}
+            onMouseLeave={this.toggleHover}>
+            <i className={`fas fa-sync ${this.state.hover ? "fa-spin" : ""}`} />
           </button>
         </div>
 

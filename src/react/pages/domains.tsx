@@ -71,7 +71,6 @@ class Domains extends React.Component<Props> {
           // Read the data from our cache for this query.
           const cachedData = proxy.readQuery({ query: FETCH_DOMAINS });
           cachedData.fetchDomains.push(registerDomain);
-          console.log(cachedData);
           // Write our data back to the cache.
           proxy.writeQuery({ query: FETCH_DOMAINS, data: cachedData });
         }
@@ -299,9 +298,13 @@ class Domains extends React.Component<Props> {
                       </span>
 
                       <span className="domain-item">
-                        {domain.createdate == null
-                          ? "Registration"
-                          : new Date(domain.createdate).toDateString()}
+                        {domain.createdate == null ? (
+                          <React.Fragment>
+                            <i className="fas fa-spinner fa-spin" />Registration
+                          </React.Fragment>
+                        ) : (
+                          new Date(domain.createdate).toDateString()
+                        )}
                       </span>
 
                       <span className="domain-item">
