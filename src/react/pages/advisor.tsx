@@ -32,7 +32,42 @@ mutation createAddress($addressData: AddressInput!, $department: Boolean) {
 }
 `;
 
-class Advisor extends React.Component {
+interface Props {
+  setApp: Function;
+  setName: Function;
+}
+
+interface State {
+  advisorStage: number;
+  companystatistic: any;
+  industry: string;
+  subindustry: string;
+  companyname: string;
+  focus: number;
+  tabActive: number;
+  noCompanyName: boolean;
+  thisYearRevenue: number;
+  lastYearRevenue: number;
+  thisYearExpectedRevenue: number;
+  nextYearExpectedRevenue: number;
+  foundingYearOfCompany: number;
+  expectedYearOfMarketEntry: number;
+  numberOfEmployees: number;
+  addressCountry: string;
+  addressState: string;
+  addressCity: string;
+  addressZip: string;
+  addressStreet: string;
+  addressSecondLine: string;
+  addressFirstLine: string;
+  adminname: string;
+  adminage: number;
+  education: string;
+  jobCategory: string;
+  workexperience: string;
+}
+
+class Advisor extends React.Component<Props, State> {
   state = {
     advisorStage: 1,
     companystatistic: {},
@@ -1276,7 +1311,7 @@ class Advisor extends React.Component {
     //console.log("USER", user)
     try {
       const res = this.props.uU({variables: {user}})
-
+      this.props.setName(user.firstname, user.lastname)
       this.props.moveTo("/area/dashboard")
     } catch (err) {
       //console.log("ERROR SAVE", err);

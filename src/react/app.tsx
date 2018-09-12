@@ -32,6 +32,7 @@ interface AppProps {
   relogMeIn: Function;
   logMeIn: Function;
   logMeOut: Function;
+  setName: Function;
   signIn: any;
   signUp: any;
 }
@@ -103,6 +104,11 @@ class App extends React.Component<AppProps, AppState> {
     this.props.logoutFunction(this.logMeOut);
   }
 
+  setName = (firstname, lastname) => {
+    console.log("setName", firstname);
+    this.setState({ firstname, lastname });
+  };
+
   renderPopup = ({ header, body, props, type }) => {
     this.setState({ popup: { show: true, header, body, props, type } });
   };
@@ -126,8 +132,8 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   logMeOut = () => {
-    this.setState(INITIAL_STATE);
-    this.props.client.cache.reset(); //clear graphql cache
+    this.setState(INITIAL_STATE); // clear state
+    this.props.client.cache.reset(); // clear graphql cache
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
     this.props.history.push("/");
@@ -207,12 +213,19 @@ class App extends React.Component<AppProps, AppState> {
               );
             }
 
-            return <Area logMeOut={this.logMeOut} reLogIn={this.relogMeIn} userData={data.me} />;
+            return (
+              <Area
+                setName={this.setName}
+                logMeOut={this.logMeOut}
+                reLogIn={this.relogMeIn}
+                userData={data.me}
+              />
+            );
           }}
         </Query>
       );
     } else if (this.state.login && localStorage.getItem("token")) {
-      return <Area logMeOut={this.logMeOut} {...this.state} />;
+      return <Area setName={this.setName} logMeOut={this.logMeOut} {...this.state} />;
     } else {
       return (
         <Login

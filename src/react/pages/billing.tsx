@@ -3,38 +3,33 @@ import { graphql, compose } from "react-apollo";
 
 import BillHistory from "../graphs/billhistory";
 import BillNext from "../graphs/billnext";
-import CreditCard from "../components/CreditCard";
-import CreditCardSelector from "../components/CreditCardSelector";
+import CreditCard from "../components/billing/CreditCard";
+import CreditCardSelector from "../components/billing/CreditCardSelector";
 import LoadingDiv from "../components/LoadingDiv";
-import StripeForm from "../components/StripeForm";
-import Popup from "../components/Popup";
+import StripeForm from "../components/billing/StripeForm";
 
 import { ErrorComp } from "../common/functions";
 import { fetchBills, fetchCards, fetchBillingAddresses } from "../queries/billing";
 import { downloadBill } from "../mutations/billing";
 
-interface Props {}
+interface Props {
+  downloadBill: Function;
+  cards: any;
+  bills: any;
+  addresses: any;
+  company: any;
+  showPopup: Function;
+}
 
 interface State {
   bills: any[];
-  popup: object;
   error: string;
 }
 
 class Billing extends React.Component<Props, State> {
   state = {
     bills: [],
-    popup: {
-      show: false,
-      header: "",
-      body: null,
-      props: {}
-    },
     error: ""
-  };
-
-  toggle = (body = null, props = {}, header = "") => {
-    this.setState(prevState => ({ popup: { show: !prevState.popup.show, body, props, header } }));
   };
 
   downloadBill = async billid => {
@@ -42,13 +37,10 @@ class Billing extends React.Component<Props, State> {
       const res = await this.props.downloadBill({ variables: { billid } });
       console.log("DOWNLOAD", billid, res);
     } catch {
-      this.setState({
-        popup: {
-          show: true,
-          header: "Error!",
-          body: ErrorComp,
-          props: { error: "Download not possible!" }
-        }
+      this.props.showPopup({
+        header: "Error!",
+        body: ErrorComp,
+        props: { error: "Download not possible!" }
       });
       console.log("NO DOWNLOAD", billid);
     }
@@ -56,19 +48,20 @@ class Billing extends React.Component<Props, State> {
 
   showBills(bills) {
     let billsArray: JSX.Element[] = [];
-    let i = 0;
     if (bills) {
-      bills.forEach(bill => {
-          console.log("BillId", bill);
+      bills.forEach((bill, key) => {
+        console.log("BillId", bill);
         if (bill) {
-        billsArray.push(
-          <div className="billItem" onClick={() => this.downloadBill(bill.id)} key={`bill-${i}`}>
-            <div className="billTimeDiv">{bill.billtime}</div>
-            <div className="billNameDiv">{bill.billname}</div>
-          </div>
-        );
-        i++;
-      }
+          billsArray.push(
+            <div
+              className="billItem"
+              onClick={() => this.downloadBill(bill.id)}
+              key={`bill-${key}`}>
+              <div className="billTimeDiv">{bill.billtime}</div>
+              <div className="billNameDiv">{bill.billname}</div>
+            </div>
+          );
+        }
       });
     }
 
@@ -77,8 +70,8 @@ class Billing extends React.Component<Props, State> {
 
   render() {
     const { cards, bills, addresses } = this.props;
-    console.log("Billing", cards, bills);
-    if !(cards || bills) {
+
+    if (!cards || !bills) {
       return <div>No Billing Data to find</div>;
     }
 
@@ -87,14 +80,15 @@ class Billing extends React.Component<Props, State> {
     }
 
     const paymentData = cards.fetchPaymentData;
-    const billingAddress = addresses.fetchBillingAddresses[0]
-    let mainCard
+    const billingAddress = addresses.fetchBillingAddresses[0];
+    let mainCard;
+    let normalizedCards;
 
     if (paymentData && paymentData.length > 0) {
-      const normalizedCards = paymentData.map(card => card);
-      mainCard = normalizedCards.shift();
+      normalizedCards = paymentData.map(card => card);
+      mainCard = normalizedCards[0];
     }
-console.log("props", this.props)
+
     return (
       <div className="dashboard-working">
         <div className="currentPaymentHolder">
@@ -112,38 +106,54 @@ console.log("props", this.props)
               <div className="credit-card-change-button">
                 <button
                   className="payment-data-change-button"
-                  onClick={() =>
-                    this.toggle(
-                      CreditCardSelector,
-                      { close: this.toggle, cards: normalizedCards },
-                      "Change default Card"
-                    )
-                  }>
-                  Change default Card
+                  onClick={() => {
+                    if (normalizedCards.length > 1) {
+                      this.props.showPopup({
+                        header: "Change default Card",
+                        body: CreditCardSelector,
+                        props: { cards: normalizedCards }
+                      });
+                    } else {
+                      this.props.showPopup({
+                        header: "Add a Credit Card",
+                        body: StripeForm,
+                        props: { departmentid: this.props.company.unit.id }
+                      });
+                    }
+                  }}>
+                  {normalizedCards.length > 1 ? "Change default Card" : "Add Credit Card"}
                 </button>
               </div>
             </div>
           </div>
 
           <div className="paymentDataHolder">
-          { billingAddress ?   <div className="paymentDataAddress">
-            <label className="paymentAddressLabel">Current Payment Address</label>
-              <span className="paymentAddressName">{this.props.company.name}</span>
-              <span className="paymentAddressStreet">{billingAddress.address.street}</span>
-              <span className="paymentAddressCity">{`${billingAddress.address.zip} ${billingAddress.address.city}, ${billingAddress.country}`}</span>
-              <span className="paymentAddressEMail">{`e-mail: ${this.props.emails[0].email}`}</span>
-              <span className="paymentAddressPhone">phone: (+49) 012 123456789</span>
-            </div>: "No address specified yet"}
+            {billingAddress ? (
+              <div className="paymentDataAddress">
+                <label className="paymentAddressLabel">Current Payment Address</label>
+                <span className="paymentAddressName">{this.props.company.name}</span>
+                <span className="paymentAddressStreet">{billingAddress.address.street}</span>
+                <span className="paymentAddressCity">{`${billingAddress.address.zip} ${
+                  billingAddress.address.city
+                }, ${billingAddress.country}`}</span>
+                <span className="paymentAddressEMail">{`e-mail: ${
+                  this.props.emails[0].email
+                }`}</span>
+                <span className="paymentAddressPhone">phone: (+49) 012 123456789</span>
+              </div>
+            ) : (
+              "No address specified yet"
+            )}
           </div>
           <div className="paymentDataHolder">
             <button
               className="payment-data-change-button"
               onClick={() =>
-                this.toggle(
-                  StripeForm,
-                  { close: this.toggle, departmentid: this.props.company.unit.id },
-                  "Add another Card"
-                )
+                this.props.showPopup({
+                  header: "Add another Card",
+                  body: StripeForm,
+                  props: { departmentid: this.props.company.unit.id }
+                })
               }>
               Add Payment Data
             </button>
@@ -158,21 +168,12 @@ console.log("props", this.props)
           <div className="billingHistoryInvoices">
             <span className="paymentHistoryHeader">History of invoices</span>
             <div className="billsHolder">
-              {bills.fetchBills && bills.fetchBills.length > 0 ?this.showBills(bills.fetchBills): "No Invoices yet"}
+              {bills.fetchBills && bills.fetchBills.length > 0
+                ? this.showBills(bills.fetchBills)
+                : "No Invoices yet"}
             </div>
           </div>
         </div>
-
-        {this.state.popup.show ? (
-          <Popup
-            popupHeader={this.state.popup.header}
-            popupBody={this.state.popup.body}
-            bodyProps={this.state.popup.props}
-            onClose={this.toggle}
-          />
-        ) : (
-          ""
-        )}
       </div>
     );
   }
@@ -188,7 +189,7 @@ export default compose(
   graphql(fetchCards, {
     name: "cards"
   }),
-graphql(fetchBillingAddresses, {
-  name: "addresses"
-})
+  graphql(fetchBillingAddresses, {
+    name: "addresses"
+  })
 )(Billing);
