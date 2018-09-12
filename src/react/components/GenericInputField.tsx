@@ -25,6 +25,9 @@ class GenericInputField extends Component {
 
   changeValue(e) {
     e.preventDefault();
+    if (this.props.noteditable) {
+      return;
+    }
     if (this.props.inputType === "currency" && /^([0-9,. ])*$/i.test(e.target.value)) {
       this.setState({ value: e.target.value, error: null });
       return;

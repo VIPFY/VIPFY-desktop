@@ -246,6 +246,7 @@ class CheckOrder extends React.Component {
   }
 
   accept(plan, planInputs, value, addresses) {
+    console.log("ACCEPT", plan, planInputs, value, addresses)
     if (this.state.agreement) {
       this.setState({ agreementError: false });
       let index = 0;
@@ -272,7 +273,7 @@ class CheckOrder extends React.Component {
           case "companyaddress":
           planInputsSending["companyaddress"] = {street: addresses[0].address.street, city: addresses[0].address.city, zip: addresses[0].address.zip}
           break;
-          case "domains":
+          case "domain":
           if (this.state.dataconnections["domains"]) {
           planInputsSending["domains"] = [{domain: this.state.dataconnections["domains"]}]}
           else {planInputsSending["domains"] = []}

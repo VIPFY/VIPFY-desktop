@@ -49,7 +49,7 @@ class Advisor extends React.Component {
     foundingYearOfCompany: null,
     expectedYearOfMarketEntry: null,
     numberOfEmployees: null,
-    addressCountry: null,
+    addressCountry: "US",
     addressState: null,
     addressCity: null,
     addressZip: null,
@@ -223,6 +223,7 @@ class Advisor extends React.Component {
   }
 
   handleEnter(e) {
+    console.log("press",e.key)
     if (e.key === "Enter") {
       this.nextStep();
     }
@@ -737,7 +738,7 @@ class Advisor extends React.Component {
   }
 
   showCompanyFacts(value, state) {
-    console.log("STAGE", this.state)
+    //console.log("STAGE", this.state)
     return (
       <div className="optionsFormularBlock">
         <div style={{width: "100%"}}>
@@ -751,6 +752,7 @@ class Advisor extends React.Component {
             focus={this.state.focus===0}
             onEnter={()=>this.onEnter(2)}
             onClick={()=>this.onEnter(0)}
+            tabIndex="0"
             />: <GenericInputField
             fieldClass="inputBoxField"
             divClass=""
@@ -759,6 +761,7 @@ class Advisor extends React.Component {
             focus={this.state.focus===0}
             onEnter={()=>this.onEnter(1)}
             onClick={()=>this.onEnter(0)}
+            tabIndex="0"
             />}
             {this.state.noCompanyName ? <span className="inputBoxAdvisorError">Please insert a company name.</span> : ""}
           </div>
@@ -812,6 +815,7 @@ class Advisor extends React.Component {
             style={{ backgroundColor: "white" }}
           />:
           <GenericInputField
+            tabIndex="1"
             fieldClass="inputBoxField"
             divClass=""
             placeholder="First Line"
@@ -821,6 +825,7 @@ class Advisor extends React.Component {
             onClick={()=>this.onEnter(1)}
             />}
           <GenericInputField
+          tabIndex="2"
             fieldClass="inputBoxField"
             divClass=""
             placeholder="Second Line"
@@ -869,6 +874,8 @@ class Advisor extends React.Component {
             fieldClass="inputBoxField"
             divClass=""
             placeholder="Country"
+            default="US"
+            noteditable={true}
             onBlur={(value) => this.setState({"addressCountry": value})}
             focus={this.state.focus===7}
             onEnter={()=>this.onEnter(8)}
@@ -904,7 +911,7 @@ class Advisor extends React.Component {
   }
 
   saveFacts = async value => {
-    console.log("SaveFacts", this);
+    //console.log("SaveFacts", this);
 
     //Check if companyname is set
     if (!this.state.companyname) {
@@ -916,12 +923,12 @@ class Advisor extends React.Component {
       thisYearExpectedRevenue: this.state.thisYearExpectedRevenue, nextYearExpectedRevenue: this.state.nextYearExpectedRevenue,foundingYearOfCompany: this.state.foundingYearOfCompany
       expectedYearOfMarketEntry: this.state.expectedYearOfMarketEntry, numberOfEmployees: this.state.numberOfEmployees}
 
-      console.log("STATDATA", statisticdata)
+      //console.log("STATDATA", statisticdata)
 
     try {
       const res = await this.props.cc({ variables:  {name: this.state.companyname}  });
       const { ok, token, refreshToken } = res.data.createCompany;
-      console.log(res.data.createCompany);
+      //console.log(res.data.createCompany);
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", refreshToken);
 
@@ -932,7 +939,7 @@ class Advisor extends React.Component {
 
       this.props.moveTo("/area/advisor/personfacts")
     } catch (err) {
-      console.log("ERROR SAVE", err);
+      //console.log("ERROR SAVE", err);
       return;
     }
   }
@@ -1266,13 +1273,13 @@ class Advisor extends React.Component {
 
     user = {...user, statisticdata: {age: this.state.adminage, education: this.state.education, jobCategory: this.state.jobCategory, workexperience: this.state.workexperience}}
 
-    console.log("USER", user)
+    //console.log("USER", user)
     try {
       const res = this.props.uU({variables: {user}})
 
       this.props.moveTo("/area/dashboard")
     } catch (err) {
-      console.log("ERROR SAVE", err);
+      //console.log("ERROR SAVE", err);
       return;
     }
   }
@@ -1281,7 +1288,7 @@ class Advisor extends React.Component {
     return (
       <AppContext.Consumer>
         {value => {
-          console.log("ADVISOR", this.props, value);
+          //console.log("ADVISOR", this.props, value);
           return (
             <div className="optionsHolder">
               <AdvisorSidebar

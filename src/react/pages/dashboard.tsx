@@ -46,7 +46,7 @@ class Dashboard extends React.Component<Props, State> {
           );
         });
       } else {
-        appLogos.push(<div className="noApp">No Apps for you at the moment :(</div>)
+        return <div className="noApp">No Apps for you at the moment :(</div>
       }
     }
     return appLogos;
