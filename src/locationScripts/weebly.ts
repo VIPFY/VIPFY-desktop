@@ -6,14 +6,19 @@ module.exports = function() {
 };
 
 function onLoad() {
-  if (window.location.pathname == "/login" || window.location.href.indexOf("atlassian.com") !== -1) {
+  if (
+    window.location.pathname == "/login" ||
+    window.location.href.indexOf("atlassian.com") !== -1
+  ) {
     login();
   }
 }
 
 function onReady() {
-  con.log(window.location.pathname);
-
+  document.querySelectorAll("#upgrade-button")["0"].onmousedown = function(e) {
+    e.preventDefault();
+    window.location = "vipfy://marketplace/2";
+  };
   setInterval(modifyAll, 100);
   /*modifySettings();
     let url = location.href;
