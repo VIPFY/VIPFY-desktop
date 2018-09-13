@@ -327,7 +327,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.sideBarOpen) {
       cssClass += " side-bar-open";
     }
-    let cssClassWeb = "mainPosition";
+    let cssClassWeb = "newMainPosition";
     if (this.props.chatOpen) {
       cssClass += " chat-open";
     }

@@ -159,33 +159,23 @@ class Login extends React.Component<Props, State> {
               }}
             />
             <div className="button-holder">
-              <div
-                className={
-                  this.state.forgotMove
-                    ? "button-forgot button button-moved"
-                    : "button-forgot button"
-                }
-                onClick={this.forgetClick}>
-                <span className={this.state.forgotMove ? "button-move" : ""}>Forgot Password</span>
+              <div className="newButton _Forgot" onClick={this.forgetClick}>
+                <span>Forgot Password</span>
               </div>
-              <div
-                className={
-                  this.state.loginMove ? "buttonLogin button button-moved" : "buttonLogin button"
-                }
-                onClick={this.loginClick}>
-                <span className={this.state.loginMove ? "button-move" : ""}>Login</span>
+              <div className="newButton" onClick={this.loginClick}>
+                <span>Login</span>
               </div>
             </div>
           </div>
           <div className="button-new-user button" onClick={() => this.changeLogin(false)}>
-            Register Now
+            Or register now
           </div>
         </div>
       );
     } else {
       return (
         <div className="centralize backgroundLogo">
-          <div className="button-new-user button" onClick={() => this.changeLogin(true)}>
+          <div className="button-already button" onClick={() => this.changeLogin(true)}>
             Already registered? Login Now
           </div>
           <div className="login-holder">

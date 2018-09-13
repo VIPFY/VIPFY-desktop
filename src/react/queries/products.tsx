@@ -48,7 +48,7 @@ export const fetchReviews = gql`
       stars
       reviewtext
       reviewdate
-      reviewer {
+      reviewer: unitid {
         firstname
         middlename
         lastname
