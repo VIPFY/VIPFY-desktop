@@ -42,7 +42,7 @@ const REGISTER_DOMAIN = gql`
 
 const UPDATE_DOMAIN = gql`
   mutation UpdateDomain($data: DD24!, $id: Int!) {
-    updateDomain(domainData: $data, licenceid: $id) {
+    updateDomain(domainData: $data, id: $id) {
       ok
     }
   }
@@ -51,7 +51,7 @@ const UPDATE_DOMAIN = gql`
 class Domains extends React.Component<Props> {
   handleSubmit = async ({ domainName, tld, whoisprivacy }) => {
     try {
-      const domain = { domain: `${domainName}.${tld}`, whoisprivacy };
+      const domain = { domain: `${domainName}.${tld}`, whoisprivacy, tld };
 
       await this.props.registerDomain({
         variables: { domain },
@@ -80,46 +80,38 @@ class Domains extends React.Component<Props> {
     }
   };
 
-  updateDomain = async (key, updateField, id) => {
+  updateDomain = async (domainData, updateField) => {
     try {
-      const { domain, cid } = key;
+      const { id } = domainData;
       await this.props.updateDomain({
         variables: {
-          data: { domain, cid, [Object.keys(updateField)[0]]: Object.values(updateField)[0] },
+          data: {
+            [Object.keys(updateField)[0]]: Object.values(updateField)[0]
+          },
           id
         },
         optimisticResponse: {
           __typename: "Mutation",
           updateDomain: {
             __typename: "Domain",
-            ok: true,
-            data: { domain, cid, [Object.keys(updateField)[0]]: Object.values(updateField)[0] },
-            id
+            ok: true
           }
         },
-        update: (proxy, { data: { updateDomain } }) => {
+        update: proxy => {
           // Read the data from our cache for this query.
-          const data = proxy.readQuery({ query: FETCH_DOMAINS });
-          const updatedDomains = data.fetchDomains.map(domain => {
+          const cachedData = proxy.readQuery({ query: FETCH_DOMAINS });
+          const updatedDomains = cachedData.fetchDomains.map(domain => {
             if (domain.id == id) {
               const updatedDomain = domain;
-              updatedDomain.key = {
-                ...domain.key,
-                // Selecting once sets the domain to autodelete after renewal
-                [Object.keys(updateField)[0]]:
-                  Object.values(updateField)[0] == "ONCE" ||
-                  Object.values(updateField)[0] == "AUTODELETE"
-                    ? "0"
-                    : "1"
-              };
+              updatedDomain[Object.keys(updateField)[0]] = Object.values(updateField)[0];
 
               return updatedDomain;
             }
             return domain;
           });
-          data.fetchDomains = updatedDomains;
+          cachedData.fetchDomains = updatedDomains;
           // Write our data back to the cache.
-          proxy.writeQuery({ query: FETCH_DOMAINS, data });
+          proxy.writeQuery({ query: FETCH_DOMAINS, data: cachedData });
         }
       });
     } catch (err) {
@@ -127,7 +119,7 @@ class Domains extends React.Component<Props> {
     }
   };
 
-  toggleOption = (key, type, id, renderPopup) => {
+  toggleOption = (domain, type) => {
     let fields;
     let handleSubmit;
     let header;
@@ -139,20 +131,18 @@ class Domains extends React.Component<Props> {
           name: "whoisprivacy",
           type: "checkbox",
           label: `Do you want to ${
-            !key.whoisprivacy || key.whoisprivacy == 0 ? "buy" : "cancel the"
-          } Whois Privacy for ${key.domainname}${key.whoisprivacy == 0 ? " for 5.99 $" : ""}?`,
+            !domain.whoisprivacy || domain.whoisprivacy == 0 ? "buy" : "cancel the"
+          } Whois Privacy for ${domain.domainname}${
+            domain.whoisprivacy == 0 ? " for 5.99 $" : ""
+          }?`,
           icon: "user-secret"
         }
       ];
       handleSubmit = values => {
         if (values.whoisprivacy) {
-          this.updateDomain(
-            key,
-            {
-              whoisprivacy: key.whoisprivacy == 1 ? 0 : 1
-            },
-            id
-          );
+          this.updateDomain(domain, {
+            whoisprivacy: domain.whoisprivacy == 1 ? 0 : 1
+          });
         }
       };
     } else {
@@ -161,20 +151,16 @@ class Domains extends React.Component<Props> {
         {
           name: "renewalmode",
           type: "select",
-          label: `Select Renewalmode for ${key.domainname}`,
+          label: `Select Renewalmode for ${domain.domainname}`,
           icon: "globe",
           options: ["autorenew", "once", "autodelete"],
           required: true
         }
       ];
       handleSubmit = values => {
-        this.updateDomain(
-          key,
-          {
-            renewalmode: values.renewalmode.toUpperCase()
-          },
-          id
-        );
+        this.updateDomain(domain, {
+          renewalmode: values.renewalmode.toUpperCase()
+        });
       };
     }
 
@@ -192,12 +178,10 @@ class Domains extends React.Component<Props> {
       props: properties
     };
 
-    renderPopup(popup);
+    this.props.showPopup(popup);
   };
 
   render() {
-    const { showPopup } = this.props;
-
     const headers: string[] = [
       "Domain",
       "Whois Privacy",
@@ -242,7 +226,6 @@ class Domains extends React.Component<Props> {
         }
       ],
       handleSubmit: this.handleSubmit,
-      submittingMessage: <LoadingDiv text="Registering Domain... " />,
       runInBackground: true
     };
 
@@ -289,7 +272,7 @@ class Domains extends React.Component<Props> {
                       <span className="domain-item domain-name">{domain.domainname}</span>
                       <span
                         className="domain-item-icon"
-                        onClick={() => this.toggleOption(domain, "whois", domain.id, showPopup)}>
+                        onClick={() => this.toggleOption(domain, "whois")}>
                         <i
                           className={`fas fa-${
                             domain.whoisprivacy == 1 ? "check-circle" : "times-circle"
@@ -300,7 +283,7 @@ class Domains extends React.Component<Props> {
                       <span className="domain-item">
                         {domain.createdate == null ? (
                           <React.Fragment>
-                            <i className="fas fa-spinner fa-spin" />Registration
+                            <i className="fas fa-spinner fa-spin" />
                           </React.Fragment>
                         ) : (
                           new Date(domain.createdate).toDateString()
@@ -315,9 +298,7 @@ class Domains extends React.Component<Props> {
 
                       <span
                         className="domain-item-icon"
-                        onClick={() =>
-                          this.toggleOption(domain, "renewalmode", domain.id, showPopup)
-                        }>
+                        onClick={() => this.toggleOption(domain, "renewalmode")}>
                         <i
                           className={`fas fa-${
                             domain.renewalmode == "AUTORENEW" ? "check-circle" : "times-circle"

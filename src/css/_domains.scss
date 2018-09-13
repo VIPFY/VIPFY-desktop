@@ -8,7 +8,7 @@ $text-width: 5rem;
 }
 
 .register-domain {
-  @include vipfy-button(5px);
+  @include vipfy-button(0.7rem);
   align-self: flex-end;
   max-width: 8rem;
   min-height: 26px;
@@ -17,10 +17,11 @@ $text-width: 5rem;
 .domain-table {
   display: flex;
   flex-direction: column;
-  margin-top: 2em;
+  margin-top: 1rem;
 
   &-body {
     overflow-y: auto;
+    max-height: calc(100vh - 12rem);
   }
 }
 
