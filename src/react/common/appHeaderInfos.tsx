@@ -23,7 +23,6 @@ class AppHeaderInfos extends React.Component<State> {
   changeShowHolder = a => this.setState({ showRecord: a });
 
   render() {
-    console.log("DD", this.props.departmentsdata);
     return (
       <div className="appHeaderInfos">
         <div className="appHeaderStars">{showStars(this.props.appDetails.avgstars)}</div>
@@ -33,22 +32,6 @@ class AppHeaderInfos extends React.Component<State> {
           <div className="appHeaderPriceText">
             <small>Our recommendation for you</small>
           </div>
-          {/*<ChooseDepartmentBox
-            departments={this.props.departmentsdata.fetchDepartmentsData}
-            showHolder={this.state.showRecord}
-            chosenDepartment={this.state.chosenDepartment}
-            changeShowHolder={this.changeShowHolder}
-            handleOutside={() => this.setState({ showRecord: 0 })}
-          />*/}
-          {/*<div className="appHeaderSelectDepartment">
-            <span className="appHeaderSelectDepartmentText">
-              everyone at Vipfy<span className="fas fa-caret-down caretApp" />
-            </span>
-            <div className="appHeaderSelectDepartmentOptionHolder">
-              <span className="appHeaderSelectDepartmentOption">me</span>
-              <span className="appHeaderSelectDepartmentOption">everyone at Vipfy</span>
-            </div>
-    </div>*/}
           <ChoosePlanBox
             plans={this.props.allPlans}
             appid={this.props.appDetails.id}
@@ -61,7 +44,6 @@ class AppHeaderInfos extends React.Component<State> {
           <div
             className="appHeaderBuyButton"
             onClick={() => this.props.buyApp(this.props.allPlans[this.state.chosenPlan])}>
-            {console.log("PRICE", this.props.allPlans)}
             {this.props.allPlans[this.state.chosenPlan].price == 0
               ? "Start for free!"
               : `Starting at $${this.props.allPlans[this.state.chosenPlan].price}/mo`}

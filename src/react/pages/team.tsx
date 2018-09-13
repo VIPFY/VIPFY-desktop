@@ -114,10 +114,9 @@ class Team extends Component {
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
 
-    console.log("NEW EMPLOYEE", email, departmentid)
     this.closePopup();
   } catch (err) {
-    console.log("aEA", err)
+    console.log("aEA", err, email, departmentid)
       this.showPopup(err.message || "Something went really wrong");
     }
   }
@@ -129,11 +128,10 @@ class Team extends Component {
       variables: { unitid, departmentid },
       refetchQueries: [{ query: fetchDepartmentsData }]
     });
-    console.log("Del EMPLOYEE", unitid, departmentid)
     this.closePopup();
   }
   catch (err){
-    console.log("dEA", err)
+    console.log("dEA", err, unitid, departmentid)
       this.showPopup(err.message || "Something went really wrong");
   }
 }
@@ -433,7 +431,7 @@ class Team extends Component {
   };
   distributeLicence = async (boughtplanid, unitid, departmentid, appname) => {
     //this.showLoading("We are adding the App to the user account.")
-    console.log("APPNAME", appname)
+    //console.log("APPNAME", appname)
     this.setState({addingAppUser: unitid, addingAppName: appname})
     const res = await this.props.distributeLicence({
       variables: { boughtplanid, unitid, departmentid },
@@ -449,7 +447,7 @@ class Team extends Component {
   };
 
   revokeLicence = async (licenceid, unitid) => {
-    console.log("REVOKE", licenceid)
+    //console.log("REVOKE", licenceid)
     //this.showLoading("We are removing the app from the user account.")
     this.setState({removeApp: `${unitid}-${licenceid}`})
     try{
@@ -497,7 +495,6 @@ class Team extends Component {
   };
 
   onDragStart(ev, id, app) {
-    console.log("DRAG START", id, app.appname);
     ev.dataTransfer.setData("id", id);
     ev.dataTransfer.setData("appname", app.appname);
   }
@@ -505,9 +502,7 @@ class Team extends Component {
   onDrop = (ev, person, department) => {
     let id = ev.dataTransfer.getData("id");
     let appname = ev.dataTransfer.getData("appname");
-    console.log("DROP", id, person, department, appname);
     this.distributeLicence(id, person, department, appname);
-    console.log("DROP", id, person, department);
   };
 
   showEmployees(data, departmentid, state) {
@@ -548,7 +543,7 @@ class Team extends Component {
                     return `Error! ${error.message}`;
                   }
 
-                  console.log("DATA", data);
+                  //console.log("DATA", data);
                   let appArray: JSX.Element[] = [];
 
                   if (data.fetchUsersOwnLicences) {
@@ -622,7 +617,7 @@ class Team extends Component {
     return (
       <AppContext.Consumer>
         {value => {
-          console.log("TEAM", value, this.props);
+          //console.log("TEAM", value, this.props);
           if (value.company) {
             return (
               <div className="teamPageHolder">

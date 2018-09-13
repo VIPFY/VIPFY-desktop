@@ -30,7 +30,6 @@ class Dashboard extends React.Component<Props, State> {
     if (licences) {
       if (licences.length > 0) {
         licences.forEach((licence, key) => {
-          console.log("App", licence);
           appLogos.push(
             <div
               className="logoAppsTile"
@@ -53,7 +52,6 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   showRec(licences) {
-    console.log("PROPS", this.props)
     let recLogo: JSX.Element[] = [];
     let recApps = [];
 
@@ -117,12 +115,11 @@ class Dashboard extends React.Component<Props, State> {
     if (recLogo.length > 0){
       return <div className="appsTile">{recLogo}</div>
     }
-    return <div className="noApp">No have everything you really need at the moment :)</div>
+    return <div className="noApp">You have everything you really need at the moment :)</div>
   }
 
   render() {
     const { rcApps } = this.props;
-    console.log("RC", rcApps);
     // let bI = this.props.profilepicture;
     if (rcApps.loading) {
       return <LoadingDiv text="Fetching Recommendations..." />;

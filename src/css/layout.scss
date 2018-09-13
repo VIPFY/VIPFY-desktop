@@ -230,8 +230,8 @@ label {
     /*position: absolute;
     top: 3em;
     left: 3rem;
-    width: calc(100% - 15em);*/
-    height: calc(100vh - 3em);
+    width: calc(100% - 15em);
+    height: calc(100vh - 3em);*/
 }
 
 .pic-and-name {
@@ -241,12 +241,14 @@ label {
 }
 
 #loading-screen {
-  background-color: #fff;
+  /*background-color: #fff;*/
   background-image: url('../images/loading.gif');
   background-repeat: no-repeat;
   background-position: center center;
-  max-height: 15rem;
-  margin-bottom: 4rem;
+  /*max-height: 15rem;
+  margin-bottom: 4rem;*/
+  height: 100%;
+  width: 100%;
 }
 
 .welcomeHolder{
@@ -2508,6 +2510,7 @@ h1{
 }
 .spinner {
     float: left;
+    position: relative;
   }
 
   .double-bounce1, .double-bounce2 {

@@ -21,22 +21,14 @@ class CheckOrder extends React.Component {
     require("electron").shell.openExternal(url);
   }
 
-  handleClickOutside = () => {
-    this.props.handleOutside();
-  };
-
   changeOption(index, value, plan) {
-    console.log("VALUE", index, value);
-    console.log("FNB", this.state.featurenumbers);
     let fn = this.state.featurenumbers;
     fn[index] = value;
     this.setState({ featurenumbers: fn });
-    console.log("FNA", this.state.featurenumbers);
     this.calculateTotalPrice(plan, this.state.featurenumbers)
   }
 
   showaddedprice(index, price, amountper, includedamount) {
-    console.log("SAP", index, price, amountper, includedamount, this.state.featurenumbers);
     if (!this.state.featurenumbers[index]) {
       return <div className="addedprice">Included</div>;
     } else if (this.state.featurenumbers[index] <= includedamount) {
@@ -64,7 +56,6 @@ class CheckOrder extends React.Component {
             let amount = Math.ceil(
               (this.state.featurenumbers[index] - feature.number) / feature.amountper
             );
-            console.log("AMOUNT", index, amount);
             let addedprice = amount * feature.price;
             totalamount += addedprice;
           }
@@ -91,7 +82,6 @@ class CheckOrder extends React.Component {
           } else {
             value = <div className="Pvalue">{feature.value}</div>;
           }
-          console.log("FNI", index, this.state.featurenumbers[index]);
           featureArray.push(
             <li key={fkey}>
               <div>
@@ -175,56 +165,10 @@ class CheckOrder extends React.Component {
     );
   }
 
-  setTos(bool) {
-    this.setState({ ppOpen: false });
-    this.setState({ tosOpen: bool });
-  }
-
-  setPP(bool) {
-    this.setState({ ppOpen: bool });
-    this.setState({ tosOpen: false });
-  }
-
-  showagb(options) {
-    if (options.agb) {
-      if (this.state.tosOpen) {
-        return (
-          <div className="lawbox" onClick={() => this.setTos(false)}>
-            <h1>Terms of Service</h1>
-            <div dangerouslySetInnerHTML={{ __html: options.agb }} />
-          </div>
-        );
-      } else {
-        return <div onClick={() => this.setTos(true)}>Show Terms of Service</div>;
-      }
-    } else {
-      return <span>No Terms of Service knwon</span>;
-    }
-  }
-
-  showprivacy(options) {
-    if (options.privacy) {
-      if (this.state.ppOpen) {
-        return (
-          <div className="lawbox" onClick={() => this.setPP(false)}>
-            <h1>Privacy Policy</h1>
-            <div dangerouslySetInnerHTML={{ __html: options.privacy }} />
-          </div>
-        );
-      } else {
-        return <div onClick={() => this.setPP(true)}>Show Privacy Policy</div>;
-      }
-    } else {
-      return <span>No Privacy Policy known</span>;
-    }
-  }
-
   showNeededCheckIns(options) {
-    console.log("OPTIONS");
     if (options.neededCheckIns) {
       let neededCheckInsArray: JSX.Element[] = [];
       options.neededCheckIns.forEach((element, key) => {
-        console.log("ELEMENT", element);
         neededCheckInsArray.push(
           <span
             key={`lawlink-${key}`}
@@ -246,7 +190,6 @@ class CheckOrder extends React.Component {
   }
 
   accept(plan, planInputs, value, addresses) {
-    console.log("ACCEPT", plan, planInputs, value, addresses)
     if (this.state.agreement) {
       this.setState({ agreementError: false });
       let index = 0;
@@ -254,8 +197,7 @@ class CheckOrder extends React.Component {
       if (plan.features && plan.features[0].features) {
         plan.features[0].features.forEach(feature => {
           if (feature.addable) {
-            console.log("MATH", feature, this.state.featurenumbers[index] , (this.state.featurenumbers[index]||feature.number) - feature.number, (this.state.featurenumbers[index]||feature.number - feature.number) / feature.amountper)
-            featureoptions[feature.key] = {amount: Math.ceil(
+              featureoptions[feature.key] = {amount: Math.ceil(
               ((this.state.featurenumbers[index]||feature.number) - feature.number) / feature.amountper
             ), value: ((this.state.featurenumbers[index]||feature.number)-0)}
             index++;
@@ -281,7 +223,6 @@ class CheckOrder extends React.Component {
         }
       })
 
-      console.log("FO", plan.id, featureoptions, this.state.totalprice|| plan.price, planInputsSending)
 
       this.props.acceptFunction(plan.id, featureoptions, this.state.totalprice || plan.price, planInputsSending);
     } else {
@@ -290,14 +231,12 @@ class CheckOrder extends React.Component {
   }
 
   changeSelect(key, value) {
-    console.log("ChangeSelect", key, value)
     let d = this.state.dataconnections
     d[key] = value
     this.setState({dataconnections: d})
   }
 
   showDataConnection(plan, inputs, value){
-    console.log("SDC", plan, inputs, value)
     let DCArray: JSX.Element[] = []
     inputs.forEach((dc,key) => {
 
@@ -317,8 +256,6 @@ class CheckOrder extends React.Component {
               return <span>"Error loading messages"</span>;
             }
 
-            {console.log("DO",data.fetchDomains)}
-
             let possibleDomains: JSX.Element[] = [];
             possibleDomains.push(<option key="DNCAD" value={}>Do not connect any domain</option>)
             data.fetchDomains.forEach((domain,key) => {
@@ -329,13 +266,11 @@ class CheckOrder extends React.Component {
       )}}</Query>)
       }
     })
-    console.log(DCArray)
     return (<div><h5>Select the domain you want to connect</h5>
       {DCArray}</div>)
   }
 
   render() {
-    console.log("POPUP", this.props);
 
     let planInputs = null
     let billingAddresses = null
@@ -346,7 +281,6 @@ class CheckOrder extends React.Component {
             <div className="checkOrderFeatures">
               {this.showProductInfos(this.state.featurenumbers, this.props.plan)}
             </div>
-            {console.log("CONSUMER", value)}
             <div className="checkOrderMain">
               <div className="checkOrderHolderPart">
                 <Query
@@ -379,7 +313,6 @@ class CheckOrder extends React.Component {
                     }
                     planInputs = data.fetchPlanInputs;
                     billingAddresses=data.fetchBillingAddresses;
-                    console.log("RETURN BILLING A", data, value);
                     if (data.fetchBillingAddresses && data.fetchBillingAddresses.length >= 1) {
                       return (
                         <div>

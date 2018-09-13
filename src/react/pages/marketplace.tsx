@@ -3,6 +3,7 @@ import { Component } from "react";
 import { graphql } from "react-apollo";
 
 import { fetchApps } from "../queries/products";
+import LoadingDiv from "../components/LoadingDiv";
 
 class Marketplace extends Component {
   renderLoading(apps) {
@@ -15,7 +16,7 @@ class Marketplace extends Component {
         </div>
       );
     }
-    return <div>LOADING</div>;
+    return <LoadingDiv text="Preparing marketplace" legalText="Just a moment please" />;
   }
 
   openAppDetails(id) {
