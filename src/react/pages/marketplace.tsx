@@ -1,11 +1,10 @@
 import * as React from "react";
-import { Component } from "react";
 import { graphql } from "react-apollo";
 
 import { fetchApps } from "../queries/products";
 import LoadingDiv from "../components/LoadingDiv";
 
-class Marketplace extends Component {
+class Marketplace extends React.Component {
   renderLoading(apps) {
     if (apps) {
       return (

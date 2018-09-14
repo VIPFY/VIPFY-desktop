@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Component } from "react";
+import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 
 import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "../queries/products";
@@ -8,6 +8,7 @@ import { buyPlan } from "../mutations/products";
 import Popup from "../components/Popup";
 import checkOrder from "../popups/checkorder";
 
+import GenericInputForm from "../components/GenericInputForm";
 import AppHeaderInfos from "../common/appHeaderInfos";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp } from "../common/functions";
@@ -20,6 +21,7 @@ export type AppPageProps = {
   buyPlan: any;
   match: any;
   history: string[];
+  writeReview: Function;
 };
 
 export type AppPageState = {
@@ -34,10 +36,25 @@ export type AppPageState = {
   imageindex: number;
   pricingperiod: any;
   features: any[][];
-  popup: string;
+  popup: any;
 };
 
-class AppPage extends Component<AppPageProps, AppPageState> {
+const WRITE_REVIEW = gql`
+  mutation onWriteReview($appid: Int!, $stars: Int!, $text: String!) {
+    writeReview(appid: $appid, stars: $stars, text: $text) {
+      stars
+      reviewtext
+      reviewdate
+      reviewer: unitid {
+        firstname
+        middlename
+        lastname
+      }
+    }
+  }
+`;
+
+class AppPage extends React.Component<AppPageProps, AppPageState> {
   state: AppPageState = {
     bigImage: null,
     showDescriptionFull: false,
@@ -83,15 +100,65 @@ class AppPage extends Component<AppPageProps, AppPageState> {
 
   buyAppAccepted = async (planid, features, price, planinputs) => {
     try {
-      const res = await this.props.buyPlan({
+      await this.props.buyPlan({
         variables: { planid, features, price, planinputs },
         refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
       });
       this.props.history.push("/area/dashboard");
     } catch (err) {
-      this.showError(err.message || "Something went really wrong");
+      this.showError(err.message || "Something went really wrong :-(");
       console.log("ErrorBuying", err, planid, features, price, planinputs);
     }
+  };
+
+  addReview = () => {
+    this.setState({
+      popup: true,
+      popupBody: GenericInputForm,
+      popupHeading: "Write review",
+      popupProps: {
+        fields: [
+          {
+            name: "text",
+            placeholder: "Please enter your review...",
+            type: "textField",
+            required: true
+          },
+          {
+            name: "stars",
+            placeholder: "",
+            type: "stars"
+          }
+        ],
+        submittingMessage: <LoadingDiv text="Adding Review..." />,
+        handleSubmit: async values => {
+          if (!values.stars) {
+            values.stars = 1;
+          }
+
+          try {
+            await this.props.writeReview({
+              variables: { ...values, appid: this.props.match.params.appid },
+              update: (cache, { data: { writeReview } }) => {
+                const data = cache.readQuery({
+                  query: fetchReviews,
+                  variables: { appid: this.props.match.params.appid }
+                });
+                const updatedReviews = data.fetchReviews.concat([writeReview]);
+
+                cache.writeQuery({
+                  query: fetchReviews,
+                  variables: { appid: this.props.match.params.appid },
+                  data: { fetchReviews: updatedReviews }
+                });
+              }
+            });
+          } catch (err) {
+            this.showError(err.message || "Something went really wrong :-(");
+          }
+        }
+      }
+    });
   };
 
   showStars(stars) {
@@ -117,9 +184,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     return starsArray;
   }
 
-  openExternal(url) {
-    require("electron").shell.openExternal(url);
-  }
+  openExternal = url => require("electron").shell.openExternal(url);
 
   showfulldesc(bool) {
     if (bool && this.state.showDescriptionFull) {
@@ -131,9 +196,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     }
   }
 
-  toggledescbutton() {
-    this.setState({ showDescriptionFull: true });
-  }
+  toggledescbutton = () => this.setState({ showDescriptionFull: true });
 
   showComments(reviewData) {
     let reviewDivs: JSX.Element[] = [];
@@ -165,9 +228,7 @@ class AppPage extends Component<AppPageProps, AppPageState> {
     return reviewDivs;
   }
 
-  goTo() {
-    this.props.history.push("/area/marketplace");
-  }
+  goTo = () => this.props.history.push("/area/marketplace");
 
   gallerymove(option, direct, length) {
     if (option === 1) {
@@ -339,6 +400,11 @@ class AppPage extends Component<AppPageProps, AppPageState> {
                 </div>
               </div>
             </div>
+
+            <button className="button-review" type="button" onClick={this.addReview}>
+              <i className="fa fa-plus" />
+              Add Review
+            </button>
           </div>
           {this.state.popup ? (
             <Popup
@@ -376,6 +442,7 @@ export default compose(
     }),
     name: "productPlans"
   }),
+  graphql(WRITE_REVIEW, { name: "writeReview" }),
   graphql(fetchLicences),
   graphql(buyPlan, {
     name: "buyPlan"

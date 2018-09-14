@@ -61,6 +61,10 @@
     max-width: 130px;
     min-height: 26px;
   }
+
+  &-review {
+    @include vipfy-button(5px);
+  }
 }
 
 .button > span {

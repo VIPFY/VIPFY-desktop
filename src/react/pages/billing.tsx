@@ -35,7 +35,6 @@ class Billing extends React.Component<Props, State> {
   downloadBill = async billid => {
     try {
       const res = await this.props.downloadBill({ variables: { billid } });
-      console.log("DOWNLOAD", billid, res);
     } catch {
       this.props.showPopup({
         header: "Error!",

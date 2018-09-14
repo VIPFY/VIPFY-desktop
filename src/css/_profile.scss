@@ -23,7 +23,8 @@ $shadow-color: #f0f3ff;
     display: grid;
     grid-template-areas:
       'header header'
-      'pic information';
+      'pic information'
+      'address address';
     grid-template-columns: 2fr 7fr;
   }
 
@@ -85,7 +86,49 @@ $shadow-color: #f0f3ff;
       }
     }
   }
+
+  .addresses {
+    @extend .header;
+    cursor: default;
+    grid-area: address;
+
+    &-heading {
+      cursor: pointer;
+      margin: 0.5rem 0;
+      border-bottom: $border;
+    }
+
+    &-header {
+      @include grid-system(3fr 1fr 2fr 1fr 2fr 1fr 1fr 1fr);
+      font-weight: bold;
+      align-items: center;
+    }
+
+    &-list {
+      @extend .addresses-header;
+      font-weight: normal;
+
+      span {
+        &:first-child,
+        &:nth-child(5) {
+          @include hide-overflowing-text;
+        }
+
+        &:nth-child(2),
+        &:nth-child(3) {
+          justify-self: center;
+        }
+
+        &:last-child {
+          cursor: pointer;
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
 }
+
+
 
 .in {
   @include toggleHeight(20rem);

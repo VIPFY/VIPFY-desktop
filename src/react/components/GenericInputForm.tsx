@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Dropzone from "react-dropzone";
+import { times } from "lodash";
 import { filterError } from "../common/functions";
 
 interface Props {
@@ -18,6 +19,7 @@ interface State {
   validate: object;
   asyncError: any;
   submitting: boolean;
+  stars: number;
 }
 
 const INITIAL_STATE = {
@@ -25,8 +27,10 @@ const INITIAL_STATE = {
   inputFocus: {},
   errors: {},
   validate: {},
+  stars: -1,
   asyncError: null,
-  submitting: false
+  submitting: false,
+  successMessage: ""
 };
 
 class GenericInputForm extends React.Component<Props, State> {
@@ -102,7 +106,6 @@ class GenericInputForm extends React.Component<Props, State> {
       if (throwsError) {
         this.setState({ asyncError: filterError(throwsError), submitting: false });
       } else {
-        console.log("TEST");
         this.props.onClose();
       }
     }
@@ -115,125 +118,164 @@ class GenericInputForm extends React.Component<Props, State> {
       ({ name, icon, multiple, placeholder, label, required, type, options, validate }) => {
         const field = () => {
           switch (type) {
-            case "checkbox":
-              {
-                return (
-                  <input
-                    type="checkbox"
-                    onChange={this.handleChange}
-                    name={name}
-                    required={required}
-                  />
-                );
-              }
-              break;
+            case "checkbox": {
+              return (
+                <input
+                  type="checkbox"
+                  onChange={this.handleChange}
+                  name={name}
+                  required={required}
+                />
+              );
+            }
 
-            case "select":
-              {
-                return (
-                  <select
-                    name={name}
-                    ref={this.inputField}
-                    onChange={this.handleChange}
-                    value={values[name] ? values[name] : ""}
-                    required={required}
-                    className="generic-dropdown">
-                    <option value=""> </option>
-                    {options.map(option => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                );
-              }
-              break;
+            case "select": {
+              return (
+                <select
+                  name={name}
+                  ref={this.inputField}
+                  onChange={this.handleChange}
+                  value={values[name] ? values[name] : ""}
+                  required={required}
+                  className="generic-dropdown">
+                  <option value=""> </option>
+                  {options.map(option => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              );
+            }
 
-            case "selectObject":
-              {
-                return (
-                  <select
-                    name={name}
-                    ref={this.inputField}
-                    onChange={this.handleChange}
-                    value={values[name] ? values[name] : ""}
-                    required={required}
-                    className="generic-dropdown">
-                    <option value=""> </option>
-                    {options.map(({ name, value }, key) => (
-                      <option key={key} value={value}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                );
-              }
-              break;
+            case "selectObject": {
+              return (
+                <select
+                  name={name}
+                  ref={this.inputField}
+                  onChange={this.handleChange}
+                  value={values[name] ? values[name] : ""}
+                  required={required}
+                  className="generic-dropdown">
+                  <option value=""> </option>
+                  {options.map(({ name, value }, key) => (
+                    <option key={key} value={value}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              );
+            }
 
-            case "picture":
-              {
-                const renderContent = () => {
-                  if (this.state.values.picture && !multiple) {
-                    return (
-                      <div>
+            case "textField": {
+              return (
+                <textarea
+                  className=""
+                  rows="5"
+                  cols="50"
+                  name={name}
+                  placeholder={placeholder}
+                  value={values[name] ? values[name] : ""}
+                  onChange={e => this.handleChange(e, validate)}
+                  onFocus={this.highlight}
+                  onBlur={this.offlight}
+                  required={required}
+                />
+              );
+            }
+
+            case "stars": {
+              return (
+                <div className="stars-holder">
+                  {times(5, i => (
+                    <i
+                      key={i}
+                      className={`fa${
+                        (this.state.stars >= i && !this.state.values.stars) ||
+                        (this.state.values.stars && this.state.values.stars > i)
+                          ? "s"
+                          : "r"
+                      } fa-star star`}
+                      onMouseOver={() => this.setState({ stars: i })}
+                      onMouseLeave={() => {
+                        if (!this.state.values.stars) {
+                          this.setState({ stars: -1 });
+                        }
+                      }}
+                      onClick={() =>
+                        this.setState(prevState => ({
+                          ...prevState,
+                          values: { ...prevState.values, stars: i + 1 }
+                        }))
+                      }
+                    />
+                  ))}
+                </div>
+              );
+            }
+
+            case "picture": {
+              const renderContent = () => {
+                if (this.state.values.picture && !multiple) {
+                  return (
+                    <div>
+                      <img
+                        alt={this.state.values.picture.name}
+                        height="150px"
+                        width="150px"
+                        className="img-circle"
+                        src={this.state.values.picture.preview}
+                      />
+                      <p>Click again or drag & drop to change the pic</p>
+                    </div>
+                  );
+                } else if (
+                  multiple &&
+                  this.state.values.picture &&
+                  Array.isArray(this.state.values.picture)
+                ) {
+                  return (
+                    <div className="pics-preview">
+                      {this.state.values.picture.map((file, i) => (
                         <img
-                          alt={this.state.values.picture.name}
-                          height="150px"
-                          width="150px"
-                          className="img-circle"
-                          src={this.state.values.picture.preview}
+                          key={i}
+                          alt={file.name}
+                          height="50px"
+                          width="50px"
+                          src={file.preview}
                         />
-                        <p>Click again or drag & drop to change the pic</p>
-                      </div>
-                    );
-                  } else if (
-                    multiple &&
-                    this.state.values.picture &&
-                    Array.isArray(this.state.values.picture)
-                  ) {
-                    return (
-                      <div className="pics-preview">
-                        {this.state.values.picture.map((file, i) => (
-                          <img
-                            key={i}
-                            alt={file.name}
-                            height="50px"
-                            width="50px"
-                            src={file.preview}
-                          />
-                        ))}
-                        <p>Click again to change the pictures to upload</p>
-                      </div>
-                    );
-                  } else if (multiple) {
-                    return <label>Please select several pictures for upload</label>;
-                  } else {
-                    return <label>Drag and Drop a picture or click here</label>;
-                  }
-                };
-
-                if (this.state.submitting) {
-                  return;
+                      ))}
+                      <p>Click again to change the pictures to upload</p>
+                    </div>
+                  );
+                } else if (multiple) {
+                  return <label>Please select several pictures for upload</label>;
+                } else {
+                  return <label>Drag and Drop a picture or click here</label>;
                 }
+              };
 
-                return (
-                  <Dropzone
-                    name={name}
-                    activeClassName="dropzone-active"
-                    accept="image/*"
-                    type="file"
-                    multiple={multiple ? true : false}
-                    className={this.state.values.picture ? "dropzone-preview" : "dropzone"}
-                    onDrop={
-                      multiple
-                        ? filesToUpload => this.handleDrop(filesToUpload)
-                        : ([fileToUpload]) => this.handleDrop(fileToUpload)
-                    }>
-                    {renderContent()}
-                  </Dropzone>
-                );
+              if (this.state.submitting) {
+                return;
               }
-              break;
+
+              return (
+                <Dropzone
+                  name={name}
+                  activeClassName="dropzone-active"
+                  accept="image/*"
+                  type="file"
+                  multiple={multiple ? true : false}
+                  className={this.state.values.picture ? "dropzone-preview" : "dropzone"}
+                  onDrop={
+                    multiple
+                      ? filesToUpload => this.handleDrop(filesToUpload)
+                      : ([fileToUpload]) => this.handleDrop(fileToUpload)
+                  }>
+                  {renderContent()}
+                </Dropzone>
+              );
+            }
 
             default: {
               return (

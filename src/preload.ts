@@ -17,7 +17,7 @@
       require("./locationScripts/wrike.ts")();
     } else if (hostMatches(".*.?google.com")) {
       require("./locationScripts/googledocs.ts")();
-    } else if (hostMatches(".*.?weeblycloud.com")) {
+    } else if (hostMatches(".*.?weebly(cloud?).com")) {
       require("./locationScripts/weebly.ts")();
     } else if (hostMatches(".*.?moo.com")) {
       require("./locationScripts/moo.ts")();
