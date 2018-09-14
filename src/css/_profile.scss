@@ -89,9 +89,11 @@ $shadow-color: #f0f3ff;
 
   .addresses {
     @extend .header;
+    cursor: default;
     grid-area: address;
 
     &-heading {
+      cursor: pointer;
       margin: 0.5rem 0;
       border-bottom: $border;
     }
@@ -100,13 +102,6 @@ $shadow-color: #f0f3ff;
       @include grid-system(3fr 1fr 2fr 1fr 2fr 1fr 1fr 1fr);
       font-weight: bold;
       align-items: center;
-
-      span {
-        &:last-child {
-          justify-self: flex-end;
-          cursor: pointer;
-        }
-      }
     }
 
     &-list {
@@ -125,7 +120,7 @@ $shadow-color: #f0f3ff;
         }
 
         &:last-child {
-          display: flex;
+          cursor: pointer;
           margin-right: 0.5rem;
         }
       }

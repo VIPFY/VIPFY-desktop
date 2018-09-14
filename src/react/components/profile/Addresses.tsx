@@ -126,6 +126,7 @@ class Addresses extends React.Component<Props, State> {
                         </span>
                         <span>
                           <i onClick={() => showDeletion(id)} className="fa fa-trash-alt" />
+                          <i onClick={() => showDeletion(id)} className="fa fa-edit" />
                         </span>
                       </div>
                     );
