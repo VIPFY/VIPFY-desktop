@@ -17,19 +17,19 @@
   <div id="App"></div>
 
   <script>
-  //install context menu
-window.addEventListener("DOMContentLoaded", () => {
-  //webview
-  require("@superhuman/electron-context-menu")({
-    showInspectElement: false,
-    window: document.getElementById("webview")
-  });
-  //normal windows
-  require("@superhuman/electron-context-menu")({
-    showInspectElement: true
-  });
-});
-</script>
+    //install context menu
+    window.addEventListener("DOMContentLoaded", () => {
+      //webview
+      require("@superhuman/electron-context-menu")({
+        showInspectElement: false,
+        window: document.getElementById("webview")
+      });
+      //normal windows
+      require("@superhuman/electron-context-menu")({
+        showInspectElement: true
+      });
+    });
+  </script>
 
   <script>window.exports = module.exports</script>
   <script type="text/tsx">require("./react/index.tsx")</script>

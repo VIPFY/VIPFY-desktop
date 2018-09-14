@@ -125,7 +125,54 @@ class Login extends React.Component<Props, State> {
   }
 
   render() {
-    if (this.state.login) {
+    return (
+      <div className="centralize backgroundLogo">
+        <div className="presideHolder">
+          <div className="lsrlHolder">
+            <div className="partHolder">
+              <div className="partHeading_Login" onDoubleClick={() => this.cheat()}>
+                Please login to continue
+              </div>
+              <div className="partForm">
+                <div style={{ marginBottom: "1.5rem" }}>
+                  <label>E-mail:</label>
+                  <input
+                    className="newInputField"
+                    style={{ right: "0", position: "absolute" }}
+                    placeholder="Your E-mail Address"
+                    autoFocus
+                    onKeyPress={e => this.handleEnter(e, 1)}
+                    ref={input => {
+                      this.emailInput = input;
+                    }}
+                  />
+                </div>
+                <div>
+                  <label>Password:</label>
+                  <input
+                    className="newInputField"
+                    placeholder="Your Password"
+                    type="password"
+                    onKeyPress={e => this.handleEnter(e, 2)}
+                    ref={input => {
+                      this.passInput = input;
+                    }}
+                  />
+                </div>
+                <div className="partButton" onClick={this.loginClick}>
+                  Login
+                </div>
+                <div className="partButton_Register">Or Register</div>
+              </div>
+            </div>
+            <div className="seperatorHolder" />
+            <div className="partHolder">REGISTER</div>
+          </div>
+        </div>
+      </div>
+    );
+
+    /*if (this.state.login) {
       return (
         <div className="centralize backgroundLogo">
           <div className="login-holder">
@@ -159,7 +206,7 @@ class Login extends React.Component<Props, State> {
               }}
             />
             <div className="button-holder">
-              <div className="newButton _Forgot" onClick={this.forgetClick}>
+              <div className="newButton newButton-forgot" onClick={this.forgetClick}>
                 <span>Forgot Password</span>
               </div>
               <div className="newButton" onClick={this.loginClick}>
@@ -224,7 +271,7 @@ class Login extends React.Component<Props, State> {
           </div>
         </div>
       );
-    }
+    }*/
   }
 }
 
