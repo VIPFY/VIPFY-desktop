@@ -207,6 +207,7 @@ class CheckOrder extends React.Component {
         })
       }
       let planInputsSending = {}
+      console.log("INPUTS", planInputs, this.state.dataconnections)
       planInputs.forEach(input => {
         switch(input.name){
           case "companyname":
@@ -215,7 +216,7 @@ class CheckOrder extends React.Component {
           case "companyaddress":
           planInputsSending["companyaddress"] = {street: addresses[0].address.street, city: addresses[0].address.city, zip: addresses[0].address.zip}
           break;
-          case "domain":
+          case "domains":
           if (this.state.dataconnections["domains"]) {
           planInputsSending["domains"] = [{domain: this.state.dataconnections["domains"]}]}
           else {planInputsSending["domains"] = []}
@@ -223,7 +224,7 @@ class CheckOrder extends React.Component {
         }
       })
 
-
+      console.log("Sending", planInputsSending)
       this.props.acceptFunction(plan.id, featureoptions, this.state.totalprice || plan.price, planInputsSending);
     } else {
       this.setState({ agreementError: true });
