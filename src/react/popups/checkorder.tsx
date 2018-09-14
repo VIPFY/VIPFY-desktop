@@ -221,10 +221,15 @@ class CheckOrder extends React.Component {
           planInputsSending["domains"] = [{domain: this.state.dataconnections["domains"]}]}
           else {planInputsSending["domains"] = []}
           break;
+
+          case "domain":
+          if (this.state.dataconnections["domains"]) {
+          planInputsSending["domain"] = this.state.dataconnections["domains"]}
+          break;
         }
       })
 
-      console.log("Sending", planInputsSending)
+      console.log("Additional Features", planInputsSending)
       this.props.acceptFunction(plan.id, featureoptions, this.state.totalprice || plan.price, planInputsSending);
     } else {
       this.setState({ agreementError: true });

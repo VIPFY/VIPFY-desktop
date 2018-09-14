@@ -5,6 +5,7 @@ import { graphql } from "react-apollo";
 import { AppContext, concatName } from "../../common/functions";
 import { unitPicFolder } from "../../common/constants";
 
+import Addresses from "./Addresses";
 import LoadingDiv from "../../components/LoadingDiv";
 import GenericInputForm from "../../components/GenericInputForm";
 
@@ -108,6 +109,8 @@ class PersonalData extends React.Component<Props, State> {
                   ))}
                 </ul>
               </div>
+
+              <Addresses show={true} />
             </div>
           );
         }}
