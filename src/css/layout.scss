@@ -1725,7 +1725,8 @@ select{
     border: none;
     width: 100%;
     color: #333;
-    font-family: Quicksand;
+    font-family: "Quicksand";
+    border-bottom: 1px solid #20BAA9;
 }
 select:focus{
     outline: none;
@@ -2585,7 +2586,9 @@ h1{
         height: 20rem;
         position: relative;
         left: 0rem;
-        &_{
+        transition-duration: 0.6s;
+        transition-timing-function: cubic-bezier(0.77, 0.2, 0.04, 0.81);
+        &_Register{
             left: -40rem;
         }
         .partHolder{
@@ -2594,6 +2597,11 @@ h1{
             position: relative;
             height: 20rem;
             z-index: 2;
+        }.formError{
+            position: absolute;
+            width: 40rem;
+            bottom: 0;
+            background-color: #c73544;
         }
         .seperatorHolder{
             width: 0;
@@ -2604,6 +2612,25 @@ h1{
             position: absolute;
             left: 20rem;
         }
+        .logoSeperator{
+            position: absolute;
+            left: 33rem;
+            top: 2rem;
+            font-size: 5rem;
+            color: white;
+            width: 5rem;
+            height: 5rem;
+            background-image: $newlogo;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition-duration: 0.6s;
+            transition-timing-function: cubic-bezier(0.77, 0.2, 0.04, 0.81);
+            &_Right{
+                left: 42rem;
+                transition-duration: 0.6s;
+                transition-timing-function: cubic-bezier(0.77, 0.2, 0.04, 0.81);
+            }
+        }
         .partHeading{
             &_Login{
                 position: absolute;
@@ -2611,11 +2638,28 @@ h1{
                 left: 3rem;
                 font-size: 1.5rem;
             }
+            &_Register{
+                position: absolute;
+                top: 3rem;
+                left: 20rem;
+                font-size: 1.5rem;
+                text-align: center;
+                span{
+                    font-size: 0.75rem;
+                }
+            }
         }
         .partForm{
             position: absolute;
-            top: 9rem;
-            left: 3rem;
+            &_Login{
+                left: 3rem;
+                top: 9rem;
+            }
+            &_Register{
+                right: 3rem;
+                text-align: right;
+                top: 7.5rem;
+            }
             .newInputField{
                 border: 0;
                 font-size: 0.75em;
@@ -2631,27 +2675,107 @@ h1{
                     outline: 0;
                 }
             }
-            .partButton{
-                margin-top: 3rem;
-                display: inline-block;
+            .forgotPW{
+                position: absolute;
+                font-size: 0.5rem;
+                margin-top: 0.25rem;
+                right: 0px;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+        }
+        .partButton{
+            margin-top: 3rem;
+            display: inline-block;
+            padding: 0.5rem;
+            border-radius: 3px;
+            background-color: #117f91;
+            color: white;
+            box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+            cursor: pointer;
+            &_ToRegister{
+                width: 5rem;
+                height: 1.19rem;
+                text-align: center;
+                position: absolute;
+                bottom: 0;
+                right: 0;
                 padding: 0.5rem;
                 border-radius: 3px;
                 background-color: #20BAA9;
                 color: white;
                 box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
                 cursor: pointer;
-                &_Register{
-                    position: absolute;
-                    bottom: 0;
-                    right: 0;
-                    padding: 0.5rem;
-                    border-radius: 3px;
-                    background-color: #117f91;
-                    color: white;
-                    box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-                    cursor: pointer;
-                }
+                display: flex;
+    align-items: center;
+    justify-content: center;
+            }
+            &_Next{
+                position: absolute;
+                bottom: 0;
+                right: 1rem;
+                padding: 0.5rem;
+                border-radius: 3px;
+                background-color: #20BAA9;
+                color: white;
+                box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+                cursor: pointer;
+            }
+            &_ToLogin{
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                padding: 0.5rem;
+                border-radius: 3px;
+                background-color: #117f91;
+                color: white;
+                box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+                cursor: pointer;
+            }
+        }
+        .step{
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: #FFFFFF11;
+            border: 1px solid white;
+            border-radius: 1rem;
+            top: 10rem;
+            position: absolute;
+            left: 7rem;
+            &active{
+                background-color: white;
+            }
+            &done{
+                /*background-color: #117f91;*/
+                background-color: white;
+            }
+        }
+        .registerButtons{
+            position: absolute;
+            bottom: 2rem;
+            width: 30rem;
+            right: 2rem;
+        }
+        .optionHolder{
+            display: flex;
+            width: 25rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            justify-content: space-between;
+            .option{
+                padding: 0.25rem;
+                margin: 0.5rem;
+                border-radius: 3px;
+                background-color: #20BAA9;
+                color: white;
+                box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+                cursor: pointer;
             }
         }
     }
+}
+
+.loginspinner{
+    height: 1.5rem;
+    width: 1.5rem;
 }
