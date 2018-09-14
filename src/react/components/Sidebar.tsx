@@ -97,7 +97,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             </span>
           </li>
 
-          {this.renderLink({ label: "Advisor", location: "advisor", icon: "envelope", show: true })}
+          {/*this.renderLink({ label: "Advisor", location: "advisor", icon: "envelope", show: true })*/}
         </ul>
       </div>
     );

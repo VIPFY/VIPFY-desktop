@@ -182,7 +182,7 @@ class App extends React.Component<AppProps, AppState> {
         console.log("TOKEN", res.data);
         this.setState({ login: true });
       }
-      this.props.history.push("/area/advisor");
+      //this.props.history.push("/area/advisor");
     } catch (err) {
       this.setState({ login: false, error: filterError(err) });
       localStorage.setItem("token", "");
@@ -206,6 +206,7 @@ class App extends React.Component<AppProps, AppState> {
               return (
                 <Login
                   login={this.logMeIn}
+                  setName={this.setName}
                   moveTo={this.moveTo}
                   register={this.registerMe}
                   error={filterError(error)}

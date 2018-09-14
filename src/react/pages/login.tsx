@@ -165,33 +165,41 @@ class Login extends React.Component<Props, State> {
     try {
       const res1 = await this.props.register(this.state.email, this.state.agreementa);
       const res2 = await this.props.cc({ variables:  {name: this.state.companyname}  });
+
+      const { ok, token, refreshToken } = res2.data.createCompany;
+      //console.log(res.data.createCompany);
+      localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
+
+
       let statisticdata = {
         noVat: this.state.agreementb, industry: this.state.industry, subindustry: this.state.subindustry, companyStage: this.state.selectedOption
       }
 
       const res3 = await this.props.uSD({ variables: {data: {...statisticdata} }});
 
-      let userdata = {};
+      let user = {};
       if (this.state.name != "") {
         let nameArray = [];
         nameArray = this.state.name.split(" ");
         if (nameArray.length === 1) {
-          userdata = { lastname: nameArray[0] };
+          user = { lastname: nameArray[0] };
         } else if (nameArray.length === 2) {
-          userdata = { firstname: nameArray[0], lastname: nameArray[1] };
+          user = { firstname: nameArray[0], lastname: nameArray[1] };
         } else {
           let middleArray = nameArray.slice(0);
           middleArray.pop();
           middleArray.shift();
-          userdata = {
+          user = {
             firstname: nameArray[0],
             middlename: middleArray.join(" "),
             lastname: nameArray[nameArray.length - 1]
           };
         }
       }
-      const res4 = await this.props.uU({variables: {userdata}})
-      this.props.moveTo("/area/marketplace")
+      const res4 = await this.props.uU({variables: {user}})
+      this.props.setName(user.firstname, user.lastname)
+      this.props.moveTo("dashboard")
       return
     }
     catch (err) {
@@ -335,7 +343,10 @@ class Login extends React.Component<Props, State> {
         Already registered?
       </div>
       <div className="partButton_Next" onClick={() => this.checkStep(step)}>
-        Save
+      {this.state.registering ? <div className="spinner loginspinner">
+          <div className="double-bounce1"></div>
+          <div className="double-bounce2"></div>
+        </div> : <span>Save</span>}
       </div></div>)
         break;
     }

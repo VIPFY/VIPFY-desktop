@@ -2625,6 +2625,7 @@ h1{
             background-position: center;
             transition-duration: 0.6s;
             transition-timing-function: cubic-bezier(0.77, 0.2, 0.04, 0.81);
+            transform: rotateY(180deg);
             &_Right{
                 left: 42rem;
                 transition-duration: 0.6s;
