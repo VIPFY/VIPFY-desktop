@@ -39,8 +39,18 @@
     @extend .naked-button;
 
     &:hover {
-      color: $vipfy-secondary-color;
-      transition: color 0.5s ease-in-out 0.1s;
+      @include color-fade;
+    }
+  }
+
+  &-hide {
+    cursor: pointer;
+    position: absolute;
+    right: -0.45rem;
+    top: -0.5rem;
+
+    &:hover {
+      @include color-fade;
     }
   }
 
@@ -64,6 +74,11 @@
 
   &-review {
     @include vipfy-button(5px);
+  }
+
+  &-address {
+    @include vipfy-button(5px);
+    margin-left: 2rem;
   }
 }
 
@@ -96,15 +111,16 @@
   cursor: pointer;
 }
 
-.newButton{
-  background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+.newButton {
+  background-image: linear-gradient(to right, $vipfy-secondary-color 0%, $vipfy-primary-color 100%);
   color: white;
   padding: 0.25rem;
-  box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+  box-shadow: 0 0 19px -3px rgba(0, 0, 0, 0.36);
   border-radius: 3px;
   cursor: pointer;
   text-decoration: underline;
-  &-forgot{
+
+  &-forgot {
     font-size: 0.87rem;
     line-height: 0.87rem;
   }

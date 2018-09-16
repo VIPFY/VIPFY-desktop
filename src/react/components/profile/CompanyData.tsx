@@ -2,6 +2,7 @@ import * as React from "react";
 import { Query, graphql } from "react-apollo";
 import gql from "graphql-tag";
 
+import Addresses from "./Addresses";
 import GenericInputForm from "../../components/GenericInputForm";
 import LoadingDiv from "../../components/LoadingDiv";
 import { AppContext } from "../../common/functions";
@@ -31,6 +32,7 @@ const UPDATE_PIC = gql`
 interface Props {
   toggle: Function;
   updatePic: Function;
+  company: number;
 }
 
 interface State {
@@ -75,7 +77,7 @@ class CompanyData extends React.Component<Props, State> {
 
     return (
       <AppContext.Consumer>
-        {({ showPopup }) => (
+        {({ showPopup, company }) => (
           <Query query={FETCH_COMPANY}>
             {({ loading, error, data: { fetchCompany } }) => {
               if (loading) {
@@ -88,8 +90,12 @@ class CompanyData extends React.Component<Props, State> {
 
               return (
                 <div className="profile-page-item item-information">
-                  <div onClick={this.toggle} className="header">
-                    Company Data
+                  <div className="header">
+                    <i
+                      className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
+                      onClick={this.toggle}
+                    />
+                    <span>Company Data</span>
                   </div>
 
                   <div className={`pic-holder ${this.state.show ? "in" : "out"}`}>
@@ -119,6 +125,8 @@ class CompanyData extends React.Component<Props, State> {
                       })}
                     </ul>
                   </div>
+
+                  <Addresses showPopup={showPopup} company={company.unit.id} />
                 </div>
               );
             }}

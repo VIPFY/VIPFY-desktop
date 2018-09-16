@@ -1,29 +1,41 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query } from "react-apollo";
+import { Query, compose, graphql } from "react-apollo";
 
-import LoadingDiv from "../../components/LoadingDiv";
+import Confirmation from "../../popups/Confirmation";
+import GenericInputForm from "../GenericInputForm";
+import LoadingDiv from "../LoadingDiv";
 import { filterError } from "../../common/functions";
 
-const UPDATE_ADDRESS = gql`
-  mutation onUpdateAddress($addressData: AddressInput!, $id: Int!) {
-    updateAddress(addressData: $addressData, id: $id) {
-      ok
+const CREATE_ADDRESS = gql`
+  mutation onCreateAddress($addressData: AddressInput!, $department: Boolean) {
+    createAddress(addressData: $addressData, department: $department) {
+      id
+      address
+      country
+      description
+      priority
+      tags
     }
   }
 `;
 
-const CREATE_ADDRESS = gql`
-  mutation AdminCreateAddress($addressData: AddressInput!, $unitid: Int!) {
-    adminCreateAddress(addressData: $addressData, unitid: $unitid) {
-      ok
+const UPDATE_ADDRESS = gql`
+  mutation onUpdateAddress($addressData: AddressInput!, $id: Int!) {
+    updateAddress(addressData: $addressData, id: $id) {
+      id
+      address
+      country
+      description
+      priority
+      tags
     }
   }
 `;
 
 const DELETE_ADDRESS = gql`
-  mutation AdminDeleteAddress($id: Int!) {
-    adminDeleteAddress(id: $id) {
+  mutation onDeleteAddress($id: Int!) {
+    deleteAddress(id: $id) {
       ok
     }
   }
@@ -44,52 +56,150 @@ export const FETCH_ADDRESSES = gql`
 
 interface Props {
   company: number;
-  show: boolean;
+  showPopup: Function;
+  deleteAddress: Function;
+  createAddress: Function;
+  updateAddress: Function;
+  unitid: number;
 }
 
 interface State {
+  show: boolean;
   edit: number;
   error: string;
 }
 
 class Addresses extends React.Component<Props, State> {
   state = {
+    show: true,
     edit: -1,
     error: ""
   };
 
-  renderAddressField = (address, addressKey, id) => {
-    if (addressKey && this.state.edit == addressKey && !this.state.error) {
-      return <div placeholder={address} name={addressKey} handleSubmit={changeAddress} />;
-    } else if (this.state.error && addressKey == this.state.edit) {
-      return <span>{error}</span>;
-    } else if (Array.isArray(address)) {
-      return (
-        <span className="tags">
-          {address.map((tag, key) => (
-            <span key={key} className="tag" onClick={() => console.log(addressKey, id, key)}>
-              {tag}
-            </span>
-          ))}
-        </span>
-      );
-    } else return <span onClick={() => toggleEdit(addressKey, id)}> {address} </span>;
+  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
+
+  showCreation = () => {
+    const creationPopup = {
+      header: "Create new Address",
+      body: GenericInputForm,
+      props: {
+        fields: [
+          {
+            type: "text",
+            name: "street",
+            icon: "road",
+            label: "Street",
+            placeholder: "Your street"
+          },
+          {
+            type: "text",
+            name: "zip",
+            icon: "sort-numeric-up",
+            label: "Zip",
+            placeholder: "Your zip code"
+          },
+          {
+            type: "text",
+            name: "city",
+            icon: "building",
+            label: "City",
+            placeholder: "Your city",
+            required: true
+          },
+          {
+            type: "select",
+            name: "country",
+            icon: "globe",
+            label: "Your country",
+            options: ["US", "DE", "FR", "PL", "JP"],
+            required: true
+          },
+          {
+            type: "text",
+            name: "description",
+            icon: "archive",
+            label: "Description",
+            placeholder: "A short description"
+          },
+          {
+            type: "number",
+            name: "priority",
+            icon: "sort-numeric-up",
+            label: "Priority"
+          },
+          {
+            type: "text",
+            name: "tags",
+            icon: "tags",
+            label: "Tags",
+            placeholder: "Use spaces to separate"
+          }
+        ],
+        handleSubmit: async addressData => {
+          await this.props.createAddress({
+            variables: { addressData, department: this.props.company ? true : false },
+            update: (proxy, { data: { createAddress } }) => {
+              // Read the data from our cache for this query.
+              const cachedData = proxy.readQuery({ query: FETCH_ADDRESSES });
+              cachedData.fetchAddresses.push(createAddress);
+              // Write our data back to the cache.
+              proxy.writeQuery({ query: FETCH_ADDRESSES, data: cachedData });
+            }
+          });
+        },
+        submittingMessage: <LoadingDiv text="Registering Address..." />
+      }
+    };
+
+    this.props.showPopup(creationPopup);
+  };
+
+  showEdit = () => {};
+
+  showDeletion = id => {
+    const deletionPopup = {
+      header: "Delete Address",
+      body: Confirmation,
+      props: {
+        addressId: id,
+        type: "Address",
+        submitFunction: id =>
+          this.props.deleteAddress({
+            variables: { id, department: this.props.company ? true : false },
+            update: proxy => {
+              // Read the data from our cache for this query.
+              const cachedData = proxy.readQuery({ query: FETCH_ADDRESSES });
+              const filteredAddresses = cachedData.fetchAddresses.filter(
+                address => address.id != id
+              );
+              // Write our data back to the cache.
+              proxy.writeQuery({
+                query: FETCH_ADDRESSES,
+                data: { fetchAddresses: filteredAddresses }
+              });
+            }
+          })
+      }
+    };
+
+    this.props.showPopup(deletionPopup);
   };
 
   render() {
     const addressHeaders = ["Street", "zip", "City", "Country", "Description", "Tags", "Priority"];
-    const variables = this.props.company ? { company: this.props.company } : {};
+    const variables = this.props.company ? { company: true } : {};
 
     return (
       <div className="addresses">
-        <div className="addresses-heading">Addresses</div>
-        {/* <i
-        className="material-icons admin-toggle-button"
-        onClick={() => toggleAddresses("showAddresses")}>
-        swap_vertical_circle
-      </i> */}
+        <div className="header">
+          <i
+            className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
+            onClick={this.toggle}
+          />
+          <span>Addresses</span>
+        </div>
 
-        <div className="addresses-header">
+        <div className={`addresses-header ${this.state.show ? "in" : "out"}`}>
           {addressHeaders.map(header => <span key={header}>{header}</span>)}
         </div>
 
@@ -102,49 +212,50 @@ class Addresses extends React.Component<Props, State> {
             if (error) {
               return filterError(error);
             }
-            console.log(data);
-            if (this.props.show) {
-              return data.fetchAddresses.length > 0 ? (
-                data.fetchAddresses.map(
-                  ({ address, description, country, priority, tags, id }, key) => {
-                    let { street, zip, city } = address;
-                    tags = tags ? tags : "-";
-                    zip = zip ? zip : "not set";
 
-                    return (
-                      <div className="addresses-list" key={key}>
-                        <span>{this.renderAddressField(street, `street-${key}`, id)}</span>
-                        <span>{this.renderAddressField(zip, `zip-${key}`, id)}</span>
-                        <span>{this.renderAddressField(city, `city-${key}`, id)}</span>
-                        <span>{this.renderAddressField(country, `country-${key}`, id)}</span>
-                        <span>
-                          {this.renderAddressField(description, `description-${key}`, id)}
-                        </span>
-                        <span>{this.renderAddressField(tags, `tag-${key}`, id)}</span>
-                        <span className="center">
-                          {this.renderAddressField(priority, `priority-${key}`, id)}
-                        </span>
-                        <span>
-                          <i onClick={() => showDeletion(id)} className="fa fa-trash-alt" />
-                          <i onClick={() => showDeletion(id)} className="fa fa-edit" />
-                        </span>
-                      </div>
-                    );
-                  }
-                )
-              ) : (
-                <div>
-                  <span>No addresses specified yet</span>
-                </div>
-              );
-            } else {
-              return "Click on the icon to show all addresses";
-            }
+            return data.fetchAddresses.length > 0 ? (
+              data.fetchAddresses.map(({ address, description, country, priority, tags, id }) => {
+                let { street, zip, city } = address;
+                tags = tags
+                  ? tags[0].split(" ").map((tag, key) => <span key={key}>{tag}</span>)
+                  : "-";
+
+                return (
+                  <div className={`addresses-list ${this.state.show ? "in" : "out"}`} key={id}>
+                    <span>{street}</span>
+                    <span>{zip ? zip : "not set"}</span>
+                    <span>{city}</span>
+                    <span>{country}</span>
+                    <span>{description}</span>
+                    <span className="tags">{tags}</span>
+                    <span className="center">{priority}</span>
+                    <span>
+                      <i onClick={() => this.showDeletion(id)} className="fa fa-trash-alt" />
+                      <i onClick={() => showDeletion(id)} className="fa fa-edit" />
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <button className="button-address" onClick={this.showCreation}>
+                <i className="fa fa-plus" />
+                Add your first Address
+              </button>
+            );
           }}
         </Query>
+
+        <button className="button-address" onClick={this.showCreation}>
+          <i className="fa fa-plus" />
+          Add another Address
+        </button>
       </div>
     );
   }
 }
 
-export default Addresses;
+export default compose(
+  graphql(CREATE_ADDRESS, { name: "createAddress" }),
+  graphql(UPDATE_ADDRESS, { name: "updateAddress" }),
+  graphql(DELETE_ADDRESS, { name: "deleteAddress" })
+)(Addresses);
