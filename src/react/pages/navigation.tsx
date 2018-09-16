@@ -129,12 +129,16 @@ class Navigation extends React.Component<Props, State> {
         <div className="right-infos">
           <div className="right-profile-holder">
             <div className="pic-and-name" onClick={() => this.goTo("profile")}>
-              <img
-                className="right-profile-image"
-                src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                  this.props.profilepicture
-                }`}
-              />
+              {this.props.profilepicture ? (
+                <img
+                  className="right-profile-image"
+                  src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                    this.props.profilepicture
+                  }`}
+                />
+              ) : (
+                ""
+              )}
 
               <div className="name-holder">
                 <span className="right-profile-first-name">{this.props.firstname}</span>
@@ -161,10 +165,10 @@ class Navigation extends React.Component<Props, State> {
             className="fas fa-cog navigation-right-infos"
           />
 
-          <span
+          {/*<span
             onClick={this.props.toggleChat}
             className="fas fa-comments navigation-right-infos"
-          />
+          />*/}
         </div>
       </div>
     );
