@@ -355,7 +355,30 @@ class CheckOrder extends React.Component {
                         </div>
                       );
                     } else {
-                      return <div>PLEASE ADD A BILLING ADDRESS</div>;
+                      return <div>
+                      <div className="orderHeading">
+                        I ({`${value.firstname} ${value.lastname}`}) order in behalf of:
+                      </div>
+                      {value.company ? (
+                        <div className="orderCompanyName">{value.company.name}</div>
+                      ) : (
+                        "Myself"
+                      )}
+                      <div className="orderInformationHolder">
+                        <div className="orderAddressHolder">
+                          Please add a billing address.
+                          <div className="changeInformation">
+                            <span>Change Address</span><span>Change Payment</div>
+                          </div>
+                        </div>
+                        <div className="orderCardHolder">
+                        {data.fetchPaymentData && data.fetchPaymentData.length > 0?
+                          <CreditCard {data.fetchPaymentData[0]} />: "Please add a Credit Card to your Account"}
+                        </div>
+                      </div>
+                      {this.showOrder(this.props.plan)}
+                      {this.showDataConnection(this.props.plan, data.fetchPlanInputs, value)}
+                    </div>;
                     }
                   }}
                 </Query>

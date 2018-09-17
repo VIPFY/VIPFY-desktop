@@ -351,7 +351,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               buyApp={this.buyApp}
             />
           </div>
-          <div className="appHeading">Service Details</div>
+          {/*<div className="appHeading">Service Details</div>*/}
           <div className="appDescrition">
             <div className="appDescriptionThird">
               <span className="appDescriptionHeading">Description</span>
