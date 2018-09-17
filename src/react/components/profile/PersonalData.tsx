@@ -85,8 +85,12 @@ class PersonalData extends React.Component<Props, State> {
 
           return (
             <div className="profile-page-item item-information">
-              <div onClick={this.toggle} className="header">
-                Personal Data
+              <div className="header">
+                <i
+                  className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
+                  onClick={this.toggle}
+                />
+                <span>Personal Data</span>
               </div>
 
               <div className={`pic-holder ${this.state.show ? "in" : "out"}`}>
@@ -110,7 +114,7 @@ class PersonalData extends React.Component<Props, State> {
                 </ul>
               </div>
 
-              <Addresses show={true} />
+              <Addresses showPopup={showPopup} />
             </div>
           );
         }}

@@ -12,7 +12,8 @@
   margin-left: 1em;
   outline: none;
   padding: 5px 0;
-  width: 30%;
+  width: 15%;
+  transition: all 0.5s ease-in;
 
   option {
     color: $vipfy-primary-color;
@@ -25,12 +26,12 @@
   right: 1rem;
 
   .generic-cancel-button {
-    @include generic-button($vipfy-secondary, $hover-secondary, $feedback-secondary)
+    @include generic-button($vipfy-cancel-color, $hover-secondary, $feedback-secondary)
     margin-right: 1rem;
   }
 
   .generic-submit-button {
-    @include generic-button($vipfy-primary, $hover, $feedback)
+    @include generic-button($vipfy-primary-color, $vipfy-secondary-color, $feedback)
   }
 }
 
@@ -74,6 +75,88 @@
 
   &:focus {
     background-color: #f5f5f5;
+  }
+}
+
+.generic-checkbox-holder {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  span {
+    margin-right: 1rem;
+  }
+
+  #cool-checkbox {
+    display: none;
+
+    &:checked + .generic-form-checkbox {
+      svg {
+        stroke: #117f91;
+
+        path {
+          stroke-dashoffset: 60;
+          transition: stroke-dashoffset 0.3s linear;
+        }
+
+        polyline {
+          stroke-dashoffset: 42;
+          transition: stroke-dashoffset 0.2s linear;
+          transition-delay: 0.15s;
+        }
+      }
+    }
+  }
+
+  .generic-form-checkbox {
+    cursor: pointer;
+    height: 18px;
+    transform: translate3d(0, 0, 0);
+    margin-bottom: 6px;
+
+    &:hover {
+      svg {
+        stroke: #117f91;
+      }
+
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    &::before {
+      content: "";
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(34, 50, 84, 0.03);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      }
+
+    svg {
+      position: relative;
+      z-index: 1;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke: #c8ccd4;
+      stroke-width: 1.5;
+      transform: translate3d(0, 0, 0);
+      transition: all 0.2s ease;
+
+      path {
+        stroke-dasharray: 60;
+        stroke-dashoffset: 0;
+        transition: all 0.3s linear;
+        }
+
+      polyline {
+        stroke-dasharray: 22;
+        stroke-dashoffset: 66;
+        transition: all 0.2s linear;
+        }
+      }
   }
 }
 

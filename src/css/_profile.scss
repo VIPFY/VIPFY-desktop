@@ -30,10 +30,10 @@ $shadow-color: #f0f3ff;
 
   .header {
     border-bottom: $border;
-    cursor: pointer;
     font-weight: bold;
     grid-area: header;
     padding: 0.5rem 0;
+    position: relative;
     text-align: center;
   }
 
@@ -89,14 +89,10 @@ $shadow-color: #f0f3ff;
 
   .addresses {
     @extend .header;
+    border-bottom: 0;
     cursor: default;
     grid-area: address;
-
-    &-heading {
-      cursor: pointer;
-      margin: 0.5rem 0;
-      border-bottom: $border;
-    }
+    margin-top: 1rem;
 
     &-header {
       @include grid-system(3fr 1fr 2fr 1fr 2fr 1fr 1fr 1fr);
@@ -110,18 +106,26 @@ $shadow-color: #f0f3ff;
 
       span {
         &:first-child,
-        &:nth-child(5) {
-          @include hide-overflowing-text;
-        }
-
         &:nth-child(2),
         &:nth-child(3) {
           justify-self: center;
         }
 
+        &:nth-child(5) {
+          @include hide-overflowing-text;
+          max-width: 8rem;
+        }
+
         &:last-child {
-          cursor: pointer;
-          margin-right: 0.5rem;
+          i {
+            cursor: pointer;
+            margin-right: 0.2rem;
+
+            &:hover {
+              color: $vipfy-secondary-color;
+              transition: color 0.5s ease-in-out 0.1s;
+            }
+          }
         }
       }
     }

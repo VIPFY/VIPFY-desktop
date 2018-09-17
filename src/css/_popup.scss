@@ -29,47 +29,31 @@ $modal-wh: 50%;
     display: flex;
     padding-bottom: 0.2rem;
     border-bottom: 0.2rem solid;
-    border-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+    border-image: $vipfy-primary;
     border-image-slice: 1;
 
     &-text {
       font-weight: bold;
       padding-top: 5px;
     }
-
-    &-close-button {
-      background-color: #082e44;
-      border-radius: 30px;
-      color: #fff;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
-      height: 30px;
-      line-height: 35px;
-      position: absolute;
-      right: -1rem;
-      text-align: center;
-      top: -1rem;
-      width: 30px;
-    }
   }
 
   &-close-button {
-    /*background-color: #082e44;
-    border-radius: 30px;*/
     color: #fff;
     cursor: pointer;
     font-size: 15px;
     font-weight: bold;
     height: 30px;
-    /*line-height: 35px;*/
     line-height: 30px;
     position: absolute;
-    /*right: -1rem;*/
     text-align: center;
-    /*top: -1rem;*/
     width: 30px;
     right: 0;
     top: 0;
+    transition: all 0.5s ease-in;
+
+    &:hover {
+      font-size: 20px;
+    }
   }
 }
