@@ -78,7 +78,13 @@ class Billing extends React.Component<Props, State> {
       return <LoadingDiv text="Fetching bills..." />;
     }
     console.log(cards, bills, addresses);
-    if (cards.error || bills.error || addresses.error) {
+    if (
+      cards.error ||
+      bills.error ||
+      addresses.error ||
+      !cards.fetchPaymentData ||
+      !addresses.fetchBillingAddresses
+    ) {
       return <div>Ups... something went wrong</div>;
     }
 
