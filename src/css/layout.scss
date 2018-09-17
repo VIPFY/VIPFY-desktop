@@ -608,7 +608,9 @@
     overflow-x: scroll;
     margin-top: 2rem;
     background-color: white;
-    border-radius: 3px;
+    /*border-radius: 3px;*/
+    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+    border-radius: 10px;
 }
 .planSingleHolder {
     width: 30%;
@@ -1337,9 +1339,10 @@ span.paymentAddressPhone {
     display: flex;
     height: 20rem;
     margin-bottom: 3rem;
-    box-shadow: 0 0 4rem #f0f3ff;
-    border-radius: 0.25rem;
-    /*overflow: hidden;*/
+    /*box-shadow: 0 0 4rem #f0f3ff;*/
+    box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+    border-radius: 10px;
+    overflow: hidden;
 }
 .appHeaderGallery {
     width: calc(100% - 15rem);
@@ -1395,11 +1398,13 @@ span.paymentAddressPhone {
     position: relative;
     padding: 0.5rem;
     /*background-color: #3abf94;*/
-    background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+    /*background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);*/
     cursor: pointer;
     font-size: 0.8rem;
-    border-radius: .25rem;
-    border: 1px solid #3abf94;
+    border-radius: 3px;
+    /*border: 1px solid #3abf94;*/
+    background-color: #20BAA9;
+    box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
     margin-top: 0.25rem;
     color: white;
     font-weight: bold;
@@ -1422,20 +1427,17 @@ span.paymentAddressPhone {
     /*margin-left: 1rem;*/
     float: right;
 }
-.appHeader {
-    display: flex;
-    height: 20rem;
-    margin-bottom: 3rem;
-    box-shadow: 0 0 4rem #f0f3ff;
-    border-radius: 0.25rem;
-    /*overflow: hidden;*/
-}
+
 .appDescrition {
     background-color: white;
     border-radius: 0.25rem;
     display: flex;
     min-height: 15rem;
     padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+    background-image: radial-gradient(farthest-corner at 0px 100%, #20BAA9 0%, #117f91 100%);
+    color: white;
 }
 .appDescriptionThird {
     width: 30%;
@@ -2104,6 +2106,7 @@ h1{
       background: white;
       margin: 1rem;
       transition: all 0.3s ease-in-out;
+      box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
 
       &__header{
         padding: 1rem;
@@ -2208,7 +2211,7 @@ h1{
       }
 
       &:hover{
-        box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+        box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.7);
         cursor: pointer;
 
         .pricing-table__button{
