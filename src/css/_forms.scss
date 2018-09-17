@@ -37,7 +37,6 @@
 
 .generic-error {
   color: red;
-  margin-top: 3rem;
   text-align: center;
 
   &-field {
@@ -55,7 +54,7 @@
 .generic-async-error {
   @extend .generic-error;
   align-self: center;
-  margin-left: 0;
+  margin: 2rem 0;
 }
 
 .generic-async-success {
@@ -189,3 +188,27 @@
     }
   }
 }
+
+.inline-form {
+  display: contents;
+}
+
+.inline-dropdown {
+  @extend .generic-dropdown;
+  width: 75%;
+}
+
+.inline-searchbar {
+  font-size: 1rem;
+  color: #ccc;
+  line-height: 1rem;
+  border: 0;
+  font-family: 'Quicksand', sans-serif;
+  outline: none;
+  background-color: transparent;
+  transition: color 0.7s ease-in-out;
+
+  &:nth-child(6) {
+    padding-left: 0.9rem;
+  }
+ }

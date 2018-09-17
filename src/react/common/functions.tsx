@@ -87,7 +87,7 @@ export const filterError = error => {
 
 export const AppContext = React.createContext();
 
-export const ErrorComp = ({ error }) => <div className="generic-error">{error}</div>;
+export const ErrorComp = ({ error }) => <div className="error-field">{error}</div>;
 
 export const concatName = (first, middle, last) => `${first} ${middle ? middle : ""} ${last}`;
 
