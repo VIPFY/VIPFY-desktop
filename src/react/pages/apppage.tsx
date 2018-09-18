@@ -12,6 +12,7 @@ import GenericInputForm from "../components/GenericInputForm";
 import AppHeaderInfos from "../common/appHeaderInfos";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp } from "../common/functions";
+import AddReview from "../popups/addReview";
 
 export type AppPageProps = {
   employees: number;
@@ -114,7 +115,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
   addReview = () => {
     this.setState({
       popup: true,
-      popupBody: GenericInputForm,
+      popupBody: AddReview,
       popupHeading: "Write review",
       popupProps: {
         fields: [
@@ -206,7 +207,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
       console.log("REVIEWS", reviewData);
       reviewData.forEach(review => {
         reviewDivs.push(
-          <div key={`review-${i}`} className="detail-comment" style={{ marginTop: "0px" }}>
+          <div key={`review-${i}`} className="detail-comment">
             <div className="rating">{this.showStars(review.stars)}</div>
             <span className="detail-comment-author">
               by{" "}
@@ -302,6 +303,29 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     return <div className="price-table-wrapper">{priceBoxes}</div>;
   }
 
+  showTopComment(review, index) {
+    if (review.length > index) {
+      return (
+        <div key={`reviewt-${index}`} className="detail-comment">
+          <div className="rating">{this.showStars(review[index].stars)}</div>
+          <span className="detail-comment-author">
+            by{" "}
+            {`${review[index].reviewer.firstname} ${review[index].reviewer.middlename} ${
+              review[index].reviewer.lastname
+            }`}
+          </span>
+          <span className="detail-comment-date">
+            {review[index].reviewdate.split(" ")[1]} {review[index].reviewdate.split(" ")[2]}{" "}
+            {review[index].reviewdate.split(" ")[3]}
+          </span>
+          <p className="detail-comment-text">{review[index].reviewtext}</p>
+        </div>
+      );
+    } else {
+      return "";
+    }
+  }
+
   render() {
     let cssClass = "paddingPage";
     if (this.props.chat - open) {
@@ -386,25 +410,37 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             <div className="planHolder">{this.showPrices(this.props.productPlans.fetchPlans)}</div>
           </div>
           <div className="detail-comments">
-            <h3 className="detail-comments-heading">Reviews</h3>
+            {/*<h3 className="detail-comments-heading">Reviews</h3>*/}
             <div className="detail-comments-holder">
-              <div className="detail-comments-oversizeholder">
+              <div className="commentOverviewBlock">
+                <h3>Reviews</h3>
+                <div style={{ marginTop: "4rem" }}>{this.showStars(appDetails.avgstars)}</div>
+                <div className="avgnumber">{appDetails.avgstars}</div>
+
+                <button className="reviewAddButton" type="button" onClick={this.addReview}>
+                  <i className="fa fa-plus" /> Add Review
+                </button>
+              </div>
+              {this.props.productReview.fetchReviews
+                ? this.showTopComment(this.props.productReview.fetchReviews, 0)
+                : ""}
+
+              {this.props.productReview.fetchReviews
+                ? this.showTopComment(this.props.productReview.fetchReviews, 1)
+                : ""}
+
+              {/*<div className="detail-comments-oversizeholder">
                 <div className="detail-comments-stars">
                   <div className="detail-comments-stars-bignum">{appDetails.avgstars}</div>
                   <div className="detail-comments-stars-holder">
                     {this.showStars(appDetails.avgstars)}
                   </div>
-                </div>
+                  </div>
                 <div className="detail-comments-section">
                   {this.showComments(this.props.productReview.fetchReviews)}
                 </div>
-              </div>
+              </div>*/}
             </div>
-
-            <button className="button-review" type="button" onClick={this.addReview}>
-              <i className="fa fa-plus" />
-              Add Review
-            </button>
           </div>
           {this.state.popup ? (
             <Popup
