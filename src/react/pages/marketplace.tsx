@@ -9,9 +9,19 @@ class Marketplace extends React.Component {
     if (apps) {
       return (
         <div className="marketplace">
-          {apps.map(appDetails => {
-            return this.renderAppCard(appDetails);
-          })}
+          {apps.length > 0 ? (
+            apps.map(appDetails => {
+              return this.renderAppCard(appDetails);
+            })
+          ) : (
+            <div className="nothingHere">
+              <div className="h1">Nothing here :(</div>
+              <div className="h2">
+                That commonly means that you don't have enough rights or that VIPFY is not available
+                in your country.
+              </div>
+            </div>
+          )}
         </div>
       );
     }

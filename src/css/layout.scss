@@ -7,6 +7,7 @@
 @import './domains.scss';
 @import './messages.scss';
 @import './profile.scss';
+@import './editor.scss';
 
 /*::-webkit-scrollbar {
   width: 0.5em;
@@ -487,6 +488,9 @@
     margin: auto;
     flex-wrap: wrap;
     min-width: 40em;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
 .appThumbnail{
@@ -614,7 +618,7 @@
     /*display: flex;
     justify-content: center;*/
     overflow-x: scroll;
-    margin-top: 2rem;
+    margin-top: 3rem;
     background-color: white;
     /*border-radius: 3px;*/
     box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
@@ -693,17 +697,28 @@
     cursor: pointer;
 }
 .detail-comments{
-	padding: 1em;
 }
 .detail-comments-heading{
 }
 .detail-comments-holder{
-
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: 10rem 1fr 1fr;
+    height: 20rem;
+    margin-bottom: 3rem;
+}
+.topCommentsHolder{
+    display: flex;
+    max-height: 20rem;
+    justify-content: space-evenly;
 }
 .detail-comments-oversizeholder{
 	display: flex;
 	align-items: center;
-	overflow-x: auto;
+    overflow-x: auto;
+    display: none;
+    grid-column-end: 3;
+    grid-column-start: 1;
 }
 .detail-comments-stars{
 	padding: 5px;
@@ -714,17 +729,34 @@
 }
 .detail-comments-stars-holder{
 }
+.commentOverviewBlock{
+    padding: 10px;
+    overflow: auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+    margin: 0.5rem;
+    text-align: center;
+    position: relative;
+    .avgnumber{
+        font-size: 2rem;
+    }
+}
 .detail-comments-section{
 	display: flex;
 	min-width: 200px;
 	flex-direction: column;
 	flex-wrap: wrap;
-	height: 300px;
+	height: 20rem;
+    justify-content: space-between;
 }
 .detail-comment{
 	padding: 10px;
-	max-width: 250px;
-	overflow: auto;
+    overflow: auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+    margin: 0.5rem;
 }
 .detail-comment-author{
 	font-style: italic;
@@ -732,7 +764,8 @@
 }
 .detail-comment-date{
 	font-style: italic;
-	font-size: 12px;
+    font-size: 12px;
+    float: right;
 }
 .detail-comment-text{
 	word-wrap: break-word;
@@ -831,7 +864,8 @@
 */
 
 .sidebar {
-  background-color: $sidebar-background;
+  /*background-color: #117f91;*/
+  background-image: radial-gradient(farthest-corner at 0px 100%, #20BAA9 0%, #117f91 50%);
   height: 100vh;
   position: fixed;
   transition: width 0.6s ease-in-out;
@@ -839,12 +873,13 @@
   z-index: 300;
 
   &-logo {
-    background-image: $app-logo;
+    background-image: $newlogo;
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
     height: 2rem;
     margin: 0.5rem;
+    transform: rotateY(180deg);
   }
 
   &-link {
@@ -855,7 +890,7 @@
     padding-left: 1rem;
 
     &:hover {
-      background-color: #111;
+      background-color: #20BAA9;
     }
 
     &-holder {
@@ -1416,6 +1451,11 @@ span.paymentAddressPhone {
     margin-top: 0.25rem;
     color: white;
     font-weight: bold;
+    transition: all 0.6s ease-in-out;
+    &:hover{
+        background-color: #117f91;
+        transition: all 0.6s ease-in-out;
+    }
 }
 .appHeaderSelectPlan {
     position: relative;
@@ -2094,10 +2134,14 @@ h1{
   }
 
   .price-table-wrapper{
-    text-align: center;
+    /*text-align: center;
     margin-top: 1.5rem;
     display: grid;
-    grid-template-columns: repeat(5, max-content);
+    grid-template-columns: repeat(5, max-content);*/
+    text-align: center;
+    display: flex;
+    width: max-content;
+    margin: auto;
 
     .featured-table{
       box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
@@ -2795,4 +2839,43 @@ h1{
 .loginspinner{
     height: 1.5rem;
     width: 1.5rem;
+}
+.reviewAddButton {
+    bottom: 0px;
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    border-radius: 3px;
+    background-color: #20BAA9;
+    box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+    margin-top: 0.25rem;
+    color: white;
+    font-weight: bold;
+    transition: all 0.6s ease-in-out;
+    border: none;
+    outline: none;
+    &:hover{
+        background-color: #117f91;
+        transition: all 0.6s ease-in-out;
+    }
+}
+.nothingHere{
+    width: 20rem;
+    height: 20rem;
+    border-radius: 10rem;
+    background-image: radial-gradient(#20BAA9 0%, #117f91 100%);
+    color: white;
+    text-align: center;
+    .h1{
+        margin-top: 6.5rem;
+        font-size: 2rem;
+    }
+    .h2{
+        margin-top: 2rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
