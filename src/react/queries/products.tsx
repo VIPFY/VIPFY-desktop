@@ -89,61 +89,6 @@ export const fetchPlans = gql`
         name
         teaserdescription
         options
-        subplans {
-          id
-          numlicences
-          currency
-          price
-          optional
-          payperiod
-          name
-          teaserdescription
-          options
-        }
-      }
-      subplans {
-        id
-        numlicences
-        currency
-        price
-        optional
-        payperiod
-        name
-        teaserdescription
-        options
-        gotoplan {
-          id
-          numlicences
-          currency
-          price
-          optional
-          payperiod
-          name
-          teaserdescription
-          options
-        }
-        subplans {
-          id
-          numlicences
-          currency
-          price
-          optional
-          payperiod
-          name
-          teaserdescription
-          options
-          gotoplan {
-            id
-            numlicences
-            currency
-            price
-            optional
-            payperiod
-            name
-            teaserdescription
-            options
-          }
-        }
       }
     }
   }
