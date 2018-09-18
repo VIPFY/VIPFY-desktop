@@ -25,7 +25,8 @@ $shadow-color: #f0f3ff;
     grid-template-areas:
       'header header'
       'pic information'
-      'address address';
+      'address address'
+      'phone phone';
     grid-template-columns: 2fr 7fr;
   }
 
@@ -137,6 +138,52 @@ $shadow-color: #f0f3ff;
         &:focus {
           color: #000;
         }
+      }
+    }
+  }
+
+  .phones {
+    @extend .addresses;
+    grid-area: phone;
+
+    &-header {
+      @include grid-system(3fr 2fr 1fr 1fr 2fr 1fr);
+      font-weight: bold;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    &-list {
+      @extend .phones-header;
+      margin-top: 0;
+      font-weight: normal;
+
+      span {
+        &:first-child,
+        &:nth-child(2) {
+          @include hide-overflowing-text;
+        }
+
+        &:last-child {
+          i {
+            cursor: pointer;
+            margin-right: 0.2rem;
+
+            &:hover {
+              color: $vipfy-secondary-color;
+              transition: color 0.5s ease-in-out 0.1s;
+            }
+          }
+        }
+      }
+    }
+
+    input {
+      @include hide-overflowing-text;
+      text-align: center;
+
+      &:focus {
+        color: #000;
       }
     }
   }

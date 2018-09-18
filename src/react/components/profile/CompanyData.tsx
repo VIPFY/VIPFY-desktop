@@ -3,6 +3,7 @@ import { Query, graphql } from "react-apollo";
 import gql from "graphql-tag";
 
 import Addresses from "./Addresses";
+import Phones from "./Phones";
 import GenericInputForm from "../../components/GenericInputForm";
 import LoadingDiv from "../../components/LoadingDiv";
 import { AppContext } from "../../common/functions";
@@ -127,6 +128,7 @@ class CompanyData extends React.Component<Props, State> {
                   </div>
 
                   <Addresses showPopup={showPopup} company={company.unit.id} />
+                  <Phones showPopup={showPopup} company={company.unit.id} />
                 </div>
               );
             }}

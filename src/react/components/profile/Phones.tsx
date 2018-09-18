@@ -8,48 +8,48 @@ import CoolCheckbox from "../CoolCheckbox";
 import LoadingDiv from "../LoadingDiv";
 import { filterError, ErrorComp } from "../../common/functions";
 
-const CREATE_ADDRESS = gql`
-  mutation onCreateAddress($addressData: AddressInput!, $department: Boolean) {
-    createAddress(addressData: $addressData, department: $department) {
+const CREATE_PHONE = gql`
+  mutation onCreatePhone($phoneData: PhoneInput!, $department: Boolean) {
+    createPhone(phoneData: $phoneData, department: $department) {
       id
-      address
-      country
+      number
       description
       priority
+      verified
       tags
     }
   }
 `;
 
-const UPDATE_ADDRESS = gql`
-  mutation onUpdateAddress($address: AddressInput!, $id: Int!) {
-    updateAddress(address: $address, id: $id) {
+const UPDATE_PHONE = gql`
+  mutation onUpdatePhone($phone: PhoneInput!, $id: Int!) {
+    updatePhone(phone: $phone, id: $id) {
       id
-      address
-      country
+      number
       description
       priority
+      verified
       tags
     }
   }
 `;
 
-const DELETE_ADDRESS = gql`
-  mutation onDeleteAddress($id: Int!, $department: Boolean) {
-    deleteAddress(id: $id, department: $department) {
+const DELETE_PHONE = gql`
+  mutation onDeletePhone($id: Int!, $department: Boolean) {
+    deletePhone(id: $id, department: $department) {
       ok
     }
   }
 `;
 
-export const FETCH_ADDRESSES = gql`
-  query onFetchAddresses($company: Boolean) {
-    fetchAddresses(forCompany: $company) {
+export const FETCH_PHONES = gql`
+  query onFetchPhones($company: Boolean) {
+    fetchPhones(forCompany: $company) {
       id
-      address
-      country
+      number
       description
       priority
+      verified
       tags
     }
   }
@@ -58,9 +58,9 @@ export const FETCH_ADDRESSES = gql`
 interface Props {
   company: number;
   showPopup: Function;
-  deleteAddress: Function;
-  createAddress: Function;
-  updateAddress: Function;
+  deletePhone: Function;
+  createPhone: Function;
+  updatePhone: Function;
   unitid: number;
 }
 
@@ -71,7 +71,7 @@ interface State {
   variables: { company: boolean };
 }
 
-class Addresses extends React.Component<Props, State> {
+class Phones extends React.Component<Props, State> {
   state = {
     show: true,
     edit: -1,
@@ -91,39 +91,16 @@ class Addresses extends React.Component<Props, State> {
 
   showCreation = () => {
     const creationPopup = {
-      header: "Create new Address",
+      header: "Create new Phone",
       body: GenericInputForm,
       props: {
         fields: [
           {
             type: "text",
-            name: "street",
-            icon: "road",
-            label: "Street",
-            placeholder: "Your street",
-            required: true
-          },
-          {
-            type: "text",
-            name: "zip",
-            icon: "sort-numeric-up",
-            label: "Zip",
-            placeholder: "Your zip code"
-          },
-          {
-            type: "text",
-            name: "city",
-            icon: "building",
-            label: "City",
-            placeholder: "Your city",
-            required: true
-          },
-          {
-            type: "select",
-            name: "country",
-            icon: "globe",
-            label: "Your country",
-            options: ["US", "DE", "FR", "PL", "JP"],
+            name: "number",
+            icon: "phone-square",
+            label: "Phone number",
+            placeholder: "Enter your phone number",
             required: true
           },
           {
@@ -147,50 +124,52 @@ class Addresses extends React.Component<Props, State> {
             placeholder: "Use spaces to separate"
           }
         ],
-        handleSubmit: async addressData => {
+        handleSubmit: async phoneData => {
           const { variables } = this.state;
-          await this.props.createAddress({
-            variables: { addressData, department: variables.company },
-            update: (proxy, { data: { createAddress } }) => {
+          await this.props.createPhone({
+            variables: { phoneData, department: variables.company },
+            update: (proxy, { data: { createPhone } }) => {
               // Read the data from our cache for this query.
-              const cachedData = proxy.readQuery({ query: FETCH_ADDRESSES, variables });
-              cachedData.fetchAddresses.push(createAddress);
+              const cachedData = proxy.readQuery({ query: FETCH_PHONES, variables });
+              cachedData.fetchPhones.push(createPhone);
               // Write our data back to the cache.
-              proxy.writeQuery({ query: FETCH_ADDRESSES, variables, data: cachedData });
+              proxy.writeQuery({ query: FETCH_PHONES, variables, data: cachedData });
             }
           });
         },
-        submittingMessage: <LoadingDiv text="Registering Address..." />
+        submittingMessage: <LoadingDiv text="Registering Phone..." />
       }
     };
 
     this.props.showPopup(creationPopup);
   };
 
-  editAddress = async (e, id) => {
+  editPhone = async (e, id) => {
     e.preventDefault();
     try {
-      const address: { tags: string[]; department?: boolean } = { tags: [] };
+      const phone: { tags: string[]; department?: boolean } = { tags: [] };
 
       Object.values(e.target.childNodes).forEach(node => {
         if (node.name) {
-          address[node.name] = node.value;
+          if (node.name != "verified") {
+            phone[node.name] = node.value;
+          }
         } else {
           if (node.childNodes["0"].childNodes["0"].checked) {
-            address.tags.push("billing");
+            phone.tags.push("billing");
           }
 
           if (node.childNodes["1"].childNodes["0"].checked) {
-            address.tags.push("main");
+            phone.tags.push("main");
           }
         }
       });
 
       if (this.state.variables.company) {
-        address.department = true;
+        phone.department = true;
       }
 
-      await this.props.updateAddress({ variables: { address, id } });
+      await this.props.updatePhone({ variables: { phone, id } });
       this.setState({ edit: -1 });
     } catch (err) {
       this.props.showPopup({
@@ -205,25 +184,23 @@ class Addresses extends React.Component<Props, State> {
     const { variables } = this.state;
 
     const deletionPopup = {
-      header: "Delete Address",
+      header: "Delete Phone",
       body: Confirmation,
       props: {
         id,
-        type: "Address",
+        type: "Phone",
         submitFunction: id =>
-          this.props.deleteAddress({
+          this.props.deletePhone({
             variables: { id, department: variables.company },
             update: proxy => {
               // Read the data from our cache for this query.
-              const cachedData = proxy.readQuery({ query: FETCH_ADDRESSES, variables });
-              const filteredAddresses = cachedData.fetchAddresses.filter(
-                address => address.id != id
-              );
+              const cachedData = proxy.readQuery({ query: FETCH_PHONES, variables });
+              const filteredPhones = cachedData.fetchPhones.filter(phone => phone.id != id);
               // Write our data back to the cache.
               proxy.writeQuery({
-                query: FETCH_ADDRESSES,
+                query: FETCH_PHONES,
                 variables,
-                data: { fetchAddresses: filteredAddresses }
+                data: { fetchPhones: filteredPhones }
               });
             }
           })
@@ -234,35 +211,34 @@ class Addresses extends React.Component<Props, State> {
   };
 
   render() {
-    const addressHeaders = ["Street", "zip", "City", "Country", "Description", "Priority", ""];
+    const phoneHeaders = ["Number", "Description", "Priority", "Verified", ""];
 
     return (
-      <div className="addresses">
+      <div className="phones">
         <div className="header">
           <i
             className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
             onClick={this.toggle}
           />
-          <span>Addresses</span>
+          <span>Phones</span>
         </div>
 
-        <div className={`addresses-header ${this.state.show ? "in" : "out"}`}>
-          {addressHeaders.map(header => <span key={header}>{header}</span>)}
+        <div className={`phones-header ${this.state.show ? "in" : "out"}`}>
+          {phoneHeaders.map(header => <span key={header}>{header}</span>)}
         </div>
 
-        <Query query={FETCH_ADDRESSES} variables={this.state.variables}>
+        <Query query={FETCH_PHONES} variables={this.state.variables}>
           {({ data, loading, error }) => {
             if (loading) {
-              return <LoadingDiv text="Fetching Addresses..." />;
+              return <LoadingDiv text="Fetching Phones..." />;
             }
 
             if (error) {
               return filterError(error);
             }
 
-            return data.fetchAddresses.length > 0
-              ? data.fetchAddresses.map(({ address, description, country, priority, tags, id }) => {
-                  let { street, zip, city } = address;
+            return data.fetchPhones.length > 0
+              ? data.fetchPhones.map(({ tags, id, __typename, ...phoneData }) => {
                   const normalizedTags =
                     tags && tags.length > 0
                       ? tags.map((tag, key) => (
@@ -274,64 +250,45 @@ class Addresses extends React.Component<Props, State> {
                       : "";
 
                   return (
-                    <div className={`addresses-list ${this.state.show ? "in" : "out"}`} key={id}>
+                    <div className={`phones-list ${this.state.show ? "in" : "out"}`} key={id}>
                       {this.state.edit != id ? (
                         <React.Fragment>
-                          <span>{street}</span>
-                          <span>{zip ? zip : "not set"}</span>
-                          <span>{city}</span>
-                          <span>{country}</span>
-                          <span>{description}</span>
-                          <span>{priority}</span>
+                          {Object.values(phoneData).map(data => <span key={data}>{data}</span>)}
                           <span className="tags">{normalizedTags}</span>
                         </React.Fragment>
                       ) : (
                         <form
                           className="inline-form"
-                          id={`address-form-${id}`}
-                          onSubmit={e => this.editAddress(e, id)}>
+                          id={`phone-form-${id}`}
+                          onSubmit={e => this.editPhone(e, id)}>
                           <input
                             type="text"
-                            name="street"
+                            name="number"
                             className="inline-searchbar"
-                            defaultValue={street}
+                            defaultValue={phoneData.number}
                           />
-
-                          <input
-                            name="zip"
-                            type="text"
-                            className="inline-searchbar"
-                            defaultValue={zip ? zip : "not set"}
-                          />
-
-                          <input
-                            type="text"
-                            name="city"
-                            className="inline-searchbar"
-                            defaultValue={city}
-                          />
-
-                          <select name="country" className="inline-dropdown" defaultValue={country}>
-                            <option value=""> </option>
-                            {["DE", "US", "JP", "FR", "PL"].map(tag => (
-                              <option key={tag} value={tag}>
-                                {tag}
-                              </option>
-                            ))}
-                          </select>
 
                           <input
                             type="text"
                             name="description"
                             className="inline-searchbar"
-                            defaultValue={description}
+                            defaultValue={phoneData.description}
                           />
 
                           <input
                             name="priority"
                             type="number"
                             className="inline-searchbar"
-                            defaultValue={priority}
+                            defaultValue={phoneData.priority}
+                          />
+
+                          <input
+                            name="verified"
+                            type="checkbox"
+                            style={{ margin: "auto" }}
+                            disabled={true}
+                            className="inline-searchbar"
+                            defaultValue={phoneData.verified}
                           />
 
                           <div className="tags">
@@ -354,7 +311,7 @@ class Addresses extends React.Component<Props, State> {
                             <button
                               className="naked-button"
                               type="submit"
-                              form={`address-form-${id}`}>
+                              form={`phone-form-${id}`}>
                               <i className="fa fa-check" />
                             </button>
                             <i
@@ -376,9 +333,9 @@ class Addresses extends React.Component<Props, State> {
           }}
         </Query>
 
-        <button className="button-address" onClick={this.showCreation}>
+        <button className="button-phone" onClick={this.showCreation}>
           <i className="fa fa-plus" />
-          Add Address
+          Add Phone
         </button>
       </div>
     );
@@ -386,7 +343,7 @@ class Addresses extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(CREATE_ADDRESS, { name: "createAddress" }),
-  graphql(UPDATE_ADDRESS, { name: "updateAddress" }),
-  graphql(DELETE_ADDRESS, { name: "deleteAddress" })
-)(Addresses);
+  graphql(CREATE_PHONE, { name: "createPhone" }),
+  graphql(UPDATE_PHONE, { name: "updatePhone" }),
+  graphql(DELETE_PHONE, { name: "deletePhone" })
+)(Phones);

@@ -12,7 +12,7 @@ export default props => (
         type="submit"
         className="generic-submit-button"
         onClick={async () => {
-          await props.submitFunction(props.addressId);
+          await props.submitFunction(props.id);
           props.onClose();
         }}>
         <i className="fas fa-check-circle" /> Submit
