@@ -1,13 +1,14 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-
-import { AppContext, concatName } from "../../common/functions";
-import { unitPicFolder } from "../../common/constants";
+import { graphql, compose } from "react-apollo";
 
 import Addresses from "./Addresses";
 import LoadingDiv from "../../components/LoadingDiv";
 import GenericInputForm from "../../components/GenericInputForm";
+
+import { CHANGE_PASSWORD } from "../../mutations/auth";
+import { AppContext, concatName, filterError } from "../../common/functions";
+import { unitPicFolder } from "../../common/constants";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: File!) {
@@ -18,6 +19,7 @@ const UPDATE_PIC = gql`
 interface Props {
   toggle: Function;
   updatePic: Function;
+  changePassword: Function;
 }
 
 interface State {
@@ -37,7 +39,19 @@ class PersonalData extends React.Component<Props, State> {
 
       return true;
     } catch (err) {
-      return err;
+      throw new Error(filterError(err));
+    }
+  };
+
+  uploadPassword = async values => {
+    try {
+      const res = await this.props.changePassword({ variables: { ...values } });
+      await localStorage.setItem("token", res.data.changePassword.token);
+      await localStorage.setItem("refreshToken", res.data.changePassword.refreshToken);
+
+      return true;
+    } catch (err) {
+      throw new Error(filterError(err));
     }
   };
 
@@ -77,10 +91,47 @@ class PersonalData extends React.Component<Props, State> {
             submittingMessage: <LoadingDiv text="Uploading Picture... " />
           };
 
+          const passwordProps = {
+            fields: [
+              {
+                type: "password",
+                name: "pw",
+                icon: "key",
+                label: "Current Password",
+                placeholder: "Your current Password",
+                required: true
+              },
+              {
+                type: "password",
+                name: "newPw",
+                icon: "key",
+                label: "New Password",
+                placeholder: "Your new Password",
+                required: true
+              },
+              {
+                type: "password",
+                name: "confirmPw",
+                icon: "key",
+                label: "Confirm Password",
+                placeholder: "Enter new Password again",
+                required: true
+              }
+            ],
+            submittingMessage: <LoadingDiv text="Updating Password... " />,
+            handleSubmit: this.uploadPassword
+          };
+
           const picPopup: { header: string; body: Function; props: object } = {
             header: "Upload a Profile Picture",
             body: GenericInputForm,
             props: picProps
+          };
+
+          const passwordPopup = {
+            header: "Change Password",
+            body: GenericInputForm,
+            props: passwordProps
           };
 
           return (
@@ -111,6 +162,13 @@ class PersonalData extends React.Component<Props, State> {
                       <span>{data}</span>
                     </li>
                   ))}
+
+                  <li>
+                    <button className="button-pw" onClick={() => showPopup(passwordPopup)}>
+                      <i className="fa fa-key" />
+                      <span>Change Password</span>
+                    </button>
+                  </li>
                 </ul>
               </div>
 
@@ -123,4 +181,7 @@ class PersonalData extends React.Component<Props, State> {
   }
 }
 
-export default graphql(UPDATE_PIC, { name: "updatePic" })(PersonalData);
+export default compose(
+  graphql(CHANGE_PASSWORD, { name: "changePassword" }),
+  graphql(UPDATE_PIC, { name: "updatePic" })
+)(PersonalData);

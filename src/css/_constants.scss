@@ -110,10 +110,17 @@ $rccs-valid-font-size: 0.4rem;
     color: #fff;
     font-size: 14px;
     margin-top: 0.5rem;
+    padding: 0 0.1rem;
 
     &:hover {
       background: $vipfy-secondary-color;
-
     }
   }
+}
+
+.error-field {
+  color: red;
+  text-align: center;
+  margin: 10% 0;
+  font-size: 1.3rem;
 }

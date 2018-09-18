@@ -72,14 +72,6 @@ export default values => {
     errors.country = "Please enter a two-letter ISO-Code";
   }
 
-  passwordFields.forEach(field => {
-    if (!values[field]) {
-      errors[field] = "Please enter a password!";
-    } else if (values.password !== values.passwordConfirm) {
-      errors[field] = "Passwords don't match!";
-    }
-  });
-
   if (values.options) {
     values.options.forEach(option => {
       if ((option.key && !option.value) || (!option.key && option.value)) {

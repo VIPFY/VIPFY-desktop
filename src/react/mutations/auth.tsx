@@ -142,3 +142,13 @@ export const updateUser = gql`
     }
   }
 `;
+
+export const CHANGE_PASSWORD = gql`
+  mutation onChangePassword($pw: String!, $newPw: String!, $confirmPw: String!) {
+    changePassword(pw: $pw, newPw: $newPw, confirmPw: $confirmPw) {
+      ok
+      token
+      refreshToken
+    }
+  }
+`;

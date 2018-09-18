@@ -101,12 +101,11 @@ class GenericInputForm extends React.Component<Props, State> {
       this.props.handleSubmit(this.state.values);
       this.props.onClose();
     } else {
-      const throwsError = await this.props.handleSubmit(this.state.values);
-
-      if (throwsError) {
-        this.setState({ asyncError: filterError(throwsError), submitting: false });
-      } else {
+      try {
+        await this.props.handleSubmit(this.state.values);
         this.props.onClose();
+      } catch (err) {
+        this.setState({ asyncError: filterError(err), submitting: false });
       }
     }
   };
