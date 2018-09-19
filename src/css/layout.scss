@@ -1971,10 +1971,10 @@ option{
 .check {
     cursor: pointer;
     /*position: relative;
-    margin: auto;*/
+    margin: auto;
     float: left;
     width: 18px;
-    height: 18px;
+    height: 18px;*/
     -webkit-tap-highlight-color: transparent;
     transform: translate3d(0, 0, 0);
   }
@@ -2029,7 +2029,7 @@ option{
   }
   .lawlink{
     cursor: pointer;
-    background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+    background-color: #20BAA9;
     margin: 0.2rem;
     padding: 0.2rem;
     padding-left: 0.4rem;
@@ -2038,6 +2038,12 @@ option{
     border-radius: 3px;
     display: inline-block;
     font-size: 0.8rem;
+    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+    transition: all 0.6s ease-in-out;
+    &:hover{
+        background-color: #117f91;
+        transition: all 0.6s ease-in-out;
+    }
   }
   .lawholder{
     margin-top: 1rem;
@@ -2056,26 +2062,40 @@ option{
   .agreementSentence{
     font-size: 0.8rem;
     margin-left: 0.4rem;
+    top: -0.35rem;
+    position: relative;
   }
   .checkoutButton{
     cursor: pointer;
-    background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+    background-color: #20BAA9;
     margin: 0.5rem;
     padding: 0.5rem;
     color: white;
     border-radius: 3px;
     display: inline-block;
     border: none;
+    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+    transition: all 0.6s ease-in-out;
+    &:hover{
+        background-color: #117f91;
+        transition: all 0.6s ease-in-out;
+    }
   }
   .cancelButton{
     cursor: pointer;
-    background-image: linear-gradient(to right, #c73544 0%, #991b78 100%);
+    background-color: #c73544;
     margin: 0.5rem;
     padding: 0.5rem;
     color: white;
     border-radius: 3px;
     display: inline-block;
     border: none;
+    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+    transition: all 0.6s ease-in-out;
+    &:hover{
+        background-color: #991b78;
+        transition: all 0.6s ease-in-out;
+    }
   }
   .agreementError{
     position: absolute;
@@ -2574,7 +2594,7 @@ h1{
     }
 }
 .addEmployeeButton{
-    background-image: linear-gradient(to right, #20BAA9 0%, #117f91 100%);
+    background-color: #20BAA9;
     color: white;
     width: 10rem;
     text-align: center;
@@ -2582,8 +2602,11 @@ h1{
     height: 2rem;
     cursor: pointer;
     line-height: 2rem;
+    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+    transition: all 0.6s ease-in-out;
     &:hover{
-        box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+        background-color: #117f91;
+        transition: all 0.6s ease-in-out;
     }
 }
 .teamPageHolder{
@@ -2910,4 +2933,8 @@ h1{
         background-color: #117f91;
         transition: all 0.6s ease-in-out;
     }
+}
+.domainHolderMargin{
+    position: relative;
+    margin-bottom: 2rem;
 }
