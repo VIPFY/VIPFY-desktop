@@ -98,6 +98,7 @@
     "apollo-link-ws": "^1.0.8",
     "dotenv": "^5.0.1",
     "draft-js": "^0.10.5",
+    "draftjs-to-html": "0.8.3",
     "electron-compile": "^6.4.2",
     "electron-devtools-installer": "^2.2.4",
     "electron-squirrel-startup": "^1.0.0",

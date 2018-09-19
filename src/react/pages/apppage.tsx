@@ -13,6 +13,8 @@ import AppHeaderInfos from "../common/appHeaderInfos";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp } from "../common/functions";
 import AddReview from "../popups/addReview";
+import LoadingPopup from "../popups/loadingPopup";
+import draftToHtml from "draftjs-to-html";
 
 export type AppPageProps = {
   employees: number;
@@ -112,12 +114,34 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     }
   };
 
+  showLoading = (sentence) => {
+    this.setState({ popup: true, popupProps: { sentence },
+      popupBody:  LoadingPopup, popupHeading: "Please wait..."  })
+  }
+
+  handleAddReview = async (stars, review) => {
+    this.showLoading("We are adding your review. Thank you for your feedback.")
+    console.log("ADDREVIEW", stars, review)
+    try {
+      const res = await this.props.writeReview({
+        variables: { stars, text: JSON.stringify(review), appid: this.props.match.params.appid },
+        refetchQueries: [{ query: fetchReviews, variables: { appid: this.props.match.params.appid } }]
+      })
+
+        console.log(res)
+        this.closePopup();
+      } catch (err) {
+        this.showError(err.message || "Something went really wrong :-(");
+      }
+  }
+
   addReview = () => {
     this.setState({
       popup: true,
       popupBody: AddReview,
       popupHeading: "Write review",
-      popupProps: {
+      popupProps: {handleAdd: this.handleAddReview}
+      popupPropsold: {
         fields: [
           {
             name: "text",
@@ -318,7 +342,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             {review[index].reviewdate.split(" ")[1]} {review[index].reviewdate.split(" ")[2]}{" "}
             {review[index].reviewdate.split(" ")[3]}
           </span>
-          <p className="detail-comment-text">{review[index].reviewtext}</p>
+          <div className="detail-comment-text" dangerouslySetInnerHTML={{__html: draftToHtml(JSON.parse(review[index].reviewtext))}}></div>
         </div>
       );
     } else {
