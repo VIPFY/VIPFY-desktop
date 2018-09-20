@@ -116,7 +116,7 @@ class Billing extends React.Component<Props, State> {
                 <button
                   className="payment-data-change-button"
                   onClick={() => {
-                    if (normalizedCards.length > 1) {
+                    if (normalizedCards && normalizedCards.length > 1) {
                       this.props.showPopup({
                         header: "Change default Card",
                         body: CreditCardSelector,
@@ -130,7 +130,9 @@ class Billing extends React.Component<Props, State> {
                       });
                     }
                   }}>
-                  {normalizedCards.length > 1 ? "Change default Card" : "Add Credit Card"}
+                  {normalizedCards && normalizedCards.length > 1
+                    ? "Change default Card"
+                    : "Add Credit Card"}
                 </button>
               </div>
             </div>

@@ -1,7 +1,11 @@
 import * as React from "react";
 
 export default ({ text = "Vipfy loves you", legalText = "Legal legal legal" }) => (
-  <div id="loading-screen" className="mainPosition" style={{ display: "block" }}>
+  <div id="loading-screen" className="mainPosition">
+    <div className="loadingLogoHolder">
+      <div className="loadingLogo" />
+      <div className="loadingLogo loadingLogo2" />
+    </div>
     <div className="loadingTextBlock">
       <div className="centerText inspirationalText">
         <div>{text}</div>

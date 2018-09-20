@@ -519,7 +519,7 @@ class Team extends Component {
               <div className="picutre">
                 <img
                   src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                    person.profilepicture
+                    person.profilepicture ? person.profilepicture : "default.png"
                   }`}
                 />
               </div>
@@ -678,11 +678,11 @@ class Team extends Component {
               <div className="teamHolder">
                 <div className="companyHeader">
                   <div className="companyLogo">
-                    <img
+                    {value.company.profilepicture?<img
                       src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
                         value.company.profilepicture
                       }`}
-                    />
+                    />:""}
                   </div>
                   <div className="companyName">{value.company.name}</div>
                 </div>

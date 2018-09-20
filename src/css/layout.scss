@@ -253,9 +253,10 @@
 }
 
 .loadingTextBlock {
-    position:relative;
+    /*position:relative;
     top:70%;
-    width: 100%;
+    width: 100%;*/
+    margin-left: 2rem;
 }
 
 .mainPosition {
@@ -277,15 +278,69 @@
 
 #loading-screen {
   /*background-color: #fff;*/
-  background-image: url('../images/loading.gif');
+  /*background-image: url('../images/loading.gif');
   background-repeat: no-repeat;
-  background-position: center center;
+  background-position: center center;*/
   /*max-height: 15rem;
   margin-bottom: 4rem;*/
   height: 100%;
   width: 100%;
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.loadingLogoHolder{
+    position: relative;
+    width: 5rem;
+    height: 5rem;
+}
+.loadingLogo{
+    background-image: url(../images/Vipfy_Logo_008.svg);
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 5rem;
+    width: 5rem;
+    background-color: #117f91;
+    border-radius: 5rem;
+    background-size: 4rem;
+    position: absolute;
+
+    -webkit-animation: loading-bounce 2.0s infinite ease-in-out;
+    animation: loading-bounce 2.0s infinite ease-in-out;
 }
 
+.loadingLogo2 {
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+    background-color: #20BAA9;
+  }
+
+@keyframes loading-bounce {
+    0%, 100% {
+      transform: scale(0.0);
+      -webkit-transform: scale(0.0);
+    } 50% {
+      transform: scale(1.0);
+      -webkit-transform: scale(1.0);
+    }
+  }
+.welcomeHolderNew{
+    padding: 3em;
+    text-align: center;
+    .logo{
+        height: 5rem;
+        width: 5rem;
+        background-image: url(../images/Vipfy_Logo_008.svg);
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-color: #117f91;
+        border-radius: 5rem;
+        background-size: 4rem;
+        display: inline-block;
+        margin-bottom: 2rem;
+    }
+}
 .welcomeHolder{
   padding: 5em;
 }
@@ -2707,7 +2762,6 @@ h1{
             background-position: center;
             transition-duration: 0.6s;
             transition-timing-function: cubic-bezier(0.77, 0.2, 0.04, 0.81);
-            transform: rotateY(180deg);
             &_Right{
                 left: 42rem;
                 transition-duration: 0.6s;
