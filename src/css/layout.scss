@@ -1283,14 +1283,18 @@
     position: relative;
     margin: 2rem;
 }
+
 .paymentDataHolder {
-    padding: 1rem;
+    display: flex;
+    justify-content: center;
     background-color: white;
     box-shadow: 0 0 4rem #f0f3ff;
     border-radius: 0.2rem;
     position: relative;
     margin: 2rem;
+    padding: 1rem 0;
 }
+
 .paymentCreditCardLabel {
     text-align: center;
     font-size: 1.5rem;
