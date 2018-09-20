@@ -14,7 +14,8 @@ class CheckOrder extends React.Component {
     agreementError: false,
     featurenumbers: [],
     totalprice: null,
-    dataconnections: {}
+    dataconnections: {},
+    errordc: null
   };
 
   openExternal(url) {
@@ -191,7 +192,7 @@ class CheckOrder extends React.Component {
 
   accept(plan, planInputs, value, addresses) {
     if (this.state.agreement) {
-      this.setState({ agreementError: false });
+      this.setState({ agreementError: false, errordc: null });
       let index = 0;
       let featureoptions = {}
       if (plan.features && plan.features[0].features) {
@@ -207,16 +208,28 @@ class CheckOrder extends React.Component {
         })
       }
       let planInputsSending = {}
-      console.log("INPUTS", planInputs, this.state.dataconnections)
-      planInputs.forEach(input => {
+      let noErrors = true;
+      planInputs.forEach((input, key) => {
         switch(input.name){
           case "companyname":
+          if (input.required && !value.company.name) {
+            this.setState({errordc: key})
+            noErrors = false;
+          }
           planInputsSending["companyname"] = value.company.name
           break;
           case "companyaddress":
+          if (input.required && !{street: addresses[0].address.street, city: addresses[0].address.city, zip: addresses[0].address.zip}) {
+            this.setState({errordc: key})
+            noErrors = false;
+          }
           planInputsSending["companyaddress"] = {street: addresses[0].address.street, city: addresses[0].address.city, zip: addresses[0].address.zip}
           break;
           case "domains":
+          if (input.required && !this.state.dataconnections["domains"]) {
+            this.setState({errordc: key})
+            noErrors = false;
+          }
           if (this.state.dataconnections["domains"]) {
           planInputsSending["domains"] = [{domain: this.state.dataconnections["domains"]}]}
           else {planInputsSending["domains"] = []}
@@ -228,9 +241,8 @@ class CheckOrder extends React.Component {
           break;
         }
       })
-
-      console.log("Additional Features", planInputsSending)
-      this.props.acceptFunction(plan.id, featureoptions, this.state.totalprice || plan.price, planInputsSending);
+      if (noErrors) {
+      this.props.acceptFunction(plan.id, featureoptions, this.state.totalprice || plan.price, planInputsSending)}
     } else {
       this.setState({ agreementError: true });
     }
@@ -246,7 +258,7 @@ class CheckOrder extends React.Component {
     let DCArray: JSX.Element[] = []
     inputs.forEach((dc,key) => {
 
-      if (dc.type === "domainname"){
+      if (dc.type === "domainname") {
 
         DCArray.push(<Query key={key}
           query={gql`query {
@@ -267,17 +279,18 @@ class CheckOrder extends React.Component {
             data.fetchDomains.forEach((domain,key) => {
               possibleDomains.push(<option key={key}>{domain.domainname}</option>)
             })
-        return (
-        <select onChange={(e) => this.changeSelect("domains", e.target.value)}>{possibleDomains}</select>
+        return (<div>
+          <h5>Select the domain you want to connect</h5>
+          <select onChange={(e) => this.changeSelect("domains", e.target.value)}>{possibleDomains}</select>
+          {this.state.errordc === key?<div className="agreementError">A domainname is required.</div>:""}</div>
       )}}</Query>)
       }
     })
-    return (<div><h5>Select the domain you want to connect</h5>
+    return (<div className="domainHolderMargin">
       {DCArray}</div>)
   }
 
   render() {
-
     let planInputs = null
     let billingAddresses = null
     return (
@@ -341,9 +354,9 @@ class CheckOrder extends React.Component {
                               <div className="orderAddressLine">
                                 {data.fetchBillingAddresses[0].address.zip}
                               </div>
-                              <div className="changeInformation">
+                              {/*<div className="changeInformation">
                                 <span>Change Address</span><span>Change Payment</div>
-                              </div>
+                              </div>*/}
                             </div>
                             <div className="orderCardHolder">
                             {data.fetchPaymentData && data.fetchPaymentData.length > 0?
@@ -367,9 +380,9 @@ class CheckOrder extends React.Component {
                       <div className="orderInformationHolder">
                         <div className="orderAddressHolder">
                           Please add a billing address.
-                          <div className="changeInformation">
+                          {/*<div className="changeInformation">
                             <span>Change Address</span><span>Change Payment</div>
-                          </div>
+                    </div>*/}
                         </div>
                         <div className="orderCardHolder">
                         {data.fetchPaymentData && data.fetchPaymentData.length > 0?
@@ -400,11 +413,11 @@ class CheckOrder extends React.Component {
                           <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
                           <polyline points="1 9 7 14 15 4" />
                         </svg>
-                      </label>
-                      <span className="agreementSentence">
+                        <span className="agreementSentence">
                         I agree to the above third party agreements and to our Terms of Service and Privacy
                         agreement regarding {this.props.plan.appid.name}
                       </span>
+                      </label>
                       {this.state.agreementError ? (
                         <div className="agreementError">Please agree to the agreements.</div>
                       ) : (

@@ -4,6 +4,10 @@ import { Component } from "react";
 class AcceptLicence extends Component {
   state = { agreementError: false, agreement: false };
 
+  openExternal(url) {
+    require("electron").shell.openExternal(url);
+  }
+
   accept() {
     if (this.state.agreement) {
       this.props.acceptFunction();

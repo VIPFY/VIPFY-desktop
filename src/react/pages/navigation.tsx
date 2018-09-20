@@ -110,7 +110,7 @@ class Navigation extends React.Component<Props, State> {
         ${sideBarOpen ? "side-bar-open" : ""}`}>
         <div className="leftNavigation">
           <span onClick={toggleSidebar} className="fas fa-bars barIcon" />
-          <div
+          {/*<div
             className={
               this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"
             }>
@@ -123,7 +123,7 @@ class Navigation extends React.Component<Props, State> {
               className="searchbar"
               placeholder="Search for something..."
             />
-          </div>
+          </div>*/}
         </div>
 
         <div className="right-infos">
