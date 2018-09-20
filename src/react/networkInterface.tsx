@@ -10,7 +10,12 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 const SERVER_NAME = process.env.SERVER_NAME || "dev.vipfy.com";
 const SERVER_PORT = process.env.SERVER_PORT || 4000;
 // eslint-disable-next-line
-const secure = SERVER_NAME == "vipfy.com" || SERVER_NAME == "dev.vipfy.com" || SERVER_NAME == "conferences.vipfy.store" ? "s" : "";
+const secure =
+  SERVER_NAME == "vipfy.com" ||
+  SERVER_NAME == "dev.vipfy.com" ||
+  SERVER_NAME == "conferences.vipfy.store"
+    ? "s"
+    : "";
 
 const cache = new InMemoryCache();
 const httpLink = createFileLink({
@@ -74,17 +79,13 @@ export const setLogoutFunction = logoutFunc => {
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
-    graphQLErrors.map(({ message, locations, path }) => {
-      if (
-        message == "Not authenticated!" ||
-        message == "Cannot read property 'user' of null" ||
-        message == "Couldn't find user in database!"
-      ) {
+    graphQLErrors.map(({ message, locations, path, name }) => {
+      if (name.toLowerCase() == "autherror") {
         logout();
       }
 
       return console.log(
-        `[GraphQLError]: Message: ${message}, Location: ${locations}, Path: ${path}`
+        `[GraphQLError]: Message: ${message}, Type: ${name}, Location: ${locations}, Path: ${path}`
       );
     });
   }

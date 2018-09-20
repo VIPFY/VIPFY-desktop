@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 
 import Addresses from "./Addresses";
+import Phones from "./Phones";
 import LoadingDiv from "../../components/LoadingDiv";
 import GenericInputForm from "../../components/GenericInputForm";
 
@@ -173,6 +174,7 @@ class PersonalData extends React.Component<Props, State> {
               </div>
 
               <Addresses showPopup={showPopup} />
+              <Phones showPopup={showPopup} />
             </div>
           );
         }}
