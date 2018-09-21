@@ -1,5 +1,3 @@
-$text-width: 5rem;
-
 #domains {
   display: flex;
   flex-direction: column;
@@ -26,37 +24,42 @@ $text-width: 5rem;
 }
 
 .domain-header {
-  @include flex-system(center, space-between)
-  background-color: #ffeedb;
-  border-bottom: 2px solid #e0e0e0;
+  // @include flex-system(center, space-between);
+  display: grid;
+  grid-template-columns: 10rem repeat(8, 1fr);
+  align-items: center;
+  background: $vipfy-primary-color;
+  color: #fff;
+  border-bottom: 2px solid $vipfy-secondary-color;
   font-weight: bold;
 
   span {
-    &:nth-child(2),
-    &:nth-child(5)  {
-      text-align: center;
-    }
-
     &:first-child {
-      min-width: 120px;
       padding-left: 0;
-
+      
       &:hover {
         overflow: visible;
       }
+    }
+
+    &:nth-child(2),
+    &:nth-child(5)  {
+      text-align: center;
     }
   }
 }
 
 .domain-row {
   @extend .domain-header;
-  background-color: #fff;
+  background: #fff;
+  color: #000;
   font-weight: normal;
   min-height: 3em;
   transition: 0.3s;
 
   &:hover {
-    background: #ffeedf;
+    background: lighten($vipfy-secondary-color, 10);
+    transition: all 0.5s ease-in-out;
   }
 }
 
@@ -65,7 +68,6 @@ $text-width: 5rem;
   padding-left: 10px;
   padding-right: 10px;
   text-overflow: ellipsis;
-  width: $text-width;
 
   &-icon {
     @extend .domain-item;
@@ -79,10 +81,13 @@ $text-width: 5rem;
     flex-direction: row;
   }
 
-  .domain-header,
+  .domain-header {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(9, 1fr);
+  }
+
   .domain-row {
-    flex-direction: column;
-    flex-wrap: wrap;
+    height: 100%;
   }
 
   .domain-item {

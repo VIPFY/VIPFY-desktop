@@ -426,26 +426,33 @@ $rccs-visaelectron-logo: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
   margin-top: 2rem;
 }
 
-.credit-card-holder {
+.credit-card-selector {
   display: flex;
-  justify-content: space-around;
-  margin-top: 2rem;
-  overflow: hidden;
+  flex-flow: column wrap;
+  height: 15rem;
 
-  i {
-    cursor: pointer;
-    margin: auto 0;
-  }
-
-  .hide-card {
-    position: absolute;
-    left: -30rem;
-    transition: left 0.5s ease-in-out;
-  }
-
-  .show-card {
-    position: relative;
-    left: 0;
-    transition: left 1s ease-in-out;
+  .credit-card-holder {
+    display: flex;
+    justify-content: space-around;
+    margin: 2rem 0;
+    overflow: hidden;
+  
+    i {
+      cursor: pointer;
+      margin: auto 0;
+    }
+  
+    .hide-card {
+      position: absolute;
+      left: -300rem;
+      transition: left 0.5s ease-in-out;
+    }
+  
+    .show-card {
+      position: relative;
+      left: 0;
+      transition: left 0.5s ease-in-out;
+    }
   }
 }
+

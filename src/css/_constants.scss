@@ -44,7 +44,7 @@ $rccs-valid-font-size: 0.4rem;
 }
 
 @mixin vipfy-button($padding: 0) {
-  @include flex-system(center, center)
+  @include flex-system(center, center);
   background: $vipfy-primary-color;
   border: 0;
   color: #eee;
