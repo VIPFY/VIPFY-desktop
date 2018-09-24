@@ -240,94 +240,105 @@ class Phones extends React.Component<Props, State> {
             }
 
             return data.fetchPhones.length > 0 ? (
-              data.fetchPhones.map(({ tags, id, __typename, ...phoneData }) => {
-                const normalizedTags =
-                  tags && tags.length > 0
-                    ? tags.map((tag, key) => (
-                        <span key={key}>
-                          <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
-                          {tag}
-                        </span>
-                      ))
-                    : "";
+              <React.Fragment>
+                {data.fetchPhones.map(({ tags, id, __typename, ...phoneData }) => {
+                  const normalizedTags =
+                    tags && tags.length > 0
+                      ? tags.map((tag, key) => (
+                          <span key={key}>
+                            <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
+                            {tag}
+                          </span>
+                        ))
+                      : "";
 
-                return (
-                  <div className={`phones-list ${this.state.show ? "in" : "out"}`} key={id}>
-                    {this.state.edit != id ? (
-                      <React.Fragment>
-                        {Object.values(phoneData).map(data => (
-                          <span key={data}>{data}</span>
-                        ))}
-                        <span className="tags">{normalizedTags}</span>
-                      </React.Fragment>
-                    ) : (
-                      <form
-                        className="inline-form"
-                        id={`phone-form-${id}`}
-                        onSubmit={e => this.editPhone(e, id)}>
-                        <input
-                          type="text"
-                          name="number"
-                          className="inline-searchbar"
-                          defaultValue={phoneData.number}
-                        />
-
-                        <input
-                          type="text"
-                          name="description"
-                          className="inline-searchbar"
-                          defaultValue={phoneData.description}
-                        />
-
-                        <input
-                          name="priority"
-                          type="number"
-                          className="inline-searchbar"
-                          defaultValue={phoneData.priority}
-                        />
-
-                        <input
-                          name="verified"
-                          type="checkbox"
-                          style={{ margin: "auto" }}
-                          disabled={true}
-                          className="inline-searchbar"
-                          defaultValue={phoneData.verified}
-                        />
-
-                        <div className="tags">
-                          <CoolCheckbox
-                            name="billing"
-                            value={tags ? tags.includes("billing") : false}
-                          />
-
-                          <CoolCheckbox name="main" value={tags ? tags.includes("main") : false} />
-                        </div>
-                      </form>
-                    )}
-
-                    <span>
-                      {this.state.edit == id ? (
+                  return (
+                    <div className={`phones-list ${this.state.show ? "in" : "out"}`} key={id}>
+                      {this.state.edit != id ? (
                         <React.Fragment>
-                          <button className="naked-button" type="submit" form={`phone-form-${id}`}>
-                            <i className="fa fa-check" />
-                          </button>
-                          <i onClick={() => this.setState({ edit: -1 })} className="fa fa-times" />
+                          {Object.values(phoneData).map(data => (
+                            <span key={data}>{data}</span>
+                          ))}
+                          <span className="tags">{normalizedTags}</span>
                         </React.Fragment>
                       ) : (
-                        <React.Fragment>
-                          <i onClick={() => this.showDeletion(id)} className="fa fa-trash-alt" />
-                          <i onClick={() => this.setState({ edit: id })} className="fa fa-edit" />
-                        </React.Fragment>
+                        <form
+                          className="inline-form"
+                          id={`phone-form-${id}`}
+                          onSubmit={e => this.editPhone(e, id)}>
+                          <input
+                            type="text"
+                            name="number"
+                            className="inline-searchbar"
+                            defaultValue={phoneData.number}
+                          />
+
+                          <input
+                            type="text"
+                            name="description"
+                            className="inline-searchbar"
+                            defaultValue={phoneData.description}
+                          />
+
+                          <input
+                            name="priority"
+                            type="number"
+                            className="inline-searchbar"
+                            defaultValue={phoneData.priority}
+                          />
+
+                          <input
+                            name="verified"
+                            type="checkbox"
+                            style={{ margin: "auto" }}
+                            disabled={true}
+                            className="inline-searchbar"
+                            defaultValue={phoneData.verified}
+                          />
+
+                          <div className="tags">
+                            <CoolCheckbox
+                              name="billing"
+                              value={tags ? tags.includes("billing") : false}
+                            />
+
+                            <CoolCheckbox
+                              name="main"
+                              value={tags ? tags.includes("main") : false}
+                            />
+                          </div>
+                        </form>
                       )}
-                    </span>
-                    <button className="button-phone" onClick={this.showCreation}>
-                      <i className="fa fa-plus" />
-                      Add Phone
-                    </button>
-                  </div>
-                );
-              })
+
+                      <span>
+                        {this.state.edit == id ? (
+                          <React.Fragment>
+                            <button
+                              className="naked-button"
+                              type="submit"
+                              form={`phone-form-${id}`}>
+                              <i className="fa fa-check" />
+                            </button>
+                            <i
+                              onClick={() => this.setState({ edit: -1 })}
+                              className="fa fa-times"
+                            />
+                          </React.Fragment>
+                        ) : (
+                          <React.Fragment>
+                            <i onClick={() => this.showDeletion(id)} className="fa fa-trash-alt" />
+                            <i onClick={() => this.setState({ edit: id })} className="fa fa-edit" />
+                          </React.Fragment>
+                        )}
+                      </span>
+                    </div>
+                  );
+                })}
+                <button className="button-phone" onClick={this.showCreation}>
+                  <i className="fa fa-plus" />
+                  Add Phone
+                </button>
+              </React.Fragment>
             ) : (
               <button className="button-phone" onClick={this.showCreation}>
                 <i className="fa fa-plus" />

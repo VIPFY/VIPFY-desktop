@@ -101,12 +101,12 @@ class Billing extends React.Component<Props, State> {
     return (
       <div className="dashboard-working">
         <div className="currentPaymentHolder">
-          <div className="nextPaymentHolder">
+          {/*<div className="nextPaymentHolder">
             <span className="nextPaymentTitle">Next sheduled bill on 6-28-18: approx. 215 $</span>
             <div className="nextPaymentChart">
               <BillNext />
             </div>
-          </div>
+    </div>*/}
 
           <div className="paymentDataHolder">
             <div className="paymentDataCard">
@@ -135,6 +135,19 @@ class Billing extends React.Component<Props, State> {
                     : "Add Credit Card"}
                 </button>
               </div>
+              <div className="credit-card-change-button">
+                <button
+                  className="payment-data-change-button"
+                  onClick={() =>
+                    this.props.showPopup({
+                      header: "Add another Card",
+                      body: StripeForm,
+                      props: { departmentid: this.props.company.unit.id }
+                    })
+                  }>
+                  Add Payment Data
+                </button>
+              </div>
             </div>
           </div>
 
@@ -156,7 +169,7 @@ class Billing extends React.Component<Props, State> {
               "No address specified yet"
             )}
           </div>
-          <div className="paymentDataHolder">
+          {/*<div className="paymentDataHolder">
             <button
               className="payment-data-change-button"
               onClick={() =>
@@ -168,10 +181,10 @@ class Billing extends React.Component<Props, State> {
               }>
               Add Payment Data
             </button>
-          </div>
+            </div>*/}
         </div>
 
-        <div className="historyPaymentHolder">
+        {/*<div className="historyPaymentHolder">
           <div className="billingStreamChart">
             <span className="paymentHistoryHeader">Payment History</span>
             <BillHistory />
@@ -184,7 +197,7 @@ class Billing extends React.Component<Props, State> {
                 : "No Invoices yet"}
             </div>
           </div>
-        </div>
+        </div>*/}
       </div>
     );
   }
