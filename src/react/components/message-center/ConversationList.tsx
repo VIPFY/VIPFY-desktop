@@ -9,6 +9,7 @@ import InlineUser from "../InlineUser";
 import { QUERY_GROUPS } from "./common";
 import { JsxJoin } from "../../common/functions";
 import { unitPicFolder, defaultPic } from "../../common/constants";
+import UserPicture from "../UserPicture";
 
 export default (props: { userid: number }): JSX.Element => {
   return (
@@ -48,11 +49,14 @@ export default (props: { userid: number }): JSX.Element => {
               );
               const date = group.foundingdate ? new Date(group.foundingdate) : null;
 
-              const picture: string = group.image
-                ? group.image
-                : grouppartners.length == 1 && grouppartners[0].profilepicture
-                  ? unitPicFolder + grouppartners[0].profilepicture
-                  : defaultPic;
+              console.log("Grouppartners", grouppartners);
+              const picture: JSX.Element = group.image ? (
+                <img className="conversation-list-pic" src={group.image} />
+              ) : grouppartners.length == 1 ? (
+                <UserPicture unitid={grouppartners[0].id} size={"conversation-list-pic"} />
+              ) : (
+                <img className="conversation-list-pic" src={defaultPic} />
+              );
 
               return (
                 <Link
@@ -60,7 +64,7 @@ export default (props: { userid: number }): JSX.Element => {
                   to={`/area/messagecenter/${group.id}`}
                   key={`groupListKey${group.id}`}>
                   <li className="conversation-list-item">
-                    <img className="conversation-list-pic" src={picture} />
+                    {picture}
                     <div>
                       <div className="conversation-list-item-heading">{groupname}</div>
                       <div className="conversation-list-item-text">
@@ -73,7 +77,8 @@ export default (props: { userid: number }): JSX.Element => {
                               : undefined
                           }
                           short={true}
-                        />: <Message {...props} message={group.lastmessage} />
+                        />
+                        : <Message {...props} message={group.lastmessage} />
                       </div>
                     </div>
                   </li>
