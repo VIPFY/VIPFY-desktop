@@ -18,6 +18,9 @@ class Message extends React.Component<Props, State> {
   };
 
   componentDidMount = async () => {
+    if (!this.props.message.payload.files) {
+      return;
+    }
     try {
       const headers = new Headers({
         "Content-Type": "application/json",
@@ -35,8 +38,9 @@ class Message extends React.Component<Props, State> {
         body: JSON.stringify({ id: this.props.message.id })
       };
 
+      const secure = process.env.SERVER_NAME == "localhost" ? "" : "s";
       const res = await fetch(
-        `http://${process.env.SERVER_NAME}:${process.env.SERVER_PORT}/download`,
+        `http${secure}://${process.env.SERVER_NAME}:${process.env.SERVER_PORT}/download`,
         config
       );
 
