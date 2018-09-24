@@ -106,15 +106,8 @@
 }
 
 .payment-data-change-button {
-  background-color: #547fff;
-  color: #fff;
-  font-weight: bold;
-  margin-left: 15%;
-  margin-right: 15%;
-  line-height: 2rem;
-  font-size: 1.2rem;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.15), transparent);
-  cursor: pointer;
+  @include vipfy-button(0.8rem);
+  font-size: 1rem;
 }
 
 .newButton {
