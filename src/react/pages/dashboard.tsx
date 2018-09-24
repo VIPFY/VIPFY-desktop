@@ -21,7 +21,7 @@ interface State {
 class Dashboard extends React.Component<Props, State> {
   state = {
     recommended: false,
-    popup: true
+    popup: false
   };
 
   setApp = (licence: number) => this.props.setApp(licence);

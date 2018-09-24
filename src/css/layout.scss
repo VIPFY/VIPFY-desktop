@@ -538,24 +538,28 @@
 }
 
 .marketplace{
-    display: flex;
+    display: grid;
     max-width: 80%;
     margin: auto;
     flex-wrap: wrap;
     min-width: 40em;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    height: calc(100% - 2rem);
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 2rem;
+    grid-template-rows: 15rem 15rem 15rem 15rem 15rem;
+    margin-top: 2rem;
 }
 
 .appThumbnail{
-  width: 20%;
-  margin: 2.5%;
+    height: 100%;
+    width: 100%;
   background-color: white;
   box-shadow: 2px 2px 10px #ddd;
   cursor: pointer;
   border-radius: 3px;
-
+  overflow: hidden;
   &:hover {
     box-shadow: 2px 2px 10px rgba(0,0,0,0.36);
   }
