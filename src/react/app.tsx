@@ -180,7 +180,7 @@ class App extends React.Component<AppProps, AppState> {
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
         console.log("TOKEN", res.data);
-        this.setState({ login: true });
+        //this.setState({ login: true });
       }
       //this.props.history.push("/area/advisor");
     } catch (err) {
@@ -234,6 +234,7 @@ class App extends React.Component<AppProps, AppState> {
           moveTo={this.moveTo}
           register={this.registerMe}
           error={this.state.error}
+          setName={this.setName}
         />
       );
     }

@@ -35,6 +35,7 @@ interface Props {
   register: Function;
   login: Function;
   moveTo: Function;
+  setName: Function;
 }
 
 interface State {
@@ -173,7 +174,8 @@ class Login extends React.Component<Props, State> {
 
 
       let statisticdata = {
-        noVat: this.state.agreementb, industry: this.state.industry, subindustry: this.state.subindustry, companyStage: this.state.selectedOption
+        noVat: this.state.agreementb, industry: this.state.industry, country: this.state.country,
+        subindustry: this.state.subindustry, companyStage: this.state.selectedOption
       }
 
       const res3 = await this.props.uSD({ variables: {data: {...statisticdata} }});
@@ -199,7 +201,7 @@ class Login extends React.Component<Props, State> {
       }
       const res4 = await this.props.uU({variables: {user}})
       this.props.setName(user.firstname, user.lastname)
-      this.props.moveTo("dashboard")
+      this.props.moveTo("dashboard/newuser")
       return
     }
     catch (err) {
@@ -231,18 +233,6 @@ class Login extends React.Component<Props, State> {
           });
           return
         }
-        if (!(this.state.agreementa)) {
-          this.setState({
-            errorbool: true,
-            error: "Please agree to the Terms of Service and Privacy Agreement."
-          });
-          return
-        }
-        this.setState({email: this.remailInput.value,agreementa:true})
-        this.setStep(2)
-        break;
-      case 2:
-      console.log("CHECK", step)
         if (!(this.nameInput && this.nameInput.value)){
           this.setState({
             errorbool: true,
@@ -250,10 +240,29 @@ class Login extends React.Component<Props, State> {
           });
           return
         }
+        if (!(this.state.agreementa)) {
+          this.setState({
+            errorbool: true,
+            error: "Please agree to the Terms of Service and Privacy Agreement."
+          });
+          return
+        }
+        this.setState({name: this.nameInput.value, email: this.remailInput.value,agreementa:true})
+        this.setStep(2)
+        break;
+      case 2:
+      console.log("CHECK", step)
         if (!(this.companyInput && this.companyInput.value)) {
           this.setState({
             errorbool: true,
             error: "Please insert a company name for you."
+          });
+          return
+        }
+        if (!(this.state.country)) {
+          this.setState({
+            errorbool: true,
+            error: "Please insert a country for your company."
           });
           return
         }
@@ -264,7 +273,7 @@ class Login extends React.Component<Props, State> {
           });
           return
         }
-        this.setState({name: this.nameInput.value, companyname: this.companyInput.value, agreementb: true)
+        this.setState({companyname: this.companyInput.value, agreementb: true)
         this.setStep(3)
         break;
         case 3: 
@@ -362,7 +371,7 @@ class Login extends React.Component<Props, State> {
       case 1:
         return (
           <div className="partForm partForm_Register">
-            <div style={{ marginBottom: "3.5rem" }}>
+            <div style={{ marginBottom: "1rem" }}>
               <label>Your Email:</label>
               <input
                 key="remail"
@@ -372,6 +381,19 @@ class Login extends React.Component<Props, State> {
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
                   this.remailInput = input;
+                }}
+              />
+            </div>
+            <div style={{ marginBottom: "1rem" }}>
+              <label>Your name:</label>
+              <input
+                key="name"
+                className="newInputField"
+                placeholder="Your Name"
+                //autoFocus
+                //onKeyPress={e => this.handleEnter(e, 1)}
+                ref={input => {
+                  this.nameInput = input;
                 }}
               />
             </div>
@@ -388,10 +410,10 @@ class Login extends React.Component<Props, State> {
                           <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
                           <polyline points="1 9 7 14 15 4" />
                         </svg>
-                      </label>
-                      <span className="agreementSentence">
+                        <span className="agreementSentence">
                         I agree to the Terms of Service and Privacy Agreement of VIPFY.
                       </span>
+                      </label>
                     </div>
           </div>
         );
@@ -399,49 +421,81 @@ class Login extends React.Component<Props, State> {
       case 2:
         return (
           <div className="partForm partForm_Register">
-            <div style={{ marginBottom: "1.5rem" }}>
-              <label>Your name:</label>
-              <input
-                key="name"
-                className="newInputField"
-                placeholder="Your Name"
-                //autoFocus
-                //onKeyPress={e => this.handleEnter(e, 1)}
-                ref={input => {
-                  this.nameInput = input;
-                }}
-              />
-            </div>
             <div style={{ marginBottom: "1rem" }}>
               <label>Company name:</label>
               <input
                 key="cname"
                 className="newInputField"
                 placeholder="Your Companyname"
+                key="Check1"
                 //onKeyPress={e => this.handleEnter(e, 2)}
                 ref={input => {
                   this.companyInput = input;
                 }}
               />
             </div>
+            <div className="chooseStage" style={{marginBottom: "1rem"}}>
+              <div className="Heading">Please choose your country</div>
+              <div className="optionHolder">
+                <select
+                  placeholder="Select Country"
+                  onChange={e => this.setCountry(e.target.value)}
+                  defaultValue="">
+                  <option value="" disabled hidden>
+                    Please choose your country
+                  </option>
+                  <option value="AT">Austria</option>
+                  <option value="BE">Belgium</option>
+                  <option value="BG">Bulgaria</option>
+                  <option value="HR">Croatia</option>
+                  <option value="CY">Cyprus</option>
+                  <option value="CZ">Czech Republic</option>
+                  <option value="DK">Denmark</option>
+                  <option value="EE">Estonia</option>
+                  <option value="FI">Finland</option>
+                  <option value="FR">France</option>
+                  <option value="DE">Germany</option>
+                  <option value="GR">Greece</option>
+                  <option value="HU">Hungary</option>
+                  <option value="IE">Ireland</option>
+                  <option value="IT">Italy</option>
+                  <option value="LV">Latvia</option>
+                  <option value="LT">Lithuania</option>
+                  <option value="LU">Luxembourg</option>
+                  <option value="MT">Malta</option>
+                  <option value="NL">Netherlands</option>
+                  <option value="PL">Poland</option>
+                  <option value="PT">Portugal</option>
+                  <option value="RO">Romania</option>
+                  <option value="SK">Slovakia</option>
+                  <option value="SI">Slovenia</option>
+                  <option value="ES">Spain</option>
+                  <option value="SE">Sweden</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="US">United States of America</option>
+                  <option value="OT">Other</option>
+                </select>
+              </div>
+            </div>
             <div className="agreementBox">
-                      <input
-                        type="checkbox"
-                        className="cbx"
-                        id="CheckBox"
-                        style={{ display: "none" }}
-                        onChange={e => this.setState({ agreementb: e.target.checked })}
-                      />
-                      <label htmlFor="CheckBox" className="check">
-                        <svg width="18px" height="18px" viewBox="0 0 18 18">
-                          <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
-                          <polyline points="1 9 7 14 15 4" />
-                        </svg>
-                      </label>
-                      <span className="agreementSentence">
-                        My company is allowed to accept invoices without VAT
-                      </span>
-                    </div>
+              <input
+                type="checkbox"
+                className="cbx"
+                id="CheckBox2"
+                key="Check2"
+                style={{ display: "none" }}
+                onChange={e => this.setState({ agreementb: e.target.checked })}
+              />
+              <label htmlFor="CheckBox2" className="check">
+                <svg width="18px" height="18px" viewBox="0 0 18 18">
+                  <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
+                  <polyline points="1 9 7 14 15 4" />
+                </svg>
+                <span className="agreementSentence">
+                My company is allowed to accept invoices without VAT
+              </span>
+              </label>
+            </div>
           </div>
         );
         break;
@@ -680,6 +734,10 @@ class Login extends React.Component<Props, State> {
   setIndustry(e) {
     this.setState({ industry: e });
     console.log("SETI", this.state);
+  }
+
+  setCountry(e) {
+    this.setState({ country: e });
   }
 
   setSubIndustry(e) {

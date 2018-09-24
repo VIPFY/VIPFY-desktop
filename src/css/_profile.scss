@@ -10,14 +10,25 @@ $shadow-color: #f0f3ff;
   display: flex;
   flex-flow: column;
   padding: 2rem;
-  width: 100%;
+  /*width: 100%;*/
 
   .profile-page-item {
     background: #fff;
-    box-shadow: 0 0 4rem $shadow-color;
+    /*box-shadow: 0 0 4rem $shadow-color;
     margin: 1rem 0;
     min-width: 860px;
-    max-width: 1000px;
+    max-width: 1000px;*/
+    box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+    margin: auto;
+    max-width: 60rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    width: 100%;
+    overflow: hidden;
+    .header{
+      background-color: #20BAA9;
+      color: white;
+    }
   }
 
   .item-information {
@@ -99,6 +110,8 @@ $shadow-color: #f0f3ff;
     cursor: default;
     grid-area: address;
     margin-top: 1rem;
+    background-color: white !important;
+      color: #333 !important;
 
     &-header {
       @include grid-system(3fr 1fr 2fr 1fr 2fr 1fr 1fr 1fr);
