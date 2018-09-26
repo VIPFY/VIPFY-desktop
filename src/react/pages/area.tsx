@@ -123,10 +123,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           render={props => {
             if (!this.props.location.pathname.includes("advisor")) {
               return (
-                <Query
-                  query={FETCH_NOTIFICATIONS}
-                  pollInterval={600000}
-                  variables={{ receiver: this.props.userid }}>
+                <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
                   {res => (
                     <Navigation
                       chatOpen={chatOpen}

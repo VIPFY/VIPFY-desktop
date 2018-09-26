@@ -5,8 +5,8 @@ import Notification from "../components/Notification";
 import { filterError } from "../common/functions";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
-  subscription onNewNotification($receiver: Int!) {
-    newNotification(receiver: $receiver) {
+  subscription onNewNotification {
+    newNotification {
       id
       sendtime
       message
@@ -60,7 +60,6 @@ class Navigation extends React.Component<Props, State> {
 
     this.props.subscribeToMore({
       document: NOTIFICATION_SUBSCRIPTION,
-      variables: { receiver: this.props.userid },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
           console.log(subscriptionData);
