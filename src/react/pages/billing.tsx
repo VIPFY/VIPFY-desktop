@@ -102,38 +102,45 @@ class Billing extends React.Component<Props, State> {
     return (
       <div className="dashboard-working">
         <div className="currentPaymentHolder">
-          <div className="nextPaymentHolder">
+          {/*<div className="nextPaymentHolder">
             <span className="nextPaymentTitle">Next sheduled bill on 6-28-18: approx. 215 $</span>
             <div className="nextPaymentChart">
               <BillNext />
             </div>
-          </div>
+    </div>*/}
 
           <div className="paymentDataHolder">
             <div className="paymentDataCard">
               <label className="paymentCreditCardLabel">Current Credit Card</label>
               {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
-              <div className="credit-card-change-button">
-                <button
-                  className="payment-data-change-button"
-                  onClick={() => {
-                    if (normalizedCards && normalizedCards.length > 1) {
+              {normalizedCards && normalizedCards.length > 1 ? (
+                <div className="credit-card-change-button">
+                  <button
+                    className="payment-data-change-button"
+                    onClick={() =>
                       this.props.showPopup({
                         header: "Change default Card",
                         body: CreditCardSelector,
                         props: { cards: normalizedCards }
-                      });
-                    } else {
-                      this.props.showPopup({
-                        header: "Add a Credit Card",
-                        body: StripeForm,
-                        props: { departmentid: this.props.company.unit.id }
-                      });
-                    }
-                  }}>
-                  {normalizedCards && normalizedCards.length > 1
-                    ? "Change default Card"
-                    : "Add Credit Card"}
+                      })
+                    }>
+                    Change default Card
+                  </button>
+                </div>
+              ) : (
+                ""
+              )}
+              <div className="credit-card-change-button">
+                <button
+                  className="payment-data-change-button"
+                  onClick={() =>
+                    this.props.showPopup({
+                      header: "Add another Card",
+                      body: StripeForm,
+                      props: { departmentid: this.props.company.unit.id }
+                    })
+                  }>
+                  Add Credit Card
                 </button>
               </div>
             </div>
@@ -157,7 +164,7 @@ class Billing extends React.Component<Props, State> {
               "No address specified yet"
             )}
           </div>
-          <div className="paymentDataHolder">
+          {/*<div className="paymentDataHolder">
             <button
               className="payment-data-change-button"
               onClick={() =>
@@ -169,10 +176,10 @@ class Billing extends React.Component<Props, State> {
               }>
               Add Payment Data
             </button>
-          </div>
+            </div>*/}
         </div>
 
-        <div className="historyPaymentHolder">
+        {/*<div className="historyPaymentHolder">
           <div className="billingStreamChart">
             <span className="paymentHistoryHeader">Payment History</span>
             <BillHistory />
@@ -185,7 +192,7 @@ class Billing extends React.Component<Props, State> {
                 : "No Invoices yet"}
             </div>
           </div>
-        </div>
+        </div>*/}
       </div>
     );
   }

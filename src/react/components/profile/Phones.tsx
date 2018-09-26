@@ -224,7 +224,9 @@ class Phones extends React.Component<Props, State> {
         </div>
 
         <div className={`phones-header ${this.state.show ? "in" : "out"}`}>
-          {phoneHeaders.map(header => <span key={header}>{header}</span>)}
+          {phoneHeaders.map(header => (
+            <span key={header}>{header}</span>
+          ))}
         </div>
 
         <Query query={FETCH_PHONES} variables={this.state.variables}>
@@ -237,8 +239,9 @@ class Phones extends React.Component<Props, State> {
               return filterError(error);
             }
 
-            return data.fetchPhones.length > 0
-              ? data.fetchPhones.map(({ tags, id, __typename, ...phoneData }) => {
+            return data.fetchPhones.length > 0 ? (
+              <React.Fragment>
+                {data.fetchPhones.map(({ tags, id, __typename, ...phoneData }) => {
                   const normalizedTags =
                     tags && tags.length > 0
                       ? tags.map((tag, key) => (
@@ -253,7 +256,9 @@ class Phones extends React.Component<Props, State> {
                     <div className={`phones-list ${this.state.show ? "in" : "out"}`} key={id}>
                       {this.state.edit != id ? (
                         <React.Fragment>
-                          {Object.values(phoneData).map(data => <span key={data}>{data}</span>)}
+                          {Object.values(phoneData).map(data => (
+                            <span key={data}>{data}</span>
+                          ))}
                           <span className="tags">{normalizedTags}</span>
                         </React.Fragment>
                       ) : (
@@ -328,15 +333,20 @@ class Phones extends React.Component<Props, State> {
                       </span>
                     </div>
                   );
-                })
-              : "";
+                })}
+                <button className="button-phone" onClick={this.showCreation}>
+                  <i className="fa fa-plus" />
+                  Add Phone
+                </button>
+              </React.Fragment>
+            ) : (
+              <button className="button-phone" onClick={this.showCreation}>
+                <i className="fa fa-plus" />
+                Add Phone
+              </button>
+            );
           }}
         </Query>
-
-        <button className="button-phone" onClick={this.showCreation}>
-          <i className="fa fa-plus" />
-          Add Phone
-        </button>
       </div>
     );
   }

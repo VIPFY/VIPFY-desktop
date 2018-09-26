@@ -46,8 +46,8 @@
   &-hide {
     cursor: pointer;
     position: absolute;
-    right: -0.45rem;
-    top: -0.5rem;
+    right: 0.45rem;
+    top: 0.45rem;
 
     &:hover {
       @include color-fade;
@@ -80,6 +80,7 @@
   &-phone {
     @include vipfy-button(5px);
     margin: 2rem 0 1.3rem 2.3rem;
+    width: 10rem;
   }
 
   &-pw {

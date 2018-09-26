@@ -77,9 +77,11 @@ class CreditCardSelector extends React.Component<Props, State> {
         {submitting ? (
           <LoadingDiv style={{ height: "20%" }} text="Changing Default Card..." />
         ) : error ? (
-          <div>{error}</div>
+          <div className="credit-card-information" style={{ color: "red" }}>
+            {error}
+          </div>
         ) : (
-          ""
+          <div className="credit-card-information">Please select a new default card</div>
         )}
 
         <div className="generic-button-holder">
