@@ -2,7 +2,8 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import gql from "graphql-tag";
 import Notification from "../components/Notification";
-import { filterError } from "../common/functions";
+import { filterError, sleep } from "../common/functions";
+import { fetchLicences } from "../queries/auth";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -11,6 +12,7 @@ const NOTIFICATION_SUBSCRIPTION = gql`
       sendtime
       message
       icon
+      changed
     }
   }
 `;
@@ -60,11 +62,13 @@ class Navigation extends React.Component<Props, State> {
 
     this.props.subscribeToMore({
       document: NOTIFICATION_SUBSCRIPTION,
-      updateQuery: (prev, { subscriptionData }) => {
+      updateQuery: (prev, { client, subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
           console.log(subscriptionData);
           return prev;
         }
+
+        this.refetchCategories(subscriptionData.data.newNotification.changed, client);
 
         return Object.assign({}, prev, {
           fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
@@ -76,6 +80,15 @@ class Navigation extends React.Component<Props, State> {
   componentWillUnmount() {
     window.removeEventListener("keydown", this.listenKeyboard, true);
     document.removeEventListener("click", this.handleClickOutside, true);
+  }
+
+  async refetchCategories(categories, client) {
+    await sleep(500);
+    for (const category of categories) {
+      if (category == "ownLicences") {
+        await client.query({ query: fetchLicences, errorPolicy: "none" });
+      }
+    }
   }
 
   handleClickOutside = e => {
