@@ -279,11 +279,12 @@
 
 #loading-screen {
   /*background-color: #fff;*/
-  /*background-image: url('../images/loading.gif');
+  background-image: url('../images/loading.gif');
+  background-position: center center;
   background-repeat: no-repeat;
-  background-position: center center;*/
   /*max-height: 15rem;
   margin-bottom: 4rem;*/
+  display: block;
   height: 100%;
   width: 100%;
   display: flex;

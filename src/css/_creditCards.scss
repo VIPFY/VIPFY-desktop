@@ -428,8 +428,8 @@ $rccs-visaelectron-logo: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
 
 .credit-card-selector {
   display: flex;
-  flex-flow: column wrap;
-  height: 15rem;
+  flex-flow: column;
+  height: 20rem;
 
   .credit-card-holder {
     display: flex;
@@ -453,6 +453,10 @@ $rccs-visaelectron-logo: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
       left: 0;
       transition: left 0.5s ease-in-out;
     }
+  }
+
+  .credit-card-information {
+    text-align: center;
   }
 }
 

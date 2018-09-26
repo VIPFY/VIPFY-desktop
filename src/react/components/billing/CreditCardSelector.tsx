@@ -1,7 +1,10 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
+
+import LoadingDiv from "../../components/LoadingDiv";
 import CreditCard from "./CreditCard";
+import { fetchCards } from "../../queries/billing";
 
 const CHANGE_DEFAULT_METHOD = gql`
   mutation onChangeDefaultMethod($card: String!) {
@@ -18,11 +21,15 @@ interface Props {
 
 interface State {
   showCard: number;
+  error: string;
+  submitting: boolean;
 }
 
 class CreditCardSelector extends React.Component<Props, State> {
   state = {
-    showCard: 0
+    showCard: 0,
+    error: "",
+    submitting: false
   };
 
   switchCard = card => {
@@ -39,16 +46,21 @@ class CreditCardSelector extends React.Component<Props, State> {
 
   handleSubmit = async () => {
     try {
+      await this.setState({ submitting: true });
       await this.props.changeCard({
-        variables: { card: this.props.cards[this.state.showCard].id }
+        variables: { card: this.props.cards[this.state.showCard].id },
+        refetchQueries: [{ query: fetchCards }]
       });
+
+      this.setState({ submitting: false });
+      this.props.onClose();
     } catch (error) {
-      console.log(error);
+      this.setState({ error: "Sorry, something went wrong. Please try again.", submitting: false });
     }
   };
 
   render() {
-    const { showCard } = this.state;
+    const { showCard, submitting, error } = this.state;
 
     return (
       <div className="credit-card-selector">
@@ -62,12 +74,30 @@ class CreditCardSelector extends React.Component<Props, State> {
           <i className="fa fa-caret-right fa-3x" onClick={() => this.switchCard(showCard + 1)} />
         </div>
 
+        {submitting ? (
+          <LoadingDiv style={{ height: "20%" }} text="Changing Default Card..." />
+        ) : error ? (
+          <div className="credit-card-information" style={{ color: "red" }}>
+            {error}
+          </div>
+        ) : (
+          <div className="credit-card-information">Please select a new default card</div>
+        )}
+
         <div className="generic-button-holder">
-          <button type="button" className="generic-cancel-button" onClick={this.props.onClose}>
+          <button
+            disabled={submitting ? true : false}
+            type="button"
+            className="generic-cancel-button"
+            onClick={this.props.onClose}>
             <i className="fas fa-long-arrow-alt-left" /> Cancel
           </button>
 
-          <button type="submit" className="generic-submit-button" onClick={this.handleSubmit}>
+          <button
+            disabled={submitting ? true : false}
+            type="submit"
+            className="generic-submit-button"
+            onClick={this.handleSubmit}>
             <i className="fas fa-check-circle" /> Submit
           </button>
         </div>
