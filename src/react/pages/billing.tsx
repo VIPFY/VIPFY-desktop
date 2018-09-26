@@ -34,7 +34,7 @@ class Billing extends React.Component<Props, State> {
 
   downloadBill = async billid => {
     try {
-      const res = await this.props.downloadBill({ variables: { billid } });
+      await this.props.downloadBill({ variables: { billid } });
     } catch {
       this.props.showPopup({
         header: "Error!",
@@ -85,10 +85,11 @@ class Billing extends React.Component<Props, State> {
       !cards.fetchPaymentData ||
       !addresses.fetchBillingAddresses
     ) {
-      return <div>Ups... something went wrong</div>;
+      return <div>Oops... something went wrong</div>;
     }
 
     const paymentData = cards.fetchPaymentData;
+    console.log(paymentData);
     const billingAddress = addresses.fetchBillingAddresses[0];
     let mainCard;
     let normalizedCards;
@@ -116,7 +117,7 @@ class Billing extends React.Component<Props, State> {
                 <button
                   className="payment-data-change-button"
                   onClick={() => {
-                    if (normalizedCards.length > 1) {
+                    if (normalizedCards && normalizedCards.length > 1) {
                       this.props.showPopup({
                         header: "Change default Card",
                         body: CreditCardSelector,
@@ -130,7 +131,9 @@ class Billing extends React.Component<Props, State> {
                       });
                     }
                   }}>
-                  {normalizedCards.length > 1 ? "Change default Card" : "Add Credit Card"}
+                  {normalizedCards && normalizedCards.length > 1
+                    ? "Change default Card"
+                    : "Add Credit Card"}
                 </button>
               </div>
             </div>
