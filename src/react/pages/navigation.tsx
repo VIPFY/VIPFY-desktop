@@ -1,9 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import gql from "graphql-tag";
+import { withApollo } from "react-apollo";
 import Notification from "../components/Notification";
 import { filterError, sleep } from "../common/functions";
 import { fetchLicences } from "../queries/auth";
+import { FETCH_DOMAINS } from "./domains";
+import { fetchUnitApps } from "../queries/departments";
+import { fetchCards } from "../queries/billing";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -62,13 +66,15 @@ class Navigation extends React.Component<Props, State> {
 
     this.props.subscribeToMore({
       document: NOTIFICATION_SUBSCRIPTION,
-      updateQuery: (prev, { client, subscriptionData }) => {
+      updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
           console.log(subscriptionData);
           return prev;
         }
 
-        this.refetchCategories(subscriptionData.data.newNotification.changed, client);
+        console.log("gotNotifiaction", subscriptionData);
+
+        this.refetchCategories(subscriptionData.data.newNotification.changed, this.props.client);
 
         return Object.assign({}, prev, {
           fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
@@ -83,10 +89,33 @@ class Navigation extends React.Component<Props, State> {
   }
 
   async refetchCategories(categories, client) {
-    await sleep(500);
+    await sleep(2000);
     for (const category of categories) {
+      console.log("refetch category", category);
       if (category == "ownLicences") {
-        await client.query({ query: fetchLicences, errorPolicy: "none" });
+        await client.query({
+          query: fetchLicences,
+          errorPolicy: "none",
+          fetchPolicy: "network-only"
+        });
+      } else if (category == "domains") {
+        await client.query({
+          query: FETCH_DOMAINS,
+          errorPolicy: "none",
+          fetchPolicy: "network-only"
+        });
+      } else if (category == "foreignLicences") {
+        await client.query({
+          query: fetchUnitApps,
+          errorPolicy: "none",
+          fetchPolicy: "network-only"
+        });
+      } else if (category == "paymentMethods") {
+        await client.query({
+          query: fetchCards,
+          errorPolicy: "none",
+          fetchPolicy: "network-only"
+        });
       }
     }
   }
@@ -187,4 +216,4 @@ class Navigation extends React.Component<Props, State> {
   }
 }
 
-export default Navigation;
+export default withApollo(Navigation);

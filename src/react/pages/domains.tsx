@@ -14,7 +14,7 @@ interface Props {
   setDomain: Function;
 }
 
-const FETCH_DOMAINS = gql`
+export const FETCH_DOMAINS = gql`
   {
     fetchDomains {
       id
