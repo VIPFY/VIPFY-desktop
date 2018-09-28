@@ -21,6 +21,14 @@ const NOTIFICATION_SUBSCRIPTION = gql`
   }
 `;
 
+const DUMMY_QUERY = gql`
+  mutation {
+    ping {
+      ok
+    }
+  }
+`;
+
 interface Props {
   chatOpen: boolean;
   firstname: string;
@@ -95,25 +103,29 @@ class Navigation extends React.Component<Props, State> {
       if (category == "ownLicences") {
         await client.query({
           query: fetchLicences,
-          errorPolicy: "none",
+          errorPolicy: "ignore",
           fetchPolicy: "network-only"
         });
       } else if (category == "domains") {
         await client.query({
           query: FETCH_DOMAINS,
-          errorPolicy: "none",
+          errorPolicy: "ignore",
           fetchPolicy: "network-only"
         });
       } else if (category == "foreignLicences") {
-        await client.query({
-          query: fetchUnitApps,
-          errorPolicy: "none",
-          fetchPolicy: "network-only"
+        // refetchQueries of the mutate functions can refetch observed queries by name,
+        // using the variables used by the query observer
+        // that's the easiest way to get this functionality
+        await client.mutate({
+          mutation: DUMMY_QUERY,
+          errorPolicy: "ignore",
+          fetchPolicy: "no-cache",
+          refetchQueries: ["fetchUnitApps", "fetchUsersOwnLicences"]
         });
       } else if (category == "paymentMethods") {
         await client.query({
           query: fetchCards,
-          errorPolicy: "none",
+          errorPolicy: "ignore",
           fetchPolicy: "network-only"
         });
       }

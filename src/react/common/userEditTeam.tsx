@@ -35,7 +35,7 @@ handleClickOutside = () => {
             let appArray: JSX.Element[] = [];
 
             if (data.fetchUsersOwnLicences) {
-              if (data.fetchUsersOwnLicences[0]){
+              if (data.fetchUsersOwnLicences[0]) {
               appArray = data.fetchUsersOwnLicences.map((licence, key) => (
                 <div className="PApp" key={key}>
                   <img
