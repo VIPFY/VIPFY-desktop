@@ -1,16 +1,30 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import gql from "graphql-tag";
+import { withApollo } from "react-apollo";
 import Notification from "../components/Notification";
-import { filterError } from "../common/functions";
+import { filterError, sleep } from "../common/functions";
+import { fetchLicences } from "../queries/auth";
+import { FETCH_DOMAINS } from "./domains";
+import { fetchUnitApps } from "../queries/departments";
+import { fetchCards } from "../queries/billing";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
-  subscription onNewNotification($receiver: Int!) {
-    newNotification(receiver: $receiver) {
+  subscription onNewNotification {
+    newNotification {
       id
       sendtime
       message
       icon
+      changed
+    }
+  }
+`;
+
+const DUMMY_QUERY = gql`
+  mutation {
+    ping {
+      ok
     }
   }
 `;
@@ -60,12 +74,15 @@ class Navigation extends React.Component<Props, State> {
 
     this.props.subscribeToMore({
       document: NOTIFICATION_SUBSCRIPTION,
-      variables: { receiver: this.props.userid },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
           console.log(subscriptionData);
           return prev;
         }
+
+        console.log("gotNotifiaction", subscriptionData);
+
+        this.refetchCategories(subscriptionData.data.newNotification.changed, this.props.client);
 
         return Object.assign({}, prev, {
           fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
@@ -77,6 +94,42 @@ class Navigation extends React.Component<Props, State> {
   componentWillUnmount() {
     window.removeEventListener("keydown", this.listenKeyboard, true);
     document.removeEventListener("click", this.handleClickOutside, true);
+  }
+
+  async refetchCategories(categories, client) {
+    await sleep(2000);
+    for (const category of categories) {
+      console.log("refetch category", category);
+      if (category == "ownLicences") {
+        await client.query({
+          query: fetchLicences,
+          errorPolicy: "ignore",
+          fetchPolicy: "network-only"
+        });
+      } else if (category == "domains") {
+        await client.query({
+          query: FETCH_DOMAINS,
+          errorPolicy: "ignore",
+          fetchPolicy: "network-only"
+        });
+      } else if (category == "foreignLicences") {
+        // refetchQueries of the mutate functions can refetch observed queries by name,
+        // using the variables used by the query observer
+        // that's the easiest way to get this functionality
+        await client.mutate({
+          mutation: DUMMY_QUERY,
+          errorPolicy: "ignore",
+          fetchPolicy: "no-cache",
+          refetchQueries: ["fetchUnitApps", "fetchUsersOwnLicences"]
+        });
+      } else if (category == "paymentMethods") {
+        await client.query({
+          query: fetchCards,
+          errorPolicy: "ignore",
+          fetchPolicy: "network-only"
+        });
+      }
+    }
   }
 
   handleClickOutside = e => {
@@ -175,4 +228,4 @@ class Navigation extends React.Component<Props, State> {
   }
 }
 
-export default Navigation;
+export default withApollo(Navigation);

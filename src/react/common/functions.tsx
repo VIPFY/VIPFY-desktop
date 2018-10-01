@@ -104,3 +104,7 @@ export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Elemen
   r.pop();
   return r;
 };
+
+export const sleep = async ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};

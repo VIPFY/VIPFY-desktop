@@ -14,6 +14,7 @@ interface Props {
   setDomain: Function;
 }
 
+<<<<<<< HEAD
 interface State {
   showDomains: boolean;
   showExternal: boolean;
@@ -30,7 +31,7 @@ const FETCH_DOMAIN_PLANS = gql`
   }
 `;
 
-const FETCH_DOMAINS = gql`
+export const FETCH_DOMAINS = gql`
   {
     fetchDomains {
       id
