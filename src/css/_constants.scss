@@ -31,6 +31,20 @@ $rccs-valid-font-size: 0.4rem;
   justify-content: $justify;
 }
 
+@mixin toggleHeight($height) {
+  max-height: $height;
+  overflow: hidden;
+  transition: max-height 0.6s ease-in-out;
+}
+
+.in {
+  @include toggleHeight(20rem);
+}
+
+.out {
+  @include toggleHeight(0);
+}
+
 @mixin hide-overflowing-text {
   text-overflow: ellipsis;
   // Required for text-overflow to do anything

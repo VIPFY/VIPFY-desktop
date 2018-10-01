@@ -14,6 +14,22 @@ interface Props {
   setDomain: Function;
 }
 
+interface State {
+  showDomains: boolean;
+  showExternal: boolean;
+}
+
+const FETCH_DOMAIN_PLANS = gql`
+  {
+    fetchPlans(appid: 11) {
+      id
+      name
+      price
+      currency
+    }
+  }
+`;
+
 const FETCH_DOMAINS = gql`
   {
     fetchDomains {
@@ -23,6 +39,12 @@ const FETCH_DOMAINS = gql`
       renewaldate
       renewalmode
       whoisprivacy
+    }
+    fetchPlans(appid: 11) {
+      id
+      name
+      price
+      currency
     }
   }
 `;
@@ -48,10 +70,16 @@ const UPDATE_DOMAIN = gql`
   }
 `;
 
-class Domains extends React.Component<Props> {
+class Domains extends React.Component<Props, State> {
+  state = {
+    showDomains: true,
+    showExternal: true
+  };
+
   handleSubmit = async ({ domainName, tld, whoisprivacy }) => {
     try {
-      const domain = { domain: `${domainName}.${tld}`, whoisprivacy, tld };
+      const domainname = `${domainName}${tld.substring(0, 4)}`;
+      const domain = { domain: domainname, whoisprivacy, tld: tld.substring(1, 4) };
 
       await this.props.registerDomain({
         variables: { domain },
@@ -59,7 +87,7 @@ class Domains extends React.Component<Props> {
           __typename: "Mutation",
           registerDomain: {
             id: "-1",
-            domainname: `${domainName}.${tld}`,
+            domainname,
             createdate: null,
             renewaldate: null,
             renewalmode: "AUTODELETE",
@@ -181,6 +209,21 @@ class Domains extends React.Component<Props> {
     this.props.showPopup(popup);
   };
 
+  renderHeaders = (headers: string[], state: string) => (
+    <div className="domain-header">
+      {headers.map(header => (
+        <span key={header} className="domain-item">
+          {header}
+        </span>
+      ))}
+
+      <i
+        className="fa fa-eye domain-toggle-icon"
+        onClick={() => this.setState(prevState => ({ [state]: !prevState[state] }))}
+      />
+    </div>
+  );
+
   render() {
     const headers: string[] = [
       "Domain",
@@ -194,66 +237,13 @@ class Domains extends React.Component<Props> {
       "Configuration"
     ];
 
-    const regProps: {
-      fields: object[];
-      handleSubmit: Function;
-      submittingMessage: any;
-      runInBackground: boolean;
-    } = {
-      fields: [
-        {
-          name: "domainName",
-          label: "Domain",
-          placeholder: "Enter Domain name",
-          icon: "hdd",
-          type: "text",
-          validate: domainValidation,
-          required: true
-        },
-        {
-          name: "tld",
-          type: "select",
-          icon: "globe",
-          label: "Select TLD",
-          options: ["com", "net", "org"],
-          required: true
-        },
-        {
-          name: "whoisprivacy",
-          type: "checkbox",
-          label: "Whois Privacy",
-          icon: "user-secret"
-        }
-      ],
-      handleSubmit: this.handleSubmit,
-      runInBackground: true
-    };
-
-    const domainPopup = {
-      header: "Domain Registration",
-      body: GenericInputForm,
-      props: regProps
-    };
-
     return (
       <div id="domains">
-        <button
-          className="register-domain"
-          type="button"
-          onClick={() => this.props.showPopup(domainPopup)}>
-          <i className="fas fa-plus" /> Register New
-        </button>
+        <h1 style={{ paddingTop: 0 }}>Domains</h1>
 
         <div className="domain-table">
-          <div className="domain-header">
-            {headers.map(header => (
-              <span key={header} className="domain-item">
-                {header}
-              </span>
-            ))}
-          </div>
-
-          <div className="domain-table-body">
+          {this.renderHeaders(headers, "showDomains")}
+          <div className={`domain-table-body ${this.state.showDomains ? "in" : "out"}`}>
             <Query query={FETCH_DOMAINS}>
               {({ loading, error, data }) => {
                 if (loading) {
@@ -322,6 +312,91 @@ class Domains extends React.Component<Props> {
               }}
             </Query>
           </div>
+        </div>
+
+        <Query query={FETCH_DOMAIN_PLANS}>
+          {({ data, loading, error }) => {
+            const registerButton = (
+              <button
+                className="register-domain"
+                disabled={loading || !data}
+                type="button"
+                onClick={() => this.props.showPopup(domainPopup)}>
+                <i className="fas fa-plus" /> Register New
+              </button>
+            );
+
+            if (loading || error || !data) {
+              return registerButton;
+            }
+
+            const tlds = data.fetchPlans.filter(item => item.name[0] != "W");
+            const regProps: {
+              fields: object[];
+              handleSubmit: Function;
+              submittingMessage?: string;
+              runInBackground: boolean;
+              buttonName: string;
+            } = {
+              fields: [
+                {
+                  name: "domainName",
+                  label: "Domain",
+                  placeholder: "Enter Domain name",
+                  icon: "hdd",
+                  type: "text",
+                  validate: domainValidation,
+                  required: true
+                },
+                {
+                  name: "tld",
+                  type: "select",
+                  icon: "globe",
+                  label: "Select TLD",
+                  options: tlds.map(tld => `.${tld.name} ${tld.price} ${tld.currency}`),
+                  required: true
+                },
+                {
+                  name: "whoisprivacy",
+                  type: "checkbox",
+                  label: "Whois Privacy",
+                  icon: "user-secret"
+                },
+                {
+                  name: "agb",
+                  type: "agb",
+                  required: true
+                }
+              ],
+              buttonName: "Buy",
+              handleSubmit: this.handleSubmit,
+              runInBackground: true
+            };
+
+            const domainPopup = {
+              header: "Domain Registration",
+              body: GenericInputForm,
+              props: regProps
+            };
+
+            return registerButton;
+          }}
+        </Query>
+
+        <div className="">
+          <h1>External Domains</h1>
+          <div className="domain-table">{this.renderHeaders(headers, "showExternal")}</div>
+          <div className={`domain-table-body ${this.state.showExternal ? "in" : "out"}`}>
+            <div className="domain-row">domain</div>
+          </div>
+
+          <button
+            style={{ maxWidth: "9rem" }}
+            className="register-domain"
+            type="button"
+            onClick={() => console.log("domainPopup")}>
+            <i className="fas fa-plus" /> External Domain
+          </button>
         </div>
       </div>
     );

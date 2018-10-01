@@ -382,20 +382,23 @@ class Addresses extends React.Component<Props, State> {
                             </React.Fragment>
                           )}
                         </span>
+
+                        <button className="button-address" onClick={this.showCreation}>
+                          <i className="fa fa-plus" />
+                          Add Address
+                        </button>
                       </div>
                     );
                   }
                 )}
+              </React.Fragment>
+            ) : (
+              <div className={this.state.show ? "in" : "out"}>
                 <button className="button-address" onClick={this.showCreation}>
                   <i className="fa fa-plus" />
                   Add Address
                 </button>
-              </React.Fragment>
-            ) : (
-              <button className="button-address" onClick={this.showCreation}>
-                <i className="fa fa-plus" />
-                Add Address
-              </button>
+              </div>
             );
           }}
         </Query>

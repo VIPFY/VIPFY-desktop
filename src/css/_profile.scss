@@ -1,10 +1,5 @@
 $border: 1px solid #005;
 $shadow-color: #f0f3ff;
-@mixin toggleHeight($height) {
-  max-height: $height;
-  overflow: hidden;
-  transition: max-height 0.6s ease-in-out;
-}
 
 #profile-page {
   display: flex;
@@ -200,12 +195,4 @@ $shadow-color: #f0f3ff;
       }
     }
   }
-}
-
-.in {
-  @include toggleHeight(20rem);
-}
-
-.out {
-  @include toggleHeight(0);
 }
