@@ -10,6 +10,9 @@ export const signInUser = gql`
         id
         firstname
         lastname
+        emails {
+          email
+        }
         language
         birthday
         teams

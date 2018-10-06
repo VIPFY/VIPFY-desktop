@@ -20,6 +20,7 @@ interface State {
   asyncError: any;
   submitting: boolean;
   stars: number;
+  successMessage: any;
 }
 
 const INITIAL_STATE = {
@@ -110,11 +111,41 @@ class GenericInputForm extends React.Component<Props, State> {
     }
   };
 
-  renderFields = fields => {
+  renderFields = (fields: object[]) => {
     const { inputFocus, values, errors } = this.state;
 
     return fields.map(
-      ({ name, icon, multiple, placeholder, label, required, type, options, validate }) => {
+      ({
+        name,
+        icon,
+        multiple,
+        min,
+        max,
+        placeholder,
+        label,
+        required,
+        type,
+        options,
+        validate,
+        lawLink,
+        privacyLink,
+        appName
+      }: {
+        name: string;
+        icon: string;
+        multiple: boolean;
+        min: string;
+        max: string;
+        placeholder: string;
+        label: string;
+        required: boolean;
+        type: string;
+        options: any[];
+        validate: Function;
+        lawLink: string;
+        privacyLink: string;
+        appName: string;
+      }) => {
         const field = () => {
           switch (type) {
             case "checkbox": {
@@ -183,8 +214,8 @@ class GenericInputForm extends React.Component<Props, State> {
               return (
                 <textarea
                   className=""
-                  rows="5"
-                  cols="50"
+                  rows={5}
+                  cols={50}
                   name={name}
                   placeholder={placeholder}
                   value={values[name] ? values[name] : ""}
@@ -237,9 +268,7 @@ class GenericInputForm extends React.Component<Props, State> {
                       <span
                         className="lawlink"
                         onClick={() => {
-                          require("electron").shell.openExternal(
-                            "https://www.domaindiscount24.com/en/legal/terms-and-conditions"
-                          );
+                          require("electron").shell.openExternal(lawLink);
                         }}>
                         Terms of Service
                       </span>
@@ -247,9 +276,7 @@ class GenericInputForm extends React.Component<Props, State> {
                       <span
                         className="lawlink"
                         onClick={() => {
-                          require("electron").shell.openExternal(
-                            "https://www.domaindiscount24.com/en/legal/privacy-policy"
-                          );
+                          require("electron").shell.openExternal(privacyLink);
                         }}>
                         Privacy
                       </span>
@@ -257,9 +284,9 @@ class GenericInputForm extends React.Component<Props, State> {
                     <div className="agreementBox">
                       <input
                         type="checkbox"
+                        name="agb"
                         className="cbx"
                         id="agb-checkbox"
-                        style={{ display: "none" }}
                         required={required}
                         onChange={this.handleChange}
                       />
@@ -269,8 +296,8 @@ class GenericInputForm extends React.Component<Props, State> {
                           <polyline points="1 9 7 14 15 4" />
                         </svg>
                         <span className="agreementSentence">
-                          I agree to the above third party agreements and to our Terms of Service
-                          and Privacy agreement regarding Domaindiscount24
+                          {`I agree to the above third party agreements and to our Terms of Service
+                          and Privacy agreement regarding ${appName}`}
                         </span>
                       </label>
                     </div>
@@ -349,6 +376,8 @@ class GenericInputForm extends React.Component<Props, State> {
                   name={name}
                   placeholder={placeholder}
                   type={type}
+                  min={min}
+                  max={max}
                   value={values[name] ? values[name] : ""}
                   onChange={e => this.handleChange(e, validate)}
                   onFocus={this.highlight}

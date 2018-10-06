@@ -117,3 +117,8 @@ export const domainValidation = {
   check: testValue => !/^[a-zA-Z0-9-]{1,}$/g.test(testValue),
   error: "Only characters, numbers and hyphens allowed!"
 };
+
+export const fullDomainNameValidation = {
+  check: testValue => !/^[a-zA-Z0-9-]{1,}\.[a-zA-Z]{2,}$/g.test(testValue),
+  error: "Must be in this format: example.com"
+};
