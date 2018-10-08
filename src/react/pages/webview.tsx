@@ -21,6 +21,11 @@ export type WebViewState = {
   planId: number;
   previousPlanId: number;
   unitId: number;
+  popup: any;
+  interactions: Date[];
+  intervalId: Timer | null;
+  intervalId2: Timer | null;
+  timeSpent: number[];
 };
 
 export type WebViewProps = {
@@ -58,7 +63,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       planId: props.app,
       previousPlanId: -1,
       unitId: -1,
-      popup: null
+      popup: null,
+      interactions: [],
+      intervalId: null,
+      intervalId2: null,
+      timeSpent: [],
     };
   }
 
@@ -80,8 +89,18 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   componentDidMount() {
     console.log("webview mounted");
+    let intervalId = setInterval(() => this.timer1m(), 60000);
+    let intervalId2 = setInterval(() => this.sendTimeSpent(), 600000);
+    this.setState({intervalId, intervalId2});
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
     this.switchApp();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.state.intervalId);
+    clearInterval(this.state.intervalId2);
+    this.setState({intervalId: null, intervalId2: null});
+    this.sendTimeSpent();
   }
 
   componentDidUpdate(prevProps: WebViewProps, prevState: WebViewState) {
@@ -98,6 +117,40 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   closePopup = () => {
     this.setState({ popup: null });
   };
+
+  timer1m = () => {
+    const now = new Date();
+    let timeSpent = this.state.timeSpent;
+    for(let licenceId in this.state.interactions) {
+      const lastInteraction = this.state.interactions[licenceId];
+      if(now - lastInteraction < 1000*60*5) {
+        if(!timeSpent[licenceId]) {
+          timeSpent[licenceId] = 0;
+        }
+        timeSpent[licenceId] += 1;
+      }
+    }
+    console.log("TIME SPENT", timeSpent);
+    this.setState({timeSpent});
+  }
+
+  sendTimeSpent = () => {
+    let timeSpent = this.state.timeSpent;
+    this.setState({timeSpent: []});
+    for(let licenceId in timeSpent) {
+      const minutes = timeSpent[licenceId];
+      this.props.client.mutate({
+        mutation: gql`
+          mutation trackMinutesSpent($licenceid: ID!, $minutes: Int!) {
+            trackMinutesSpent(licenceid: $licenceid, minutes: $minutes) {
+              ok
+            }
+          }
+        `,
+        variables: {licenceid: this.state.planId, minutes: minutes}
+      });
+    }
+  }
 
   acceptFunction = async () => {
     console.log("ACCEPTED LICENCE", this.state.planId)
@@ -311,6 +364,14 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       case "requestPush":
         {
           this.props.history.push(`/area/domains/${this.props.domain}`);
+        }
+        break;
+
+      case "interactionHappened":
+        {
+          let interactions = this.state.interactions;
+          interactions[this.state.planId] = new Date();
+          await this.setState({interactions});
         }
         break;
 
