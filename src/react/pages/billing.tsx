@@ -11,6 +11,7 @@ import StripeForm from "../components/billing/StripeForm";
 import { ErrorComp } from "../common/functions";
 import { fetchBills, fetchCards, fetchBillingAddresses } from "../queries/billing";
 import { downloadBill } from "../mutations/billing";
+import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 
 interface Props {
   downloadBill: Function;
@@ -179,8 +180,9 @@ class Billing extends React.Component<Props, State> {
             </div>*/}
         </div>
 
-        {/*<div className="historyPaymentHolder">
-          <div className="billingStreamChart">
+        <div className="paymentDataHolder" style={{ width: "30rem", height: "32rem" }}>
+          <BillingHistoryChart {...this.props} />
+          {/*<div className="billingStreamChart">
             <span className="paymentHistoryHeader">Payment History</span>
             <BillHistory />
           </div>
@@ -191,8 +193,8 @@ class Billing extends React.Component<Props, State> {
                 ? this.showBills(bills.fetchBills)
                 : "No Invoices yet"}
             </div>
-          </div>
-        </div>*/}
+              </div>*/}
+        </div>
       </div>
     );
   }
