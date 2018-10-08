@@ -22,6 +22,7 @@ import Webview from "./webview";
 import { fetchLicences } from "../queries/auth";
 import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
+import SupportPage from "./support";
 
 interface AreaProps {
   history: any[];
@@ -97,7 +98,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "advisor/:typeid", component: Advisor },
       { path: "marketplace", component: Marketplace },
       { path: "marketplace/:appid/", component: AppPage },
-      { path: "marketplace/:appid/:action", component: AppPage }
+      { path: "marketplace/:appid/:action", component: AppPage },
+      { path: "support", component: SupportPage }
     ];
 
     return (
