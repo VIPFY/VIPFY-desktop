@@ -27,7 +27,7 @@ class SupportPage extends React.Component<Props> {
             }
 
             const requester = data.me.emails[0].email;
-            return <FreshdeskWidget url="https://vipfy.freshdesk.com" autofill={{ requester }} />;
+            return <FreshdeskWidget url="https://vipfy.freshdesk.com" autofill={{ requester }} disable={["requester"]}/>;
           }}
         </Query>
       </div>
