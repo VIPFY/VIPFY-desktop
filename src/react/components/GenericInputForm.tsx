@@ -20,6 +20,7 @@ interface State {
   asyncError: any;
   submitting: boolean;
   stars: number;
+  successMessage: any;
 }
 
 const INITIAL_STATE = {
@@ -110,11 +111,41 @@ class GenericInputForm extends React.Component<Props, State> {
     }
   };
 
-  renderFields = fields => {
+  renderFields = (fields: object[]) => {
     const { inputFocus, values, errors } = this.state;
 
     return fields.map(
-      ({ name, icon, multiple, placeholder, label, required, type, options, validate }) => {
+      ({
+        name,
+        icon,
+        multiple,
+        min,
+        max,
+        placeholder,
+        label,
+        required,
+        type,
+        options,
+        validate,
+        lawLink,
+        privacyLink,
+        appName
+      }: {
+        name: string;
+        icon: string;
+        multiple: boolean;
+        min: string;
+        max: string;
+        placeholder: string;
+        label: string;
+        required: boolean;
+        type: string;
+        options: any[];
+        validate: Function;
+        lawLink: string;
+        privacyLink: string;
+        appName: string;
+      }) => {
         const field = () => {
           switch (type) {
             case "checkbox": {
@@ -183,8 +214,8 @@ class GenericInputForm extends React.Component<Props, State> {
               return (
                 <textarea
                   className=""
-                  rows="5"
-                  cols="50"
+                  rows={5}
+                  cols={50}
                   name={name}
                   placeholder={placeholder}
                   value={values[name] ? values[name] : ""}
@@ -222,6 +253,55 @@ class GenericInputForm extends React.Component<Props, State> {
                       }
                     />
                   ))}
+                </div>
+              );
+            }
+
+            case "agb": {
+              return (
+                <div className="checkOrderHolderLawBox">
+                  <div>
+                    <div className="lawholder">
+                      <span className="lawheading">
+                        Please read the following third party agreements (external links)
+                      </span>
+                      <span
+                        className="lawlink"
+                        onClick={() => {
+                          require("electron").shell.openExternal(lawLink);
+                        }}>
+                        Terms of Service
+                      </span>
+
+                      <span
+                        className="lawlink"
+                        onClick={() => {
+                          require("electron").shell.openExternal(privacyLink);
+                        }}>
+                        Privacy
+                      </span>
+                    </div>
+                    <div className="agreementBox">
+                      <input
+                        type="checkbox"
+                        name="agb"
+                        className="cbx"
+                        id="agb-checkbox"
+                        required={required}
+                        onChange={this.handleChange}
+                      />
+                      <label htmlFor="agb-checkbox" className="check">
+                        <svg width="18px" height="18px" viewBox="0 0 18 18">
+                          <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
+                          <polyline points="1 9 7 14 15 4" />
+                        </svg>
+                        <span className="agreementSentence">
+                          {`I agree to the above third party agreements and to our Terms of Service
+                          and Privacy agreement regarding ${appName}`}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               );
             }
@@ -296,6 +376,8 @@ class GenericInputForm extends React.Component<Props, State> {
                   name={name}
                   placeholder={placeholder}
                   type={type}
+                  min={min}
+                  max={max}
                   value={values[name] ? values[name] : ""}
                   onChange={e => this.handleChange(e, validate)}
                   onFocus={this.highlight}
@@ -374,7 +456,8 @@ class GenericInputForm extends React.Component<Props, State> {
               Object.values(errors).filter(err => err != false).length > 0
             }
             className="generic-submit-button">
-            <i className="fas fa-check-circle" /> Submit
+            <i className="fas fa-check-circle" />{" "}
+            {this.props.buttonName ? this.props.buttonName : "Submit"}
           </button>
         </div>
       </form>

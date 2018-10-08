@@ -22,6 +22,7 @@ import Webview from "./webview";
 import { fetchLicences } from "../queries/auth";
 import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
+import SupportPage from "./support";
 
 interface AreaProps {
   history: any[];
@@ -97,7 +98,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "advisor/:typeid", component: Advisor },
       { path: "marketplace", component: Marketplace },
       { path: "marketplace/:appid/", component: AppPage },
-      { path: "marketplace/:appid/:action", component: AppPage }
+      { path: "marketplace/:appid/:action", component: AppPage },
+      { path: "support", component: SupportPage }
     ];
 
     return (
@@ -123,10 +125,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           render={props => {
             if (!this.props.location.pathname.includes("advisor")) {
               return (
-                <Query
-                  query={FETCH_NOTIFICATIONS}
-                  pollInterval={600000}
-                  variables={{ receiver: this.props.userid }}>
+                <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
                   {res => (
                     <Navigation
                       chatOpen={chatOpen}

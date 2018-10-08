@@ -1,3 +1,5 @@
+
+
 #domains {
   display: flex;
   flex-direction: column;
@@ -7,7 +9,7 @@
 
 .register-domain {
   @include vipfy-button(0.7rem);
-  align-self: flex-end;
+  margin-top: 2rem;
   max-width: 8rem;
   min-height: 26px;
 }
@@ -15,11 +17,9 @@
 .domain-table {
   display: flex;
   flex-direction: column;
-  margin-top: 1rem;
 
   &-body {
     overflow-y: auto;
-    max-height: calc(100vh - 12rem);
   }
 }
 
@@ -32,6 +32,7 @@
   color: #fff;
   border-bottom: 2px solid $vipfy-secondary-color;
   font-weight: bold;
+  position: relative;
 
   span {
     &:first-child {
@@ -45,6 +46,17 @@
     &:nth-child(2),
     &:nth-child(5)  {
       text-align: center;
+    }
+  }
+
+  .domain-toggle-icon {
+    position: absolute;
+    cursor: pointer;
+    right: 8px;
+
+    &:hover {
+      color: darken($vipfy-secondary-color, 10);
+      transition: color 0.6s ease-in-out;
     }
   }
 }

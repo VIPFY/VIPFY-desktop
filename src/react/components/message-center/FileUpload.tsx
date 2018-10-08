@@ -12,7 +12,7 @@ const FileUpload = ({ children, disableClick, mutate, groupid }) => {
         const res = await mutate({
           variables: {
             groupid,
-            file
+            file: { name: file.name, type: file.type, size: file.size, path: file.path }
           }
         });
         console.log(res);

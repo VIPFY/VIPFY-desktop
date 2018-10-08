@@ -87,7 +87,8 @@
   }
 
   .cool-checkbox {
-    display: none;
+    opacity: 0;
+    position: absolute;
 
     &:checked + .generic-form-checkbox {
       svg {
@@ -157,6 +158,11 @@
         }
       }
   }
+}
+
+#agb-checkbox {
+  opacity: 0;
+  position: absolute
 }
 
 .card-element {

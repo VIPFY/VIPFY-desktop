@@ -11,6 +11,7 @@ import StripeForm from "../components/billing/StripeForm";
 import { ErrorComp } from "../common/functions";
 import { fetchBills, fetchCards, fetchBillingAddresses } from "../queries/billing";
 import { downloadBill } from "../mutations/billing";
+import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 
 interface Props {
   downloadBill: Function;
@@ -34,7 +35,7 @@ class Billing extends React.Component<Props, State> {
 
   downloadBill = async billid => {
     try {
-      const res = await this.props.downloadBill({ variables: { billid } });
+      await this.props.downloadBill({ variables: { billid } });
     } catch {
       this.props.showPopup({
         header: "Error!",
@@ -85,10 +86,11 @@ class Billing extends React.Component<Props, State> {
       !cards.fetchPaymentData ||
       !addresses.fetchBillingAddresses
     ) {
-      return <div>Ups... something went wrong</div>;
+      return <div>Oops... something went wrong</div>;
     }
 
     const paymentData = cards.fetchPaymentData;
+    console.log(paymentData);
     const billingAddress = addresses.fetchBillingAddresses[0];
     let mainCard;
     let normalizedCards;
@@ -112,29 +114,23 @@ class Billing extends React.Component<Props, State> {
             <div className="paymentDataCard">
               <label className="paymentCreditCardLabel">Current Credit Card</label>
               {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
-              <div className="credit-card-change-button">
-                <button
-                  className="payment-data-change-button"
-                  onClick={() => {
-                    if (normalizedCards && normalizedCards.length > 1) {
+              {normalizedCards && normalizedCards.length > 1 ? (
+                <div className="credit-card-change-button">
+                  <button
+                    className="payment-data-change-button"
+                    onClick={() =>
                       this.props.showPopup({
                         header: "Change default Card",
                         body: CreditCardSelector,
                         props: { cards: normalizedCards }
-                      });
-                    } else {
-                      this.props.showPopup({
-                        header: "Add a Credit Card",
-                        body: StripeForm,
-                        props: { departmentid: this.props.company.unit.id }
-                      });
-                    }
-                  }}>
-                  {normalizedCards && normalizedCards.length > 1
-                    ? "Change default Card"
-                    : "Add Credit Card"}
-                </button>
-              </div>
+                      })
+                    }>
+                    Change default Card
+                  </button>
+                </div>
+              ) : (
+                ""
+              )}
               <div className="credit-card-change-button">
                 <button
                   className="payment-data-change-button"
@@ -145,7 +141,7 @@ class Billing extends React.Component<Props, State> {
                       props: { departmentid: this.props.company.unit.id }
                     })
                   }>
-                  Add Payment Data
+                  Add Credit Card
                 </button>
               </div>
             </div>
@@ -184,8 +180,9 @@ class Billing extends React.Component<Props, State> {
             </div>*/}
         </div>
 
-        {/*<div className="historyPaymentHolder">
-          <div className="billingStreamChart">
+        <div className="paymentDataHolder" style={{ width: "30rem", height: "32rem" }}>
+          <BillingHistoryChart {...this.props} />
+          {/*<div className="billingStreamChart">
             <span className="paymentHistoryHeader">Payment History</span>
             <BillHistory />
           </div>
@@ -196,8 +193,8 @@ class Billing extends React.Component<Props, State> {
                 ? this.showBills(bills.fetchBills)
                 : "No Invoices yet"}
             </div>
-          </div>
-        </div>*/}
+              </div>*/}
+        </div>
       </div>
     );
   }

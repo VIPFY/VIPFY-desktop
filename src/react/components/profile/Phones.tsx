@@ -331,19 +331,22 @@ class Phones extends React.Component<Props, State> {
                           </React.Fragment>
                         )}
                       </span>
+
+                      <button className="button-phone" onClick={this.showCreation}>
+                        <i className="fa fa-plus" />
+                        Add Phone
+                      </button>
                     </div>
                   );
                 })}
+              </React.Fragment>
+            ) : (
+              <div className={this.state.show ? "in" : "out"}>
                 <button className="button-phone" onClick={this.showCreation}>
                   <i className="fa fa-plus" />
                   Add Phone
                 </button>
-              </React.Fragment>
-            ) : (
-              <button className="button-phone" onClick={this.showCreation}>
-                <i className="fa fa-plus" />
-                Add Phone
-              </button>
+              </div>
             );
           }}
         </Query>

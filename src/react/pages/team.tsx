@@ -14,7 +14,6 @@ import LoadingPopup from "../popups/loadingPopup"
 import { AppContext } from "../common/functions";
 
 import { fetchLicences } from "../queries/auth";
-import { Query } from "react-apollo";
 
 import {
   fetchDepartments,

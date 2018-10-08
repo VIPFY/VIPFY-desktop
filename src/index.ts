@@ -1,5 +1,8 @@
 import { app, BrowserWindow, autoUpdater, dialog, protocol, session } from "electron";
-import installExtension, { REACT_DEVELOPER_TOOLS, APOLLO_DEVELOPER_TOOLS } from "electron-devtools-installer";
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+  APOLLO_DEVELOPER_TOOLS
+} from "electron-devtools-installer";
 import { enableLiveReload } from "electron-compile";
 import path = require("path");
 
@@ -50,42 +53,42 @@ function initUpdates() {
 }
 
 const vipfyHandler = (request, callback) => {
-  const url = request.url.substr(8)
+  const url = request.url.substr(8);
   //callback({path: path.normalize(`${__dirname}/${url}`)})
 
-  if(url.startsWith("todo")) {
-    callback({path: path.normalize(`${app.getAppPath()}/src/todo.html`)});
+  if (url.startsWith("todo")) {
+    callback({ path: path.normalize(`${app.getAppPath()}/src/todo.html`) });
     return;
   } else if (url.startsWith("blank")) {
-    callback({path: path.normalize(`${app.getAppPath()}/src/blank.html`)});
+    callback({ path: path.normalize(`${app.getAppPath()}/src/blank.html`) });
     return;
-  } else if(url.startsWith("marketplace/")) {
+  } else if (url.startsWith("marketplace/")) {
     mainWindow.webContents.send("change-page", `/area/${url}`);
   }
 
-  callback({path: path.normalize(`${app.getAppPath()}/src/blank.html`)});
+  callback({ path: path.normalize(`${app.getAppPath()}/src/blank.html`) });
 };
 
 const createWindow = async () => {
   //initUpdates();
 
-  protocol.registerFileProtocol("vipfy", vipfyHandler, (error) => {
+  protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
       console.error("Failed to register vipfy protocol");
     }
   });
 
-  session.fromPartition('services').protocol.registerFileProtocol("vipfy", vipfyHandler, (error) => {
+  session.fromPartition("services").protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
       console.error("Failed to register vipfy protocol");
     }
-  })
+  });
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
-    icon: "iconTransparent.png",
+    icon: "src/images/logo_weis.png",
     show: false,
     center: true,
     title: "Vipfy",
@@ -103,7 +106,7 @@ const createWindow = async () => {
   if (isDevMode) {
     await installExtension(REACT_DEVELOPER_TOOLS);
     await installExtension(APOLLO_DEVELOPER_TOOLS);
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
   }
 
   // Emitted when the window is closed.

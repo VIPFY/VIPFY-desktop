@@ -80,6 +80,13 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         icon: "code",
         show: this.props.domains,
         important: true
+      },
+      {
+        label: "Support",
+        location: "support",
+        icon: "life-ring",
+        show: true,
+        important: true
       }
     ];
 
@@ -89,7 +96,6 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         <ul className="sidebar-link-holder">
           {sidebarLinks.map(link => this.renderLink(link))}
           {this.showApps(this.props.licences.fetchLicences)}
-
           <li className="sidebar-link sidebar-link-important" onClick={() => this.props.logMeOut()}>
             <span className="fas fa-sign-out-alt sidebar-icons" />
             <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>

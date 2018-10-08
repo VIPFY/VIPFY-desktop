@@ -381,9 +381,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           onDomReady={e => {
             console.log("DomReady", e);
             this.maybeHideLoadingScreen();
-            /*if (!e.target.isDevToolsOpened()) {
-              e.target.openDevTools();
-            }*/
+            if (!e.target.isDevToolsOpened()) {
+              // e.target.openDevTools();
+            }
           }}
           onDialog={e => console.log("Dialog", e)}
           onIpcMessage={e => this.onIpcMessage(e)}

@@ -25,6 +25,8 @@
       require("./locationScripts/dd24.ts")();
     } else if (hostMatches(".*.?sendgrid.com")) {
       require("./locationScripts/sendgrid.ts")();
+    } else if (hostMatches(".*.?freshbooks.com")) {
+      require("./locationScripts/freshbooks.ts");
     } else {
       con.log(`No Script for ${hostname}`);
     }

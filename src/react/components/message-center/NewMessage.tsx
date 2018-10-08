@@ -1,6 +1,6 @@
 import * as React from "react";
 import { graphql } from "react-apollo";
-import { MUTATION_SENDMESSAGE } from "./common";
+import { MUTATION_SENDMESSAGE, QUERY_GROUPS } from "./common";
 
 import FileUpload from "./FileUpload";
 
@@ -38,7 +38,8 @@ class NewMessage extends React.Component<Props> {
     try {
       e.preventDefault();
       this.props.sendMessage({
-        variables: { message: this.state.value, groupid: this.props.groupid }
+        variables: { message: this.state.value, groupid: this.props.groupid },
+        refetchQueries: [{ query: QUERY_GROUPS }]
       });
 
       this.setState({ value: "" });
