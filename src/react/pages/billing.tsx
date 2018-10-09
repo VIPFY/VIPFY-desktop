@@ -1,7 +1,7 @@
 import * as React from "react";
 import { graphql, compose } from "react-apollo";
 
-import BillHistory from "../graphs/billhistory";
+// import BillHistory from "../graphs/billhistory";
 import BillNext from "../graphs/billnext";
 import CreditCard from "../components/billing/CreditCard";
 import CreditCardSelector from "../components/billing/CreditCardSelector";
