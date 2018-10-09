@@ -1,7 +1,16 @@
 import * as React from "react";
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
-import { ResponsiveContainer, BarChart, Tooltip, Legend, XAxis, YAxis, Bar } from "recharts";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Tooltip,
+  Legend,
+  XAxis,
+  YAxis,
+  Bar,
+  CartesianGrid
+} from "recharts";
 
 import moment = require("moment");
 
@@ -34,8 +43,9 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
     return (
       <ResponsiveContainer>
         <BarChart data={data}>
-          <XAxis dataKey="name" />
-          <YAxis />
+          <CartesianGrid />
+          <XAxis dataKey="title" />
+          <YAxis tickFormatter={v => `$${v}`} />
           <Tooltip />
           <Legend />
           {bars}
