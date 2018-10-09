@@ -108,6 +108,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
         fill={plan.appcolor}
         stackId="a"
         key={`bar-${plan.id}`}
+        unit=" USD"
       />
     ));
   }
