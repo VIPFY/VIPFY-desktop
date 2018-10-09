@@ -69,12 +69,12 @@ class Area extends React.Component<AreaProps, AreaState> {
   setApp = (boughtplan: number) => {
     console.log("SetApp to boughtplan ", boughtplan);
     this.setState({ app: boughtplan });
-    this.props.history.push("/area/webview");
+    this.props.history.push(`/area/app/${boughtplan}`);
   };
 
   setDomain = (boughtplan: number, domain: string) => {
     this.setState({ app: boughtplan, domain });
-    this.props.history.push("/area/webview");
+    this.props.history.push(`/area/app/${boughtplan}`);
   };
 
   setSidebar = value => this.setState({ sideBarOpen: value });
@@ -149,7 +149,7 @@ class Area extends React.Component<AreaProps, AreaState> {
 
         <Route
           exact
-          path="/area/webview"
+          path="/area/app/:licenceid"
           render={props => <Webview {...this.state} {...this.props} {...props} />}
         />
 

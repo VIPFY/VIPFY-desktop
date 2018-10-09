@@ -18,8 +18,8 @@ export type WebViewState = {
   legalText: string;
   showLoadingScreen: boolean;
   t: number;
-  planId: number;
-  previousPlanId: number;
+  licenceId: number;
+  previousLicenceId: number;
   unitId: number;
   popup: any;
   interactions: Date[];
@@ -58,16 +58,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       currentUrl: "vipfy://blank",
       inspirationalText: "Loading...",
       legalText: "Legal Text",
-      showLoadingScreen: false,
+      showLoadingScreen: true,
       t: performance.now(),
-      planId: props.app,
-      previousPlanId: -1,
+      licenceId: props.match.params.licenceid,
+      previousLicenceId: -1,
       unitId: -1,
       popup: null,
       interactions: [],
       intervalId: null,
       intervalId2: null,
-      timeSpent: [],
+      timeSpent: []
     };
   }
 
@@ -75,11 +75,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     nextProps: WebViewProps,
     prevState: WebViewState
   ): WebViewState | null {
-    if (nextProps.app !== prevState.planId) {
+    if (nextProps.match.params.licenceid !== prevState.licenceId) {
       return {
         ...prevState,
-        previousPlanId: prevState.planId,
-        planId: nextProps.app,
+        previousLicenceId: prevState.licenceId,
+        licenceId: nextProps.match.params.licenceid,
         showLoadingScreen: true
       };
     } else {
@@ -91,7 +91,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     console.log("webview mounted");
     let intervalId = setInterval(() => this.timer1m(), 60000);
     let intervalId2 = setInterval(() => this.sendTimeSpent(), 600000);
-    this.setState({intervalId, intervalId2});
+    this.setState({ intervalId, intervalId2 });
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
     this.switchApp();
   }
@@ -99,13 +99,17 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   componentWillUnmount() {
     clearInterval(this.state.intervalId);
     clearInterval(this.state.intervalId2);
-    this.setState({intervalId: null, intervalId2: null});
+    this.setState({ intervalId: null, intervalId2: null });
     this.sendTimeSpent();
   }
 
-  componentDidUpdate(prevProps: WebViewProps, prevState: WebViewState) {
-    if (this.state.previousPlanId !== this.state.planId) {
-      console.log("CHECK", this.state.previousPlanId, this.state.planId);
+  async componentDidUpdate(prevProps: WebViewProps, prevState: WebViewState) {
+    if (this.state.previousLicenceId !== this.state.licenceId) {
+      console.log("CHECK", this.state.previousLicenceId, this.state.licenceId);
+      await this.setState({
+        previousLicenceId: this.state.licenceId
+      });
+
       // At this point, we're in the "commit" phase, so it's safe to load the new data.
       this.switchApp();
     }
@@ -121,24 +125,28 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   timer1m = () => {
     const now = new Date();
     let timeSpent = this.state.timeSpent;
-    for(let licenceId in this.state.interactions) {
+    for (let licenceId in this.state.interactions) {
       const lastInteraction = this.state.interactions[licenceId];
-      if(now - lastInteraction < 1000*60*5) {
-        if(!timeSpent[licenceId]) {
+      if (now - lastInteraction < 1000 * 60 * 5) {
+        if (!timeSpent[licenceId]) {
           timeSpent[licenceId] = 0;
         }
         timeSpent[licenceId] += 1;
       }
     }
     console.log("TIME SPENT", timeSpent);
-    this.setState({timeSpent});
-  }
+    this.setState({ timeSpent });
+  };
 
-  sendTimeSpent = () => {
+  sendTimeSpent = (newTimeSpent?: number[]) => {
+    if (!newTimeSpent) {
+      newTimeSpent = [];
+    }
     let timeSpent = this.state.timeSpent;
-    this.setState({timeSpent: []});
-    for(let licenceId in timeSpent) {
-      const minutes = timeSpent[licenceId];
+    this.setState({ timeSpent: newTimeSpent });
+    for (let licenceId in timeSpent) {
+      const minutes = timeSpent[licenceId] + 1;
+      // no need to await this, let apollo do this whenever
       this.props.client.mutate({
         mutation: gql`
           mutation trackMinutesSpent($licenceid: ID!, $minutes: Int!) {
@@ -147,36 +155,42 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             }
           }
         `,
-        variables: {licenceid: this.state.planId, minutes: minutes}
+        variables: { licenceid: this.state.licenceId, minutes: minutes }
       });
     }
-  }
+  };
 
   acceptFunction = async () => {
-    console.log("ACCEPTED LICENCE", this.state.planId)
+    console.log("ACCEPTED LICENCE", this.state.licenceId);
     try {
-    await this.props.client.mutate({
-      mutation: gql`mutation agreeToLicence($licenceid: ID!) {
-        agreeToLicence(licenceid: $licenceid) {
-          ok
-        }
-      }`,
-      variables: {licenceid: this.state.planId}
-    })
-    this.closePopup()
-    this.setState({previousPlanId: -1})
-    this.switchApp();
-  } catch (err) {
-    console.log(err)
+      await this.props.client.mutate({
+        mutation: gql`
+          mutation agreeToLicence($licenceid: ID!) {
+            agreeToLicence(licenceid: $licenceid) {
+              ok
+            }
+          }
+        `,
+        variables: { licenceid: this.state.licenceId }
+      });
+      this.closePopup();
+      this.setState({ previousLicenceId: -1 });
+      this.switchApp();
+    } catch (err) {
+      console.log(err);
     }
   };
 
   private async switchApp(): Promise<void> {
-    console.log("switchApp", this.state.planId);
+    console.log("switchApp", this.state.licenceId);
+
+    const timeSpent: number[] = [];
+    timeSpent[this.state.licenceId] = 0;
+    this.sendTimeSpent(timeSpent);
     let result = await this.props.client.query({
       query: gql`
       {
-        fetchLicences(licenceid: ${this.state.planId}) {
+        fetchLicences(licenceid: ${this.state.licenceId}) {
           id
           agreed
           disabled
@@ -203,22 +217,24 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     });
     console.log("APP DATA", result);
     let licence = result.data.fetchLicences[0];
-    if (!licence) { return }
+    if (!licence) {
+      return;
+    }
     if (licence && licence.disabled) {
       window.alert("This licence is disabled, you cannot use it");
     } else if (licence && !licence.agreed) {
       this.setState({
-        previousPlanId: this.state.planId
+        previousLicenceId: this.state.licenceId
       });
 
       this.showPopup({
         type: "Accept Licences",
-        id: this.state.planId
+        id: this.state.licenceId,
         neededCheckIns: licence.boughtPlan.plan.app.options,
-        appname: licence.boughtPlan.plan.app.name
-        acceptFunction: this.acceptFunction,
+        appname: licence.boughtPlan.plan.app.name,
+        acceptFunction: this.acceptFunction
       });
-      return
+      return;
       /*window.alert(
         "You first have to agree to the licence terms. Unfortunately this isn't implemented yet"
       );*/
@@ -238,7 +254,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
     this.setState({
       setUrl: loginurl,
-      previousPlanId: this.state.planId,
       unitId: licence.unit.id
     });
   }
@@ -310,7 +325,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           let result = await this.props.client.query({
             query: gql`
           {
-            fetchLicences(licenceid: ${this.state.planId}) {
+            fetchLicences(licenceid: ${this.state.licenceId}) {
               key
             }
           }
@@ -329,7 +344,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
       case "getLoginData":
         {
-          let licence = this.state.planId;
+          let licence = this.state.licenceId;
           let result = await this.props.client.query({
             query: gql`
           {
@@ -371,7 +386,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         {
           let interactions = this.state.interactions;
           interactions[this.state.planId] = new Date();
-          await this.setState({interactions});
+          await this.setState({ interactions });
         }
         break;
 
