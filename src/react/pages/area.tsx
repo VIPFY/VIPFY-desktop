@@ -22,6 +22,7 @@ import Webview from "./webview";
 import { fetchLicences } from "../queries/auth";
 import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
+import SupportPage from "./support";
 
 interface AreaProps {
   history: any[];
@@ -68,12 +69,12 @@ class Area extends React.Component<AreaProps, AreaState> {
   setApp = (boughtplan: number) => {
     console.log("SetApp to boughtplan ", boughtplan);
     this.setState({ app: boughtplan });
-    this.props.history.push("/area/webview");
+    this.props.history.push(`/area/app/${boughtplan}`);
   };
 
   setDomain = (boughtplan: number, domain: string) => {
     this.setState({ app: boughtplan, domain });
-    this.props.history.push("/area/webview");
+    this.props.history.push(`/area/app/${boughtplan}`);
   };
 
   setSidebar = value => this.setState({ sideBarOpen: value });
@@ -97,7 +98,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "advisor/:typeid", component: Advisor },
       { path: "marketplace", component: Marketplace },
       { path: "marketplace/:appid/", component: AppPage },
-      { path: "marketplace/:appid/:action", component: AppPage }
+      { path: "marketplace/:appid/:action", component: AppPage },
+      { path: "support", component: SupportPage }
     ];
 
     return (
@@ -147,7 +149,7 @@ class Area extends React.Component<AreaProps, AreaState> {
 
         <Route
           exact
-          path="/area/webview"
+          path="/area/app/:licenceid"
           render={props => <Webview {...this.state} {...this.props} {...props} />}
         />
 

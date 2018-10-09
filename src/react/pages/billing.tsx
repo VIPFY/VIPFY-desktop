@@ -7,13 +7,13 @@ import CreditCard from "../components/billing/CreditCard";
 import CreditCardSelector from "../components/billing/CreditCardSelector";
 import LoadingDiv from "../components/LoadingDiv";
 import StripeForm from "../components/billing/StripeForm";
-import GenericInputForm from "../components/GenericInputForm";
 import Addresses from "../components/profile/Addresses";
 
 import { ErrorComp } from "../common/functions";
 import { fetchBills, fetchCards } from "../queries/billing";
 import { downloadBill } from "../mutations/billing";
 import { CREATE_ADDRESS } from "../mutations/contact";
+import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 
 interface Props {
   downloadBill: Function;
@@ -95,57 +95,57 @@ class Billing extends React.Component<Props, State> {
     }
 
     return (
-        <div id="billing-page">
-          <div className="payment-data-holder">
-            <label className="payment-label">Cost Distribution</label>
-            <span className="nextPaymentTitle">Next sheduled bill on 6-28-18: approx. 215 $</span>
-            <div className="nextPaymentChart">
-              <BillNext />
-            </div>
+      <div id="billing-page">
+        <div className="payment-data-holder">
+          <label className="payment-label">Cost Distribution</label>
+          <span className="nextPaymentTitle">Next sheduled bill on 6-28-18: approx. 215 $</span>
+          <div className="nextPaymentChart">
+            <BillNext />
           </div>
+        </div>
 
-          <div className="payment-data-holder">
-              <label className="payment-label">Current Credit Card</label>
-              {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
-              {normalizedCards && normalizedCards.length > 1 ? (
-                <div className="credit-card-change-button">
-                  <button
-                    className="payment-data-change-button"
-                    onClick={() =>
-                      this.props.showPopup({
-                        header: "Change default Card",
-                        body: CreditCardSelector,
-                        props: { cards: normalizedCards }
-                      })
-                    }>
-                    Change default Card
-                  </button>
-                </div>
-              ) : (
-                ""
-              )}
-              <div className="credit-card-change-button">
-                <button
-                  className="payment-data-change-button"
-                  onClick={() =>
-                    this.props.showPopup({
-                      header: "Add another Card",
-                      body: StripeForm,
-                      props: {
-                        departmentid: this.props.company.unit.id
-                      }
-                    })
-                  }>
-                  Add Credit Card
-                </button>
-              </div>
+        <div className="payment-data-holder">
+          <label className="payment-label">Current Credit Card</label>
+          {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
+          {normalizedCards && normalizedCards.length > 1 ? (
+            <div className="credit-card-change-button">
+              <button
+                className="payment-data-change-button"
+                onClick={() =>
+                  this.props.showPopup({
+                    header: "Change default Card",
+                    body: CreditCardSelector,
+                    props: { cards: normalizedCards }
+                  })
+                }>
+                Change default Card
+              </button>
             </div>
-
-          <div className="payment-data-holder">
-            <label className="payment-label">Billing Addresses</label>
-            <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
+          ) : (
+            ""
+          )}
+          <div className="credit-card-change-button">
+            <button
+              className="payment-data-change-button"
+              onClick={() =>
+                this.props.showPopup({
+                  header: "Add another Card",
+                  body: StripeForm,
+                  props: {
+                    departmentid: this.props.company.unit.id
+                  }
+                })
+              }>
+              Add Credit Card
+            </button>
           </div>
-          {/* 
+        </div>
+
+        <div className="payment-data-holder">
+          <label className="payment-label">Billing Addresses</label>
+          <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
+        </div>
+        {/* 
             <div className="credit-card-change-button">
               <button
                 className="payment-data-change-button"
@@ -182,7 +182,7 @@ class Billing extends React.Component<Props, State> {
               </button>
             </div>
            */}
-          {/*<div className="paymentDataHolder">
+        {/*<div className="paymentDataHolder">
             <button
               className="payment-data-change-button"
               onClick={() =>
@@ -195,10 +195,10 @@ class Billing extends React.Component<Props, State> {
               Add Payment Data
             </button>
             </div>*/}
-        </div>
 
-        {/*<div className="historyPaymentHolder">
-          <div className="billingStreamChart">
+        <div className="paymentDataHolder" style={{ width: "30rem", height: "32rem" }}>
+          <BillingHistoryChart {...this.props} />
+          {/*<div className="billingStreamChart">
             <span className="paymentHistoryHeader">Payment History</span>
             <BillHistory />
           </div>
@@ -211,6 +211,8 @@ class Billing extends React.Component<Props, State> {
             </div>
           </div>
         </div>*/}
+        </div>
+      </div>
     );
   }
 }

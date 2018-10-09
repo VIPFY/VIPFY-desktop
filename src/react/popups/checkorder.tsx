@@ -191,6 +191,7 @@ class CheckOrder extends React.Component {
   }
 
   accept(plan, planInputs, value, addresses) {
+    console.log(plan, planInputs, value, addresses)
     if (this.state.agreement) {
       this.setState({ agreementError: false, errordc: null });
       let index = 0;
