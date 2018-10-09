@@ -1151,7 +1151,7 @@
   border: 1px solid #e9ecef;
   box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.175);
   cursor: default;
-  animation: pop-in 800ms ease-in-out 0s forwards;
+  animation: pop-in 150ms ease-in-out 0s forwards;
   transform-origin: right top;
 
   @keyframes pop-in {
