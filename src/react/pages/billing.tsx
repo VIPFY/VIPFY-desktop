@@ -14,6 +14,7 @@ import { fetchBills, fetchCards } from "../queries/billing";
 import { downloadBill } from "../mutations/billing";
 import { CREATE_ADDRESS } from "../mutations/contact";
 import BillingHistoryChart from "../components/billing/BillingHistoryChart";
+import AppTable from "../components/billing/AppTable";
 
 interface Props {
   downloadBill: Function;
@@ -196,9 +197,13 @@ class Billing extends React.Component<Props, State> {
             </button>
             </div>*/}
 
-        <div className="payment-data-holder" style={{ minWidth: "30rem", height: "32rem" }}>
+        <div className="payment-data-holder" style={{ height: "32rem" }}>
           <label className="payment-label">Billing History</label>
           <BillingHistoryChart {...this.props} />
+        </div>
+        <div className="payment-data-holder">
+          <label className="payment-label">Bought Apps</label>
+          <AppTable {...this.props} />
         </div>
         {/*<div className="billingStreamChart">
             <span className="paymentHistoryHeader">Payment History</span>

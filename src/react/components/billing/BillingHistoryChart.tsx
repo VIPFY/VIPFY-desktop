@@ -1,15 +1,7 @@
 import * as React from "react";
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
-import {
-  FlexibleXYPlot,
-  XAxis,
-  YAxis,
-  VerticalGridLines,
-  HorizontalGridLines,
-  VerticalBarSeries,
-  DiscreteColorLegend
-} from "react-vis";
+import { ResponsiveContainer, BarChart, Tooltip, Legend, XAxis, YAxis, Bar } from "recharts";
 
 import moment = require("moment");
 
@@ -37,20 +29,29 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       const label = m.format("MM");
       labels.push(label);
     }
-    const serieses = this.BarSeries(this.props);
-    const bars = serieses.map(v => v.b);
-    const names = serieses.map(v => v.n);
+    const data = this.BarSeries(this.props);
+    const bars = this.Bars(this.props);
     return (
-      <FlexibleXYPlot stackBy="y" xType="ordinal">
+      <ResponsiveContainer>
+        <BarChart data={data}>
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          {bars}
+        </BarChart>
+      </ResponsiveContainer>
+    );
+  }
+
+  /*<FlexibleXYPlot stackBy="y" xType="ordinal">
         <VerticalGridLines />
         <HorizontalGridLines />
         <DiscreteColorLegend orientation="horizontal" width={300} items={names} />
         <XAxis tickLabelAngle={270} />
         <YAxis tickFormat={v => `$${v}`} />
         {bars}
-      </FlexibleXYPlot>
-    );
-  }
+      </FlexibleXYPlot>*/
 
   BarSeries(props): { b: JSX.Element; n: any }[] {
     console.log("test");
@@ -70,22 +71,45 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       .endOf("month")
       .subtract(6, "months");
     const timeend = moment().add(1, "months");
-    return plans.map(plan => {
-      const data: { x: string; y: number }[] = [];
-      for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
-        const label = m.format("MM");
+    const data: any[] = [];
+
+    for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
+      let d = { title: m.format("MM") };
+      plans.forEach(plan => {
         if (moment(plan.buytime).isBefore(m)) {
-          data.push({ x: label, y: plan.price });
+          d[`${plan.appname} ${plan.id}`] = plan.price;
         } else {
-          data.push({ x: label, y: 0 });
+          d[`${plan.appname} ${plan.id}`] = 0;
         }
-      }
-      console.log(data);
-      return {
-        b: <VerticalBarSeries data={data} key={`bar-${plan.id}`} />,
-        n: { title: plan.planname, color: "blue" }
-      };
-    });
+      });
+      data.push(d);
+    }
+    return data;
+  }
+
+  Bars(props): { b: JSX.Element; n: any }[] {
+    console.log("test");
+    const d = props.data.fetchUnitApps;
+    const plans = d.map(boughtplan => ({
+      id: boughtplan.boughtplan.id,
+      price: boughtplan.boughtplan.totalprice,
+      buytime: boughtplan.boughtplan.buytime,
+      endtime: boughtplan.boughtplan.endtime,
+      planname: boughtplan.boughtplan.planid.name,
+      appname: boughtplan.boughtplan.planid.appid.name,
+      applogo: boughtplan.boughtplan.planid.appid.logo,
+      appicon: boughtplan.boughtplan.planid.appid.icon,
+      appcolor: boughtplan.boughtplan.planid.appid.color
+    }));
+
+    return plans.map(plan => (
+      <Bar
+        dataKey={`${plan.appname} ${plan.id}`}
+        fill={plan.appcolor}
+        stackId="a"
+        key={`bar-${plan.id}`}
+      />
+    ));
   }
 }
 
@@ -110,6 +134,7 @@ function BillingHistoryChart(props) {
                   name
                   icon
                   logo
+                  color
                 }
               }
             }
