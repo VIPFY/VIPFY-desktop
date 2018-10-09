@@ -137,7 +137,7 @@ class Phones extends React.Component<Props, State> {
             }
           });
         },
-        submittingMessage: <LoadingDiv text="Registering Phone..." />
+        submittingMessage: "Registering Phone..."
       }
     };
 
@@ -310,7 +310,7 @@ class Phones extends React.Component<Props, State> {
                         </form>
                       )}
 
-                      <span>
+                      <span className="naked-buttons-holder">
                         {this.state.edit == id ? (
                           <React.Fragment>
                             <button
@@ -331,25 +331,21 @@ class Phones extends React.Component<Props, State> {
                           </React.Fragment>
                         )}
                       </span>
-
-                      <button className="button-phone" onClick={this.showCreation}>
-                        <i className="fa fa-plus" />
-                        Add Phone
-                      </button>
                     </div>
                   );
                 })}
               </React.Fragment>
             ) : (
-              <div className={this.state.show ? "in" : "out"}>
-                <button className="button-phone" onClick={this.showCreation}>
-                  <i className="fa fa-plus" />
-                  Add Phone
-                </button>
-              </div>
+              ""
             );
           }}
         </Query>
+        <div className={this.state.show ? "in" : "out"}>
+          <button className="button-phone" onClick={this.showCreation}>
+            <i className="fa fa-plus" />
+            Add Phone
+          </button>
+        </div>
       </div>
     );
   }

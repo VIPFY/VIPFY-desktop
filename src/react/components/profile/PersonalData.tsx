@@ -80,7 +80,11 @@ class PersonalData extends React.Component<Props, State> {
             { label: "User since", data: createdate }
           ];
 
-          const picProps: { fields: object[]; handleSubmit: Function; submittingMessage: any } = {
+          const picProps: {
+            fields: object[];
+            handleSubmit: Function;
+            submittingMessage: string;
+          } = {
             fields: [
               {
                 name: "profilepicture",
@@ -89,7 +93,7 @@ class PersonalData extends React.Component<Props, State> {
               }
             ],
             handleSubmit: this.uploadPic,
-            submittingMessage: <LoadingDiv text="Uploading Picture... " />
+            submittingMessage: "Uploading Picture... "
           };
 
           const passwordProps = {
@@ -119,7 +123,7 @@ class PersonalData extends React.Component<Props, State> {
                 required: true
               }
             ],
-            submittingMessage: <LoadingDiv text="Updating Password... " />,
+            submittingMessage: "Updating Password... ",
             handleSubmit: this.uploadPassword
           };
 

@@ -231,9 +231,7 @@ class Domains extends React.Component<Props, State> {
     const properties: { fields: object[]; handleSubmit: Function; submittingMessage: any } = {
       fields,
       handleSubmit,
-      submittingMessage: (
-        <LoadingDiv text={`Updating ${type == "whois" ? "Whois Privacy" : "Renewalmode"}... `} />
-      )
+      submittingMessage: `Updating ${type == "whois" ? "Whois Privacy" : "Renewalmode"}... `
     };
 
     const popup = {
@@ -348,7 +346,7 @@ class Domains extends React.Component<Props, State> {
                         }
                       }),
                     buttonName: "Delete",
-                    submittingMessage: <LoadingDiv text="Removing External Domain..." />
+                    submittingMessage: "Removing External Domain..."
                   }
                 });
               } else {
@@ -425,7 +423,6 @@ class Domains extends React.Component<Props, State> {
             const regProps: {
               fields: object[];
               handleSubmit: Function;
-              submittingMessage?: string;
               runInBackground: boolean;
               buttonName: string;
             } = {
@@ -513,8 +510,8 @@ class Domains extends React.Component<Props, State> {
               const regProps: {
                 fields: object[];
                 handleSubmit: Function;
-                submittingMessage?: any;
                 runInBackground: boolean;
+                submittingMessage: string;
                 buttonName: string;
               } = {
                 fields: [
@@ -553,7 +550,7 @@ class Domains extends React.Component<Props, State> {
                 buttonName: "Add",
                 handleSubmit: this.handleSubmit,
                 runInBackground: false,
-                submittingMessage: <LoadingDiv text="Adding External Domain..." />
+                submittingMessage: "Adding External Domain..."
               };
 
               const domainPopup = {

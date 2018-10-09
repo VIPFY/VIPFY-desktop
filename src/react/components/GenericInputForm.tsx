@@ -2,14 +2,17 @@ import * as React from "react";
 import * as Dropzone from "react-dropzone";
 import { times } from "lodash";
 import { filterError } from "../common/functions";
+import LoadingDiv from "../components/LoadingDiv";
 
 interface Props {
   fields: object[];
-  submittingMessage: string;
-  runInBackground: boolean;
+  submittingMessage?: string;
+  runInBackground?: boolean;
   onClose: Function;
+  buttonName?: string;
   handleSubmit: Function;
   handleChange: Function;
+  genericForm: any;
 }
 
 interface State {
@@ -433,7 +436,9 @@ class GenericInputForm extends React.Component<Props, State> {
         {asyncError ? (
           <div className="generic-async-error">{asyncError}</div>
         ) : !asyncError && submitting ? (
-          this.props.submittingMessage
+          <LoadingDiv
+            text={this.props.submittingMessage ? this.props.submittingMessage : "Submitting..."}
+          />
         ) : (
           ""
         )}

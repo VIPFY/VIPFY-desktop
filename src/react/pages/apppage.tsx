@@ -155,7 +155,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             type: "stars"
           }
         ],
-        submittingMessage: <LoadingDiv text="Adding Review..." />,
+        submittingMessage: "Adding Review...",
         handleSubmit: async values => {
           if (!values.stars) {
             values.stars = 1;

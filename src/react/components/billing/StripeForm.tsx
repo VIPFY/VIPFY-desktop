@@ -7,13 +7,20 @@
 
 import * as React from "react";
 import { Elements, StripeProvider } from "react-stripe-elements";
+import { Query } from "react-apollo";
 import StripeBody from "./StripeBody";
+import LoadingDiv from "../LoadingDiv";
+import { FETCH_ADDRESSES } from "../../queries/contact";
+import { filterError } from "../../common/functions";
 
 interface State {
   stripe: any;
 }
 
-interface Props {}
+interface Props {
+  departmentid: number;
+  onClose: Function;
+}
 
 class StripeForm extends React.Component<Props, State> {
   state = {
@@ -34,7 +41,23 @@ class StripeForm extends React.Component<Props, State> {
     return (
       <StripeProvider stripe={this.state.stripe}>
         <Elements>
-          <StripeBody {...this.props} />
+          <Query query={FETCH_ADDRESSES} variables={{ company: true }}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <LoadingDiv text="Preparing Credit Card Form..." />;
+              }
+
+              if (error) {
+                return filterError(error);
+              }
+
+              const billingAddresses = data.fetchAddresses.filter(
+                address => address.tags == "billing"
+              );
+
+              return <StripeBody {...this.props} addresses={billingAddresses} />;
+            }}
+          </Query>
         </Elements>
       </StripeProvider>
     );

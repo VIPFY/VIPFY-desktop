@@ -1,8 +1,7 @@
 .generic-form {
   display: flex;
   flex-direction: column;
-  height: calc(100% - 2em);
-  justify-content: space-between;
+  height: calc(100% - 5em);
 }
 
 .generic-dropdown {
@@ -62,7 +61,7 @@
   color: $vipfy-primary;
 }
 
-.generic-submit-buttonting {
+.generic-submit-success {
   margin-top: 3rem;
   text-align: center;
 }
@@ -162,7 +161,7 @@
 
 #agb-checkbox {
   opacity: 0;
-  position: absolute
+  position: absolute;
 }
 
 .card-element {

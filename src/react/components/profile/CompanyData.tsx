@@ -58,7 +58,7 @@ class CompanyData extends React.Component<Props, State> {
   };
 
   render() {
-    const picProps: { fields: object[]; handleSubmit: Function; submittingMessage: any } = {
+    const picProps: { fields: object[]; handleSubmit: Function; submittingMessage: string } = {
       fields: [
         {
           name: "profilepicture",
@@ -67,7 +67,7 @@ class CompanyData extends React.Component<Props, State> {
         }
       ],
       handleSubmit: this.uploadPic,
-      submittingMessage: <LoadingDiv text="Uploading Picture... " />
+      submittingMessage: "Uploading Picture... "
     };
 
     const picPopup: { header: string; body: Function; props: object } = {

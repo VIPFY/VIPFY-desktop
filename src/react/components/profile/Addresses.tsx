@@ -4,22 +4,11 @@ import { Query, compose, graphql } from "react-apollo";
 
 import Confirmation from "../../popups/Confirmation";
 import GenericInputForm from "../GenericInputForm";
-import CoolCheckbox from "../CoolCheckbox";
 import LoadingDiv from "../LoadingDiv";
 import { filterError, ErrorComp } from "../../common/functions";
-
-const CREATE_ADDRESS = gql`
-  mutation onCreateAddress($addressData: AddressInput!, $department: Boolean) {
-    createAddress(addressData: $addressData, department: $department) {
-      id
-      address
-      country
-      description
-      priority
-      tags
-    }
-  }
-`;
+import { addressFields } from "../../common/constants";
+import { CREATE_ADDRESS } from "../../mutations/contact";
+import { FETCH_ADDRESSES } from "../../queries/contact";
 
 const UPDATE_ADDRESS = gql`
   mutation onUpdateAddress($address: AddressInput!, $id: Int!) {
@@ -42,19 +31,6 @@ const DELETE_ADDRESS = gql`
   }
 `;
 
-export const FETCH_ADDRESSES = gql`
-  query onFetchAddresses($company: Boolean) {
-    fetchAddresses(forCompany: $company) {
-      id
-      address
-      country
-      description
-      priority
-      tags
-    }
-  }
-`;
-
 interface Props {
   company: number;
   showPopup: Function;
@@ -62,13 +38,17 @@ interface Props {
   createAddress: Function;
   updateAddress: Function;
   unitid: number;
+  label: string;
+  tag?: string;
 }
 
 interface State {
   show: boolean;
   edit: number;
   error: string;
-  variables: { company: boolean };
+  variables: {
+    company: boolean;
+  };
 }
 
 class Addresses extends React.Component<Props, State> {
@@ -94,59 +74,7 @@ class Addresses extends React.Component<Props, State> {
       header: "Create new Address",
       body: GenericInputForm,
       props: {
-        fields: [
-          {
-            type: "text",
-            name: "street",
-            icon: "road",
-            label: "Street",
-            placeholder: "Your street",
-            required: true
-          },
-          {
-            type: "text",
-            name: "zip",
-            icon: "sort-numeric-up",
-            label: "Zip",
-            placeholder: "Your zip code"
-          },
-          {
-            type: "text",
-            name: "city",
-            icon: "building",
-            label: "City",
-            placeholder: "Your city",
-            required: true
-          },
-          {
-            type: "select",
-            name: "country",
-            icon: "globe",
-            label: "Your country",
-            options: ["US", "DE", "FR", "PL", "JP"],
-            required: true
-          },
-          {
-            type: "text",
-            name: "description",
-            icon: "archive",
-            label: "Description",
-            placeholder: "A short description"
-          },
-          {
-            type: "number",
-            name: "priority",
-            icon: "sort-numeric-up",
-            label: "Priority"
-          },
-          {
-            type: "text",
-            name: "tags",
-            icon: "tags",
-            label: "Tags",
-            placeholder: "Use spaces to separate"
-          }
-        ],
+        fields: addressFields,
         handleSubmit: async addressData => {
           const { variables } = this.state;
           await this.props.createAddress({
@@ -160,7 +88,7 @@ class Addresses extends React.Component<Props, State> {
             }
           });
         },
-        submittingMessage: <LoadingDiv text="Registering Address..." />
+        submittingMessage: "Registering Address..."
       }
     };
 
@@ -234,7 +162,7 @@ class Addresses extends React.Component<Props, State> {
   };
 
   render() {
-    const addressHeaders = ["Street", "zip", "City", "Country", "Description", "Priority", ""];
+    const addressHeaders = ["Street", "zip", "City", "Country", "Description", "Priority"];
 
     return (
       <div className="addresses">
@@ -243,7 +171,7 @@ class Addresses extends React.Component<Props, State> {
             className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
             onClick={this.toggle}
           />
-          <span>Addresses</span>
+          <span>{this.props.label ? this.props.label : "Addresses"}</span>
         </div>
 
         <div className={`addresses-header ${this.state.show ? "in" : "out"}`}>
@@ -264,18 +192,25 @@ class Addresses extends React.Component<Props, State> {
 
             return data.fetchAddresses.length > 0 ? (
               <React.Fragment>
-                {data.fetchAddresses.map(
-                  ({ address, description, country, priority, tags, id }) => {
+                {data.fetchAddresses
+                  .filter(address => {
+                    if (this.props.tag) {
+                      return address.tags == this.props.tag;
+                    } else {
+                      return true;
+                    }
+                  })
+                  .map(({ address, description, country, priority, tags, id }) => {
                     let { street, zip, city } = address;
-                    const normalizedTags =
-                      tags && tags.length > 0
-                        ? tags.map((tag, key) => (
-                            <span key={key}>
-                              <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
-                              {tag}
-                            </span>
-                          ))
-                        : "";
+                    // const normalizedTags =
+                    //   tags && tags.length > 0
+                    //     ? tags.map((tag, key) => (
+                    //         <span key={key}>
+                    //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
+                    //           {tag}
+                    //         </span>
+                    //       ))
+                    //     : "";
 
                     return (
                       <div className={`addresses-list ${this.state.show ? "in" : "out"}`} key={id}>
@@ -287,7 +222,7 @@ class Addresses extends React.Component<Props, State> {
                             <span>{country}</span>
                             <span>{description}</span>
                             <span>{priority}</span>
-                            <span className="tags">{normalizedTags}</span>
+                            {/* <span className="tags">{normalizedTags}</span> */}
                           </React.Fragment>
                         ) : (
                           <form
@@ -341,7 +276,7 @@ class Addresses extends React.Component<Props, State> {
                               defaultValue={priority}
                             />
 
-                            <div className="tags">
+                            {/* <div className="tags">
                               <CoolCheckbox
                                 name="billing"
                                 value={tags ? tags.includes("billing") : false}
@@ -351,11 +286,11 @@ class Addresses extends React.Component<Props, State> {
                                 name="main"
                                 value={tags ? tags.includes("main") : false}
                               />
-                            </div>
+                            </div> */}
                           </form>
                         )}
 
-                        <span>
+                        <span className="naked-button-holder">
                           {this.state.edit == id ? (
                             <React.Fragment>
                               <button
@@ -382,26 +317,21 @@ class Addresses extends React.Component<Props, State> {
                             </React.Fragment>
                           )}
                         </span>
-
-                        <button className="button-address" onClick={this.showCreation}>
-                          <i className="fa fa-plus" />
-                          Add Address
-                        </button>
                       </div>
                     );
-                  }
-                )}
+                  })}
               </React.Fragment>
             ) : (
-              <div className={this.state.show ? "in" : "out"}>
-                <button className="button-address" onClick={this.showCreation}>
-                  <i className="fa fa-plus" />
-                  Add Address
-                </button>
-              </div>
+              ""
             );
           }}
         </Query>
+        <div className={this.state.show ? "in" : "out"}>
+          <button className="button-address" onClick={this.showCreation}>
+            <i className="fa fa-plus" />
+            Add Address
+          </button>
+        </div>
       </div>
     );
   }

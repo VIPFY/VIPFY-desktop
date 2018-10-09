@@ -1,0 +1,78 @@
+#billing-page {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(750px, 1fr));
+  grid-gap: 1.2rem;
+  margin: 2rem;
+}
+
+.payment-data-holder {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 19px -3px rgba(0,0,0,0.36);
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.payment-label {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #005;
+  width: 100%;
+  text-align: center;
+  background-color: #20BAA9;
+}
+
+.nextPaymentChart {
+  width: 100%;
+  height: 10rem;
+}
+
+// .historyPaymentHolder {
+//   width: 60%;
+// }
+
+
+// .billingStreamChart {
+//   height: 20rem;
+//   padding: 1rem;
+//   background-color: white;
+//   box-shadow: 0 0 4rem #f0f3ff;
+//   border-radius: 0.2rem;
+//   position: relative;
+//   margin: 2rem;
+// }
+
+// .paymentDataAddress {
+//   display: flex;
+//   flex-flow: column;
+//   align-items: center;
+// }
+
+
+// .paymentAddressName {
+//   display: block;
+//   font-size: 1.4rem;
+//   font-weight: bold;
+//   padding-left: 2rem;
+// }
+
+// .paymentAddressStreet {
+//   display: block;
+//   font-size: 0.9rem;
+//   line-height: 2rem;
+//   font-weight: bold;
+//   padding-left: 2rem;
+// }
+
+// .billingHistoryInvoices{
+//   padding: 1rem;
+//   background-color: white;
+//   box-shadow: 0 0 4rem #f0f3ff;
+//   border-radius: 0.2rem;
+//   position: relative;
+//   margin: 2rem;
+// }

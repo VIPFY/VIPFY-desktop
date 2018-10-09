@@ -57,8 +57,7 @@ class Notification extends React.Component<Props, State> {
           __typename: "Mutation",
           readNotification: {
             __typename: "Notification",
-            id,
-            ok: true
+            id
           }
         },
         update: proxy => {

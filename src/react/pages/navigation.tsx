@@ -50,12 +50,14 @@ interface Props {
 interface State {
   searchFocus: boolean;
   showNotification: boolean;
+  notify: boolean;
 }
 
 class Navigation extends React.Component<Props, State> {
   state = {
     searchFocus: false,
-    showNotification: false
+    showNotification: false,
+    notify: false
   };
 
   setApp = (boughtplan: number) => this.props.setApp(boughtplan);
@@ -80,7 +82,9 @@ class Navigation extends React.Component<Props, State> {
           return prev;
         }
 
+        this.setState({ notify: true });
         console.log("gotNotifiaction", subscriptionData);
+        setTimeout(() => this.setState({ notify: false }), 5000);
 
         this.refetchCategories(subscriptionData.data.newNotification.changed, this.props.client);
 
@@ -200,8 +204,14 @@ class Navigation extends React.Component<Props, State> {
             </div>
 
             <span onClick={this.toggleNotificationPopup} className="right-profile-holder">
-              <span className="right-profile-notifications">
-                {!loading && !data && !data.fetchNotifications ? 0 : data.fetchNotifications.length}
+              <span
+                className={`right-profile-notifications ${this.state.notify ? "notify-user" : ""}`}>
+                <i className="far fa-bell" />
+                <span className="notification-amount">
+                  {!loading && !data && !data.fetchNotifications
+                    ? 0
+                    : data.fetchNotifications.length}
+                </span>
               </span>
               <span className="right-profile-caret" />
             </span>
