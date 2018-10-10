@@ -65,7 +65,7 @@ $rccs-valid-font-size: 0.4rem;
 
   &:hover {
     background: $vipfy-secondary-color;
-    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+    box-shadow: 0 0 19px -3px rgba(0, 0, 0, 0.36);
   }
 }
 
@@ -96,6 +96,11 @@ $rccs-valid-font-size: 0.4rem;
   }
 }
 
+.disabled {
+  color: #bbb;
+  transition: color 200ms ease-in;
+}
+
 .tags {
   display: flex;
   flex-flow: column wrap;
@@ -106,7 +111,7 @@ $rccs-valid-font-size: 0.4rem;
   padding: 0;
 
   span {
-    background: $vipfy-primary-color;
+    background: $vipfy-primary;
     border-radius: 10%;
     transition: all 0.5s ease-in-out;
     color: #fff;
@@ -115,7 +120,63 @@ $rccs-valid-font-size: 0.4rem;
     padding: 0 0.1rem;
 
     &:hover {
-      background: $vipfy-secondary-color;
+      background: $vipfy-secondary;
+    }
+  }
+}
+
+.float-in-left {
+  animation: float-in 200ms ease-in-out;
+
+  @keyframes float-in {
+    0% {
+      opacity: 0;
+      transform: translate(-100px);
+    }
+    
+    90% {
+      opacity: 1;
+      transform: translate(10px);
+    }
+
+    100% {
+      transform: translate(0);
+    }
+  }
+}
+
+.float-to-bottom {
+  animation: float-bottom 200ms ease-in-out;
+
+  @keyframes float-bottom {
+    0% {
+      transform: translateY(-100px);
+    }
+    
+    90% {
+      transform: translateY(10px);
+    }
+
+    100% {
+      transform: translateY(0);
+    }
+  }
+}
+
+.float-to-top {
+  animation: float-top 200ms ease-in-out;
+
+  @keyframes float-top {
+    0% {
+      transform: translateY(0);
+    }
+    
+    90% {
+      transform: translateY(1px);
+    }
+
+    100% {
+      transform: translateY(-1px);
     }
   }
 }

@@ -457,7 +457,7 @@ class GenericInputForm extends React.Component<Props, State> {
               Object.values(errors).filter(err => err != false).length > 0
             }
             className="generic-submit-button">
-            <i className="fas fa-check-circle" />{" "}
+            <i className="fas fa-check-circle" />
             {this.props.buttonName ? this.props.buttonName : "Submit"}
           </button>
         </div>

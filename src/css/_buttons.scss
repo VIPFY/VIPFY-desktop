@@ -82,11 +82,22 @@
     margin: 2rem 0 1.3rem 2.3rem;
     width: 10rem;
   }
-
+  
   &-pw {
     @include vipfy-button(5px);
   }
+
+  &-billing {
+    @include vipfy-button(5px);
+    margin: 5px 0 5px 3px;
+
+    span {
+      font-family: Quicksand;
+      padding-left: 10px;
+    }
+  }
 }
+
 
 .button > span {
   display: block;

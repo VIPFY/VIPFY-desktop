@@ -8,10 +8,11 @@ import { fetchCards } from "../../queries/billing";
 import { filterError, ErrorComp } from "../../common/functions";
 import { addressFields } from "../../common/constants";
 import { FieldsOnCorrectType } from "graphql/validation/rules/FieldsOnCorrectType";
+import { FETCH_ADDRESSES } from "../../queries/contact";
 
 const ADD_PAYMENT = gql`
-  mutation onAddPaymentData($data: JSON, $id: Int!) {
-    addPaymentData(data: $data, departmentid: $id) {
+  mutation onAddPaymentData($data: JSON, $address: AddressInput) {
+    addPaymentData(data: $data, address: $address) {
       ok
     }
   }
@@ -27,6 +28,7 @@ interface State {
   complete: boolean;
   submitting: boolean;
   success: string;
+  showFields: boolean;
 }
 
 interface Props {
@@ -46,6 +48,7 @@ class StripeBody extends React.Component<Props, State> {
     error: "",
     complete: false,
     submitting: false,
+    showFields: false,
     success: ""
   };
 
@@ -71,50 +74,53 @@ class StripeBody extends React.Component<Props, State> {
   };
 
   handleSubmit = async (e, addCard) => {
-    e.preventDefault();
-    await this.setState({ error: "" });
-    const { firstName, lastName, address, newAddress } = this.state;
+    try {
+      e.preventDefault();
+      await this.setState({ error: "" });
+      const { firstName, lastName, address, newAddress } = this.state;
 
-    if (firstName.length < 2 || lastName.length < 2) {
-      return this.setState({ error: "Please enter a First and Last Name" });
+      if (firstName.length < 2 || lastName.length < 2) {
+        return this.setState({ error: "Please enter a First and Last Name" });
+      }
+
+      let address_city;
+      let address_country;
+      let address_zip;
+      let address_line1;
+      const variables = {};
+
+      if (Object.keys(newAddress).length > 0) {
+        address_city = newAddress.city;
+        address_country = newAddress.country;
+        address_zip = newAddress.zip;
+        address_line1 = newAddress.street;
+        variables.address = newAddress;
+      } else {
+        address_city = this.props.addresses[address].address.city;
+        address_country = this.props.addresses[address].country;
+        address_zip = this.props.addresses[address].address.zip;
+        address_line1 = this.props.addresses[address].address.street;
+      }
+
+      let { token, error } = await this.props.stripe.createToken({
+        name: `${firstName} ${lastName}`,
+        address_city,
+        address_country,
+        address_zip,
+        address_line1
+      });
+
+      if (error) {
+        return this.setState({ error: error.message });
+      }
+
+      variables.data = token;
+
+      this.setState({ submitting: true });
+      await addCard({ variables });
+    } catch (error) {
+      this.setState({ submitting: false, error: "Oops, something went wrong, please retry." });
     }
-
-    let address_city;
-    let address_country;
-    let address_zip;
-    let address_line1;
-    const variables;
-
-    if (Object.keys(newAddress).length > 0) {
-      address_city = newAddress.city;
-      address_country = newAddress.country;
-      address_zip = newAddress.zip;
-      address_line1 = newAddress.street;
-      variables.address = newAddress;
-    } else {
-      address_city = this.props.addresses[address].address.city;
-      address_country = this.props.addresses[address].country;
-      address_zip = this.props.addresses[address].address.zip;
-      address_line1 = this.props.addresses[address].address.street;
-    }
-
-    let { token, error } = await this.props.stripe.createToken({
-      name: `${firstName} ${lastName}`,
-      address_city,
-      address_country,
-      address_zip,
-      address_line1
-    });
-
-    if (error) {
-      return this.setState({ error: error.message });
-    }
-
-    variables.data = token;
-    variables.id = this.props.departmentid;
-
-    this.setState({ submitting: true });
-    await addCard({ variables });
   };
 
   handleSuccess = data => {
@@ -126,6 +132,33 @@ class StripeBody extends React.Component<Props, State> {
       this.setState({ error: "Sorry, something went wrong!" });
     }
   };
+
+  renderAddressFields = addressFields =>
+    addressFields.map(field => (
+      <div
+        onFocus={() => this.setState({ focus: field.name })}
+        onBlur={() => this.setState({ focus: "none" })}
+        className={`generic-searchbar ${this.state.focus == field.name ? "searchbarFocus" : ""}
+        ${this.state.showFields ? "float-in-left" : ""}`}
+        key={field.name}>
+        <div className="billing-icon-holder">
+          <i className={`fas fa-${field.icon}`} />
+        </div>
+
+        {field.type == "select" ? (
+          <select {...field} onChange={this.handleNewAddress} className="billing-dropdown">
+            <option value=""> </option>
+            {field.options.map(option => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input className="billing-input" {...field} onChange={this.handleNewAddress} />
+        )}
+      </div>
+    ));
 
   render() {
     const { firstName, lastName, complete, error, submitting, success } = this.state;
@@ -144,13 +177,19 @@ class StripeBody extends React.Component<Props, State> {
         mutation={ADD_PAYMENT}
         onError={error => this.setState({ error: filterError(error), submitting: false })}
         onCompleted={this.handleSuccess}
-        refetchQueries={[{ query: fetchCards }]}>
+        refetchQueries={[
+          { query: fetchCards },
+          {
+            query: Object.keys(this.state.newAddress).length > 0 ? FETCH_ADDRESSES : null,
+            variables: { company: true }
+          }
+        ]}>
         {(addCard, { loading }) => (
           <form
             className="generic-form"
             style={{ padding: "0 1rem" }}
             onSubmit={e => this.handleSubmit(e, addCard)}>
-            <p>Please enter your card data:</p>
+            <h3>Please enter your card data:</h3>
 
             {inputFields.map(({ name, placeholder, value }) => (
               <div
@@ -176,16 +215,19 @@ class StripeBody extends React.Component<Props, State> {
             ))}
 
             <div className="billing-addresses">
-              {this.props.addresses.length > 0
-                ? this.props.addresses.map((address, key) => (
+              {this.props.addresses.length > 0 ? (
+                <React.Fragment>
+                  {this.props.addresses.map((address, key) => (
                     <div className="generic-searchbar" key={key}>
                       <div className="billing-icon-holder">
                         <i className="fas fa-address-card" />
                       </div>
 
-                      <label className="billing-input" htmlFor={`address-radio-${key}`}>{`${
-                        address.address.street
-                      } ${address.address.zip} ${address.address.city} ${address.country}`}</label>
+                      <label
+                        className={`billing-input ${this.state.showFields ? "disabled" : ""}`}
+                        htmlFor={`address-radio-${key}`}>{`${address.address.street} ${
+                        address.address.zip
+                      } ${address.address.city} ${address.country}`}</label>
                       <input
                         defaultChecked={key == 0 ? true : false}
                         name="address"
@@ -193,48 +235,32 @@ class StripeBody extends React.Component<Props, State> {
                         id={`address-radio-${key}`}
                         className="billing-input"
                         required={true}
-                        disabled={loading}
+                        disabled={loading || this.state.showFields}
                         value={key}
                         onChange={this.handleChange}
                       />
                     </div>
-                  ))
-                : addressFields.map(field => (
-                    <div
-                      onFocus={() => this.setState({ focus: field.name })}
-                      onBlur={() => this.setState({ focus: "none" })}
-                      className={`generic-searchbar ${
-                        this.state.focus == field.name ? "searchbarFocus" : ""
-                      }`}
-                      key={field.name}>
-                      <div className="billing-icon-holder">
-                        <i className={`fas fa-${field.icon}`} />
-                      </div>
-
-                      {field.type == "select" ? (
-                        <select
-                          {...field}
-                          onChange={this.handleNewAddress}
-                          className="billing-dropdown">
-                          <option value=""> </option>
-                          {field.options.map(option => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <input
-                          className="billing-input"
-                          {...field}
-                          onChange={this.handleNewAddress}
-                        />
-                      )}
-                    </div>
                   ))}
+                  <button
+                    className="button-billing"
+                    type="button"
+                    onClick={() =>
+                      this.setState(prevState => ({ showFields: !prevState.showFields }))
+                    }>
+                    <i className={`fas fa-${this.state.showFields ? "minus" : "plus"}`} />
+                    <span>Add new Address</span>
+                  </button>
+                  {this.state.showFields ? this.renderAddressFields(addressFields) : ""}
+                </React.Fragment>
+              ) : (
+                this.renderAddressFields(addressFields)
+              )}
             </div>
 
-            <div className="card-element">
+            <div
+              className={`card-element ${
+                this.state.showFields ? "float-to-bottom" : "float-to-top"
+              }`}>
               <CardElement
                 style={{
                   base: {
@@ -265,14 +291,16 @@ class StripeBody extends React.Component<Props, State> {
                 disabled={loading || success}
                 className="generic-cancel-button"
                 onClick={this.props.onClose}>
-                Cancel
+                <i className="fas fa-long-arrow-alt-left" />
+                &nbsp;Cancel
               </button>
 
               <button
                 disabled={loading || !complete || success}
                 className="generic-submit-button"
                 type="submit">
-                Submit
+                <i className="fas fa-check-circle" />
+                &nbsp;Submit
               </button>
             </div>
           </form>
