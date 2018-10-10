@@ -5,6 +5,7 @@ class GenericInputField extends Component {
   state = {
     inputFocus: false,
     value: this.props.default || "",
+    valueChanged: false,
     error: null
   };
 
@@ -12,6 +13,12 @@ class GenericInputField extends Component {
     //console.log("DIDUPDATE", this.props.placeholder, this.props.focus);
     if (this.props.focus) {
       this.nameInput.focus();
+    }
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (!state.valueChanged) {
+      return { ...state, value: props.default };
     }
   }
 
@@ -28,14 +35,15 @@ class GenericInputField extends Component {
     if (this.props.noteditable) {
       return;
     }
-    if (this.props.inputType === "currency" && /^([0-9,. ])*$/i.test(e.target.value)) {
-      this.setState({ value: e.target.value, error: null });
+    const value = e.target.value;
+    if (this.props.inputType === "currency" && /^([0-9,. ])*$/i.test(value)) {
+      this.setState({ value, valueChanged: true, error: null });
       return;
-    } else if (this.props.inputType === "number" && /^([0-9,. ])*$/i.test(e.target.value)) {
-      this.setState({ value: e.target.value, error: null });
+    } else if (this.props.inputType === "number" && /^([0-9,. ])*$/i.test(value)) {
+      this.setState({ value, valueChanged: true, error: null });
       return;
     } else if (!this.props.inputType) {
-      this.setState({ value: e.target.value, error: null });
+      this.setState({ value, valueChanged: true, error: null });
       return;
     } else {
       this.setState({ error: "Only numbers are allowed" });
