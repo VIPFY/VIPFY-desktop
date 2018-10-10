@@ -1,3 +1,9 @@
+/* wordlist generated from en_US dictionary from http://wordlist.aspell.net/other-dicts/
+ using
+ cat en_US.dic | sed -r 's/^(.*?)\//\1/' |  grep -P "^[a-z]{3,}$" | tr '[: upper:]' '[: lower:]' | sort | uniq > wordlist5a.txt
+ for word in $(cat wordlist5a.txt); do echo "\"$word\"," >> wordlist5.json; done
+*/
+// wordlist is licenced BSD/MIT-Like
 import wordlist = require("./wordlist5a.json");
 import randomNumber = require("random-number-csprng");
 
