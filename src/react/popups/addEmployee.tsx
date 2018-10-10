@@ -1,14 +1,22 @@
 import * as React from "react";
 import { Component } from "react";
 import GenericInputField from "../components/GenericInputField";
+import { randomPassword } from "../common/random";
 
 class AddEmployee extends Component {
   state = {
     email: null,
     name: null,
-    password: "AppleGinTonic",
+    password: "",
+    initialPassword: "",
     focus: 0,
     emailError: null
+  };
+
+  componentDidMount = async () => {
+    const pw = await randomPassword();
+    this.setState({ password: pw, initialPassword: pw });
+    console.log("PW", pw);
   };
 
   onEnter = async fieldid => {
@@ -28,7 +36,7 @@ class AddEmployee extends Component {
   };
 
   render() {
-    console.log("Add", this.props);
+    console.log("Add", this.props, this.state);
 
     return (
       <div className="addEmployeeHolderP">
@@ -64,7 +72,8 @@ class AddEmployee extends Component {
             fieldClass="inputBoxField"
             divClass=""
             placeholder="Password"
-            default="AppleGinTonic"
+            default={this.state.initialPassword}
+            value={this.state.password}
             onBlur={value => this.setState({ password: value })}
             focus={this.state.focus === 2}
             onEnter={() => this.onEnter(3)}
