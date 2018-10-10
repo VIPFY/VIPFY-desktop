@@ -11,8 +11,6 @@ interface Props {
   onClose: Function;
   buttonName?: string;
   handleSubmit: Function;
-  handleChange: Function;
-  genericForm: any;
 }
 
 interface State {
@@ -394,9 +392,7 @@ class GenericInputForm extends React.Component<Props, State> {
 
         const picCheck = type == "picture";
         return (
-          <div
-            key={name}
-            className={inputFocus[name] ? "searchbarHolder searchbarFocus" : "searchbarHolder"}>
+          <div key={name} className={`searchbarHolder ${inputFocus[name] ? "searchbarFocus" : ""}`}>
             {picCheck ? (
               ""
             ) : (

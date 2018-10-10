@@ -4,10 +4,10 @@ import { CardElement, injectStripe } from "react-stripe-elements";
 import { Mutation } from "react-apollo";
 
 import LoadingDiv from "../../components/LoadingDiv";
-import GenericInputForm from "../../components/GenericInputForm";
 import { fetchCards } from "../../queries/billing";
 import { filterError, ErrorComp } from "../../common/functions";
 import { addressFields } from "../../common/constants";
+import { FieldsOnCorrectType } from "graphql/validation/rules/FieldsOnCorrectType";
 
 const ADD_PAYMENT = gql`
   mutation onAddPaymentData($data: JSON, $id: Int!) {
@@ -22,6 +22,7 @@ interface State {
   lastName: string;
   address: number;
   newAddress: object | null;
+  focus: string;
   error: string;
   complete: boolean;
   submitting: boolean;
@@ -40,7 +41,8 @@ class StripeBody extends React.Component<Props, State> {
     firstName: "",
     lastName: "",
     address: 0,
-    newAddress: null,
+    newAddress: {},
+    focus: "none",
     error: "",
     complete: false,
     submitting: false,
@@ -48,6 +50,15 @@ class StripeBody extends React.Component<Props, State> {
   };
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
+
+  handleNewAddress = e => {
+    const name = e.target.name;
+    const value = e.target.value;
+
+    this.setState(prevState => ({
+      newAddress: { ...prevState.newAddress, [name]: value }
+    }));
+  };
 
   handleCard = ({ error, complete }) => {
     if (error) {
@@ -62,26 +73,48 @@ class StripeBody extends React.Component<Props, State> {
   handleSubmit = async (e, addCard) => {
     e.preventDefault();
     await this.setState({ error: "" });
-    const { firstName, lastName, address } = this.state;
+    const { firstName, lastName, address, newAddress } = this.state;
+
     if (firstName.length < 2 || lastName.length < 2) {
       return this.setState({ error: "Please enter a First and Last Name" });
     }
 
-    const name = `${firstName} ${lastName}`;
+    let address_city;
+    let address_country;
+    let address_zip;
+    let address_line1;
+    const variables;
+
+    if (Object.keys(newAddress).length > 0) {
+      address_city = newAddress.city;
+      address_country = newAddress.country;
+      address_zip = newAddress.zip;
+      address_line1 = newAddress.street;
+      variables.address = newAddress;
+    } else {
+      address_city = this.props.addresses[address].address.city;
+      address_country = this.props.addresses[address].country;
+      address_zip = this.props.addresses[address].address.zip;
+      address_line1 = this.props.addresses[address].address.street;
+    }
+
     let { token, error } = await this.props.stripe.createToken({
-      name,
-      address_city: this.props.addresses[address].address.city,
-      address_country: this.props.addresses[address].country,
-      address_zip: this.props.addresses[address].address.zip,
-      address_line1: this.props.addresses[address].address.street
+      name: `${firstName} ${lastName}`,
+      address_city,
+      address_country,
+      address_zip,
+      address_line1
     });
 
     if (error) {
       return this.setState({ error: error.message });
     }
 
+    variables.data = token;
+    variables.id = this.props.departmentid;
+
     this.setState({ submitting: true });
-    await addCard({ variables: { data: token, id: this.props.departmentid } });
+    await addCard({ variables });
   };
 
   handleSuccess = data => {
@@ -102,8 +135,7 @@ class StripeBody extends React.Component<Props, State> {
       {
         name: "lastName",
         placeholder: "Last Name",
-        value: lastName,
-        style: { marginBottom: "8px" }
+        value: lastName
       }
     ];
 
@@ -114,18 +146,26 @@ class StripeBody extends React.Component<Props, State> {
         onCompleted={this.handleSuccess}
         refetchQueries={[{ query: fetchCards }]}>
         {(addCard, { loading }) => (
-          <form className="generic-form" onSubmit={e => this.handleSubmit(e, addCard)}>
+          <form
+            className="generic-form"
+            style={{ padding: "0 1rem" }}
+            onSubmit={e => this.handleSubmit(e, addCard)}>
             <p>Please enter your card data:</p>
 
-            {inputFields.map(({ name, placeholder, value, style }) => (
-              <div className="generic-searchbar" style={style} key={name}>
-                <div className="searchbarButton">
+            {inputFields.map(({ name, placeholder, value }) => (
+              <div
+                onFocus={() => this.setState({ focus: name })}
+                onBlur={() => this.setState({ focus: "none" })}
+                className={`generic-searchbar ${this.state.focus == name ? "searchbarFocus" : ""}`}
+                key={name}>
+                <div className="billing-icon-holder">
                   <i className="fas fa-user" />
                 </div>
 
                 <input
+                  style={{ paddingLeft: "10px" }}
                   name={name}
-                  className="searchbar"
+                  className="billing-input"
                   autoComplete="on"
                   disabled={loading}
                   placeholder={placeholder}
@@ -136,40 +176,78 @@ class StripeBody extends React.Component<Props, State> {
             ))}
 
             <div className="billing-addresses">
-              {this.props.addresses.length > 0 ? (
-                this.props.addresses.map((address, key) => (
-                  <div className="generic-searchbar" key={key}>
-                    <div className="searchbarButton">
-                      <i className="fas fa-address-card" />
-                    </div>
+              {this.props.addresses.length > 0
+                ? this.props.addresses.map((address, key) => (
+                    <div className="generic-searchbar" key={key}>
+                      <div className="billing-icon-holder">
+                        <i className="fas fa-address-card" />
+                      </div>
 
-                    <input
-                      defaultChecked={key == 0 ? true : false}
-                      name="address"
-                      type="radio"
-                      id={`address-radio-${key}`}
-                      className="searchbar"
-                      required={true}
-                      disabled={loading}
-                      value={key}
-                      onChange={this.handleChange}
-                    />
-                    <label for={`address-radio-${key}`}>{`${address.address.street} ${
-                      address.address.zip
-                    } ${address.address.city} ${address.country}`}</label>
-                  </div>
-                ))
-              ) : (
-                <GenericInputForm
-                  onClose={() => console.log("Close")}
-                  fields={addressFields}
-                  handleSubmit={values => console.log(values)}
-                />
-              )}
+                      <label className="billing-input" htmlFor={`address-radio-${key}`}>{`${
+                        address.address.street
+                      } ${address.address.zip} ${address.address.city} ${address.country}`}</label>
+                      <input
+                        defaultChecked={key == 0 ? true : false}
+                        name="address"
+                        type="radio"
+                        id={`address-radio-${key}`}
+                        className="billing-input"
+                        required={true}
+                        disabled={loading}
+                        value={key}
+                        onChange={this.handleChange}
+                      />
+                    </div>
+                  ))
+                : addressFields.map(field => (
+                    <div
+                      onFocus={() => this.setState({ focus: field.name })}
+                      onBlur={() => this.setState({ focus: "none" })}
+                      className={`generic-searchbar ${
+                        this.state.focus == field.name ? "searchbarFocus" : ""
+                      }`}
+                      key={field.name}>
+                      <div className="billing-icon-holder">
+                        <i className={`fas fa-${field.icon}`} />
+                      </div>
+
+                      {field.type == "select" ? (
+                        <select
+                          {...field}
+                          onChange={this.handleNewAddress}
+                          className="billing-dropdown">
+                          <option value=""> </option>
+                          {field.options.map(option => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          className="billing-input"
+                          {...field}
+                          onChange={this.handleNewAddress}
+                        />
+                      )}
+                    </div>
+                  ))}
             </div>
 
             <div className="card-element">
-              <CardElement onChange={this.handleCard} />
+              <CardElement
+                style={{
+                  base: {
+                    fontFamily: "Quicksand",
+                    fontSize: "16px",
+                    lineHeight: "16px",
+                    "::placeholder::": {
+                      color: "#aaa"
+                    }
+                  }
+                }}
+                onChange={this.handleCard}
+              />
             </div>
 
             {submitting ? (

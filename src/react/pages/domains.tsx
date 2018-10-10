@@ -274,7 +274,7 @@ class Domains extends React.Component<Props, State> {
    * "normal" domains.
    * @returns {any}
    */
-  renderBody = (data, showExternal = false): { data: any; showExternal: boolean } => {
+  renderBody = (data: any, showExternal: boolean = false): JSX.Element => {
     if (data && data.length > 0) {
       const filteredDomains = data.filter(domain => domain.external == showExternal);
 
@@ -356,6 +356,8 @@ class Domains extends React.Component<Props, State> {
           />
         </div>
       ));
+    } else {
+      return <div>No Domains registered yet</div>;
     }
   };
 

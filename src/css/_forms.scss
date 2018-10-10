@@ -5,9 +5,9 @@
 }
 
 .generic-dropdown {
-  background: $vipfy-primary;
+  background: $vipfy-primary-color;
   border: 0;
-  color: #fff;
+  color: $vipfy-secondary-color;
   margin-left: 1em;
   outline: none;
   padding: 5px 0;
@@ -15,7 +15,7 @@
   transition: all 0.5s ease-in;
 
   option {
-    color: $vipfy-primary-color;
+    color: $vipfy-secondary-color;
   }
 }
 
@@ -25,7 +25,7 @@
   right: 1rem;
 
   .generic-cancel-button {
-    @include generic-button($vipfy-cancel-color, $hover-secondary, $feedback-secondary)
+    @include generic-button($vipfy-cancel-color, $hover-secondary, $feedback-secondary);
     margin-right: 1rem;
   }
 
@@ -165,7 +165,26 @@
 }
 
 .card-element {
-  margin-left: 4px;
+  margin: 6px 4px 4px;
+}
+
+.billing-icon-holder {
+  @extend .searchbarButton;
+  padding-left: 8px!important;
+}
+
+.billing-input {
+  @extend .searchbar;
+  font-size: 1rem!important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.billing-dropdown {
+  @extend .generic-dropdown;
+  background: #ddd!important;
+  margin-left: 0!important;
 }
 
 .dropzone {

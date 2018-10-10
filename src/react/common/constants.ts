@@ -46,6 +46,7 @@ export const addressFields = [
   {
     type: "number",
     name: "priority",
+    placeholder: "Select Priority",
     icon: "sort-numeric-up",
     label: "Priority"
   }
