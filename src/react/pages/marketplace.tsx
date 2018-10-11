@@ -4,15 +4,18 @@ import { graphql } from "react-apollo";
 import { fetchApps } from "../queries/products";
 import LoadingDiv from "../components/LoadingDiv";
 
-class Marketplace extends React.Component {
+interface Props {
+  history: any;
+  products: any;
+}
+
+class Marketplace extends React.Component<Props> {
   renderLoading(apps) {
     if (apps) {
       return (
         <div className="marketplace">
           {apps.length > 0 ? (
-            apps.map(appDetails => {
-              return this.renderAppCard(appDetails);
-            })
+            apps.map(appDetails => this.renderAppCard(appDetails))
           ) : (
             <div className="nothingHere">
               <div className="h1">Nothing here :(</div>
@@ -28,34 +31,25 @@ class Marketplace extends React.Component {
     return <LoadingDiv text="Preparing marketplace" legalText="Just a moment please" />;
   }
 
-  openAppDetails(id) {
-    this.props.history.push(`/area/marketplace/${id}/`);
-  }
+  openAppDetails = id => this.props.history.push(`/area/marketplace/${id}/`);
 
-  renderAppCard(appDetails) {
-    return (
+  renderAppCard = ({ id, logo, name, teaserdescription }) => (
+    <div className="appThumbnail" key={id} onClick={() => this.openAppDetails(id)}>
       <div
-        className="appThumbnail"
-        key={appDetails.id}
-        onClick={() => this.openAppDetails(appDetails.id)}>
-        <div
-          className="app-thumbnail-logo"
-          style={{
-            backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${
-              appDetails.logo
-            })`
-          }}
-        />
-        <div className="caption">
-          <h3>{appDetails.name}</h3>
-          <div className="appdiscripton">
-            <p>{appDetails.teaserdescription}</p>
-          </div>
-          <div className="app-short-info-holder" />
+        className="app-thumbnail-logo"
+        style={{
+          backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${logo})`
+        }}
+      />
+      <div className="caption">
+        <h3>{name}</h3>
+        <div className="appdiscripton">
+          <p>{teaserdescription}</p>
         </div>
+        <div className="app-short-info-holder" />
       </div>
-    );
-  }
+    </div>
+  );
 
   render() {
     return this.renderLoading(this.props.products.allApps);

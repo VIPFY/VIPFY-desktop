@@ -87,6 +87,10 @@
     @include vipfy-button(5px);
   }
 
+  &-external {
+    @include vipfy-button(10px);
+  }
+
   &-billing {
     @include vipfy-button(5px);
     margin: 5px 0 5px 3px;

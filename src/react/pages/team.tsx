@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Component } from "react";
 import { graphql, compose, Query } from "react-apollo";
 import DepartmentEdit from "../common/departmentEdit";
 import UserEditTeam from "../common/userEditTeam";
@@ -10,7 +9,7 @@ import Popup from "../components/Popup";
 import { ErrorComp } from "../common/functions";
 import AddEmployee from "../popups/addEmployee";
 import ShowEmployee from "../popups/showEmployee";
-import LoadingPopup from "../popups/loadingPopup"
+import LoadingPopup from "../popups/loadingPopup";
 import { AppContext } from "../common/functions";
 
 import { fetchLicences } from "../queries/auth";
@@ -34,8 +33,31 @@ import {
   revokeLicence,
   revokeLicencesFromDepartment
 } from "../mutations/auth";
+import { printIntrospectionSchema } from "graphql/utilities";
 
-class Team extends Component {
+interface Props {}
+
+interface State {
+  showAdd: number;
+  showDA: number;
+  showPApps: number;
+  showEI: string;
+  searchFocus: boolean;
+  inputFoucs: boolean;
+  newEmail: string;
+  newDepartment: string;
+  showAppOption: string;
+  popup: any;
+  popupProps: any;
+  popupBody: any;
+  update: number;
+  popupHeading: string;
+  addingAppUser: any;
+  addingAppName: any;
+  removeApp: any;
+}
+
+class Team extends React.Component<Props, State> {
   state = {
     showAdd: 0,
     showDA: 0,
@@ -48,7 +70,7 @@ class Team extends Component {
     showAppOption: "",
     popup: null,
     popupProps: null,
-    popupBody: null
+    popupBody: null,
     update: 0,
     popupHeading: "",
     addingAppUser: null,
@@ -61,21 +83,43 @@ class Team extends Component {
   toggleInput = bool => this.setState({ inputFocus: bool });
 
   showPopup = error =>
-    this.setState({ popup: true, popupProps: { error }, popupBody:  ErrorComp, popupHeading: "Please check"  });
+    this.setState({
+      popup: true,
+      popupProps: { error },
+      popupBody: ErrorComp,
+      popupHeading: "Please check"
+    });
 
-  addEmployeeP = (did) =>
-  this.setState({ popup: true, popupProps: { acceptFunction: this.addEmployeeAccept, did: did },
-    popupBody:  AddEmployee, popupHeading: "Add Employee"  });
+  addEmployeeP = did =>
+    this.setState({
+      popup: true,
+      popupProps: { acceptFunction: this.addEmployeeAccept, did: did },
+      popupBody: AddEmployee,
+      popupHeading: "Add Employee"
+    });
 
   showEmployee = (userid, did) => {
-    this.setState({ popup: true, popupProps: { acceptFunction: this.delEmployeeAccept, userid: userid, closePopup: this.closePopup, did: did },
-      popupBody:  ShowEmployee, popupHeading: "Employee"  })
-  }
+    this.setState({
+      popup: true,
+      popupProps: {
+        acceptFunction: this.delEmployeeAccept,
+        userid: userid,
+        closePopup: this.closePopup,
+        did: did
+      },
+      popupBody: ShowEmployee,
+      popupHeading: "Employee"
+    });
+  };
 
-  showLoading = (sentence) =>{
-    this.setState({ popup: true, popupProps: { sentence },
-      popupBody:  LoadingPopup, popupHeading: "Please wait..."  })
-  }
+  showLoading = sentence => {
+    this.setState({
+      popup: true,
+      popupProps: { sentence },
+      popupBody: LoadingPopup,
+      popupHeading: "Please wait..."
+    });
+  };
 
   closePopup = () => this.setState({ popup: null });
 
@@ -108,32 +152,30 @@ class Team extends Component {
 
   addEmployeeAccept = async (email, departmentid) => {
     try {
-    const res = await this.props.addCreateEmployee({
-      variables: { email, departmentid },
-      refetchQueries: [{ query: fetchDepartmentsData }]
-    });
+      const res = await this.props.addCreateEmployee({
+        variables: { email, departmentid },
+        refetchQueries: [{ query: fetchDepartmentsData }]
+      });
 
-    this.closePopup();
-  } catch (err) {
-    console.log("aEA", err, email, departmentid)
+      this.closePopup();
+    } catch (err) {
+      console.log("aEA", err, email, departmentid);
       this.showPopup(err.message || "Something went really wrong");
     }
-  }
+  };
 
-
-  delEmployeeAccept = async(unitid, departmentid) => {
-    try{
-    const res = await this.props.removeEmployee({
-      variables: { unitid, departmentid },
-      refetchQueries: [{ query: fetchDepartmentsData }]
-    });
-    this.closePopup();
-  }
-  catch (err){
-    console.log("dEA", err, unitid, departmentid)
+  delEmployeeAccept = async (unitid, departmentid) => {
+    try {
+      const res = await this.props.removeEmployee({
+        variables: { unitid, departmentid },
+        refetchQueries: [{ query: fetchDepartmentsData }]
+      });
+      this.closePopup();
+    } catch (err) {
+      console.log("dEA", err, unitid, departmentid);
       this.showPopup(err.message || "Something went really wrong");
-  }
-}
+    }
+  };
 
   toggleEmployeeInfo = (index, did) => {
     if (this.state.showEI === `${did} ${index}`) {
@@ -431,15 +473,18 @@ class Team extends Component {
   distributeLicence = async (boughtplanid, unitid, departmentid, appname) => {
     //this.showLoading("We are adding the App to the user account.")
     //console.log("APPNAME", appname)
-    this.setState({addingAppUser: unitid, addingAppName: appname})
+    this.setState({ addingAppUser: unitid, addingAppName: appname });
     const res = await this.props.distributeLicence({
       variables: { boughtplanid, unitid, departmentid },
-      refetchQueries: [{query: fetchLicences}, { query: fetchUsersOwnLicences, variables: { unitid } }]
+      refetchQueries: [
+        { query: fetchLicences },
+        { query: fetchUsersOwnLicences, variables: { unitid } }
+      ]
     });
     if (res.data.distributeLicence.error || !res.data.distributeLicence.ok) {
       this.showPopup(res.data.distributeLicence.error.message || "Something went really wrong");
     }
-    this.setState({addingAppUser: null, addingAppName: null})
+    this.setState({ addingAppUser: null, addingAppName: null });
     //this.closePopup();
     //this.toggleEmployeeInfo(0, 0);
     //this.setState({ update: this.state.update + 1 });
@@ -448,17 +493,20 @@ class Team extends Component {
   revokeLicence = async (licenceid, unitid) => {
     //console.log("REVOKE", licenceid)
     //this.showLoading("We are removing the app from the user account.")
-    this.setState({removeApp: `${unitid}-${licenceid}`})
-    try{
-    const res = await this.props.revokeLicence({
-      variables: { licenceid },
-      refetchQueries: [{query: fetchLicences}, { query: fetchUsersOwnLicences, variables: { unitid } }]
-    });
-  } catch(err) {
+    this.setState({ removeApp: `${unitid}-${licenceid}` });
+    try {
+      const res = await this.props.revokeLicence({
+        variables: { licenceid },
+        refetchQueries: [
+          { query: fetchLicences },
+          { query: fetchUsersOwnLicences, variables: { unitid } }
+        ]
+      });
+    } catch (err) {
       this.showPopup(err.message || "Something went really wrong");
-  }
-  this.setState({removeApp: null})
-  //this.closePopup();
+    }
+    this.setState({ removeApp: null });
+    //this.closePopup();
     //this.toggleEmployeeInfo(0, 0);
   };
 
@@ -476,7 +524,7 @@ class Team extends Component {
   };
 
   deleteDepartment = async departmentid => {
-    this.showLoading("We are removing the app from the user account.")
+    this.showLoading("We are removing the app from the user account.");
     const res = await this.props.deleteSubDepartment({
       variables: { departmentid },
       refetchQueries: [{ query: fetchDepartmentsData }]
@@ -552,52 +600,51 @@ class Team extends Component {
                           appArray.push(
                             <div className="EApp" key="newApp">
                               <div className="spinner right-profile-image">
-          <div className="double-bounce1"></div>
-          <div className="double-bounce2"></div>
-        </div>
+                                <div className="double-bounce1" />
+                                <div className="double-bounce2" />
+                              </div>
                               <div className="employeeName">
-                              {licence.boughtplanid.planid.appid.name}
+                                {licence.boughtplanid.planid.appid.name}
+                              </div>
+                              <span className="revokelicence">removing...</span>
+                            </div>
+                          );
+                        } else {
+                          appArray.push(
+                            <div className="EApp" key={key}>
+                              <img
+                                className="right-profile-image"
+                                style={{
+                                  float: "left"
+                                }}
+                                src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
+                                  .boughtplanid.planid.appid.icon ||
+                                  "21062018-htv58-scarlett-jpeg"}`}
+                              />
+                              <div className="employeeName">
+                                {licence.boughtplanid.planid.appid.name} {licence.boughtplanid.id}
                               </div>
                               <span
-                            className="revokelicence">
-                            removing...
-                          </span>
-                            </div>)
+                                className="revokelicence"
+                                onClick={() => this.revokeLicence(licence.id, person.id)}>
+                                Revoke
+                              </span>
+                            </div>
+                          );
                         }
-                        else{
-                          appArray.push(
-                        <div className="EApp" key={key}>
-                          <img
-                            className="right-profile-image"
-                            style={{
-                              float: "left"
-                            }}
-                            src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
-                              .boughtplanid.planid.appid.icon || "21062018-htv58-scarlett-jpeg"}`}
-                          />
-                          <div className="employeeName">
-                            {licence.boughtplanid.planid.appid.name} {licence.boughtplanid.id}
-                          </div>
-                          <span
-                            className="revokelicence"
-                            onClick={() => this.revokeLicence(licence.id, person.id)}>
-                            Revoke
-                          </span>
-                        </div>
-                      )}});
+                      });
                     }
                   }
                   if (this.state.addingAppUser === person.id) {
                     appArray.push(
-                    <div className="EApp" key="newApp">
-                      <div className="spinner right-profile-image">
-  <div className="double-bounce1"></div>
-  <div className="double-bounce2"></div>
-</div>
-                      <div className="employeeName">
-                        {this.state.addingAppName}
+                      <div className="EApp" key="newApp">
+                        <div className="spinner right-profile-image">
+                          <div className="double-bounce1" />
+                          <div className="double-bounce2" />
+                        </div>
+                        <div className="employeeName">{this.state.addingAppName}</div>
                       </div>
-                    </div>)
+                    );
                   }
                   return appArray;
                 }}
@@ -642,7 +689,7 @@ class Team extends Component {
                             <div
                               draggable
                               className="PApp"
-                              onDragStart={ev => this.onDragStart(ev, app.boughtplan.id,app)}
+                              onDragStart={ev => this.onDragStart(ev, app.boughtplan.id, app)}
                               key={key}
                               /*onClick={() =>
                               this.props.distributeLicence(
@@ -663,9 +710,7 @@ class Team extends Component {
                               <div className="employeeName">
                                 {app.appname} {app.boughtplan.id}
                               </div>
-                              <span
-                            className="explain">Move to add to user
-                            </span>
+                              <span className="explain">Move to add to user</span>
                             </div>
                           ));
                         }
@@ -674,46 +719,52 @@ class Team extends Component {
                     </Query>
                   </div>
                 </div>
-              <div className="teamHolder">
-                <div className="companyHeader">
-                  <div className="companyLogo">
-                    {value.company.profilepicture?<img
-                      src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                        value.company.profilepicture
-                      }`}
-                    />:""}
+                <div className="teamHolder">
+                  <div className="companyHeader">
+                    <div className="companyLogo">
+                      {value.company.profilepicture ? (
+                        <img
+                          src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                            value.company.profilepicture
+                          }`}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                    <div className="companyName">{value.company.name}</div>
                   </div>
-                  <div className="companyName">{value.company.name}</div>
-                </div>
-                <div className="companyEmployees">
-                  {this.props.departmentsdata.fetchDepartmentsData
-                    ? this.showEmployees(
-                        this.props.departmentsdata.fetchDepartmentsData[0],
-                        value.company.unit.id,
-                        this.state.update
-                      )
-                    : ""}
-                </div>
-                <div className="addEmployeeButton" onClick={() => this.addEmployeeP(value.company.unit.id)}><span
-                  className="fas fa-plus"
-                /> Add Employee</div>
-                
-                {/*<div className="UMS">
+                  <div className="companyEmployees">
+                    {this.props.departmentsdata.fetchDepartmentsData
+                      ? this.showEmployees(
+                          this.props.departmentsdata.fetchDepartmentsData[0],
+                          value.company.unit.id,
+                          this.state.update
+                        )
+                      : ""}
+                  </div>
+                  <div
+                    className="addEmployeeButton"
+                    onClick={() => this.addEmployeeP(value.company.unit.id)}>
+                    <span className="fas fa-plus" /> Add Employee
+                  </div>
+
+                  {/*<div className="UMS">
                   {this.props.departmentsdata.fetchDepartmentsData
                     ? this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData[0], 2)
                     : ""}
                   </div>*/}
-                {this.state.popup ? (
-                  <Popup
-                    popupHeader={this.state.popupHeading}
-                    popupBody={this.state.popupBody}
-                    bodyProps={this.state.popupProps}
-                    onClose={this.closePopup}
-                  />
-                ) : (
-                  ""
-                )}
-              </div>
+                  {this.state.popup ? (
+                    <Popup
+                      popupHeader={this.state.popupHeading}
+                      popupBody={this.state.popupBody}
+                      bodyProps={this.state.popupProps}
+                      onClose={this.closePopup}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </div>
               </div>
             );
           } else {
