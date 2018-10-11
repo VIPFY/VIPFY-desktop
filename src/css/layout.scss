@@ -1516,21 +1516,22 @@
     float: right;
 }
 
-.appDescrition {
+.app-description {
     background-color: white;
     border-radius: 0.25rem;
     display: flex;
     min-height: 15rem;
     padding: 1rem;
     border-radius: 10px;
-    box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+    box-shadow: 0 0 19px -3px rgba(0, 0, 0, 0.36);
     background-image: radial-gradient(farthest-corner at 0px 100%, #20BAA9 0%, #117f91 100%);
     color: white;
+
+    &-item {
+      padding: 1rem;
+    }
 }
-.appDescriptionThird {
-    width: 30%;
-    padding: 1rem;
-}
+
 .appDescriptionHeading {
     font-size: 1.15rem;
     font-weight: bold;

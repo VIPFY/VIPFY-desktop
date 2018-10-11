@@ -25,6 +25,8 @@ export type AppPageProps = {
   match: any;
   history: string[];
   writeReview: Function;
+  sidebaropen: any;
+  chat: any;
 };
 
 export type AppPageState = {
@@ -39,7 +41,11 @@ export type AppPageState = {
   imageindex: number;
   pricingperiod: any;
   features: any[][];
-  popup: any;
+  popup: boolean;
+  popupBody: any;
+  popupHeading: string;
+  popupProps: object;
+  popupPropsold: object;
 };
 
 const WRITE_REVIEW = gql`
@@ -70,7 +76,11 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     imageindex: 0,
     pricingperiod: "months",
     features: [[]],
-    popup: null
+    popup: false,
+    popupBody: null,
+    popupHeading: "",
+    popupProps: {},
+    popupPropsold: {}
   };
 
   showPopup = type => {
@@ -81,9 +91,8 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
       popupProps: type
     });
   };
-  closePopup = () => {
-    this.setState({ popup: null });
-  };
+
+  closePopup = () => this.setState({ popup: null });
 
   showError = error =>
     this.setState({
@@ -399,16 +408,16 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               buyApp={this.buyApp}
             />
           </div>
-          {/*<div className="appHeading">Service Details</div>*/}
-          <div className="appDescrition">
-            <div className="appDescriptionThird">
+
+          <div className="app-description">
+            <div className="app-description-item">
               <span className="appDescriptionHeading">Description</span>
               <p
                 className="appDescriptionText"
                 dangerouslySetInnerHTML={{ __html: appDetails.description }}
               />
             </div>
-            <div className="appDescriptionThird">
+            <div className="app-description-item">
               <span className="appDescriptionHeading">Developer</span>
               {appDetails ? (
                 <span>
@@ -424,10 +433,48 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               )}
               <span className="appDescriptionHeading">Support</span>
             </div>
-            <div className="appDescriptionThird">
+            <div className="app-description-item">
               <span className="appDescriptionHeading">Report</span>
               <p className="appDescriptionText">Flag as not working</p>
               <p className="appDescriptionText">Flag as inappropriate</p>
+            </div>
+
+            <div className="app-description-item">
+                <span className="appDescriptionHeading">Add External Account</span>
+                <p className="appDescriptionText">An external Account is managed by you and not by
+                Vipfy and has none of the features like User Management, Data Exchange or Centralized Billing. 
+                But you will be able to log in via Vipfy.</p>
+
+                <button className="button-external" type="button"
+                onClick={() => {
+                  this.setState({
+                    popup: true,
+                    popupBody: GenericInputForm,
+                    popupHeading: "Add External App",
+                    popupProps: {
+                      fields: [
+                        {
+                        name: "username",
+                        type: "text",
+                        label: `Please add the username at ${appDetails.name}`,
+                        icon: "user",
+                        required: true,
+                        placeholder: "Username at App"
+                      },
+                      {
+                        name: "password",
+                        type: "password",
+                        label: `Please add the password at ${appDetails.name}`,
+                        icon: "user",
+                        required: true,
+                        placeholder: "Username at App"
+                      },
+                    ]
+                    }
+                  });
+                }} >
+                <i className="fas fa-boxes"/> Add as External
+                </button>
             </div>
           </div>
           <div className="planSectionHolder">

@@ -31,6 +31,10 @@
 
   .generic-submit-button {
     @include generic-button($vipfy-primary-color, $vipfy-secondary-color, $feedback)
+    
+    i {
+      margin-right: 3px;
+    }
   }
 }
 
