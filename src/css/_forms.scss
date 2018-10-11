@@ -60,14 +60,10 @@
   margin: 2rem 0;
 }
 
-.generic-async-success {
-  @extend .generic-async-error;
-  color: $vipfy-primary;
-}
-
 .generic-submit-success {
   margin-top: 3rem;
   text-align: center;
+  color: green;
 }
 
 .generic-searchbar {

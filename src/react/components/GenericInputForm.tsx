@@ -11,6 +11,7 @@ interface Props {
   onClose: Function;
   buttonName?: string;
   handleSubmit: Function;
+  successMessage: string;
 }
 
 interface State {
@@ -21,7 +22,7 @@ interface State {
   asyncError: any;
   submitting: boolean;
   stars: number;
-  successMessage: any;
+  success: boolean;
 }
 
 const INITIAL_STATE = {
@@ -32,7 +33,7 @@ const INITIAL_STATE = {
   stars: -1,
   asyncError: null,
   submitting: false,
-  successMessage: ""
+  success: false
 };
 
 class GenericInputForm extends React.Component<Props, State> {
@@ -105,7 +106,13 @@ class GenericInputForm extends React.Component<Props, State> {
     } else {
       try {
         await this.props.handleSubmit(this.state.values);
-        this.props.onClose();
+
+        if (this.props.successMessage) {
+          await this.setState({ submitting: false, success: true });
+          setTimeout(() => this.props.onClose(), 1000);
+        } else {
+          this.props.onClose();
+        }
       } catch (err) {
         this.setState({ asyncError: filterError(err), submitting: false });
       }
@@ -420,7 +427,8 @@ class GenericInputForm extends React.Component<Props, State> {
   };
 
   render() {
-    const { values, errors, submitting, asyncError, successMessage } = this.state;
+    const { values, errors, submitting, asyncError, success } = this.state;
+    const { successMessage, submittingMessage } = this.props;
 
     return (
       <form
@@ -432,9 +440,11 @@ class GenericInputForm extends React.Component<Props, State> {
         {asyncError ? (
           <div className="generic-async-error">{asyncError}</div>
         ) : !asyncError && submitting ? (
-          <LoadingDiv
-            text={this.props.submittingMessage ? this.props.submittingMessage : "Submitting..."}
-          />
+          <LoadingDiv text={submittingMessage ? submittingMessage : "Submitting..."} />
+        ) : !asyncError && !submitting && success && successMessage ? (
+          <div className="generic-submit-success">
+            {successMessage} <i className="fas fa-check-circle" />
+          </div>
         ) : (
           ""
         )}
@@ -442,7 +452,7 @@ class GenericInputForm extends React.Component<Props, State> {
         <div className="generic-button-holder">
           <button
             type="button"
-            disabled={submitting || successMessage}
+            disabled={submitting || success}
             className="generic-cancel-button"
             onClick={this.props.onClose}>
             <i className="fas fa-long-arrow-alt-left" /> Cancel
@@ -451,7 +461,7 @@ class GenericInputForm extends React.Component<Props, State> {
           <button
             type="submit"
             disabled={
-              successMessage ||
+              success ||
               submitting ||
               Object.keys(values).length === 0 ||
               Object.values(errors).filter(err => err != false).length > 0
