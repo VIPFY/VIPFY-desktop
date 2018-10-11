@@ -29,6 +29,7 @@ class AppHeaderInfos extends React.Component<State> {
         <div className="appHeaderName">{this.props.appDetails.name}</div>
         <div className="appHeaderType">{this.props.appDetails.features.type}</div>
         <div className="appHeaderPriceHolder">
+        {this.props.allPlans[0]?
           <div className="appHeaderPriceText">
             <small>Our recommendation for you</small>
           </div>
@@ -47,7 +48,7 @@ class AppHeaderInfos extends React.Component<State> {
             {this.props.allPlans[this.state.chosenPlan].price == 0
               ? "Start for free!"
               : `Starting at $${this.props.allPlans[this.state.chosenPlan].price}/mo`}
-          </div>
+          </div>:"You can only integrate existing accounts"}
         </div>
       </div>
     );

@@ -516,9 +516,10 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               </button>
             </div>
           </div>
+          {this.props.productPlans.fetchPlans[0]?
           <div className="planSectionHolder">
             <div className="planHolder">{this.showPrices(this.props.productPlans.fetchPlans)}</div>
-          </div>
+          </div>:""}
           <div className="detail-comments">
             {/*<h3 className="detail-comments-heading">Reviews</h3>*/}
             <div className="detail-comments-holder">

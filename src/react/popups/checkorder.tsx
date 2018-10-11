@@ -306,7 +306,7 @@ class CheckOrder extends React.Component {
                 <Query
                   query={gql`
                     query {
-                      fetchBillingAddresses {
+                      fetchAddresses {
                         id
                         address
                         country
@@ -332,8 +332,8 @@ class CheckOrder extends React.Component {
                       return "Error loading Billing Data";
                     }
                     planInputs = data.fetchPlanInputs;
-                    billingAddresses=data.fetchBillingAddresses;
-                    if (data.fetchBillingAddresses && data.fetchBillingAddresses.length >= 1) {
+                    billingAddresses=data.fetchAddresses;
+                    if (data.fetchAddresses && data.fetchAddresses.length >= 1) {
                       return (
                         <div>
                           <div className="orderHeading">
@@ -347,13 +347,13 @@ class CheckOrder extends React.Component {
                           <div className="orderInformationHolder">
                             <div className="orderAddressHolder">
                               <div className="orderAddressLine">
-                                {data.fetchBillingAddresses[0].address.street}
+                                {data.fetchAddresses[0].address.street}
                               </div>
                               <div className="orderAddressLine">
-                                {data.fetchBillingAddresses[0].address.city}
+                                {data.fetchAddresses[0].address.city}
                               </div>
                               <div className="orderAddressLine">
-                                {data.fetchBillingAddresses[0].address.zip}
+                                {data.fetchAddresses[0].address.zip}
                               </div>
                               {/*<div className="changeInformation">
                                 <span>Change Address</span><span>Change Payment</div>
