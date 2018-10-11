@@ -29,7 +29,6 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 
 class AppListInner extends React.Component<Props, State> {
   render() {
-    console.log("CHARTPROPS", this.props);
     if (!this.props.data.fetchUnitApps || !this.props.data.fetchUnitAppsSimpleStats) {
       return <div>Error fetching data</div>;
     }
@@ -37,26 +36,28 @@ class AppListInner extends React.Component<Props, State> {
     const rows = this.tableRows();
     return (
       <table>
-        <tr>
-          <th />
-          <th />
-          <th />
-          <th colspan={2}>Licences</th>
-          <th />
-          <th />
-          <th />
-        </tr>
-        <tr>
-          <th>App Name</th>
-          <th>Plan Name</th>
-          <th>ID</th>
-          <th>Used</th>
-          <th>Total</th>
-          <th>Time Spend this Month</th>
-          <th>Price per Month</th>
-          <th />
-        </tr>
-        {rows}
+        <thead>
+          <tr>
+            <th />
+            <th />
+            <th />
+            <th colSpan={2}>Licences</th>
+            <th />
+            <th />
+            <th />
+          </tr>
+          <tr>
+            <th>App Name</th>
+            <th>Plan Name</th>
+            <th>ID</th>
+            <th>Used</th>
+            <th>Total</th>
+            <th>Time Spend this Month</th>
+            <th>Price per Month</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
       </table>
     );
   }
@@ -71,7 +72,7 @@ class AppListInner extends React.Component<Props, State> {
               largest: 2
             });
       return (
-        <tr>
+        <tr key={`r${boughtplan.id}`}>
           <td>{boughtplan.boughtplan.planid.appid.name}</td>
           <td>{boughtplan.boughtplan.planid.name}</td>
           <td>{boughtplan.boughtplan.id}</td>
@@ -90,7 +91,6 @@ class AppListInner extends React.Component<Props, State> {
 }
 
 function AppTable(props) {
-  console.log("PROPS", props);
   return (
     <Query
       query={gql`
