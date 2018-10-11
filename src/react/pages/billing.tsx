@@ -201,7 +201,7 @@ class Billing extends React.Component<Props, State> {
           <label className="payment-label">Billing History</label>
           <BillingHistoryChart {...this.props} />
         </div>
-        <div className="payment-data-holder">
+        <div className="payment-data-holder" id="bought-apps">
           <label className="payment-label">Bought Apps</label>
           <AppTable {...this.props} />
         </div>
