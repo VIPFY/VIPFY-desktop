@@ -65,9 +65,9 @@ const WRITE_REVIEW = gql`
   }
 `;
 
-const ADD_EXTERNAL_APP = gql`
-  mutation onAddExternalAppData($username: String!, $password: String!, $appid: Int!) {
-    addExternalAppData(username: $username, password: $password, appid: $appid) {
+const ADD_EXTERNAL_ACCOUNT = gql`
+  mutation onAddExternalAccount($username: String!, $password: String!, $appid: Int!) {
+    addExternalAccount(username: $username, password: $password, appid: $appid) {
       ok
     }
   }
@@ -516,10 +516,15 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               </button>
             </div>
           </div>
-          {this.props.productPlans.fetchPlans[0]?
-          <div className="planSectionHolder">
-            <div className="planHolder">{this.showPrices(this.props.productPlans.fetchPlans)}</div>
-          </div>:""}
+          {this.props.productPlans.fetchPlans[0] ? (
+            <div className="planSectionHolder">
+              <div className="planHolder">
+                {this.showPrices(this.props.productPlans.fetchPlans)}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
           <div className="detail-comments">
             {/*<h3 className="detail-comments-heading">Reviews</h3>*/}
             <div className="detail-comments-holder">
@@ -592,7 +597,7 @@ export default compose(
   }),
   graphql(WRITE_REVIEW, { name: "writeReview" }),
   graphql(fetchLicences),
-  graphql(ADD_EXTERNAL_APP, { name: "addExternalApp" }),
+  graphql(ADD_EXTERNAL_ACCOUNT, { name: "addExternalApp" }),
   graphql(buyPlan, {
     name: "buyPlan"
   })
