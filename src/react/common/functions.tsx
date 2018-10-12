@@ -1,4 +1,7 @@
 import * as React from "react";
+import gql from "graphql-tag";
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 export function showStars(stars) {
   const starsArray: JSX.Element[] = [];
@@ -107,4 +110,24 @@ export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Elemen
 
 export const sleep = async ms => {
   return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+const DUMMY_QUERY = gql`
+  mutation {
+    ping {
+      ok
+    }
+  }
+`;
+
+export const refetchQueries = async (client: ApolloClient<InMemoryCache>, queries: string[]) => {
+  // refetchQueries of the mutate functions can refetch observed queries by name,
+  // using the variables used by the query observer
+  // that's the easiest way to get this functionality
+  return await client.mutate({
+    mutation: DUMMY_QUERY,
+    errorPolicy: "ignore",
+    fetchPolicy: "no-cache",
+    refetchQueries: queries
+  });
 };

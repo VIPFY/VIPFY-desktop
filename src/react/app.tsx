@@ -5,13 +5,15 @@ import gql from "graphql-tag";
 
 import { signInUser } from "./mutations/auth";
 import { me } from "./queries/auth";
-import { AppContext } from "./common/functions";
+import { AppContext, refetchQueries } from "./common/functions";
 import { filterError } from "./common/functions";
 
 import Area from "./pages/area";
 import Popup from "./components/Popup";
 import LoadingDiv from "./components/LoadingDiv";
 import Login from "./pages/login";
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 const SignUp = gql`
   mutation signUp($email: String!, $newsletter: Boolean!) {
@@ -24,7 +26,7 @@ const SignUp = gql`
 `;
 
 interface AppProps {
-  client: any;
+  client: ApolloClient<InMemoryCache>;
   history: any;
   logoutFunction: Function;
   me: any;
@@ -72,9 +74,10 @@ class App extends React.Component<AppProps, AppState> {
     this.props.logoutFunction(this.logMeOut);
   }
 
-  setName = (firstname, lastname) => {
+  setName = async (firstname, lastname) => {
+    // legacy function, call refetchQueries directly instead
+    await refetchQueries(this.props.client, ["me"]);
     console.log("setName", firstname);
-    this.setState({ firstname, lastname });
   };
 
   renderPopup = ({ header, body, props, type }) => {
@@ -164,6 +167,7 @@ class App extends React.Component<AppProps, AppState> {
               <Area
                 setName={this.setName}
                 logMeOut={this.logMeOut}
+                showPopup={data => this.renderPopup(data)}
                 {...data.me}
                 employees={data.me.company.employees}
                 profilepicture={data.me.profilepicture || data.me.company.profilepicture}
