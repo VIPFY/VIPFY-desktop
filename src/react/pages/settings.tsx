@@ -62,11 +62,6 @@ class Settings extends Component {
   }
 
   render() {
-    let bI = this.props.profilepicture
-      ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
-        this.props.profilepicture
-      : "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/artist.jpg";
-
     return (
       <div>
         <div className="welcomeHolder">

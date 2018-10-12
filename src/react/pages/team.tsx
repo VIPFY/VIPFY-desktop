@@ -297,13 +297,11 @@ class Team extends React.Component<Props, State> {
                       className="employee"
                       key={`empolyee-${element.id}`}
                       onClick={() => this.toggleEmployeeInfo(element.id, department.parent)}>
-                      <img
-                        className="right-profile-image"
+                      <UserPicture
+                        size="right-profile-image"
                         style={{
                           float: "left"
                         }}
-                        src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${element.profilepicture ||
-                          "9b.jpg"}`}
                       />
                       <div className="employeeName">
                         {element.firstname} {element.lastname}
