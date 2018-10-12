@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Component } from "react";
+import UserPicture from "../components/UserPicture";
 
 class Settings extends Component {
   state = {
@@ -62,13 +63,17 @@ class Settings extends Component {
 
   render() {
     let bI = this.props.profilepicture
-      ? this.props.profilepicture
+      ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
+        this.props.profilepicture
       : "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/artist.jpg";
 
     return (
       <div>
         <div className="welcomeHolder">
-          <div className="welcomeImage" style={{ backgroundImage: `url(${bI})` }} />
+          {/*<div className="welcomeImage" style={{ backgroundImage: `url(${bI})` }} />*/}
+          <div className="welcomeImage">
+            <UserPicture size="welcomeImage" unitid={this.props.id} />
+          </div>
           <div className="welcomeMessage">
             <span>
               Edit your options, {this.props.firstname} {this.props.lastname}
