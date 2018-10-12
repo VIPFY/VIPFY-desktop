@@ -316,7 +316,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     plans.forEach((plan, key) => {
       let featureArray: JSX.Element[] = [];
 
-      if (plan.features && plan.features[0].features) {
+      if (plan.features && plan.features[0] && plan.features[0].features) {
         plan.features[0].features.forEach((feature, fkey) => {
           let value: JSX.Element = <span />;
           if (feature.includedvalue) {
