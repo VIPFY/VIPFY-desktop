@@ -190,3 +190,62 @@ $shadow-color: #f0f3ff;
     }
   }
 }
+.profileApps {
+  width: 8em;
+  height: 8em;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  margin: 1em;
+  position: relative;
+  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+  cursor: pointer;
+  border-radius: 0.5em;
+  text-align: center;
+
+  &Holder{
+    display: grid;
+    grid-template-rows: repeat(auto-fill, 10rem);
+    grid-template-columns: repeat(auto-fill, 10rem);
+    margin-top: 1rem;
+    height: 100%;
+    width: 100%;
+  }
+  .name{
+    position: absolute;
+    top: -1.25em;
+    font-size: 0.75rem;
+    left: 0.5em;
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 1em);
+  }
+}
+
+.shaking {
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  animation-iteration-count: infinite;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  font-size: 5rem !important;
+  line-height: 8rem !important;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}

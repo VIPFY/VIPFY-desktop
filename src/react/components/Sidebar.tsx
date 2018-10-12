@@ -31,8 +31,17 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
                 backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
                   licence.boughtplanid.planid.appid.icon
                 })`
-              }}
-            />
+              }}>
+              {licence.boughtplanid.planid.options &&
+              licence.boughtplanid.planid.options.external ? (
+                <div className="ribbon-small ribbon-small-top-right">
+                  <span>E</span>
+                </div>
+              ) : (
+                ""
+              )}
+            </span>
+
             <span className={this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}>
               {licence.boughtplanid.planid.appid.name}
             </span>
