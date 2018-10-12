@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query, graphql } from "react-apollo";
+import { Query, graphql, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 import Addresses from "./Addresses";
@@ -9,6 +9,9 @@ import LoadingDiv from "../../components/LoadingDiv";
 import { AppContext } from "../../common/functions";
 import { filterError } from "../../common/functions";
 import { unitPicFolder } from "../../common/constants";
+import { me } from "../../queries/auth";
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 const FETCH_COMPANY = gql`
   {
@@ -34,6 +37,7 @@ interface Props {
   toggle: Function;
   updatePic: Function;
   company: number;
+  client: ApolloClient<InMemoryCache>;
 }
 
 interface State {
@@ -49,7 +53,14 @@ class CompanyData extends React.Component<Props, State> {
 
   uploadPic = async ({ picture }) => {
     try {
-      await this.props.updatePic({ variables: { file: picture } });
+      await this.props.updatePic({
+        variables: { file: picture }
+      });
+      this.props.client.query({ query: me, fetchPolicy: "network-only" });
+      this.props.client.query({
+        query: FETCH_COMPANY,
+        fetchPolicy: "network-only"
+      });
 
       return true;
     } catch (err) {
@@ -139,4 +150,4 @@ class CompanyData extends React.Component<Props, State> {
   }
 }
 
-export default graphql(UPDATE_PIC, { name: "updatePic" })(CompanyData);
+export default graphql(UPDATE_PIC, { name: "updatePic" })(withApollo(CompanyData));

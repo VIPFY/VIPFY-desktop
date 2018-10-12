@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose, Query } from "react-apollo";
+import { graphql, compose, Query, withApollo } from "react-apollo";
 
 import Addresses from "./Addresses";
 import Phones from "./Phones";
@@ -8,9 +8,13 @@ import LoadingDiv from "../../components/LoadingDiv";
 import GenericInputForm from "../../components/GenericInputForm";
 
 import { CHANGE_PASSWORD } from "../../mutations/auth";
-import { AppContext, concatName, filterError } from "../../common/functions";
+import { AppContext, concatName, filterError, refetchQueries } from "../../common/functions";
 import { unitPicFolder } from "../../common/constants";
 import { me } from "../../queries/auth";
+import { QUERY_USER } from "../../queries/user";
+import UserPicture from "../UserPicture";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { ApolloClient } from "apollo-client";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: File!) {
@@ -22,6 +26,8 @@ interface Props {
   toggle: Function;
   updatePic: Function;
   changePassword: Function;
+  client: ApolloClient<InMemoryCache>;
+  id: number;
 }
 
 interface State {
@@ -37,8 +43,13 @@ class PersonalData extends React.Component<Props, State> {
 
   uploadPic = async ({ picture }) => {
     try {
-      await this.props.updatePic({ variables: { file: picture } });
-
+      await this.props.updatePic({ variables: { file: picture }, refetchQueries: ["me"] });
+      this.props.client.query({ query: me, fetchPolicy: "network-only" });
+      this.props.client.query({
+        query: QUERY_USER,
+        variables: { userid: this.props.id },
+        fetchPolicy: "network-only"
+      });
       return true;
     } catch (err) {
       throw new Error(filterError(err));
@@ -74,8 +85,7 @@ class PersonalData extends React.Component<Props, State> {
             title,
             birthday,
             language,
-            createdate,
-            profilepicture
+            createdate
           } = data.me;
           return (
             <AppContext.Consumer>
@@ -159,13 +169,10 @@ class PersonalData extends React.Component<Props, State> {
                       <span>Personal Data</span>
                     </div>
 
-                    <div className={`pic-holder ${this.state.show ? "in" : "out"}`}>
-                      <img
-                        src={`${unitPicFolder}${profilepicture ? profilepicture : "default.png"} `}
-                        className="pic"
-                        alt="Picture of you"
-                        onClick={() => showPopup(picPopup)}
-                      />
+                    <div
+                      className={`pic-holder ${this.state.show ? "in" : "out"}`}
+                      onClick={() => showPopup(picPopup)}>
+                      <UserPicture size="pic" unitid={this.props.id} />
                       <div>Click to change</div>
                     </div>
 
@@ -203,4 +210,4 @@ class PersonalData extends React.Component<Props, State> {
 export default compose(
   graphql(CHANGE_PASSWORD, { name: "changePassword" }),
   graphql(UPDATE_PIC, { name: "updatePic" })
-)(PersonalData);
+)(withApollo(PersonalData));
