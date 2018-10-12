@@ -934,6 +934,7 @@
   transition: width 0.6s ease-in-out;
   width:  $sidebar-width;
   z-index: 300;
+  overflow-y: auto;
 
   &-logo {
     background-image: $newlogo;
@@ -2488,35 +2489,36 @@ h1{
                     }
                 }
             }
-            .apps{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-left: 1rem;
-                flex-wrap: wrap;
-                flex-direction: column;
-                height: 8rem;
-                .EApp{
-                    width: 9rem;
-                    position: relative;
-                    overflow: hidden;
-                    background-color: white;
-                    padding: 0.25rem;
-                    margin-right: 0.2rem;
-                    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
-                    .revokelicence{
-                        cursor: pointer;
-                        font-size: 0.5rem
-                    }
-                    img{
-                        user-drag: none;
-                        user-select: none;
-                        -moz-user-select: none;
-                        -webkit-user-drag: none;
-                        -webkit-user-select: none;
-                        -ms-user-select: none;
-                    }
+            .apps {
+              display: grid;
+              grid-template-rows: repeat(auto-fill, 2.3rem);
+              grid-template-columns: repeat(auto-fill, 9rem);
+              grid-gap: 0.5rem;
+              margin-left: 1rem;
+              height: 100%;
+              width: 100%;
+
+              .EApp {
+                position: relative;
+                overflow: hidden;
+                background-color: white;
+                padding: 0.25rem;
+                box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+                  
+                .revokelicence {
+                  cursor: pointer;
+                  font-size: 0.5rem
                 }
+
+                img {
+                  user-drag: none;
+                  user-select: none;
+                  -moz-user-select: none;
+                  -webkit-user-drag: none;
+                  -webkit-user-select: none;
+                  -ms-user-select: none;
+                }
+              }
             }
         }
     }

@@ -5,9 +5,10 @@ export default (props: {
   popupHeader: string;
   bodyProps: object;
   onClose: any;
+  info: string;
   type: string;
 }): JSX.Element => {
-  const { popupBody, bodyProps, popupHeader, onClose, type } = props;
+  const { popupBody, bodyProps, popupHeader, onClose, type, info } = props;
   const PopupBody = popupBody;
 
   if (type == "pic") {
@@ -29,6 +30,7 @@ export default (props: {
             </div>
           </div>
 
+          {info ? <div id="popup-info">{info}</div> : ""}
           <PopupBody {...bodyProps} onClose={onClose} />
         </div>
       </div>

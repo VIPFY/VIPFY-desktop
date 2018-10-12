@@ -1,4 +1,5 @@
 import * as React from "react";
+import gql from "graphql-tag";
 import { graphql, compose, Query } from "react-apollo";
 import DepartmentEdit from "../common/departmentEdit";
 import UserEditTeam from "../common/userEditTeam";
@@ -35,6 +36,13 @@ import {
 } from "../mutations/auth";
 import { printIntrospectionSchema } from "graphql/utilities";
 
+const REMOVE_EXTERNAL_ACCOUNT = gql`
+  mutation onRemoveExternalAccount($licenceid: Int!) {
+    removeExternalAccount(licenceid: $licenceid) {
+      ok
+    }
+  }
+`;
 interface Props {}
 
 interface State {
@@ -152,7 +160,7 @@ class Team extends React.Component<Props, State> {
 
   addEmployeeAccept = async (data, departmentid) => {
     try {
-      const res = await this.props.addCreateEmployee({
+      await this.props.addCreateEmployee({
         variables: { ...data, departmentid },
         refetchQueries: [{ query: fetchDepartmentsData }]
       });
@@ -166,7 +174,7 @@ class Team extends React.Component<Props, State> {
 
   delEmployeeAccept = async (unitid, departmentid) => {
     try {
-      const res = await this.props.removeEmployee({
+      await this.props.removeEmployee({
         variables: { unitid, departmentid },
         refetchQueries: [{ query: fetchDepartmentsData }]
       });
@@ -495,7 +503,7 @@ class Team extends React.Component<Props, State> {
     //this.showLoading("We are removing the app from the user account.")
     this.setState({ removeApp: `${unitid}-${licenceid}` });
     try {
-      const res = await this.props.revokeLicence({
+      await this.props.revokeLicence({
         variables: { licenceid },
         refetchQueries: [
           { query: fetchLicences },
@@ -815,5 +823,6 @@ export default compose(
   }),
   graphql(revokeLicencesFromDepartment, {
     name: "revokeLicencesFromDepartment"
-  })
+  }),
+  graphql(REMOVE_EXTERNAL_ACCOUNT, { name: "removeExternalAccount" })
 )(Team);

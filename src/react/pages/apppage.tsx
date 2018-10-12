@@ -27,6 +27,7 @@ export type AppPageProps = {
   writeReview: Function;
   sidebaropen: any;
   chat: any;
+  addExternalApp: Function;
 };
 
 export type AppPageState = {
@@ -46,6 +47,7 @@ export type AppPageState = {
   popupHeading: string;
   popupProps: object;
   popupPropsold: object;
+  popupInfo: string;
 };
 
 const WRITE_REVIEW = gql`
@@ -59,6 +61,14 @@ const WRITE_REVIEW = gql`
         middlename
         lastname
       }
+    }
+  }
+`;
+
+const ADD_EXTERNAL_ACCOUNT = gql`
+  mutation onAddExternalAccount($username: String!, $password: String!, $appid: Int!) {
+    addExternalAccount(username: $username, password: $password, appid: $appid) {
+      ok
     }
   }
 `;
@@ -80,7 +90,8 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     popupBody: null,
     popupHeading: "",
     popupProps: {},
-    popupPropsold: {}
+    popupPropsold: {},
+    popupInfo: ""
   };
 
   showPopup = type => {
@@ -123,33 +134,39 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     }
   };
 
-  showLoading = (sentence) => {
-    this.setState({ popup: true, popupProps: { sentence },
-      popupBody:  LoadingPopup, popupHeading: "Please wait..."  })
-  }
+  showLoading = sentence => {
+    this.setState({
+      popup: true,
+      popupProps: { sentence },
+      popupBody: LoadingPopup,
+      popupHeading: "Please wait..."
+    });
+  };
 
   handleAddReview = async (stars, review) => {
-    this.showLoading("We are adding your review. Thank you for your feedback.")
-    console.log("ADDREVIEW", stars, review)
+    this.showLoading("We are adding your review. Thank you for your feedback.");
+    console.log("ADDREVIEW", stars, review);
     try {
       const res = await this.props.writeReview({
         variables: { stars, text: JSON.stringify(review), appid: this.props.match.params.appid },
-        refetchQueries: [{ query: fetchReviews, variables: { appid: this.props.match.params.appid } }]
-      })
+        refetchQueries: [
+          { query: fetchReviews, variables: { appid: this.props.match.params.appid } }
+        ]
+      });
 
-        console.log(res)
-        this.closePopup();
-      } catch (err) {
-        this.showError(err.message || "Something went really wrong :-(");
-      }
-  }
+      console.log(res);
+      this.closePopup();
+    } catch (err) {
+      this.showError(err.message || "Something went really wrong :-(");
+    }
+  };
 
   addReview = () => {
     this.setState({
       popup: true,
       popupBody: AddReview,
       popupHeading: "Write review",
-      popupProps: {handleAdd: this.handleAddReview}
+      popupProps: { handleAdd: this.handleAddReview },
       popupPropsold: {
         fields: [
           {
@@ -351,7 +368,10 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             {review[index].reviewdate.split(" ")[1]} {review[index].reviewdate.split(" ")[2]}{" "}
             {review[index].reviewdate.split(" ")[3]}
           </span>
-          <div className="detail-comment-text" dangerouslySetInnerHTML={{__html: draftToHtml(JSON.parse(review[index].reviewtext))}}></div>
+          <div
+            className="detail-comment-text"
+            dangerouslySetInnerHTML={{ __html: draftToHtml(JSON.parse(review[index].reviewtext)) }}
+          />
         </div>
       );
     } else {
@@ -440,47 +460,71 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             </div>
 
             <div className="app-description-item">
-                <span className="appDescriptionHeading">Add External Account</span>
-                <p className="appDescriptionText">An external Account is managed by you and not by
-                Vipfy and has none of the features like User Management, Data Exchange or Centralized Billing. 
-                But you will be able to log in via Vipfy.</p>
+              <span className="appDescriptionHeading">Add External Account</span>
+              <p className="appDescriptionText">
+                An external Account is managed by you and not by Vipfy and has none of the features
+                like User Management, Data Exchange or Centralized Billing. But you will be able to
+                log in via Vipfy.
+              </p>
 
-                <button className="button-external" type="button"
+              <button
+                className="button-external"
+                type="button"
                 onClick={() => {
                   this.setState({
                     popup: true,
                     popupBody: GenericInputForm,
                     popupHeading: "Add External App",
+                    popupInfo: `Please enter your Account data from ${appDetails.name}.
+                    You will then be able to login to the App via Vipfy.`,
                     popupProps: {
                       fields: [
                         {
-                        name: "username",
-                        type: "text",
-                        label: `Please add the username at ${appDetails.name}`,
-                        icon: "user",
-                        required: true,
-                        placeholder: "Username at App"
-                      },
-                      {
-                        name: "password",
-                        type: "password",
-                        label: `Please add the password at ${appDetails.name}`,
-                        icon: "user",
-                        required: true,
-                        placeholder: "Username at App"
-                      },
-                    ]
+                          name: "username",
+                          type: "text",
+                          label: `Please add the username at ${appDetails.name}`,
+                          icon: "user",
+                          required: true,
+                          placeholder: `Username at ${appDetails.name}`
+                        },
+                        {
+                          name: "password",
+                          type: "password",
+                          label: `Please add the password at ${appDetails.name}`,
+                          icon: "key",
+                          required: true,
+                          placeholder: `Password at ${appDetails.name}`
+                        }
+                      ],
+                      submittingMessage: "Adding external Account...",
+                      successMessage: `${appDetails.name} successfully added`,
+                      handleSubmit: async ({ username, password }) => {
+                        try {
+                          await this.props.addExternalApp({
+                            variables: { username, password, appid: this.props.match.params.appid }
+                          });
+
+                          return true;
+                        } catch (error) {
+                          throw error;
+                        }
+                      }
                     }
                   });
-                }} >
-                <i className="fas fa-boxes"/> Add as External
-                </button>
+                }}>
+                <i className="fas fa-boxes" /> Add as External
+              </button>
             </div>
           </div>
-          {this.props.productPlans.fetchPlans[0]?
-          <div className="planSectionHolder">
-            <div className="planHolder">{this.showPrices(this.props.productPlans.fetchPlans)}</div>
-          </div>:""}
+          {this.props.productPlans.fetchPlans[0] ? (
+            <div className="planSectionHolder">
+              <div className="planHolder">
+                {this.showPrices(this.props.productPlans.fetchPlans)}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
           <div className="detail-comments">
             {/*<h3 className="detail-comments-heading">Reviews</h3>*/}
             <div className="detail-comments-holder">
@@ -520,6 +564,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               popupBody={this.state.popupBody}
               bodyProps={this.state.popupProps}
               onClose={this.closePopup}
+              info={this.state.popupInfo}
             />
           ) : (
             ""
@@ -552,6 +597,7 @@ export default compose(
   }),
   graphql(WRITE_REVIEW, { name: "writeReview" }),
   graphql(fetchLicences),
+  graphql(ADD_EXTERNAL_ACCOUNT, { name: "addExternalApp" }),
   graphql(buyPlan, {
     name: "buyPlan"
   })
