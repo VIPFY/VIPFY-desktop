@@ -38,6 +38,7 @@ export const fetchLicences = gql`
         id
         planid {
           id
+          options
           appid {
             id
             name

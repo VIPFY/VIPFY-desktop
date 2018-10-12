@@ -623,14 +623,27 @@ class Team extends React.Component<Props, State> {
                                   .boughtplanid.planid.appid.icon ||
                                   "21062018-htv58-scarlett-jpeg"}`}
                               />
+                              {licence.boughtplanid.planid.options &&
+                              licence.boughtplanid.planid.options.external ? (
+                                <div className="ribbon-small ribbon-small-top-right">
+                                  <span>E</span>
+                                </div>
+                              ) : (
+                                ""
+                              )}
                               <div className="employeeName">
                                 {licence.boughtplanid.planid.appid.name} {licence.boughtplanid.id}
                               </div>
-                              <span
-                                className="revokelicence"
-                                onClick={() => this.revokeLicence(licence.id, person.id)}>
-                                Revoke
-                              </span>
+                              {licence.boughtplanid.planid.options &&
+                              licence.boughtplanid.planid.options.external ? (
+                                ""
+                              ) : (
+                                <span
+                                  className="revokelicence"
+                                  onClick={() => this.revokeLicence(licence.id, person.id)}>
+                                  Revoke
+                                </span>
+                              )}
                             </div>
                           );
                         }
@@ -694,7 +707,11 @@ class Team extends React.Component<Props, State> {
                         let appArray: JSX.Element[] = [];
 
                         if (data.fetchUnitApps) {
-                          appArray = data.fetchUnitApps.map((app, key) => (
+                          console.log(data.fetchUnitApps);
+                          const noExternalApps = data.fetchUnitApps.filter(
+                            app => app.boughtplan.planid.options === null
+                          );
+                          appArray = noExternalApps.map((app, key) => (
                             <div
                               draggable
                               className="PApp"

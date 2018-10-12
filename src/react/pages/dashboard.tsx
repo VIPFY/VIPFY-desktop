@@ -46,6 +46,9 @@ class Dashboard extends React.Component<Props, State> {
                   licence.boughtplanid.planid.appid.icon
                 })`
               }}>
+              {licence.boughtplanid.planid.options && licence.boughtplanid.planid.options.external ?<div className="ribbon ribbon-top-right">
+                            <span>external</span>
+                          </div>: ""}
               <span className="nameAppsTile">{licence.boughtplanid.planid.appid.name}</span>
             </div>
           );
