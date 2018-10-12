@@ -8,6 +8,7 @@ import { fetchLicences } from "../queries/auth";
 import { FETCH_DOMAINS } from "./domains";
 import { fetchUnitApps } from "../queries/departments";
 import { fetchCards } from "../queries/billing";
+import UserPicture from "../components/UserPicture";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -161,6 +162,7 @@ class Navigation extends React.Component<Props, State> {
       return filterError(error);
     }
 
+    console.log("P", this.props);
     return (
       <div
         className={`navigation ${chatOpen ? "chat-open" : ""}
@@ -186,16 +188,7 @@ class Navigation extends React.Component<Props, State> {
         <div className="right-infos">
           <div className="right-profile-holder">
             <div className="pic-and-name" onClick={() => this.goTo("profile")}>
-              {this.props.profilepicture ? (
-                <img
-                  className="right-profile-image"
-                  src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                    this.props.profilepicture
-                  }`}
-                />
-              ) : (
-                ""
-              )}
+              <UserPicture size="right-profile-image" unitid={this.props.id} />
 
               <div className="name-holder">
                 <span className="right-profile-first-name">{this.props.firstname}</span>

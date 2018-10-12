@@ -29,7 +29,6 @@ interface AreaProps {
   fetchLicences: any;
   login: boolean;
   logMeOut: () => void;
-  reLogIn: Function;
   location: any;
   userData: any;
   userid: number;
@@ -54,10 +53,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     require("electron").ipcRenderer.on("change-page", (event, page) => {
       this.props.history.push(page);
     });
-
-    if (!this.props.login) {
-      await this.props.reLogIn(this.props.userData);
-    }
   };
 
   moveTo = path => {

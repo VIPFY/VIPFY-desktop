@@ -78,7 +78,7 @@ class CompanyData extends React.Component<Props, State> {
 
     return (
       <AppContext.Consumer>
-        {({ showPopup, company }) => (
+        {({ showPopup }) => (
           <Query query={FETCH_COMPANY}>
             {({ loading, error, data: { fetchCompany } }) => {
               if (loading) {
@@ -127,8 +127,8 @@ class CompanyData extends React.Component<Props, State> {
                     </ul>
                   </div>
 
-                  <Addresses showPopup={showPopup} company={company.unit.id} />
-                  <Phones showPopup={showPopup} company={company.unit.id} />
+                  <Addresses showPopup={showPopup} company={fetchCompany.unit.id} />
+                  <Phones showPopup={showPopup} company={fetchCompany.unit.id} />
                 </div>
               );
             }}

@@ -11,9 +11,8 @@ import { ErrorComp } from "../common/functions";
 import AddEmployee from "../popups/addEmployee";
 import ShowEmployee from "../popups/showEmployee";
 import LoadingPopup from "../popups/loadingPopup";
-import { AppContext } from "../common/functions";
 
-import { fetchLicences } from "../queries/auth";
+import { fetchLicences, me } from "../queries/auth";
 
 import {
   fetchDepartments,
@@ -35,6 +34,8 @@ import {
   revokeLicencesFromDepartment
 } from "../mutations/auth";
 import { printIntrospectionSchema } from "graphql/utilities";
+import UserPicture from "../components/UserPicture";
+import LoadingDiv from "../components/LoadingDiv";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onRemoveExternalAccount($licenceid: Int!) {
@@ -98,10 +99,10 @@ class Team extends React.Component<Props, State> {
       popupHeading: "Please check"
     });
 
-  addEmployeeP = did =>
+  addEmployeeP = departmentId =>
     this.setState({
       popup: true,
-      popupProps: { acceptFunction: this.addEmployeeAccept, did: did },
+      popupProps: { acceptFunction: this.addEmployeeAccept, departmentId },
       popupBody: AddEmployee,
       popupHeading: "Add Employee"
     });
@@ -158,10 +159,10 @@ class Team extends React.Component<Props, State> {
     }
   };
 
-  addEmployeeAccept = async (email, departmentid) => {
+  addEmployeeAccept = async (data, departmentid) => {
     try {
       await this.props.addCreateEmployee({
-        variables: { email, departmentid },
+        variables: { ...data, departmentid },
         refetchQueries: [{ query: fetchDepartmentsData }]
       });
 
@@ -564,6 +565,7 @@ class Team extends React.Component<Props, State> {
     if (data.employees) {
       let employeeArray: JSX.Element[] = [];
       data.employees.forEach((person, key) => {
+        console.log("PERSON", person);
         employeeArray.push(
           <div
             key={key}
@@ -571,13 +573,7 @@ class Team extends React.Component<Props, State> {
             onDragOver={e => this.onDragOver(e)}
             onDrop={ev => this.onDrop(ev, person.id, departmentid)}>
             <div className="infoHolder" onClick={() => this.showEmployee(person.id, departmentid)}>
-              <div className="picutre">
-                <img
-                  src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                    person.profilepicture ? person.profilepicture : "default.png"
-                  }`}
-                />
-              </div>
+              <UserPicture size="picutre" unitid={person.id} />
               <div className="namebox">
                 <div className="name">
                   {person.firstname} {person.lastname}
@@ -682,10 +678,17 @@ class Team extends React.Component<Props, State> {
 
   render() {
     return (
-      <AppContext.Consumer>
-        {value => {
+      <Query query={me}>
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <LoadingDiv text="Loading Data" />;
+          }
+          if (error) {
+            return <div>Error loading data</div>;
+          }
+          const { company } = data.me;
           //console.log("TEAM", value, this.props);
-          if (value.company) {
+          if (company) {
             return (
               <div className="teamPageHolder">
                 <div className="availableApps">
@@ -693,7 +696,7 @@ class Team extends React.Component<Props, State> {
                   <div className="appHolder">
                     <Query
                       query={fetchUnitApps}
-                      variables={{ departmentid: value.company.unit.id }}
+                      variables={{ departmentid: company.unit.id }}
                       fetchPolicy="network-only">
                       {({ loading, error, data }) => {
                         if (loading) {
@@ -747,30 +750,30 @@ class Team extends React.Component<Props, State> {
                 <div className="teamHolder">
                   <div className="companyHeader">
                     <div className="companyLogo">
-                      {value.company.profilepicture ? (
+                      {company.profilepicture ? (
                         <img
                           src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                            value.company.profilepicture
+                            company.profilepicture
                           }`}
                         />
                       ) : (
                         ""
                       )}
                     </div>
-                    <div className="companyName">{value.company.name}</div>
+                    <div className="companyName">{company.name}</div>
                   </div>
                   <div className="companyEmployees">
                     {this.props.departmentsdata.fetchDepartmentsData
                       ? this.showEmployees(
                           this.props.departmentsdata.fetchDepartmentsData[0],
-                          value.company.unit.id,
+                          company.unit.id,
                           this.state.update
                         )
                       : ""}
                   </div>
                   <div
                     className="addEmployeeButton"
-                    onClick={() => this.addEmployeeP(value.company.unit.id)}>
+                    onClick={() => this.addEmployeeP(company.unit.id)}>
                     <span className="fas fa-plus" /> Add Employee
                   </div>
 
@@ -796,7 +799,7 @@ class Team extends React.Component<Props, State> {
             return <div />;
           }
         }}
-      </AppContext.Consumer>
+      </Query>
     );
   }
 }

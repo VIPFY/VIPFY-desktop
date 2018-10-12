@@ -6,37 +6,23 @@ export const signInUser = gql`
       ok
       token
       refreshToken
-      user {
-        id
-        firstname
-        lastname
-        emails {
-          email
-        }
-        language
-        birthday
-        teams
-        domains
-        marketplace
-        billing
-        profilepicture
-        createdate
-        company {
-          unit: unitid {
-            id
-          }
-          profilepicture
-          employees
-          name
-        }
-      }
     }
   }
 `;
 
 export const addCreateEmployee = gql`
-  mutation addCreateEmployee($email: String!, $departmentid: Int!) {
-    addCreateEmployee(email: $email, departmentid: $departmentid) {
+  mutation addCreateEmployee(
+    $email: String!
+    $password: String!
+    $name: HumanName!
+    $departmentid: Int!
+  ) {
+    addCreateEmployee(
+      email: $email
+      password: $password
+      name: $name
+      departmentid: $departmentid
+    ) {
       ok
     }
   }

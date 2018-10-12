@@ -39,21 +39,7 @@ interface AppProps {
 
 interface AppState {
   login: boolean;
-  firstname: string;
-  middlename: string;
-  lastname: string;
-  birthday: string;
-  language: string;
-  teams: boolean;
-  billing: boolean;
-  domains: boolean;
-  marketplace: boolean;
-  employees: number;
-  createdate: string;
-  profilepicture: string;
   error: string;
-  userid: number;
-  company: any;
   popup: {
     show: boolean;
     header: string;
@@ -61,8 +47,6 @@ interface AppState {
     props: any;
     type: string;
   };
-  updateUser: Function;
-  showPopup: Function;
 }
 
 const INITIAL_POPUP = {
@@ -75,29 +59,13 @@ const INITIAL_POPUP = {
 
 const INITIAL_STATE = {
   login: false,
-  firstname: "",
-  middlename: "",
-  lastname: "",
-  birthday: "",
-  language: "",
-  teams: false,
-  billing: false,
-  domains: false,
-  createdate: "",
-  marketplace: false,
-  employees: 3,
-  profilepicture: "artist.jpg",
   error: "",
-  userid: -1,
-  company: null,
   popup: INITIAL_POPUP
 };
 
 class App extends React.Component<AppProps, AppState> {
   state: AppState = {
-    ...INITIAL_STATE,
-    updateUser: (name, value) => this.setState({ [name]: value }),
-    showPopup: data => this.renderPopup(data)
+    ...INITIAL_STATE
   };
 
   componentDidMount() {
@@ -115,22 +83,6 @@ class App extends React.Component<AppProps, AppState> {
 
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
 
-  relogMeIn = async data => {
-    if (localStorage.getItem("token")) {
-      const { company, profilepicture, id, ...userData } = data;
-      await this.setState({
-        login: true,
-        employees: company.employees,
-        userid: id,
-        company,
-        profilepicture: profilepicture || company.profilepicture,
-        ...userData
-      });
-    } else {
-      this.logMeOut();
-    }
-  };
-
   logMeOut = () => {
     this.setState(INITIAL_STATE); // clear state
     this.props.client.cache.reset(); // clear graphql cache
@@ -142,19 +94,13 @@ class App extends React.Component<AppProps, AppState> {
   logMeIn = async (email, password) => {
     try {
       const res = await this.props.signIn({ variables: { email, password } });
-      const { ok, token, refreshToken, user } = res.data.signIn;
+      const { ok, token, refreshToken } = res.data.signIn;
 
       if (ok) {
-        const { id, company, profilepicture, ...userData } = user;
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
         await this.setState({
-          login: true,
-          userid: id,
-          company,
-          employees: company.employees,
-          profilepicture: profilepicture || company.profilepicture,
-          ...userData
+          login: true
         });
 
         return true;
@@ -184,15 +130,15 @@ class App extends React.Component<AppProps, AppState> {
       }
       //this.props.history.push("/area/advisor");
     } catch (err) {
-      this.setState({ login: false, error: filterError(err) });
       localStorage.setItem("token", "");
       localStorage.setItem("refreshToken", "");
+      this.setState({ login: false, error: filterError(err) });
       console.log("LoginError", err);
     }
   };
 
   renderComponents = () => {
-    if (!this.state.login && localStorage.getItem("token")) {
+    if (localStorage.getItem("token")) {
       return (
         <Query query={me} fetchPolicy="network-only">
           {({ data, loading, error }) => {
@@ -218,23 +164,22 @@ class App extends React.Component<AppProps, AppState> {
               <Area
                 setName={this.setName}
                 logMeOut={this.logMeOut}
-                reLogIn={this.relogMeIn}
-                userData={data.me}
+                {...data.me}
+                employees={data.me.company.employees}
+                profilepicture={data.me.profilepicture || data.me.company.profilepicture}
               />
             );
           }}
         </Query>
       );
-    } else if (this.state.login && localStorage.getItem("token")) {
-      return <Area setName={this.setName} logMeOut={this.logMeOut} {...this.state} />;
     } else {
       return (
         <Login
           login={this.logMeIn}
+          setName={this.setName}
           moveTo={this.moveTo}
           register={this.registerMe}
           error={this.state.error}
-          setName={this.setName}
         />
       );
     }
@@ -242,7 +187,9 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     return (
-      <AppContext.Provider value={this.state} className="full-size">
+      <AppContext.Provider
+        value={{ showPopup: data => this.renderPopup(data) }}
+        className="full-size">
         {this.renderComponents()}
         {this.state.popup.show ? (
           <Popup
