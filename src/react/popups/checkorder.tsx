@@ -7,6 +7,7 @@ import WebView = require("react-electron-web-view");
 import CreditCard from "../components/billing/CreditCard";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
+import UserName from "../components/UserName";
 
 interface Props {
   plan: any;
@@ -363,7 +364,7 @@ class CheckOrder extends React.Component<Props, State> {
           if (error) {
             return <div>Error loading data</div>;
           }
-          const { firstname, lastname, company } = data.me;
+          const { company, id } = data.me;
           return (
             <div className="checkOrderHolder">
               <div className="checkOrderFeatures">
@@ -405,7 +406,7 @@ class CheckOrder extends React.Component<Props, State> {
                         return (
                           <div>
                             <div className="orderHeading">
-                              I ({`${firstname} ${lastname}`}) order in behalf of:
+                              I (<UserName unitid={id} />) order on behalf of:
                             </div>
                             {company ? (
                               <div className="orderCompanyName">{company.name}</div>
@@ -443,7 +444,7 @@ class CheckOrder extends React.Component<Props, State> {
                         return (
                           <div>
                             <div className="orderHeading">
-                              I ({`${firstname} ${lastname}`}) order in behalf of:
+                              I (<UserName unitid={id} />) order in behalf of:
                             </div>
                             {company ? (
                               <div className="orderCompanyName">{company.name}</div>

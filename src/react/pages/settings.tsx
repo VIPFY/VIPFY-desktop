@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import UserPicture from "../components/UserPicture";
+import UserName from "../components/UserName";
 
 class Settings extends Component {
   state = {
@@ -71,7 +72,7 @@ class Settings extends Component {
           </div>
           <div className="welcomeMessage">
             <span>
-              Edit your options, {this.props.firstname} {this.props.lastname}
+              Edit your options, <UserName unitid={this.props.id} />
             </span>
           </div>
         </div>

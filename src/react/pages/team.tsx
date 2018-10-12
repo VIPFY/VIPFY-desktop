@@ -36,6 +36,7 @@ import {
 import { printIntrospectionSchema } from "graphql/utilities";
 import UserPicture from "../components/UserPicture";
 import LoadingDiv from "../components/LoadingDiv";
+import UserName from "../components/UserName";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onRemoveExternalAccount($licenceid: Int!) {
@@ -302,9 +303,10 @@ class Team extends React.Component<Props, State> {
                         style={{
                           float: "left"
                         }}
+                        unitid={element.id}
                       />
                       <div className="employeeName">
-                        {element.firstname} {element.lastname}
+                        <UserName unitid={element.id} />
                       </div>
                       <div className="employeeTags">
                         <span className="employeeTag">{}</span>
@@ -574,7 +576,7 @@ class Team extends React.Component<Props, State> {
               <UserPicture size="picutre" unitid={person.id} />
               <div className="namebox">
                 <div className="name">
-                  {person.firstname} {person.lastname}
+                  <UserName unitid={person.id} />
                 </div>
                 {person.position ? <div className="position">{person.position}</div> : ""}
               </div>

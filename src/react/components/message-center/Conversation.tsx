@@ -170,7 +170,9 @@ class Conversation extends React.Component<Props, State> {
                             {...this.props}
                             unitid={message.sender ? message.sender.id : undefined}
                             short={true}
-                          />&nbsp;
+                            className="user-name"
+                          />
+                          &nbsp;
                           <span className="date">{date ? date.toUTCString() : ""}</span>
                         </span>
                         <Message {...this.props} message={message} />
