@@ -107,6 +107,7 @@
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2",
     "humanize-duration": "^3.15.3",
+    "humanparser": "^1.9.0",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "nivo": "^0.31.0",
