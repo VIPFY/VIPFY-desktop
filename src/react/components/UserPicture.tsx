@@ -31,7 +31,7 @@ export default function UserPicture(props: { unitid: number | null; size: string
         const picture = user.profilepicture
           ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
             user.profilepicture
-          : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
+          : "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/default.png";
         return <img src={picture} className={props.size} />;
       }}
     </Query>

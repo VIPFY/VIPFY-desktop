@@ -1323,6 +1323,7 @@ class Advisor extends React.Component<Props, State> {
     return (
       <AppContext.Consumer>
         {value => {
+          console.error("Please refactor Query 'me' instead of using AppContext");
           //console.log("ADVISOR", this.props, value);
           return (
             <div className="optionsHolder">

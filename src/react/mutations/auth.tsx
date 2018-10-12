@@ -6,30 +6,6 @@ export const signInUser = gql`
       ok
       token
       refreshToken
-      user {
-        id
-        firstname
-        lastname
-        emails {
-          email
-        }
-        language
-        birthday
-        teams
-        domains
-        marketplace
-        billing
-        profilepicture
-        createdate
-        company {
-          unit: unitid {
-            id
-          }
-          profilepicture
-          employees
-          name
-        }
-      }
     }
   }
 `;
