@@ -90,10 +90,10 @@ class Team extends React.Component<Props, State> {
       popupHeading: "Please check"
     });
 
-  addEmployeeP = did =>
+  addEmployeeP = departmentId =>
     this.setState({
       popup: true,
-      popupProps: { acceptFunction: this.addEmployeeAccept, did: did },
+      popupProps: { acceptFunction: this.addEmployeeAccept, departmentId },
       popupBody: AddEmployee,
       popupHeading: "Add Employee"
     });
@@ -150,10 +150,10 @@ class Team extends React.Component<Props, State> {
     }
   };
 
-  addEmployeeAccept = async (email, departmentid) => {
+  addEmployeeAccept = async (data, departmentid) => {
     try {
       const res = await this.props.addCreateEmployee({
-        variables: { email, departmentid },
+        variables: { ...data, departmentid },
         refetchQueries: [{ query: fetchDepartmentsData }]
       });
 

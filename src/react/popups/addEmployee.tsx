@@ -2,6 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import GenericInputField from "../components/GenericInputField";
 import { randomPassword } from "../common/random";
+import { parseName } from "humanparser";
 
 class AddEmployee extends Component {
   state = {
@@ -28,7 +29,21 @@ class AddEmployee extends Component {
     if (this.state.email && this.state.email.includes("@")) {
       console.log("ACC", this.state.email, this.state.name, this.state.password);
       this.setState({ emailError: null });
-      this.props.acceptFunction(this.state.email, this.props.did);
+      const name = parseName(this.state.name);
+      this.props.acceptFunction(
+        {
+          email: this.state.email,
+          password: this.state.password,
+          name: {
+            title: name.salutation || "",
+            firstname: name.firstName || "",
+            middlename: name.middleName || "",
+            lastname: name.lastName || "",
+            suffix: name.suffix || ""
+          }
+        },
+        this.props.departmentId
+      );
     } else {
       console.log("Error", this.state.email);
       this.setState({ emailError: "Please insert Email!" });
@@ -80,6 +95,9 @@ class AddEmployee extends Component {
             onClick={() => this.onEnter(2)}
           />
         </div>
+        <span className="heading">
+          The password will be sent to the employee by email and has to be changed after first use
+        </span>
         <div className="checkoutButton" onClick={() => this.addEmp()}>
           Add Employee
         </div>

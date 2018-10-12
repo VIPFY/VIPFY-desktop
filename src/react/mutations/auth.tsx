@@ -35,8 +35,18 @@ export const signInUser = gql`
 `;
 
 export const addCreateEmployee = gql`
-  mutation addCreateEmployee($email: String!, $departmentid: Int!) {
-    addCreateEmployee(email: $email, departmentid: $departmentid) {
+  mutation addCreateEmployee(
+    $email: String!
+    $password: String!
+    $name: HumanName!
+    $departmentid: Int!
+  ) {
+    addCreateEmployee(
+      email: $email
+      password: $password
+      name: $name
+      departmentid: $departmentid
+    ) {
       ok
     }
   }
