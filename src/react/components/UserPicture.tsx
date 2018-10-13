@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import { QUERY_USER } from "../queries/user";
+import { unitPicFolder, defaultPic } from "../common/constants";
 
 /**
  * Prints the profile picture of a user, or the default picture
@@ -12,10 +13,16 @@ import { QUERY_USER } from "../queries/user";
  *
  * @returns {JSX.Element}
  */
-export default function UserPicture(props: { unitid: number | null; size: string }): JSX.Element {
+export default function UserPicture(props: {
+  unitid: number | null;
+  size: string;
+  style?: any;
+}): JSX.Element {
   if (props.unitid === null || props.unitid === undefined) {
     return <span />;
   }
+
+  const customStyle = props.style ? props.style : {};
 
   return (
     <Query query={QUERY_USER} variables={{ userid: props.unitid }}>
@@ -28,11 +35,14 @@ export default function UserPicture(props: { unitid: number | null; size: string
         }
 
         const user = data.fetchPublicUser;
-        const picture = user.profilepicture
-          ? "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/" +
-            user.profilepicture
-          : "https://storage.googleapis.com/vipfy-imagestore-01/artist.jpg";
-        return <img src={picture} className={props.size} />;
+        const picture = user.profilepicture ? unitPicFolder + user.profilepicture : defaultPic;
+        const style = {
+          backgroundImage: `url(${picture})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          ...customStyle
+        };
+        return <div className={props.size} style={style} />;
       }}
     </Query>
   );

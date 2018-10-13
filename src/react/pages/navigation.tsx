@@ -3,11 +3,12 @@ import * as ReactDOM from "react-dom";
 import gql from "graphql-tag";
 import { withApollo } from "react-apollo";
 import Notification from "../components/Notification";
-import { filterError, sleep } from "../common/functions";
+import { filterError, sleep, refetchQueries } from "../common/functions";
 import { fetchLicences } from "../queries/auth";
 import { FETCH_DOMAINS } from "./domains";
 import { fetchUnitApps } from "../queries/departments";
 import { fetchCards } from "../queries/billing";
+import UserPicture from "../components/UserPicture";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -17,14 +18,6 @@ const NOTIFICATION_SUBSCRIPTION = gql`
       message
       icon
       changed
-    }
-  }
-`;
-
-const DUMMY_QUERY = gql`
-  mutation {
-    ping {
-      ok
     }
   }
 `;
@@ -117,15 +110,7 @@ class Navigation extends React.Component<Props, State> {
           fetchPolicy: "network-only"
         });
       } else if (category == "foreignLicences") {
-        // refetchQueries of the mutate functions can refetch observed queries by name,
-        // using the variables used by the query observer
-        // that's the easiest way to get this functionality
-        await client.mutate({
-          mutation: DUMMY_QUERY,
-          errorPolicy: "ignore",
-          fetchPolicy: "no-cache",
-          refetchQueries: ["fetchUnitApps", "fetchUsersOwnLicences"]
-        });
+        await refetchQueries(client, ["fetchUnitApps", "fetchUsersOwnLicences"]);
       } else if (category == "paymentMethods") {
         await client.query({
           query: fetchCards,
@@ -161,6 +146,7 @@ class Navigation extends React.Component<Props, State> {
       return filterError(error);
     }
 
+    console.log("P", this.props);
     return (
       <div
         className={`navigation ${chatOpen ? "chat-open" : ""}
@@ -186,16 +172,7 @@ class Navigation extends React.Component<Props, State> {
         <div className="right-infos">
           <div className="right-profile-holder">
             <div className="pic-and-name" onClick={() => this.goTo("profile")}>
-              {this.props.profilepicture ? (
-                <img
-                  className="right-profile-image"
-                  src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                    this.props.profilepicture
-                  }`}
-                />
-              ) : (
-                ""
-              )}
+              <UserPicture size="right-profile-image" unitid={this.props.id} />
 
               <div className="name-holder">
                 <span className="right-profile-first-name">{this.props.firstname}</span>

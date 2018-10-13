@@ -50,6 +50,10 @@ export const fetchUnitApps = gql`
       }
       boughtplan {
         id
+        planid {
+          id
+          options
+        }
       }
       description
       appname
@@ -67,6 +71,7 @@ export const fetchUsersOwnLicences = gql`
         id
         planid {
           id
+          options
           appid {
             id
             logo

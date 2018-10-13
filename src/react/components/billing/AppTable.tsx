@@ -126,7 +126,8 @@ function AppTable(props) {
           }
         }
       `}
-      variables={{ departmentid: props.company.unit.id }}>
+      variables={{ departmentid: props.company.unit.id }}
+      pollInterval={1000 * 60 * 10}>
       {({ data, loading, error }) => {
         if (loading) {
           return <div>Loading</div>;

@@ -15,8 +15,9 @@ import { QUERY_USER } from "../queries/user";
  */
 export default function UserName(props: {
   unitid: number | null;
-  userid: number;
+  userid?: number;
   short?: boolean;
+  className?: string;
 }): JSX.Element {
   const { unitid, userid } = props;
   const short = props.short === undefined ? false : props.short;
@@ -42,7 +43,7 @@ export default function UserName(props: {
 
         const userData = data.fetchPublicUser;
         return (
-          <span className="user-name">
+          <span className={props.className}>
             {short ? userData.firstname : `${userData.firstname} ${userData.lastname}`}
           </span>
         );

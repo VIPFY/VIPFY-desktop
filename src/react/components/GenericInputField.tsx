@@ -20,6 +20,7 @@ class GenericInputField extends Component {
     if (!state.valueChanged) {
       return { ...state, value: props.default };
     }
+    return state;
   }
 
   toggleInput = bool => {
