@@ -41,12 +41,12 @@ interface Props {
   register: Function;
   login: Function;
   moveTo: Function;
-  setName: Function;
   updateStatisticData: Function;
   createCompany: Function;
   updateUser: Function;
   createAddress: Function;
   searchCompany: Function;
+  afterRegistration: Function;
 }
 
 interface State {
@@ -276,7 +276,11 @@ class Login extends React.Component<Props, State> {
       }
 
       await this.props.updateUser({ variables: { user } });
-      this.props.setName(user.firstname, user.lastname);
+
+      if (this.state.address) {
+        this.props.afterRegistration(address);
+      }
+
       this.props.moveTo("dashboard/newuser");
       return;
     } catch (err) {

@@ -1,9 +1,16 @@
 import * as React from "react";
-import PipedriveGraph from "../graphs/pipedrivegraph";
-import LoadingDiv from "../components/LoadingDiv";
-import { filterError } from "../common/functions";
-import Popup from "../components/Popup";
+import { Query } from "react-apollo";
+import gql from "graphql-tag";
 import Welcome from "../popups/welcome";
+import LoadingDiv from "../components/LoadingDiv";
+
+import { filterError, AppContext } from "../common/functions";
+
+const FETCH_ADDRESS_PROPOSAL = gql`
+  query onFetchAddressProposal($placeid: String!) {
+    fetchAddressProposal(placeid: $placeid)
+  }
+`;
 
 interface Props {
   firstname: string;
@@ -11,24 +18,27 @@ interface Props {
   lastname: string;
   rcApps: any;
   setApp: Function;
+  moveTo: Function;
+  showPopup: Function;
+  licences: any;
+  addressProposal?: object
 }
 
-interface State {
-  recommended: boolean;
-  popup: boolean;
-}
-
-class Dashboard extends React.Component<Props, State> {
-  state = {
-    recommended: false,
-    popup: false
-  };
+class Dashboard extends React.Component<Props, {}> {
+  componentDidMount() {
+    // if (this.props.address && this.props.firstLogin) {
+    this.props.showPopup({
+      header: "Welcome to Vipfy",
+      body: Welcome,
+      props: { name: `${this.props.firstname} ${this.props.lastname}`,
+    proposal: this.props.addressProposal }
+    });
+    // }
+  }
 
   setApp = (licence: number) => this.props.setApp(licence);
 
   goTo = view => this.props.history.push(`/area${view}`);
-
-  closePopup = () => this.setState({ popup: null });
 
   showApps(licences) {
     let appLogos: JSX.Element[] = [];
@@ -46,15 +56,20 @@ class Dashboard extends React.Component<Props, State> {
                   licence.boughtplanid.planid.appid.icon
                 })`
               }}>
-              {licence.boughtplanid.planid.options && licence.boughtplanid.planid.options.external ?<div className="ribbon ribbon-top-right">
-                            <span>external</span>
-                          </div>: ""}
+              {licence.boughtplanid.planid.options &&
+              licence.boughtplanid.planid.options.external ? (
+                <div className="ribbon ribbon-top-right">
+                  <span>external</span>
+                </div>
+              ) : (
+                ""
+              )}
               <span className="nameAppsTile">{licence.boughtplanid.planid.appid.name}</span>
             </div>
           );
         });
       } else {
-        return <div className="noApp">No Apps for you at the moment :(</div>
+        return <div className="noApp">No Apps for you at the moment :(</div>;
       }
     }
     return appLogos;
@@ -128,10 +143,9 @@ class Dashboard extends React.Component<Props, State> {
   }
 
   render() {
+    const { rcApps, licences } = this.props;
 
-    console.log(this.props)
-    const { rcApps } = this.props;
-    if (rcApps.loading) {
+    if (rcApps.loading || licences.loading) {
       return <LoadingDiv text="Fetching Recommendations..." />;
     }
 
@@ -144,24 +158,37 @@ class Dashboard extends React.Component<Props, State> {
         <div className="dashboardHeading">
           <div>My Apps</div>
         </div>
-        <div className="appsTile">{this.showApps(this.props.licences.fetchLicences)}</div>
+        <div className="appsTile">{this.showApps(licences.fetchLicences)}</div>
         <div className="dashboardHeading">
           <div>Our Recommendations</div>
         </div>
-        {this.showRec(this.props.licences.fetchLicences)}
-        {this.state.popup ? (
-          <Popup
-            popupHeader="Welcome to VIPFY!"
-            popupBody={Welcome}
-            bodyProps={null}
-            onClose={this.closePopup}
-          />
-        ) : (
-          ""
-        )}
+        {this.showRec(licences.fetchLicences)}
       </div>
     );
   }
 }
 
-export default Dashboard;
+export default props => (
+  <AppContext.Consumer>
+    {context => {
+      return (
+        <Query query={FETCH_ADDRESS_PROPOSAL} variables={{ placeid: "ChIJ0URlseAQsYkRyurNJVo3gDk" }}>
+          {({ data, loading, error }) => {
+            if (loading) {
+              return <LoadingDiv text="Fetching Recommendations..." />;
+            }
+
+            if (error) {
+              return filterError(error);
+            }
+            console.log(data);
+
+            return (
+              <Dashboard {...props} addressProposal={data.fetchAddressProposal} {...context} />
+            );
+          }}
+        </Query>
+      );
+    }}
+  </AppContext.Consumer>
+);
