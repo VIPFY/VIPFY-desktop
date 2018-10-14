@@ -12,7 +12,9 @@
     interactionHappened = true;
   }
   function timer() {
-    if(!interactionHappened) {return};
+    if (!interactionHappened) {
+      return;
+    }
     interactionHappened = false;
     ipcRenderer.sendToHost("interactionHappened");
   }
@@ -47,7 +49,9 @@
     } else if (hostMatches(".*.?sendgrid.com")) {
       require("./locationScripts/sendgrid.ts")();
     } else if (hostMatches(".*.?freshbooks.com")) {
-      require("./locationScripts/freshbooks.ts");
+      require("./locationScripts/freshbooks.ts")();
+    } else if (hostMatches(".*.?vistaprint.com")) {
+      require("./locationScripts/vistaprint.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }

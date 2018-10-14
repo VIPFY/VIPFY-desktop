@@ -294,7 +294,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       "^https://www.wrike.com/login",
       "^https://www.weebly.com/login",
       "^https://login.domaindiscount24.com/(login|dashboard)",
-      "^https://.*?sendgrid.com/login"
+      "^https://.*?sendgrid.com/login",
+      "https://www.moo.com/uk/account/signin.php"
     ];
     let loginPageRegex = loginPages.join("|");
 
@@ -458,7 +459,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             console.log("DomReady", e);
             this.maybeHideLoadingScreen();
             if (!e.target.isDevToolsOpened()) {
-              // e.target.openDevTools();
+              e.target.openDevTools();
             }
           }}
           onDialog={e => console.log("Dialog", e)}

@@ -151,7 +151,7 @@ class CheckOrder extends React.Component<Props, State> {
     let featureArray: JSX.Element[] = [];
     let index = 0;
 
-    if (plan.features && plan.features[0].features) {
+    if (plan.features && plan.features[0] && plan.features[0].features) {
       plan.features[0].features.forEach((feature, fkey) => {
         let value: JSX.Element = <span />;
         if (feature.addable) {
