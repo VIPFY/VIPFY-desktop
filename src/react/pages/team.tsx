@@ -36,6 +36,7 @@ import {
 import { printIntrospectionSchema } from "graphql/utilities";
 import UserPicture from "../components/UserPicture";
 import LoadingDiv from "../components/LoadingDiv";
+import UserName from "../components/UserName";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onRemoveExternalAccount($licenceid: Int!) {
@@ -64,6 +65,7 @@ interface State {
   addingAppUser: any;
   addingAppName: any;
   removeApp: any;
+  dragging: number;
 }
 
 class Team extends React.Component<Props, State> {
@@ -84,7 +86,8 @@ class Team extends React.Component<Props, State> {
     popupHeading: "",
     addingAppUser: null,
     addingAppName: null,
-    removeApp: null
+    removeApp: null,
+    dragging: 0
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
@@ -302,9 +305,10 @@ class Team extends React.Component<Props, State> {
                         style={{
                           float: "left"
                         }}
+                        unitid={element.id}
                       />
                       <div className="employeeName">
-                        {element.firstname} {element.lastname}
+                        <UserName unitid={element.id} />
                       </div>
                       <div className="employeeTags">
                         <span className="employeeTag">{}</span>
@@ -549,6 +553,7 @@ class Team extends React.Component<Props, State> {
   };
 
   onDragStart(ev, id, app) {
+    this.setState({ dragging: app.id });
     ev.dataTransfer.setData("id", id);
     ev.dataTransfer.setData("appname", app.appname);
   }
@@ -574,7 +579,7 @@ class Team extends React.Component<Props, State> {
               <UserPicture size="picutre" unitid={person.id} />
               <div className="namebox">
                 <div className="name">
-                  {person.firstname} {person.lastname}
+                  <UserName unitid={person.id} />
                 </div>
                 {person.position ? <div className="position">{person.position}</div> : ""}
               </div>
@@ -685,7 +690,6 @@ class Team extends React.Component<Props, State> {
             return <div>Error loading data</div>;
           }
           const { company } = data.me;
-          //console.log("TEAM", value, this.props);
           if (company) {
             return (
               <div className="teamPageHolder">
@@ -714,8 +718,9 @@ class Team extends React.Component<Props, State> {
                           appArray = noExternalApps.map((app, key) => (
                             <div
                               draggable
-                              className="PApp"
+                              className={`PApp ${this.state.dragging == app.id ? "dragging" : ""}`}
                               onDragStart={ev => this.onDragStart(ev, app.boughtplan.id, app)}
+                              onDragEnd={() => this.setState({ dragging: 0 })}
                               key={key}
                               /*onClick={() =>
                               this.props.distributeLicence(

@@ -16,7 +16,7 @@ import { unitPicFolder, defaultPic } from "../common/constants";
 export default function UserPicture(props: {
   unitid: number | null;
   size: string;
-  style: any;
+  style?: any;
 }): JSX.Element {
   if (props.unitid === null || props.unitid === undefined) {
     return <span />;

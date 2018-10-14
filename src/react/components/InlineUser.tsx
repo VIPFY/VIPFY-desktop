@@ -21,6 +21,7 @@ export default function InlineUser(props: {
   unitid: number | null;
   userid: number;
   short?: boolean;
+  className?: string;
 }): JSX.Element {
   //Optimization opportunity: try fetchFragment first, since the user data is almost always already in cache
   return (

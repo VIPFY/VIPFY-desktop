@@ -43,7 +43,9 @@ export default (props: { userid: number }): JSX.Element => {
                 <span key={group.name}>{group.name}</span>
               ) : (
                 JsxJoin(
-                  grouppartners.map(p => <UserName key={p.id} {...props} unitid={p.id} />),
+                  grouppartners.map(p => (
+                    <UserName key={p.id} {...props} unitid={p.id} className="user-name" />
+                  )),
                   <span>, </span>
                 )
               );
@@ -77,6 +79,7 @@ export default (props: { userid: number }): JSX.Element => {
                               : undefined
                           }
                           short={true}
+                          className="user-name"
                         />
                         : <Message {...props} message={group.lastmessage} />
                       </div>

@@ -42,12 +42,15 @@ interface AppProps {
 interface AppState {
   login: boolean;
   error: string;
+  firstLogin: boolean;
+  placeid: string;
   popup: {
     show: boolean;
     header: string;
     body: any;
     props: any;
     type: string;
+    info: string;
   };
 }
 
@@ -56,32 +59,32 @@ const INITIAL_POPUP = {
   header: "",
   body: () => <div>No content</div>,
   props: {},
-  type: ""
+  type: "",
+  info: ""
 };
 
 const INITIAL_STATE = {
   login: false,
   error: "",
+  firstLogin: false,
+  placeid: "",
   popup: INITIAL_POPUP
 };
 
 class App extends React.Component<AppProps, AppState> {
-  state: AppState = {
-    ...INITIAL_STATE
-  };
+  state: AppState = INITIAL_STATE;
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
   }
 
-  setName = async (firstname, lastname) => {
+  setName = async () => {
     // legacy function, call refetchQueries directly instead
     await refetchQueries(this.props.client, ["me"]);
-    console.log("setName", firstname);
   };
 
-  renderPopup = ({ header, body, props, type }) => {
-    this.setState({ popup: { show: true, header, body, props, type } });
+  renderPopup = data => {
+    this.setState({ popup: { show: true, ...data } });
   };
 
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
@@ -102,9 +105,7 @@ class App extends React.Component<AppProps, AppState> {
       if (ok) {
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
-        await this.setState({
-          login: true
-        });
+        await this.setState({ login: true });
 
         return true;
       }
@@ -129,15 +130,17 @@ class App extends React.Component<AppProps, AppState> {
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
         console.log("TOKEN", res.data);
-        //this.setState({ login: true });
       }
-      //this.props.history.push("/area/advisor");
     } catch (err) {
       localStorage.setItem("token", "");
       localStorage.setItem("refreshToken", "");
       this.setState({ login: false, error: filterError(err) });
       console.log("LoginError", err);
     }
+  };
+
+  welcomeNewUser = placeid => {
+    this.setState({ firstLogin: true, placeid });
   };
 
   renderComponents = () => {
@@ -155,7 +158,6 @@ class App extends React.Component<AppProps, AppState> {
               return (
                 <Login
                   login={this.logMeIn}
-                  setName={this.setName}
                   moveTo={this.moveTo}
                   register={this.registerMe}
                   error={filterError(error)}
@@ -179,8 +181,8 @@ class App extends React.Component<AppProps, AppState> {
     } else {
       return (
         <Login
+          afterRegistration={this.welcomeNewUser}
           login={this.logMeIn}
-          setName={this.setName}
           moveTo={this.moveTo}
           register={this.registerMe}
           error={this.state.error}
@@ -190,9 +192,16 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
+    const { placeid, firstLogin } = this.state;
+
     return (
       <AppContext.Provider
-        value={{ showPopup: data => this.renderPopup(data) }}
+        value={{
+          showPopup: data => this.renderPopup(data),
+          firstLogin,
+          placeid,
+          disableWelcome: () => this.setState({ firstLogin: false })
+        }}
         className="full-size">
         {this.renderComponents()}
         {this.state.popup.show ? (
@@ -202,6 +211,7 @@ class App extends React.Component<AppProps, AppState> {
             bodyProps={this.state.popup.props}
             onClose={this.closePopup}
             type={this.state.popup.type}
+            info={this.state.popup.info}
           />
         ) : (
           ""

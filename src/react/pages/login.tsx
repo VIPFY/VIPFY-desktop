@@ -2,9 +2,10 @@ import * as React from "react";
 import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
 import { updateUser } from "../mutations/auth";
+import { emailRegex } from "../common/constants";
 
-const CreateCompany = gql`
-  mutation createCompany($name: String!) {
+const CREATE_COMPANY = gql`
+  mutation onCreateCompany($name: String!) {
     createCompany(name: $name) {
       ok
       token
@@ -13,29 +14,39 @@ const CreateCompany = gql`
   }
 `;
 
-const updateStatisticData = gql`
-  mutation updateStatisticData($data: JSON!) {
+const UPDATE_STATISTIC_DATA = gql`
+  mutation onUpdateStatisticData($data: JSON!) {
     updateStatisticData(data: $data) {
       ok
     }
   }
 `;
 
-const createAddress = gql`
-mutation createAddress($addressData: AddressInput!, $department: Boolean) {
-  createAddress(addressData: $addressData, department: $department) {
-    ok
+const CREATE_ADDRESS = gql`
+  mutation onCreateAddress($addressData: AddressInput!, $department: Boolean) {
+    createAddress(addressData: $addressData, department: $department) {
+      ok
+    }
   }
-}
+`;
+
+const SEARCH_COMPANY = gql`
+  mutation onSearchAddressByCompanyName($company: String!) {
+    searchAddressByCompanyName(input: $company)
+  }
 `;
 
 interface Props {
-  error: string;import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from 'constants';
-
+  error: string;
   register: Function;
   login: Function;
   moveTo: Function;
-  setName: Function;
+  updateStatisticData: Function;
+  createCompany: Function;
+  updateUser: Function;
+  createAddress: Function;
+  searchCompany: Function;
+  afterRegistration: Function;
 }
 
 interface State {
@@ -48,6 +59,21 @@ interface State {
   newsletter: boolean;
   registerbool: boolean;
   registerStep: number;
+  registering: boolean;
+  loggingin: boolean;
+  registerMove: boolean;
+  agreementa: boolean;
+  agreementb: boolean;
+  companyname: string;
+  email: string;
+  industry: string;
+  country: string;
+  subindustry: string;
+  companyStage: string;
+  selectedOption: string;
+  name: string;
+  address: string;
+  possibleAddresses: string[];
 }
 
 class Login extends React.Component<Props, State> {
@@ -62,8 +88,28 @@ class Login extends React.Component<Props, State> {
     registerbool: false,
     registerStep: 1,
     loggingin: false,
-    registering: false
+    registering: false,
+    registerMove: false,
+    agreementa: false,
+    agreementb: false,
+    companyname: "",
+    email: "",
+    industry: "",
+    country: "",
+    subindustry: "",
+    companyStage: "",
+    selectedOption: "",
+    name: "",
+    address: "",
+    possibleAddresses: []
   };
+
+  emailInput: HTMLInputElement;
+  passInput: HTMLInputElement;
+  registerInput: HTMLInputElement;
+  remailInput: HTMLInputElement;
+  nameInput: HTMLInputElement;
+  companyInput: HTMLInputElement;
 
   componentDidMount() {
     if (this.props.error) {
@@ -80,6 +126,33 @@ class Login extends React.Component<Props, State> {
     this.handleEnter(null, null, true);
   }
 
+  searchCompany = async e => {
+    e.preventDefault();
+    const company = e.target.value;
+
+    if (company.length > 2) {
+      const addresses = await this.props.searchCompany({ variables: { company } });
+      this.setState({ possibleAddresses: addresses.data.searchAddressByCompanyName });
+    } else {
+      if (this.state.possibleAddresses.length > 0) {
+        this.setState({ possibleAddresses: [] });
+      }
+    }
+  };
+
+  selectAddress = address => {
+    this.setState({
+      address: address.place_id,
+      possibleAddresses: [],
+      country: address.description
+        .split(",")
+        .pop()
+        .trim()
+    });
+
+    this.companyInput.value = address.structured_formatting.main_text.split(",")[0];
+  };
+
   loginClick = () => this.handleEnter(null, null, true);
 
   login = async () => {
@@ -95,7 +168,7 @@ class Login extends React.Component<Props, State> {
 
   forgetClick = () => this.setState({ forgotMove: true });
 
-  handleEnter(e, field, force) {
+  handleEnter(e, field, force = false) {
     if (field === 3 && (force || e.key === "Enter")) {
       let email = this.registerInput.value;
       if (email.includes("@") && email.includes(".")) {
@@ -110,12 +183,13 @@ class Login extends React.Component<Props, State> {
         return;
       }
     }
+
     if (force || e.key === "Enter") {
       let email = this.emailInput.value;
       let pass = this.passInput.value;
       this.setState({ errorbool: false });
 
-      if (email.includes("@") && email.includes(".") && !(pass === "")) {
+      if (email.match(emailRegex) && !(pass === "")) {
         //Email Basic Check and Password not empty -> Check
         this.login();
       } else if (!(email.includes("@") && email.includes("."))) {
@@ -164,21 +238,22 @@ class Login extends React.Component<Props, State> {
   registerSave = async () => {
     this.setState({ registering: true });
     try {
-      const res1 = await this.props.register(this.state.email, this.state.agreementa);
-      const res2 = await this.props.cc({ variables:  {name: this.state.companyname}  });
+      await this.props.register(this.state.email, this.state.agreementa);
+      const res = await this.props.createCompany({ variables: { name: this.state.companyname } });
 
-      const { ok, token, refreshToken } = res2.data.createCompany;
-      //console.log(res.data.createCompany);
+      const { token, refreshToken } = res.data.createCompany;
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", refreshToken);
 
-
       let statisticdata = {
-        noVat: this.state.agreementb, industry: this.state.industry, country: this.state.country,
-        subindustry: this.state.subindustry, companyStage: this.state.selectedOption
-      }
+        noVat: this.state.agreementb,
+        industry: this.state.industry,
+        country: this.state.country,
+        subindustry: this.state.subindustry,
+        companyStage: this.state.selectedOption
+      };
 
-      const res3 = await this.props.uSD({ variables: {data: {...statisticdata} }});
+      await this.props.updateStatisticData({ variables: { data: { ...statisticdata } } });
 
       let user = {};
       if (this.state.name != "") {
@@ -199,88 +274,111 @@ class Login extends React.Component<Props, State> {
           };
         }
       }
-      const res4 = await this.props.uU({variables: {user}})
-      this.props.setName(user.firstname, user.lastname)
-      this.props.moveTo("dashboard/newuser")
-      return
+
+      await this.props.updateUser({ variables: { user } });
+
+      this.props.afterRegistration(this.state.address);
+
+      return this.props.moveTo("dashboard/newuser");
+    } catch (err) {
+      console.log("ERR", err);
     }
-    catch (err) {
-      console.log("ERR", err)
-    }
-  }
+  };
 
   switchState(bool) {
     console.log("switchState", bool);
-    this.setState({ registerbool: bool, errorbool: false, registerStep: 1, registering: false, loggingin: false });
+    this.setState({
+      registerbool: bool,
+      errorbool: false,
+      registerStep: 1,
+      registering: false,
+      loggingin: false
+    });
     this.emailInput.value = "";
     this.passInput.value = "";
-    this.setState({email: null, agreementa: false, name: null, companyname: null, agreementb: false})
+    this.setState({
+      email: "",
+      agreementa: false,
+      name: "",
+      companyname: "",
+      agreementb: false
+    });
   }
 
   setStep(n) {
     this.setState({ registerStep: n });
   }
 
-  checkStep(step){
-    console.log("CHECK", step)
+  checkStep(step) {
+    console.log("CHECK", step);
     this.setState({ errorbool: false });
-    switch(step){
+    switch (step) {
       case 1:
-        if (!(this.remailInput && this.remailInput.value.includes("@") && this.remailInput.value.includes("."))){
+        if (
+          !(
+            this.remailInput &&
+            this.remailInput.value.includes("@") &&
+            this.remailInput.value.includes(".")
+          )
+        ) {
           this.setState({
             errorbool: true,
             error: "Please insert a valid email."
           });
-          return
+          return;
         }
-        if (!(this.nameInput && this.nameInput.value)){
+        if (!(this.nameInput && this.nameInput.value)) {
           this.setState({
             errorbool: true,
             error: "Please insert a name for you."
           });
-          return
+          return;
         }
-        if (!(this.state.agreementa)) {
+        if (!this.state.agreementa) {
           this.setState({
             errorbool: true,
             error: "Please agree to the Terms of Service and Privacy Agreement."
           });
-          return
+          return;
         }
-        this.setState({name: this.nameInput.value, email: this.remailInput.value,agreementa:true})
-        this.setStep(2)
+        this.setState({
+          name: this.nameInput.value,
+          email: this.remailInput.value,
+          agreementa: true
+        });
+        this.setStep(2);
         break;
       case 2:
-      console.log("CHECK", step)
+        console.log("CHECK", step);
         if (!(this.companyInput && this.companyInput.value)) {
           this.setState({
             errorbool: true,
             error: "Please insert a company name for you."
           });
-          return
+          return;
         }
-        if (!(this.state.country)) {
+        if (!this.state.country) {
           this.setState({
             errorbool: true,
             error: "Please insert a country for your company."
           });
-          return
+          return;
         }
-        if (!(this.state.agreementb)) {
+        if (!this.state.agreementb) {
           this.setState({
             errorbool: true,
             error: "Please verify that you can accept invoices without VAT."
           });
-          return
+          return;
         }
-        this.setState({companyname: this.companyInput.value, agreementb: true)
-        this.setStep(3)
+        this.setState({ companyname: this.companyInput.value, agreementb: true });
+        this.setStep(3);
         break;
-        case 3: 
-        this.setStep(4)
+      case 3:
+        this.setStep(4);
         break;
-        case 4:
-        console.log(this.state)
+      case 4:
+        console.log(this.state);
         this.registerSave();
         break;
     }
@@ -310,7 +408,8 @@ class Login extends React.Component<Props, State> {
     } else {
       return (
         <div
-          className="step stepdone" onClick={() => this.setStep(stepRepresent)
+          className="step stepdone"
+          onClick={() => this.setStep(stepRepresent)}
           style={{
             top: `calc(9.5rem - 9.5rem/8*${stepRepresent - 2})`,
             left: `calc(7.5rem + 9.5rem/8*${stepRepresent - 2})`,
@@ -324,46 +423,69 @@ class Login extends React.Component<Props, State> {
   showButtons(step) {
     switch (step) {
       case 1:
-        return (<div className="registerButtons"><div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
-        Already registered?
-      </div>
-      <div className="partButton_Next" onClick={() => this.checkStep(step)}>
-        Next
-      </div></div>)
+        return (
+          <div className="registerButtons">
+            <div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
+              Already registered?
+            </div>
+            <div className="partButton_Next" onClick={() => this.checkStep(step)}>
+              Next
+            </div>
+          </div>
+        );
         break;
-        case 2:
-        return (<div className="registerButtons"><div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
-        Already registered?
-      </div>
-      <div className="partButton_Next" onClick={() => this.checkStep(step)}>
-        Next
-      </div></div>)
+
+      case 2:
+        return (
+          <div className="registerButtons">
+            <div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
+              Already registered?
+            </div>
+            <div className="partButton_Next" onClick={() => this.checkStep(step)}>
+              Next
+            </div>
+          </div>
+        );
         break;
-        case 3:
-        return (<div className="registerButtons"><div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
-        Already registered?
-      </div>
-      <div className="partButton_Next" onClick={() => this.checkStep(step)}>
-        Skip
-      </div></div>)
+
+      case 3:
+        return (
+          <div className="registerButtons">
+            <div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
+              Already registered?
+            </div>
+            <div className="partButton_Next" onClick={() => this.checkStep(step)}>
+              Skip
+            </div>
+          </div>
+        );
         break;
-        case 4:
-        return (<div className="registerButtons"><div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
-        Already registered?
-      </div>
-      <div className="partButton_Next" onClick={() => this.checkStep(step)}>
-      {this.state.registering ? <div className="spinner loginspinner">
-          <div className="double-bounce1"></div>
-          <div className="double-bounce2"></div>
-        </div> : <span>Save</span>}
-      </div></div>)
+
+      case 4:
+        return (
+          <div className="registerButtons">
+            <div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
+              Already registered?
+            </div>
+            <div className="partButton_Next" onClick={() => this.checkStep(step)}>
+              {this.state.registering ? (
+                <div className="spinner loginspinner">
+                  <div className="double-bounce1" />
+                  <div className="double-bounce2" />
+                </div>
+              ) : (
+                <span>Save</span>
+              )}
+            </div>
+          </div>
+        );
         break;
     }
   }
 
-  optionClick(option){
-    this.setState({selectedOption: option})
-    this.setStep(4)
+  optionClick(option) {
+    this.setState({ selectedOption: option });
+    this.setStep(4);
   }
 
   registerForm(step) {
@@ -380,7 +502,7 @@ class Login extends React.Component<Props, State> {
                 //autoFocus
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
-                  this.remailInput = input;
+                  this.remailInput = input!;
                 }}
               />
             </div>
@@ -393,31 +515,32 @@ class Login extends React.Component<Props, State> {
                 //autoFocus
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
-                  this.nameInput = input;
+                  this.nameInput = input!;
                 }}
               />
             </div>
             <div className="agreementBox">
-                      <input
-                        type="checkbox"
-                        className="cbx"
-                        id="CheckBox"
-                        style={{ display: "none" }}
-                        onChange={e => this.setState({ agreementa: e.target.checked })}
-                      />
-                      <label htmlFor="CheckBox" className="check">
-                        <svg width="18px" height="18px" viewBox="0 0 18 18">
-                          <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
-                          <polyline points="1 9 7 14 15 4" />
-                        </svg>
-                        <span className="agreementSentence">
-                        I agree to the Terms of Service and Privacy Agreement of VIPFY.
-                      </span>
-                      </label>
-                    </div>
+              <input
+                type="checkbox"
+                className="cbx"
+                id="CheckBox"
+                style={{ display: "none" }}
+                onChange={e => this.setState({ agreementa: e.target.checked })}
+              />
+              <label htmlFor="CheckBox" className="check">
+                <svg width="18px" height="18px" viewBox="0 0 18 18">
+                  <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
+                  <polyline points="1 9 7 14 15 4" />
+                </svg>
+                <span className="agreementSentence">
+                  I agree to the Terms of Service and Privacy Agreement of VIPFY.
+                </span>
+              </label>
+            </div>
           </div>
         );
         break;
+
       case 2:
         return (
           <div className="partForm partForm_Register">
@@ -427,19 +550,50 @@ class Login extends React.Component<Props, State> {
                 key="cname"
                 className="newInputField"
                 placeholder="Your Companyname"
-                key="Check1"
+                onChange={this.searchCompany}
                 //onKeyPress={e => this.handleEnter(e, 2)}
                 ref={input => {
-                  this.companyInput = input;
+                  this.companyInput = input!;
                 }}
               />
             </div>
-            <div className="chooseStage" style={{marginBottom: "1rem"}}>
+
+            <div
+              className={`possible-addresses-${
+                this.state.possibleAddresses.length > 0 ? "show" : "hide"
+              }`}>
+              {this.state.possibleAddresses.map((address, key) => (
+                <div
+                  className="possible-addresses-item"
+                  onClick={() => this.selectAddress(address)}
+                  key={key}>
+                  <i className="fas fa-map-marker-alt" />
+                  <span>
+                    <strong>
+                      {address.structured_formatting.main_text}
+                      &nbsp;
+                    </strong>
+                    <span>{address.structured_formatting.secondary_text}</span>
+                  </span>
+                </div>
+              ))}
+              <button
+                className="possible-addresses-close-button"
+                type="button"
+                onClick={() => this.setState({ possibleAddresses: [] })}>
+                <i className="fas fa-times" />
+              </button>
+            </div>
+
+            <div className="chooseStage" style={{ marginBottom: "1rem" }}>
               <div className="Heading">Please choose your country</div>
               <div className="optionHolder">
                 <select
+                  style={this.state.address ? { opacity: 0 } : {}}
+                  disabled={this.state.address ? true : false}
                   placeholder="Select Country"
-                  onChange={e => this.setCountry(e.target.value)}
+                  name="country"
+                  onChange={this.setField}
                   defaultValue="">
                   <option value="" disabled hidden>
                     Please choose your country
@@ -475,6 +629,7 @@ class Login extends React.Component<Props, State> {
                   <option value="US">United States of America</option>
                   <option value="OT">Other</option>
                 </select>
+                {this.state.country ? this.state.country : ""}
               </div>
             </div>
             <div className="agreementBox">
@@ -492,8 +647,8 @@ class Login extends React.Component<Props, State> {
                   <polyline points="1 9 7 14 15 4" />
                 </svg>
                 <span className="agreementSentence">
-                My company is allowed to accept invoices without VAT
-              </span>
+                  My company is allowed to accept invoices without VAT
+                </span>
               </label>
             </div>
           </div>
@@ -506,9 +661,18 @@ class Login extends React.Component<Props, State> {
             <div className="chooseStage">
               <div className="Heading">Please choose the stage of your company</div>
               <div className="optionHolder">
-                <div className="option" onClick={() => this.optionClick(1)}>Existing Company</div>
-                <div className="option" onClick={() => this.optionClick(2)}>Implementation phase</div>
-                <div className="option" style={{marginRight: "0"}} onClick={() => this.optionClick(3)}>Idea phase</div>
+                <div className="option" onClick={() => this.optionClick(1)}>
+                  Existing Company
+                </div>
+                <div className="option" onClick={() => this.optionClick(2)}>
+                  Implementation phase
+                </div>
+                <div
+                  className="option"
+                  style={{ marginRight: "0" }}
+                  onClick={() => this.optionClick(3)}>
+                  Idea phase
+                </div>
               </div>
             </div>
           </div>
@@ -518,12 +682,13 @@ class Login extends React.Component<Props, State> {
       case 4:
         return (
           <div className="partForm partForm_Register">
-            <div className="chooseStage" style={{marginBottom: "1.5rem"}}>
+            <div className="chooseStage" style={{ marginBottom: "1.5rem" }}>
               <div className="Heading">Please choose the industry of your company</div>
               <div className="optionHolder">
                 <select
                   placeholder="Select Industry"
-                  onChange={e => this.setIndustry(e.target.value)}
+                  name="industry"
+                  onChange={e => this.setField(e)}
                   defaultValue="">
                   <option value="" disabled hidden>
                     Please choose an Industry
@@ -718,7 +883,8 @@ class Login extends React.Component<Props, State> {
           <div className="optionHolder">
             <select
               placeholder="Select Subindustry"
-              onChange={e => this.setSubIndustry(e.target.value)}
+              name="subindustry"
+              onChange={e => this.setField(e)}
               defaultValue="">
               <option value="" disabled hidden>
                 Please choose an Subindustry
@@ -731,19 +897,7 @@ class Login extends React.Component<Props, State> {
     }
   }
 
-  setIndustry(e) {
-    this.setState({ industry: e });
-    console.log("SETI", this.state);
-  }
-
-  setCountry(e) {
-    this.setState({ country: e });
-  }
-
-  setSubIndustry(e) {
-    this.setState({ subindustry: e });
-    console.log("SETI", this.state);
-  }
+  setField = e => this.setState({ [e.target.name]: e.target.value });
 
   render() {
     return (
@@ -771,7 +925,7 @@ class Login extends React.Component<Props, State> {
                     autoFocus
                     onKeyPress={e => this.handleEnter(e, 1)}
                     ref={input => {
-                      this.emailInput = input;
+                      this.emailInput = input!;
                     }}
                   />
                 </div>
@@ -783,25 +937,32 @@ class Login extends React.Component<Props, State> {
                     type="password"
                     onKeyPress={e => this.handleEnter(e, 2)}
                     ref={input => {
-                      this.passInput = input;
+                      this.passInput = input!;
                     }}
                   />
                   <div className="forgotPW">Forgot Password?</div>
                 </div>
                 <div className="partButton_ToRegister" onClick={this.loginClick}>
-                  {this.state.loggingin ? <div className="spinner loginspinner">
-          <div className="double-bounce1"></div>
-          <div className="double-bounce2"></div>
-        </div> : <span>Login</span>}
+                  {this.state.loggingin ? (
+                    <div className="spinner loginspinner">
+                      <div className="double-bounce1" />
+                      <div className="double-bounce2" />
+                    </div>
+                  ) : (
+                    <span>Login</span>
+                  )}
                 </div>
                 <div className="partButton" onClick={() => this.switchState(true)}>
                   Or Register
                 </div>
               </div>
             </div>
-            <div className="seperatorHolder"></div>
-            <div 
-            className={this.state.registerbool ? "logoSeperator logoSeperator_Right" : "logoSeperator"}></div>
+            <div className="seperatorHolder" />
+            <div
+              className={
+                this.state.registerbool ? "logoSeperator logoSeperator_Right" : "logoSeperator"
+              }
+            />
             <div className="partHolder">
               <div className="stepShower">
                 {this.showStep(this.state.registerStep, 1)}
@@ -821,131 +982,26 @@ class Login extends React.Component<Props, State> {
               </div>
               {this.registerForm(this.state.registerStep)}
               {this.showButtons(this.state.registerStep)}
-              {/*<div onClick={() => this.switchState(false)}>Back</div>
-              <div onClick={() => this.setStep(1)}>1</div>
-              <div onClick={() => this.setStep(2)}>2</div>
-              <div onClick={() => this.setStep(3)}>3</div>
-                  <div onClick={() => this.setStep(4)}>4</div>*/}
             </div>
           </div>
         </div>
       </div>
     );
-
-    /*if (this.state.login) {
-      return (
-        <div className="centralize backgroundLogo">
-          <div className="login-holder">
-            <div className="form-heading" onDoubleClick={() => this.cheat()}>
-              Please log in
-            </div>
-            <div
-              className={
-                this.state.errorbool === false ? "formError noError" : "formError oneError"
-              }>
-              {this.state.error}
-            </div>
-            <label>E-mail:</label>
-            <input
-              className="inputField"
-              placeholder="Your E-mail Address"
-              autoFocus
-              onKeyPress={e => this.handleEnter(e, 1)}
-              ref={input => {
-                this.emailInput = input;
-              }}
-            />
-            <label>Password:</label>
-            <input
-              className="inputField"
-              placeholder="Your Password"
-              type="password"
-              onKeyPress={e => this.handleEnter(e, 2)}
-              ref={input => {
-                this.passInput = input;
-              }}
-            />
-            <div className="button-holder">
-              <div className="newButton newButton-forgot" onClick={this.forgetClick}>
-                <span>Forgot Password</span>
-              </div>
-              <div className="newButton" onClick={this.loginClick}>
-                <span>Login</span>
-              </div>
-            </div>
-          </div>
-          <div className="button-new-user button" onClick={() => this.changeLogin(false)}>
-            Or register now
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="centralize backgroundLogo">
-          <div className="button-already button" onClick={() => this.changeLogin(true)}>
-            Already registered? Login Now
-          </div>
-          <div className="login-holder">
-            <div className="form-heading">Please register</div>
-            <div
-              className={
-                this.state.errorbool === false ? "formError noError" : "formError oneError"
-              }>
-              {this.state.error}
-            </div>
-            <label>E-mail:</label>
-            <input
-              className="inputField"
-              placeholder="Your E-mail Address"
-              autoFocus
-              onKeyPress={e => this.handleEnter(e, 3)}
-              ref={input => {
-                this.registerInput = input;
-              }}
-            />
-            <div className="button-holder">
-              <div
-                className={
-                  this.state.registerMove ? "buttonLogin button button-moved" : "buttonLogin button"
-                }
-                onClick={() => this.registerClick()}>
-                <span className={this.state.registerMove ? "button-move" : ""}>Register</span>
-              </div>
-              <div className="registerInfo">
-                <label>
-                  <input
-                    type="checkbox"
-                    value={this.state.newsletter}
-                    onChange={() =>
-                      this.setState(prevState => ({
-                        newsletter: !prevState.newsletter
-                      }))
-                    }
-                  />
-                  I agree to receive updates from
-                  <br />
-                  Vipfy. I can revoke this at any time.
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }*/
   }
 }
 
 export default compose(
-  graphql(CreateCompany, {
-    name: "cc"
+  graphql(CREATE_COMPANY, {
+    name: "createCompany"
   }),
-  graphql(updateStatisticData, {
-    name: "uSD"
+  graphql(UPDATE_STATISTIC_DATA, {
+    name: "updateStatisticData"
   }),
   graphql(updateUser, {
-    name: "uU"
+    name: "updateUser"
   }),
-  graphql(createAddress, {
-    name: "cA"
-  })
+  graphql(CREATE_ADDRESS, {
+    name: "createAddress"
+  }),
+  graphql(SEARCH_COMPANY, { name: "searchCompany" })
 )(Login);

@@ -97,7 +97,8 @@ class Message extends React.Component<Props, State> {
         case "groupcreated":
           messagetext = (
             <span>
-              Group created by <InlineUser {...this.props} unitid={desc.actor} />
+              Group created by{" "}
+              <InlineUser {...this.props} unitid={desc.actor} className="user-name" />
             </span>
           );
           break;
