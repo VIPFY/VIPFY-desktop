@@ -277,12 +277,9 @@ class Login extends React.Component<Props, State> {
 
       await this.props.updateUser({ variables: { user } });
 
-      if (this.state.address) {
-        this.props.afterRegistration(address);
-      }
+      this.props.afterRegistration(this.state.address);
 
-      this.props.moveTo("dashboard/newuser");
-      return;
+      return this.props.moveTo("dashboard/newuser");
     } catch (err) {
       console.log("ERR", err);
     }
@@ -565,11 +562,11 @@ class Login extends React.Component<Props, State> {
               className={`possible-addresses-${
                 this.state.possibleAddresses.length > 0 ? "show" : "hide"
               }`}>
-              {this.state.possibleAddresses.map(address => (
+              {this.state.possibleAddresses.map((address, key) => (
                 <div
                   className="possible-addresses-item"
                   onClick={() => this.selectAddress(address)}
-                  key={address.id}>
+                  key={key}>
                   <i className="fas fa-map-marker-alt" />
                   <span>
                     <strong>
@@ -903,7 +900,6 @@ class Login extends React.Component<Props, State> {
   setField = e => this.setState({ [e.target.name]: e.target.value });
 
   render() {
-    console.log(this.state);
     return (
       <div className="centralize backgroundLogo">
         <div className="presideHolder">

@@ -21,19 +21,26 @@ interface Props {
   moveTo: Function;
   showPopup: Function;
   licences: any;
-  addressProposal?: object
+  placeid?: string;
+  firstLogin: boolean;
+  disableWelcome: Function;
+  addressProposal?: object;
 }
 
 class Dashboard extends React.Component<Props, {}> {
   componentDidMount() {
-    // if (this.props.address && this.props.firstLogin) {
-    this.props.showPopup({
-      header: "Welcome to Vipfy",
-      body: Welcome,
-      props: { name: `${this.props.firstname} ${this.props.lastname}`,
-    proposal: this.props.addressProposal }
-    });
-    // }
+    if (this.props.firstLogin) {
+      this.props.disableWelcome();
+
+      this.props.showPopup({
+        header: "Welcome to Vipfy",
+        body: Welcome,
+        props: {
+          name: `${this.props.firstname} ${this.props.lastname}`,
+          proposal: this.props.addressProposal ? this.props.addressProposal : null
+        }
+      });
+    }
   }
 
   setApp = (licence: number) => this.props.setApp(licence);
@@ -171,24 +178,30 @@ class Dashboard extends React.Component<Props, {}> {
 export default props => (
   <AppContext.Consumer>
     {context => {
-      return (
-        <Query query={FETCH_ADDRESS_PROPOSAL} variables={{ placeid: "ChIJ0URlseAQsYkRyurNJVo3gDk" }}>
-          {({ data, loading, error }) => {
-            if (loading) {
-              return <LoadingDiv text="Fetching Recommendations..." />;
-            }
+      console.log(context);
 
-            if (error) {
-              return filterError(error);
-            }
-            console.log(data);
+      if (context.firstLogin && context.placeid) {
+        return (
+          <Query query={FETCH_ADDRESS_PROPOSAL} variables={{ placeid: context.placeid }}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <LoadingDiv text="Fetching Recommendations..." />;
+              }
 
-            return (
-              <Dashboard {...props} addressProposal={data.fetchAddressProposal} {...context} />
-            );
-          }}
-        </Query>
-      );
+              if (error) {
+                return filterError(error);
+              }
+              console.log(data);
+
+              return (
+                <Dashboard {...props} addressProposal={data.fetchAddressProposal} {...context} />
+              );
+            }}
+          </Query>
+        );
+      } else {
+        return <Dashboard {...props} {...context} />;
+      }
     }}
   </AppContext.Consumer>
 );

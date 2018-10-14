@@ -43,7 +43,7 @@ interface AppState {
   login: boolean;
   error: string;
   firstLogin: boolean;
-  address: string;
+  placeid: string;
   popup: {
     show: boolean;
     header: string;
@@ -67,7 +67,7 @@ const INITIAL_STATE = {
   login: false,
   error: "",
   firstLogin: false,
-  address: "",
+  placeid: "",
   popup: INITIAL_POPUP
 };
 
@@ -105,9 +105,7 @@ class App extends React.Component<AppProps, AppState> {
       if (ok) {
         localStorage.setItem("token", token);
         localStorage.setItem("refreshToken", refreshToken);
-        await this.setState({
-          login: true
-        });
+        await this.setState({ login: true });
 
         return true;
       }
@@ -141,8 +139,8 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
-  welcomeNewUser = address => {
-    this.setState({ firstLogin: true, address });
+  welcomeNewUser = placeid => {
+    this.setState({ firstLogin: true, placeid });
   };
 
   renderComponents = () => {
@@ -194,14 +192,15 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    const { address, firstLogin } = this.state;
+    const { placeid, firstLogin } = this.state;
 
     return (
       <AppContext.Provider
         value={{
           showPopup: data => this.renderPopup(data),
           firstLogin,
-          address
+          placeid,
+          disableWelcome: () => this.setState({ firstLogin: false })
         }}
         className="full-size">
         {this.renderComponents()}
