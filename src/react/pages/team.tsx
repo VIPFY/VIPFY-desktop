@@ -65,6 +65,7 @@ interface State {
   addingAppUser: any;
   addingAppName: any;
   removeApp: any;
+  dragging: number;
 }
 
 class Team extends React.Component<Props, State> {
@@ -85,7 +86,8 @@ class Team extends React.Component<Props, State> {
     popupHeading: "",
     addingAppUser: null,
     addingAppName: null,
-    removeApp: null
+    removeApp: null,
+    dragging: 0
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
@@ -551,6 +553,7 @@ class Team extends React.Component<Props, State> {
   };
 
   onDragStart(ev, id, app) {
+    this.setState({ dragging: app.id });
     ev.dataTransfer.setData("id", id);
     ev.dataTransfer.setData("appname", app.appname);
   }
@@ -687,7 +690,6 @@ class Team extends React.Component<Props, State> {
             return <div>Error loading data</div>;
           }
           const { company } = data.me;
-          //console.log("TEAM", value, this.props);
           if (company) {
             return (
               <div className="teamPageHolder">
@@ -716,8 +718,9 @@ class Team extends React.Component<Props, State> {
                           appArray = noExternalApps.map((app, key) => (
                             <div
                               draggable
-                              className="PApp"
+                              className={`PApp ${this.state.dragging == app.id ? "dragging" : ""}`}
                               onDragStart={ev => this.onDragStart(ev, app.boughtplan.id, app)}
+                              onDragEnd={() => this.setState({ dragging: 0 })}
                               key={key}
                               /*onClick={() =>
                               this.props.distributeLicence(

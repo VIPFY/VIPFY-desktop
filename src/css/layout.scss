@@ -166,20 +166,24 @@
     padding: 0.5em 0.5em;
     cursor: pointer;
 }
+
 .navigationButton:hover{
-    color: #771a1c;
-    background-color: white;
+  color: #771a1c;
+  background-color: white;
 }
+
 .searchbar {
-    font-size: 0.8rem;
-    line-height: 1rem;
-    padding: 5px;
-    border: 0px;
-    font-family: 'Quicksand', sans-serif;
-    outline: none !important;
-    height: 1.5em;
-    background-color: transparent;
+  font-size: 0.8rem;
+  width: 100%;
+  line-height: 1rem;
+  padding: 5px;
+  border: 0px;
+  font-family: 'Quicksand', sans-serif;
+  outline: none !important;
+  height: 1.5em;
+  background-color: transparent;
 }
+
 .searchbarHolder {
     align-items: center;
     display: flex;
@@ -191,6 +195,7 @@
       background-color: #f5f5f5;
     }
 }
+
 .searchbarButton {
     display: inline;
     font-size: 1rem;
@@ -200,12 +205,16 @@
     line-height: 1em;
     transform: rotateY(180deg);
 }
+
 .searchbarFocus{
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
+  transition: all 300ms ease-in-out;
 }
+
 .navigationButtonHolder{
     display: flex;
 }
+
 .navigationLogoHolder{
     width: 4em;
     overflow: hidden;
@@ -1199,9 +1208,19 @@
   }
 }
 
-.proposal-company {
-  font-weight: bold;
+.proposal-holder {
+  margin-top: 1rem;
+
+  .proposal {
+    display: flex;
+    justify-content: center;
+  
+    &-company {
+      font-weight: bold;
+    }
+  }
 }
+
 
 .notificationPopup {
   position: absolute;
@@ -3123,15 +3142,21 @@ h1{
     top: 0.1rem;
     transform: rotate(45deg);
     position: absolute;
-display: block;
-width: 2rem;
-font-size: 0rem;
-padding: 0.25rem;
-background-color: #20BAA9;
-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-color: #fff;
-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-text-transform: uppercase;
-text-align: center;
+    display: block;
+    width: 2rem;
+    font-size: 0rem;
+    padding: 0.25rem;
+    background-color: #20BAA9;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.dragging {
+  border: 1px dashed #111;
+  opacity: 0.5;
+  transition: all 300ms ease-in-out;
 }
   

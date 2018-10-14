@@ -36,7 +36,7 @@ class Dashboard extends React.Component<Props, {}> {
         header: "Welcome to Vipfy",
         body: Welcome,
         props: {
-          name: `${this.props.firstname} ${this.props.lastname}`,
+          fullName: `${this.props.firstname} ${this.props.lastname}`,
           proposal: this.props.addressProposal ? this.props.addressProposal : null
         }
       });
@@ -178,11 +178,10 @@ class Dashboard extends React.Component<Props, {}> {
 export default props => (
   <AppContext.Consumer>
     {context => {
-      console.log(context);
 
       if (context.firstLogin && context.placeid) {
         return (
-          <Query query={FETCH_ADDRESS_PROPOSAL} variables={{ placeid: context.placeid }}>
+            <Query query={FETCH_ADDRESS_PROPOSAL} variables={{ placeid: context.placeid }}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching Recommendations..." />;
