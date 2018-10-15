@@ -92,7 +92,8 @@ const createWindow = async () => {
     show: false,
     center: true,
     title: "Vipfy",
-    titleBarStyle: "hiddenInset"
+    titleBarStyle: "hiddenInset",
+    fullscreenable: true
   });
 
   mainWindow.once("ready-to-show", () => {
