@@ -86,7 +86,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
     for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
       let d = { title: m.format("MM") };
       plans.forEach(plan => {
-        if (moment.unix(plan.buytime).isBefore(m)) {
+        if (moment(plan.buytime).isBefore(m)) {
           d[`${plan.appname} ${plan.id}`] = plan.price;
         } else {
           d[`${plan.appname} ${plan.id}`] = 0;
@@ -94,6 +94,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       });
       data.push(d);
     }
+    console.log("DATA", data);
     return data;
   }
 
