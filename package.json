@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "vipfy-desktop",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
   "scripts": {
@@ -123,6 +123,7 @@
     "react-electron-web-view": "^2.0.1",
     "react-hot-loader": "^4.1.2",
     "react-onclickoutside": "^6.7.1",
+    "react-password-strength": "^2.3.1",
     "react-router-dom": "^4.2.2",
     "react-stripe-elements": "^2.0.1",
     "react-vis": "^1.11.2",

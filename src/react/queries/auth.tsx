@@ -26,6 +26,8 @@ export const me = gql`
         employees
         name
       }
+      needspasswordchange
+      firstlogin
     }
   }
 `;

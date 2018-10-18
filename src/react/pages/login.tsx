@@ -1061,7 +1061,9 @@ class Login extends React.Component<Props, State> {
                       this.passInput = input!;
                     }}
                   />
-                  <div className="forgotPW">Forgot Password?</div>
+                  <div className="forgotPW">
+                    <Link to="/passwordreset">Forgot Password?</Link>
+                  </div>
                 </div>
                 <div className="partButton_ToRegister" onClick={this.loginClick}>
                   {this.state.loggingin ? (

@@ -8,12 +8,12 @@ import { me } from "./queries/auth";
 import { AppContext, refetchQueries } from "./common/functions";
 import { filterError } from "./common/functions";
 
-import Area from "./pages/area";
 import Popup from "./components/Popup";
 import LoadingDiv from "./components/LoadingDiv";
 import Login from "./pages/login";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import PostLogin from "./pages/postlogin";
 
 const SignUp = gql`
   mutation signUp($email: String!, $newsletter: Boolean!) {
@@ -166,7 +166,7 @@ class App extends React.Component<AppProps, AppState> {
             }
 
             return (
-              <Area
+              <PostLogin
                 setName={this.setName}
                 logMeOut={this.logMeOut}
                 showPopup={data => this.renderPopup(data)}

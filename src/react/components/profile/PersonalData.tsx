@@ -15,6 +15,7 @@ import { QUERY_USER } from "../../queries/user";
 import UserPicture from "../UserPicture";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
+import Duration from "../../common/duration";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: File!) {
@@ -97,7 +98,7 @@ class PersonalData extends React.Component<Props, State> {
                   },
                   { label: "Birthday", data: birthday },
                   { label: "Language", data: language },
-                  { label: "User since", data: createdate }
+                  { label: "User for", data: <Duration timestamp={createdate} /> }
                 ];
 
                 const picProps: {

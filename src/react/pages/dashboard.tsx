@@ -84,69 +84,84 @@ class Dashboard extends React.Component<Props, {}> {
 
   showRec(licences) {
     let recLogo: JSX.Element[] = [];
-    let recApps = [];
+    let recApps: number[] = [];
 
     if (licences) {
-      if !(licences.find(function(e) {
-        return e.boughtplanid.planid.appid.id === 2;
-      })) {
-        recApps.push(2)
+      if (
+        !licences.find(function(e) {
+          return e.boughtplanid.planid.appid.id === 2;
+        })
+      ) {
+        recApps.push(2);
       }
-      if !(licences.find(function(e) {
-        return e.boughtplanid.planid.appid.id === 4;
-      })) {
-        recApps.push(4)
+      if (
+        !licences.find(function(e) {
+          return e.boughtplanid.planid.appid.id === 4;
+        })
+      ) {
+        recApps.push(4);
       }
-      if !(licences.find(function(e) {
-        return e.boughtplanid.planid.appid.id === 27;
-      })) {
-        recApps.push(27)
+      if (
+        !licences.find(function(e) {
+          return e.boughtplanid.planid.appid.id === 27;
+        })
+      ) {
+        recApps.push(27);
       }
 
       if (recApps.length > 0) {
         recApps.forEach((element, key) => {
-          switch (element){
+          switch (element) {
             case 2:
-            recLogo.push(<div
-              className="logoAppsTile"
-              key={`useableLogo-${key}`}
-              onClick={() => this.props.moveTo("marketplace/2")}
-              style={{
-                backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/icons/weebly.jpg)"
-              }}>
-              <span className="nameAppsTile">Weebly</span>
-            </div>)
-            break;
+              recLogo.push(
+                <div
+                  className="logoAppsTile"
+                  key={`useableLogo-${key}`}
+                  onClick={() => this.props.moveTo("marketplace/2")}
+                  style={{
+                    backgroundImage:
+                      "url(https://storage.googleapis.com/vipfy-imagestore-01/icons/weebly.jpg)"
+                  }}>
+                  <span className="nameAppsTile">Weebly</span>
+                </div>
+              );
+              break;
             case 4:
-            recLogo.push(<div
-              className="logoAppsTile"
-              key={`useableLogo-${key}`}
-              onClick={() => this.props.moveTo("marketplace/4"}
-              style={{
-                backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/icons/pipedrive.png)"
-              }}>
-              <span className="nameAppsTile">Pipedrive</span>
-            </div>)
-            break;
+              recLogo.push(
+                <div
+                  className="logoAppsTile"
+                  key={`useableLogo-${key}`}
+                  onClick={() => this.props.moveTo("marketplace/4")}
+                  style={{
+                    backgroundImage:
+                      "url(https://storage.googleapis.com/vipfy-imagestore-01/icons/pipedrive.png)"
+                  }}>
+                  <span className="nameAppsTile">Pipedrive</span>
+                </div>
+              );
+              break;
             case 27:
-            recLogo.push(<div
-              className="logoAppsTile"
-              key={`useableLogo-${key}`}
-              onClick={() => this.props.moveTo("marketplace/27"}
-              style={{
-                backgroundImage: "url(https://storage.googleapis.com/vipfy-imagestore-01/icons/20082018-e368x-sendgrid-png)"
-              }}>
-              <span className="nameAppsTile">SendGrid</span>
-            </div>)
-            break;
+              recLogo.push(
+                <div
+                  className="logoAppsTile"
+                  key={`useableLogo-${key}`}
+                  onClick={() => this.props.moveTo("marketplace/27")}
+                  style={{
+                    backgroundImage:
+                      "url(https://storage.googleapis.com/vipfy-imagestore-01/icons/20082018-e368x-sendgrid-png)"
+                  }}>
+                  <span className="nameAppsTile">SendGrid</span>
+                </div>
+              );
+              break;
           }
-        })
+        });
       }
     }
     if (recLogo.length > 0) {
-      return <div className="appsTile">{recLogo}</div>
+      return <div className="appsTile">{recLogo}</div>;
     }
-    return <div className="noApp">You have everything you really need at the moment :)</div>
+    return <div className="noApp">You have everything you really need at the moment :)</div>;
   }
 
   render() {
@@ -178,10 +193,9 @@ class Dashboard extends React.Component<Props, {}> {
 export default props => (
   <AppContext.Consumer>
     {context => {
-
       if (context.firstLogin && context.placeid) {
         return (
-            <Query query={FETCH_ADDRESS_PROPOSAL} variables={{ placeid: context.placeid }}>
+          <Query query={FETCH_ADDRESS_PROPOSAL} variables={{ placeid: context.placeid }}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching Recommendations..." />;

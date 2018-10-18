@@ -141,3 +141,11 @@ export const CHANGE_PASSWORD = gql`
     }
   }
 `;
+
+export const agreeTos = gql`
+  mutation AgreeTos {
+    agreeTos {
+      ok
+    }
+  }
+`;

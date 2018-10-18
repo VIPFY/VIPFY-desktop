@@ -4,15 +4,20 @@
  for word in $(cat wordlist5a.txt); do echo "\"$word\"," >> wordlist5.json; done
 */
 // wordlist is licenced BSD/MIT-Like
-import wordlist = require("./wordlist5a.json");
 import randomNumber = require("random-number-csprng");
+
+let wordlist: string[] | null = null;
 
 function capitalizeFirstLetter(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 export async function randomWord() {
-  return wordlist[await randomNumber(0, wordlist.length - 1)];
+  // lazy loading to improve loading to of app
+  if (wordlist === null) {
+    wordlist = require("./wordlist5a.json");
+  }
+  return wordlist![await randomNumber(0, wordlist!.length - 1)];
 }
 
 export async function randomPassword(length: number = 3) {
