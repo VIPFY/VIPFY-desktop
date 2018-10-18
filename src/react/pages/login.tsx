@@ -752,10 +752,10 @@ class Login extends React.Component<Props, State> {
                       style={{ width: "18rem" }}
                       className="newInputField float-in-right"
                       onChange={e => {
-                        if (e.target.value.length == 2) {
+                        if (e.target.value.length == 2 || e.target.value.length > 7) {
                           if (e.target.value.toUpperCase() != this.state.countryCode) {
                             const { name, value } = countries.filter(
-                              country => country.value == e.target.value.toUpperCase()
+                              country => country.value == e.target.value.substr(0, 2).toUpperCase()
                             )[0];
                             this.setState({
                               country: name,
