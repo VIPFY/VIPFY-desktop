@@ -174,7 +174,7 @@
 
 .searchbar {
   font-size: 0.8rem;
-  width: 100%;
+  width: 70%;
   line-height: 1rem;
   padding: 5px;
   border: 0px;
@@ -2103,11 +2103,12 @@ option{
     -webkit-tap-highlight-color: transparent;
     transform: translate3d(0, 0, 0);
   }
+
   .check:before {
     content: "";
     position: absolute;
     top: -15px;
-    left: -15px;
+    left: -5px;
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -2115,6 +2116,7 @@ option{
     opacity: 0;
     transition: opacity 0.2s ease;
   }
+  
   .check svg {
     position: relative;
     z-index: 1;
@@ -2201,7 +2203,8 @@ option{
     border: none;
     box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
     transition: all 0.6s ease-in-out;
-    &:hover{
+
+    &:hover {
         background-color: #117f91;
         transition: all 0.6s ease-in-out;
     }
@@ -2870,17 +2873,24 @@ h1{
                 }
             }
         }
-        .partForm{
+
+        .partForm {
             position: absolute;
-            &_Login{
+
+            &_Login {
                 left: 3rem;
                 top: 9rem;
             }
-            &_Register{
+
+            &_Register {
                 right: 3rem;
                 text-align: right;
                 top: 7.5rem;
+                display: flex;
+                flex-flow: column;
+                max-width: 25rem;
             }
+
             .newInputField{
                 border: 0;
                 font-size: 0.75em;
@@ -2928,8 +2938,9 @@ h1{
                 box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
                 cursor: pointer;
                 display: flex;
-    align-items: center;
-    justify-content: center;
+                align-items: center;
+                justify-content: center;
+
             }
             &_Next{
                 position: absolute;
@@ -2977,13 +2988,16 @@ h1{
             width: 30rem;
             right: 2rem;
         }
-        .optionHolder{
-            display: flex;
-            width: 25rem;
-            margin-top: 0.5rem;
-            text-align: center;
-            justify-content: space-between;
-            .option{
+
+        .chooseStage {
+          display: flex;
+          margin-bottom: 1rem;
+
+          .optionHolder {
+            width: 21rem;
+            margin-left: 2px;
+
+            .option {
                 padding: 0.25rem;
                 margin: 0.5rem;
                 border-radius: 3px;
@@ -2991,8 +3005,10 @@ h1{
                 color: white;
                 box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
                 cursor: pointer;
-            }
+              }
+          }
         }
+
     }
 }
 

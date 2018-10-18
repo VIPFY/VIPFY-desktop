@@ -130,6 +130,7 @@ $shadow-color: #f0f3ff;
 
   &-header {
     @include grid-system(3fr 1fr 2fr 1fr 2fr 1fr 1fr);
+    border-bottom: 2px solid #117f91;
     font-weight: bold;
     align-items: center;
     margin-top: 1rem;
@@ -138,6 +139,7 @@ $shadow-color: #f0f3ff;
 
   &-list {
     @extend .addresses-header;
+    border-bottom: 0!important;
     margin: 0 0 0.3rem 0;
     font-weight: normal;
 
@@ -145,6 +147,10 @@ $shadow-color: #f0f3ff;
       &:first-child,
       &:nth-child(5) {
         @include hide-overflowing-text;
+      }
+      
+      &:nth-child(6) {
+        text-align: center;
       }
     }
 
@@ -191,6 +197,7 @@ $shadow-color: #f0f3ff;
     }
   }
 }
+
 .profileApps {
   width: 8em;
   height: 8em;
