@@ -38,12 +38,14 @@ interface Props {
   addresses: object[];
   emails: object[];
   hasCard: boolean;
+  firstname: string;
+  lastname: string;
 }
 
 class StripeBody extends React.Component<Props, State> {
   state = {
-    firstName: "",
-    lastName: "",
+    firstName: this.props.firstname ? this.props.firstname : "",
+    lastName: this.props.lastname ? this.props.lastname : "",
     address: 0,
     email: 0,
     newAddress: {},

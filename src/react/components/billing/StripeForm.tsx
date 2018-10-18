@@ -12,6 +12,7 @@ import gql from "graphql-tag";
 import StripeBody from "./StripeBody";
 import LoadingDiv from "../LoadingDiv";
 import { filterError } from "../../common/functions";
+import { me } from "../../queries/auth";
 
 const FETCH_BILLING_DATA = gql`
   query onFetchBillingData($company: Boolean, $tag: String) {
@@ -27,6 +28,11 @@ const FETCH_BILLING_DATA = gql`
     fetchBillingEmails {
       email
       description
+    }
+
+    me {
+      firstname
+      lastname
     }
   }
 `;
@@ -59,7 +65,7 @@ class StripeForm extends React.Component<Props, State> {
     return (
       <StripeProvider stripe={this.state.stripe}>
         <Elements>
-          <Query query={FETCH_BILLING_DATA} variables={{ company: true }}>
+          <Query query={FETCH_BILLING_DATA} variables={{ company: true, tag: "billing" }}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv text="Preparing Credit Card Form..." />;
@@ -68,17 +74,15 @@ class StripeForm extends React.Component<Props, State> {
               if (error) {
                 return filterError(error);
               }
-
-              const billingAddresses = data.fetchAddresses.filter(
-                address => address.tags == "billing"
-              );
-
+              console.log(data);
               return (
                 <StripeBody
                   {...this.props}
-                  addresses={billingAddresses}
+                  addresses={data.fetchAddresses}
                   emails={data.fetchBillingEmails}
                   hasCard={this.props.hasCard}
+                  firstname={data.me.firstname}
+                  lastname={data.me.lastname}
                 />
               );
             }}

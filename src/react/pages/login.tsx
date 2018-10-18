@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import { updateUser } from "../mutations/auth";
 import { emailRegex, countries } from "../common/constants";
 import { filterError } from "../common/functions";
+import { Link } from "react-router-dom";
 
 const CREATE_COMPANY = gql`
   mutation onCreateCompany($name: String!) {
