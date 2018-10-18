@@ -23,6 +23,7 @@ import { fetchLicences } from "../queries/auth";
 import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
+import Security from "./security";
 
 interface AreaProps {
   history: any[];
@@ -86,6 +87,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "settings", component: Settings },
       { path: "profile", component: Profile },
       { path: "team", component: Team },
+      { path: "security", component: Security },
       { path: "messagecenter", component: MessageCenter },
       { path: "messagecenter/:person", component: MessageCenter },
       { path: "billing", component: Billing },
