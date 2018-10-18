@@ -6,8 +6,8 @@ import Area from "./area";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { CHANGE_PASSWORD } from "../mutations/auth";
-import PasswordChange from "../components/signup/PasswordChange";
-import FirstLogin from "../components/signup/FirstLogin";
+import PasswordChange from "../components/signin/PasswordChange";
+import FirstLogin from "../components/signin/FirstLogin";
 
 interface PostLoginProps {
   logMeOut: Function;
