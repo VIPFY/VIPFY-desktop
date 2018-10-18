@@ -344,7 +344,7 @@ class Login extends React.Component<Props, State> {
       }
 
       await this.props.updateUser({ variables: { user } });
-      console.log(this.state.vatId);
+      // console.log(this.state.vatId);
       this.props.afterRegistration(this.state.address);
 
       return this.props.moveTo("dashboard/newuser");
