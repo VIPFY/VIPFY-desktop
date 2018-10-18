@@ -22,8 +22,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
             <th />
             <th />
             <th />
-            <th colSpan={2}>Password</th>
-            <th />
+            <th colSpan={3}>Password</th>
             <th />
             <th />
           </tr>
@@ -51,17 +50,19 @@ class UserSecurityTableInner extends React.Component<Props, State> {
           <td>
             <UserName unitid={user.id} />
           </td>
-          <td>
+          <td align="right">
             <Duration timestamp={user.lastactive} postfix=" ago" />
           </td>
-          <td>
+          <td align="right">
             <Duration timestamp={user.createdate} postfix=" ago" />
           </td>
-          <td>{user.passwordlength || "unknown"}</td>
-          <td>{user.passwordstrength || "unknown"}</td>
-          <td>{user.needspasswordchange ? "yes" : "no"}</td>
-          <td>{user.banned ? "yes" : "no"}</td>
-          <td>{user.suspended ? "yes" : "no"}</td>
+          <td align="right">{user.passwordlength === null ? "unknown" : user.passwordlength}</td>
+          <td align="right">
+            {user.passwordstrength === null ? "unknown" : user.passwordstrength + "/4"}
+          </td>
+          <td align="right">{user.needspasswordchange ? "yes" : "no"}</td>
+          <td align="right">{user.banned ? "yes" : "no"}</td>
+          <td align="right">{user.suspended ? "yes" : "no"}</td>
         </tr>
       );
     });

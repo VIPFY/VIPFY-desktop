@@ -3,6 +3,7 @@ import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
 import { updateUser } from "../mutations/auth";
 import { emailRegex } from "../common/constants";
+import { Link } from "react-router-dom";
 
 const CREATE_COMPANY = gql`
   mutation onCreateCompany($name: String!) {
@@ -940,7 +941,9 @@ class Login extends React.Component<Props, State> {
                       this.passInput = input!;
                     }}
                   />
-                  <div className="forgotPW">Forgot Password?</div>
+                  <div className="forgotPW">
+                    <Link to="/passwordreset">Forgot Password?</Link>
+                  </div>
                 </div>
                 <div className="partButton_ToRegister" onClick={this.loginClick}>
                   {this.state.loggingin ? (
