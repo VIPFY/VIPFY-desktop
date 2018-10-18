@@ -96,6 +96,20 @@ $rccs-valid-font-size: 0.4rem;
   }
 }
 
+@mixin toggleHeight($height) {
+  max-height: $height;
+  overflow: hidden;
+  transition: max-height 0.6s ease-in-out;
+}
+
+.in {
+  @include toggleHeight(20rem);
+}
+
+.out {
+  @include toggleHeight(0);
+}
+
 .disabled {
   color: #bbb;
   transition: color 200ms ease-in;
@@ -121,6 +135,26 @@ $rccs-valid-font-size: 0.4rem;
 
     &:hover {
       background: $vipfy-secondary;
+    }
+  }
+}
+
+.float-in-right {
+  animation: float-from-right 400ms ease-in-out;
+
+  @keyframes float-from-right {
+    0% {
+      opacity: 0;
+      transform: translateX(3000px);
+    }
+    
+    90% {
+      opacity: 1;
+      transform: translateX(-10px);
+    }
+
+    100% {
+      transform: translateX(0);
     }
   }
 }

@@ -11,7 +11,14 @@ export type State = {
   chosenDepartment: number;
 };
 
-class AppHeaderInfos extends React.Component<State> {
+interface Props {
+  handleOutside: Function;
+  allPlans: any[];
+  buyApp: Function;
+  appDetails: any;
+}
+
+class AppHeaderInfos extends React.Component<Props, State> {
   state = {
     showRecord: 0,
     chosenPlan: 0,
@@ -29,26 +36,31 @@ class AppHeaderInfos extends React.Component<State> {
         <div className="appHeaderName">{this.props.appDetails.name}</div>
         <div className="appHeaderType">{this.props.appDetails.features.type}</div>
         <div className="appHeaderPriceHolder">
-        {this.props.allPlans[0]?
-          <div className="appHeaderPriceText">
-            <small>Our recommendation for you</small>
-          </div>
-          <ChoosePlanBox
-            plans={this.props.allPlans}
-            appid={this.props.appDetails.id}
-            chosenPlan={this.state.chosenPlan}
-            choosePlan={this.choosePlan}
-            showHolder={this.state.showRecord}
-            changeShowHolder={this.changeShowHolder}
-            handleOutside={() => this.setState({ showRecord: 0 })}
-          />
-          <div
-            className="appHeaderBuyButton"
-            onClick={() => this.props.buyApp(this.props.allPlans[this.state.chosenPlan])}>
-            {this.props.allPlans[this.state.chosenPlan].price == 0
-              ? "Start for free!"
-              : `Starting at $${this.props.allPlans[this.state.chosenPlan].price}/mo`}
-          </div>:"You can only integrate existing accounts"}
+          {this.props.allPlans[0] ? (
+            <React.Fragment>
+              <div className="appHeaderPriceText">
+                <small>Our recommendation for you</small>
+              </div>
+              <ChoosePlanBox
+                plans={this.props.allPlans}
+                appid={this.props.appDetails.id}
+                chosenPlan={this.state.chosenPlan}
+                choosePlan={this.choosePlan}
+                showHolder={this.state.showRecord}
+                changeShowHolder={this.changeShowHolder}
+                handleOutside={() => this.setState({ showRecord: 0 })}
+              />
+              <div
+                className="appHeaderBuyButton"
+                onClick={() => this.props.buyApp(this.props.allPlans[this.state.chosenPlan])}>
+                {this.props.allPlans[this.state.chosenPlan].price == 0
+                  ? "Start for free!"
+                  : `Starting at $${this.props.allPlans[this.state.chosenPlan].price}/mo`}
+              </div>
+            </React.Fragment>
+          ) : (
+            "You can only integrate existing accounts"
+          )}
         </div>
       </div>
     );

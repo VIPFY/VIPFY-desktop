@@ -8,11 +8,28 @@
 import * as React from "react";
 import { Elements, StripeProvider } from "react-stripe-elements";
 import { Query } from "react-apollo";
+import gql from "graphql-tag";
 import StripeBody from "./StripeBody";
 import LoadingDiv from "../LoadingDiv";
-import { FETCH_ADDRESSES } from "../../queries/contact";
 import { filterError } from "../../common/functions";
 
+const FETCH_BILLING_DATA = gql`
+  query onFetchBillingData($company: Boolean, $tag: String) {
+    fetchAddresses(forCompany: $company, tag: $tag) {
+      id
+      address
+      country
+      description
+      priority
+      tags
+    }
+
+    fetchBillingEmails {
+      email
+      description
+    }
+  }
+`;
 interface State {
   stripe: any;
 }
@@ -20,6 +37,7 @@ interface State {
 interface Props {
   departmentid: number;
   onClose: Function;
+  hasCard: boolean;
 }
 
 class StripeForm extends React.Component<Props, State> {
@@ -41,7 +59,7 @@ class StripeForm extends React.Component<Props, State> {
     return (
       <StripeProvider stripe={this.state.stripe}>
         <Elements>
-          <Query query={FETCH_ADDRESSES} variables={{ company: true }}>
+          <Query query={FETCH_BILLING_DATA} variables={{ company: true }}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv text="Preparing Credit Card Form..." />;
@@ -55,7 +73,14 @@ class StripeForm extends React.Component<Props, State> {
                 address => address.tags == "billing"
               );
 
-              return <StripeBody {...this.props} addresses={billingAddresses} />;
+              return (
+                <StripeBody
+                  {...this.props}
+                  addresses={billingAddresses}
+                  emails={data.fetchBillingEmails}
+                  hasCard={this.props.hasCard}
+                />
+              );
             }}
           </Query>
         </Elements>

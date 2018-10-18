@@ -64,7 +64,6 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       </FlexibleXYPlot>*/
 
   BarSeries(props): { b: JSX.Element; n: any }[] {
-    console.log("test");
     const d = props.data.fetchUnitApps;
     const plans = d.map(boughtplan => ({
       id: boughtplan.boughtplan.id,
@@ -76,7 +75,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       applogo: boughtplan.boughtplan.planid.appid.logo,
       appicon: boughtplan.boughtplan.planid.appid.icon
     }));
-    console.log("PLANS", plans);
+    console.table("PLANS", plans);
     const timestart = moment()
       .endOf("month")
       .subtract(6, "months");
