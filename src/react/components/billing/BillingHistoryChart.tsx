@@ -1,16 +1,8 @@
 import * as React from "react";
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
-import {
-  ResponsiveContainer,
-  BarChart,
-  Tooltip,
-  Legend,
-  XAxis,
-  YAxis,
-  Bar,
-  CartesianGrid
-} from "recharts";
+import Chart from "react-apexcharts";
+import ResizeAware from "react-resize-aware";
 
 import moment = require("moment");
 
@@ -30,27 +22,53 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
     }
 
     const timestart = moment()
-      .endOf("month")
+      .startOf("month")
       .subtract(6, "months");
     const timeend = moment().add(1, "months");
     const labels: string[] = [];
     for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
-      const label = m.format("MM");
+      const label = m.toISOString();
       labels.push(label);
     }
     const data = this.BarSeries(this.props);
-    const bars = this.Bars(this.props);
+    console.log("DATA", data);
     return (
-      <ResponsiveContainer>
-        <BarChart data={data}>
-          <CartesianGrid />
-          <XAxis dataKey="title" />
-          <YAxis tickFormatter={v => `$${v}`} />
-          <Tooltip />
-          <Legend />
-          {bars}
-        </BarChart>
-      </ResponsiveContainer>
+      <Chart
+        height={this.props.height}
+        width={this.props.width}
+        type="bar"
+        series={data}
+        options={{
+          chart: {
+            stacked: true
+          },
+          dataLabels: {
+            formatter: y => (y == 0 ? "" : "$" + `${y}`.padStart(3, " "))
+          },
+          colors: data.map(d => d.color),
+          xaxis: {
+            categories: labels,
+            labels: {
+              formatter: x => {
+                return x.length > 4 ? moment(x).format("MMM") : x;
+              }
+            }
+          },
+          yaxis: {
+            labels: {
+              formatter: y => "$" + `${y}`.padStart(3, " ")
+            }
+          },
+          tooltip: {
+            x: {
+              formatter: x => {
+                return moment(x).format("MMMM YYYY");
+              }
+            },
+            y: {}
+          }
+        }}
+      />
     );
   }
 
@@ -63,42 +81,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
         {bars}
       </FlexibleXYPlot>*/
 
-  BarSeries(props): { b: JSX.Element; n: any }[] {
-    const d = props.data.fetchUnitApps;
-    const plans = d.map(boughtplan => ({
-      id: boughtplan.boughtplan.id,
-      price: boughtplan.boughtplan.totalprice,
-      buytime: boughtplan.boughtplan.buytime,
-      endtime: boughtplan.boughtplan.endtime,
-      planname: boughtplan.boughtplan.planid.name,
-      appname: boughtplan.boughtplan.planid.appid.name,
-      applogo: boughtplan.boughtplan.planid.appid.logo,
-      appicon: boughtplan.boughtplan.planid.appid.icon
-    }));
-    console.table("PLANS", plans);
-    const timestart = moment()
-      .endOf("month")
-      .subtract(6, "months");
-    const timeend = moment().add(1, "months");
-    const data: any[] = [];
-
-    for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
-      let d = { title: m.format("MM") };
-      plans.forEach(plan => {
-        if (moment(plan.buytime).isBefore(m)) {
-          d[`${plan.appname} ${plan.id}`] = plan.price;
-        } else {
-          d[`${plan.appname} ${plan.id}`] = 0;
-        }
-      });
-      data.push(d);
-    }
-    console.log("DATA", data);
-    return data;
-  }
-
-  Bars(props): { b: JSX.Element; n: any }[] {
-    console.log("test");
+  BarSeries(props): { name: string; data: number[]; color: string }[] {
     const d = props.data.fetchUnitApps;
     const plans = d.map(boughtplan => ({
       id: boughtplan.boughtplan.id,
@@ -111,16 +94,29 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       appicon: boughtplan.boughtplan.planid.appid.icon,
       appcolor: boughtplan.boughtplan.planid.appid.color
     }));
+    console.log("PLANS", plans);
+    const timestart = moment()
+      .endOf("month")
+      .subtract(6, "months");
+    const timeend = moment().add(1, "months");
 
-    return plans.map(plan => (
-      <Bar
-        dataKey={`${plan.appname} ${plan.id}`}
-        fill={plan.appcolor}
-        stackId="a"
-        key={`bar-${plan.id}`}
-        unit=" USD"
-      />
-    ));
+    return plans
+      .map(plan => {
+        let d: { name: string; data: number[]; color: string } = {
+          name: `${plan.appname} ${plan.id}`,
+          data: [],
+          color: plan.appcolor
+        };
+        for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
+          if (moment(plan.buytime).isBefore(m)) {
+            d.data.push(plan.price);
+          } else {
+            d.data.push(0);
+          }
+        }
+        return d;
+      })
+      .filter(d => d.data.some(x => x !== 0));
   }
 }
 
@@ -160,7 +156,11 @@ function BillingHistoryChart(props) {
         if (error) {
           return <div>Error fetching data</div>;
         }
-        return <BillingHistoryChartInner {...props} data={data} />;
+        return (
+          <ResizeAware style={{ width: "100%" }}>
+            <BillingHistoryChartInner {...props} data={data} />
+          </ResizeAware>
+        );
       }}
     </Query>
   );

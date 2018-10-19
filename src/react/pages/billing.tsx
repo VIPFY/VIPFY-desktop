@@ -151,7 +151,7 @@ class Billing extends React.Component<Props, State> {
           <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
         </div>
 
-        <div className="payment-data-holder" style={{ height: "32rem" }}>
+        <div className="payment-data-holder">
           <label className="payment-label">Billing History</label>
           <BillingHistoryChart {...this.props} />
         </div>
