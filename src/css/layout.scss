@@ -3238,3 +3238,12 @@ h1{
   transition: all 300ms ease-in-out;
 }
   
+.apexcharts-yaxis-label {
+  white-space: pre-wrap;
+  font-family: "Roboto Mono", monospace
+}
+
+.apexcharts-datalabel {
+  white-space: pre-wrap;
+  font-family: "Roboto Mono", monospace
+}
