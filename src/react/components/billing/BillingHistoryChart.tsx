@@ -24,7 +24,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
     const timestart = moment()
       .startOf("month")
       .subtract(6, "months");
-    const timeend = moment().add(1, "months");
+    const timeend = moment();
     const labels: string[] = [];
     for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
       const label = m.toISOString();
