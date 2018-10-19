@@ -10,6 +10,8 @@ interface State {}
 
 interface Props {
   fetchUnitApps: { fetchUnitApps: any };
+  width: number;
+  height: number;
 }
 
 //fetchUnitApps
