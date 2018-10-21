@@ -127,7 +127,8 @@ class CompanyData extends React.Component<Props, State> {
                         if (info.match(/(unit)|(__typename)|(profilepicture)/gi)) {
                           return;
                         } else if (info == "legalinformation") {
-                          if (fetchCompany[info].vatId) {
+                          if (fetchCompany[info] && fetchCompany[info].vatId) {
+                            console.log("FIRE");
                             return (
                               <li key={key}>
                                 <label>Vatnumber:</label>
