@@ -1,25 +1,18 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
 import { updateUser } from "../mutations/auth";
-import { emailRegex, countries } from "../common/constants";
+import { emailRegex, countries, industries, subIndustries } from "../common/constants";
 import { filterError } from "../common/functions";
-import { Link } from "react-router-dom";
+import { valueFromAST } from "graphql";
 
 const CREATE_COMPANY = gql`
-  mutation onCreateCompany($name: String!) {
-    createCompany(name: $name) {
+  mutation onCreateCompany($name: String!, $legal: LegalInput!) {
+    createCompany(name: $name, legalinformation: $legal) {
       ok
       token
       refreshToken
-    }
-  }
-`;
-
-const UPDATE_STATISTIC_DATA = gql`
-  mutation onUpdateStatisticData($data: JSON!) {
-    updateStatisticData(data: $data) {
-      ok
     }
   }
 `;
@@ -59,7 +52,6 @@ interface Props {
   register: Function;
   login: Function;
   moveTo: Function;
-  updateStatisticData: Function;
   createCompany: Function;
   updateUser: Function;
   createAddress: Function;
@@ -177,9 +169,11 @@ class Login extends React.Component<Props, State> {
       .split(",")
       .pop()
       .trim();
-    console.log(country);
+
     if (country == "UK") {
       country = "United Kingdom";
+    } else if (country == "USA") {
+      country = "United States of America";
     }
 
     const fullCountryInfo = countries.filter(item => item.name == country);
@@ -203,7 +197,9 @@ class Login extends React.Component<Props, State> {
           isEU
         });
       }
-      this.vatInput.value = this.state.countryCode;
+      if (this.vatInput && this.vatInput.value) {
+        this.vatInput.value = this.state.countryCode;
+      }
     }
 
     this.companyInput.value = address.structured_formatting.main_text.split(",")[0];
@@ -267,7 +263,7 @@ class Login extends React.Component<Props, State> {
         this.setState({
           focus: 1,
           errorbool: true,
-          error: "Not an E-mail Address."
+          error: "Not an Email Address."
         });
       } else if (pass === "") {
         //Email Basic Check ok, but no password -> if focus before on email than just focus, otherwise also error
@@ -285,7 +281,7 @@ class Login extends React.Component<Props, State> {
         this.setState({
           focus: 1,
           errorbool: true,
-          error: "Not an E-mail Address or Password not set"
+          error: "Not an Email Address or Password not set"
         });
       }
     } else {
@@ -305,23 +301,36 @@ class Login extends React.Component<Props, State> {
 
   registerSave = async () => {
     this.setState({ registering: true });
+
+    const { vatId, agreementa, agreementb } = this.state;
     try {
-      await this.props.register(this.state.email, this.state.agreementa);
-      const res = await this.props.createCompany({ variables: { name: this.state.companyname } });
+      if (!agreementa) {
+        throw new Error("Please agree our Terms of Service and Privacy Settings");
+      }
+
+      await this.props.register(this.state.email);
+      const res = await this.props.createCompany({
+        variables: {
+          name: this.state.companyname,
+          legal: {
+            vatId,
+            termsOfService: new Date().toISOString(),
+            privacy: new Date().toISOString(),
+            noVatRequired: agreementb
+          }
+        }
+      });
 
       const { token, refreshToken } = res.data.createCompany;
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", refreshToken);
 
       let statisticdata = {
-        noVat: this.state.agreementb,
         industry: this.state.industry,
         country: this.state.countryCode,
-        subindustry: this.state.subindustry,
+        subIndustry: this.state.subindustry,
         companyStage: this.state.selectedOption
       };
-
-      await this.props.updateStatisticData({ variables: { data: { ...statisticdata } } });
 
       let user = {};
       if (this.state.name != "") {
@@ -344,12 +353,16 @@ class Login extends React.Component<Props, State> {
       }
 
       await this.props.updateUser({ variables: { user } });
-      // console.log(this.state.vatId);
-      this.props.afterRegistration(this.state.address);
+      this.props.afterRegistration(this.state.address, statisticdata);
 
       return this.props.moveTo("dashboard/newuser");
     } catch (err) {
-      console.log("ERR", err);
+      console.log(err);
+      this.setState({
+        error: err.message,
+        errorbool: true,
+        registering: false
+      });
     }
   };
 
@@ -692,15 +705,22 @@ class Login extends React.Component<Props, State> {
                     this.countrySelect = select!;
                   }}
                   onChange={e => {
+                    const value = e.target.value;
+                    const name = e.target.name;
                     this.setField(e);
+                    console.log(`%c ${value}`, "background: BADA55, font-weight: bold;");
                     this.setState({
-                      isEU: countries.filter(country => country.value == e.target.value)[0].isEU,
-                      countryCode: e.target.value,
-                      country: e.target.name
+                      isEU: countries.filter(country => country.value == value)[0].isEU,
+                      countryCode: value,
+                      country: name
                     });
 
-                    if (countries.filter(country => country.value == e.target.value)[0].isEU) {
-                      this.vatInput.value = e.target.value;
+                    if (
+                      countries.filter(country => country.value == value)[0].isEU &&
+                      this.vatInput &&
+                      this.vatInput.value
+                    ) {
+                      this.vatInput.value = value;
                     }
                   }}
                   defaultValue="">
@@ -720,7 +740,7 @@ class Login extends React.Component<Props, State> {
             </div>
             {this.state.country ? (
               !countries.filter(country => country.value == this.state.countryCode)[0].isEU ? (
-                this.state.country != "USA" ? (
+                this.state.countryCode != "US" ? (
                   <div>We are sorry, but VIPFY is not available yet in your country.</div>
                 ) : (
                   <div className="agreementBox float-in-right">
@@ -786,13 +806,13 @@ class Login extends React.Component<Props, State> {
             <div className="chooseStage" style={{ display: "block" }}>
               <div className="Heading">Please choose the stage of your company</div>
               <div className="optionHolder" style={{ display: "flex" }}>
-                <div className="option" onClick={() => this.optionClick(1)}>
+                <div className="option" onClick={() => this.optionClick("Existing Company")}>
                   Existing Company
                 </div>
-                <div className="option" onClick={() => this.optionClick(2)}>
+                <div className="option" onClick={() => this.optionClick("Implementation phase")}>
                   Implementation phase
                 </div>
-                <div className="option" onClick={() => this.optionClick(3)}>
+                <div className="option" onClick={() => this.optionClick("Idea phase")}>
                   Idea phase
                 </div>
               </div>
@@ -815,28 +835,11 @@ class Login extends React.Component<Props, State> {
                   <option value="" disabled hidden>
                     Please choose an Industry
                   </option>
-                  <option value="11">Agriculture, Forestry, Fishing and Hunting‎</option>
-                  <option value="21">Mining, Quarrying, and Oil and Gas Extraction</option>
-                  <option value="22">Utilities</option>
-                  <option value="23">Construction</option>
-                  <option value="31-33">Manufacturing</option>
-                  <option value="42">Wholesale Trade</option>
-                  <option value="44-45">Retail Trade</option>
-                  <option value="48-49">Transportation and Warehousing</option>
-                  <option value="51">Information</option>
-                  <option value="52">Finance and Insurance</option>
-                  <option value="53">Real Estate and Rental and Leasing</option>
-                  <option value="54">Professional, Scientific, and Technical Services</option>
-                  <option value="55">Management of Companies and Enterprises</option>
-                  <option value="56">
-                    Administrative and Support and Waste Management and Remediation Services
-                  </option>
-                  <option value="61">Educational Services</option>
-                  <option value="62">Health Care and Social Assistance</option>
-                  <option value="71">Arts, Entertainment, and Recreation</option>
-                  <option value="72">Accommodation and Food Services</option>
-                  <option value="81">Other Services (except Public Administration)</option>
-                  <option value="92">Public Administration</option>
+                  {industries.map(({ value, name }) => (
+                    <option key={value} value={value}>
+                      {name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -848,148 +851,6 @@ class Login extends React.Component<Props, State> {
   }
 
   showSubIndustry(industryid: String) {
-    const subIndustries = {
-      "11": [
-        { value: "111", title: "Crop Production" },
-        { value: "112", title: "Animal Production and Aquaculture" },
-        { value: "113", title: "Forestry and Logging" },
-        { value: "114", title: "Fishing, Hunting and Trapping" },
-        { value: "115", title: "Support Activities for Agriculture and Forestry" }
-      ],
-      "21": [
-        { value: "211", title: "Oil and Gas Extraction" },
-        { value: "212", title: "Mining (except Oil and Gas)" },
-        { value: "213", title: "Support Activities for Mining" }
-      ],
-      "23": [
-        { value: "236", title: "Construction of Buildings" },
-        { value: "237", title: "Heavy and Civil Engineering Construction" },
-        { value: "238", title: "Specialty Trade Contractors" }
-      ],
-      "31-33": [
-        { value: "311", title: "Food Manufacturing" },
-        { value: "312", title: "Beverage and Tobacco Product Manufacturing" },
-        { value: "313", title: "Textile Mills" },
-        { value: "314", title: "Textile Product Mills" },
-        { value: "315", title: "Apparel Manufacturing" },
-        { value: "316", title: "Leather and Allied Product Manufacturing" },
-        { value: "321", title: "Wood Product Manufacturing" },
-        { value: "322", title: "Paper Manufacturing" },
-        { value: "323", title: "Printing and Related Support Activities" },
-        { value: "324", title: "Petroleum and Coal Products Manufacturing" },
-        { value: "325", title: "Chemical Manufacturing" },
-        { value: "326", title: "Plastics and Rubber Products Manufacturing" },
-        { value: "327", title: "Nonmetallic Mineral Product Manufacturing" },
-        { value: "331", title: "Primary Metal Manufacturing" },
-        { value: "332", title: "Fabricated Metal Product Manufacturing" },
-        { value: "333", title: "Machinery Manufacturing" },
-        { value: "334", title: "Computer and Electronic Product Manufacturing" },
-        { value: "335", title: "Electrical Equipment, Appliance, and Component Manufacturing" },
-        { value: "336", title: "Transportation Equipment Manufacturing" },
-        { value: "337", title: "Furniture and Related Product Manufacturing" },
-        { value: "339", title: "Miscellaneous Manufacturing" }
-      ],
-      "42": [
-        { value: "423", title: "Merchant Wholesalers, Durable Goods" },
-        { value: "424", title: "Merchant Wholesalers, Nondurable Goods" },
-        { value: "425", title: "Wholesale Electronic Markets and Agents and Brokers" }
-      ],
-      "44-45": [
-        { value: "441", title: "Motor Vehicle and Parts Dealers" },
-        { value: "442", title: "Furniture and Home Furnishings Stores" },
-        { value: "443", title: "Electronics and Appliance Stores" },
-        { value: "444", title: "Building Material and Garden Equipment and Supplies Dealers" },
-        { value: "445", title: "Food and Beverage Stores" },
-        { value: "446", title: "Health and Personal Care Stores" },
-        { value: "447", title: "Gasoline Stations" },
-        { value: "448", title: "Clothing and Clothing Accessories Stores" },
-        { value: "451", title: "Sporting Goods, Hobby, Musical Instrument, and Book Stores" },
-        { value: "452", title: "General Merchandise Stores" },
-        { value: "453", title: "Miscellaneous Store Retailers" },
-        { value: "454", title: "Nonstore Retailers" }
-      ],
-      "48-49": [
-        { value: "481", title: "Air Transportation" },
-        { value: "482", title: "Rail Transportation" },
-        { value: "483", title: "Water Transportation" },
-        { value: "484", title: "Truck Transportation" },
-        { value: "485", title: "Transit and Ground Passenger Transportation" },
-        { value: "486", title: "Pipeline Transportation" },
-        { value: "487", title: "Scenic and Sightseeing Transportation" },
-        { value: "488", title: "Support Activities for Transportation" },
-        { value: "491", title: "Postal Service" },
-        { value: "492", title: "Couriers and Messengers" },
-        { value: "493", title: "Warehousing and Storage" }
-      ],
-      "51": [
-        { value: "511", title: "Publishing Industries (except Internet)" },
-        { value: "512", title: "Motion Picture and Sound Recording Industries" },
-        { value: "515", title: "Broadcasting (except Internet)" },
-        { value: "517", title: "Telecommunications" },
-        { value: "518", title: "Data Processing, Hosting, and Related Services" },
-        { value: "519", title: "Other Information Services" }
-      ],
-      "52": [
-        { value: "521", title: "Monetary Authorities-Central Bank" },
-        { value: "522", title: "Credit Intermediation and Related Activities" },
-        {
-          value: "523",
-          title:
-            "Securities, Commodity Contracts, and Other Financial Investments and Related Activities"
-        },
-        { value: "524", title: "Insurance Carriers and Related Activities" },
-        { value: "525", title: "Funds, Trusts, and Other Financial Vehicles" }
-      ],
-      "53": [
-        { value: "531", title: "Real Estate" },
-        { value: "532", title: "Rental and Leasing Services" },
-        {
-          value: "533",
-          title: "Lessors of Nonfinancial Intangible Assets (except Copyrighted Works)"
-        }
-      ],
-      "56": [
-        { value: "561", title: "Administrative and Support Services" },
-        { value: "562", title: "Waste Management and Remediation Services" }
-      ],
-      "62": [
-        { value: "621", title: "Ambulatory Health Care Services" },
-        { value: "622", title: "Hospitals" },
-        { value: "623", title: "Nursing and Residential Care Facilities" },
-        { value: "624", title: "Social Assistance" }
-      ],
-      "71": [
-        { value: "711", title: "Performing Arts, Spectator Sports, and Related Industries" },
-        { value: "712", title: "Museums, Historical Sites, and Similar Institutions" },
-        { value: "713", title: "Amusement, Gambling, and Recreation Industries" }
-      ],
-      "72": [
-        { value: "721", title: "Accommodation" },
-        { value: "722", title: "Food Services and Drinking Places" }
-      ],
-      "81": [
-        { value: "811", title: "Repair and Maintenance " },
-        { value: "812", title: "Personal and Laundry Services" },
-        {
-          value: "813",
-          title: "Religious, Grantmaking, Civic, Professional, and SimilarOrganizations"
-        },
-        { value: "814", title: "Private Households" }
-      ],
-      "92": [
-        { value: "921", title: "Executive, Legislative, and Other General Government Support" },
-        { value: "922", title: "Justice, Public Order, and Safety Activities" },
-        { value: "923", title: "Administration of Human Resource Programs" },
-        { value: "924", title: "Administration of Environmental Quality Programs" },
-        {
-          value: "925",
-          title: "Administration of Housing Programs, Urban Planning, and Community Development"
-        },
-        { value: "926", title: "Administration of Economic Programs" },
-        { value: "927", title: "Space Research and Technology" },
-        { value: "928", title: "National Security and International Affairs" }
-      ]
-    };
     if (subIndustries[industryid]) {
       let subIndustryArray: JSX.Element[] = [];
       subIndustries[industryid].forEach((element, index) => {
@@ -1116,9 +977,6 @@ class Login extends React.Component<Props, State> {
 export default compose(
   graphql(CREATE_COMPANY, {
     name: "createCompany"
-  }),
-  graphql(UPDATE_STATISTIC_DATA, {
-    name: "updateStatisticData"
   }),
   graphql(updateUser, {
     name: "updateUser"

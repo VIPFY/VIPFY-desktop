@@ -139,6 +139,7 @@ class GenericInputForm extends React.Component<Props, State> {
         placeholder,
         label,
         required,
+        disabled,
         type,
         options,
         validate,
@@ -149,6 +150,7 @@ class GenericInputForm extends React.Component<Props, State> {
         name: string;
         icon: string;
         multiple: boolean;
+        disabled: boolean;
         min: string;
         max: string;
         placeholder: string;
@@ -217,7 +219,7 @@ class GenericInputForm extends React.Component<Props, State> {
                   className="generic-dropdown">
                   <option value=""> </option>
                   {options.map(({ name, value }, key) => (
-                    <option key={key} value={value}>
+                    <option selected={this.state.values[name] == value} key={key} value={value}>
                       {name}
                     </option>
                   ))}
@@ -232,6 +234,7 @@ class GenericInputForm extends React.Component<Props, State> {
                   rows={5}
                   cols={50}
                   name={name}
+                  disabled={disabled}
                   placeholder={placeholder}
                   value={values[name] ? values[name] : ""}
                   onChange={e => this.handleChange(e, validate)}
@@ -391,6 +394,7 @@ class GenericInputForm extends React.Component<Props, State> {
                   name={name}
                   placeholder={placeholder}
                   type={type}
+                  disabled={disabled}
                   min={min}
                   max={max}
                   value={values[name] ? values[name] : ""}

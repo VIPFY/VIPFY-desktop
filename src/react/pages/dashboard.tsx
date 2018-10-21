@@ -25,6 +25,8 @@ interface Props {
   firstLogin: boolean;
   disableWelcome: Function;
   addressProposal?: object;
+  vatId: string;
+  statisticData: object;
 }
 
 class Dashboard extends React.Component<Props, {}> {
@@ -37,7 +39,8 @@ class Dashboard extends React.Component<Props, {}> {
         body: Welcome,
         props: {
           fullName: `${this.props.firstname} ${this.props.lastname}`,
-          proposal: this.props.addressProposal ? this.props.addressProposal : null
+          proposal: this.props.addressProposal ? this.props.addressProposal : null,
+          statisticData: this.props.statisticData
         }
       });
     }
