@@ -44,6 +44,7 @@ interface AppState {
   error: string;
   firstLogin: boolean;
   placeid: string;
+  statisticData: object;
   popup: {
     show: boolean;
     header: string;
@@ -68,7 +69,8 @@ const INITIAL_STATE = {
   error: "",
   firstLogin: false,
   placeid: "",
-  popup: INITIAL_POPUP
+  popup: INITIAL_POPUP,
+  statisticData: {}
 };
 
 class App extends React.Component<AppProps, AppState> {
@@ -97,7 +99,7 @@ class App extends React.Component<AppProps, AppState> {
     this.props.history.push("/");
   };
 
-  logMeIn = async (email, password) => {
+  logMeIn = async (email: string, password: string) => {
     try {
       const res = await this.props.signIn({ variables: { email, password } });
       const { ok, token, refreshToken } = res.data.signIn;
@@ -121,7 +123,7 @@ class App extends React.Component<AppProps, AppState> {
 
   moveTo = (path: string) => this.props.history.push(`/area/${path}`);
 
-  registerMe = async (email, newsletter) => {
+  registerMe = async (email: string, newsletter: boolean = false) => {
     try {
       const res = await this.props.signUp({ variables: { email, newsletter } });
       const { ok, token, refreshToken } = res.data.signUp;
@@ -139,8 +141,8 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
-  welcomeNewUser = placeid => {
-    this.setState({ firstLogin: true, placeid });
+  welcomeNewUser = (placeid: string, statisticData: object) => {
+    this.setState({ firstLogin: true, placeid, statisticData });
   };
 
   renderComponents = () => {
@@ -192,7 +194,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    const { placeid, firstLogin } = this.state;
+    const { placeid, firstLogin, statisticData, popup } = this.state;
 
     return (
       <AppContext.Provider
@@ -200,18 +202,19 @@ class App extends React.Component<AppProps, AppState> {
           showPopup: data => this.renderPopup(data),
           firstLogin,
           placeid,
+          statisticData,
           disableWelcome: () => this.setState({ firstLogin: false })
         }}
         className="full-size">
         {this.renderComponents()}
-        {this.state.popup.show ? (
+        {popup.show ? (
           <Popup
-            popupHeader={this.state.popup.header}
-            popupBody={this.state.popup.body}
-            bodyProps={this.state.popup.props}
+            popupHeader={popup.header}
+            popupBody={popup.body}
+            bodyProps={popup.props}
             onClose={this.closePopup}
-            type={this.state.popup.type}
-            info={this.state.popup.info}
+            type={popup.type}
+            info={popup.info}
           />
         ) : (
           ""

@@ -123,13 +123,37 @@ class CompanyData extends React.Component<Props, State> {
 
                   <div className={`information ${this.state.show ? "in" : "out"}`}>
                     <ul>
-                      {Object.keys(fetchCompany).map(info => {
+                      {Object.keys(fetchCompany).map((info, key) => {
                         if (info.match(/(unit)|(__typename)|(profilepicture)/gi)) {
                           return;
+                        } else if (info == "legalinformation") {
+                          if (fetchCompany[info] && fetchCompany[info].vatId) {
+                            console.log("FIRE");
+                            return (
+                              <li key={key}>
+                                <label>Vatnumber:</label>
+                                <span>{fetchCompany[info].vatId}</span>
+                              </li>
+                            );
+                          } else {
+                            return;
+                          }
+                          // Function to map through legalinformation
+                          // return;
+                          // Object.keys(fetchCompany[info]).map(item => (
+                          //   <li key={item}>
+                          //     <label>
+                          //       {`${item.substr(0, 1).toLocaleUpperCase()}${item.substr(1)}`}:
+                          //     </label>
+                          //     <span>{fetchCompany[info][item]}</span>
+                          //   </li>
+                          // ));
                         } else {
                           return (
-                            <li key={info}>
-                              <label>{info}:</label>
+                            <li key={key}>
+                              <label>
+                                {`${info.substr(0, 1).toLocaleUpperCase()}${info.substr(1)}`}:
+                              </label>
                               <span>{fetchCompany[info]}</span>
                             </li>
                           );
