@@ -50,6 +50,7 @@ export const fetchUnitApps = gql`
       }
       boughtplan {
         id
+        alias
         planid {
           id
           options
@@ -59,6 +60,9 @@ export const fetchUnitApps = gql`
       appname
       appid
       appicon
+      licencesused
+      licencestotal
+      endtime
     }
   }
 `;
@@ -69,6 +73,7 @@ export const fetchUsersOwnLicences = gql`
       id
       boughtplanid {
         id
+        alias
         planid {
           id
           options

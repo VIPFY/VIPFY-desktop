@@ -71,12 +71,12 @@ class Navigation extends React.Component<Props, State> {
       document: NOTIFICATION_SUBSCRIPTION,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
-          console.log(subscriptionData);
+          //console.log(subscriptionData);
           return prev;
         }
 
         this.setState({ notify: true });
-        console.log("gotNotifiaction", subscriptionData);
+        //console.log("gotNotifiaction", subscriptionData);
         setTimeout(() => this.setState({ notify: false }), 5000);
 
         this.refetchCategories(subscriptionData.data.newNotification.changed, this.props.client);
@@ -96,7 +96,7 @@ class Navigation extends React.Component<Props, State> {
   async refetchCategories(categories, client) {
     await sleep(2000);
     for (const category of categories) {
-      console.log("refetch category", category);
+      //console.log("refetch category", category);
       if (category == "ownLicences") {
         await client.query({
           query: fetchLicences,
@@ -146,7 +146,7 @@ class Navigation extends React.Component<Props, State> {
       return filterError(error);
     }
 
-    console.log("P", this.props);
+    //console.log("P", this.props);
     return (
       <div
         className={`navigation ${chatOpen ? "chat-open" : ""}
