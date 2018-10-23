@@ -62,6 +62,7 @@ export const fetchUnitApps = gql`
       appicon
       licencesused
       licencestotal
+      endtime
     }
   }
 `;
