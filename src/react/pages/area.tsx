@@ -18,6 +18,7 @@ import Settings from "./settings";
 import Sidebar from "../components/Sidebar";
 import Team from "./team";
 import Webview from "./webview";
+import ErrorPage from "./error";
 
 import { fetchLicences } from "../queries/auth";
 import { fetchRecommendedApps } from "../queries/products";
@@ -73,6 +74,11 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.props.history.push(`/area/app/${boughtplan}`);
   };
 
+  componentDidCatch(error, info) {
+    console.log("ERROR", error, info);
+    this.moveTo("/area/error");
+  }
+
   setSidebar = value => this.setState({ sideBarOpen: value });
 
   toggleChat = () => this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
@@ -96,7 +102,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "marketplace", component: Marketplace },
       { path: "marketplace/:appid/", component: AppPage },
       { path: "marketplace/:appid/:action", component: AppPage },
-      { path: "support", component: SupportPage }
+      { path: "support", component: SupportPage },
+      { path: "error", component: ErrorPage }
     ];
 
     return (

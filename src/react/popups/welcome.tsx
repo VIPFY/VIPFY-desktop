@@ -1,11 +1,19 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import { graphql, compose } from "react-apollo";
 import GenericInputFrom from "../components/GenericInputForm";
-
+import { industries, subIndustries } from "../common/constants";
 const UPLOAD_DATA = gql`
   mutation onSaveProposalData($data: ProposalInput!) {
     saveProposalData(data: $data) {
+      ok
+    }
+  }
+`;
+
+const UPDATE_STATISTIC_DATA = gql`
+  mutation onUpdateStatisticData($data: StatisticInput!) {
+    updateStatisticData(data: $data) {
       ok
     }
   }
@@ -20,14 +28,22 @@ interface Props {
     international_phone_number: string;
     address_components: object[];
   };
+  vatId: string;
+  statisticData: {
+    industry: string;
+    country: string;
+    subIndustry: string;
+    companyStage: string;
+  };
   onClose: Function;
   uploadData: Function;
+  updateStatisticData: Function;
 }
 
 const Welcome = (props: Props) => {
-  const { fullName, proposal, onClose } = props;
+  const { fullName, proposal, onClose, statisticData } = props;
   const { name, formatted_address, website, international_phone_number } = proposal;
-
+  const { industry, subIndustry, companyStage } = statisticData;
   const defaultValues = {
     name,
     formatted_address,
@@ -36,16 +52,43 @@ const Welcome = (props: Props) => {
   };
 
   const fields = [
-    { name: "name", icon: "building" },
-    { name: "formatted_address", icon: "address-card" },
-    { name: "website", icon: "home" },
-    { name: "international_phone_number", icon: "phone" }
+    { name: "name", type: "text", icon: "building" },
+    { name: "formatted_address", type: "text", icon: "address-card" },
+    { name: "website", type: "text", icon: "home" },
+    { name: "international_phone_number", type: "text", icon: "phone" }
   ];
 
-  const handleSubmit = async data => {
+  if (industry) {
+    const industryName = industries.filter(item => item.value == industry);
+    defaultValues.industry = industryName[0].name;
+    fields.push({ name: "industry", type: "text", icon: "industry", disabled: true });
+  }
+
+  if (subIndustry) {
+    const subIndustryName = subIndustries[industry].filter(item => item.value == subIndustry);
+    defaultValues.subIndustry = subIndustryName[0].title;
+    fields.push({ name: "subIndustry", type: "text", icon: "industry", disabled: true });
+  }
+
+  if (companyStage) {
+    defaultValues.companyStage = companyStage;
+    fields.push({ name: "companyStage", type: "text", icon: "chess-rook", disabled: true });
+  }
+
+  const handleSubmit = async ({ name, website, international_phone_number }) => {
     try {
-      data.address_components = proposal.address_components;
-      await props.uploadData({ variables: { data } });
+      const p1 = props.uploadData({
+        variables: {
+          data: {
+            name,
+            address_components: proposal.address_components,
+            website,
+            international_phone_number
+          }
+        }
+      });
+      const p2 = props.updateStatisticData({ variables: { data: statisticData } });
+      await Promise.all([p1, p2]);
     } catch (error) {
       throw new Error(error);
     }
@@ -55,7 +98,8 @@ const Welcome = (props: Props) => {
     <div className="welcomeHolderNew">
       <div className="logo" />
       <div className="text">
-        {`${fullName}, VIPFY is very proud to have you here.
+        <b>{fullName}</b>
+        {`, VIPFY is very proud to have you here.
         If you have any questions, we're happy to help you :)`}
       </div>
 
@@ -79,4 +123,9 @@ const Welcome = (props: Props) => {
   );
 };
 
-export default graphql(UPLOAD_DATA, { name: "uploadData" })(Welcome);
+export default compose(
+  graphql(UPDATE_STATISTIC_DATA, {
+    name: "updateStatisticData"
+  }),
+  graphql(UPLOAD_DATA, { name: "uploadData" })
+)(Welcome);

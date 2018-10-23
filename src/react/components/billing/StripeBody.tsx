@@ -11,8 +11,8 @@ import { FieldsOnCorrectType } from "graphql/validation/rules/FieldsOnCorrectTyp
 import { FETCH_ADDRESSES } from "../../queries/contact";
 
 const ADD_PAYMENT = gql`
-  mutation onAddPaymentData($data: JSON, $address: AddressInput) {
-    addPaymentData(data: $data, address: $address) {
+  mutation onAddPaymentData($data: JSON, $address: AddressInput, $email: String) {
+    addPaymentData(data: $data, address: $address, email: $email) {
       ok
     }
   }
@@ -36,13 +36,18 @@ interface Props {
   stripe: any;
   departmentid: number;
   addresses: object[];
+  emails: object[];
+  hasCard: boolean;
+  firstname: string;
+  lastname: string;
 }
 
 class StripeBody extends React.Component<Props, State> {
   state = {
-    firstName: "",
-    lastName: "",
+    firstName: this.props.firstname ? this.props.firstname : "",
+    lastName: this.props.lastname ? this.props.lastname : "",
     address: 0,
+    email: 0,
     newAddress: {},
     focus: "none",
     error: "",
@@ -77,7 +82,7 @@ class StripeBody extends React.Component<Props, State> {
     try {
       e.preventDefault();
       await this.setState({ error: "" });
-      const { firstName, lastName, address, newAddress } = this.state;
+      const { firstName, lastName, address, newAddress, email } = this.state;
 
       if (firstName.length < 2 || lastName.length < 2) {
         return this.setState({ error: "Please enter a First and Last Name" });
@@ -87,7 +92,9 @@ class StripeBody extends React.Component<Props, State> {
       let address_country;
       let address_zip;
       let address_line1;
-      const variables = {};
+      const variables = {
+        email: this.props.hasCard ? null : this.props.emails[email].email
+      };
 
       if (Object.keys(newAddress).length > 0) {
         address_city = newAddress.city;
@@ -102,8 +109,10 @@ class StripeBody extends React.Component<Props, State> {
         address_line1 = this.props.addresses[address].address.street;
       }
 
+      // createToken doesn't like template strings. This is the work around.
+      const name = `${firstName} ${lastName}`;
       let { token, error } = await this.props.stripe.createToken({
-        name: `${firstName} ${lastName}`,
+        name,
         address_city,
         address_country,
         address_zip,
@@ -115,7 +124,6 @@ class StripeBody extends React.Component<Props, State> {
       }
 
       variables.data = token;
-
       this.setState({ submitting: true });
       await addCard({ variables });
     } catch (error) {
@@ -168,7 +176,8 @@ class StripeBody extends React.Component<Props, State> {
       {
         name: "lastName",
         placeholder: "Last Name",
-        value: lastName
+        value: lastName,
+        icon: "user"
       }
     ];
 
@@ -213,6 +222,40 @@ class StripeBody extends React.Component<Props, State> {
                 />
               </div>
             ))}
+
+            {!this.props.hasCard ? (
+              <div className="billing-addresses">
+                {this.props.emails.length > 0
+                  ? this.props.emails.map(({ email }, key) => (
+                      <div className="generic-searchbar" key={`email-${key}`}>
+                        <div className="billing-icon-holder">
+                          <i className="fas fa-envelope" />
+                        </div>
+
+                        <label
+                          title=""
+                          className={`billing-input ${this.state.showFields ? "disabled" : ""}`}
+                          htmlFor={`email-radio-${key}`}>
+                          {email}
+                        </label>
+                        <input
+                          defaultChecked={key == 0 ? true : false}
+                          name="email"
+                          type="radio"
+                          id={`email-radio-${key}`}
+                          className="billing-input"
+                          required={true}
+                          disabled={loading || this.state.showFields}
+                          value={key}
+                          onChange={this.handleChange}
+                        />
+                      </div>
+                    ))
+                  : "Please set an Billing Email first"}
+              </div>
+            ) : (
+              ""
+            )}
 
             <div className="billing-addresses">
               {this.props.addresses.length > 0 ? (

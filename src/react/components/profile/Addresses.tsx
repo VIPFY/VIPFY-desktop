@@ -5,6 +5,8 @@ import { Query, compose, graphql } from "react-apollo";
 import Confirmation from "../../popups/Confirmation";
 import GenericInputForm from "../GenericInputForm";
 import LoadingDiv from "../LoadingDiv";
+
+import { AppContext } from "../../common/functions";
 import { filterError, ErrorComp } from "../../common/functions";
 import { addressFields } from "../../common/constants";
 import { CREATE_ADDRESS } from "../../mutations/contact";
@@ -33,12 +35,11 @@ const DELETE_ADDRESS = gql`
 
 interface Props {
   company: number;
-  showPopup: Function;
   deleteAddress: Function;
   createAddress: Function;
   updateAddress: Function;
   unitid: number;
-  label: string;
+  label?: string;
   tag?: string;
 }
 
@@ -65,11 +66,15 @@ class Addresses extends React.Component<Props, State> {
     if (this.props.company) {
       this.setState({ variables: { company: true } });
     }
+
+    if (this.props.tag) {
+      this.setState(prevState => ({ variables: { ...prevState.variables, tag: this.props.tag } }));
+    }
   }
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
-  showCreation = () => {
+  showCreation = showPopup => {
     const creationPopup = {
       header: "Create new Address",
       body: GenericInputForm,
@@ -92,10 +97,10 @@ class Addresses extends React.Component<Props, State> {
       }
     };
 
-    this.props.showPopup(creationPopup);
+    showPopup(creationPopup);
   };
 
-  editAddress = async (e, id) => {
+  editAddress = async (e, id, showPopup) => {
     e.preventDefault();
     try {
       const address: { tags: string[]; department?: boolean } = { tags: [] };
@@ -121,7 +126,7 @@ class Addresses extends React.Component<Props, State> {
       await this.props.updateAddress({ variables: { address, id } });
       this.setState({ edit: -1 });
     } catch (err) {
-      this.props.showPopup({
+      showPopup({
         header: "Error",
         body: ErrorComp,
         props: { error: filterError(err) }
@@ -129,7 +134,7 @@ class Addresses extends React.Component<Props, State> {
     }
   };
 
-  showDeletion = (id: { id: number }) => {
+  showDeletion = (id: { id: number }, showPopup: { showPopup: Function }) => {
     const { variables } = this.state;
 
     const deletionPopup = {
@@ -158,181 +163,183 @@ class Addresses extends React.Component<Props, State> {
       }
     };
 
-    this.props.showPopup(deletionPopup);
+    showPopup(deletionPopup);
   };
 
   render() {
     const addressHeaders = ["Street", "zip", "City", "Country", "Description", "Priority"];
 
     return (
-      <div className="addresses">
-        <div className="header">
-          <i
-            className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
-            onClick={this.toggle}
-          />
-          <span>{this.props.label ? this.props.label : "Addresses"}</span>
-        </div>
+      <AppContext.Consumer>
+        {({ showPopup }) => (
+          <div className="addresses">
+            <div className="header">
+              <i
+                className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
+                onClick={this.toggle}
+              />
+              <span>{this.props.label ? this.props.label : "Addresses"}</span>
+            </div>
 
-        <div className={`addresses-header ${this.state.show ? "in" : "out"}`}>
-          {addressHeaders.map(header => (
-            <span key={header}>{header}</span>
-          ))}
-        </div>
+            <div className={`addresses-header ${this.state.show ? "in" : "out"}`}>
+              {addressHeaders.map(header => (
+                <span key={header}>{header}</span>
+              ))}
+            </div>
 
-        <Query query={FETCH_ADDRESSES} variables={this.state.variables}>
-          {({ data, loading, error }) => {
-            if (loading) {
-              return <LoadingDiv text="Fetching Addresses..." />;
-            }
+            <Query query={FETCH_ADDRESSES} variables={this.state.variables}>
+              {({ data, loading, error }) => {
+                if (loading) {
+                  return <LoadingDiv text="Fetching Addresses..." />;
+                }
 
-            if (error) {
-              return filterError(error);
-            }
+                if (error) {
+                  return filterError(error);
+                }
 
-            return data.fetchAddresses.length > 0 ? (
-              <React.Fragment>
-                {data.fetchAddresses
-                  .filter(address => {
-                    if (this.props.tag) {
-                      return address.tags == this.props.tag;
-                    } else {
-                      return true;
-                    }
-                  })
-                  .map(({ address, description, country, priority, tags, id }) => {
-                    let { street, zip, city } = address;
-                    // const normalizedTags =
-                    //   tags && tags.length > 0
-                    //     ? tags.map((tag, key) => (
-                    //         <span key={key}>
-                    //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
-                    //           {tag}
-                    //         </span>
-                    //       ))
-                    //     : "";
+                return data.fetchAddresses.length > 0 ? (
+                  <React.Fragment>
+                    {data.fetchAddresses.map(
+                      ({ address, description, country, priority, tags, id }) => {
+                        let { street, zip, city } = address;
+                        // const normalizedTags =
+                        //   tags && tags.length > 0
+                        //     ? tags.map((tag, key) => (
+                        //         <span key={key}>
+                        //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
+                        //           {tag}
+                        //         </span>
+                        //       ))
+                        //     : "";
 
-                    return (
-                      <div className={`addresses-list ${this.state.show ? "in" : "out"}`} key={id}>
-                        {this.state.edit != id ? (
-                          <React.Fragment>
-                            <span>{street}</span>
-                            <span>{zip ? zip : "not set"}</span>
-                            <span>{city}</span>
-                            <span>{country}</span>
-                            <span>{description}</span>
-                            <span>{priority}</span>
-                            {/* <span className="tags">{normalizedTags}</span> */}
-                          </React.Fragment>
-                        ) : (
-                          <form
-                            className="inline-form"
-                            id={`address-form-${id}`}
-                            onSubmit={e => this.editAddress(e, id)}>
-                            <input
-                              type="text"
-                              name="street"
-                              className="inline-searchbar"
-                              defaultValue={street}
-                            />
+                        return (
+                          <div
+                            className={`addresses-list ${this.state.show ? "in" : "out"}`}
+                            key={id}>
+                            {this.state.edit != id ? (
+                              <React.Fragment>
+                                <span>{street}</span>
+                                <span>{zip ? zip : "not set"}</span>
+                                <span>{city}</span>
+                                <span>{country}</span>
+                                <span>{description}</span>
+                                <span>{priority}</span>
+                                {/* <span className="tags">{normalizedTags}</span> */}
+                              </React.Fragment>
+                            ) : (
+                              <form
+                                className="inline-form"
+                                id={`address-form-${id}`}
+                                onSubmit={e => this.editAddress(e, id, showPopup)}>
+                                <input
+                                  type="text"
+                                  name="street"
+                                  className="inline-searchbar"
+                                  defaultValue={street}
+                                />
 
-                            <input
-                              name="zip"
-                              type="text"
-                              className="inline-searchbar"
-                              defaultValue={zip ? zip : "not set"}
-                            />
+                                <input
+                                  name="zip"
+                                  type="text"
+                                  className="inline-searchbar"
+                                  defaultValue={zip ? zip : "not set"}
+                                />
 
-                            <input
-                              type="text"
-                              name="city"
-                              className="inline-searchbar"
-                              defaultValue={city}
-                            />
+                                <input
+                                  type="text"
+                                  name="city"
+                                  className="inline-searchbar"
+                                  defaultValue={city}
+                                />
 
-                            <select
-                              name="country"
-                              className="inline-dropdown"
-                              defaultValue={country}>
-                              <option value=""> </option>
-                              {["DE", "US", "JP", "FR", "PL"].map(tag => (
-                                <option key={tag} value={tag}>
-                                  {tag}
-                                </option>
-                              ))}
-                            </select>
+                                <select
+                                  name="country"
+                                  className="inline-dropdown"
+                                  defaultValue={country}>
+                                  <option value=""> </option>
+                                  {["DE", "US", "JP", "FR", "PL"].map(tag => (
+                                    <option key={tag} value={tag}>
+                                      {tag}
+                                    </option>
+                                  ))}
+                                </select>
 
-                            <input
-                              type="text"
-                              name="description"
-                              className="inline-searchbar"
-                              defaultValue={description}
-                            />
+                                <input
+                                  type="text"
+                                  name="description"
+                                  className="inline-searchbar"
+                                  defaultValue={description}
+                                />
 
-                            <input
-                              name="priority"
-                              type="number"
-                              className="inline-searchbar"
-                              defaultValue={priority}
-                            />
+                                <input
+                                  name="priority"
+                                  type="number"
+                                  className="inline-searchbar"
+                                  defaultValue={priority}
+                                />
 
-                            {/* <div className="tags">
+                                {/* <div className="tags">
                               <CoolCheckbox
-                                name="billing"
-                                value={tags ? tags.includes("billing") : false}
+                              name="billing"
+                              value={tags ? tags.includes("billing") : false}
                               />
-
+                              
                               <CoolCheckbox
-                                name="main"
-                                value={tags ? tags.includes("main") : false}
+                              name="main"
+                              value={tags ? tags.includes("main") : false}
                               />
                             </div> */}
-                          </form>
-                        )}
+                              </form>
+                            )}
 
-                        <span className="naked-button-holder">
-                          {this.state.edit == id ? (
-                            <React.Fragment>
-                              <button
-                                className="naked-button"
-                                type="submit"
-                                form={`address-form-${id}`}>
-                                <i className="fa fa-check" />
-                              </button>
-                              <i
-                                onClick={() => this.setState({ edit: -1 })}
-                                className="fa fa-times"
-                              />
-                            </React.Fragment>
-                          ) : (
-                            <React.Fragment>
-                              <i
-                                onClick={() => this.showDeletion(id)}
-                                className="fa fa-trash-alt"
-                              />
-                              <i
-                                onClick={() => this.setState({ edit: id })}
-                                className="fa fa-edit"
-                              />
-                            </React.Fragment>
-                          )}
-                        </span>
-                      </div>
-                    );
-                  })}
-              </React.Fragment>
-            ) : (
-              ""
-            );
-          }}
-        </Query>
-        <div className={this.state.show ? "in" : "out"}>
-          <button className="button-address" onClick={this.showCreation}>
-            <i className="fa fa-plus" />
-            Add Address
-          </button>
-        </div>
-      </div>
+                            <span className="naked-button-holder">
+                              {this.state.edit == id ? (
+                                <React.Fragment>
+                                  <button
+                                    className="naked-button"
+                                    type="submit"
+                                    form={`address-form-${id}`}>
+                                    <i className="fa fa-check" />
+                                  </button>
+                                  <i
+                                    onClick={() => this.setState({ edit: -1 })}
+                                    className="fa fa-times"
+                                  />
+                                </React.Fragment>
+                              ) : (
+                                <React.Fragment>
+                                  <i
+                                    title="Delete"
+                                    onClick={() => this.showDeletion(id, showPopup)}
+                                    className="fa fa-trash-alt"
+                                  />
+                                  <i
+                                    title="Edit"
+                                    onClick={() => this.setState({ edit: id })}
+                                    className="fa fa-edit"
+                                  />
+                                </React.Fragment>
+                              )}
+                            </span>
+                          </div>
+                        );
+                      }
+                    )}
+                  </React.Fragment>
+                ) : (
+                  ""
+                );
+              }}
+            </Query>
+            <div className={this.state.show ? "in" : "out"}>
+              <button className="button-address" onClick={() => this.showCreation(showPopup)}>
+                <i className="fa fa-plus" />
+                Add Address
+              </button>
+            </div>
+          </div>
+        )}
+      </AppContext.Consumer>
     );
   }
 }

@@ -109,6 +109,7 @@ class CheckOrder extends React.Component<Props, State> {
                 <div className="Pcaption">{feature.precaption}</div>
                 <input
                   className="inputNew"
+                  type="number"
                   value={this.state.featurenumbers[i] || feature.number}
                   onChange={e => this.changeOption(i, e.target.value, plan)}
                 />
@@ -375,7 +376,7 @@ class CheckOrder extends React.Component<Props, State> {
                   <Query
                     query={gql`
                     query {
-                      fetchAddresses {
+                      fetchAddresses(forCompany: true, tag: "billing") {
                         id
                         address
                         country
@@ -383,6 +384,7 @@ class CheckOrder extends React.Component<Props, State> {
                         priority
                         tags
                       }
+
                       fetchPaymentData {
                         name
                         last4
@@ -390,6 +392,7 @@ class CheckOrder extends React.Component<Props, State> {
                         exp_month
                         exp_year
                       }
+
                       fetchPlanInputs(planid: ${this.props.plan.id})
                     }
                   `}>
