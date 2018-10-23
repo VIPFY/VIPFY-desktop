@@ -579,12 +579,12 @@ class Team extends React.Component<Props, State> {
     let licenceid = ev.dataTransfer.getData("licenceid");
     let personid = ev.dataTransfer.getData("personid");
 
-    console.log(id, appname, remove, ev, person, department, removearea);
+    //console.log(id, appname, remove, ev, person, department, removearea);
     if (remove == "true" && removearea) {
-      console.log("REMOVE", remove);
+      //console.log("REMOVE", remove);
       this.revokeLicence(licenceid, personid);
     } else if (remove == "false" && !removearea) {
-      console.log("distributeLicence");
+      //console.log("distributeLicence");
       this.distributeLicence(id, person, department, appname);
     }
   };
@@ -650,7 +650,7 @@ class Team extends React.Component<Props, State> {
                           ) {
                             appArray.push(
                               <div
-                                className={`EApp ${
+                                className={`EApp dragable ${
                                   this.state.dragginglicence == licence.id ? "dragging" : ""
                                 }`}
                                 key={key}
@@ -793,7 +793,7 @@ class Team extends React.Component<Props, State> {
                         let appArray: JSX.Element[] = [];
 
                         if (data.fetchUnitApps) {
-                          console.log(data.fetchUnitApps);
+                          //console.log(data.fetchUnitApps);
                           const noExternalApps = data.fetchUnitApps.filter(
                             app =>
                               app.boughtplan.planid.options === null &&

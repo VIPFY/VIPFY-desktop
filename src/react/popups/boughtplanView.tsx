@@ -56,7 +56,7 @@ class BoughtplanView extends Component {
   };
 
   render() {
-    console.log("Loading", this.props);
+    //console.log("Loading", this.props);
 
     return (
       <div className="addEmployeeHolderP">
@@ -89,7 +89,7 @@ class BoughtplanView extends Component {
                     <polyline points="1 9 7 14 15 4" />
                   </svg>
                   <span className="agreementSentence">
-                    No licences used. Check to hide this plan.
+                    No licences used. Check to terminate this plan permantly.
                   </span>
                 </label>
               </div>
