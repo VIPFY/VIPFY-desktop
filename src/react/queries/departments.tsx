@@ -50,6 +50,7 @@ export const fetchUnitApps = gql`
       }
       boughtplan {
         id
+        alias
         planid {
           id
           options
@@ -69,6 +70,7 @@ export const fetchUsersOwnLicences = gql`
       id
       boughtplanid {
         id
+        alias
         planid {
           id
           options

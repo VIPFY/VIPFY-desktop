@@ -11,6 +11,7 @@ import { ErrorComp } from "../common/functions";
 import AddEmployee from "../popups/addEmployee";
 import ShowEmployee from "../popups/showEmployee";
 import LoadingPopup from "../popups/loadingPopup";
+import BoughtplanView from "../popups/boughtplanView";
 
 import { fetchLicences, me } from "../queries/auth";
 
@@ -45,7 +46,9 @@ const REMOVE_EXTERNAL_ACCOUNT = gql`
     }
   }
 `;
-interface Props {}
+interface Props {
+  showPopup: Function;
+}
 
 interface State {
   showAdd: number;
@@ -171,7 +174,7 @@ class Team extends React.Component<Props, State> {
 
       this.closePopup();
     } catch (err) {
-      console.log("aEA", err, email, departmentid);
+      //console.log("aEA", err, email, departmentid);
       this.showPopup(err.message || "Something went really wrong");
     }
   };
@@ -184,7 +187,7 @@ class Team extends React.Component<Props, State> {
       });
       this.closePopup();
     } catch (err) {
-      console.log("dEA", err, unitid, departmentid);
+      //console.log("dEA", err, unitid, departmentid);
       this.showPopup(err.message || "Something went really wrong");
     }
   };
@@ -568,7 +571,7 @@ class Team extends React.Component<Props, State> {
     if (data.employees) {
       let employeeArray: JSX.Element[] = [];
       data.employees.forEach((person, key) => {
-        console.log("PERSON", person);
+        //console.log("PERSON", person);
         employeeArray.push(
           <div
             key={key}
@@ -637,7 +640,10 @@ class Team extends React.Component<Props, State> {
                                 ""
                               )}
                               <div className="employeeName">
-                                {licence.boughtplanid.planid.appid.name} {licence.boughtplanid.id}
+                                {licence.boughtplanid.alias ||
+                                  `${licence.boughtplanid.planid.appid.name} ${
+                                    licence.boughtplanid.id
+                                  }`}
                               </div>
                               {licence.boughtplanid.planid.options &&
                               licence.boughtplanid.planid.options.external ? (
@@ -711,7 +717,7 @@ class Team extends React.Component<Props, State> {
                         let appArray: JSX.Element[] = [];
 
                         if (data.fetchUnitApps) {
-                          console.log(data.fetchUnitApps);
+                          //console.log(data.fetchUnitApps);
                           const noExternalApps = data.fetchUnitApps.filter(
                             app => app.boughtplan.planid.options === null
                           );
@@ -722,14 +728,14 @@ class Team extends React.Component<Props, State> {
                               onDragStart={ev => this.onDragStart(ev, app.boughtplan.id, app)}
                               onDragEnd={() => this.setState({ dragging: 0 })}
                               key={key}
-                              /*onClick={() =>
-                              this.props.distributeLicence(
-                                app.boughtplan.id,
-                                this.props.unitId,
-                                this.props.departmentId
-                              )
-                            }*/
-                            >
+                              onClick={() =>
+                                this.props.showPopup({
+                                  header:
+                                    app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`,
+                                  body: BoughtplanView,
+                                  props: { sentence: "Bla" }
+                                })
+                              }>
                               <img
                                 className="right-profile-image"
                                 style={{
@@ -739,7 +745,7 @@ class Team extends React.Component<Props, State> {
                                   "21062018-htv58-scarlett-jpeg"}`}
                               />
                               <div className="employeeName">
-                                {app.appname} {app.boughtplan.id}
+                                {app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`}
                               </div>
                               <span className="explain">Move to add to user</span>
                             </div>

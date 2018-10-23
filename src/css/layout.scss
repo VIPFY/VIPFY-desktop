@@ -289,8 +289,9 @@
 
 #loading-screen {
   /*background-color: #fff;*/
-  background-image: url('../images/loading.gif');
-  background-position: center center;
+  background-image: url('../images/Ladeanimation_Vipfy_transparent.gif');
+  background-position: calc(50% - 2.5rem) calc(50% - 3rem);
+  background-size: 5rem;
   background-repeat: no-repeat;
   /*max-height: 15rem;
   margin-bottom: 4rem;*/
