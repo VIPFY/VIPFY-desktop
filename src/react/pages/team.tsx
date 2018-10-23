@@ -733,7 +733,11 @@ class Team extends React.Component<Props, State> {
                                   header:
                                     app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`,
                                   body: BoughtplanView,
-                                  props: { sentence: "Bla" }
+                                  props: {
+                                    appname:
+                                      app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`,
+                                    app
+                                  }
                                 })
                               }>
                               <img

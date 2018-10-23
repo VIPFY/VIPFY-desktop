@@ -60,6 +60,8 @@ export const fetchUnitApps = gql`
       appname
       appid
       appicon
+      licencesused
+      licencestotal
     }
   }
 `;

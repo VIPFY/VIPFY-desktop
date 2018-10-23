@@ -71,7 +71,7 @@ class GenericInputField extends Component {
           display: "flex",
           alignItems: "center"
         }}
-        onClick={() => this.props.onClick()}>
+        onClick={() => (this.props.onClick ? this.props.onClick() : this.nameInput.select())}>
         {this.props.button ? (
           <div className={this.props.buttonClass}>
             <i className={this.props.button} />
