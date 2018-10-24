@@ -8,7 +8,7 @@ import moment = require("moment");
 interface State {}
 
 interface Props {
-  fetchUnitApps: { fetchUnitApps: any };
+  data: { fetchUnitApps: any; fetchUnitAppsSimpleStats: any };
 }
 
 const shortEnglishHumanizer = humanizeDuration.humanizer({
@@ -38,22 +38,17 @@ class AppListInner extends React.Component<Props, State> {
       <table>
         <thead>
           <tr>
-            <th />
-            <th />
-            <th />
-            <th colSpan={2}>Licences</th>
-            <th />
-            <th />
-            <th />
-          </tr>
-          <tr>
             <th>App Name</th>
             <th>Plan Name</th>
             <th>ID</th>
-            <th>Used</th>
-            <th>Total</th>
+            <th>
+              Licences
+              <br />
+              Used
+            </th>
             <th>Time Spend this Month</th>
             <th>Price per Month</th>
+            <th>Runs Until</th>
             <th />
           </tr>
         </thead>
@@ -71,15 +66,21 @@ class AppListInner extends React.Component<Props, State> {
           : shortEnglishHumanizer(stats.minutestotal * 60 * 1000, {
               largest: 2
             });
+      let endsat = "forever";
+      if (boughtplan.buytime) {
+        endsat = `ends at ${moment(boughtplan.buytime).format("LLL")}`;
+      }
       return (
         <tr key={`r${boughtplan.id}`}>
           <td>{boughtplan.boughtplan.planid.appid.name}</td>
           <td>{boughtplan.boughtplan.planid.name}</td>
           <td>{boughtplan.boughtplan.id}</td>
-          <td>{boughtplan.licencesused}</td>
-          <td>{boughtplan.licencestotal}</td>
+          <td>
+            {boughtplan.licencesused}/{boughtplan.licencestotal}
+          </td>
           <td>{totaldur}</td>
           <td>${boughtplan.boughtplan.totalprice}</td>
+          <td>{endsat}</td>
           <td>
             <a>Show Usage</a>
             <a>Upgrade</a> <a>Cancel</a>
