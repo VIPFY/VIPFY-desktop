@@ -9,7 +9,21 @@ import Confirmation from "../../popups/Confirmation";
 const CANCEL_PLAN = gql`
   mutation onCancelPlan($planid: Int!) {
     cancelPlan(planid: $planid) {
-      ok
+      id
+      totalprice
+      buytime
+      endtime
+      planid {
+        id
+        name
+        appid {
+          id
+          name
+          icon
+          logo
+          color
+        }
+      }
     }
   }
 `;
@@ -132,22 +146,23 @@ class AppListInner extends React.Component<Props, State> {
                 <a>Upgrade</a>
                 <Mutation
                   mutation={CANCEL_PLAN}
-                  update={cache => {
-                    const { fetchUnitApps } = cache.readQuery({
-                      query: FETCH_UNIT_APPS,
-                      variables: { departmentid: this.props.company.unit.id }
-                    });
+                  // update={cache => {
+                  //   const { fetchUnitApps } = cache.readQuery({
+                  //     query: FETCH_UNIT_APPS,
+                  //     variables: { departmentid: this.props.company.unit.id }
+                  //   });
 
-                    cache.writeQuery({
-                      query: FETCH_UNIT_APPS,
-                      variables: { departmentid: this.props.company.unit.id },
-                      data: {
-                        fetchUnitApps: fetchUnitApps.filter(
-                          unitApps => unitApps.boughtplan.id != boughtplan.boughtplan.id
-                        )
-                      }
-                    });
-                  }}>
+                  //   cache.writeQuery({
+                  //     query: FETCH_UNIT_APPS,
+                  //     variables: { departmentid: this.props.company.unit.id },
+                  //     data: {
+                  //       fetchUnitApps: fetchUnitApps.filter(
+                  //         unitApps => unitApps.boughtplan.id != boughtplan.boughtplan.id
+                  //       )
+                  //     }
+                  //   });
+                  // }}
+                >
                   {cancelPlan => (
                     <i
                       title="cancel"
