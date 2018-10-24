@@ -18,7 +18,8 @@
     "pretty": true,
     "target": "es6",
     "jsx": "react",
-    "lib": ["dom","es6","dom.iterable","scripthost"]
+    "lib": ["dom","es6","dom.iterable","scripthost"],
+    "experimentalDecorators": true
   },
   "formatCodeOptions": {
     "indentSize": 2,
