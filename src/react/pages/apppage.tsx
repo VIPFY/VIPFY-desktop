@@ -117,7 +117,8 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     this.showPopup({
       type: "Check Buying",
       acceptFunction: this.buyAppAccepted,
-      plan
+      plan,
+      history: this.props.history
     });
   };
 

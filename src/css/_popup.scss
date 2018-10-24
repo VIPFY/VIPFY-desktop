@@ -33,6 +33,7 @@ $modal-wh: 50%;
   width: $modal-wh;
   border-radius: 3px;
   animation: fly-in 150ms ease-in-out 100ms forwards;
+  display: flex;
 
   @keyframes fly-in {
     0% {
