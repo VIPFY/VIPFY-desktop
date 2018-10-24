@@ -1,6 +1,6 @@
 {
   "name": "vipfy-desktop",
-  "productName": "vipfy-desktop",
+  "productName": "VIPFY Desktop",
   "version": "0.4.1",
   "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
@@ -28,6 +28,7 @@
     "forge": {
       "make_targets": {
         "win32": [
+          "squirrel",
           "zip"
         ],
         "darwin": [
