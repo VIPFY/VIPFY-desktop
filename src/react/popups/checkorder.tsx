@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Query } from "react-apollo";
+import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
 import { AppContext } from "../common/functions";
 import WebView = require("react-electron-web-view");
@@ -9,10 +9,13 @@ import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
 import UserName from "../components/UserName";
 
+import { distributeLicence } from "../mutations/auth";
+
 interface Props {
   plan: any;
   acceptFunction: Function;
   onClose: Function;
+  history: string[];
 }
 
 interface State {
@@ -369,13 +372,24 @@ class CheckOrder extends React.Component<Props, State> {
           <LoadingDiv />
           <div>We are setting everything up for you. Please wait :)</div>
           <button
-            /*onClick={() => this.props.onClose()}*/ onClick={() => this.setState({ buying: 2 })}>
+            onClick={() => this.props.onClose()} /*onClick={() => this.setState({ buying: 2 })}*/
+          >
             I don't want to wait. Inform me, when everything is finished.
           </button>
         </div>
       );
     } else if (this.state.buying === 2) {
-      return <div className="distributeBuying">Now distributeBuying</div>;
+      return (
+        <div className="distributeBuying">
+          {/*<button className="option">Distribute One Licence to myself</button> TODO */}
+          <button className="option" onClick={() => this.props.history.push("/area/team")}>
+            Go to Team-Page to distribute licences
+          </button>
+          <button className="option" onClick={() => this.props.history.push("/area/marketplace")}>
+            Continue Shopping
+          </button>
+        </div>
+      );
     } else {
       let planInputs = null;
       let billingAddresses = null;
@@ -428,6 +442,7 @@ class CheckOrder extends React.Component<Props, State> {
                         }
                         planInputs = data.fetchPlanInputs;
                         billingAddresses = data.fetchAddresses;
+
                         if (data.fetchAddresses && data.fetchAddresses.length >= 1) {
                           return (
                             <div>
@@ -537,14 +552,64 @@ class CheckOrder extends React.Component<Props, State> {
                     <button className="cancelButton" onClick={() => this.props.onClose()}>
                       Cancel
                     </button>
-                    <button
-                      className="checkoutButton"
-                      onClick={() =>
-                        this.accept(this.props.plan, planInputs, company, billingAddresses)
-                      }>
-                      Checkout for ${this.state.totalprice || this.props.plan.price}
-                      /mo
-                    </button>
+                    <Query
+                      query={gql`
+                        query {
+                          fetchAddresses(forCompany: true, tag: "billing") {
+                            id
+                            address
+                            country
+                            description
+                            priority
+                            tags
+                          }
+
+                          fetchPaymentData {
+                            name
+                            last4
+                            brand
+                            exp_month
+                            exp_year
+                          }
+                        }
+                      `}>
+                      {({ loading, error, data }) => {
+                        if (loading) {
+                          return "Fetching invoice data...";
+                        }
+                        if (error) {
+                          return "Error loading Billing Data";
+                        }
+                        console.log(data);
+                        return (
+                          <div>
+                            {!data.fetchPaymentData ||
+                            data.fetchPaymentData.length === 0 ||
+                            !data.fetchAddresses ||
+                            data.fetchAddresses.length === 0 ? (
+                              <button className="checkoutButton checkoutButton_notworking">
+                                Checkout for ${this.state.totalprice || this.props.plan.price}
+                                /mo
+                              </button>
+                            ) : (
+                              <button
+                                className="checkoutButton"
+                                onClick={() =>
+                                  this.accept(
+                                    this.props.plan,
+                                    planInputs,
+                                    company,
+                                    billingAddresses
+                                  )
+                                }>
+                                Checkout for ${this.state.totalprice || this.props.plan.price}
+                                /mo
+                              </button>
+                            )}
+                          </div>
+                        );
+                      }}
+                    </Query>
                   </div>
                 </div>
               </div>
@@ -555,4 +620,8 @@ class CheckOrder extends React.Component<Props, State> {
     }
   }
 }
-export default CheckOrder;
+export default compose(
+  graphql(distributeLicence, {
+    name: "distributeLicence"
+  })
+)(CheckOrder);
