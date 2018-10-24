@@ -9,7 +9,43 @@ import Confirmation from "../../popups/Confirmation";
 const CANCEL_PLAN = gql`
   mutation onCancelPlan($planid: Int!) {
     cancelPlan(planid: $planid) {
-      ok
+      id
+      totalprice
+      buytime
+      endtime
+      planid {
+        id
+        name
+        appid {
+          id
+          name
+          icon
+          logo
+          color
+        }
+      }
+    }
+  }
+`;
+
+const REACTIVATE_PLAN = gql`
+  mutation onReactivatePlan($planid: Int!) {
+    reactivatePlan(planid: $planid) {
+      id
+      totalprice
+      buytime
+      endtime
+      planid {
+        id
+        name
+        appid {
+          id
+          name
+          icon
+          logo
+          color
+        }
+      }
     }
   }
 `;
@@ -104,16 +140,20 @@ class AppListInner extends React.Component<Props, State> {
   tableRows() {
     return this.props.data.fetchUnitApps.map(boughtplan => {
       const stats = this.props.data.fetchUnitAppsSimpleStats.filter(d => d.id == boughtplan.id)[0];
-      const totaldur =
+      const { endtime } = boughtplan.boughtplan;
+
+      const totalDur =
         stats.minutestotal == 0
           ? "0"
           : shortEnglishHumanizer(stats.minutestotal * 60 * 1000, {
               largest: 2
             });
-      let endsat = "forever";
-      if (boughtplan.buytime) {
-        endsat = `ends at ${moment(boughtplan.buytime).format("LLL")}`;
+      let endSat = "forever";
+
+      if (endtime) {
+        endSat = `ends at ${moment(endtime).format("LLL")}`;
       }
+
       return (
         <AppContext.Consumer key={`r${boughtplan.id}`}>
           {({ showPopup }) => (
@@ -124,44 +164,29 @@ class AppListInner extends React.Component<Props, State> {
               <td>
                 {boughtplan.licencesused}/{boughtplan.licencestotal}
               </td>
-              <td>{totaldur}</td>
+              <td>{totalDur}</td>
               <td>${boughtplan.boughtplan.totalprice}</td>
-              <td>{endsat}</td>
+              <td>{endSat}</td>
               <td className="naked-button-holder">
                 <a>Show Usage</a>
                 <a>Upgrade</a>
-                <Mutation
-                  mutation={CANCEL_PLAN}
-                  update={cache => {
-                    const { fetchUnitApps } = cache.readQuery({
-                      query: FETCH_UNIT_APPS,
-                      variables: { departmentid: this.props.company.unit.id }
-                    });
-
-                    cache.writeQuery({
-                      query: FETCH_UNIT_APPS,
-                      variables: { departmentid: this.props.company.unit.id },
-                      data: {
-                        fetchUnitApps: fetchUnitApps.filter(
-                          unitApps => unitApps.boughtplan.id != boughtplan.boughtplan.id
-                        )
-                      }
-                    });
-                  }}>
-                  {cancelPlan => (
+                <Mutation mutation={!endtime ? CANCEL_PLAN : REACTIVATE_PLAN}>
+                  {mutation => (
                     <i
-                      title="cancel"
-                      className="fas fa-trash-alt"
+                      title={!endtime ? "Cancel" : "Reactivate"}
+                      className={`fas fa-${!endtime ? "trash-alt" : "redo"}`}
                       onClick={() =>
                         showPopup({
-                          header: `Cancel ${boughtplan.boughtplan.planid.appid.name} ${
-                            boughtplan.boughtplan.planid.name
-                          }`,
+                          header: `${!endtime ? "Cancel" : "Reactivate"} ${
+                            boughtplan.boughtplan.planid.appid.name
+                          } ${boughtplan.boughtplan.planid.name}`,
                           body: Confirmation,
                           props: {
                             id: boughtplan.boughtplan.id,
-                            headline: "Please confirm cancellation of this plan",
-                            submitFunction: planid => cancelPlan({ variables: { planid } })
+                            headline: `Please confirm ${
+                              !endtime ? "cancellation" : "reactivation"
+                            } of this plan`,
+                            submitFunction: planid => mutation({ variables: { planid } })
                           }
                         })
                       }
