@@ -69,7 +69,7 @@ $rccs-visaelectron-logo: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
   width: $rccs-size;
 
   &__card {
-    cursor: pointer;
+    /*cursor: pointer;*/
     height: $rccs-size / $rccs-card-ratio;
     margin: 0 auto;
     position: relative;
