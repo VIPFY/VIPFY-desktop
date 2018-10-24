@@ -443,7 +443,12 @@ class Domains extends React.Component<Props, State> {
                   type: "select",
                   icon: "globe",
                   label: "Select TLD",
-                  options: tlds.map(tld => `.${tld.name} ${tld.price} ${tld.currency}`),
+                  options: tlds.map(tld => {
+                    return {
+                      value: `.${tld.name} ${tld.price} ${tld.currency}`,
+                      name: `.${tld.name} ${tld.price} ${tld.currency}`
+                    };
+                  }),
                   required: true
                 },
                 {

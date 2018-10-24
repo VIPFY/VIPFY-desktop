@@ -234,7 +234,7 @@ export const addressFields = [
     name: "country",
     icon: "globe",
     label: "Your country",
-    options: ["US", "DE", "FR", "PL", "JP"],
+    options: countries,
     required: true
   },
   {

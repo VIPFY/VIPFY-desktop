@@ -956,6 +956,10 @@
     background-size: contain;
     height: 2rem;
     margin: 0.5rem;
+
+    &-small {
+        background-image: $newlogo-small;
+    }
   }
 
   &-icons {
@@ -996,7 +1000,7 @@
   }
 
   &-small {
-    background-color: #333;
+    background-color: #253647;
     height: 100vh;
     position: fixed;
     transition: width 0.6s ease-in-out;
@@ -1909,7 +1913,7 @@ select{
     border: none;
     width: 100%;
     color: #333;
-    font-family: "Quicksand";
+    font-family: "Roboto";
     border-bottom: 1px solid #20BAA9;
 }
 select:focus{
@@ -2878,7 +2882,7 @@ h1{
             color: white;
             width: 5rem;
             height: 5rem;
-            background-image: $newlogo;
+            background-image: $newlogo-small;
             background-repeat: no-repeat;
             background-position: center;
             transition-duration: 0.6s;
