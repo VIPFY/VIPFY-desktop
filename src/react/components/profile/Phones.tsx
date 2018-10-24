@@ -188,7 +188,7 @@ class Phones extends React.Component<Props, State> {
       body: Confirmation,
       props: {
         id,
-        type: "Phone",
+        headline: "Please confirm cancellation of this phone number",
         submitFunction: id =>
           this.props.deletePhone({
             variables: { id, department: variables.company },

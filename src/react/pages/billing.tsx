@@ -37,41 +37,6 @@ class Billing extends React.Component<Props, State> {
     error: ""
   };
 
-  downloadBill = async billid => {
-    try {
-      await this.props.downloadBill({ variables: { billid } });
-    } catch {
-      this.props.showPopup({
-        header: "Error!",
-        body: ErrorComp,
-        props: { error: "Download not possible!" }
-      });
-      console.log("NO DOWNLOAD", billid);
-    }
-  };
-
-  showBills(bills) {
-    let billsArray: JSX.Element[] = [];
-    if (bills) {
-      bills.forEach((bill, key) => {
-        console.log("BillId", bill);
-        if (bill) {
-          billsArray.push(
-            <div
-              className="billItem"
-              onClick={() => this.downloadBill(bill.id)}
-              key={`bill-${key}`}>
-              <div className="billTimeDiv">{bill.billtime}</div>
-              <div className="billNameDiv">{bill.billname}</div>
-            </div>
-          );
-        }
-      });
-    }
-
-    return billsArray;
-  }
-
   render() {
     const { cards, bills } = this.props;
 
@@ -160,19 +125,20 @@ class Billing extends React.Component<Props, State> {
           <label className="payment-label">Bought Apps</label>
           <AppTable {...this.props} />
         </div>
-        {/*<div className="billingStreamChart">
-            <span className="paymentHistoryHeader">Payment History</span>
-            <BillHistory />
-          </div>
-          <div className="billingHistoryInvoices">
-            <span className="paymentHistoryHeader">History of invoices</span>
-            <div className="billsHolder">
-              {bills.fetchBills && bills.fetchBills.length > 0
-                ? this.showBills(bills.fetchBills)
-                : "No Invoices yet"}
-            </div>
-          </div>
-        </div>*/}
+
+        <div className="payment-data-holder">
+          <label className="payment-label">Invoices</label>
+          {bills.fetchBills && bills.fetchBills.length > 0
+            ? bills.fetchBills.map(({ id, billtime, billname }) => (
+                <div>
+                  <span> {billtime}</span>
+                  <i className="fas fa-download naked-button">
+                    <a key={`bill-${id}`} href={billname} className="bill" />
+                  </i>
+                </div>
+              ))
+            : "No Invoices yet"}
+        </div>
       </div>
     );
   }

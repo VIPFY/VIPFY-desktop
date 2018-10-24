@@ -24,6 +24,7 @@ interface State {
   totalprice: number | null;
   dataconnections: any;
   errordc: any | null;
+  buying: number;
 }
 
 class CheckOrder extends React.Component<Props, State> {
@@ -35,7 +36,8 @@ class CheckOrder extends React.Component<Props, State> {
     featurenumbers: [],
     totalprice: null,
     dataconnections: {},
-    errordc: null
+    errordc: null,
+    buying: 0
   };
 
   openExternal(url) {
@@ -211,7 +213,7 @@ class CheckOrder extends React.Component<Props, State> {
     }
   }
 
-  accept(plan, planInputs, company, addresses) {
+  accept = async (plan, planInputs, company, addresses) => {
     console.log(plan, planInputs, company, addresses);
     if (this.state.agreement) {
       this.setState({ agreementError: false, errordc: null });
@@ -282,17 +284,24 @@ class CheckOrder extends React.Component<Props, State> {
         }
       });
       if (noErrors) {
-        this.props.acceptFunction(
-          plan.id,
-          featureoptions,
-          this.state.totalprice || plan.price,
-          planInputsSending
-        );
+        this.setState({ buying: 1 });
+        try {
+          await this.props.acceptFunction(
+            plan.id,
+            featureoptions,
+            this.state.totalprice || plan.price,
+            planInputsSending
+          );
+          this.setState({ buying: 2 });
+          console.log("OK");
+        } catch (err) {
+          console.log("ERR", err);
+        }
       }
     } else {
       this.setState({ agreementError: true });
     }
-  }
+  };
 
   changeSelect(key, value) {
     let d = this.state.dataconnections;
@@ -354,27 +363,41 @@ class CheckOrder extends React.Component<Props, State> {
   }
 
   render() {
-    let planInputs = null;
-    let billingAddresses = null;
-    return (
-      <Query query={me}>
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <LoadingDiv text="Loading Data" />;
-          }
-          if (error) {
-            return <div>Error loading data</div>;
-          }
-          const { company, id } = data.me;
-          return (
-            <div className="checkOrderHolder">
-              <div className="checkOrderFeatures">
-                {this.showProductInfos(this.state.featurenumbers, this.props.plan)}
-              </div>
-              <div className="checkOrderMain">
-                <div className="checkOrderHolderPart">
-                  <Query
-                    query={gql`
+    if (this.state.buying === 1) {
+      return (
+        <div className="loadingBuying">
+          <LoadingDiv />
+          <div>We are setting everything up for you. Please wait :)</div>
+          <button
+            /*onClick={() => this.props.onClose()}*/ onClick={() => this.setState({ buying: 2 })}>
+            I don't want to wait. Inform me, when everything is finished.
+          </button>
+        </div>
+      );
+    } else if (this.state.buying === 2) {
+      return <div className="distributeBuying">Now distributeBuying</div>;
+    } else {
+      let planInputs = null;
+      let billingAddresses = null;
+      return (
+        <Query query={me}>
+          {({ data, loading, error }) => {
+            if (loading) {
+              return <LoadingDiv text="Loading Data" />;
+            }
+            if (error) {
+              return <div>Error loading data</div>;
+            }
+            const { company, id } = data.me;
+            return (
+              <div className="checkOrderHolder">
+                <div className="checkOrderFeatures">
+                  {this.showProductInfos(this.state.featurenumbers, this.props.plan)}
+                </div>
+                <div className="checkOrderMain">
+                  <div className="checkOrderHolderPart">
+                    <Query
+                      query={gql`
                     query {
                       fetchAddresses(forCompany: true, tag: "billing") {
                         id
@@ -396,139 +419,140 @@ class CheckOrder extends React.Component<Props, State> {
                       fetchPlanInputs(planid: ${this.props.plan.id})
                     }
                   `}>
-                    {({ loading, error, data }) => {
-                      if (loading) {
-                        return "Fetching invoice data...";
-                      }
-                      if (error) {
-                        return "Error loading Billing Data";
-                      }
-                      planInputs = data.fetchPlanInputs;
-                      billingAddresses = data.fetchAddresses;
-                      if (data.fetchAddresses && data.fetchAddresses.length >= 1) {
-                        return (
-                          <div>
-                            <div className="orderHeading">
-                              I (<UserName unitid={id} />) order on behalf of:
-                            </div>
-                            {company ? (
-                              <div className="orderCompanyName">{company.name}</div>
-                            ) : (
-                              "Myself"
-                            )}
-                            <div className="orderInformationHolder">
-                              <div className="orderAddressHolder">
-                                <div className="orderAddressLine">
-                                  {data.fetchAddresses[0].address.street}
-                                </div>
-                                <div className="orderAddressLine">
-                                  {data.fetchAddresses[0].address.city}
-                                </div>
-                                <div className="orderAddressLine">
-                                  {data.fetchAddresses[0].address.zip}
-                                </div>
-                                {/*<div className="changeInformation">
+                      {({ loading, error, data }) => {
+                        if (loading) {
+                          return "Fetching invoice data...";
+                        }
+                        if (error) {
+                          return "Error loading Billing Data";
+                        }
+                        planInputs = data.fetchPlanInputs;
+                        billingAddresses = data.fetchAddresses;
+                        if (data.fetchAddresses && data.fetchAddresses.length >= 1) {
+                          return (
+                            <div>
+                              <div className="orderHeading">
+                                I (<UserName unitid={id} />) order on behalf of:
+                              </div>
+                              {company ? (
+                                <div className="orderCompanyName">{company.name}</div>
+                              ) : (
+                                "Myself"
+                              )}
+                              <div className="orderInformationHolder">
+                                <div className="orderAddressHolder">
+                                  <div className="orderAddressLine">
+                                    {data.fetchAddresses[0].address.street}
+                                  </div>
+                                  <div className="orderAddressLine">
+                                    {data.fetchAddresses[0].address.city}
+                                  </div>
+                                  <div className="orderAddressLine">
+                                    {data.fetchAddresses[0].address.zip}
+                                  </div>
+                                  {/*<div className="changeInformation">
                                 <span>Change Address</span><span>Change Payment</div>
                               </div>*/}
+                                </div>
+                                <div className="orderCardHolder">
+                                  {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
+                                    <CreditCard {...data.fetchPaymentData[0]} />
+                                  ) : (
+                                    "Please add a Credit Card to your Account"
+                                  )}
+                                </div>
                               </div>
-                              <div className="orderCardHolder">
-                                {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
-                                  <CreditCard {...data.fetchPaymentData[0]} />
-                                ) : (
-                                  "Please add a Credit Card to your Account"
-                                )}
+                              {this.showOrder(this.props.plan)}
+                              {this.showDataConnection(this.props.plan, data.fetchPlanInputs)}
+                            </div>
+                          );
+                        } else {
+                          return (
+                            <div>
+                              <div className="orderHeading">
+                                I (<UserName unitid={id} />) order in behalf of:
                               </div>
-                            </div>
-                            {this.showOrder(this.props.plan)}
-                            {this.showDataConnection(this.props.plan, data.fetchPlanInputs)}
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <div>
-                            <div className="orderHeading">
-                              I (<UserName unitid={id} />) order in behalf of:
-                            </div>
-                            {company ? (
-                              <div className="orderCompanyName">{company.name}</div>
-                            ) : (
-                              "Myself"
-                            )}
-                            <div className="orderInformationHolder">
-                              <div className="orderAddressHolder">
-                                Please add a billing address.
-                                {/*<div className="changeInformation">
+                              {company ? (
+                                <div className="orderCompanyName">{company.name}</div>
+                              ) : (
+                                "Myself"
+                              )}
+                              <div className="orderInformationHolder">
+                                <div className="orderAddressHolder">
+                                  Please add a billing address.
+                                  {/*<div className="changeInformation">
                             <span>Change Address</span><span>Change Payment</div>
                     </div>*/}
+                                </div>
+                                <div className="orderCardHolder">
+                                  {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
+                                    <CreditCard {...data.fetchPaymentData[0]} />
+                                  ) : (
+                                    "Please add a Credit Card to your Account"
+                                  )}
+                                </div>
                               </div>
-                              <div className="orderCardHolder">
-                                {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
-                                  <CreditCard {...data.fetchPaymentData[0]} />
-                                ) : (
-                                  "Please add a Credit Card to your Account"
-                                )}
-                              </div>
+                              {this.showOrder(this.props.plan)}
+                              {this.showDataConnection(this.props.plan, data.fetchPlanInputs)}
                             </div>
-                            {this.showOrder(this.props.plan)}
-                            {this.showDataConnection(this.props.plan, data.fetchPlanInputs)}
-                          </div>
-                        );
-                      }
-                    }}
-                  </Query>
-                </div>
-                <div className="checkOrderHolderLawBox">
-                  {this.props.plan.appid.options ? (
-                    <div>
-                      {this.showNeededCheckIns(this.props.plan.appid.options)}
-                      <div className="agreementBox">
-                        <input
-                          type="checkbox"
-                          className="cbx"
-                          id="CheckBox"
-                          style={{ display: "none" }}
-                          onChange={e => this.setState({ agreement: e.target.checked })}
-                        />
-                        <label htmlFor="CheckBox" className="check">
-                          <svg width="18px" height="18px" viewBox="0 0 18 18">
-                            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
-                            <polyline points="1 9 7 14 15 4" />
-                          </svg>
-                          <span className="agreementSentence">
-                            I agree to the above third party agreements and to our Terms of Service
-                            and Privacy agreement regarding {this.props.plan.appid.name}
-                          </span>
-                        </label>
-                        {this.state.agreementError ? (
-                          <div className="agreementError">Please agree to the agreements.</div>
-                        ) : (
-                          ""
-                        )}
+                          );
+                        }
+                      }}
+                    </Query>
+                  </div>
+                  <div className="checkOrderHolderLawBox">
+                    {this.props.plan.appid.options ? (
+                      <div>
+                        {this.showNeededCheckIns(this.props.plan.appid.options)}
+                        <div className="agreementBox">
+                          <input
+                            type="checkbox"
+                            className="cbx"
+                            id="CheckBox"
+                            style={{ display: "none" }}
+                            onChange={e => this.setState({ agreement: e.target.checked })}
+                          />
+                          <label htmlFor="CheckBox" className="check">
+                            <svg width="18px" height="18px" viewBox="0 0 18 18">
+                              <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
+                              <polyline points="1 9 7 14 15 4" />
+                            </svg>
+                            <span className="agreementSentence">
+                              I agree to the above third party agreements and to our Terms of
+                              Service and Privacy agreement regarding {this.props.plan.appid.name}
+                            </span>
+                          </label>
+                          {this.state.agreementError ? (
+                            <div className="agreementError">Please agree to the agreements.</div>
+                          ) : (
+                            ""
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </div>
-                <div className="checkOrderHolderButton">
-                  <button className="cancelButton" onClick={() => this.props.onClose()}>
-                    Cancel
-                  </button>
-                  <button
-                    className="checkoutButton"
-                    onClick={() =>
-                      this.accept(this.props.plan, planInputs, company, billingAddresses)
-                    }>
-                    Checkout for ${this.state.totalprice || this.props.plan.price}
-                    /mo
-                  </button>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                  <div className="checkOrderHolderButton">
+                    <button className="cancelButton" onClick={() => this.props.onClose()}>
+                      Cancel
+                    </button>
+                    <button
+                      className="checkoutButton"
+                      onClick={() =>
+                        this.accept(this.props.plan, planInputs, company, billingAddresses)
+                      }>
+                      Checkout for ${this.state.totalprice || this.props.plan.price}
+                      /mo
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        }}
-      </Query>
-    );
+            );
+          }}
+        </Query>
+      );
+    }
   }
 }
 export default CheckOrder;

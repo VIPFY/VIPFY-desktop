@@ -142,7 +142,7 @@ class Addresses extends React.Component<Props, State> {
       body: Confirmation,
       props: {
         id,
-        type: "Address",
+        headline: "Please confirm deletion of this address",
         submitFunction: id =>
           this.props.deleteAddress({
             variables: { id, department: variables.company },

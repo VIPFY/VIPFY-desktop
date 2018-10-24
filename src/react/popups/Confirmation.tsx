@@ -1,22 +1,66 @@
 import * as React from "react";
+import { ErrorComp, filterError } from "../common/functions";
+import LoadingDiv from "../components/LoadingDiv";
 
-export default props => (
-  <div className="confirmation-dialog">
-    <h1>{`Do you really want to delete this ${props.type}?`}</h1>
-    <div className="generic-button-holder">
-      <button type="button" className="generic-cancel-button" onClick={props.onClose}>
-        <i className="fas fa-long-arrow-alt-left" /> Cancel
-      </button>
+interface Props {
+  headline: string;
+  onClose: Function;
+  id: number;
+  submitFunction: Function;
+}
 
-      <button
-        type="submit"
-        className="generic-submit-button"
-        onClick={async () => {
-          await props.submitFunction(props.id);
-          props.onClose();
-        }}>
-        <i className="fas fa-check-circle" /> Submit
-      </button>
-    </div>
-  </div>
-);
+interface State {
+  loading: boolean;
+  error: string;
+}
+
+class Confirmation extends React.Component<Props, State> {
+  state = {
+    loading: false,
+    error: ""
+  };
+
+  handleSubmit = async () => {
+    try {
+      await this.setState({ loading: true });
+      await this.props.submitFunction(this.props.id);
+      this.props.onClose();
+    } catch (err) {
+      this.setState({ error: filterError(err), loading: false });
+    }
+  };
+
+  render() {
+    return (
+      <div className="confirmation-dialog">
+        <h1>{this.props.headline}</h1>
+        {this.state.loading ? (
+          <LoadingDiv text="Please wait for Vipfy working it's magic in the background" />
+        ) : this.state.error ? (
+          <ErrorComp error={this.state.error} />
+        ) : (
+          ""
+        )}
+        <div className="generic-button-holder">
+          <button
+            disabled={this.state.loading}
+            type="button"
+            className="generic-cancel-button"
+            onClick={this.props.onClose}>
+            <i className="fas fa-long-arrow-alt-left" /> Cancel
+          </button>
+
+          <button
+            type="submit"
+            disabled={this.state.loading}
+            className="generic-submit-button"
+            onClick={this.handleSubmit}>
+            <i className="fas fa-check-circle" /> Confirm
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Confirmation;

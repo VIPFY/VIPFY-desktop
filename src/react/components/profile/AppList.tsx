@@ -69,8 +69,9 @@ class AppList extends React.Component<Props, State> {
                               header: "Remove external account",
                               body: Confirmation,
                               props: {
+                                headline: "Please confirm removal of this account",
                                 submitFunction: async licenceid => {
-                                  let res1 = await this.props.removeExternal({
+                                  await this.props.removeExternal({
                                     variables: { licenceid }
                                   });
                                   this.setState({ removeApp: licenceid });
