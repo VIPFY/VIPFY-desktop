@@ -1,5 +1,4 @@
 import * as React from "react";
-import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 
 // import BillHistory from "../graphs/billhistory";
@@ -17,14 +16,6 @@ import { CREATE_ADDRESS } from "../mutations/contact";
 import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 import AppTable from "../components/billing/AppTable";
 import BillingEmails from "../components/billing/BillingEmails";
-
-const CANCEL_PLAN = gql`
-  mutation onCancelPlan($planid: Int!) {
-    cancelPlan(planid: $planid) {
-      ok
-    }
-  }
-`;
 
 interface Props {
   downloadBill: Function;
@@ -45,19 +36,6 @@ class Billing extends React.Component<Props, State> {
     bills: [],
     error: ""
   };
-
-  // downloadBill = async billid => {
-  //   try {
-  //     await this.props.downloadBill({ variables: { billid } });
-  //   } catch {
-  //     this.props.showPopup({
-  //       header: "Error!",
-  //       body: ErrorComp,
-  //       props: { error: "Download not possible!" }
-  //     });
-  //     console.log("NO DOWNLOAD", billid);
-  //   }
-  // };
 
   render() {
     const { cards, bills } = this.props;
@@ -152,16 +130,14 @@ class Billing extends React.Component<Props, State> {
           <label className="payment-label">Invoices</label>
           {bills.fetchBills && bills.fetchBills.length > 0
             ? bills.fetchBills.map(({ id, billtime, billname }) => (
-                <a key={`bill-${id}`} href={billname} className="bill">
-                  {billtime}
-                </a>
+                <div>
+                  <span> {billtime}</span>
+                  <i className="fas fa-download naked-button">
+                    <a key={`bill-${id}`} href={billname} className="bill" />
+                  </i>
+                </div>
               ))
             : "No Invoices yet"}
-          <button
-            type="button"
-            onClick={() => this.props.cancelPlan({ variables: { planid: 105 } })}>
-            Click Me
-          </button>
         </div>
       </div>
     );
@@ -170,7 +146,6 @@ class Billing extends React.Component<Props, State> {
 
 export default compose(
   graphql(fetchBills, { name: "bills" }),
-  graphql(CANCEL_PLAN, { name: "cancelPlan" }),
   graphql(fetchCards, { name: "cards" }),
   graphql(downloadBill, { name: "downloadBill" }),
   graphql(CREATE_ADDRESS, { name: "createAddress" })

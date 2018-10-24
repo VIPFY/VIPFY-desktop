@@ -1,14 +1,59 @@
 import * as React from "react";
-import { graphql, compose, Query } from "react-apollo";
+import { Mutation, Query } from "react-apollo";
 import gql from "graphql-tag";
 import humanizeDuration = require("humanize-duration");
-
 import moment = require("moment");
+import { AppContext } from "../../common/functions";
+import Confirmation from "../../popups/Confirmation";
+
+const CANCEL_PLAN = gql`
+  mutation onCancelPlan($planid: Int!) {
+    cancelPlan(planid: $planid) {
+      ok
+    }
+  }
+`;
+
+const FETCH_UNIT_APPS = gql`
+  query onFetchUnitApps($departmentid: Int!) {
+    fetchUnitApps(departmentid: $departmentid) {
+      id
+      licencesused
+      licencestotal
+      boughtplan {
+        id
+        totalprice
+        buytime
+        endtime
+        planid {
+          id
+          name
+          appid {
+            id
+            name
+            icon
+            logo
+            color
+          }
+        }
+      }
+    }
+    fetchUnitAppsSimpleStats(departmentid: $departmentid) {
+      id
+      boughtplan {
+        id
+      }
+      minutestotal
+    }
+  }
+`;
 
 interface State {}
 
 interface Props {
   fetchUnitApps: { fetchUnitApps: any };
+  data: any;
+  company: object;
 }
 
 const shortEnglishHumanizer = humanizeDuration.humanizer({
@@ -72,19 +117,61 @@ class AppListInner extends React.Component<Props, State> {
               largest: 2
             });
       return (
-        <tr key={`r${boughtplan.id}`}>
-          <td>{boughtplan.boughtplan.planid.appid.name}</td>
-          <td>{boughtplan.boughtplan.planid.name}</td>
-          <td>{boughtplan.boughtplan.id}</td>
-          <td>{boughtplan.licencesused}</td>
-          <td>{boughtplan.licencestotal}</td>
-          <td>{totaldur}</td>
-          <td>${boughtplan.boughtplan.totalprice}</td>
-          <td>
-            <a>Show Usage</a>
-            <a>Upgrade</a> <a>Cancel</a>
-          </td>
-        </tr>
+        <AppContext.Consumer key={`r${boughtplan.id}`}>
+          {({ showPopup }) => (
+            <tr>
+              <td>{boughtplan.boughtplan.planid.appid.name}</td>
+              <td>{boughtplan.boughtplan.planid.name}</td>
+              <td>{boughtplan.boughtplan.id}</td>
+              <td>{boughtplan.licencesused}</td>
+              <td>{boughtplan.licencestotal}</td>
+              <td>{totaldur}</td>
+              <td>${boughtplan.boughtplan.totalprice}</td>
+              <td className="naked-button-holder">
+                <a>Show Usage</a>
+                <a>Upgrade</a>
+                <Mutation
+                  mutation={CANCEL_PLAN}
+                  update={cache => {
+                    const { fetchUnitApps } = cache.readQuery({
+                      query: FETCH_UNIT_APPS,
+                      variables: { departmentid: this.props.company.unit.id }
+                    });
+
+                    cache.writeQuery({
+                      query: FETCH_UNIT_APPS,
+                      variables: { departmentid: this.props.company.unit.id },
+                      data: {
+                        fetchUnitApps: fetchUnitApps.filter(
+                          unitApps => unitApps.boughtplan.id != boughtplan.boughtplan.id
+                        )
+                      }
+                    });
+                  }}>
+                  {cancelPlan => (
+                    <i
+                      title="cancel"
+                      className="fas fa-trash-alt"
+                      onClick={() =>
+                        showPopup({
+                          header: `Cancel ${boughtplan.boughtplan.planid.appid.name} ${
+                            boughtplan.boughtplan.planid.name
+                          }`,
+                          body: Confirmation,
+                          props: {
+                            id: boughtplan.boughtplan.id,
+                            headline: "Please confirm cancellation of this plan",
+                            submitFunction: planid => cancelPlan({ variables: { planid } })
+                          }
+                        })
+                      }
+                    />
+                  )}
+                </Mutation>
+              </td>
+            </tr>
+          )}
+        </AppContext.Consumer>
       );
     });
   }
@@ -93,39 +180,7 @@ class AppListInner extends React.Component<Props, State> {
 function AppTable(props) {
   return (
     <Query
-      query={gql`
-        query fetchUnitApps($departmentid: Int!) {
-          fetchUnitApps(departmentid: $departmentid) {
-            id
-            licencesused
-            licencestotal
-            boughtplan {
-              id
-              totalprice
-              buytime
-              endtime
-              planid {
-                id
-                name
-                appid {
-                  id
-                  name
-                  icon
-                  logo
-                  color
-                }
-              }
-            }
-          }
-          fetchUnitAppsSimpleStats(departmentid: $departmentid) {
-            id
-            boughtplan {
-              id
-            }
-            minutestotal
-          }
-        }
-      `}
+      query={FETCH_UNIT_APPS}
       variables={{ departmentid: props.company.unit.id }}
       pollInterval={1000 * 60 * 10}>
       {({ data, loading, error }) => {

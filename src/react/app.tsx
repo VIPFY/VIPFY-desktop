@@ -39,20 +39,22 @@ interface AppProps {
   signUp: any;
 }
 
+interface PopUp {
+  show: boolean;
+  header: string;
+  body: any;
+  props: any;
+  type: string;
+  info: string;
+}
+
 interface AppState {
   login: boolean;
   error: string;
   firstLogin: boolean;
   placeid: string;
   statisticData: object;
-  popup: {
-    show: boolean;
-    header: string;
-    body: any;
-    props: any;
-    type: string;
-    info: string;
-  };
+  popup: PopUp;
 }
 
 const INITIAL_POPUP = {
@@ -85,7 +87,7 @@ class App extends React.Component<AppProps, AppState> {
     await refetchQueries(this.props.client, ["me"]);
   };
 
-  renderPopup = data => {
+  renderPopup = (data: PopUp) => {
     this.setState({ popup: { show: true, ...data } });
   };
 
@@ -199,7 +201,7 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <AppContext.Provider
         value={{
-          showPopup: data => this.renderPopup(data),
+          showPopup: (data: PopUp) => this.renderPopup(data),
           firstLogin,
           placeid,
           statisticData,
