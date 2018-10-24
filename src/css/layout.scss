@@ -552,19 +552,14 @@
     border: 5px solid #771a1c;
 }
 
-.marketplace{
-    display: flex;
-    max-width: 90%;
-    margin: auto;
-    flex-wrap: wrap;
-    min-width: 40em;
-    justify-content: center;
-    align-items: center;
-    height: calc(100% - 2rem);
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-gap: 2rem;
-    grid-template-rows: 15rem 15rem 15rem 15rem 15rem;
-    margin-top: 2rem;
+.marketplace {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  height: calc(100% - 2rem);
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  grid-gap: 1rem;
+  margin: 2rem;
 }
 
 .appThumbnail{
