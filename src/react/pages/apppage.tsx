@@ -127,7 +127,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
         variables: { planid, features, price, planinputs },
         refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
       });
-      this.props.history.push("/area/dashboard");
+      //this.props.history.push("/area/dashboard");
     } catch (err) {
       this.showError(err.message || "Something went really wrong :-(");
       console.log("ErrorBuying", err, planid, features, price, planinputs);

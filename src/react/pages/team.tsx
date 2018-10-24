@@ -832,6 +832,7 @@ class Team extends React.Component<Props, State> {
                                 {app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`}
                               </div>
                               <span className="explain">Move to add to user</span>
+                              <div className="fas fa-ellipsis-v menuteam" />
                             </div>
                           ));
                         }
