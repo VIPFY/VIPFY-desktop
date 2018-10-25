@@ -18,7 +18,7 @@ interface Props {
 
 class BillingHistoryChartInner extends React.Component<Props, State> {
   render() {
-    console.log("CHARTPROPS", this.props);
+    //console.log("CHARTPROPS", this.props);
     if (!this.props.data.fetchUnitApps) {
       return <div>Error fetching data</div>;
     }
@@ -33,7 +33,16 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       labels.push(label);
     }
     const data = this.BarSeries(this.props);
-    console.log("DATA", data);
+
+    let monthlysum: number[] = [0, 0, 0, 0, 0, 0, 0];
+    data.forEach(d => {
+      for (let i = 0; i < 7; i++) {
+        monthlysum[i] += d.data[i];
+      }
+    });
+    let monthlymax: number = Math.max(...monthlysum);
+    //console.log("DATA", data, monthlysum);
+
     return (
       <Chart
         height={this.props.height}
@@ -45,7 +54,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
             stacked: true
           },
           dataLabels: {
-            formatter: y => (y == 0 ? "" : "$" + `${y}`.padStart(3, " "))
+            formatter: y => (y === 0 ? "" : "$" + `${y.toFixed(2)}`.padStart(3, " "))
           },
           colors: data.map(d => d.color),
           xaxis: {
@@ -59,7 +68,8 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
           yaxis: {
             labels: {
               formatter: y => "$" + `${y}`.padStart(3, " ")
-            }
+            },
+            max: monthlymax % 6 === 0 ? monthlymax : Math.ceil(monthlymax / 6) * 6
           },
           tooltip: {
             x: {
@@ -67,7 +77,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
                 return moment(x).format("MMMM YYYY");
               }
             },
-            y: {}
+            y: { formatter: y => (y === 0 ? "" : "$" + `${y.toFixed(2)}`.padStart(3, " ")) }
           }
         }}
       />
@@ -84,9 +94,10 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       </FlexibleXYPlot>*/
 
   BarSeries(props): { name: string; data: number[]; color: string }[] {
-    const d = props.data.fetchUnitApps;
-    const plans = d.map(boughtplan => ({
+    let d = props.data.fetchUnitApps;
+    let plans = d.map(boughtplan => ({
       id: boughtplan.boughtplan.id,
+      alias: boughtplan.boughtplan.alias,
       price: boughtplan.boughtplan.totalprice,
       buytime: boughtplan.boughtplan.buytime,
       endtime: boughtplan.boughtplan.endtime,
@@ -96,22 +107,37 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       appicon: boughtplan.boughtplan.planid.appid.icon,
       appcolor: boughtplan.boughtplan.planid.appid.color
     }));
-    console.log("PLANS", plans);
+    plans.sort(function(a, b) {
+      return (
+        (a.alias ? a.alias : `${a.appname} ${a.id}`) > (b.alias ? b.alias : `${b.appname} ${b.id}`)
+      );
+    });
+    //console.log("PLANS", plans);
     const timestart = moment()
-      .endOf("month")
+      .startOf("month")
       .subtract(6, "months");
-    const timeend = moment().add(1, "months");
+    const timeend = moment().endOf("month");
+    //console.log("times", timestart, timeend);
 
     return plans
       .map(plan => {
         let d: { name: string; data: number[]; color: string } = {
-          name: `${plan.appname} ${plan.id}`,
+          name: plan.alias ? plan.alias : `${plan.appname} ${plan.id}`,
           data: [],
           color: plan.appcolor
         };
         for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
-          if (moment(plan.buytime).isBefore(m)) {
-            d.data.push(plan.price);
+          //console.log(m.endOf("month"));
+          if (moment(plan.buytime).isBefore(m.endOf("month"))) {
+            //console.log(moment(plan.buytime).isAfter(m.startOf("month")), plan, m);
+            if (moment(plan.buytime).isAfter(m.startOf("month"))) {
+              let price =
+                (-moment(plan.buytime).diff(m.endOf("month"), "days") / m.daysInMonth()) *
+                plan.price;
+              d.data.push(price);
+            } else {
+              d.data.push(plan.price);
+            }
           } else {
             d.data.push(0);
           }
@@ -123,7 +149,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
 }
 
 function BillingHistoryChart(props) {
-  console.log("PROPS", props);
+  //console.log("PROPS", props);
   return (
     <Query
       query={gql`
@@ -135,6 +161,7 @@ function BillingHistoryChart(props) {
               totalprice
               buytime
               endtime
+              alias
               planid {
                 id
                 name

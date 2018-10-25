@@ -16,6 +16,7 @@ import { CREATE_ADDRESS } from "../mutations/contact";
 import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 import AppTable from "../components/billing/AppTable";
 import BillingEmails from "../components/billing/BillingEmails";
+import BillingPie from "../components/billing/BillingPie";
 
 interface Props {
   downloadBill: Function;
@@ -105,9 +106,9 @@ class Billing extends React.Component<Props, State> {
 
         <div className="payment-data-holder">
           <label className="payment-label">Cost Distribution</label>
-          <span className="nextPaymentTitle">Next sheduled bill on 6-28-18: approx. 215 $</span>
           <div className="nextPaymentChart">
-            <BillNext />
+            {/*<BillNext />*/}
+            <BillingPie {...this.props} />
           </div>
         </div>
 
