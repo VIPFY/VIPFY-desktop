@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Component } from "react";
+import pjson = require("pjson");
 
 export type SidebarProps = {
   history: any[];
@@ -115,6 +116,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
 
           {/*this.renderLink({ label: "Advisor", location: "advisor", icon: "envelope", show: true })*/}
         </ul>
+        <div className="versionnumber">Version {pjson.version}</div>
       </div>
     );
   }

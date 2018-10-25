@@ -10,51 +10,37 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
+const DOMAIN = "https://storage.googleapis.com/releases.vipfy.store";
+const suffix =
+  process.platform === "darwin" ? `/RELEASES.json?method=JSON&version=${app.getVersion()}` : "";
+autoUpdater.setFeedURL({
+  url: `${DOMAIN}/VIPFY/62353a59e91d9ebc1ffffaacef835caf/${process.platform}/${
+    process.arch
+  }${suffix}`,
+  serverType: "json"
+});
+
+autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
+  const dialogOpts = {
+    type: "info",
+    buttons: ["Restart", "Later"],
+    title: "Application Update",
+    message: process.platform === "win32" ? releaseNotes : releaseName,
+    detail: "A new version has been downloaded. Restart the application to apply the updates."
+  };
+
+  dialog.showMessageBox(dialogOpts, response => {
+    if (response === 0) {
+      autoUpdater.quitAndInstall();
+    }
+  });
+});
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null = null;
 
-const isDevMode = process.execPath.match(/[\\/]electron/);
-
-if (isDevMode) {
-  enableLiveReload({ strategy: "react-hmr" });
-}
-
-function initUpdates() {
-  const DOMAIN = "http://release.vipfy.com:9999";
-  const suffix =
-    process.platform === "darwin" ? `/RELEASES.json?method=JSON&version=${app.getVersion()}` : "";
-  autoUpdater.setFeedURL({
-    url: `${DOMAIN}/vipfy-desktop/810e67d425a96eb8a85d68a03bd4c4ea/${process.platform}/${
-      process.arch
-    }${suffix}`,
-    serverType: "json"
-  });
-
-  autoUpdater.on("checking-for-update", () => {});
-
-  autoUpdater.on("update-available", () => {});
-
-  autoUpdater.on("update-not-available", () => {});
-
-  autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
-    const dialogOpts = {
-      type: "info",
-      buttons: ["Restart", "Later"],
-      title: "Application Update",
-      message: process.platform === "win32" ? releaseNotes : releaseName,
-      detail: "A new version has been downloaded. Restart the application to apply the updates."
-    };
-
-    dialog.showMessageBox(dialogOpts, response => {
-      if (response === 0) {
-        autoUpdater.quitAndInstall();
-      }
-    });
-  });
-
-  autoUpdater.checkForUpdates();
-}
+let isDevMode = !!process.execPath.match(/[\\/]electron/);
 
 const vipfyHandler = (request, callback) => {
   const url = request.url.substr(8);
@@ -74,7 +60,18 @@ const vipfyHandler = (request, callback) => {
 };
 
 const createWindow = async () => {
-  //initUpdates();
+  try {
+    autoUpdater.checkForUpdates();
+  } catch (err) {
+    console.error(err);
+    console.error("you can ignore that error if this is run from source");
+    console.log("reverting to devmode");
+    isDevMode = true;
+  }
+
+  if (isDevMode) {
+    enableLiveReload({ strategy: "react-hmr" });
+  }
 
   protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
