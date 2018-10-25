@@ -5,6 +5,7 @@ import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
 import { domainValidation, fullDomainNameValidation } from "../common/validation";
 import { filterError } from "../common/functions";
+import BuyDomain from "../popups/buyDomain";
 
 interface Props {
   registerDomain: Function;
@@ -28,6 +29,7 @@ const FETCH_DOMAIN_PLANS = gql`
       name
       price
       currency
+      features
     }
   }
 `;
@@ -111,8 +113,8 @@ class Domains extends React.Component<Props, State> {
       if (!domainName) {
         operation = "registerExternalDomain";
       } else {
-        const domainname = `${domainName}${tld.substring(0, 4)}`;
-        domain = { domain: domainname, whoisprivacy, tld: tld.substring(1, 4) };
+        const domainname = `${domainName}.${tld}`;
+        domain = { domain: domainname, whoisprivacy, tld: tld };
       }
       const dummyId = `-${(Math.random() + 1) * (Math.random() + 3)}`;
 
@@ -421,12 +423,14 @@ class Domains extends React.Component<Props, State> {
               return registerButton;
             }
 
-            const tlds = data.fetchPlans.filter(item => item.name[0] != "W");
+            const tlds = data.fetchPlans.filter(item => !item.name.startsWith("W"));
+            console.log("PLans", data.fetchPlans, tlds);
             const regProps: {
               fields: object[];
               handleSubmit: Function;
               runInBackground: boolean;
               buttonName: string;
+              tlds: object[];
             } = {
               fields: [
                 {
@@ -466,6 +470,7 @@ class Domains extends React.Component<Props, State> {
                   required: true
                 }
               ],
+              tlds,
               buttonName: "Buy",
               handleSubmit: this.handleSubmit,
               runInBackground: true
@@ -473,7 +478,7 @@ class Domains extends React.Component<Props, State> {
 
             const domainPopup = {
               header: "Domain Registration",
-              body: GenericInputForm,
+              body: BuyDomain,
               props: regProps
             };
 
@@ -568,7 +573,8 @@ class Domains extends React.Component<Props, State> {
 
               this.props.showPopup(domainPopup);
             }}>
-            <i className="fas fa-plus" /> External Domain
+            <i className="fas fa-plus" />
+            External Domain
           </button>
         </div>
       </div>
