@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(750px, 1fr));
   grid-gap: 1.2rem;
+  grid-auto-flow: dense;
   margin: 2rem;
 }
 
@@ -19,6 +20,10 @@
 
 #bought-apps {
   grid-column: 1 / -1;
+}
+
+.bought-apps-row {
+  text-align: center;
 }
 
 .payment-label {
