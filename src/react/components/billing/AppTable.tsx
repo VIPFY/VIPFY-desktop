@@ -3,8 +3,9 @@ import { Mutation, Query } from "react-apollo";
 import gql from "graphql-tag";
 import humanizeDuration = require("humanize-duration");
 import moment = require("moment");
-import { AppContext } from "../../common/functions";
 import Confirmation from "../../popups/Confirmation";
+import ChangePlan from "../../popups/ChangePlan";
+import { AppContext } from "../../common/functions";
 import { CANCEL_PLAN } from "../../mutations/products";
 
 const REACTIVATE_PLAN = gql`
@@ -16,6 +17,8 @@ const REACTIVATE_PLAN = gql`
       endtime
       planid {
         id
+        price
+        features
         name
         appid {
           id
@@ -43,6 +46,8 @@ const FETCH_UNIT_APPS = gql`
         endtime
         planid {
           id
+          price
+          features
           name
           appid {
             id
@@ -125,7 +130,7 @@ class AppListInner extends React.Component<Props, State> {
         endtime,
         planid: {
           name: planName,
-          appid: { name: appName }
+          appid: { name: appName, id: appId }
         }
       } = boughtplan;
 
@@ -161,9 +166,13 @@ class AppListInner extends React.Component<Props, State> {
                   onClick={() =>
                     showPopup({
                       header: "Upgrade Plan",
-                      body: () => <div>test</div>,
-                      info: `Do you want to upgrade the ${appName} ${planName} Plan?`,
-                      props: {}
+                      body: ChangePlan,
+                      props: {
+                        appName,
+                        planName,
+                        appId,
+                        currentPlan: boughtplan.planid
+                      }
                     })
                   }
                   className="fas fa-sort-amount-up"
@@ -176,12 +185,10 @@ class AppListInner extends React.Component<Props, State> {
                       className={`fas fa-${!endtime ? "trash-alt" : "redo"}`}
                       onClick={() =>
                         showPopup({
-                          header: `${!endtime ? "Cancel" : "Reactivate"} ${
-                            boughtplan.boughtplan.planid.appid.name
-                          } ${boughtplan.boughtplan.planid.name}`,
+                          header: `${!endtime ? "Cancel" : "Reactivate"} ${appName} ${planName}`,
                           body: Confirmation,
                           props: {
-                            id: boughtplan.boughtplan.id,
+                            id: boughtplan.id,
                             headline: `Please confirm ${
                               !endtime ? "cancellation" : "reactivation"
                             } of this plan`,

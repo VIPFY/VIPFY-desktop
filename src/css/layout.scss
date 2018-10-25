@@ -569,7 +569,7 @@
   cursor: pointer;
   border-radius: 3px;
   overflow: hidden;
-  
+
   &:hover {
     box-shadow: 2px 2px 10px rgba(0,0,0,0.36);
   }
@@ -2305,8 +2305,9 @@ h1{
       }
     }
 
-    .pricing-table{
+    .pricing-table {
       display: inline-block;
+      position: relative;
       border: 1px solid #C8C8C8;
       border-radius: 0.5rem;
       background: white;
@@ -3183,55 +3184,69 @@ h1{
     margin-bottom: 2rem;
 }
 
+@keyframes stretch-out {
+  from {
+    font-size: 0;
+  } to {
+    font-size: 0.75rem;
+  }
+}
+
 .ribbon {
-    width: 6rem;
-    height: 7rem;
-    overflow: hidden;
+  width: 6rem;
+  height: 7rem;
+  overflow: hidden;
+  position: absolute;
+    
+  span {
     position: absolute;
-  }
-  .ribbon::before,
-  .ribbon::after {
-    position: absolute;
-    z-index: -1;
-    content: '';
     display: block;
-    border: 5px solid #117f91;
+    width: 12rem;
+    font-size: 0;
+    padding: 0.25rem;
+    background-color: #20BAA9;
+    color: #fff;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    text-align: center;  
+    transition: font-size 200ms ease-in-out;
   }
-  .ribbon span {
+
+  .selected {
     position: absolute;
     display: block;
     width: 12rem;
     font-size: 0.75rem;
     padding: 0.25rem;
     background-color: #20BAA9;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     color: #fff;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
     text-transform: uppercase;
-    text-align: center;
+    text-align: center;  
+    transition: font-size 200ms ease-in-out;
+  }
 
+  &::before,
+  &::after {
+    position: absolute;
+    z-index: -1;
+    content: '';
+    display: block;
+    border: 5px solid #117f91;
   }
-  .ribbon-top-right span {
-    left: -2rem;
-    top: 1rem;
-    transform: rotate(45deg);
-  }
+}
+
   .ribbon-top-right {
     top: 0;
     right: 0;
-  }
-  .ribbon-top-right::before,
-  .ribbon-top-right::after {
-    border-top-color: transparent;
-    border-right-color: transparent;
-  }
-  .ribbon-top-right::before {
-    top: 0;
-    left: 0;
-  }
-  .ribbon-top-right::after {
-    bottom: 0;
-    right: 0;
+
+    span {
+      left: -2rem;
+      top: 1rem;
+      transform: rotate(45deg);
+    }
   }
 
   .ribbon-small {

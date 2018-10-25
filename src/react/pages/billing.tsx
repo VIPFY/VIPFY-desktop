@@ -130,11 +130,11 @@ class Billing extends React.Component<Props, State> {
           <label className="payment-label">Invoices</label>
           {bills.fetchBills && bills.fetchBills.length > 0
             ? bills.fetchBills.map(({ id, billtime, billname }) => (
-                <div>
+                <div className="invoices">
                   <span> {billtime}</span>
-                  <i className="fas fa-download naked-button">
-                    <a key={`bill-${id}`} href={billname} className="bill" />
-                  </i>
+                  <a key={`bill-${id}`} href={billname} className="naked-button">
+                    <i className="fas fa-download" />
+                  </a>
                 </div>
               ))
             : "No Invoices yet"}
