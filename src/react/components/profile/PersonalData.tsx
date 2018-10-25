@@ -195,8 +195,8 @@ class PersonalData extends React.Component<Props, State> {
                       </ul>
                     </div>
 
-                    <Addresses showPopup={showPopup} />
-                    <Phones showPopup={showPopup} />
+                    {/*<Addresses showPopup={showPopup} />
+                    <Phones showPopup={showPopup} />*/}
                   </div>
                 );
               }}

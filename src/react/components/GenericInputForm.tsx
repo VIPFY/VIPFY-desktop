@@ -200,8 +200,8 @@ class GenericInputForm extends React.Component<Props, State> {
                   className="generic-dropdown">
                   <option value=""> </option>
                   {options.map(option => (
-                    <option key={option} value={option}>
-                      {option}
+                    <option key={option.value} value={option.value}>
+                      {option.name}
                     </option>
                   ))}
                 </select>

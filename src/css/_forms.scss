@@ -5,17 +5,14 @@
 }
 
 .generic-dropdown {
-  background: $vipfy-primary-color;
   border: 0;
-  color: $vipfy-secondary-color;
   margin-left: 1em;
   outline: none;
   padding: 5px 0;
-  width: 15%;
+  width: 15em;
   transition: all 0.5s ease-in;
 
   option {
-    color: $vipfy-secondary-color;
   }
 }
 
