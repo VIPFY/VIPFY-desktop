@@ -114,9 +114,20 @@ class CheckOrder extends React.Component<Props, State> {
                 <div className="Pcaption">{feature.precaption}</div>
                 <input
                   className="inputNew"
+                  min={feature.number}
+                  step={feature.amountper}
                   type="number"
                   value={this.state.featurenumbers[i] || feature.number}
                   onChange={e => this.changeOption(i, e.target.value, plan)}
+                  onBlur={e => {
+                    let valuenew =
+                      Math.ceil((e.target.value - feature.number) / feature.amountper) *
+                        feature.amountper +
+                      feature.number;
+                    this.setState(prevState => ({
+                      featurenumbers: { ...prevState.featurenumbers, [i]: valuenew }
+                    }));
+                  }}
                 />
                 <div className="Pcaption">{feature.aftercaption}</div>
               </div>
