@@ -80,6 +80,7 @@ class App extends React.Component<AppProps, AppState> {
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
+    this.props.history.push("/area");
   }
 
   setName = async () => {

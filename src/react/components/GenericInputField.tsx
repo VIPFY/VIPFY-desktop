@@ -6,7 +6,7 @@ class GenericInputField extends Component {
     inputFocus: false,
     value: this.props.default || "",
     valueChanged: false,
-    error: null
+    error: this.props.error || null
   };
 
   componentDidUpdate() {
@@ -19,6 +19,17 @@ class GenericInputField extends Component {
   static getDerivedStateFromProps(props, state) {
     if (!state.valueChanged) {
       return { ...state, value: props.default };
+    }
+    if (props.inputType === "domain") {
+      let domain = state.value.split(".");
+
+      if (domain.length === 1 && props.forcedTld !== "") {
+        return { ...state, value: `${state.value}.${props.forcedTld}` };
+      }
+      if (domain.length === 2 && props.forcedTld !== "") {
+        return { ...state, value: `${domain[0]}.${props.forcedTld}` };
+      }
+      return { ...state, error: props.error };
     }
     return state;
   }
@@ -36,6 +47,11 @@ class GenericInputField extends Component {
     if (this.props.noteditable) {
       return;
     }
+
+    if (this.props.onChange) {
+      this.props.onChange(e.target.value);
+    }
+
     const value = e.target.value;
     if (this.props.inputType === "currency" && /^([0-9,. ])*$/i.test(value)) {
       this.setState({ value, valueChanged: true, error: null });
@@ -43,7 +59,7 @@ class GenericInputField extends Component {
     } else if (this.props.inputType === "number" && /^([0-9,. ])*$/i.test(value)) {
       this.setState({ value, valueChanged: true, error: null });
       return;
-    } else if (!this.props.inputType) {
+    } else if (!this.props.inputType || this.props.inputType === "domain") {
       this.setState({ value, valueChanged: true, error: null });
       return;
     } else {

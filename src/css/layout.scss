@@ -2449,6 +2449,10 @@ h1{
     height: calc(100% - 2rem);
     position: relative;
 
+    &LawBox{
+        margin-bottom: 2em;
+    }
+
     .checkOrderFeatures{
         .productInfoHolder{
             text-align: center;
@@ -3324,4 +3328,114 @@ h1{
     padding: 0.5em;
     cursor: pointer;
     }
+}
+.domainInputHolder{
+    display: flex;
+
+    .domainInput{
+        width: 100%;
+
+        &Field{
+            border-bottom: 1px solid;
+        }
+    }
+    button{
+        background-color: #20BAA9;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: all 0.6s ease-in-out;
+
+        &:focus{
+            outline: none;
+        }
+        &:hover{
+            background-color: #117f91;
+        }
+    }
+}
+.tldHolder{
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    margin-top: 0.5em;
+
+    .tldItem{
+        width: 100%;
+        text-align: center;
+
+        .tld{
+        font-weight: bold;
+        margin-right: 0.25em;
+        }
+
+        .tldItemSmall{
+            padding: 0.25em;
+            cursor: pointer;
+            transition: all 0.6s ease-in-out;
+
+            &:hover{
+                background-color: #20BAA9;
+            }
+        }
+
+        .selectedTld{
+            padding: 0.25em;
+            background-color: #20BAA9
+        }
+    }
+}
+.whoisPrivacyBox{
+    margin-top: 1em;
+
+    .whoisPrivacy{
+        font-size: 0.8rem;
+        margin-left: 0.4rem;
+        top: -0.26rem;
+        position: relative;
+    }
+}
+.buyDomainButtonHolder{
+    margin-top: 2em;
+    display: flex;
+    justify-content: space-evenly;
+
+    button{
+        background-color: #20BAA9;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: all 0.6s ease-in-out;
+        padding: 0.5em 1em;
+        border-radius: 0.3em;
+        font-weight: bold;
+
+        &:focus{
+            outline: none;
+        }
+        &:hover{
+            background-color: #117f91;
+        }
+    }
+    .__cancel{
+        background-color: #c73544;
+
+        &:hover{
+            background-color: #991b78;
+        }
+    }
+    .__greyed{
+        background-color: grey;
+
+        &:hover{
+            background-color: grey;
+        }
+    }
+}
+
+.versionnumber {
+    position: absolute;
+    bottom: 0.5em;
+    left: 0.5em;
+    color: #3e6b98;
 }
