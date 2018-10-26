@@ -13,17 +13,20 @@ function capitalizeFirstLetter(s: string) {
 }
 
 export async function randomWord() {
-  // lazy loading to improve loading to of app
+  // lazy loading to improve loadtime
   if (wordlist === null) {
     wordlist = require("./wordlist5a.json");
   }
   return wordlist![await randomNumber(0, wordlist!.length - 1)];
 }
 
-export async function randomPassword(length: number = 3) {
+export async function randomPassword(words: number = 3, digits: number = 0) {
   let r = "";
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < words; i++) {
     r += capitalizeFirstLetter(await randomWord());
+  }
+  for (let i = 0; i < digits; i++) {
+    r += await randomNumber(0, 9);
   }
   return r;
 }
