@@ -39,7 +39,15 @@ $plan-background: #ccc;
 
 .nextPaymentChart {
   width: 100%;
-  height: 10rem;
+  height: 13rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nextBillHeading{
+  width: 100%;
+  font-size: 1.5em;
+  text-align: center;
 }
 
 .change-plan {

@@ -200,12 +200,12 @@ class Navigation extends React.Component<Props, State> {
             )}
           </div>
 
-          <span
+          {/*<span
             onClick={() => this.goTo("settings")}
             className="fas fa-cog navigation-right-infos"
           />
 
-          {/*<span
+          <span
             onClick={this.props.toggleChat}
             className="fas fa-comments navigation-right-infos"
           />*/}

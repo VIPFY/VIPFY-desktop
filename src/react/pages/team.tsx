@@ -793,14 +793,25 @@ class Team extends React.Component<Props, State> {
                         let appArray: JSX.Element[] = [];
 
                         if (data.fetchUnitApps) {
-                          //console.log(data.fetchUnitApps);
-                          const noExternalApps = data.fetchUnitApps.filter(
+                          console.log(data.fetchUnitApps);
+                          let noExternalApps = data.fetchUnitApps.filter(
                             app =>
                               app.boughtplan.planid.options === null &&
                               (app.endtime === null || moment(app.endtime).isAfter(moment()))
                           );
+                          noExternalApps.sort(function(a, b) {
+                            return (
+                              (a.boughtplan.alias
+                                ? a.boughtplan.alias
+                                : `${a.appname} ${a.boughtplan.id}`) >
+                              (b.boughtplan.alias
+                                ? b.boughtplan.alias
+                                : `${b.appname} ${b.boughtplan.id}`)
+                            );
+                          });
                           appArray = noExternalApps.map((app, key) => (
                             <div
+                              title={`${app.licencesused} of ${app.licencestotal} licences used`}
                               draggable
                               className={`PApp ${this.state.dragging == app.id ? "dragging" : ""}`}
                               onDragStart={ev =>
