@@ -171,6 +171,7 @@ class AppListInner extends React.Component<Props, State> {
                         appName,
                         planName,
                         appId,
+                        boughtPlanId: boughtplan.id,
                         currentPlan: boughtplan.planid
                       }
                     })

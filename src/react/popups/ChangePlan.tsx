@@ -1,9 +1,18 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import gql from "graphql-tag";
+import { Query, Mutation } from "react-apollo";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError } from "../common/functions";
 import { fetchPlans } from "../queries/products";
 import PlanHolder from "../components/PlanHolder";
+
+const UPDATE_PLAN = gql`
+  mutation onUpdatePlan($planid: ID!, $features: JSON!, $price: Float!, $planinputs: JSON!) {
+    updatePlan(planid: $planid, features: $features, price: $price, planinputs: $planinputs) {
+      ok
+    }
+  }
+`;
 
 interface Plan {
   id: number;
@@ -21,51 +30,103 @@ interface Plan {
 
 interface Props {
   appName: string;
+  boughtPlanId: number;
   planName: string;
   appId: number;
   currentPlan: Plan;
+  onClose: Function;
 }
 
 interface State {
   selectedPlan: Plan | null;
-  fullPrice: number;
   values: any;
+  prices: any;
+  amount: any;
+  touched: boolean;
 }
 
+const INITIALSTATE: State = {
+  selectedPlan: null,
+  prices: {},
+  values: {},
+  amount: {},
+  touched: false
+};
+
 class ChangePlan extends React.Component<Props, State> {
-  state = {
-    selectedPlan: null,
-    fullPrice: 0,
-    values: {}
-  };
+  state = INITIALSTATE;
 
   componentDidMount() {
-    const { currentPlan } = this.props;
-    if (currentPlan) {
-      this.setState({ selectedPlan: currentPlan, fullPrice: parseInt(currentPlan.price) });
+    if (this.props.currentPlan) {
+      this.setState({ selectedPlan: this.props.currentPlan });
     }
   }
 
-  handleChange = e => {
+  handleChange = (e, amount, amountper, price) => {
     e.preventDefault();
     const name = e.target.name;
     const value = parseInt(e.target.value);
 
+    const amountAdditionalOptions = (value - amount) / amountper;
+    const fullPrice = price * amountAdditionalOptions;
+
     this.setState(prevState => ({
+      touched: true,
+      amount: { ...prevState.amount, [name]: amountAdditionalOptions },
       values: { ...prevState.values, [name]: value },
-      fullPrice: prevState.fullPrice + value
+      prices: { ...prevState.prices, [name]: fullPrice }
     }));
   };
 
+  handleSubmit = updatePlan => {
+    const { values, selectedPlan, amount, prices } = this.state;
+    console.log(this.state);
+    const features = {};
+    selectedPlan.features
+      .map(more => more.features.filter(feature => feature.addable).map(feature => feature))
+      .reduce(features => features)
+      .forEach(({ key, number: value }) => (features[key] = { amount: 0, value }));
+
+    Object.keys(values).forEach(sKey => {
+      features[sKey].value = values[sKey];
+      features[sKey].amount = amount[sKey];
+    });
+
+    console.log(features);
+
+    console.log({
+      planid: this.props.boughtPlanId,
+      features,
+      price: selectedPlan.price + Object.values(prices).reduce((acc, price) => acc + price),
+      planInputs: null
+    });
+    // updatePlan({
+    //   variables: {
+    //     planid: this.props.boughtPlanId,
+    //     features,
+    //     price: selectedPlan.price + Object.values(prices).reduce((acc, price) => acc + price),
+    //     planInputs: null
+    //   }
+    // });
+    //   {
+    //   "limit":{"amount":0,"value":5000},
+    //   "ips":{"amount":16,"value":16},
+    //   "contacts":{"amount":7,"value":17600},
+    //   "users":{"amount":5,"value":6}
+    // },
+    //   "price":855,
+    //   "planinputs":{
+    //     "companyname":"Dennis Group",
+    //     "companyaddress":{
+    //       "street":"2445, Commerce Avenue Northwest",
+    //       "city":"Duluth","zip":"30096"
+    //     }
+    //     ,"domains":[]
+    //   }
+  };
+
   render() {
-    const { selectedPlan, values, fullPrice } = this.state;
-    // console.log(`%c Values`, "color: green;", values);
-
-    // const debug = selectedPlan.features
-    //   .map(more => more.features.filter(feature => feature.addable).map(feature => feature))
-    //   .reduce(features => features);
-
-    // console.log(debug);
+    const { selectedPlan, values, prices } = this.state;
 
     return (
       <div className="change-plan">
@@ -90,7 +151,9 @@ class ChangePlan extends React.Component<Props, State> {
                   currentPlan={this.props.currentPlan.id}
                   buttonText="Select"
                   plans={data.fetchPlans}
-                  updateUpperState={selectedPlan => this.setState({ selectedPlan })}
+                  updateUpperState={selectedPlan =>
+                    this.setState({ ...INITIALSTATE, selectedPlan, touched: true })
+                  }
                 />
               </React.Fragment>
             );
@@ -126,16 +189,13 @@ class ChangePlan extends React.Component<Props, State> {
                       .reduce(features => features)
                       .map(feature => {
                         const { key, number: amount, amountper, price } = feature;
-                        const computedAmount = values[key] ? values[key] : amount;
-                        fullPrice[key] = price * ((computedAmount - amount) / amountper);
 
                         return (
                           <li key={key}>
-                            <span className="Pcaption">{feature.precaption}</span>
+                            <span className="precaption">{feature.precaption}</span>
 
                             <input
                               name={key}
-                              className="inputNew"
                               min={amount}
                               step={feature.amountper}
                               type="number"
@@ -148,10 +208,10 @@ class ChangePlan extends React.Component<Props, State> {
                                 }));
                               }}
                               value={values[key] ? values[key] : amount}
-                              onChange={this.handleChange}
+                              onChange={e => this.handleChange(e, amount, amountper, price)}
                             />
                             <span className="Pcaption">{feature.aftercaption}</span>
-                            {`+ $${fullPrice[key]}/${feature.priceper}`}
+                            {prices[key] ? `+ $${prices[key]}/${feature.priceper}` : "Included"}
                           </li>
                         );
                       })
@@ -159,8 +219,9 @@ class ChangePlan extends React.Component<Props, State> {
               </ul>
               <div className="totalprice">
                 $
-                {this.state.fullPrice +
-                  parseInt(Object.keys(fullPrice).reduce(price => fullPrice[price]))}
+                {Object.values(prices).length > 0
+                  ? selectedPlan.price + Object.values(prices).reduce((acc, price) => acc + price)
+                  : selectedPlan.price}
                 /month
               </div>
             </div>
@@ -168,6 +229,29 @@ class ChangePlan extends React.Component<Props, State> {
             "Sorry, there was a problem. Please reload."
           )}
         </div>
+
+        <Mutation mutation={UPDATE_PLAN}>
+          {(mutate, { loading, error }) => (
+            <div className="generic-button-holder">
+              <button
+                type="button"
+                disabled={loading}
+                className="generic-cancel-button"
+                onClick={this.props.onClose}>
+                <i className="fas fa-long-arrow-alt-left" /> Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={this.handleSubmit}
+                disabled={loading || !this.state.touched}
+                className="generic-submit-button">
+                <i className="fas fa-check-circle" />
+                Change Plan
+              </button>
+            </div>
+          )}
+        </Mutation>
       </div>
     );
   }

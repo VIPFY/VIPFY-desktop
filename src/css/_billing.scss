@@ -59,7 +59,20 @@ $plan-background: #ccc;
   overflow: hidden;
 
   &-options {
-    margin-top: 1rem;
+    margin: 1rem 0 2rem 0;
+
+    .precaption {
+      min-width: 12rem;
+    }
+
+    input {
+      width: 5rem;
+      border: 0;
+      outline: none;
+      text-align: center;
+      border-bottom: 1px solid #20BAA9;
+      font-family: 'Montserrat', sans-serif !important;
+    }
   }
 }
 
