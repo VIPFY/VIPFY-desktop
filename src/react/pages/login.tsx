@@ -7,6 +7,16 @@ import { emailRegex, countries, industries, subIndustries } from "../common/cons
 import { filterError } from "../common/functions";
 import { valueFromAST } from "graphql";
 
+const SIGN_UP = gql`
+  mutation onSignUp($email: String!, $name: NameInput!, $companyData: CompanyInput!) {
+    signUp(email: $email, name: $name, companyData: $companyData) {
+      ok
+      token
+      refreshToken
+    }
+  }
+`;
+
 const CREATE_COMPANY = gql`
   mutation onCreateCompany($name: String!, $legal: LegalInput!) {
     createCompany(name: $name, legalinformation: $legal) {
@@ -235,17 +245,15 @@ class Login extends React.Component<Props, State> {
   handleEnter(e, field, force = false) {
     if (field === 3 && (force || e.key === "Enter")) {
       let email = this.registerInput.value;
-      if (email.includes("@") && email.includes(".")) {
-        return this.register();
-      } else {
+      if (!email.includes("@") && !email.includes(".")) {
         this.registerInput.focus();
         this.setState({
           focus: 3,
           errorbool: true,
           error: "Not an Email Address."
         });
-        return;
       }
+      return;
     }
 
     if (force || e.key === "Enter") {
@@ -294,36 +302,56 @@ class Login extends React.Component<Props, State> {
 
   registerClick = () => this.handleEnter(null, 3, true);
 
-  register() {
-    this.setState({ registerMove: true });
-    this.props.register(this.registerInput.value, this.state.newsletter);
-  }
-
   registerSave = async () => {
-    this.setState({ registering: true });
+    await this.setState({ registering: true });
 
-    const { vatId, agreementa, agreementb } = this.state;
+    const { vatId, agreementa, agreementb, email } = this.state;
     try {
       if (!agreementa) {
         throw new Error("Please agree our Terms of Service and Privacy Settings");
       }
 
-      await this.props.register(this.state.email);
-      const res = await this.props.createCompany({
-        variables: {
-          name: this.state.companyname,
-          legal: {
-            vatId,
-            termsOfService: new Date().toISOString(),
-            privacy: new Date().toISOString(),
-            noVatRequired: agreementb
-          }
+      const companyData = {
+        name: this.state.companyname,
+        legalinformation: {
+          vatId,
+          termsOfService: new Date().toISOString(),
+          privacy: new Date().toISOString(),
+          noVatRequired: agreementb
         }
-      });
+      };
 
-      const { token, refreshToken } = res.data.createCompany;
-      localStorage.setItem("token", token);
-      localStorage.setItem("refreshToken", refreshToken);
+      const name = {
+        firstname: "not set",
+        lastname: ""
+      };
+
+      if (this.state.name != "") {
+        const nameArray = this.state.name.split(" ");
+        if (nameArray.length === 1) {
+          name.lastname = nameArray[0];
+        } else if (nameArray.length === 2) {
+          name.firstname = nameArray[0];
+          name.lastname = nameArray[1];
+        } else {
+          let middleArray = nameArray.slice(0);
+          middleArray.pop();
+          middleArray.shift();
+          name.firstname = nameArray[0];
+          name.middlename = middleArray.join(" ");
+          name.lastname = nameArray[nameArray.length - 1];
+        }
+      }
+
+      const res = await this.props.register({ variables: { email, name, companyData } });
+      const { ok, token, refreshToken } = res.data.signUp;
+
+      if (ok) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("refreshToken", refreshToken);
+      } else {
+        throw new Error("Something went wrong");
+      }
 
       let statisticdata = {
         industry: this.state.industry,
@@ -332,34 +360,13 @@ class Login extends React.Component<Props, State> {
         companyStage: this.state.selectedOption
       };
 
-      let user = {};
-      if (this.state.name != "") {
-        let nameArray = [];
-        nameArray = this.state.name.split(" ");
-        if (nameArray.length === 1) {
-          user = { lastname: nameArray[0] };
-        } else if (nameArray.length === 2) {
-          user = { firstname: nameArray[0], lastname: nameArray[1] };
-        } else {
-          let middleArray = nameArray.slice(0);
-          middleArray.pop();
-          middleArray.shift();
-          user = {
-            firstname: nameArray[0],
-            middlename: middleArray.join(" "),
-            lastname: nameArray[nameArray.length - 1]
-          };
-        }
-      }
-
-      await this.props.updateUser({ variables: { user } });
       this.props.afterRegistration(this.state.address, statisticdata);
 
       return this.props.moveTo("dashboard/newuser");
     } catch (err) {
-      console.log(err);
+      console.log("LoginError", err);
       this.setState({
-        error: err.message,
+        error: filterError(err),
         errorbool: true,
         registering: false
       });
@@ -607,7 +614,6 @@ class Login extends React.Component<Props, State> {
                 className="newInputField"
                 placeholder="Email"
                 onBlur={this.checkEmail}
-                //autoFocus
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
                   this.remailInput = input!;
@@ -620,7 +626,6 @@ class Login extends React.Component<Props, State> {
                 key="name"
                 className="newInputField"
                 placeholder="Your Name"
-                //autoFocus
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
                   this.nameInput = input!;
@@ -977,6 +982,9 @@ class Login extends React.Component<Props, State> {
 export default compose(
   graphql(CREATE_COMPANY, {
     name: "createCompany"
+  }),
+  graphql(SIGN_UP, {
+    name: "register"
   }),
   graphql(updateUser, {
     name: "updateUser"
