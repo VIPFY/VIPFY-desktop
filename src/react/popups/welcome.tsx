@@ -42,17 +42,19 @@ interface Props {
 
 const Welcome = (props: Props) => {
   const { fullName, proposal, onClose, statisticData } = props;
-  const { name, formatted_address, website, international_phone_number } = proposal;
   const { industry, subIndustry, companyStage } = statisticData;
-  const defaultValues = {
-    name,
-    formatted_address,
-    website,
-    international_phone_number
-  };
+  const defaultValues = {};
+
+  if (proposal) {
+    const { name, formatted_address, website, international_phone_number } = proposal;
+    defaultValues.name = name;
+    defaultValues.formatted_address = formatted_address;
+    defaultValues.website = website;
+    defaultValues.international_phone_number = international_phone_number;
+  }
 
   const fields = [
-    { name: "name", type: "text", icon: "building" },
+    { name: "name", type: "text", icon: "building", disabled: true },
     { name: "formatted_address", type: "text", icon: "address-card" },
     { name: "website", type: "text", icon: "home" },
     { name: "international_phone_number", type: "text", icon: "phone" }
@@ -88,6 +90,7 @@ const Welcome = (props: Props) => {
         }
       });
       const p2 = props.updateStatisticData({ variables: { data: statisticData } });
+
       await Promise.all([p1, p2]);
     } catch (error) {
       throw new Error(error);
@@ -103,7 +106,12 @@ const Welcome = (props: Props) => {
         If you have any questions, we're happy to help you :)`}
       </div>
 
-      {proposal ? (
+      {proposal.formatted_address ||
+      proposal.website ||
+      proposal.international_phone_number ||
+      industry ||
+      subIndustry ||
+      companyStage ? (
         <div className="proposal-holder">
           <div>Do you want to save this data to your account? Just click the field to edit.</div>
 

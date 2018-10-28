@@ -51,9 +51,7 @@ export const CHECK_EMAIL = gql`
 
 export const CHECK_VAT = gql`
   mutation onCheckVat($vat: String!, $cc: String!) {
-    checkVat(vat: $vat, cc: $cc) {
-      ok
-    }
+    checkVat(vat: $vat, cc: $cc)
   }
 `;
 
@@ -467,15 +465,23 @@ class Login extends React.Component<Props, State> {
           return;
         }
 
-        this.setState({ companyname: this.companyInput.value, agreementb: true });
+        this.setState({ companyname: this.companyInput.value });
 
         if (this.state.isEU && this.vatInput.value.length > 3) {
           try {
-            await this.props.checkVat({
-              variables: { vat: this.vatInput.value, cc: this.state.countryCode }
-            });
+            if (this.vatInput.value.substr(0, 2).toUpperCase() != "DE") {
+              const res = await this.props.checkVat({
+                variables: { vat: this.vatInput.value, cc: this.state.countryCode }
+              });
 
-            this.setState({ vatId: this.vatInput.value });
+              this.setState({
+                vatId: this.vatInput.value,
+                companyname: res.data.checkVat,
+                agreementb: false
+              });
+            } else {
+              this.setState({ vatId: this.vatInput.value, agreementb: false });
+            }
           } catch (error) {
             this.setState({
               errorbool: true,
@@ -778,7 +784,11 @@ class Login extends React.Component<Props, State> {
                       className="newInputField float-in-right"
                       onChange={e => {
                         if (e.target.value.length == 2 || e.target.value.length > 7) {
-                          if (e.target.value.toUpperCase() != this.state.countryCode) {
+                          if (
+                            e.target.value.toUpperCase() != this.state.countryCode &&
+                            typeof e.target.value.charAt[0] == "string" &&
+                            typeof e.target.value.charAt[1] == "string"
+                          ) {
                             const { name, value } = countries.filter(
                               country => country.value == e.target.value.substr(0, 2).toUpperCase()
                             )[0];

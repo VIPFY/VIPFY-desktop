@@ -2568,59 +2568,66 @@ h1{
             font-size: 2rem;
         }
     }
+
     .companyEmployees{
-        .Cemployee{
-            display: flex;
-            justify-content: start;
-            margin-bottom: 2rem;
-            border: 1px solid #C8C8C8;
-            border-radius: 3px;
-            .infoHolder{
-                width: 10rem;
-                text-align: center;
-                background-color: white;
-                border-radius: 3px;
-                height: 8rem;
+      .Cemployee {
+        display: flex;
+        justify-content: start;
+        margin-bottom: 2rem;
+        border: 1px solid #C8C8C8;
+        border-radius: 3px;
+
+        .infoHolder {
+          width: 10rem;
+          display: flex;
+          flex-flow: column;
+          align-items: center;
+          background-color: #fff;
+          border-radius: 3px;
+          height: 8rem;
+          cursor: pointer;
+
+          .picutre {
+              margin: 0.5rem;
+              height: 5rem;
+              width: 5rem;
+          }
+        }
+
+          .apps {
+            display: grid;
+            grid-template-rows: repeat(auto-fill, 2.3rem);
+            grid-template-columns: repeat(auto-fill, 9rem);
+            grid-gap: 0.5rem;
+            margin-left: 1rem;
+            height: 100%;
+            width: 100%;
+
+            .EApp {
+              position: relative;
+              overflow: hidden;
+              background-color: white;
+              padding: 0.25rem;
+              box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+                
+              .revokelicence {
                 cursor: pointer;
-                .picutre{
-                    margin: 0.5rem;
-                    height: 5rem;
-                    width: 5rem;
-                }
-            }
-            .apps {
-              display: grid;
-              grid-template-rows: repeat(auto-fill, 2.3rem);
-              grid-template-columns: repeat(auto-fill, 9rem);
-              grid-gap: 0.5rem;
-              margin-left: 1rem;
-              height: 100%;
-              width: 100%;
-
-              .EApp {
-                position: relative;
-                overflow: hidden;
-                background-color: white;
-                padding: 0.25rem;
-                box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
-                  
-                .revokelicence {
-                  cursor: pointer;
-                  font-size: 0.5rem
-                }
-
-                img {
-                  user-drag: none;
-                  user-select: none;
-                  -moz-user-select: none;
-                  -webkit-user-drag: none;
-                  -webkit-user-select: none;
-                  -ms-user-select: none;
-                }
+                font-size: 0.5rem
               }
-              .dragable{
+
+              img {
+                user-drag: none;
+                user-select: none;
+                -moz-user-select: none;
+                -webkit-user-drag: none;
+                -webkit-user-select: none;
+                -ms-user-select: none;
+              }
+            }
+              .dragable {
                 cursor: move;
                 transition: all 300ms ease-in-out;
+
                 &:hover {
                     box-shadow: 3px 11px 19px -3px rgba(0, 0, 0, 0.36);
                     transform: translateY(-5px);

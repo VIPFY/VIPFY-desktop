@@ -10,22 +10,9 @@ import { AppContext } from "../../common/functions";
 import { filterError } from "../../common/functions";
 import { unitPicFolder } from "../../common/constants";
 import { me } from "../../queries/auth";
+import { FETCH_COMPANY } from "../../queries/departments";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
-
-const FETCH_COMPANY = gql`
-  {
-    fetchCompany {
-      profilepicture
-      name
-      legalinformation
-      employees
-      unit: unitid {
-        id
-      }
-    }
-  }
-`;
 
 const UPDATE_PIC = gql`
   mutation onUpdatePic($file: File!) {

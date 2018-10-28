@@ -107,7 +107,6 @@ class Billing extends React.Component<Props, State> {
         <div className="payment-data-holder">
           <label className="payment-label">Cost Distribution</label>
           <div className="nextPaymentChart">
-            {/*<BillNext />*/}
             <BillingPie {...this.props} />
           </div>
         </div>

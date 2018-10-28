@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import Welcome from "../popups/welcome";
 import LoadingDiv from "../components/LoadingDiv";
 
+import { FETCH_COMPANY } from "../queries/departments";
 import { filterError, AppContext } from "../common/functions";
 
 const FETCH_ADDRESS_PROPOSAL = gql`
@@ -207,7 +208,6 @@ export default props => (
               if (error) {
                 return filterError(error);
               }
-              console.log(data);
 
               return (
                 <Dashboard {...props} addressProposal={data.fetchAddressProposal} {...context} />
@@ -216,7 +216,22 @@ export default props => (
           </Query>
         );
       } else {
-        return <Dashboard {...props} {...context} />;
+        return (
+          <Query query={FETCH_COMPANY}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <LoadingDiv text="Fetching Recommendations..." />;
+              }
+
+              if (error) {
+                return filterError(error);
+              }
+
+              const addressProposal = { name: data.fetchCompany.name };
+              return <Dashboard {...props} addressProposal={addressProposal} {...context} />;
+            }}
+          </Query>
+        );
       }
     }}
   </AppContext.Consumer>
