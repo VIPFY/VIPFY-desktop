@@ -38,6 +38,7 @@ interface Props {
   onClose: Function;
   uploadData: Function;
   updateStatisticData: Function;
+  disableWelcome: Function;
 }
 
 const Welcome = (props: Props) => {
@@ -92,6 +93,7 @@ const Welcome = (props: Props) => {
       const p2 = props.updateStatisticData({ variables: { data: statisticData } });
 
       await Promise.all([p1, p2]);
+      props.disableWelcome();
     } catch (error) {
       throw new Error(error);
     }
@@ -120,7 +122,10 @@ const Welcome = (props: Props) => {
             successMessage="Upload finished. Have fun with Vipfy."
             fields={fields}
             defaultValues={defaultValues}
-            onClose={onClose}
+            onClose={() => {
+              props.disableWelcome();
+              onClose();
+            }}
             handleSubmit={handleSubmit}
           />
         </div>

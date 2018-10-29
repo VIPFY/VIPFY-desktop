@@ -33,15 +33,14 @@ interface Props {
 class Dashboard extends React.Component<Props, {}> {
   componentDidMount() {
     if (this.props.firstLogin) {
-      this.props.disableWelcome();
-
       this.props.showPopup({
         header: "Welcome to Vipfy",
         body: Welcome,
         props: {
           fullName: `${this.props.firstname} ${this.props.lastname}`,
           proposal: this.props.addressProposal ? this.props.addressProposal : null,
-          statisticData: this.props.statisticData
+          statisticData: this.props.statisticData,
+          disableWelcome: () => this.props.disableWelcome()
         }
       });
     }
@@ -226,7 +225,7 @@ export default props => (
               if (error) {
                 return filterError(error);
               }
-
+              console.log(data);
               const addressProposal = { name: data.fetchCompany.name };
               return <Dashboard {...props} addressProposal={addressProposal} {...context} />;
             }}
