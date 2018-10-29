@@ -1,5 +1,19 @@
 import gql from "graphql-tag";
 
+export const FETCH_COMPANY = gql`
+  {
+    fetchCompany {
+      profilepicture
+      name
+      legalinformation
+      employees
+      unit: unitid {
+        id
+      }
+    }
+  }
+`;
+
 export const fetchDepartments = gql`
   query fetchDepartments {
     fetchDepartments {

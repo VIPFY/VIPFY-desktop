@@ -2,7 +2,7 @@ import * as React from "react";
 import { withApollo } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { CHANGE_PASSWORD } from "../../mutations/auth";
+import { forgotPassword } from "../../mutations/auth";
 
 interface PasswordResetProps {
   logMeOut: Function;
@@ -39,7 +39,7 @@ class PasswordReset extends React.Component<PasswordResetProps, PasswordResetSta
     await this.setState({ error: null, loading: true, message: "" });
     try {
       await this.props.client.mutate({
-        mutation: CHANGE_PASSWORD,
+        mutation: forgotPassword,
         variables: {
           email: this.state.email
         }

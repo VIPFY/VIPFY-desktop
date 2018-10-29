@@ -1,7 +1,10 @@
+$plan-background: #ccc;
+
 #billing-page {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(750px, 1fr));
   grid-gap: 1.2rem;
+  grid-auto-flow: dense;
   margin: 2rem;
 }
 
@@ -19,6 +22,10 @@
 
 #bought-apps {
   grid-column: 1 / -1;
+}
+
+.bought-apps-row {
+  text-align: center;
 }
 
 .payment-label {
@@ -43,8 +50,39 @@
   text-align: center;
 }
 
-.bill {
-  text-decoration: none;
+.change-plan {
+  width: 100vh;
+  padding: 1rem;
+  display: flex;
+  flex-flow: column nowrap;
+  align-self: start;
+  overflow: hidden;
+
+  &-options {
+    margin: 1rem 0 2rem 0;
+
+    .precaption {
+      min-width: 12rem;
+    }
+
+    input {
+      width: 5rem;
+      border: 0;
+      outline: none;
+      text-align: center;
+      border-bottom: 1px solid #20BAA9;
+      font-family: 'Montserrat', sans-serif !important;
+    }
+  }
+}
+
+.invoices {
+  display: flex;
+  justify-content: space-between;
+
+  span {
+    margin-right: 1rem;
+  }
 }
 
 .billing-emails {

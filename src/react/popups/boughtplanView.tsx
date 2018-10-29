@@ -4,6 +4,8 @@ import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import GenericInputField from "../components/GenericInputField";
 import { fetchUnitApps } from "../queries/departments";
+import { CANCEL_PLAN } from "../mutations/products";
+import { ErrorComp, filterError } from "../common/functions";
 
 const CHANGE_ALIAS = gql`
   mutation setBoughtPlanAlias($boughtplanid: ID!, $alias: String!) {
@@ -13,19 +15,27 @@ const CHANGE_ALIAS = gql`
   }
 `;
 
-const HIDE_BOUGHT = gql`
-  mutation endBoughtPlan($boughtplanid: ID!) {
-    endBoughtPlan(boughtplanid: $boughtplanid) {
-      ok
-    }
-  }
-`;
+interface Props {
+  changeAlias: Function;
+  appname: string;
+  app: any;
+  client: any;
+  onClose: Function;
+  cancelPlan: Function;
+}
 
-class BoughtplanView extends Component {
+interface State {
+  alias: string;
+  saving: boolean;
+  hide: boolean;
+  error: string;
+}
+class BoughtplanView extends Component<Props, State> {
   state = {
     alias: this.props.appname,
     saving: false,
-    hide: false
+    hide: false,
+    error: ""
   };
 
   save = async () => {
@@ -37,13 +47,15 @@ class BoughtplanView extends Component {
           alias: this.state.alias
         }
       });
+
       if (this.state.hide) {
-        await this.props.hideBought({
+        await this.props.cancelPlan({
           variables: {
-            boughtplanid: this.props.app.boughtplan.id
+            planid: this.props.app.boughtplan.id
           }
         });
       }
+
       this.props.client.query({
         query: fetchUnitApps,
         variables: { departmentid: this.props.app.usedby.id },
@@ -51,7 +63,7 @@ class BoughtplanView extends Component {
       });
       this.props.onClose();
     } catch (err) {
-      console.log("ERROR", err);
+      this.setState({ error: filterError(err) });
     }
   };
 
@@ -96,7 +108,8 @@ class BoughtplanView extends Component {
             )}
           </div>
         </div>
-        <div className="checkoutButton" onClick={() => this.save()}>
+        {this.state.error ? <ErrorComp error={this.state.error} /> : ""}
+        <div className="checkoutButton" onClick={this.save}>
           {this.state.saving ? (
             <div className="spinner loginspinner">
               <div className="double-bounce1" />
@@ -111,10 +124,10 @@ class BoughtplanView extends Component {
   }
 }
 export default compose(
+  graphql(CANCEL_PLAN, {
+    name: "cancelPlan"
+  }),
   graphql(CHANGE_ALIAS, {
     name: "changeAlias"
-  }),
-  graphql(HIDE_BOUGHT, {
-    name: "hideBought"
   })
 )(withApollo(BoughtplanView));

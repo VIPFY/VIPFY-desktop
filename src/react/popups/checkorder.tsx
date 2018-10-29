@@ -43,6 +43,12 @@ class CheckOrder extends React.Component<Props, State> {
     buying: 0
   };
 
+  componentDidMount() {
+    if (this.props.plan.price) {
+      this.setState({ totalprice: this.props.plan.price });
+    }
+  }
+
   openExternal(url) {
     require("electron").shell.openExternal(url);
   }
@@ -114,9 +120,20 @@ class CheckOrder extends React.Component<Props, State> {
                 <div className="Pcaption">{feature.precaption}</div>
                 <input
                   className="inputNew"
+                  min={feature.number}
+                  step={feature.amountper}
                   type="number"
                   value={this.state.featurenumbers[i] || feature.number}
                   onChange={e => this.changeOption(i, e.target.value, plan)}
+                  onBlur={e => {
+                    let valuenew =
+                      Math.ceil((e.target.value - feature.number) / feature.amountper) *
+                        feature.amountper +
+                      feature.number;
+                    this.setState(prevState => ({
+                      featurenumbers: { ...prevState.featurenumbers, [i]: valuenew }
+                    }));
+                  }}
                 />
                 <div className="Pcaption">{feature.aftercaption}</div>
               </div>
@@ -443,7 +460,11 @@ class CheckOrder extends React.Component<Props, State> {
                         planInputs = data.fetchPlanInputs;
                         billingAddresses = data.fetchAddresses;
 
-                        if (data.fetchAddresses && data.fetchAddresses.length >= 1) {
+                        if (billingAddresses && billingAddresses.length >= 1) {
+                          if (!billingAddresses[0].address.street) {
+                            return "Please update your address with a valid street.";
+                          }
+
                           return (
                             <div>
                               <div className="orderHeading">
@@ -457,13 +478,13 @@ class CheckOrder extends React.Component<Props, State> {
                               <div className="orderInformationHolder">
                                 <div className="orderAddressHolder">
                                   <div className="orderAddressLine">
-                                    {data.fetchAddresses[0].address.street}
+                                    {billingAddresses[0].address.street}
                                   </div>
                                   <div className="orderAddressLine">
-                                    {data.fetchAddresses[0].address.city}
+                                    {billingAddresses[0].address.city}
                                   </div>
                                   <div className="orderAddressLine">
-                                    {data.fetchAddresses[0].address.zip}
+                                    {billingAddresses[0].address.zip}
                                   </div>
                                   {/*<div className="changeInformation">
                                 <span>Change Address</span><span>Change Payment</div>
@@ -580,20 +601,23 @@ class CheckOrder extends React.Component<Props, State> {
                         if (error) {
                           return "Error loading Billing Data";
                         }
-                        console.log(data);
+
                         return (
                           <div>
                             {!data.fetchPaymentData ||
                             data.fetchPaymentData.length === 0 ||
                             !data.fetchAddresses ||
                             data.fetchAddresses.length === 0 ? (
-                              <button className="checkoutButton checkoutButton_notworking">
+                              <button
+                                disabled={!this.state.agreement || !this.state.totalprice}
+                                className="checkoutButton">
                                 Checkout for ${this.state.totalprice || this.props.plan.price}
                                 /mo
                               </button>
                             ) : (
                               <button
                                 className="checkoutButton"
+                                disabled={!this.state.agreement || !this.state.totalprice}
                                 onClick={() =>
                                   this.accept(
                                     this.props.plan,

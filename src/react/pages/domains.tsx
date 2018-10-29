@@ -306,7 +306,7 @@ class Domains extends React.Component<Props, State> {
             onClick={() => this.toggleOption(domain, "renewalmode")}>
             <i
               className={`fas fa-${
-                domain.renewalmode == "AUTORENEW" ? "check-circle" : "times-circle"
+                domain.renewalmode == "AUTORENEWAL" ? "check-circle" : "times-circle"
               }`}
             />
           </span>

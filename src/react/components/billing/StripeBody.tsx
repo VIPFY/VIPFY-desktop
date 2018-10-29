@@ -156,9 +156,9 @@ class StripeBody extends React.Component<Props, State> {
         {field.type == "select" ? (
           <select {...field} onChange={this.handleNewAddress} className="billing-dropdown">
             <option value=""> </option>
-            {field.options.map(option => (
-              <option key={option} value={option}>
-                {option}
+            {field.options.map(({ value, name }) => (
+              <option key={value} value={value}>
+                {name}
               </option>
             ))}
           </select>

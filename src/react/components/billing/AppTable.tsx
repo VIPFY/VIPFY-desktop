@@ -3,30 +3,10 @@ import { Mutation, Query } from "react-apollo";
 import gql from "graphql-tag";
 import humanizeDuration = require("humanize-duration");
 import moment = require("moment");
-import { AppContext } from "../../common/functions";
 import Confirmation from "../../popups/Confirmation";
-
-const CANCEL_PLAN = gql`
-  mutation onCancelPlan($planid: Int!) {
-    cancelPlan(planid: $planid) {
-      id
-      totalprice
-      buytime
-      endtime
-      planid {
-        id
-        name
-        appid {
-          id
-          name
-          icon
-          logo
-          color
-        }
-      }
-    }
-  }
-`;
+import ChangePlan from "../../popups/ChangePlan";
+import { AppContext } from "../../common/functions";
+import { CANCEL_PLAN } from "../../mutations/products";
 
 const REACTIVATE_PLAN = gql`
   mutation onReactivatePlan($planid: Int!) {
@@ -37,6 +17,8 @@ const REACTIVATE_PLAN = gql`
       endtime
       planid {
         id
+        price
+        features
         name
         appid {
           id
@@ -58,11 +40,14 @@ const FETCH_UNIT_APPS = gql`
       licencestotal
       boughtplan {
         id
+        alias
         totalprice
         buytime
         endtime
         planid {
           id
+          price
+          features
           name
           appid {
             id
@@ -120,6 +105,7 @@ class AppListInner extends React.Component<Props, State> {
           <tr>
             <th>App Name</th>
             <th>Plan Name</th>
+            <th>Alias</th>
             <th>ID</th>
             <th>
               Licences
@@ -138,9 +124,15 @@ class AppListInner extends React.Component<Props, State> {
   }
 
   tableRows() {
-    return this.props.data.fetchUnitApps.map(boughtplan => {
-      const stats = this.props.data.fetchUnitAppsSimpleStats.filter(d => d.id == boughtplan.id)[0];
-      const { endtime } = boughtplan.boughtplan;
+    return this.props.data.fetchUnitApps.map(({ boughtplan, id, licencesused, licencestotal }) => {
+      const stats = this.props.data.fetchUnitAppsSimpleStats.filter(d => d.id == id)[0];
+      const {
+        endtime,
+        planid: {
+          name: planName,
+          appid: { name: appName, id: appId }
+        }
+      } = boughtplan;
 
       const totalDur =
         stats.minutestotal == 0
@@ -155,21 +147,38 @@ class AppListInner extends React.Component<Props, State> {
       }
 
       return (
-        <AppContext.Consumer key={`r${boughtplan.id}`}>
+        <AppContext.Consumer key={`r${id}`}>
           {({ showPopup }) => (
-            <tr>
-              <td>{boughtplan.boughtplan.planid.appid.name}</td>
-              <td>{boughtplan.boughtplan.planid.name}</td>
-              <td>{boughtplan.boughtplan.id}</td>
+            <tr className="bought-apps-row">
+              <td>{appName}</td>
+              <td>{planName}</td>
+              <td>{boughtplan.alias}</td>
+              <td>{boughtplan.id}</td>
               <td>
-                {boughtplan.licencesused}/{boughtplan.licencestotal}
+                {licencesused}/{licencestotal}
               </td>
               <td>{totalDur}</td>
-              <td>${boughtplan.boughtplan.totalprice}</td>
+              <td>${boughtplan.totalprice}</td>
               <td>{endSat}</td>
               <td className="naked-button-holder">
-                <a>Show Usage</a>
-                <a>Upgrade</a>
+                <i className="fas fa-eye" title="Show" />
+                <i
+                  onClick={() =>
+                    showPopup({
+                      header: "Upgrade Plan",
+                      body: ChangePlan,
+                      props: {
+                        appName,
+                        planName,
+                        appId,
+                        boughtPlanId: boughtplan.id,
+                        currentPlan: boughtplan.planid
+                      }
+                    })
+                  }
+                  className="fas fa-sort-amount-up"
+                  title="Upgrade"
+                />
                 <Mutation mutation={!endtime ? CANCEL_PLAN : REACTIVATE_PLAN}>
                   {mutation => (
                     <i
@@ -177,12 +186,10 @@ class AppListInner extends React.Component<Props, State> {
                       className={`fas fa-${!endtime ? "trash-alt" : "redo"}`}
                       onClick={() =>
                         showPopup({
-                          header: `${!endtime ? "Cancel" : "Reactivate"} ${
-                            boughtplan.boughtplan.planid.appid.name
-                          } ${boughtplan.boughtplan.planid.name}`,
+                          header: `${!endtime ? "Cancel" : "Reactivate"} ${appName} ${planName}`,
                           body: Confirmation,
                           props: {
-                            id: boughtplan.boughtplan.id,
+                            id: boughtplan.id,
                             headline: `Please confirm ${
                               !endtime ? "cancellation" : "reactivation"
                             } of this plan`,

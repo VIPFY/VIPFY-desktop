@@ -1,7 +1,6 @@
 import * as React from "react";
 import { withRouter } from "react-router";
-import { graphql, Query, compose, withApollo } from "react-apollo";
-import gql from "graphql-tag";
+import { graphql, Query, withApollo } from "react-apollo";
 
 import { signInUser } from "./mutations/auth";
 import { me } from "./queries/auth";
@@ -14,16 +13,6 @@ import Login from "./pages/login";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
-
-const SignUp = gql`
-  mutation signUp($email: String!, $newsletter: Boolean!) {
-    signUp(email: $email, newsletter: $newsletter) {
-      ok
-      token
-      refreshToken
-    }
-  }
-`;
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -127,24 +116,6 @@ class App extends React.Component<AppProps, AppState> {
 
   moveTo = (path: string) => this.props.history.push(`/area/${path}`);
 
-  registerMe = async (email: string, newsletter: boolean = false) => {
-    try {
-      const res = await this.props.signUp({ variables: { email, newsletter } });
-      const { ok, token, refreshToken } = res.data.signUp;
-      if (ok) {
-        console.log("SIGNUP", res.data);
-        localStorage.setItem("token", token);
-        localStorage.setItem("refreshToken", refreshToken);
-        console.log("TOKEN", res.data);
-      }
-    } catch (err) {
-      localStorage.setItem("token", "");
-      localStorage.setItem("refreshToken", "");
-      this.setState({ login: false, error: filterError(err) });
-      console.log("LoginError", err);
-    }
-  };
-
   welcomeNewUser = (placeid: string, statisticData: object) => {
     this.setState({ firstLogin: true, placeid, statisticData });
   };
@@ -190,7 +161,6 @@ class App extends React.Component<AppProps, AppState> {
           afterRegistration={this.welcomeNewUser}
           login={this.logMeIn}
           moveTo={this.moveTo}
-          register={this.registerMe}
           error={this.state.error}
         />
       );
@@ -228,11 +198,6 @@ class App extends React.Component<AppProps, AppState> {
   }
 }
 
-export default compose(
-  graphql(signInUser, {
-    name: "signIn"
-  }),
-  graphql(SignUp, {
-    name: "signUp"
-  })
-)(withApollo(withRouter(App)));
+export default graphql(signInUser, {
+  name: "signIn"
+})(withApollo(withRouter(App)));

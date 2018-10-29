@@ -15,3 +15,25 @@ export const agreeToLicence = gql`
     }
   }
 `;
+
+export const CANCEL_PLAN = gql`
+  mutation onCancelPlan($planid: Int!) {
+    cancelPlan(planid: $planid) {
+      id
+      totalprice
+      buytime
+      endtime
+      planid {
+        id
+        name
+        appid {
+          id
+          name
+          icon
+          logo
+          color
+        }
+      }
+    }
+  }
+`;

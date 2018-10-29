@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import GenericInputField from "../components/GenericInputField";
-import { randomPassword } from "../common/random";
+import { randomPassword } from "../common/passwordgen";
 import { parseName } from "humanparser";
 
 class AddEmployee extends Component {

@@ -9,12 +9,13 @@ import Popup from "../components/Popup";
 import checkOrder from "../popups/checkorder";
 
 import GenericInputForm from "../components/GenericInputForm";
+import PlanHolder from "../components/PlanHolder";
 import AppHeaderInfos from "../common/appHeaderInfos";
 import LoadingDiv from "../components/LoadingDiv";
-import { ErrorComp } from "../common/functions";
 import AddReview from "../popups/addReview";
 import LoadingPopup from "../popups/loadingPopup";
 import draftToHtml from "draftjs-to-html";
+import { ErrorComp } from "../common/functions";
 
 export type AppPageProps = {
   employees: number;
@@ -311,49 +312,6 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     return dots;
   }
 
-  showPrices(plans) {
-    let priceBoxes: JSX.Element[] = [];
-
-    plans.forEach((plan, key) => {
-      let featureArray: JSX.Element[] = [];
-
-      if (plan.features && plan.features[0] && plan.features[0].features) {
-        plan.features[0].features.forEach((feature, fkey) => {
-          let value: JSX.Element = <span />;
-          if (feature.includedvalue) {
-            value = (
-              <div className="PextraHolder">
-                <div className="PIvalue">{feature.includedvalue}</div>
-                <div className="PEvalue">{feature.value}</div>
-              </div>
-            );
-          } else {
-            value = <div className="Pvalue">{feature.value}</div>;
-          }
-          featureArray.push(
-            <li key={fkey}>
-              <div className="Pcaption">{feature.precaption}</div>
-              {value}
-              <div className="Pcaption">{feature.aftercaption}</div>
-            </li>
-          );
-        });
-      }
-
-      priceBoxes.push(
-        <div key={key} onClick={() => this.buyApp(plan)} className="pricing-table">
-          <h2 className="pricing-table__header">- {plan.name} -</h2>
-          <h5 className="pricing-table__starting">starting at</h5>
-          <h3 className="pricing-table__price">${plan.price}</h3>
-          <a className="pricing-table__button">Subscribe Now!</a>
-          <ul className="pricing-table__list">{featureArray}</ul>
-        </div>
-      );
-    });
-
-    return <div className="price-table-wrapper">{priceBoxes}</div>;
-  }
-
   showTopComment(review, index) {
     if (review.length > index) {
       return (
@@ -518,16 +476,11 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             </div>
           </div>
           {this.props.productPlans.fetchPlans[0] ? (
-            <div className="planSectionHolder">
-              <div className="planHolder">
-                {this.showPrices(this.props.productPlans.fetchPlans)}
-              </div>
-            </div>
+            <PlanHolder onClickFunction={this.buyApp} plans={this.props.productPlans.fetchPlans} />
           ) : (
             ""
           )}
           <div className="detail-comments">
-            {/*<h3 className="detail-comments-heading">Reviews</h3>*/}
             <div className="detail-comments-holder">
               <div className="commentOverviewBlock">
                 <h3>Reviews</h3>
