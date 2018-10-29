@@ -52,12 +52,12 @@
       require("./locationScripts/freshbooks.ts")();
     } else if (hostMatches(".*.?vistaprint.com")) {
       require("./locationScripts/vistaprint.ts")();
-    
     } else if (hostMatches(".*.?salesforce.com")) {
       require("./locationScripts/salesforce.ts")();
     } else if (hostMatches(".*.?webex.com")) {
       require("./locationScripts/webex.ts")();
-    
+    } else if (hostMatches(".*.?zendesk.com")) {
+      require("./locationScripts/support.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }

@@ -100,6 +100,7 @@ class App extends React.Component<AppProps, AppState> {
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
     this.props.history.push("/");
+    location.reload();
   };
 
   logMeIn = async (email: string, password: string) => {

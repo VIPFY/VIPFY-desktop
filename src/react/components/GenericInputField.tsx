@@ -1,7 +1,36 @@
 import * as React from "react";
 import { Component } from "react";
 
-class GenericInputField extends Component {
+interface Props {
+  default?: String;
+  error?: String;
+  focus?: Boolean;
+  onBlur?: Function;
+  noteditable?: Boolean;
+  onChange?: Function;
+  inputType?: String;
+  onEnter?: Function;
+  divFocusClass?: string;
+  divClass?: string;
+  onClick?: Function;
+  button?: string;
+  buttonClass?: string;
+  symbol?: string;
+  symbolClass?: string;
+  fieldClass?: string;
+  placeholder?: string;
+  errorInputClass?: string;
+  forcedTld?: string;
+}
+
+interface State {
+  inputFocus: Boolean;
+  value: String;
+  valueChanged: Boolean;
+  error: String | null;
+}
+
+class GenericInputField extends Component<Props, State> {
   state = {
     inputFocus: false,
     value: this.props.default || "",
