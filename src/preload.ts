@@ -58,6 +58,8 @@
       require("./locationScripts/webex.ts")();
     } else if (hostMatches(".*.?zendesk.com")) {
       require("./locationScripts/support.ts")();
+    } else if (hostMatches(".*.?meraki.com")) {
+      require("./locationScripts/meraki.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
