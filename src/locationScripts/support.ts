@@ -28,8 +28,9 @@ function onReady() {
 
 function modifyAll() {
   let element = document.getElementById("user");
-
-  element.parentNode.removeChild(element);
+  if (element) {
+    element.parentNode.removeChild(element);
+  }
 }
 
 function modifySettings() {}
