@@ -60,6 +60,10 @@
       require("./locationScripts/support.ts")();
     } else if (hostMatches(".*.?meraki.com")) {
       require("./locationScripts/meraki.ts")();
+    } else if (hostMatches(".*.?docusign.com")) {
+      require("./locationScripts/docusign.ts")();
+    } else if (hostMatches(".*.?amazon.com")) {
+      require("./locationScripts/aws.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }

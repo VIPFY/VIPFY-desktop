@@ -7,16 +7,16 @@ module.exports = function() {
 };
 
 function onLoad() {
-  let loginForm = document.getElementById("loginForm");
+  let loginForm = document.getElementById("login");
   let loginUser = document.getElementById("username");
-  let loginPass = document.getElementById("IDToken2");
+  let loginPass = document.getElementById("password");
 
   console.log(loginForm);
   if (loginUser) {
-    loginUsername(loginForm);
+    loginUsername();
   }
   if (loginPass) {
-    loginPwd();
+    loginPwd(loginForm);
   }
 }
 
@@ -26,23 +26,22 @@ function modifyAll() {}
 
 function modifySettings() {}
 
-function loginUsername(form: Element) {
-  console.log("filling in webex login form user");
+function loginUsername() {
+  console.log("filling in docusign login form user");
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
 
     console.log("KEY", key);
     let username = key.username;
-
-    form.querySelector<HTMLInputElement>("input[name='username']")!.value = username;
-    document.getElementById("login-btn-next").click();
+    document.getElementById("username").value = username;
+    document.querySelector<HTMLInputElement>("button[type='submit']")!.click();
 
   });
 }
 
-function loginPwd() {
-  console.log("filling in webex login form password");
+function loginPwd(form: Element) {
+  console.log("filling in docusign login form password");
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
@@ -50,8 +49,8 @@ function loginPwd() {
     console.log("KEY", key);
     let password = key.password;
 
-    document.getElementById("IDToken2").value = password;
-    document.getElementById("Button1").click();
+    document.getElementById("password").value = password;
+    form.querySelector<HTMLInputElement>("button[data-qa='submit-password']")!.submit();
 
 
   });

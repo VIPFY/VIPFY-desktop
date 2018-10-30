@@ -8,12 +8,12 @@ module.exports = function() {
 
 function onLoad() {
   let loginForm = document.getElementById("loginForm");
-  let loginUser = document.getElementById("username");
+  let loginUser = document.getElementById("resolving_input");
   let loginPass = document.getElementById("IDToken2");
 
   console.log(loginForm);
   if (loginUser) {
-    loginUsername(loginForm);
+    loginUsername();
   }
   if (loginPass) {
     loginPwd();
@@ -26,7 +26,7 @@ function modifyAll() {}
 
 function modifySettings() {}
 
-function loginUsername(form: Element) {
+function loginUsername() {
   console.log("filling in webex login form user");
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
@@ -34,9 +34,9 @@ function loginUsername(form: Element) {
 
     console.log("KEY", key);
     let username = key.username;
-
-    form.querySelector<HTMLInputElement>("input[name='username']")!.value = username;
-    document.getElementById("login-btn-next").click();
+    document.getElementById("resolving_input").value = username;
+//    form.querySelector<HTMLInputElement>("input[name='username']")!.value = username;
+    document.getElementById("next_button").click();
 
   });
 }
