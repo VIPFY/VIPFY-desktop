@@ -2,7 +2,7 @@ import * as React from "react";
 import { Route } from "react-router-dom";
 import { withRouter } from "react-router";
 
-import { graphql, compose, Query } from "react-apollo";
+import { graphql, compose, Query, withApollo } from "react-apollo";
 
 import Advisor from "./advisor";
 import AppPage from "./apppage";
@@ -20,11 +20,13 @@ import Team from "./team";
 import Webview from "./webview";
 import ErrorPage from "./error";
 
-import { fetchLicences } from "../queries/auth";
+import { fetchLicences, me } from "../queries/auth";
 import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
 import Security from "./security";
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 interface AreaProps {
   history: any[];
@@ -34,6 +36,7 @@ interface AreaProps {
   location: any;
   userData: any;
   userid: number;
+  client: ApolloClient<InMemoryCache>;
 }
 
 interface AreaState {
@@ -41,6 +44,8 @@ interface AreaState {
   chatOpen: boolean;
   sideBarOpen: boolean;
   domain: string;
+  script: Element | null;
+  script3: Element | null;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -48,14 +53,50 @@ class Area extends React.Component<AreaProps, AreaState> {
     app: -1,
     chatOpen: false,
     sideBarOpen: true,
-    domain: ""
+    domain: "",
+    script: null,
+    script3: null
   };
 
   componentDidMount = async () => {
     require("electron").ipcRenderer.on("change-page", (event, page) => {
       this.props.history.push(page);
     });
+
+    const meme = await this.props.client.query({ query: me });
+    console.log(meme);
+
+    const script = document.createElement("script");
+
+    script.src =
+      "https://static.zdassets.com/ekr/snippet.js?key=dae43c43-7726-40fb-be8a-7468a19337e0";
+    script.id = "ze-snippet";
+    script.async = false;
+    script.onload = () => {
+      const script3 = document.createElement("script");
+
+      script3.innerHTML = `zE(function() {zE.identify({name: '${meme.data.me.firstname} ${
+        meme.data.me.lastname
+      }',email: '${meme.data.me.emails[0].email}', organization: '${
+        meme.data.me.company.name
+      }' });});`;
+      script3.id = "ze-snippet3";
+      script3.async = false;
+      document.head.appendChild(script3);
+
+      this.setState({ script3 });
+    };
+    this.setState({ script });
+    document.head.appendChild(script);
   };
+
+  componentWillUnmount() {
+    console.log("AREA UNMOUNT");
+    /*if (this.state.script) {
+      console.log(this.state.script);
+      document.head.removeChild(this.state.script);
+    }*/
+  }
 
   moveTo = path => {
     if (!(this.props.location.pathname === path)) {
@@ -103,7 +144,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "marketplace", component: Marketplace },
       { path: "marketplace/:appid/", component: AppPage },
       { path: "marketplace/:appid/:action", component: AppPage },
-      { path: "support", component: SupportPage },
+      //{ path: "support", component: SupportPage },
       { path: "error", component: ErrorPage }
     ];
 
@@ -156,6 +197,12 @@ class Area extends React.Component<AreaProps, AreaState> {
           exact
           path="/area/app/:licenceid"
           render={props => <Webview {...this.state} {...this.props} {...props} />}
+        />
+
+        <Route
+          exact
+          path="/area/support"
+          render={props => <SupportPage {...this.state} {...this.props} {...props} />}
         />
 
         {routes.map(({ path, component }) => {
@@ -223,5 +270,6 @@ export default compose(
   }),
   graphql(fetchRecommendedApps, {
     name: "rcApps"
-  })
+  }),
+  withApollo
 )(withRouter(Area));
