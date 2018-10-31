@@ -74,7 +74,11 @@ class Dashboard extends React.Component<Props, {}> {
               ) : (
                 ""
               )}
-              <span className="nameAppsTile">{licence.boughtplanid.planid.appid.name}</span>
+              <span className="nameAppsTile">
+                {licence.boughtplanid.alias
+                  ? licence.boughtplanid.alias
+                  : licence.boughtplanid.planid.appid.name}
+              </span>
             </div>
           );
         });

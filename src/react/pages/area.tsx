@@ -157,6 +157,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                 <Sidebar
                   sideBarOpen={sideBarOpen}
                   setApp={this.setApp}
+                  toggleSidebar={this.toggleSidebar}
                   {...this.props}
                   {...props}
                 />

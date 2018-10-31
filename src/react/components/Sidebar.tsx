@@ -9,6 +9,7 @@ export type SidebarProps = {
   sideBarOpen: boolean;
   logMeOut: () => void;
   isadmin: boolean;
+  toggleSidebar: Function;
 };
 
 export type SidebarState = {
@@ -20,6 +21,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
 
   showApps = licences => {
     let appLogos: JSX.Element[] = [];
+    console.log(licences);
     if (licences) {
       licences.forEach((licence, key) => {
         appLogos.push(
@@ -45,7 +47,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             </span>
 
             <span className={this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}>
-              {licence.boughtplanid.planid.appid.name}
+              {licence.boughtplanid.alias
+                ? licence.boughtplanid.alias
+                : licence.boughtplanid.planid.appid.name}
             </span>
           </li>
         );
@@ -106,6 +110,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
       <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
         {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
         <ul className="sidebar-link-holder">
+          <span onClick={() => this.props.toggleSidebar()} className="fas fa-bars barIcon" />
           {sidebarLinks.map(link => this.renderLink(link))}
           {this.showApps(this.props.licences.fetchLicences)}
           <li className="sidebar-link sidebar-link-important" onClick={() => this.props.logMeOut()}>
