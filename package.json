@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
-  "productName": "VIPFYdesktop",
-  "version": "0.4.6",
+  "productName": "VIPFY",
+  "version": "0.4.14",
   "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
   "scripts": {
@@ -70,8 +70,8 @@
           "config": {
             "host": "http://release.vipfy.store:3030",
             "appId": "1",
-            "channelId": "62353a59e91d9ebc1ffffaacef835caf",
-            "token": "8f5a66e64d8eacbe866e2bee5e96fd02"
+            "channelId": "98c61756053f11b6429ce49805bd7553",
+            "token": "4a3db0e625fbb3aec657f0e033bb8dd1"
           }
         }
       ]
