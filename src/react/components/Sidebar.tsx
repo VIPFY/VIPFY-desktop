@@ -8,6 +8,7 @@ export type SidebarProps = {
   licences: any;
   sideBarOpen: boolean;
   logMeOut: () => void;
+  isadmin: boolean;
 };
 
 export type SidebarState = {
@@ -75,21 +76,21 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
       { label: "Dashboard", location: "dashboard", icon: "home", show: true },
       { label: "Profile", location: "profile", icon: "user", show: true },
       /*{ label: "Message Center", location: "messagecenter", icon: "envelope", show: true },*/
-      { label: "Billing", location: "billing", icon: "dollar-sign", show: this.props.billing },
-      { label: "Security", location: "security", icon: "shield-alt", show: true },
-      { label: "Teams", location: "team", icon: "users-cog", show: this.props.teams },
+      { label: "Billing", location: "billing", icon: "dollar-sign", show: this.props.isadmin },
+      { label: "Security", location: "security", icon: "shield-alt", show: this.props.isadmin },
+      { label: "Teams", location: "team", icon: "users-cog", show: this.props.isadmin },
       {
         label: "Marketplace",
         location: "marketplace",
         icon: "shopping-cart",
-        show: this.props.marketplace,
+        show: true,
         important: true
       },
       {
         label: "Domains",
         location: "domains",
         icon: "code",
-        show: this.props.domains,
+        show: this.props.isadmin,
         important: true
       },
       {
