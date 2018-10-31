@@ -13,10 +13,7 @@ export const me = gql`
       language
       firstname
       lastname
-      teams
-      domains
-      marketplace
-      billing
+      isadmin
       profilepicture
       company {
         unit: unitid {

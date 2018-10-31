@@ -7,7 +7,11 @@ import LoadingDiv from "../components/LoadingDiv";
 import WebView = require("react-electron-web-view");
 
 interface Props {}
-
+const fetchSupportToken = gql`
+  query {
+    fetchSupportToken
+  }
+`;
 class SupportPage extends React.Component<Props> {
   render() {
     console.log("SUPP", this.props);
@@ -28,7 +32,7 @@ class SupportPage extends React.Component<Props> {
     }
     return (
       <div className={cssClass}>
-        <Query query={me}>
+        <Query query={fetchSupportToken}>
           {({ loading, error, data }) => {
             if (loading) {
               return <LoadingDiv />;
@@ -41,8 +45,8 @@ class SupportPage extends React.Component<Props> {
                 </div>
               );
             }
-
-            const requester = data.me.emails[0].email;
+            console.log(data);
+            //const requester = data.me.emails[0].email;
             //return <FreshdeskWidget url="https://vipfy.freshdesk.com" autofill={{ requester }} disable={["requester"]}/>;
             return (
               <WebView
@@ -50,7 +54,9 @@ class SupportPage extends React.Component<Props> {
                 preload="./preload-launcher.js"
                 webpreferences="webSecurity=no"
                 className={cssClassWeb}
-                src="https://vipfy.zendesk.com/hc/en-us/signin?return_to=https%3A%2F%2Fvipfy.zendesk.com%2Fhc%2Fen-us&locale=1"
+                src={`https://vipfy.zendesk.com/access/jwt?jwt=${
+                  data.fetchSupportToken
+                }&return_to=https://vipfy.zendesk.com`}
                 partition="services"
                 onLoadCommit={e => console.log("LoadCommit", e)}
                 onNewWindow={e => console.log("NewWindow", e)}
@@ -69,8 +75,7 @@ class SupportPage extends React.Component<Props> {
                 onDialog={e => console.log("Dialog", e)}
                 onIpcMessage={e =>
                   e.target.send("loginData", {
-                    username: "Waldimir@vipfy.store",
-                    password: "tester123"
+                    token: data.fetchSupportToken
                   })
                 }
               />
