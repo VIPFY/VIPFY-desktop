@@ -168,15 +168,16 @@ class Dashboard extends React.Component<Props, {}> {
   }
 
   render() {
-    const { rcApps, licences } = this.props;
+    const { /*rcApps,*/ licences } = this.props;
 
-    if (rcApps.loading || licences.loading) {
-      return <LoadingDiv text="Fetching Recommendations..." />;
+    if (/*rcApps.loading ||*/ licences.loading) {
+      //return <LoadingDiv text="Fetching Recommendations..." />;
+      return <LoadingDiv text="Fetching Licences..." />;
     }
 
-    if (rcApps.error) {
+    /*if (rcApps.error) {
       return filterError(rcApps.error);
-    }
+    }*/
 
     return (
       <div className="dashboard-working">
@@ -184,10 +185,10 @@ class Dashboard extends React.Component<Props, {}> {
           <div>My Apps</div>
         </div>
         <div className="appsTile">{this.showApps(licences.fetchLicences)}</div>
-        <div className="dashboardHeading">
+        {/*<div className="dashboardHeading">
           <div>Our Recommendations</div>
         </div>
-        {this.showRec(licences.fetchLicences)}
+        {this.showRec(licences.fetchLicences)} //TODO Reimplement reccomendations*/}
       </div>
     );
   }

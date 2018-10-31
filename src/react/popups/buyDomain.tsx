@@ -90,7 +90,7 @@ class BuyDomain extends Component<Props, State> {
               }
             }}>
             <span className="tld">.{tld.name}</span>
-            <span>{`$${tld.price}`}</span>
+            <span>{`$${tld.price.toFixed(2)}/yr`}</span>
           </span>
         </span>
       );
@@ -114,7 +114,7 @@ class BuyDomain extends Component<Props, State> {
         </div>
         <div className="tldHolder">{domainPrices}</div>
 
-        {this.state.tld === "" ? (
+        {/*{this.state.tld === "" ? (
           <div className="agreementBox whoisPrivacyBox">Please choose a Domain</div>
         ) : (
           <div className="agreementBox whoisPrivacyBox">
@@ -136,7 +136,7 @@ class BuyDomain extends Component<Props, State> {
               </span>
             </label>
           </div>
-        )}
+        )}*/}
 
         <div className="agreementBox whoisPrivacyBox">
           <input

@@ -127,7 +127,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     try {
       await this.props.buyPlan({
         variables: { planid, features, price, planinputs },
-        refetchQueries: [{ query: fetchLicences }, { query: fetchRecommendedApps }]
+        refetchQueries: [{ query: fetchLicences } /*, { query: fetchRecommendedApps }*/]
       });
       //this.props.history.push("/area/dashboard");
     } catch (err) {
@@ -475,7 +475,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               </button>
             </div>
           </div>
-          {this.props.productPlans.fetchPlans[0] ? (
+          {this.props.productPlans.fetchPlans[0] && this.props.isadmin ? (
             <PlanHolder onClickFunction={this.buyApp} plans={this.props.productPlans.fetchPlans} />
           ) : (
             ""

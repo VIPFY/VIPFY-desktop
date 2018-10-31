@@ -104,7 +104,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
 
     return (
       <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
-        <div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />
+        {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
         <ul className="sidebar-link-holder">
           {sidebarLinks.map(link => this.renderLink(link))}
           {this.showApps(this.props.licences.fetchLicences)}
