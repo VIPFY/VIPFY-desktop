@@ -26,6 +26,12 @@ $plan-background: #ccc;
 
 .bought-apps-row {
   text-align: center;
+  transition: background 200ms ease-in-out;
+
+  &:hover {
+    background: beige;
+    transition: background 200ms ease-in-out;
+  }
 }
 
 .payment-label {
