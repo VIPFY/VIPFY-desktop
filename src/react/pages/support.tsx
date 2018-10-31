@@ -69,7 +69,7 @@ class SupportPage extends React.Component<Props> {
                   console.log("DomReady", e);
                   //this.maybeHideLoadingScreen();
                   if (!e.target.isDevToolsOpened()) {
-                    e.target.openDevTools();
+                    //e.target.openDevTools();
                   }
                 }}
                 onDialog={e => console.log("Dialog", e)}

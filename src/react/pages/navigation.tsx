@@ -152,7 +152,7 @@ class Navigation extends React.Component<Props, State> {
         className={`navigation ${chatOpen ? "chat-open" : ""}
         ${sideBarOpen ? "side-bar-open" : ""}`}>
         <div className="leftNavigation">
-          <span onClick={toggleSidebar} className="fas fa-bars barIcon" />
+          {/*<span onClick={toggleSidebar} className="fas fa-bars barIcon" />*/}
           {/*<div
             className={
               this.state.searchFocus ? "searchbarHolder searchbarFocus" : "searchbarHolder"

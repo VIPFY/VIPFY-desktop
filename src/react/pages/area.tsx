@@ -157,6 +157,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                 <Sidebar
                   sideBarOpen={sideBarOpen}
                   setApp={this.setApp}
+                  toggleSidebar={this.toggleSidebar}
                   {...this.props}
                   {...props}
                 />
@@ -267,9 +268,9 @@ class Area extends React.Component<AreaProps, AreaState> {
 export default compose(
   graphql(fetchLicences, {
     name: "licences"
-  }),
+  }) /*
   graphql(fetchRecommendedApps, {
     name: "rcApps"
-  }),
+  }),*/,
   withApollo
 )(withRouter(Area));
