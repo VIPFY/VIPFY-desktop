@@ -21,12 +21,17 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
 
   showApps = licences => {
     let appLogos: JSX.Element[] = [];
-    console.log(licences);
+    //console.log("PL", this.props, licences);
     if (licences) {
       licences.forEach((licence, key) => {
+        let cssClass = "sidebar-link";
+        if (this.props.location.pathname === `/area/app/${licence.id}`) {
+          cssClass += " sidebar-active";
+        }
+
         appLogos.push(
           <li
-            className="sidebar-link"
+            className={cssClass}
             key={`ServiceLogo-${key}`}
             onClick={() => this.props.setApp(licence.id)}>
             <span
@@ -60,12 +65,20 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
   };
 
   renderLink = ({ label, location, icon, show, important }: object) => {
+    let cssClass = "sidebar-link";
+    if (important) {
+      cssClass += " sidebar-link-important";
+    }
+    if (
+      this.props.location.pathname === `/area/${location}` ||
+      `${this.props.location.pathname}/dashboard` === `/area/${location}`
+    ) {
+      cssClass += " sidebar-active";
+    }
+
     if (show) {
       return (
-        <li
-          key={location}
-          className={`sidebar-link ${important ? "sidebar-link-important" : ""}`}
-          onClick={() => this.goTo(location)}>
+        <li key={location} className={cssClass} onClick={() => this.goTo(location)}>
           <span className={`fas fa-${icon} sidebar-icons`} />
           <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
             {label}

@@ -6,16 +6,26 @@ import { Query, compose, graphql } from "react-apollo";
 
 interface State {
   changeAdminStatus: number;
+  changeForce: number;
 }
 
 interface Props {
   data: { fetchUserSecurityOverview: any };
   changeAdminStatus: Function;
+  forcePasswordChange: Function;
 }
 
 const CHANGEADMINSTATUS = gql`
   mutation changeAdminStatus($id: ID!, $bool: Boolean!) {
     changeAdminStatus(unitid: $id, admin: $bool) {
+      ok
+    }
+  }
+`;
+
+const FORCERESET = gql`
+  mutation forcePasswordChange($userids: [ID]!) {
+    forcePasswordChange(userids: $userids) {
       ok
     }
   }
@@ -43,11 +53,11 @@ const FETCHUSERSECURITYOVERVIEW = gql`
 
 class UserSecurityTableInner extends React.Component<Props, State> {
   state = {
-    changeAdminStatus: 0
+    changeAdminStatus: 0,
+    changeForce: 0
   };
 
   changeAdminStatus = async (id, bool) => {
-    console.log("CHANGE ADMIN STATUS", id, bool);
     this.setState({ changeAdminStatus: id });
     try {
       await this.props.changeAdminStatus({
@@ -57,6 +67,24 @@ class UserSecurityTableInner extends React.Component<Props, State> {
       this.setState({ changeAdminStatus: 0 });
     } catch (err) {
       console.log("Change Admin Status not possible");
+    }
+  };
+
+  forceReset = async userids => {
+    console.log(userids);
+    if (userids.length === 1) {
+      this.setState({ changeForce: userids[0] });
+    } else {
+      this.setState({ changeForce: -1 });
+    }
+    try {
+      await this.props.forcePasswordChange({
+        variables: { userids },
+        refetchQueries: [{ query: FETCHUSERSECURITYOVERVIEW }]
+      });
+      this.setState({ changeForce: 0 });
+    } catch (err) {
+      console.log("Force reset not possible", err);
     }
   };
 
@@ -97,7 +125,17 @@ class UserSecurityTableInner extends React.Component<Props, State> {
             <td />
             <td />
             <td align="center">
-              <button className="naked-button button">force all</button>
+              <button
+                onClick={() =>
+                  this.forceReset(
+                    this.props.data.fetchUserSecurityOverview.map(user => {
+                      return user.id;
+                    })
+                  )
+                }
+                className="naked-button button">
+                force all
+              </button>
             </td>
             <td />
           </tr>
@@ -131,7 +169,9 @@ class UserSecurityTableInner extends React.Component<Props, State> {
             {user.needspasswordchange ? (
               "yes"
             ) : (
-              <button className="naked-button button">force</button>
+              <button onClick={() => this.forceReset([user.id])} className="naked-button button">
+                force
+              </button>
             )}
           </td>
           <td align="center">
@@ -172,6 +212,6 @@ function UserSecurityTable(props) {
 }
 
 export default compose(
-  //graphql(FORCERESET, { name: "forceReset" }),
+  graphql(FORCERESET, { name: "forcePasswordChange" }),
   graphql(CHANGEADMINSTATUS, { name: "changeAdminStatus" })
 )(UserSecurityTable);

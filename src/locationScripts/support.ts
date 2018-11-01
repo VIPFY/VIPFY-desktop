@@ -1,17 +1,17 @@
 import { con, todoPath, hideByQuery, redirectLinks } from "./utils/util";
 
 module.exports = function() {
-  console.log("MATCH");
+  //console.log("MATCH");
   window.addEventListener("DOMContentLoaded", onReady);
   window.addEventListener("load", onLoad);
 };
 
 function onLoad() {
-  console.log("ONLOAD");
+  //console.log("ONLOAD");
   let loginForm = document
     .querySelectorAll("iframe")[0]
     .contentWindow.document.querySelectorAll("form")[0];
-  console.log(loginForm);
+  //console.log(loginForm);
   if (loginForm) {
     login(loginForm);
   }
@@ -36,7 +36,7 @@ function modifyAll() {
 function modifySettings() {}
 
 async function login(form: Element) {
-  console.log("filling in support login form");
+  //console.log("filling in support login form");
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
