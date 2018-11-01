@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import { shell } from "electron";
 import * as moment from "moment";
-import * as path from "path";
-import * as fs from "fs";
-import * as os from "os";
-import axios from "axios";
-axios.defaults.adapter = require("axios/lib/adapters/http");
+// import { shell } from "electron";
+// import * as path from "path";
+// import * as fs from "fs";
+// import * as os from "os";
+// import axios from "axios";
+// axios.defaults.adapter = require("axios/lib/adapters/http");
 
 import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../LoadingDiv";
@@ -24,26 +24,26 @@ class Invoices extends React.Component<Props, State> {
     show: 0
   };
 
-  downloadPdf = async pdfLink => {
-    const pathArray = pdfLink.split("/");
-    const fileName = pathArray[pathArray.length - 2];
-    const pdfPath = path.join(os.tmpdir(), fileName);
-    const res = await axios({
-      method: "GET",
-      url: pdfLink,
-      responseType: "stream"
-    });
+  // downloadPdf = async pdfLink => {
+  //   const pathArray = pdfLink.split("/");
+  //   const fileName = pathArray[pathArray.length - 2];
+  //   const pdfPath = path.join(os.tmpdir(), fileName);
+  //   const res = await axios({
+  //     method: "GET",
+  //     url: pdfLink,
+  //     responseType: "stream"
+  //   });
 
-    res.data.pipe(fs.createWriteStream(pdfPath));
+  //   res.data.pipe(fs.createWriteStream(pdfPath));
 
-    await new Promise((resolve, reject) => {
-      res.data.on("end", () => resolve());
+  //   await new Promise((resolve, reject) => {
+  //     res.data.on("end", () => resolve());
 
-      res.data.on("error", () => reject());
-    });
+  //     res.data.on("error", () => reject());
+  //   });
 
-    shell.openExternal(pdfPath);
-  };
+  //   shell.openExternal(pdfPath);
+  // };
 
   toggleInvoice = invoice => {
     if (invoice != this.state.show) {
@@ -82,10 +82,12 @@ class Invoices extends React.Component<Props, State> {
                   </span>
 
                   <span className="naked-button-holder">
-                    <i
-                      className="fas fa-download"
-                      onClick={() => this.downloadPdf(invoice.pdflink)}
-                    />
+                    <a href={invoice.pdflink} className="naked-button">
+                      <i
+                        className="fas fa-download"
+                        // onClick={() => this.downloadPdf(invoice.pdflink)}
+                      />
+                    </a>
                     <i
                       onClick={() => this.toggleInvoice(invoice.id)}
                       className="fas fa-file-invoice-dollar"
@@ -145,13 +147,10 @@ class InvoiceWebView extends React.Component<InvoiceProps, InvoiceState> {
 
     return (
       <React.Fragment>
-        <LoadingDiv
-          text="Fetching Invoice..."
-          style={{ height: "10rem", display: loading ? "" : "none" }}
-        />
+        <LoadingDiv text="Fetching Invoice..." style={{ height: loading ? "15rem" : "0" }} />
         <webview
-          style={{ display: loading ? "none" : "" }}
           className="invoices-item"
+          style={{ height: loading ? "0" : "" }}
           src={this.props.invoice}
         />
       </React.Fragment>

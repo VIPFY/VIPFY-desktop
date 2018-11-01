@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import { filterError, ErrorComp } from "../common/functions";
+import * as moment from "moment";
 
 const READ_NOTIFICATION = gql`
   mutation onReadNotification($id: Int!) {
@@ -116,7 +117,7 @@ class Notification extends React.Component<Props, State> {
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
         <p className="notificationText">{message}</p>
-        <div className="notificationTime">{sendtime}</div>
+        <div className="notificationTime">{moment(sendtime).format("LLL")}</div>
       </div>
     ));
   }
@@ -138,24 +139,29 @@ class Notification extends React.Component<Props, State> {
           {dataExists ? this.renderNotifications(data.fetchNotifications) : ""}
         </div>
 
-        <div className="notificationPopupFooter">
-          <span>Synced at: </span>
-          <button
-            className="naked-button"
-            type="button"
-            onClick={this.fetchNotifications}
-            onMouseEnter={this.toggleHover}
-            onMouseLeave={this.toggleHover}>
-            <i className={`fas fa-sync ${this.state.hover ? "fa-spin" : ""}`} />
-          </button>
-        </div>
-
-        <div className="notificationPopupFooter">
-          <span>Read All</span>
-          <button className="button-sync" type="button" onClick={this.markAllAsRead}>
-            <i className="fas fa-check" />
-          </button>
-        </div>
+        {dataExists ? (
+          <React.Fragment>
+            <div className="notificationPopupFooter">
+              <span>Synchronize: </span>
+              <button
+                className="naked-button"
+                type="button"
+                onClick={this.fetchNotifications}
+                onMouseEnter={this.toggleHover}
+                onMouseLeave={this.toggleHover}>
+                <i className={`fas fa-sync ${this.state.hover ? "fa-spin" : ""}`} />
+              </button>
+            </div>
+            <div className="notificationPopupFooter">
+              <span>Discard:</span>
+              <button className="button-sync" type="button" onClick={this.markAllAsRead}>
+                <i className="fas fa-check" />
+              </button>
+            </div>
+          </React.Fragment>
+        ) : (
+          ""
+        )}
       </div>
     );
   }
