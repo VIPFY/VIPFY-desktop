@@ -167,118 +167,127 @@ class Addresses extends React.Component<Props, State> {
   };
 
   render() {
-    const addressHeaders = ["Street", "zip", "City", "Country", "Description", "Priority"];
+    const addressHeaders = ["Street", "Zip", "City", "Country", "Description" /*, "Priority"*/];
 
     return (
       <AppContext.Consumer>
         {({ showPopup }) => (
           <div className="addresses">
-            <div className="header">
+            <div className="header" onClick={this.toggle}>
               <i
-                className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
-                onClick={this.toggle}
+                className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
+                //onClick={this.toggle}
               />
-              <span>{this.props.label ? this.props.label : "Addresses"}</span>
+              <span>Addresses</span>
             </div>
+            <div className={`inside ${this.state.show ? "in" : "out"}`}>
+              <table>
+                <thead className="addresses-header">
+                  <tr>
+                    {addressHeaders.map(header => (
+                      <th key={header}>{header}</th>
+                    ))}
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  <Query query={FETCH_ADDRESSES} variables={this.state.variables}>
+                    {({ data, loading, error }) => {
+                      if (loading) {
+                        return <LoadingDiv text="Fetching Addresses..." />;
+                      }
 
-            <div className={`addresses-header ${this.state.show ? "in" : "out"}`}>
-              {addressHeaders.map(header => (
-                <span key={header}>{header}</span>
-              ))}
-            </div>
+                      if (error) {
+                        return filterError(error);
+                      }
 
-            <Query query={FETCH_ADDRESSES} variables={this.state.variables}>
-              {({ data, loading, error }) => {
-                if (loading) {
-                  return <LoadingDiv text="Fetching Addresses..." />;
-                }
+                      return data.fetchAddresses.length > 0 ? (
+                        <React.Fragment>
+                          {data.fetchAddresses.map(
+                            ({ address, description, country, priority, tags, id }) => {
+                              let { street, zip, city } = address;
+                              // const normalizedTags =
+                              //   tags && tags.length > 0
+                              //     ? tags.map((tag, key) => (
+                              //         <span key={key}>
+                              //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
+                              //           {tag}
+                              //         </span>
+                              //       ))
+                              //     : "";
 
-                if (error) {
-                  return filterError(error);
-                }
+                              return (
+                                <tr className="addresses-list" key={id}>
+                                  {this.state.edit != id ? (
+                                    <React.Fragment>
+                                      <td>{street}</td>
+                                      <td>{zip ? zip : "not set"}</td>
+                                      <td>{city}</td>
+                                      <td>{country}</td>
+                                      <td>{description}</td>
+                                      {/*<td>{priority}</td>*/}
+                                      {/* <span className="tags">{normalizedTags}</span> */}
+                                    </React.Fragment>
+                                  ) : (
+                                    <form
+                                      className="inline-form"
+                                      id={`address-form-${id}`}
+                                      onSubmit={e => this.editAddress(e, id, showPopup)}>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          name="street"
+                                          className="inline-searchbar"
+                                          defaultValue={street}
+                                        />
+                                      </td>
+                                      <td>
+                                        <input
+                                          name="zip"
+                                          type="text"
+                                          className="inline-searchbar"
+                                          defaultValue={zip ? zip : "not set"}
+                                        />
+                                      </td>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          name="city"
+                                          className="inline-searchbar"
+                                          defaultValue={city}
+                                        />
+                                      </td>
+                                      <td>
+                                        <select
+                                          name="country"
+                                          className="inline-dropdown"
+                                          defaultValue={country}>
+                                          <option value=""> </option>
+                                          {["DE", "US", "JP", "FR", "PL"].map(tag => (
+                                            <option key={tag} value={tag}>
+                                              {tag}
+                                            </option>
+                                          ))}
+                                        </select>
+                                      </td>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          name="description"
+                                          className="inline-searchbar"
+                                          defaultValue={description}
+                                        />
+                                      </td>
+                                      {/*<td>
+                                        <input
+                                          name="priority"
+                                          type="number"
+                                          className="inline-searchbar"
+                                          defaultValue={priority}
+                                        />
+                                      </td>*/}
 
-                return data.fetchAddresses.length > 0 ? (
-                  <React.Fragment>
-                    {data.fetchAddresses.map(
-                      ({ address, description, country, priority, tags, id }) => {
-                        let { street, zip, city } = address;
-                        // const normalizedTags =
-                        //   tags && tags.length > 0
-                        //     ? tags.map((tag, key) => (
-                        //         <span key={key}>
-                        //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
-                        //           {tag}
-                        //         </span>
-                        //       ))
-                        //     : "";
-
-                        return (
-                          <div
-                            className={`addresses-list ${this.state.show ? "in" : "out"}`}
-                            key={id}>
-                            {this.state.edit != id ? (
-                              <React.Fragment>
-                                <span>{street}</span>
-                                <span>{zip ? zip : "not set"}</span>
-                                <span>{city}</span>
-                                <span>{country}</span>
-                                <span>{description}</span>
-                                <span>{priority}</span>
-                                {/* <span className="tags">{normalizedTags}</span> */}
-                              </React.Fragment>
-                            ) : (
-                              <form
-                                className="inline-form"
-                                id={`address-form-${id}`}
-                                onSubmit={e => this.editAddress(e, id, showPopup)}>
-                                <input
-                                  type="text"
-                                  name="street"
-                                  className="inline-searchbar"
-                                  defaultValue={street}
-                                />
-
-                                <input
-                                  name="zip"
-                                  type="text"
-                                  className="inline-searchbar"
-                                  defaultValue={zip ? zip : "not set"}
-                                />
-
-                                <input
-                                  type="text"
-                                  name="city"
-                                  className="inline-searchbar"
-                                  defaultValue={city}
-                                />
-
-                                <select
-                                  name="country"
-                                  className="inline-dropdown"
-                                  defaultValue={country}>
-                                  <option value=""> </option>
-                                  {["DE", "US", "JP", "FR", "PL"].map(tag => (
-                                    <option key={tag} value={tag}>
-                                      {tag}
-                                    </option>
-                                  ))}
-                                </select>
-
-                                <input
-                                  type="text"
-                                  name="description"
-                                  className="inline-searchbar"
-                                  defaultValue={description}
-                                />
-
-                                <input
-                                  name="priority"
-                                  type="number"
-                                  className="inline-searchbar"
-                                  defaultValue={priority}
-                                />
-
-                                {/* <div className="tags">
+                                      {/* <div className="tags">
                               <CoolCheckbox
                               name="billing"
                               value={tags ? tags.includes("billing") : false}
@@ -289,52 +298,61 @@ class Addresses extends React.Component<Props, State> {
                               value={tags ? tags.includes("main") : false}
                               />
                             </div> */}
-                              </form>
-                            )}
+                                    </form>
+                                  )}
 
-                            <span className="naked-button-holder">
-                              {this.state.edit == id ? (
-                                <React.Fragment>
-                                  <button
-                                    className="naked-button"
-                                    type="submit"
-                                    form={`address-form-${id}`}>
-                                    <i className="fa fa-check" />
-                                  </button>
-                                  <i
-                                    onClick={() => this.setState({ edit: -1 })}
-                                    className="fa fa-times"
-                                  />
-                                </React.Fragment>
-                              ) : (
-                                <React.Fragment>
-                                  <i
-                                    title="Delete"
-                                    onClick={() => this.showDeletion(id, showPopup)}
-                                    className="fa fa-trash-alt"
-                                  />
-                                  <i
-                                    title="Edit"
-                                    onClick={() => this.setState({ edit: id })}
-                                    className="fa fa-edit"
-                                  />
-                                </React.Fragment>
-                              )}
-                            </span>
-                          </div>
-                        );
-                      }
-                    )}
-                  </React.Fragment>
-                ) : (
-                  ""
-                );
-              }}
-            </Query>
-            <div className={this.state.show ? "in" : "out"}>
-              <button className="button-address" onClick={() => this.showCreation(showPopup)}>
-                <i className="fa fa-plus" />
-                Add Address
+                                  {this.state.edit == id ? (
+                                    <React.Fragment>
+                                      <td className="editButton">
+                                        <button
+                                          className="naked-button"
+                                          type="submit"
+                                          form={`address-form-${id}`}>
+                                          <i className="fa fa-check" />
+                                        </button>
+                                      </td>
+                                      <td className="editButton">
+                                        <i
+                                          onClick={() => this.setState({ edit: -1 })}
+                                          className="fa fa-times"
+                                        />
+                                      </td>
+                                    </React.Fragment>
+                                  ) : (
+                                    <React.Fragment>
+                                      <td className="editButton">
+                                        <i
+                                          title="Delete"
+                                          onClick={() => this.showDeletion(id, showPopup)}
+                                          className="fal fa-trash-alt"
+                                        />
+                                      </td>
+                                      <td className="editButton">
+                                        <i
+                                          title="Edit"
+                                          onClick={() => this.setState({ edit: id })}
+                                          className="fal fa-edit"
+                                        />
+                                      </td>
+                                    </React.Fragment>
+                                  )}
+                                </tr>
+                              );
+                            }
+                          )}
+                        </React.Fragment>
+                      ) : (
+                        ""
+                      );
+                    }}
+                  </Query>
+                </tbody>
+              </table>
+              <button
+                className="naked-button genericButton"
+                onClick={() => this.showCreation(showPopup)}>
+                <span className="textButton">+</span>
+                <span className="textButtonBeside">Add Address</span>
               </button>
             </div>
           </div>

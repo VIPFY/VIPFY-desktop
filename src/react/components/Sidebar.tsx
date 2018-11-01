@@ -21,12 +21,17 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
 
   showApps = licences => {
     let appLogos: JSX.Element[] = [];
-    console.log(licences);
+    //console.log("PL", this.props, licences);
     if (licences) {
       licences.forEach((licence, key) => {
+        let cssClass = "sidebar-link";
+        if (this.props.location.pathname === `/area/app/${licence.id}`) {
+          cssClass += " sidebar-active";
+        }
+
         appLogos.push(
           <li
-            className="sidebar-link"
+            className={cssClass}
             key={`ServiceLogo-${key}`}
             onClick={() => this.props.setApp(licence.id)}>
             <span
@@ -60,13 +65,21 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
   };
 
   renderLink = ({ label, location, icon, show, important }: object) => {
+    let cssClass = "sidebar-link";
+    if (important) {
+      cssClass += " sidebar-link-important";
+    }
+    if (
+      this.props.location.pathname === `/area/${location}` ||
+      `${this.props.location.pathname}/dashboard` === `/area/${location}`
+    ) {
+      cssClass += " sidebar-active";
+    }
+
     if (show) {
       return (
-        <li
-          key={location}
-          className={`sidebar-link ${important ? "sidebar-link-important" : ""}`}
-          onClick={() => this.goTo(location)}>
-          <span className={`fas fa-${icon} sidebar-icons`} />
+        <li key={location} className={cssClass} onClick={() => this.goTo(location)}>
+          <span className={`fal fa-${icon} sidebar-icons`} />
           <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
             {label}
           </span>
@@ -78,31 +91,31 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
   render() {
     const sidebarLinks = [
       { label: "Dashboard", location: "dashboard", icon: "home", show: true },
-      { label: "Profile", location: "profile", icon: "user", show: true },
+      { label: "Profile", location: "profile", icon: "alicorn", show: true },
       /*{ label: "Message Center", location: "messagecenter", icon: "envelope", show: true },*/
       { label: "Billing", location: "billing", icon: "dollar-sign", show: this.props.isadmin },
       { label: "Security", location: "security", icon: "shield-alt", show: this.props.isadmin },
-      { label: "Teams", location: "team", icon: "users-cog", show: this.props.isadmin },
+      { label: "Teams", location: "team", icon: "users", show: this.props.isadmin },
       {
         label: "Marketplace",
         location: "marketplace",
         icon: "shopping-cart",
         show: true,
-        important: true
+        important: false
       },
       {
         label: "Domains",
         location: "domains",
         icon: "code",
         show: this.props.isadmin,
-        important: true
+        important: false
       },
       {
         label: "Support",
         location: "support",
         icon: "life-ring",
         show: true,
-        important: true
+        important: false
       }
     ];
 
@@ -110,11 +123,12 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
       <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
         {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
         <ul className="sidebar-link-holder">
-          <span onClick={() => this.props.toggleSidebar()} className="fas fa-bars barIcon" />
+          <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
           {sidebarLinks.map(link => this.renderLink(link))}
+          <li className="sidebarfree" />
           {this.showApps(this.props.licences.fetchLicences)}
           <li className="sidebar-link sidebar-link-important" onClick={() => this.props.logMeOut()}>
-            <span className="fas fa-sign-out-alt sidebar-icons" />
+            <span className="fal fa-sign-out-alt sidebar-icons" />
             <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
               Logout
             </span>

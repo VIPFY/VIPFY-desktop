@@ -112,7 +112,7 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
                       className="passwordStrength"
                       minLength={8}
                       minScore={2}
-                      scoreWords={["weak", "okay", "good", "strong", "stronger"]}
+                      scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
                       tooShortWord={"too short"}
                       inputProps={{
                         name: "password_input",

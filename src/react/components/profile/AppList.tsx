@@ -23,14 +23,19 @@ interface Props {
 
 interface State {
   removeApp: number;
+  show: Boolean;
 }
 
 class AppList extends React.Component<Props, State> {
   state = {
-    removeApp: 0
+    removeApp: 0,
+    show: true
   };
+
+  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
+
   render() {
-    console.log(this.state.removeApp);
+    //console.log(this.state.removeApp);
     return (
       <Query query={fetchLicences}>
         {({ loading, error, data: { fetchLicences } }) => {
@@ -42,55 +47,86 @@ class AppList extends React.Component<Props, State> {
             return filterError(error);
           }
           return (
-            <div className="profile-page-item app-list">
-              <div className="header">Apps</div>
-              <div className="profileAppsHolder">
-                {fetchLicences.map((licence, key) => {
-                  if (
-                    licence.boughtplanid.planid.options &&
-                    licence.boughtplanid.planid.options.external
-                  ) {
-                    if (this.state.removeApp === licence.id) {
-                      return (
-                        <div className="profileApps" key={`useableLogo-${key}`}>
-                          <i className="fas fa-trash shaking" />
-                          <div className="name">
-                            <span>Removing</span>
+            <div className="genericHolder">
+              <div className="header" onClick={this.toggle}>
+                <i
+                  className={`button-hide fas ${
+                    this.state.show ? "fa-angle-left" : "fa-angle-down"
+                  }`}
+                  //onClick={this.toggle}
+                />
+                <span>Apps</span>
+              </div>
+              <div className={`inside ${this.state.show ? "in" : "out"}`}>
+                <div className="profileAppsHolder">
+                  {fetchLicences.map((licence, key) => {
+                    if (
+                      licence.boughtplanid.planid.options &&
+                      licence.boughtplanid.planid.options.external
+                    ) {
+                      if (this.state.removeApp === licence.id) {
+                        return (
+                          <div className="profileApps" key={`useableLogo-${key}`}>
+                            <i className="fal fa-trash-alt shaking" />
+                            <div className="name">
+                              <span>Removing</span>
+                            </div>
                           </div>
-                        </div>
-                      );
+                        );
+                      } else {
+                        return (
+                          <div
+                            className="profileApps"
+                            key={`useableLogo-${key}`}
+                            onClick={() =>
+                              this.props.showPopup({
+                                header: "Remove external account",
+                                body: Confirmation,
+                                props: {
+                                  headline: "Please confirm removal of this account",
+                                  submitFunction: async licenceid => {
+                                    await this.props.removeExternal({
+                                      variables: { licenceid }
+                                    });
+                                    this.setState({ removeApp: licenceid });
+                                  },
+                                  type: `External account - ${
+                                    licence.boughtplanid.planid.appid.name
+                                  }`,
+                                  id: licence.id
+                                }
+                              })
+                            }
+                            style={{
+                              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                                licence.boughtplanid.planid.appid.icon
+                              })`
+                            }}>
+                            <div className="ribbon ribbon-top-right">
+                              <span>external</span>
+                            </div>
+                            <div className="name">
+                              <span>{licence.boughtplanid.planid.appid.name}</span>
+                              {licence.boughtplanid.planid.options &&
+                              licence.boughtplanid.planid.options.external ? (
+                                <i className="fal fa-trash-alt" />
+                              ) : (
+                                ""
+                              )}
+                            </div>
+                          </div>
+                        );
+                      }
                     } else {
                       return (
                         <div
                           className="profileApps"
                           key={`useableLogo-${key}`}
-                          onClick={() =>
-                            this.props.showPopup({
-                              header: "Remove external account",
-                              body: Confirmation,
-                              props: {
-                                headline: "Please confirm removal of this account",
-                                submitFunction: async licenceid => {
-                                  await this.props.removeExternal({
-                                    variables: { licenceid }
-                                  });
-                                  this.setState({ removeApp: licenceid });
-                                },
-                                type: `External account - ${
-                                  licence.boughtplanid.planid.appid.name
-                                }`,
-                                id: licence.id
-                              }
-                            })
-                          }
                           style={{
                             backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
                               licence.boughtplanid.planid.appid.icon
                             })`
                           }}>
-                          <div className="ribbon ribbon-top-right">
-                            <span>external</span>
-                          </div>
                           <div className="name">
                             <span>{licence.boughtplanid.planid.appid.name}</span>
                             {licence.boughtplanid.planid.options &&
@@ -103,31 +139,9 @@ class AppList extends React.Component<Props, State> {
                         </div>
                       );
                     }
-                  } else {
-                    return (
-                      <div
-                        className="profileApps"
-                        key={`useableLogo-${key}`}
-                        style={{
-                          backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                            licence.boughtplanid.planid.appid.icon
-                          })`
-                        }}>
-                        <div className="name">
-                          <span>{licence.boughtplanid.planid.appid.name}</span>
-                          {licence.boughtplanid.planid.options &&
-                          licence.boughtplanid.planid.options.external ? (
-                            <i className="fas fa-trash" />
-                          ) : (
-                            ""
-                          )}
-                        </div>
-                      </div>
-                    );
-                  }
-                })}
-              </div>
-              {/*<ul className="app-accordion">
+                  })}
+                </div>
+                {/*<ul className="app-accordion">
             {Object.keys(fetchLicences).map((item, key) => {
               const {
                 boughtplanid: {
@@ -148,6 +162,7 @@ class AppList extends React.Component<Props, State> {
               );
             })}
           </ul>*/}
+              </div>
             </div>
           );
         }}

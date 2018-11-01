@@ -1,6 +1,6 @@
-$app-logo:                  url('../images/logo-full-aaa-ai.svg');
-$newlogo-small:             url('../images/Vipfy-white.svg');
-$newlogo:                   url('../images/Vipfy_Logo_Links_Weiss_HG_Dunkel.svg');
+$app-logo:                  url('./images/logo-full-aaa-ai.svg');
+$newlogo-small:             url('./images/Vipfy-white.svg');
+$newlogo:                   url('./images/Vipfy_Logo_Links_Weiss_HG_Dunkel.svg');
 $sidebar-background:        #333;
 $sidebar-width:             15em;
 $fullworking-background:    #f5f5f5;
@@ -104,7 +104,7 @@ $rccs-valid-font-size: 0.4rem;
 }
 
 .in {
-  @include toggleHeight(20rem);
+  @include toggleHeight(100rem);
 }
 
 .out {

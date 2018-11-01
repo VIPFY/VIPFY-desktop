@@ -88,69 +88,90 @@ class CompanyData extends React.Component<Props, State> {
               }
 
               return (
-                <div className="profile-page-item item-information">
-                  <div className="header">
+                <div className="genericHolder">
+                  <div className="header" onClick={this.toggle}>
                     <i
-                      className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
-                      onClick={this.toggle}
+                      className={`button-hide fas ${
+                        this.state.show ? "fa-angle-left" : "fa-angle-down"
+                      }`}
+                      //onClick={this.toggle}
                     />
                     <span>Company Data</span>
                   </div>
+                  <div className={`inside-profile ${this.state.show ? "in" : "out"}`}>
+                    <div className="pic-holder">
+                      {/*<img
+                        style={{ position: "relative" }}
+                        src={`${unitPicFolder}${
+                          fetchCompany.profilepicture ? fetchCompany.profilepicture : "default.png"
+                        } `}
+                        onClick={() => showPopup(picPopup)}
+                        className="pic"
+                        alt="Picture of your Company"
+                      />*/}
+                      <div
+                        className="imagehoverable pic"
+                        style={{
+                          backgroundImage: `url(${unitPicFolder}${
+                            fetchCompany.profilepicture
+                              ? fetchCompany.profilepicture
+                              : "default.png"
+                          })`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          position: "relative"
+                        }}>
+                        <div className="imagehover">
+                          <i className="fal fa-camera" />
+                          <span>Updaten</span>
+                        </div>
+                      </div>
+                    </div>
 
-                  <div className={`pic-holder ${this.state.show ? "in" : "out"}`}>
-                    <img
-                      src={`${unitPicFolder}${
-                        fetchCompany.profilepicture ? fetchCompany.profilepicture : "default.png"
-                      } `}
-                      onClick={() => showPopup(picPopup)}
-                      className="pic"
-                      alt="Picture of your Company"
-                    />
-                  </div>
-
-                  <div className={`information ${this.state.show ? "in" : "out"}`}>
-                    <ul>
-                      {Object.keys(fetchCompany).map((info, key) => {
-                        if (info.match(/(unit)|(__typename)|(profilepicture)/gi)) {
-                          return;
-                        } else if (info == "legalinformation") {
-                          if (fetchCompany[info] && fetchCompany[info].vatId) {
-                            console.log("FIRE");
+                    <div className="information">
+                      <ul>
+                        {Object.keys(fetchCompany).map((info, key) => {
+                          if (info.match(/(unit)|(__typename)|(profilepicture)/gi)) {
+                            return;
+                          } else if (info == "legalinformation") {
+                            if (fetchCompany[info] && fetchCompany[info].vatId) {
+                              //console.log("FIRE");
+                              return (
+                                <li key={key}>
+                                  <label>Vatnumber:</label>
+                                  <span>{fetchCompany[info].vatId}</span>
+                                </li>
+                              );
+                            } else {
+                              return;
+                            }
+                            // Function to map through legalinformation
+                            // return;
+                            // Object.keys(fetchCompany[info]).map(item => (
+                            //   <li key={item}>
+                            //     <label>
+                            //       {`${item.substr(0, 1).toLocaleUpperCase()}${item.substr(1)}`}:
+                            //     </label>
+                            //     <span>{fetchCompany[info][item]}</span>
+                            //   </li>
+                            // ));
+                          } else {
                             return (
                               <li key={key}>
-                                <label>Vatnumber:</label>
-                                <span>{fetchCompany[info].vatId}</span>
+                                <label>
+                                  {`${info.substr(0, 1).toLocaleUpperCase()}${info.substr(1)}`}:
+                                </label>
+                                <span>{fetchCompany[info]}</span>
                               </li>
                             );
-                          } else {
-                            return;
                           }
-                          // Function to map through legalinformation
-                          // return;
-                          // Object.keys(fetchCompany[info]).map(item => (
-                          //   <li key={item}>
-                          //     <label>
-                          //       {`${item.substr(0, 1).toLocaleUpperCase()}${item.substr(1)}`}:
-                          //     </label>
-                          //     <span>{fetchCompany[info][item]}</span>
-                          //   </li>
-                          // ));
-                        } else {
-                          return (
-                            <li key={key}>
-                              <label>
-                                {`${info.substr(0, 1).toLocaleUpperCase()}${info.substr(1)}`}:
-                              </label>
-                              <span>{fetchCompany[info]}</span>
-                            </li>
-                          );
-                        }
-                      })}
-                    </ul>
-                  </div>
+                        })}
+                      </ul>
+                    </div>
 
-                  <Addresses showPopup={showPopup} company={fetchCompany.unit.id} />
-                  <Phones showPopup={showPopup} company={fetchCompany.unit.id} />
+                    <Addresses showPopup={showPopup} company={fetchCompany.unit.id} />
+                    <Phones showPopup={showPopup} company={fetchCompany.unit.id} />
+                  </div>
                 </div>
               );
             }}
