@@ -135,7 +135,7 @@
 
 .login-holder {
   /*background-color: rgba(255, 255, 255, 0.7);*/
-  background-image: url('../images/vipfy-logo_hell.png');
+  background-image: url('./images/vipfy-logo_hell.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -359,7 +359,7 @@
 
 #loading-screen {
   /*background-color: #fff;*/
-  background-image: url('../images/Ladeanimation_Vipfy_transparent.gif');
+  background-image: url('./images/Ladeanimation_Vipfy_transparent.gif');
   background-position: calc(50% - 2.5rem) calc(50% - 3rem);
   background-size: 5rem;
   background-repeat: no-repeat;
@@ -379,7 +379,7 @@
     height: 5rem;
 }
 .loadingLogo{
-    background-image: url(../images/Vipfy_Logo_008.svg);
+    background-image: url(./images/Vipfy_Logo_008.svg);
     background-repeat: no-repeat;
     background-position: center center;
     height: 5rem;
@@ -415,7 +415,7 @@
     .logo{
         height: 5rem;
         width: 5rem;
-        background-image: url(../images/Vipfy_Logo_008.svg);
+        background-image: url(./images/Vipfy_Logo_008.svg);
         background-repeat: no-repeat;
         background-position: center center;
         background-color: #117f91;
