@@ -18,12 +18,12 @@ interface Props {
 
 class BillingPieInner extends React.Component<Props, State> {
   render() {
-    console.log("CHARTPROPS", this.props);
+    //console.log("CHARTPROPS", this.props);
     if (!this.props.data.fetchUnitApps) {
       return <div>Error fetching data</div>;
     }
     const data = this.BarSeries(this.props);
-    console.log("HW", data);
+    //console.log("HW", data);
     return (
       <Chart
         height={this.props.height}
@@ -36,7 +36,11 @@ class BillingPieInner extends React.Component<Props, State> {
               "$" + `${data.data[opt.seriesIndex].toFixed(2)}`.padStart(3, " ")
           },
           colors: data.color,
-          labels: data.name
+          labels: data.name,
+          legend: {
+            position: "right",
+            verticalAlign: "top"
+          }
         }}
       />
     );
@@ -95,7 +99,7 @@ class BillingPieInner extends React.Component<Props, State> {
 }
 
 function BillingPie(props) {
-  console.log("PROPS", props);
+  //console.log("PROPS", props);
   return (
     <Query
       query={gql`

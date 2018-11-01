@@ -41,7 +41,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       }
     });
     let monthlymax: number = Math.max(...monthlysum);
-    //console.log("DATA", data, monthlysum);
+    console.log("DATA", data, monthlysum);
 
     return (
       <Chart
@@ -117,7 +117,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
       .startOf("month")
       .subtract(6, "months");
     const timeend = moment().endOf("month");
-    //console.log("times", timestart, timeend);
+    console.log("times", timestart, timeend);
 
     return plans
       .map(plan => {
@@ -126,20 +126,26 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
           data: [],
           color: plan.appcolor
         };
-        for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
+        for (let m = moment(timestart); m.isSameOrBefore(timeend); m.add(1, "month")) {
+          console.log("Month", m, moment(plan.buytime), m.endOf("month"));
           //console.log(m.endOf("month"));
-          if (moment(plan.buytime).isBefore(m.endOf("month"))) {
+          let mm = m;
+          if (moment(plan.buytime).isSameOrBefore(mm.endOf("month"))) {
             //console.log(moment(plan.buytime).isAfter(m.startOf("month")), plan, m);
-            if (moment(plan.buytime).isAfter(m.startOf("month"))) {
-              console.log(-moment(plan.buytime).diff(m.endOf("month"), "days"), m.daysInMonth());
+            //console.log("BEFORE", moment(plan.buytime));
+            if (moment(plan.buytime).isAfter(mm.startOf("month"))) {
+              //console.log(-moment(plan.buytime).diff(m.endOf("month"), "days"), m.daysInMonth());
+              //console.log("AFTER", moment(plan.buytime));
               let price =
-                (-moment(plan.buytime).diff(m.endOf("month"), "days") / m.daysInMonth()) *
+                (-moment(plan.buytime).diff(mm.endOf("month"), "days") / mm.daysInMonth()) *
                 plan.price;
               d.data.push(price);
             } else {
+              //console.log("ELSE", moment(plan.buytime));
               d.data.push(plan.price);
             }
           } else {
+            //console.log("ELSE1", moment(plan.buytime));
             d.data.push(0);
           }
         }

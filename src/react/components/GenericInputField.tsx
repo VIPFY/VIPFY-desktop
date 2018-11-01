@@ -88,7 +88,14 @@ class GenericInputField extends Component<Props, State> {
     } else if (this.props.inputType === "number" && /^([0-9,. ])*$/i.test(value)) {
       this.setState({ value, valueChanged: true, error: null });
       return;
-    } else if (!this.props.inputType || this.props.inputType === "domain") {
+    } else if (this.props.inputType === "domain") {
+      if (/^([0-9,a-zA-Z.\-])*$/i.test(value)) {
+        this.setState({ value, valueChanged: true, error: null });
+      } else {
+        this.setState({ error: "No spaces allowed" });
+      }
+      return;
+    } else if (!this.props.inputType) {
       this.setState({ value, valueChanged: true, error: null });
       return;
     } else {

@@ -1,16 +1,65 @@
 import * as React from "react";
-import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import UserName from "../UserName";
 import Duration from "../../common/duration";
+import { Query, compose, graphql } from "react-apollo";
 
-interface State {}
+interface State {
+  changeAdminStatus: number;
+}
 
 interface Props {
   data: { fetchUserSecurityOverview: any };
+  changeAdminStatus: Function;
 }
 
+const CHANGEADMINSTATUS = gql`
+  mutation changeAdminStatus($id: ID!, $bool: Boolean!) {
+    changeAdminStatus(unitid: $id, admin: $bool) {
+      ok
+    }
+  }
+`;
+
+const FETCHUSERSECURITYOVERVIEW = gql`
+  query userSecurityOverview {
+    fetchUserSecurityOverview {
+      id
+      unitid {
+        firstname
+        lastname
+        isadmin
+      }
+      lastactive
+      needspasswordchange
+      passwordlength
+      passwordstrength
+      banned
+      suspended
+      createdate
+    }
+  }
+`;
+
 class UserSecurityTableInner extends React.Component<Props, State> {
+  state = {
+    changeAdminStatus: 0
+  };
+
+  changeAdminStatus = async (id, bool) => {
+    console.log("CHANGE ADMIN STATUS", id, bool);
+    this.setState({ changeAdminStatus: id });
+    try {
+      await this.props.changeAdminStatus({
+        variables: { id, bool },
+        refetchQueries: [{ query: FETCHUSERSECURITYOVERVIEW }]
+      });
+      this.setState({ changeAdminStatus: 0 });
+    } catch (err) {
+      console.log("Change Admin Status not possible");
+    }
+  };
+
   render() {
     console.log("props", this.props.data);
 
@@ -32,12 +81,27 @@ class UserSecurityTableInner extends React.Component<Props, State> {
             <th>Created</th>
             <th>Length</th>
             <th>Strength</th>
-            <th>Change on next login</th>
+            {/*<th>Change on next login</th>
             <th>Banned</th>
-            <th>Suspended</th>
+            <th>Suspended</th>*/}
+            <th>Reset</th>
+            <th>Make Admin</th>
           </tr>
         </thead>
-        <tbody>{rows}</tbody>
+        <tbody>
+          {rows}
+          <tr>
+            <td />
+            <td />
+            <td />
+            <td />
+            <td />
+            <td align="center">
+              <button className="naked-button button">force all</button>
+            </td>
+            <td />
+          </tr>
+        </tbody>
       </table>
     );
   }
@@ -48,7 +112,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
       return (
         <tr key={`r${user.id}`}>
           <td>
-            <UserName unitid={user.id} />
+            <span>{`${user.unitid.firstname} ${user.unitid.lastname}`}</span>
           </td>
           <td align="right">
             <Duration timestamp={user.lastactive} postfix=" ago" />
@@ -60,9 +124,31 @@ class UserSecurityTableInner extends React.Component<Props, State> {
           <td align="right">
             {user.passwordstrength === null ? "unknown" : user.passwordstrength + "/4"}
           </td>
-          <td align="right">{user.needspasswordchange ? "yes" : "no"}</td>
+          {/*<td align="right">{user.needspasswordchange ? "yes" : "no"}</td>
           <td align="right">{user.banned ? "yes" : "no"}</td>
-          <td align="right">{user.suspended ? "yes" : "no"}</td>
+      <td align="right">{user.suspended ? "yes" : "no"}</td>*/}
+          <td align="center">
+            {user.needspasswordchange ? (
+              "yes"
+            ) : (
+              <button className="naked-button button">force</button>
+            )}
+          </td>
+          <td align="center">
+            {user.unitid.isadmin ? (
+              <button
+                onClick={() => this.changeAdminStatus(user.id, false)}
+                className="naked-button button">
+                revoke admin
+              </button>
+            ) : (
+              <button
+                onClick={() => this.changeAdminStatus(user.id, true)}
+                className="naked-button button">
+                make admin
+              </button>
+            )}
+          </td>
         </tr>
       );
     });
@@ -71,22 +157,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
 
 function UserSecurityTable(props) {
   return (
-    <Query
-      query={gql`
-        query userSecurityOverview {
-          fetchUserSecurityOverview {
-            id
-            lastactive
-            needspasswordchange
-            passwordlength
-            passwordstrength
-            banned
-            suspended
-            createdate
-          }
-        }
-      `}
-      pollInterval={1000 * 60 * 10}>
+    <Query query={FETCHUSERSECURITYOVERVIEW} pollInterval={1000 * 60 * 10}>
       {({ data, loading, error }) => {
         if (loading) {
           return <div>Loading</div>;
@@ -100,4 +171,7 @@ function UserSecurityTable(props) {
   );
 }
 
-export default UserSecurityTable;
+export default compose(
+  //graphql(FORCERESET, { name: "forceReset" }),
+  graphql(CHANGEADMINSTATUS, { name: "changeAdminStatus" })
+)(UserSecurityTable);

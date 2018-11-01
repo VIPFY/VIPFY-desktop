@@ -14,7 +14,7 @@ const DOMAIN = "https://storage.googleapis.com/releases.vipfy.store";
 const suffix =
   process.platform === "darwin" ? `/RELEASES.json?method=JSON&version=${app.getVersion()}` : "";
 autoUpdater.setFeedURL({
-  url: `${DOMAIN}/VIPFY/62353a59e91d9ebc1ffffaacef835caf/${process.platform}/${
+  url: `${DOMAIN}/VIPFY/98c61756053f11b6429ce49805bd7553/${process.platform}/${
     process.arch
   }${suffix}`,
   serverType: "json"
@@ -95,7 +95,8 @@ const createWindow = async () => {
     title: "Vipfy",
     titleBarStyle: "hiddenInset",
     fullscreenable: true,
-    backgroundColor: "#20BAA9"
+    backgroundColor: "#253647",
+    frame: false
   });
 
   mainWindow.once("ready-to-show", () => {
