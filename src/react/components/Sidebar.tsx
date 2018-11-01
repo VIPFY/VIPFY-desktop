@@ -79,7 +79,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     if (show) {
       return (
         <li key={location} className={cssClass} onClick={() => this.goTo(location)}>
-          <span className={`fas fa-${icon} sidebar-icons`} />
+          <span className={`fal fa-${icon} sidebar-icons`} />
           <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
             {label}
           </span>
@@ -91,11 +91,11 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
   render() {
     const sidebarLinks = [
       { label: "Dashboard", location: "dashboard", icon: "home", show: true },
-      { label: "Profile", location: "profile", icon: "user", show: true },
+      { label: "Profile", location: "profile", icon: "alicorn", show: true },
       /*{ label: "Message Center", location: "messagecenter", icon: "envelope", show: true },*/
       { label: "Billing", location: "billing", icon: "dollar-sign", show: this.props.isadmin },
       { label: "Security", location: "security", icon: "shield-alt", show: this.props.isadmin },
-      { label: "Teams", location: "team", icon: "users-cog", show: this.props.isadmin },
+      { label: "Teams", location: "team", icon: "users", show: this.props.isadmin },
       {
         label: "Marketplace",
         location: "marketplace",
@@ -123,12 +123,12 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
       <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
         {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
         <ul className="sidebar-link-holder">
-          <span onClick={() => this.props.toggleSidebar()} className="fas fa-bars barIcon" />
+          <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
           {sidebarLinks.map(link => this.renderLink(link))}
           <li className="sidebarfree" />
           {this.showApps(this.props.licences.fetchLicences)}
           <li className="sidebar-link sidebar-link-important" onClick={() => this.props.logMeOut()}>
-            <span className="fas fa-sign-out-alt sidebar-icons" />
+            <span className="fal fa-sign-out-alt sidebar-icons" />
             <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
               Logout
             </span>
