@@ -30,7 +30,7 @@ class AppList extends React.Component<Props, State> {
     removeApp: 0
   };
   render() {
-    console.log(this.state.removeApp);
+    //console.log(this.state.removeApp);
     return (
       <Query query={fetchLicences}>
         {({ loading, error, data: { fetchLicences } }) => {
