@@ -101,21 +101,21 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         location: "marketplace",
         icon: "shopping-cart",
         show: true,
-        important: true
+        important: false
       },
       {
         label: "Domains",
         location: "domains",
         icon: "code",
         show: this.props.isadmin,
-        important: true
+        important: false
       },
       {
         label: "Support",
         location: "support",
         icon: "life-ring",
         show: true,
-        important: true
+        important: false
       }
     ];
 
@@ -125,6 +125,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         <ul className="sidebar-link-holder">
           <span onClick={() => this.props.toggleSidebar()} className="fas fa-bars barIcon" />
           {sidebarLinks.map(link => this.renderLink(link))}
+          <li className="sidebarfree" />
           {this.showApps(this.props.licences.fetchLicences)}
           <li className="sidebar-link sidebar-link-important" onClick={() => this.props.logMeOut()}>
             <span className="fas fa-sign-out-alt sidebar-icons" />

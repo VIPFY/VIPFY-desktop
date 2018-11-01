@@ -4,7 +4,7 @@ $shadow-color: #f0f3ff;
 #profile-page {
   display: flex;
   flex-flow: column;
-  padding: 2rem;
+  padding: 48px;
 
   .profile-page-item {
     background: #fff;
@@ -33,12 +33,12 @@ $shadow-color: #f0f3ff;
   }
 
   .header {
-    border-bottom: $border;
-    font-weight: bold;
-    grid-area: header;
-    padding: 0.5rem 0;
-    position: relative;
-    text-align: center;
+    //border-bottom: $border;
+    //font-weight: bold;
+    //grid-area: header;
+    //padding: 0.5rem 0;
+    //position: relative;
+    //text-align: center;
   }
 
   .pic-holder {
@@ -54,8 +54,8 @@ $shadow-color: #f0f3ff;
       border-radius: 50%;
       cursor: pointer;
       margin: 1rem 0;
-      width: 5rem;
-      height: 5rem;
+      width: 6rem;
+      height: 6rem;
     }
 
     div {
@@ -77,7 +77,7 @@ $shadow-color: #f0f3ff;
   }
 
   .information {
-    border-left: $border;
+    //border-left: $border;
     grid-area: information;
 
     ul {

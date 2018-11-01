@@ -17,6 +17,7 @@ export default function UserPicture(props: {
   unitid: number | null;
   size: string;
   style?: any;
+  updateable?: any;
 }): JSX.Element {
   if (props.unitid === null || props.unitid === undefined) {
     return <span />;
@@ -40,9 +41,21 @@ export default function UserPicture(props: {
           backgroundImage: `url(${picture})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          position: "relative",
           ...customStyle
         };
-        return <div className={props.size} style={style} />;
+        return (
+          <div className={`imagehoverable ${props.size}`} style={style}>
+            {props.updateable ? (
+              <div className="imagehover">
+                <i className="fas fa-camera" />
+                <span>Updaten</span>
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+        );
       }}
     </Query>
   );

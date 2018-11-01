@@ -49,7 +49,7 @@
 }
 
 #App {
-  color: #333;
+  color: #253647;   //#333 durch #253647 überall ersetzen
   font-family: 'Roboto', sans-serif;
   width: 100%;
   background-color: #f5f5f5;
@@ -62,7 +62,7 @@
     position: fixed;
     height: 32px;
     width: 100%;
-    background: #253647;
+    background: #1c2935;
     color: #FFF;
     top:0;
     z-index: 1000;
@@ -221,8 +221,9 @@
     /*color: white;*/
     display: flex;
     justify-content: space-between;
-    background-color: #fff !important;
-    box-shadow: 0 0 10px #e8e8e8;
+    //background-color: #fff !important;
+    //box-shadow: 0 0 10px #e8e8e8;
+    background-color: #f5f5f5;
     margin-left: 3rem;
     transition: margin-left 0.6s ease-in-out;
     position: relative;
@@ -520,7 +521,8 @@
 
 .full-working {
   /*background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);*/
-  background-color: $fullworking-background;
+  //background-color: $fullworking-background;
+  background-color: white;
   height: calc(100vh - 3rem - 32px);
   margin-left: 3rem;
   overflow-y: scroll;
@@ -1065,6 +1067,7 @@
         font-size: 1em;
         overflow: hidden;
         overflow-wrap: unset;
+        font-weight: 500;
     }
   }
 
@@ -1199,7 +1202,8 @@
 .right-profile-notifications {
   color: #fff;
   font-size: 1rem;
-  background-color: #ffc247;
+  //background-color: #ffc247;
+  background-color: #1db5bc;
   font-weight: 700;
   height: 2rem;
   line-height: 2rem;
@@ -1210,7 +1214,7 @@
 
   .notification-amount {
     position: absolute;
-    font-size: 0.8rem;
+    font-size: 0.6rem;
     top: -5px;
     right: -3px;
     color: #fff;
@@ -1219,7 +1223,8 @@
     width: 1rem;
     text-align: center;
     border-radius: 1rem;
-    background-color: hsla(0, 77%, 56%, 0.729);
+    //background-color: hsla(0, 77%, 56%, 0.729);
+    background-color: #117f91;
   }
 }
 
@@ -1515,8 +1520,17 @@
     padding: 1rem;
 }
 .barIcon {
-    margin: 1rem;
+    font-size: 1em;
     cursor: pointer;
+    line-height: 2em !important;
+    padding-left: 1em;
+    width: 16px;
+    margin-top: 3em;
+    text-align: center;
+}
+.sidebarfree{
+    height: 2em;
+    width: 1em;
 }
 .leftNavigation{
     display: flex;
@@ -1552,7 +1566,7 @@
     box-shadow: 0 0 4rem #f0f3ff;
     border-radius: 0.2rem;
     position: relative;
-    color: #333;
+    color: #253647;
 }
 .informationGraphHeader {
     font-size: 1.5rem;
@@ -1760,7 +1774,7 @@
     width: 15%;
     line-height: 20rem;
     padding-left: 1rem;
-    background-image: linear-gradient(to left, transparent 0%, #333 100%);
+    background-image: linear-gradient(to left, transparent 0%, #253647 100%);
     color: white;
     cursor: pointer;
     transition: 0.3s;
@@ -1775,7 +1789,7 @@
     line-height: 20rem;
     padding-right: 1rem;
     text-align: right;
-    background-image: linear-gradient(to right, transparent 0%, #333 100%);
+    background-image: linear-gradient(to right, transparent 0%, #253647 100%);
     color: white;
     cursor: pointer;
     transition: 0.3s;
@@ -3528,4 +3542,86 @@ h1{
     bottom: 0.5em;
     left: 0.5em;
     color: #3e6b98;
+}
+
+
+.genericHolder {
+    background: #fff;
+    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
+    margin: auto;
+    max-width: 60rem;
+    border-radius: 3px;
+    margin-bottom: 2rem;
+    width: 100%;
+    overflow: hidden;
+    font-size: 13px;
+
+    .header{
+        position: relative;
+        text-align: left;
+        background-color: #f5f5f5;
+        height: 32px;
+        line-height: 32px;
+        padding-left: 20px;
+        font-weight: 500;
+        font-size: 15px;
+        cursor: pointer;
+
+        .button-hide{
+            right: 20px;
+
+            &:hover{
+                color: #20BAA9;
+            }
+        }
+    }
+
+    .inside{
+        &-profile{
+            display: grid;
+            grid-template-columns: 2fr 7fr;
+            grid-template-areas: 'pic information' 'address address' 'phone phone';
+        }
+    }
+
+    label{
+        font-weight: 500;
+    }
+}
+
+.imagehoverable{
+    position: relative;
+    overflow: hidden;
+
+    .imagehover{
+        opacity: 0;
+        transition: all 0.6s ease-in-out;
+        background-color: rgba(0,0,0,0.5);
+        height: 45%;
+        bottom: 0;
+        position: absolute;
+        width: 100%;
+        color: white;
+        text-align: center;
+
+        i{
+            width: 100%;
+            margin-top: 0.4em;
+        }
+    }
+
+    &:hover{
+        & > .imagehover{
+            opacity: 100;
+        }
+    }
+}
+
+.genericButton{
+    height: 32px;
+    width: 32px;
+    background-color: #20BAA9;
+    border-radius: 3px;
+    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
+    color: white;
 }

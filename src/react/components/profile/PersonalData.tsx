@@ -161,38 +161,42 @@ class PersonalData extends React.Component<Props, State> {
                 };
 
                 return (
-                  <div className="profile-page-item item-information">
-                    <div className="header">
+                  <div className="genericHolder">
+                    <div className="header" onClick={this.toggle}>
                       <i
-                        className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
-                        onClick={this.toggle}
+                        className={`button-hide fas ${
+                          this.state.show ? "fa-angle-left" : "fa-angle-down"
+                        }`}
+                        //onClick={this.toggle}
                       />
                       <span>Personal Data</span>
                     </div>
+                    <div className={`inside-profile ${this.state.show ? "in" : "out"}`}>
+                      <div
+                        className="pic-holder" //{`pic-holder ${this.state.show ? "in" : "out"}`}
+                        onClick={() => showPopup(picPopup)}>
+                        <UserPicture size="pic" unitid={this.props.id} updateable={true} />
+                      </div>
 
-                    <div
-                      className={`pic-holder ${this.state.show ? "in" : "out"}`}
-                      onClick={() => showPopup(picPopup)}>
-                      <UserPicture size="pic" unitid={this.props.id} />
-                      <div>Click to change</div>
-                    </div>
+                      <div className="information">
+                        <ul>
+                          {information.map(({ label, data }) => (
+                            <li key={label}>
+                              <label>{label}:</label>
+                              <span>{data}</span>
+                            </li>
+                          ))}
 
-                    <div className={`information ${this.state.show ? "in" : "out"}`}>
-                      <ul>
-                        {information.map(({ label, data }) => (
-                          <li key={label}>
-                            <label>{label}:</label>
-                            <span>{data}</span>
+                          <li>
+                            <button
+                              className="naked-button genericButton"
+                              onClick={() => showPopup(passwordPopup)}>
+                              <i className="fa fa-key" />
+                              {/*<span>Change Password</span>*/}
+                            </button>
                           </li>
-                        ))}
-
-                        <li>
-                          <button className="button-pw" onClick={() => showPopup(passwordPopup)}>
-                            <i className="fa fa-key" />
-                            <span>Change Password</span>
-                          </button>
-                        </li>
-                      </ul>
+                        </ul>
+                      </div>
                     </div>
 
                     {/*<Addresses showPopup={showPopup} />
