@@ -21,8 +21,8 @@ class Application extends React.Component {
     // inline styles to make them available to smartlook
     const style = document.createElement("style");
     fs.readFile(__dirname + "/../css/layout.css", "utf8", function(err, contents) {
-      console.log(err);
-      console.log(contents);
+      //console.log(err);
+      //console.log(contents);
       document.head!.appendChild(style);
       style.innerHTML = contents;
     });

@@ -258,7 +258,7 @@ class Phones extends React.Component<Props, State> {
                                 </td>
                               ))
                             : "";
-                        console.log(phoneData);
+                        //console.log(phoneData);
                         return (
                           <tr className="phones-list" key={id}>
                             {this.state.edit != id ? (
