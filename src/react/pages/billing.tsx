@@ -1,8 +1,6 @@
 import * as React from "react";
 import { graphql, compose } from "react-apollo";
-
 // import BillHistory from "../graphs/billhistory";
-import BillNext from "../graphs/billnext";
 import CreditCard from "../components/billing/CreditCard";
 import CreditCardSelector from "../components/billing/CreditCardSelector";
 import LoadingDiv from "../components/LoadingDiv";
@@ -10,16 +8,15 @@ import StripeForm from "../components/billing/StripeForm";
 import Addresses from "../components/profile/Addresses";
 
 import { ErrorComp } from "../common/functions";
-import { fetchBills, fetchCards } from "../queries/billing";
-import { downloadBill } from "../mutations/billing";
+import { fetchCards } from "../queries/billing";
 import { CREATE_ADDRESS } from "../mutations/contact";
 import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 import AppTable from "../components/billing/AppTable";
 import BillingEmails from "../components/billing/BillingEmails";
 import BillingPie from "../components/billing/BillingPie";
+import Invoices from "../components/billing/Invoices";
 
 interface Props {
-  downloadBill: Function;
   cards: any;
   bills: any;
   company: any;
@@ -35,22 +32,23 @@ interface State {
 class Billing extends React.Component<Props, State> {
   state = {
     bills: [],
-    error: ""
+    error: "",
+    showInvoice: 0
   };
 
   render() {
-    const { cards, bills } = this.props;
+    const { cards } = this.props;
 
-    if (!cards || !bills) {
+    if (!cards) {
       return <div>No Billing Data to find</div>;
     }
 
-    if (cards.loading || bills.loading) {
+    if (cards.loading) {
       return <LoadingDiv text="Fetching bills..." />;
     }
 
-    if (cards.error || bills.error || !cards.fetchPaymentData) {
-      return <div>Oops... something went wrong</div>;
+    if (cards.error || !cards.fetchPaymentData) {
+      return <ErrorComp error="Oops... something went wrong" />;
     }
 
     const paymentData = cards.fetchPaymentData;
@@ -128,19 +126,7 @@ class Billing extends React.Component<Props, State> {
 
         <div className="payment-data-holder">
           <label className="payment-label">Invoices</label>
-          {bills.fetchBills && bills.fetchBills.length > 0
-            ? bills.fetchBills.map(invoice => (
-                <div key={`bill-${invoice.id}`} className="invoices">
-                  <span> {invoice.billtime}</span>
-                  <a href={invoice.pdflink} title="download" className="naked-button">
-                    <i className="fas fa-download" />
-                  </a>
-                  <a href={invoice.invoicelink} title="show invoice" className="naked-button">
-                    <i className="fas fa-file-invoice-dollar" />
-                  </a>
-                </div>
-              ))
-            : "No Invoices yet"}
+          <Invoices />
         </div>
       </div>
     );
@@ -148,8 +134,6 @@ class Billing extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(fetchBills, { name: "bills" }),
   graphql(fetchCards, { name: "cards" }),
-  graphql(downloadBill, { name: "downloadBill" }),
   graphql(CREATE_ADDRESS, { name: "createAddress" })
 )(Billing);
