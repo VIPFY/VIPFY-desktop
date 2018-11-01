@@ -47,13 +47,12 @@ $shadow-color: #f0f3ff;
     flex-flow: column;
     grid-area: pic;
     justify-content: center;
-    margin: 0 auto;
+    margin: 20px auto;
 
     .pic {
-      background-color: #eee;
-      border-radius: 50%;
+      border-radius: 3px;
       cursor: pointer;
-      margin: 1rem 0;
+      //margin: 1rem 0;
       width: 6rem;
       height: 6rem;
     }
@@ -79,9 +78,12 @@ $shadow-color: #f0f3ff;
   .information {
     //border-left: $border;
     grid-area: information;
+    position: relative;
+    padding: 20px;
 
     ul {
       list-style: none;
+      margin: 0;
 
       li {
         display: flex;
@@ -120,7 +122,7 @@ $shadow-color: #f0f3ff;
   }
 }
 
-.addresses {
+/*.addresses {
   @extend .header;
   border-bottom: 0!important;
   cursor: default;
@@ -196,7 +198,7 @@ $shadow-color: #f0f3ff;
       color: #000;
     }
   }
-}
+}*/
 
 .profileApps {
   width: 8em;
@@ -206,27 +208,28 @@ $shadow-color: #f0f3ff;
   background-size: contain;
   margin: 1em;
   position: relative;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+  box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   border-radius: 0.5em;
   text-align: center;
 
   &Holder{
     display: grid;
-    grid-template-rows: repeat(auto-fill, 10rem);
-    grid-template-columns: repeat(auto-fill, 10rem);
-    margin-top: 1rem;
-    height: 100%;
-    width: 100%;
+    grid-template-rows: repeat(auto-fill, 8rem);
+    grid-template-columns: repeat(auto-fill, 8rem);
+    margin: 20px;
+    margin-bottom: 40px;
   }
   .name{
     position: absolute;
-    top: -1.25em;
+    bottom: -27px;
     font-size: 0.75rem;
     left: 0.5em;
+    height: 16px;
     display: flex;
     justify-content: space-between;
     width: calc(100% - 1em);
+    text-align: left;
   }
 }
 

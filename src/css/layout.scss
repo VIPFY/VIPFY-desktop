@@ -3557,7 +3557,7 @@ h1{
     overflow: hidden;
     font-size: 13px;
 
-    .header{
+    & > .header{
         position: relative;
         text-align: left;
         background-color: #f5f5f5;
@@ -3568,16 +3568,16 @@ h1{
         font-size: 15px;
         cursor: pointer;
 
+        &:hover > .button-hide{
+            color: #20BAA9;
+        }
+
         .button-hide{
             right: 20px;
-
-            &:hover{
-                color: #20BAA9;
-            }
         }
     }
 
-    .inside{
+    & > .inside{
         &-profile{
             display: grid;
             grid-template-columns: 2fr 7fr;
@@ -3619,10 +3619,148 @@ h1{
 }
 
 .genericButton{
-    height: 32px;
-    width: 32px;
     background-color: #20BAA9;
     border-radius: 3px;
-    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
     color: white;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    overflow: hidden;
+
+    &:hover{
+        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
+        //background-color: #117f91
+        background-color: #1697A5;
+        overflow: initial;
+    }
+
+    i{
+        font-size: 16px;
+        line-height: 16px;
+    }
+    & > .textButtonInside{
+        line-height: 16px;
+        margin-left: 10px;
+        margin-right: 4px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    & > .textButton{
+        font-size: 15px;
+    font-weight: 500;
+    width: 16px;
+    line-height: 16px;
+    text-align: center;
+    }
+
+    & > .textButtonBeside{
+        position: absolute;
+        left: 34px;
+        color: #c6c6c6;
+        line-height: 32px;
+        width: 100px;
+        opacity: 0;
+        transition: all 0.2s ease-in-out;
+    }
+
+    &:hover > .textButtonBeside{
+        opacity: 100;
+    }
+}
+
+.topright{
+    position: absolute; 
+    top: 20px;
+    right: 20px;
+}
+
+.addresses{
+    margin-left: 20px;
+
+    & > .header{
+        padding-left: 20px;
+        border-top-left-radius: 3px;
+        position: relative;
+        text-align: left;
+        background-color: #f5f5f5;
+        height: 32px;
+        line-height: 32px;
+        padding-left: 20px;
+        font-weight: 500;
+        font-size: 15px;
+        cursor: pointer;
+
+        &:hover > .button-hide{
+            color: #20BAA9;
+        }
+
+        .button-hide{
+            right: 20px;
+        }
+    }
+
+    & > .inside{
+        margin: 20px;
+
+        table{
+            width: 100%;
+            margin-bottom: 20px;
+            thead{
+                font-size: 13px;
+                font-weight: 500;
+            }
+            th{
+                text-align: left;
+                padding-bottom: 10px;
+            }
+        }
+    }
+}
+.phones{
+    margin-left: 20px;
+
+    & > .header{
+        padding-left: 20px;
+        border-top-left-radius: 3px;
+        position: relative;
+        text-align: left;
+        background-color: #f5f5f5;
+        height: 32px;
+        line-height: 32px;
+        padding-left: 20px;
+        font-weight: 500;
+        font-size: 15px;
+        cursor: pointer;
+
+        &:hover > .button-hide{
+            color: #20BAA9;
+        }
+
+        .button-hide{
+            right: 20px;
+        }
+    }
+
+    & > .inside{
+        margin: 20px;
+
+        table{
+            width: 100%;
+            margin-bottom: 20px;
+            thead{
+                font-size: 13px;
+                font-weight: 500;
+            }
+            th{
+                text-align: left;
+                padding-bottom: 10px;
+            }
+        }
+    }
+}
+.editButton{
+    width: 20px;
 }

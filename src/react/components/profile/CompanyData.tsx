@@ -89,26 +89,46 @@ class CompanyData extends React.Component<Props, State> {
 
               return (
                 <div className="genericHolder">
-                  <div className="header">
+                  <div className="header" onClick={this.toggle}>
                     <i
-                      className={`button-hide fa fa-eye${this.state.show ? "-slash" : ""}`}
-                      onClick={this.toggle}
+                      className={`button-hide fas ${
+                        this.state.show ? "fa-angle-left" : "fa-angle-down"
+                      }`}
+                      //onClick={this.toggle}
                     />
                     <span>Company Data</span>
                   </div>
                   <div className={`inside-profile ${this.state.show ? "in" : "out"}`}>
-                    <div className={`pic-holder ${this.state.show ? "in" : "out"}`}>
-                      <img
+                    <div className="pic-holder">
+                      {/*<img
+                        style={{ position: "relative" }}
                         src={`${unitPicFolder}${
                           fetchCompany.profilepicture ? fetchCompany.profilepicture : "default.png"
                         } `}
                         onClick={() => showPopup(picPopup)}
                         className="pic"
                         alt="Picture of your Company"
-                      />
+                      />*/}
+                      <div
+                        className="imagehoverable pic"
+                        style={{
+                          backgroundImage: `url(${unitPicFolder}${
+                            fetchCompany.profilepicture
+                              ? fetchCompany.profilepicture
+                              : "default.png"
+                          })`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          position: "relative"
+                        }}>
+                        <div className="imagehover">
+                          <i className="fal fa-camera" />
+                          <span>Updaten</span>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className={`information ${this.state.show ? "in" : "out"}`}>
+                    <div className="information">
                       <ul>
                         {Object.keys(fetchCompany).map((info, key) => {
                           if (info.match(/(unit)|(__typename)|(profilepicture)/gi)) {
@@ -148,10 +168,10 @@ class CompanyData extends React.Component<Props, State> {
                         })}
                       </ul>
                     </div>
-                  </div>
 
-                  <Addresses showPopup={showPopup} company={fetchCompany.unit.id} />
-                  <Phones showPopup={showPopup} company={fetchCompany.unit.id} />
+                    <Addresses showPopup={showPopup} company={fetchCompany.unit.id} />
+                    <Phones showPopup={showPopup} company={fetchCompany.unit.id} />
+                  </div>
                 </div>
               );
             }}

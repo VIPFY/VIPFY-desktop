@@ -189,10 +189,10 @@ class PersonalData extends React.Component<Props, State> {
 
                           <li>
                             <button
-                              className="naked-button genericButton"
+                              className="naked-button genericButton topright"
                               onClick={() => showPopup(passwordPopup)}>
-                              <i className="fa fa-key" />
-                              {/*<span>Change Password</span>*/}
+                              <i className="fal fa-key" />
+                              <span className="textButtonInside">Change Password</span>
                             </button>
                           </li>
                         </ul>

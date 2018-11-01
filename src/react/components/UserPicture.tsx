@@ -48,7 +48,7 @@ export default function UserPicture(props: {
           <div className={`imagehoverable ${props.size}`} style={style}>
             {props.updateable ? (
               <div className="imagehover">
-                <i className="fas fa-camera" />
+                <i className="fal fa-camera" />
                 <span>Updaten</span>
               </div>
             ) : (

@@ -104,7 +104,7 @@ $rccs-valid-font-size: 0.4rem;
 }
 
 .in {
-  @include toggleHeight(20rem);
+  @include toggleHeight(100rem);
 }
 
 .out {
