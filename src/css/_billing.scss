@@ -1,11 +1,14 @@
 $plan-background: #ccc;
 
 #billing-page {
-  display: grid;
+  /*display: grid;
   grid-template-columns: repeat(auto-fill, minmax(750px, 1fr));
   grid-gap: 1.2rem;
   grid-auto-flow: dense;
-  margin: 2rem;
+  margin: 2rem;*/
+  display: flex;
+    flex-flow: column;
+    padding: 48px;
 }
 
 .payment-data-holder {

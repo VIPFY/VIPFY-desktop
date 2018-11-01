@@ -30,13 +30,23 @@ interface Props {
 interface State {
   bills: any[];
   error: string;
+  showCostDistribution: Boolean;
+  showBillingAddresses: Boolean;
 }
 
 class Billing extends React.Component<Props, State> {
   state = {
     bills: [],
-    error: ""
+    error: "",
+    showCostDistribution: true,
+    showBillingAddresses: true
   };
+
+  toggleShowCostDistribution = (): void =>
+    this.setState(prevState => ({ showCostDistribution: !prevState.showCostDistribution }));
+
+  toggleShowBillingAddresses = (): void =>
+    this.setState(prevState => ({ showBillingAddresses: !prevState.showBillingAddresses }));
 
   render() {
     const { cards, bills } = this.props;
@@ -66,8 +76,8 @@ class Billing extends React.Component<Props, State> {
       <div id="billing-page">
         <BillingEmails showPopup={this.props.showPopup} />
 
-        <div className="payment-data-holder">
-          <label className="payment-label">Current Credit Card</label>
+        <div className="genericHolder">
+          <div className="header">Current Credit Card</div>
           {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
           {normalizedCards && normalizedCards.length > 1 ? (
             <div className="credit-card-change-button">
@@ -104,30 +114,46 @@ class Billing extends React.Component<Props, State> {
           </div>
         </div>
 
-        <div className="payment-data-holder">
-          <label className="payment-label">Cost Distribution</label>
-          <div className="nextPaymentChart">
-            <BillingPie {...this.props} />
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowCostDistribution()}>
+            <i
+              className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
+              //onClick={this.toggle}
+            />
+            <span>Cost Distribution</span>
+          </div>
+          <div className={`inside ${this.state.showCostDistribution ? "in" : "out"}`}>
+            <div className="nextPaymentChart">
+              <BillingPie {...this.props} />
+            </div>
           </div>
         </div>
 
-        <div className="payment-data-holder">
-          <label className="payment-label">Billing Addresses</label>
-          <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowBillingAddresses()}>
+            <i
+              className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
+              //onClick={this.toggle}
+            />
+            <span>Billing Addresses</span>
+          </div>
+          <div className={`inside ${this.state.showBillingAddresses ? "in" : "out"}`}>
+            <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
+          </div>
         </div>
 
-        <div className="payment-data-holder">
-          <label className="payment-label">Billing History</label>
+        <div className="genericHolder">
+          <div className="header">Billing History</div>
           <BillingHistoryChart {...this.props} />
         </div>
 
-        <div className="payment-data-holder" id="bought-apps">
-          <label className="payment-label">Bought Apps</label>
+        <div className="genericHolder" id="bought-apps">
+          <div className="header">Bought Apps</div>
           <AppTable {...this.props} />
         </div>
 
-        <div className="payment-data-holder">
-          <label className="payment-label">Invoices</label>
+        <div className="genericHolder">
+          <div className="header">Invoices</div>
           {bills.fetchBills && bills.fetchBills.length > 0
             ? bills.fetchBills.map(({ id, billtime, billname }) => (
                 <div key={`bill-${id}`} className="invoices">
