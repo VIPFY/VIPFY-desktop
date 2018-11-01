@@ -10,6 +10,7 @@
     "make": "electron-forge make",
     "make-mac": "electron-forge package --platform=darwin && electron-forge make --platform=darwin",
     "publish-js": "electron-forge publish",
+    "publish-mac": "electron-forge package --platform=darwin && electron-forge make --platform=darwin && electron-forge publish --platform=darwin",
     "lint": "tslint --project tsconfig.json --type-check --force",
     "build-css": "node-sass-chokidar src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
