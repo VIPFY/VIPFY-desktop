@@ -26,6 +26,11 @@
   border-radius: 10px;
 }*/
 
+@font-face {
+    font-family: "Segoe MDL2";
+    src: url(./SegMDL2.ttf) format("truetype")
+}
+
 .confirmation-dialog {
   padding: 1rem;
 
@@ -74,7 +79,7 @@
     top: 0;
     right: 0;
     height: 100%;
-    font-family: "Segoe MDL2 Assets";
+    font-family: "Segoe MDL2";
     font-size: 10px;
     -webkit-app-region: no-drag;
   }
@@ -341,7 +346,7 @@
     height: calc(100vh - 3em);*/
 }
 .newMainPosition{
-    height: calc(100vh - 3em);
+    height: calc(100vh - 3em - 32px);
 }
 
 .pic-and-name {
@@ -525,6 +530,7 @@
 .marginLeft {
   margin-left: 3rem;
   height: 100%;
+  transition: margin-left 0.6s ease-in-out;
 }
 
 .side-bar-open {
