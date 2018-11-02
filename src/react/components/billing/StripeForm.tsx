@@ -53,10 +53,12 @@ class StripeForm extends React.Component<Props, State> {
 
   componentDidMount() {
     if (window.Stripe) {
-      this.setState({ stripe: window.Stripe(process.env.STRIPE_KEY) });
+      this.setState({
+        stripe: window.Stripe("pk_test_W9VDDvYKZqcmbgaz7iAcUR9j")
+      });
     } else {
       document.querySelector("#stripe-js").addEventListener("load", () => {
-        this.setState({ stripe: window.Stripe(process.env.STRIPE_KEY) });
+        this.setState({ stripe: window.Stripe("pk_test_W9VDDvYKZqcmbgaz7iAcUR9j") });
       });
     }
   }

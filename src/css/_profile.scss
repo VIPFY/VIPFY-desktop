@@ -110,10 +110,14 @@ $shadow-color: #f0f3ff;
 .naked-button-holder {
   display: flex;
   justify-content: space-evenly;
-  
-  i {
-    cursor: pointer;
+
+  button {
     margin-right: 0.2rem;
+
+    &:disabled {
+      cursor: not-allowed;
+      color: #ccc;
+    }
 
     &:hover {
       color: $vipfy-secondary-color;
