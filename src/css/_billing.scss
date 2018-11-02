@@ -89,7 +89,7 @@ $plan-background: #ccc;
   display: flex;
   justify-content: space-around;
   flex-flow: row;
-  width: 54%;
+  //width: 54%;
 
   &-refunded {
     @extend .invoices;

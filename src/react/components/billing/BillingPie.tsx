@@ -174,6 +174,7 @@ function BillingPie(props) {
             <span className="nextBillHeading">
               {`Next scheduled bill on 
               ${moment()
+                .add(1, "month")
                 .startOf("month")
                 .format("ll")}
               : approx. $${sumnextmonth}`}
