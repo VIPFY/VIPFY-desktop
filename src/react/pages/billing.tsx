@@ -27,14 +27,44 @@ interface Props {
 interface State {
   bills: any[];
   error: string;
+  showCostDistribution: Boolean;
+  showBillingHistory: Boolean;
+  showBoughtApps: Boolean;
+  showInvocies: Boolean;
+  showBillingEmails: Boolean;
+  showCurrentCreditCard: Boolean;
 }
 
 class Billing extends React.Component<Props, State> {
   state = {
     bills: [],
     error: "",
+    showCostDistribution: true,
+    showBillingHistory: true,
+    showBoughtApps: true,
+    showInvocies: true,
+    showBillingEmails: true,
+    showCurrentCreditCard: true,
     showInvoice: 0
   };
+
+  toggleShowCostDistribution = (): void =>
+    this.setState(prevState => ({ showCostDistribution: !prevState.showCostDistribution }));
+
+  toggleShowBillingHistory = (): void =>
+    this.setState(prevState => ({ showBillingHistory: !prevState.showBillingHistory }));
+
+  toggleShowBoughtApps = (): void =>
+    this.setState(prevState => ({ showBoughtApps: !prevState.showBoughtApps }));
+
+  toggleShowInvocies = (): void =>
+    this.setState(prevState => ({ showInvocies: !prevState.showInvocies }));
+
+  toggleShowBillingEmails = (): void =>
+    this.setState(prevState => ({ showBillingEmails: !prevState.showBillingEmails }));
+
+  toggleShowCurrentCreditCard = (): void =>
+    this.setState(prevState => ({ showCurrentCreditCard: !prevState.showCurrentCreditCard }));
 
   render() {
     const { cards } = this.props;
@@ -62,71 +92,141 @@ class Billing extends React.Component<Props, State> {
 
     return (
       <div id="billing-page">
-        <BillingEmails showPopup={this.props.showPopup} />
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowBillingEmails()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showBillingEmails ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Billing Emails</span>
+          </div>
+          <div className={`inside ${this.state.showBillingEmails ? "in" : "out"}`}>
+            <BillingEmails showPopup={this.props.showPopup} />
+          </div>
+        </div>
 
-        <div className="payment-data-holder">
-          <label className="payment-label">Current Credit Card</label>
-          {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
-          {normalizedCards && normalizedCards.length > 1 ? (
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowCurrentCreditCard()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showCurrentCreditCard ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Credit Cards</span>
+          </div>
+          <div className={`inside ${this.state.showCurrentCreditCard ? "in" : "out"}`}>
+            {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
+            {normalizedCards && normalizedCards.length > 1 ? (
+              <div className="credit-card-change-button">
+                <button
+                  className="payment-data-change-button"
+                  onClick={() =>
+                    this.props.showPopup({
+                      header: "Change default Card",
+                      body: CreditCardSelector,
+                      props: { cards: normalizedCards }
+                    })
+                  }>
+                  Change default Card
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
             <div className="credit-card-change-button">
               <button
                 className="payment-data-change-button"
                 onClick={() =>
                   this.props.showPopup({
-                    header: "Change default Card",
-                    body: CreditCardSelector,
-                    props: { cards: normalizedCards }
+                    header: "Add another Card",
+                    body: StripeForm,
+                    props: {
+                      departmentid: this.props.company.unit.id,
+                      hasCard: mainCard ? true : false
+                    }
                   })
                 }>
-                Change default Card
+                Add Credit Card
               </button>
             </div>
-          ) : (
-            ""
-          )}
-          <div className="credit-card-change-button">
-            <button
-              className="payment-data-change-button"
-              onClick={() =>
-                this.props.showPopup({
-                  header: "Add another Card",
-                  body: StripeForm,
-                  props: {
-                    departmentid: this.props.company.unit.id,
-                    hasCard: mainCard ? true : false
-                  }
-                })
-              }>
-              Add Credit Card
-            </button>
           </div>
         </div>
 
-        <div className="payment-data-holder">
-          <label className="payment-label">Cost Distribution</label>
-          <div className="nextPaymentChart">
-            <BillingPie {...this.props} />
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowCostDistribution()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showCostDistribution ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Cost Distribution</span>
+          </div>
+          <div className={`inside ${this.state.showCostDistribution ? "in" : "out"}`}>
+            <div className="nextPaymentChart">
+              <BillingPie {...this.props} />
+            </div>
           </div>
         </div>
 
-        <div className="payment-data-holder">
-          <label className="payment-label">Billing Addresses</label>
-          <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
+        {/*<div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowBillingAddresses()}>
+            <i
+              className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
+              //onClick={this.toggle}
+            />
+            <span>Billing Addresses</span>
+          </div>
+            <div className={`inside ${this.state.showBillingAddresses ? "in" : "out"}`}>*/}
+        <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
+        {/*</div>
+        </div>*/}
+
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowBillingHistory()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showBillingHistory ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Billing History</span>
+          </div>
+          <div className={`inside ${this.state.showBillingHistory ? "in" : "out"}`}>
+            <BillingHistoryChart {...this.props} />
+          </div>
         </div>
 
-        <div className="payment-data-holder">
-          <label className="payment-label">Billing History</label>
-          <BillingHistoryChart {...this.props} />
+        <div className="genericHolder" id="bought-apps">
+          <div className="header" onClick={() => this.toggleShowBoughtApps()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showBoughtApps ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Bought Apps</span>
+          </div>
+          <div className={`inside ${this.state.showBoughtApps ? "in" : "out"}`}>
+            <AppTable {...this.props} />
+          </div>
         </div>
-
-        <div className="payment-data-holder" id="bought-apps">
-          <label className="payment-label">Bought Apps</label>
-          <AppTable {...this.props} />
-        </div>
-
-        <div className="payment-data-holder">
-          <label className="payment-label">Invoices</label>
-          <Invoices />
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowInvocies()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showInvocies ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Invoices</span>
+          </div>
+          <div className={`inside ${this.state.showInvocies ? "in" : "out"}`}>
+            <Invoices />
+          </div>
         </div>
       </div>
     );

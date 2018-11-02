@@ -75,24 +75,44 @@ class BillingEmails extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="payment-data-holder">
-        <label className="payment-label">Billing Emails</label>
-        <Query query={FETCH_BILLING_EMAILS}>
-          {({ data, loading, error }) => {
-            if (loading) {
-              return <LoadingDiv text="Fetching Emails..." />;
-            }
+      <Query query={FETCH_BILLING_EMAILS}>
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <LoadingDiv text="Fetching Emails..." />;
+          }
 
-            if (error) {
-              return <ErrorComp error={error.message} />;
-            }
+          if (error) {
+            return <ErrorComp error={error.message} />;
+          }
 
-            return (
-              <React.Fragment>
-                <span className="nextPaymentTitle">
-                  Invoices will be sent to these Email addresses
-                </span>
-                <ul className="billing-emails">
+          return (
+            <div className="inside-padding">
+              <div className="nextPaymentTitle" style={{ marginBottom: "20px" }}>
+                Invoices will be sent to these Email addresses
+              </div>
+              <table style={{ marginBottom: "20px" }}>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Description</th>
+                    <th>Edit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.fetchBillingEmails.map(({ email, description }) => (
+                    <tr key={email}>
+                      <td>{email}</td>
+                      <td>{description}</td>
+                      <td className="naked-button-holder" title="Remove Email">
+                        <i
+                          onClick={() => this.showDeletion(showPopup)}
+                          className="fal fa-trash-alt"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                {/*<ul className="billing-emails">
                   <li>
                     <span>
                       <b>Email</b>
@@ -110,29 +130,30 @@ class BillingEmails extends React.Component<Props, State> {
                       </span>
                     </li>
                   ))}
-                </ul>
+                  </ul>*/}
+              </table>
 
-                <Mutation
-                  mutation={CREATE_BILLING_EMAIL}
-                  update={(cache, { data: { createEmail } }) => {
-                    const cachedData = cache.readQuery({ query: FETCH_BILLING_EMAILS });
-                    cachedData.fetchBillingEmails.push(createEmail);
+              <Mutation
+                mutation={CREATE_BILLING_EMAIL}
+                update={(cache, { data: { createEmail } }) => {
+                  const cachedData = cache.readQuery({ query: FETCH_BILLING_EMAILS });
+                  cachedData.fetchBillingEmails.push(createEmail);
 
-                    cache.writeQuery({ query: FETCH_BILLING_EMAILS, data: cachedData });
-                  }}>
-                  {createEmail => (
-                    <button
-                      className="payment-data-change-button"
-                      onClick={() => this.addEmail(createEmail)}>
-                      Add Billing Email
-                    </button>
-                  )}
-                </Mutation>
-              </React.Fragment>
-            );
-          }}
-        </Query>
-      </div>
+                  cache.writeQuery({ query: FETCH_BILLING_EMAILS, data: cachedData });
+                }}>
+                {createEmail => (
+                  <button
+                    className="naked-button genericButton"
+                    onClick={() => this.addEmail(createEmail)}>
+                    <span className="textButton">+</span>
+                    <span className="textButtonBeside">Add Billing Email</span>
+                  </button>
+                )}
+              </Mutation>
+            </div>
+          );
+        }}
+      </Query>
     );
   }
 }

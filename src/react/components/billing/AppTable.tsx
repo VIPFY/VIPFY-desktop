@@ -47,6 +47,7 @@ const FETCH_UNIT_APPS = gql`
         planid {
           id
           price
+          options
           features
           name
           appid {
@@ -100,7 +101,7 @@ class AppListInner extends React.Component<Props, State> {
 
     const rows = this.tableRows();
     return (
-      <table>
+      <table style={{ width: "100%", textAlign: "left" }}>
         <thead>
           <tr>
             <th>App Name</th>
@@ -130,6 +131,7 @@ class AppListInner extends React.Component<Props, State> {
         endtime,
         planid: {
           name: planName,
+          options,
           appid: { name: appName, id: appId }
         }
       } = boughtplan;
@@ -149,7 +151,7 @@ class AppListInner extends React.Component<Props, State> {
       return (
         <AppContext.Consumer key={`r${id}`}>
           {({ showPopup }) => (
-            <tr className="bought-apps-row">
+            <tr>
               <td>{appName}</td>
               <td>{planName}</td>
               <td>{boughtplan.alias}</td>
@@ -162,7 +164,8 @@ class AppListInner extends React.Component<Props, State> {
               <td>{endSat}</td>
               <td className="naked-button-holder">
                 <i className="fas fa-eye" title="Show" />
-                <i
+                <button
+                  disabled={options && options.external}
                   onClick={() =>
                     showPopup({
                       header: "Upgrade Plan",
@@ -176,9 +179,13 @@ class AppListInner extends React.Component<Props, State> {
                       }
                     })
                   }
-                  className="fas fa-sort-amount-up"
-                  title="Upgrade"
-                />
+                  type="button"
+                  title={
+                    options && options.external ? "You cannot updgrade external plans" : "Upgrade"
+                  }
+                  className="naked-button">
+                  <i className="fas fa-sort-amount-up" />
+                </button>
                 <Mutation mutation={!endtime ? CANCEL_PLAN : REACTIVATE_PLAN}>
                   {mutation => (
                     <i
@@ -222,7 +229,11 @@ function AppTable(props) {
         if (error) {
           return <div>Error fetching data</div>;
         }
-        return <AppListInner {...props} data={data} />;
+        return (
+          <div style={{ padding: "20px" }}>
+            <AppListInner {...props} data={data} />
+          </div>
+        );
       }}
     </Query>
   );
