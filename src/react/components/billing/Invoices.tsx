@@ -13,15 +13,18 @@ import LoadingDiv from "../LoadingDiv";
 
 import { fetchBills } from "../../queries/billing";
 import { filterError } from "../../common/functions";
+import InvoiceMonth from "./InvoiceMonth";
 
 interface Props {}
 interface State {
   show: number;
+  showmonth: String;
 }
 
 class Invoices extends React.Component<Props, State> {
   state = {
-    show: 0
+    show: 0,
+    showmonth: ""
   };
 
   // downloadPdf = async pdfLink => {
@@ -55,6 +58,10 @@ class Invoices extends React.Component<Props, State> {
     }
   };
 
+  toggleMonthInvoice = monthid => {
+    this.setState({ showmonth: monthid });
+  };
+
   render() {
     return (
       <Query query={fetchBills}>
@@ -67,7 +74,177 @@ class Invoices extends React.Component<Props, State> {
           }
 
           if (fetchBills.length > 0) {
-            return fetchBills.map(invoice => (
+            let billmonth: JSX.Element[] = [];
+            let thismonth = "";
+            let lastinvoice = {};
+            let monthlyinvoices: JSX.Element[] = [];
+
+            fetchBills.forEach(invoice => {
+              let newthismonth = `${moment(invoice.billtime).format("MMM")}${moment(
+                invoice.billtime
+              ).format("YYYY")}`;
+
+              if (thismonth !== newthismonth && thismonth !== "") {
+                console.log(thismonth, monthlyinvoices);
+                billmonth.push(
+                  <InvoiceMonth
+                    key={thismonth}
+                    monthlyinvoices={monthlyinvoices}
+                    lastinvoice={lastinvoice}
+                  />
+                );
+                monthlyinvoices = [];
+              }
+
+              monthlyinvoices.push(
+                <React.Fragment key={`bill-${invoice.id}`}>
+                  {console.log(invoice)}
+                  <div className={`invoices${invoice.refundedtime ? "-refunded" : ""}`}>
+                    <span>{`${invoice.amount} ${invoice.currency.toUpperCase()}`}</span>
+                    <span
+                      onClick={() => this.setState({ show: 0 })}
+                      title={
+                        invoice.refundedtime
+                          ? `Refunded on ${moment(invoice.refundedtime).format("LLL")}`
+                          : ""
+                      }>
+                      {moment(invoice.billtime).format("LLL")}
+                    </span>
+
+                    <span className="naked-button-holder">
+                      <a href={invoice.pdflink} className="naked-button">
+                        <i
+                          className="fas fa-download"
+                          // onClick={() => this.downloadPdf(invoice.pdflink)}
+                        />
+                      </a>
+                      <i
+                        onClick={() => this.toggleInvoice(invoice.id)}
+                        className="fas fa-file-invoice-dollar"
+                        title="Show Invoice"
+                      />
+                    </span>
+                  </div>
+                  {this.state.show == invoice.id ? (
+                    <InvoiceWebView invoice={invoice.invoicelink} />
+                  ) : (
+                    ""
+                  )}
+                </React.Fragment>
+              );
+
+              thismonth = newthismonth;
+              lastinvoice = invoice;
+
+              /*if (thismonth !== newthismonth && thismonth !== "") {
+                billmonth.push(
+                  <div
+                    className="genericInsideHolder"
+                    key={`${moment(lastinvoice.billtime).format("MMM")}${moment(
+                      lastinvoice.billtime
+                    ).format("YYYY")}`}>
+                    <div
+                      className="header"
+                      onClick={() =>
+                        this.toggleMonthInvoice(
+                          `${moment(lastinvoice.billtime).format("MMM")}${moment(
+                            lastinvoice.billtime
+                          ).format("YYYY")}`
+                        )
+                      }>
+                      <i
+                        className={`button-hide fas ${
+                          this.state.showmonth ===
+                          `${moment(lastinvoice.billtime).format("MMM")}${moment(
+                            lastinvoice.billtime
+                          ).format("YYYY")}`
+                            ? "fa-angle-left"
+                            : "fa-angle-down"
+                        }`}
+                        //onClick={this.toggle}
+                      />
+                      <span>
+                        Invocies for {moment(lastinvoice.billtime).format("MMM")}{" "}
+                        {moment(lastinvoice.billtime).format("YYYY")}
+                      </span>
+                    </div>
+                    <div
+                      className={`inside ${
+                        this.state.showmonth ===
+                        `${moment(lastinvoice.billtime).format("MMM")}${moment(
+                          lastinvoice.billtime
+                        ).format("YYYY")}`
+                          ? "in"
+                          : "out"
+                      }`}>
+                      {monthlyinvoices}
+                    </div>
+                  </div>
+                );
+                monthlyinvoices = [];
+              }*/
+              // thismonth = newthismonth;
+              // lastinvoice = invoice;
+            });
+            /*monthlyinvoices.push(
+              <React.Fragment key={`bill-${lastinvoice.id}`}>
+                {console.log(lastinvoice)}
+                <div className={`invoices${lastinvoice.refundedtime ? "-refunded" : ""}`}>
+                  <span>{`${lastinvoice.amount} ${lastinvoice.currency.toUpperCase()}`}</span>
+                  <span
+                    onClick={() => this.setState({ show: 0 })}
+                    title={
+                      lastinvoice.refundedtime
+                        ? `Refunded on ${moment(lastinvoice.refundedtime).format("LLL")}`
+                        : ""
+                    }>
+                    {moment(lastinvoice.billtime).format("LLL")}
+                  </span>
+
+                  <span className="naked-button-holder">
+                    <a href={lastinvoice.pdflink} className="naked-button">
+                      <i
+                        className="fas fa-download"
+                        // onClick={() => this.downloadPdf(lastinvoice.pdflink)}
+                      />
+                    </a>
+                    <i
+                      onClick={() => this.toggleInvoice(lastinvoice.id)}
+                      className="fas fa-file-invoice-dollar"
+                      title="Show Invoice"
+                    />
+                  </span>
+                </div>
+                {this.state.show == lastinvoice.id ? (
+                  <InvoiceWebView invoice={lastinvoice.invoicelink} />
+                ) : (
+                  ""
+                )}
+              </React.Fragment>
+            );*/
+            billmonth.push(
+              <InvoiceMonth
+                key={thismonth}
+                monthlyinvoices={monthlyinvoices}
+                lastinvoice={lastinvoice}
+              />
+            );
+            /*billmonth.push(
+              <div
+                className="genericInsideHolder"
+                key={`${moment(lastinvoice.billtime).format("MMM")}${moment(
+                  lastinvoice.billtime
+                ).format("YYYY")}`}>
+                <div className="header">
+                  Invocies for {moment(lastinvoice.billtime).format("MMM")}{" "}
+                  {moment(lastinvoice.billtime).format("YYYY")}
+                </div>
+              </div>
+            );*/
+            console.log(thismonth, monthlyinvoices);
+            return billmonth;
+            /*
+              return(
               <React.Fragment key={`bill-${invoice.id}`}>
                 {console.log(invoice)}
                 <div className={`invoices${invoice.refundedtime ? "-refunded" : ""}`}>
@@ -101,8 +278,8 @@ class Invoices extends React.Component<Props, State> {
                 ) : (
                   ""
                 )}
-              </React.Fragment>
-            ));
+              </React.Fragment>)
+            ));*/
           }
           return "No Invoices yet";
         }}
