@@ -85,7 +85,7 @@ class Invoices extends React.Component<Props, State> {
               ).format("YYYY")}`;
 
               if (thismonth !== newthismonth && thismonth !== "") {
-                console.log(thismonth, monthlyinvoices);
+                //console.log(thismonth, monthlyinvoices);
                 billmonth.push(
                   <InvoiceMonth
                     key={thismonth}
@@ -98,7 +98,6 @@ class Invoices extends React.Component<Props, State> {
 
               monthlyinvoices.push(
                 <React.Fragment key={`bill-${invoice.id}`}>
-                  {console.log(invoice)}
                   <div className={`invoices${invoice.refundedtime ? "-refunded" : ""}`}>
                     <span>{`${invoice.amount} ${invoice.currency.toUpperCase()}`}</span>
                     <span
@@ -241,7 +240,7 @@ class Invoices extends React.Component<Props, State> {
                 </div>
               </div>
             );*/
-            console.log(thismonth, monthlyinvoices);
+            //console.log(thismonth, monthlyinvoices);
             return billmonth;
             /*
               return(

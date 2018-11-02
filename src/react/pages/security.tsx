@@ -5,17 +5,33 @@ interface Props {
   showPopup: Function;
 }
 
-interface State {}
+interface State {
+  show: Boolean;
+}
 
 class Security extends React.Component<Props, State> {
-  state = {};
+  state = {
+    show: true
+  };
+
+  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
   render() {
     return (
       <div id="billing-page">
-        <div className="payment-data-holder">
-          <label className="payment-label">Users</label>
-          <UserSecurityTable />
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggle()}>
+            <i
+              className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
+              //onClick={this.toggle}
+            />
+            <span>Security</span>
+          </div>
+          <div className={`inside ${this.state.show ? "in" : "out"}`}>
+            <div className="inside-padding">
+              <UserSecurityTable />
+            </div>
+          </div>
         </div>
       </div>
     );

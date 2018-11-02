@@ -14,7 +14,7 @@ class InvoiceMonth extends React.Component<Props, State> {
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
   render() {
-    console.log(this.props);
+    //console.log(this.props);
     return (
       <div className="genericInsideHolder">
         <div className="header" onClick={() => this.toggle()}>

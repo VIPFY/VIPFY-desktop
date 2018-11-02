@@ -1202,10 +1202,12 @@
 }
 
 .right-profile-notifications {
-  color: #fff;
+  //color: #fff;
   font-size: 1rem;
   //background-color: #ffc247;
-  background-color: #1db5bc;
+  color: #253647;
+  border: solid 1.3px;
+  //background-color: #1db5bc;
   font-weight: 700;
   height: 2rem;
   line-height: 2rem;
@@ -1226,7 +1228,8 @@
     text-align: center;
     border-radius: 1rem;
     //background-color: hsla(0, 77%, 56%, 0.729);
-    background-color: #117f91;
+    //background-color: #117f91;
+    background-color: #20BAA9;
   }
 }
 
@@ -1865,6 +1868,9 @@
 .employeeName {
     font-size: 0.75rem;
     font-weight: bold;
+    float: left;
+    line-height: 32px;
+    max-width: 120px;
 }
 .employeeTags {
     font-size: 0.75rem;
@@ -2655,15 +2661,21 @@ h1{
 }
 .teamHolder{
     padding: 2rem;
+    
     .companyHeader{
         display: flex;
-        justify-content: center;
+        //justify-content: center;
+        margin-bottom: 20px;
+        max-width: 60rem;
+        margin-left: auto;
+        margin-right: auto;
         .companyLogo > img{
             height: 5rem;
-            padding: 2.5rem;
+            //padding: 2.5rem;
         }
         .companyName{
-            line-height: 10rem;
+            //line-height: 10rem;
+            line-height: 5rem;
             font-size: 2rem;
         }
     }
@@ -2741,8 +2753,13 @@ h1{
       background-color: white;
       border-right: 1px solid;
       border-image: linear-gradient(to bottom, #20BAA9, #117f91) 0 100%;
+
+      .heading{
+          display: none;
+      }
        
       .appHolder {
+        margin-top: 32px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -2754,17 +2771,18 @@ h1{
         position: relative;
         overflow: hidden;
         background-color: white;
-        padding: 0.25rem;
-        margin-bottom: 0.2rem;
+        //padding: 0.25rem;
+        //margin-bottom: 0.2rem;
         margin-left: 0.5em;
     margin-right: 0.5em;
         cursor: move;
-        box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+        //box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
         text-align: left;
         transition: all 300ms ease-in-out;
-        display: flex;
-    align-items: center;
-    justify-content: space-between;
+        //display: flex;
+    //align-items: center;
+    //justify-content: space-between;
 
         &:hover {
           box-shadow: 3px 11px 19px -3px rgba(0, 0, 0, 0.36);
@@ -2791,6 +2809,7 @@ h1{
             top: 0em;*/
             padding: 0.5em;
             cursor: pointer;
+            float: right;
         }
       }
 
@@ -3587,6 +3606,17 @@ h1{
         }
         & > .inside-padding{
             padding: 20px;
+
+            .picutre{
+                height: 80px;
+                width: 80px;
+            }
+        }
+
+        & > .gridinner{
+            display: grid;
+            grid-gap: 20px;
+            grid-template-columns: 80px calc(100% - 100px);
         }
     }
 
@@ -3666,7 +3696,9 @@ h1{
         left: 34px;
         color: #c6c6c6;
         line-height: 32px;
-        width: 100px;
+        width: 200px;
+        margin-left: 8px;
+        text-align: left;
         opacity: 0;
         transition: all 0.2s ease-in-out;
     }
@@ -3768,6 +3800,16 @@ h1{
 }
 .editButton{
     width: 20px;
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+
+    &:hover{
+        text-shadow: 3px 3px rgba(0, 0, 0, 0.2);
+
+        & > i{
+            font-weight: 400;
+        }
+    }
 }
 .addresses-header{
     text-align: left
@@ -3805,4 +3847,47 @@ h1{
 table{
     width: 100%;
     text-align: left;
+}
+
+.team-app-holders{
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: -8px;
+    margin-top: -8px;
+    .EApp{
+        //width: 11rem;
+        position: relative;
+        overflow: hidden;
+        background-color: white;
+        cursor: move;
+        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
+        text-align: left;
+        transition: all 300ms ease-in-out;
+        margin: 8px;
+        width: 160px;
+    height: 32px;
+
+    .revokelicence {
+        cursor: pointer;
+        font-size: 0.5rem
+      }
+
+      img {
+        user-drag: none;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+      }
+    }
+      .dragable {
+        cursor: move;
+        transition: all 300ms ease-in-out;
+
+        &:hover {
+            box-shadow: 3px 11px 19px -3px rgba(0, 0, 0, 0.36);
+            transform: translateY(-5px);
+          }
+      }
 }
