@@ -10,6 +10,7 @@ import LoadingDiv from "../components/LoadingDiv";
 import UserName from "../components/UserName";
 
 import { distributeLicence } from "../mutations/auth";
+import { fetchBuyingInput } from "../queries/products";
 
 interface Props {
   plan: any;
@@ -427,36 +428,16 @@ class CheckOrder extends React.Component<Props, State> {
                 </div>
                 <div className="checkOrderMain">
                   <div className="checkOrderHolderPart">
-                    <Query
-                      query={gql`
-                    query {
-                      fetchAddresses(forCompany: true, tag: "billing") {
-                        id
-                        address
-                        country
-                        description
-                        priority
-                        tags
-                      }
-
-                      fetchPaymentData {
-                        name
-                        last4
-                        brand
-                        exp_month
-                        exp_year
-                      }
-
-                      fetchPlanInputs(planid: ${this.props.plan.id})
-                    }
-                  `}>
+                    <Query query={fetchBuyingInput} variables={{ planid: this.props.plan.id }}>
                       {({ loading, error, data }) => {
                         if (loading) {
-                          return "Fetching invoice data...";
+                          return <LoadingDiv text="Fetching invoice data..." />;
                         }
+
                         if (error) {
                           return "Error loading Billing Data";
                         }
+
                         planInputs = data.fetchPlanInputs;
                         billingAddresses = data.fetchAddresses;
 

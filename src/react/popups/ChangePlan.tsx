@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import { Query, Mutation } from "react-apollo";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError } from "../common/functions";
-import { fetchPlans } from "../queries/products";
+import { fetchPlans, fetchPlanInputs } from "../queries/products";
 import PlanHolder from "../components/PlanHolder";
 
 const UPDATE_PLAN = gql`
@@ -35,6 +35,7 @@ interface Props {
   appId: number;
   currentPlan: Plan;
   onClose: Function;
+  planInputs: any;
 }
 
 interface State {
@@ -119,6 +120,10 @@ class ChangePlan extends React.Component<Props, State> {
   render() {
     const { selectedPlan, values, prices } = this.state;
 
+    if (!selectedPlan) {
+      return "Sorry, there was a problem. Please reload.";
+    }
+
     return (
       <div className="change-plan">
         <Query query={fetchPlans} variables={{ appid: this.props.appId }}>
@@ -151,74 +156,85 @@ class ChangePlan extends React.Component<Props, State> {
           }}
         </Query>
         <div className="change-plan-options">
-          {selectedPlan ? (
-            <div className="orderSelect">
-              <div className="OHeading">
-                <div>
-                  {selectedPlan.name}
-                  -Plan of {selectedPlan.appid.name}
-                </div>
-                {selectedPlan.price == 0 ? (
-                  <div className="addedprice">Free</div>
-                ) : (
-                  <div className="addedprice">
-                    ${selectedPlan.price}
+          <Query query={fetchPlanInputs} variables={{ planid: selectedPlan.id }}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <LoadingDiv text="Fetching data..." />;
+              }
+              if (error || !data) {
+                return <ErrorComp error={filterError(error)} />;
+              }
+
+              console.log(data);
+              return (
+                <div className="orderSelect">
+                  <div className="OHeading">
+                    <div>
+                      {selectedPlan.name}
+                      -Plan of {selectedPlan.appid.name}
+                    </div>
+                    {selectedPlan.price == 0 ? (
+                      <div className="addedprice">Free</div>
+                    ) : (
+                      <div className="addedprice">
+                        ${selectedPlan.price}
+                        /month
+                      </div>
+                    )}
+                  </div>
+
+                  {selectedPlan.features ? <div className="OOptions">Options</div> : ""}
+                  <ul className="featureBuy">
+                    {selectedPlan.features &&
+                    selectedPlan.features[0].features &&
+                    selectedPlan.features.length > 0
+                      ? selectedPlan.features
+                          .map(more =>
+                            more.features.filter(feature => feature.addable).map(feature => feature)
+                          )
+                          .reduce(features => features)
+                          .map(feature => {
+                            const { key, number: amount, amountper, price } = feature;
+
+                            return (
+                              <li key={key}>
+                                <span className="precaption">{feature.precaption}</span>
+
+                                <input
+                                  name={key}
+                                  min={amount}
+                                  step={feature.amountper}
+                                  type="number"
+                                  onBlur={e => {
+                                    const value = parseInt(e.target.value);
+                                    const sanitizedValue =
+                                      Math.ceil((value - amount) / amountper) * amountper + amount;
+                                    this.setState(prevState => ({
+                                      values: { ...prevState.values, [key]: sanitizedValue }
+                                    }));
+                                  }}
+                                  value={values[key] ? values[key] : amount}
+                                  onChange={e => this.handleChange(e, amount, amountper, price)}
+                                />
+                                <span className="Pcaption">{feature.aftercaption}</span>
+                                {prices[key] ? `+ $${prices[key]}/${feature.priceper}` : "Included"}
+                              </li>
+                            );
+                          })
+                      : "No features for you"}
+                  </ul>
+                  <div className="totalprice">
+                    $
+                    {Object.values(prices).length > 0
+                      ? selectedPlan.price +
+                        Object.values(prices).reduce((acc, price) => acc + price)
+                      : selectedPlan.price}
                     /month
                   </div>
-                )}
-              </div>
-
-              {selectedPlan.features ? <div className="OOptions">Options</div> : ""}
-              <ul className="featureBuy">
-                {selectedPlan.features &&
-                selectedPlan.features[0].features &&
-                selectedPlan.features.length > 0
-                  ? selectedPlan.features
-                      .map(more =>
-                        more.features.filter(feature => feature.addable).map(feature => feature)
-                      )
-                      .reduce(features => features)
-                      .map(feature => {
-                        const { key, number: amount, amountper, price } = feature;
-
-                        return (
-                          <li key={key}>
-                            <span className="precaption">{feature.precaption}</span>
-
-                            <input
-                              name={key}
-                              min={amount}
-                              step={feature.amountper}
-                              type="number"
-                              onBlur={e => {
-                                const value = parseInt(e.target.value);
-                                const sanitizedValue =
-                                  Math.ceil((value - amount) / amountper) * amountper + amount;
-                                this.setState(prevState => ({
-                                  values: { ...prevState.values, [key]: sanitizedValue }
-                                }));
-                              }}
-                              value={values[key] ? values[key] : amount}
-                              onChange={e => this.handleChange(e, amount, amountper, price)}
-                            />
-                            <span className="Pcaption">{feature.aftercaption}</span>
-                            {prices[key] ? `+ $${prices[key]}/${feature.priceper}` : "Included"}
-                          </li>
-                        );
-                      })
-                  : "No features for you"}
-              </ul>
-              <div className="totalprice">
-                $
-                {Object.values(prices).length > 0
-                  ? selectedPlan.price + Object.values(prices).reduce((acc, price) => acc + price)
-                  : selectedPlan.price}
-                /month
-              </div>
-            </div>
-          ) : (
-            "Sorry, there was a problem. Please reload."
-          )}
+                </div>
+              );
+            }}
+          </Query>
         </div>
 
         <Mutation mutation={UPDATE_PLAN}>
@@ -234,7 +250,7 @@ class ChangePlan extends React.Component<Props, State> {
 
               <button
                 type="button"
-                onClick={this.handleSubmit}
+                onClick={() => this.handleSubmit(mutate)}
                 disabled={loading || !this.state.touched}
                 className="generic-submit-button">
                 <i className="fas fa-check-circle" />

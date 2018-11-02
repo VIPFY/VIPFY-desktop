@@ -93,3 +93,32 @@ export const fetchPlans = gql`
     }
   }
 `;
+
+export const fetchBuyingInput = gql`
+  query onFetchBuyingInput($planid: ID!) {
+    fetchAddresses(forCompany: true, tag: "billing") {
+      id
+      address
+      country
+      description
+      priority
+      tags
+    }
+
+    fetchPaymentData {
+      name
+      last4
+      brand
+      exp_month
+      exp_year
+    }
+
+    fetchPlanInputs(planid: $planid)
+  }
+`;
+
+export const fetchPlanInputs = gql`
+  query onFetchPlanInputs($planid: ID!) {
+    fetchPlanInputs(planid: $planid)
+  }
+`;
