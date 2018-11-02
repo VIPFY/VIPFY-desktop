@@ -887,12 +887,14 @@ class Team extends React.Component<Props, State> {
                         )
                       : ""}
                   </div>
-                  <button
-                    className="naked-button genericButton"
-                    onClick={() => this.addEmployeeP(company.unit.id)}>
-                    <span className="textButton">+</span>
-                    <span className="textButtonBeside">Add Employee</span>
-                  </button>
+                  <div className="teamHolder companyHeader">
+                    <button
+                      className="naked-button genericButton"
+                      onClick={() => this.addEmployeeP(company.unit.id)}>
+                      <span className="textButton">+</span>
+                      <span className="textButtonBeside">Add Employee</span>
+                    </button>
+                  </div>
 
                   {/*<div className="UMS">
                   {this.props.departmentsdata.fetchDepartmentsData
