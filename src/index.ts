@@ -10,6 +10,8 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
+let disableUpdater = false;
+
 const DOMAIN = "https://storage.googleapis.com/releases.vipfy.store";
 const suffix =
   process.platform === "darwin" ? `/RELEASES.json?method=JSON&version=${app.getVersion()}` : "";
@@ -32,6 +34,8 @@ autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
   dialog.showMessageBox(dialogOpts, response => {
     if (response === 0) {
       autoUpdater.quitAndInstall();
+    } else {
+      disableUpdater = true;
     }
   });
 });
@@ -62,7 +66,18 @@ const vipfyHandler = (request, callback) => {
 const createWindow = async () => {
   try {
     autoUpdater.checkForUpdates();
+    window.setInterval(function() {
+      try {
+        if (!disableUpdater) {
+          autoUpdater.checkForUpdates();
+        }
+      } catch (err) {
+        console.log("autoupdate failed");
+        console.log(err);
+      }
+    }, 1000 * 60 * 10);
   } catch (err) {
+    disableUpdater = true;
     console.error(err);
     console.error("you can ignore that error if this is run from source");
     console.log("reverting to devmode");
