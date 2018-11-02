@@ -9,6 +9,9 @@ export const fetchBills = gql`
       stornotime
       pdflink
       invoicelink
+      amount
+      currency
+      refundedtime
     }
   }
 `;

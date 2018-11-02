@@ -29,6 +29,12 @@ $plan-background: #ccc;
 
 .bought-apps-row {
   text-align: center;
+  transition: background 200ms ease-in-out;
+
+  &:hover {
+    background: beige;
+    transition: background 200ms ease-in-out;
+  }
 }
 
 .payment-label {
@@ -81,10 +87,19 @@ $plan-background: #ccc;
 
 .invoices {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  flex-flow: row;
+  width: 54%;
 
-  span {
-    margin-right: 1rem;
+  &-refunded {
+    @extend .invoices;
+    text-decoration: line-through;
+  }
+
+  &-item {
+    width: 100%;
+    height: 34rem;
+    margin-bottom: 1rem;
   }
 }
 

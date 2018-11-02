@@ -172,11 +172,11 @@ function BillingPie(props) {
         return (
           <React.Fragment>
             <span className="nextBillHeading">
-              Next sheduled bill on{" "}
-              {moment()
+              {`Next scheduled bill on 
+              ${moment()
                 .startOf("month")
                 .format("ll")}
-              : approx. ${sumnextmonth}
+              : approx. $${sumnextmonth}`}
             </span>
             <ResizeAware style={{ height: "15em", width: "20em" }}>
               <BillingPieInner {...props} data={data} />

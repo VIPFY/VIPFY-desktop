@@ -1,8 +1,6 @@
 import * as React from "react";
 import { graphql, compose } from "react-apollo";
-
 // import BillHistory from "../graphs/billhistory";
-import BillNext from "../graphs/billnext";
 import CreditCard from "../components/billing/CreditCard";
 import CreditCardSelector from "../components/billing/CreditCardSelector";
 import LoadingDiv from "../components/LoadingDiv";
@@ -10,16 +8,15 @@ import StripeForm from "../components/billing/StripeForm";
 import Addresses from "../components/profile/Addresses";
 
 import { ErrorComp } from "../common/functions";
-import { fetchBills, fetchCards } from "../queries/billing";
-import { downloadBill } from "../mutations/billing";
+import { fetchCards } from "../queries/billing";
 import { CREATE_ADDRESS } from "../mutations/contact";
 import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 import AppTable from "../components/billing/AppTable";
 import BillingEmails from "../components/billing/BillingEmails";
 import BillingPie from "../components/billing/BillingPie";
+import Invoices from "../components/billing/Invoices";
 
 interface Props {
-  downloadBill: Function;
   cards: any;
   bills: any;
   company: any;
@@ -31,7 +28,11 @@ interface State {
   bills: any[];
   error: string;
   showCostDistribution: Boolean;
-  showBillingAddresses: Boolean;
+  showBillingHistory: Boolean;
+  showBoughtApps: Boolean;
+  showInvocies: Boolean;
+  showBillingEmails: Boolean;
+  showCurrentCreditCard: Boolean;
 }
 
 class Billing extends React.Component<Props, State> {
@@ -39,28 +40,45 @@ class Billing extends React.Component<Props, State> {
     bills: [],
     error: "",
     showCostDistribution: true,
-    showBillingAddresses: true
+    showBillingHistory: true,
+    showBoughtApps: true,
+    showInvocies: true,
+    showBillingEmails: true,
+    showCurrentCreditCard: true,
+    showInvoice: 0
   };
 
   toggleShowCostDistribution = (): void =>
     this.setState(prevState => ({ showCostDistribution: !prevState.showCostDistribution }));
 
-  toggleShowBillingAddresses = (): void =>
-    this.setState(prevState => ({ showBillingAddresses: !prevState.showBillingAddresses }));
+  toggleShowBillingHistory = (): void =>
+    this.setState(prevState => ({ showBillingHistory: !prevState.showBillingHistory }));
+
+  toggleShowBoughtApps = (): void =>
+    this.setState(prevState => ({ showBoughtApps: !prevState.showBoughtApps }));
+
+  toggleShowInvocies = (): void =>
+    this.setState(prevState => ({ showInvocies: !prevState.showInvocies }));
+
+  toggleShowBillingEmails = (): void =>
+    this.setState(prevState => ({ showBillingEmails: !prevState.showBillingEmails }));
+
+  toggleShowCurrentCreditCard = (): void =>
+    this.setState(prevState => ({ showCurrentCreditCard: !prevState.showCurrentCreditCard }));
 
   render() {
-    const { cards, bills } = this.props;
+    const { cards } = this.props;
 
-    if (!cards || !bills) {
+    if (!cards) {
       return <div>No Billing Data to find</div>;
     }
 
-    if (cards.loading || bills.loading) {
+    if (cards.loading) {
       return <LoadingDiv text="Fetching bills..." />;
     }
 
-    if (cards.error || bills.error || !cards.fetchPaymentData) {
-      return <div>Oops... something went wrong</div>;
+    if (cards.error || !cards.fetchPaymentData) {
+      return <ErrorComp error="Oops... something went wrong" />;
     }
 
     const paymentData = cards.fetchPaymentData;
@@ -74,50 +92,75 @@ class Billing extends React.Component<Props, State> {
 
     return (
       <div id="billing-page">
-        <BillingEmails showPopup={this.props.showPopup} />
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowBillingEmails()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showBillingEmails ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Billing Emails</span>
+          </div>
+          <div className={`inside ${this.state.showBillingEmails ? "in" : "out"}`}>
+            <BillingEmails showPopup={this.props.showPopup} />
+          </div>
+        </div>
 
         <div className="genericHolder">
-          <div className="header">Current Credit Card</div>
-          {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
-          {normalizedCards && normalizedCards.length > 1 ? (
+          <div className="header" onClick={() => this.toggleShowCurrentCreditCard()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showCurrentCreditCard ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Credit Cards</span>
+          </div>
+          <div className={`inside ${this.state.showCurrentCreditCard ? "in" : "out"}`}>
+            {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
+            {normalizedCards && normalizedCards.length > 1 ? (
+              <div className="credit-card-change-button">
+                <button
+                  className="payment-data-change-button"
+                  onClick={() =>
+                    this.props.showPopup({
+                      header: "Change default Card",
+                      body: CreditCardSelector,
+                      props: { cards: normalizedCards }
+                    })
+                  }>
+                  Change default Card
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
             <div className="credit-card-change-button">
               <button
                 className="payment-data-change-button"
                 onClick={() =>
                   this.props.showPopup({
-                    header: "Change default Card",
-                    body: CreditCardSelector,
-                    props: { cards: normalizedCards }
+                    header: "Add another Card",
+                    body: StripeForm,
+                    props: {
+                      departmentid: this.props.company.unit.id,
+                      hasCard: mainCard ? true : false
+                    }
                   })
                 }>
-                Change default Card
+                Add Credit Card
               </button>
             </div>
-          ) : (
-            ""
-          )}
-          <div className="credit-card-change-button">
-            <button
-              className="payment-data-change-button"
-              onClick={() =>
-                this.props.showPopup({
-                  header: "Add another Card",
-                  body: StripeForm,
-                  props: {
-                    departmentid: this.props.company.unit.id,
-                    hasCard: mainCard ? true : false
-                  }
-                })
-              }>
-              Add Credit Card
-            </button>
           </div>
         </div>
 
         <div className="genericHolder">
           <div className="header" onClick={() => this.toggleShowCostDistribution()}>
             <i
-              className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
+              className={`button-hide fas ${
+                this.state.showCostDistribution ? "fa-angle-left" : "fa-angle-down"
+              }`}
               //onClick={this.toggle}
             />
             <span>Cost Distribution</span>
@@ -129,7 +172,7 @@ class Billing extends React.Component<Props, State> {
           </div>
         </div>
 
-        <div className="genericHolder">
+        {/*<div className="genericHolder">
           <div className="header" onClick={() => this.toggleShowBillingAddresses()}>
             <i
               className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
@@ -137,33 +180,53 @@ class Billing extends React.Component<Props, State> {
             />
             <span>Billing Addresses</span>
           </div>
-          <div className={`inside ${this.state.showBillingAddresses ? "in" : "out"}`}>
-            <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
+            <div className={`inside ${this.state.showBillingAddresses ? "in" : "out"}`}>*/}
+        <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
+        {/*</div>
+        </div>*/}
+
+        <div className="genericHolder">
+          <div className="header" onClick={() => this.toggleShowBillingHistory()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showBillingHistory ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Billing History</span>
+          </div>
+          <div className={`inside ${this.state.showBillingHistory ? "in" : "out"}`}>
+            <BillingHistoryChart {...this.props} />
           </div>
         </div>
 
-        <div className="genericHolder">
-          <div className="header">Billing History</div>
-          <BillingHistoryChart {...this.props} />
-        </div>
-
         <div className="genericHolder" id="bought-apps">
-          <div className="header">Bought Apps</div>
-          <AppTable {...this.props} />
+          <div className="header" onClick={() => this.toggleShowBoughtApps()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showBoughtApps ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Bought Apps</span>
+          </div>
+          <div className={`inside ${this.state.showBoughtApps ? "in" : "out"}`}>
+            <AppTable {...this.props} />
+          </div>
         </div>
-
         <div className="genericHolder">
-          <div className="header">Invoices</div>
-          {bills.fetchBills && bills.fetchBills.length > 0
-            ? bills.fetchBills.map(({ id, billtime, billname }) => (
-                <div key={`bill-${id}`} className="invoices">
-                  <span> {billtime}</span>
-                  <a href={billname} className="naked-button">
-                    <i className="fas fa-download" />
-                  </a>
-                </div>
-              ))
-            : "No Invoices yet"}
+          <div className="header" onClick={() => this.toggleShowInvocies()}>
+            <i
+              className={`button-hide fas ${
+                this.state.showInvocies ? "fa-angle-left" : "fa-angle-down"
+              }`}
+              //onClick={this.toggle}
+            />
+            <span>Invoices</span>
+          </div>
+          <div className={`inside ${this.state.showInvocies ? "in" : "out"}`}>
+            <Invoices />
+          </div>
         </div>
       </div>
     );
@@ -171,8 +234,6 @@ class Billing extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(fetchBills, { name: "bills" }),
   graphql(fetchCards, { name: "cards" }),
-  graphql(downloadBill, { name: "downloadBill" }),
   graphql(CREATE_ADDRESS, { name: "createAddress" })
 )(Billing);

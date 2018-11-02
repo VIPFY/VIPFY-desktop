@@ -71,7 +71,7 @@ class Navigation extends React.Component<Props, State> {
       document: NOTIFICATION_SUBSCRIPTION,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
-          //console.log(subscriptionData);
+          console.log("%c Subscription", "background: red;", subscriptionData);
           return prev;
         }
 
@@ -96,27 +96,40 @@ class Navigation extends React.Component<Props, State> {
   async refetchCategories(categories, client) {
     await sleep(2000);
     for (const category of categories) {
+      const options = {
+        errorPolicy: "ignore",
+        fetchPolicy: "network-only"
+      };
       //console.log("refetch category", category);
-      if (category == "ownLicences") {
-        await client.query({
-          query: fetchLicences,
-          errorPolicy: "ignore",
-          fetchPolicy: "network-only"
-        });
-      } else if (category == "domains") {
-        await client.query({
-          query: FETCH_DOMAINS,
-          errorPolicy: "ignore",
-          fetchPolicy: "network-only"
-        });
-      } else if (category == "foreignLicences") {
-        await refetchQueries(client, ["fetchUnitApps", "fetchUsersOwnLicences"]);
-      } else if (category == "paymentMethods") {
-        await client.query({
-          query: fetchCards,
-          errorPolicy: "ignore",
-          fetchPolicy: "network-only"
-        });
+      switch (category) {
+        case "ownLicences":
+          await client.query({
+            query: fetchLicences,
+            ...options
+          });
+          break;
+
+        case "domains":
+          await client.query({
+            query: FETCH_DOMAINS,
+            ...options
+          });
+          break;
+
+        case "foreignLicences":
+          await refetchQueries(client, ["fetchUnitApps", "fetchUsersOwnLicences"]);
+          break;
+
+        case "invoices":
+          await refetchQueries(client, ["fetchBills"]);
+          break;
+
+        case "paymentMethods":
+          await client.query({
+            query: fetchCards,
+            ...options
+          });
+          break;
       }
     }
   }

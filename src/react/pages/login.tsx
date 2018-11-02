@@ -8,8 +8,13 @@ import { filterError } from "../common/functions";
 import { valueFromAST } from "graphql";
 
 const SIGN_UP = gql`
-  mutation onSignUp($email: String!, $name: NameInput!, $companyData: CompanyInput!) {
-    signUp(email: $email, name: $name, companyData: $companyData) {
+  mutation onSignUp(
+    $email: String!
+    $name: NameInput!
+    $companyData: CompanyInput!
+    $promocode: String
+  ) {
+    signUp(email: $email, name: $name, companyData: $companyData, promocode: $promocode) {
       ok
       token
       refreshToken
@@ -138,6 +143,7 @@ class Login extends React.Component<Props, State> {
   companyInput: HTMLInputElement;
   vatInput: HTMLInputElement;
   countrySelect: HTMLSelectElement;
+  couponInput: HTMLSelectElement;
 
   componentDidMount() {
     if (this.props.error) {
@@ -216,7 +222,11 @@ class Login extends React.Component<Props, State> {
   checkEmail = async e => {
     e.preventDefault();
     try {
-      await this.props.checkEmail({ variables: { email: e.target.value } });
+      const email = e.target.value;
+      if (email.includes("@") && email.includes(".")) {
+        await this.props.checkEmail({ variables: { email: e.target.value } });
+      }
+      this.setState({ error: "", errorbool: false });
     } catch (error) {
       this.setState({
         error: filterError(error),
@@ -341,7 +351,9 @@ class Login extends React.Component<Props, State> {
         }
       }
 
-      const res = await this.props.register({ variables: { email, name, companyData } });
+      const res = await this.props.register({
+        variables: { email, name, companyData, promocode: this.couponInput }
+      });
       const { ok, token, refreshToken } = res.data.signUp;
 
       if (ok) {
@@ -618,8 +630,8 @@ class Login extends React.Component<Props, State> {
               <input
                 key="remail"
                 className="newInputField"
-                placeholder="Email"
-                onBlur={this.checkEmail}
+                placeholder="bilbo@broetlin.com"
+                onChange={this.checkEmail}
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
                   this.remailInput = input!;
@@ -627,17 +639,31 @@ class Login extends React.Component<Props, State> {
               />
             </div>
             <div style={{ marginBottom: "1rem" }}>
-              <label>Your name:</label>
+              <label>Your Name:</label>
               <input
                 key="name"
                 className="newInputField"
-                placeholder="Your Name"
+                placeholder="Bilbo Brötlin"
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
                   this.nameInput = input!;
                 }}
               />
             </div>
+
+            <div style={{ marginBottom: "1rem" }}>
+              <label>Promocode:</label>
+              <input
+                key="name"
+                className="newInputField"
+                placeholder="VIPFYISGREAT"
+                //onKeyPress={e => this.handleEnter(e, 1)}
+                ref={input => {
+                  this.couponInput = input!;
+                }}
+              />
+            </div>
+
             <div className="agreementBox">
               <input
                 type="checkbox"

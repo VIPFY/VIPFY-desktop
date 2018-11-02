@@ -75,64 +75,61 @@ class BillingEmails extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="payment-data-holder">
-        <label className="payment-label">Billing Emails</label>
-        <Query query={FETCH_BILLING_EMAILS}>
-          {({ data, loading, error }) => {
-            if (loading) {
-              return <LoadingDiv text="Fetching Emails..." />;
-            }
+      <Query query={FETCH_BILLING_EMAILS}>
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <LoadingDiv text="Fetching Emails..." />;
+          }
 
-            if (error) {
-              return <ErrorComp error={error.message} />;
-            }
+          if (error) {
+            return <ErrorComp error={error.message} />;
+          }
 
-            return (
-              <React.Fragment>
-                <span className="nextPaymentTitle">
-                  Invoices will be sent to these Email addresses
-                </span>
-                <ul className="billing-emails">
-                  <li>
-                    <span>
-                      <b>Email</b>
-                    </span>
-                    <span>
-                      <b>Description</b>
+          return (
+            <React.Fragment>
+              <span className="nextPaymentTitle">
+                Invoices will be sent to these Email addresses
+              </span>
+              <ul className="billing-emails">
+                <li>
+                  <span>
+                    <b>Email</b>
+                  </span>
+                  <span>
+                    <b>Description</b>
+                  </span>
+                </li>
+                {data.fetchBillingEmails.map(({ email, description }) => (
+                  <li key={email}>
+                    <span>{email}</span>
+                    <span>{description}</span>
+                    <span className="naked-button-holder" title="Remove Email">
+                      <i onClick={() => this.showDeletion(showPopup)} className="fa fa-eraser" />
                     </span>
                   </li>
-                  {data.fetchBillingEmails.map(({ email, description }) => (
-                    <li key={email}>
-                      <span>{email}</span>
-                      <span>{description}</span>
-                      <span className="naked-button-holder" title="Remove Email">
-                        <i onClick={() => this.showDeletion(showPopup)} className="fa fa-eraser" />
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                ))}
+              </ul>
 
-                <Mutation
-                  mutation={CREATE_BILLING_EMAIL}
-                  update={(cache, { data: { createEmail } }) => {
-                    const cachedData = cache.readQuery({ query: FETCH_BILLING_EMAILS });
-                    cachedData.fetchBillingEmails.push(createEmail);
+              <Mutation
+                mutation={CREATE_BILLING_EMAIL}
+                update={(cache, { data: { createEmail } }) => {
+                  const cachedData = cache.readQuery({ query: FETCH_BILLING_EMAILS });
+                  cachedData.fetchBillingEmails.push(createEmail);
 
-                    cache.writeQuery({ query: FETCH_BILLING_EMAILS, data: cachedData });
-                  }}>
-                  {createEmail => (
-                    <button
-                      className="payment-data-change-button"
-                      onClick={() => this.addEmail(createEmail)}>
-                      Add Billing Email
-                    </button>
-                  )}
-                </Mutation>
-              </React.Fragment>
-            );
-          }}
-        </Query>
-      </div>
+                  cache.writeQuery({ query: FETCH_BILLING_EMAILS, data: cachedData });
+                }}>
+                {createEmail => (
+                  <button
+                    className="payment-data-change-button"
+                    onClick={() => this.addEmail(createEmail)}>
+                    Add Billing Email
+                  </button>
+                )}
+              </Mutation>
+            </React.Fragment>
+          );
+        }}
+      </Query>
     );
   }
 }
