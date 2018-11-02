@@ -90,15 +90,15 @@ class ChangePlan extends React.Component<Props, State> {
       features[sKey].value = values[sKey];
       features[sKey].amount = amount[sKey];
     });
-
-    updatePlan({
-      variables: {
-        planid: this.props.boughtPlanId,
-        features,
-        price: selectedPlan.price + Object.values(prices).reduce((acc, price) => acc + price),
-        planInputs: null
-      }
-    });
+    console.log(selectedPlan);
+    // updatePlan({
+    //   variables: {
+    //     planid: this.props.boughtPlanId,
+    //     features,
+    //     price: selectedPlan.price + Object.values(prices).reduce((acc, price) => acc + price),
+    //     planInputs: null
+    //   }
+    // });
     //   {
     //   "limit":{"amount":0,"value":5000},
     //   "ips":{"amount":16,"value":16},

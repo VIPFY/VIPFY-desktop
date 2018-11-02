@@ -165,7 +165,7 @@ class AppListInner extends React.Component<Props, State> {
               <td className="naked-button-holder">
                 <i className="fas fa-eye" title="Show" />
                 <button
-                  disabled={options && options.external ? true : false}
+                  disabled={options && options.external}
                   onClick={() =>
                     showPopup({
                       header: "Upgrade Plan",
@@ -180,7 +180,9 @@ class AppListInner extends React.Component<Props, State> {
                     })
                   }
                   type="button"
-                  title="Upgrade"
+                  title={
+                    options && options.external ? "You cannot updgrade external plans" : "Upgrade"
+                  }
                   className="naked-button">
                   <i className="fas fa-sort-amount-up" />
                 </button>
