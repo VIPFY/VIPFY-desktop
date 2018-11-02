@@ -124,7 +124,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
             <td />
             <td />
             <td />
-            <td align="center">
+            <td>
               <button
                 onClick={() =>
                   this.forceReset(
@@ -146,26 +146,24 @@ class UserSecurityTableInner extends React.Component<Props, State> {
 
   tableRows() {
     return this.props.data.fetchUserSecurityOverview.map(user => {
-      console.log("user", user);
+      //console.log("user", user);
       return (
         <tr key={`r${user.id}`}>
           <td>
             <span>{`${user.unitid.firstname} ${user.unitid.lastname}`}</span>
           </td>
-          <td align="right">
+          <td>
             <Duration timestamp={user.lastactive} postfix=" ago" />
           </td>
-          <td align="right">
+          <td>
             <Duration timestamp={user.createdate} postfix=" ago" />
           </td>
-          <td align="right">{user.passwordlength === null ? "unknown" : user.passwordlength}</td>
-          <td align="right">
-            {user.passwordstrength === null ? "unknown" : user.passwordstrength + "/4"}
-          </td>
+          <td>{user.passwordlength === null ? "unknown" : user.passwordlength}</td>
+          <td>{user.passwordstrength === null ? "unknown" : user.passwordstrength + "/4"}</td>
           {/*<td align="right">{user.needspasswordchange ? "yes" : "no"}</td>
           <td align="right">{user.banned ? "yes" : "no"}</td>
       <td align="right">{user.suspended ? "yes" : "no"}</td>*/}
-          <td align="center">
+          <td>
             {user.needspasswordchange ? (
               "yes"
             ) : (
@@ -174,7 +172,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
               </button>
             )}
           </td>
-          <td align="center">
+          <td>
             {user.unitid.isadmin ? (
               <button
                 onClick={() => this.changeAdminStatus(user.id, false)}

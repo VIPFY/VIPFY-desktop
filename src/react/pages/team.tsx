@@ -40,6 +40,7 @@ import LoadingDiv from "../components/LoadingDiv";
 import UserName from "../components/UserName";
 
 import moment = require("moment");
+import TeamEmployee from "../components/teamemployee";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onRemoveExternalAccount($licenceid: Int!) {
@@ -559,7 +560,8 @@ class Team extends React.Component<Props, State> {
     ev.preventDefault();
   };
 
-  onDragStart(ev, id, app, remove, licenceid, personid) {
+  onDragStart = (ev, id, app, remove, licenceid, personid) => {
+    console.log(ev, id, app, remove, licenceid, personid);
     if (remove) {
       this.setState({ dragginglicence: licenceid });
     } else {
@@ -570,7 +572,7 @@ class Team extends React.Component<Props, State> {
     ev.dataTransfer.setData("remove", remove);
     ev.dataTransfer.setData("licenceid", licenceid);
     ev.dataTransfer.setData("personid", personid);
-  }
+  };
 
   onDrop = (ev, person, department, removearea) => {
     let id = ev.dataTransfer.getData("id");
@@ -594,7 +596,24 @@ class Team extends React.Component<Props, State> {
       let employeeArray: JSX.Element[] = [];
       data.employees.forEach((person, key) => {
         //console.log("PERSON", person);
+        console.log(person);
         employeeArray.push(
+          <TeamEmployee
+            key={key}
+            person={person}
+            onDragOver={this.onDragOver}
+            onDrop={this.onDrop}
+            departmentid={departmentid}
+            removeApp={this.state.removeApp}
+            dragginglicence={this.state.dragginglicence}
+            onDragStart={this.onDragStart}
+            teamside={this}
+            addingAppUser={this.state.addingAppUser}
+            addingAppName={this.state.addingAppName}
+          />
+        );
+        {
+          /*employeeArray.push(
           <div
             key={key}
             className="Cemployee"
@@ -689,16 +708,7 @@ class Team extends React.Component<Props, State> {
                                       licence.boughtplanid.id
                                     }`}
                                 </div>
-                                {/*licence.boughtplanid.planid.options &&
-                              licence.boughtplanid.planid.options.external ? (
-                                ""
-                              ) : (
-                                <span
-                                  className="revokelicence"
-                                  onClick={() => this.revokeLicence(licence.id, person.id)}>
-                                  Revoke
-                                </span>
-                              )*/}
+                                
                               </div>
                             );
                           } else {
@@ -750,7 +760,8 @@ class Team extends React.Component<Props, State> {
               </Query>
             </div>
           </div>
-        );
+              );*/
+        }
       });
       return employeeArray;
     } else {
@@ -876,11 +887,12 @@ class Team extends React.Component<Props, State> {
                         )
                       : ""}
                   </div>
-                  <div
-                    className="addEmployeeButton"
+                  <button
+                    className="naked-button genericButton"
                     onClick={() => this.addEmployeeP(company.unit.id)}>
-                    <span className="fas fa-plus" /> Add Employee
-                  </div>
+                    <span className="textButton">+</span>
+                    <span className="textButtonBeside">Add Employee</span>
+                  </button>
 
                   {/*<div className="UMS">
                   {this.props.departmentsdata.fetchDepartmentsData
