@@ -224,70 +224,67 @@ class Phones extends React.Component<Props, State> {
         </div>
 
         <div className={`inside ${this.state.show ? "in" : "out"}`}>
-          <table>
-            <thead className="addresses-header">
-              <tr>
-                {phoneHeaders.map(header => (
-                  <th key={header}>{header}</th>
-                ))}
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              <Query query={FETCH_PHONES} variables={this.state.variables}>
-                {({ data, loading, error }) => {
-                  if (loading) {
-                    return <LoadingDiv text="Fetching Phones..." />;
-                  }
+          <Query query={FETCH_PHONES} variables={this.state.variables}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <LoadingDiv text="Fetching Phones..." />;
+              }
 
-                  if (error) {
-                    return filterError(error);
-                  }
+              if (error) {
+                return filterError(error);
+              }
 
-                  return data.fetchPhones.length > 0 ? (
-                    <React.Fragment>
-                      {data.fetchPhones.map(({ tags, id, __typename, ...phoneData }) => {
-                        const normalizedTags =
-                          tags && tags.length > 0
-                            ? tags.map((tag, key) => (
-                                <td key={key}>
-                                  <i
-                                    className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`}
-                                  />
-                                  {tag}
-                                </td>
-                              ))
-                            : "";
-                        //console.log(phoneData);
-                        return (
-                          <tr className="phones-list" key={id}>
-                            {this.state.edit != id ? (
-                              <React.Fragment>
-                                <td>{phoneData.number}</td>
-                                <td>{phoneData.description}</td>
-                              </React.Fragment>
-                            ) : (
-                              <form
-                                className="inline-form"
-                                id={`phone-form-${id}`}
-                                onSubmit={e => this.editPhone(e, id)}>
-                                <td>
-                                  <input
-                                    type="text"
-                                    name="number"
-                                    className="inline-searchbar"
-                                    defaultValue={phoneData.number}
-                                  />
-                                </td>
-                                <td>
-                                  <input
-                                    type="text"
-                                    name="description"
-                                    className="inline-searchbar"
-                                    defaultValue={phoneData.description}
-                                  />
-                                </td>
-                                {/*<td>
+              return data.fetchPhones.length > 0 ? (
+                <table>
+                  <thead className="addresses-header">
+                    <tr>
+                      {phoneHeaders.map(header => (
+                        <th key={header}>{header}</th>
+                      ))}
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.fetchPhones.map(({ tags, id, __typename, ...phoneData }) => {
+                      const normalizedTags =
+                        tags && tags.length > 0
+                          ? tags.map((tag, key) => (
+                              <td key={key}>
+                                <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
+                                {tag}
+                              </td>
+                            ))
+                          : "";
+                      //console.log(phoneData);
+                      return (
+                        <tr className="phones-list" key={id}>
+                          {this.state.edit != id ? (
+                            <React.Fragment>
+                              <td>{phoneData.number}</td>
+                              <td>{phoneData.description}</td>
+                            </React.Fragment>
+                          ) : (
+                            <form
+                              className="inline-form"
+                              id={`phone-form-${id}`}
+                              onSubmit={e => this.editPhone(e, id)}>
+                              <td>
+                                <input
+                                  type="text"
+                                  name="number"
+                                  className="inline-searchbar"
+                                  defaultValue={phoneData.number}
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  name="description"
+                                  className="inline-searchbar"
+                                  defaultValue={phoneData.description}
+                                />
+                              </td>
+                              {/*<td>
                                   <input
                                     name="priority"
                                     type="number"
@@ -318,52 +315,52 @@ class Phones extends React.Component<Props, State> {
                                     />
                                   </div>
                                 </td>*/}
-                              </form>
-                            )}
-                            {this.state.edit == id ? (
-                              <React.Fragment>
-                                <td>
-                                  <button
-                                    className="naked-button"
-                                    type="submit"
-                                    form={`phone-form-${id}`}>
-                                    <i className="fa fa-check" />
-                                  </button>
-                                </td>
-                                <td>
-                                  <i
-                                    onClick={() => this.setState({ edit: -1 })}
-                                    className="fa fa-times"
-                                  />
-                                </td>
-                              </React.Fragment>
-                            ) : (
-                              <React.Fragment>
-                                <td className="editButton">
-                                  <i
-                                    onClick={() => this.showDeletion(id)}
-                                    className="fal fa-trash-alt"
-                                  />
-                                </td>
-                                <td className="editButton">
-                                  <i
-                                    onClick={() => this.setState({ edit: id })}
-                                    className="fal fa-edit"
-                                  />
-                                </td>
-                              </React.Fragment>
-                            )}
-                          </tr>
-                        );
-                      })}
-                    </React.Fragment>
-                  ) : (
-                    ""
-                  );
-                }}
-              </Query>
-            </tbody>
-          </table>
+                            </form>
+                          )}
+                          {this.state.edit == id ? (
+                            <React.Fragment>
+                              <td>
+                                <button
+                                  className="naked-button"
+                                  type="submit"
+                                  form={`phone-form-${id}`}>
+                                  <i className="fa fa-check" />
+                                </button>
+                              </td>
+                              <td>
+                                <i
+                                  onClick={() => this.setState({ edit: -1 })}
+                                  className="fa fa-times"
+                                />
+                              </td>
+                            </React.Fragment>
+                          ) : (
+                            <React.Fragment>
+                              <td className="editButton">
+                                <i
+                                  onClick={() => this.showDeletion(id)}
+                                  className="fal fa-trash-alt"
+                                />
+                              </td>
+                              <td className="editButton">
+                                <i
+                                  onClick={() => this.setState({ edit: id })}
+                                  className="fal fa-edit"
+                                />
+                              </td>
+                            </React.Fragment>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              ) : (
+                ""
+              );
+            }}
+          </Query>
+
           <div>
             <button className="naked-button genericButton" onClick={this.showCreation}>
               <span className="textButton">+</span>

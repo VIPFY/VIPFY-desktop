@@ -53,7 +53,8 @@
   color: #253647;   //#333 durch #253647 überall ersetzen
   font-family: 'Roboto', sans-serif;
   width: 100%;
-  background-color: #f5f5f5;
+ // background-color: #f5f5f5;
+ background-color: white;
   height: calc(100vh - 32px);
   margin-top: 32px;
 }
@@ -3539,7 +3540,7 @@ h1{
 }
 
 .versionnumber {
-    position: absolute;
+    position: fixed;
     bottom: 0.5em;
     left: 0.5em;
     color: #3e6b98;
@@ -3578,6 +3579,7 @@ h1{
     }
 
     & > .inside{
+        transition: all 0.6s ease-in-out;
         &-profile{
             display: grid;
             grid-template-columns: 2fr 7fr;

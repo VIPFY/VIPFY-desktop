@@ -32,7 +32,7 @@ class SupportPage extends React.Component<Props> {
     }
     return (
       <div className={cssClass}>
-        <Query query={fetchSupportToken}>
+        <Query query={fetchSupportToken} fetchPolicy="network-only">
           {({ loading, error, data }) => {
             if (loading) {
               return <LoadingDiv />;
@@ -48,6 +48,7 @@ class SupportPage extends React.Component<Props> {
             console.log(data);
             //const requester = data.me.emails[0].email;
             //return <FreshdeskWidget url="https://vipfy.freshdesk.com" autofill={{ requester }} disable={["requester"]}/>;
+            console.log(data.fetchSupportToken);
             return (
               <WebView
                 id="support"

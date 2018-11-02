@@ -101,7 +101,7 @@ class AppListInner extends React.Component<Props, State> {
 
     const rows = this.tableRows();
     return (
-      <table>
+      <table style={{ width: "100%", textAlign: "left" }}>
         <thead>
           <tr>
             <th>App Name</th>
@@ -151,7 +151,7 @@ class AppListInner extends React.Component<Props, State> {
       return (
         <AppContext.Consumer key={`r${id}`}>
           {({ showPopup }) => (
-            <tr className="bought-apps-row">
+            <tr>
               <td>{appName}</td>
               <td>{planName}</td>
               <td>{boughtplan.alias}</td>
@@ -227,7 +227,11 @@ function AppTable(props) {
         if (error) {
           return <div>Error fetching data</div>;
         }
-        return <AppListInner {...props} data={data} />;
+        return (
+          <div style={{ padding: "20px" }}>
+            <AppListInner {...props} data={data} />
+          </div>
+        );
       }}
     </Query>
   );

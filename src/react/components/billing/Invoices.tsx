@@ -69,6 +69,7 @@ class Invoices extends React.Component<Props, State> {
           if (fetchBills.length > 0) {
             return fetchBills.map(invoice => (
               <React.Fragment key={`bill-${invoice.id}`}>
+                {console.log(invoice)}
                 <div className={`invoices${invoice.refundedtime ? "-refunded" : ""}`}>
                   <span>{`${invoice.amount} ${invoice.currency.toUpperCase()}`}</span>
                   <span
