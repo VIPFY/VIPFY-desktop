@@ -3585,6 +3585,9 @@ h1{
             grid-template-columns: 2fr 7fr;
             grid-template-areas: 'pic information' 'address address' 'phone phone';
         }
+        & > .inside-padding{
+            padding: 20px;
+        }
     }
 
     label{
@@ -3766,6 +3769,9 @@ h1{
 .editButton{
     width: 20px;
 }
+.addresses-header{
+    text-align: left
+}
 
 .genericInsideHolder{
     margin-left: 20px;
@@ -3795,4 +3801,8 @@ h1{
     & > .inside{
         margin: 20px;
     }
+}
+table{
+    width: 100%;
+    text-align: left;
 }

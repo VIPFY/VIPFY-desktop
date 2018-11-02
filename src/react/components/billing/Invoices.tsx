@@ -114,13 +114,13 @@ class Invoices extends React.Component<Props, State> {
                     <span className="naked-button-holder">
                       <a href={invoice.pdflink} className="naked-button">
                         <i
-                          className="fas fa-download"
+                          className="fal fa-download"
                           // onClick={() => this.downloadPdf(invoice.pdflink)}
                         />
                       </a>
                       <i
                         onClick={() => this.toggleInvoice(invoice.id)}
-                        className="fas fa-file-invoice-dollar"
+                        className="fal fa-file-invoice-dollar"
                         title="Show Invoice"
                       />
                     </span>

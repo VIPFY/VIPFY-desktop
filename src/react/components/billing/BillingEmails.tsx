@@ -86,29 +86,52 @@ class BillingEmails extends React.Component<Props, State> {
           }
 
           return (
-            <React.Fragment>
-              <span className="nextPaymentTitle">
+            <div className="inside-padding">
+              <div className="nextPaymentTitle" style={{ marginBottom: "20px" }}>
                 Invoices will be sent to these Email addresses
-              </span>
-              <ul className="billing-emails">
-                <li>
-                  <span>
-                    <b>Email</b>
-                  </span>
-                  <span>
-                    <b>Description</b>
-                  </span>
-                </li>
-                {data.fetchBillingEmails.map(({ email, description }) => (
-                  <li key={email}>
-                    <span>{email}</span>
-                    <span>{description}</span>
-                    <span className="naked-button-holder" title="Remove Email">
-                      <i onClick={() => this.showDeletion(showPopup)} className="fa fa-eraser" />
+              </div>
+              <table style={{ marginBottom: "20px" }}>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Description</th>
+                    <th>Edit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.fetchBillingEmails.map(({ email, description }) => (
+                    <tr key={email}>
+                      <td>{email}</td>
+                      <td>{description}</td>
+                      <td className="naked-button-holder" title="Remove Email">
+                        <i
+                          onClick={() => this.showDeletion(showPopup)}
+                          className="fal fa-trash-alt"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                {/*<ul className="billing-emails">
+                  <li>
+                    <span>
+                      <b>Email</b>
+                    </span>
+                    <span>
+                      <b>Description</b>
                     </span>
                   </li>
-                ))}
-              </ul>
+                  {data.fetchBillingEmails.map(({ email, description }) => (
+                    <li key={email}>
+                      <span>{email}</span>
+                      <span>{description}</span>
+                      <span className="naked-button-holder" title="Remove Email">
+                        <i onClick={() => this.showDeletion(showPopup)} className="fa fa-eraser" />
+                      </span>
+                    </li>
+                  ))}
+                  </ul>*/}
+              </table>
 
               <Mutation
                 mutation={CREATE_BILLING_EMAIL}
@@ -120,13 +143,14 @@ class BillingEmails extends React.Component<Props, State> {
                 }}>
                 {createEmail => (
                   <button
-                    className="payment-data-change-button"
+                    className="naked-button genericButton"
                     onClick={() => this.addEmail(createEmail)}>
-                    Add Billing Email
+                    <span className="textButton">+</span>
+                    <span className="textButtonBeside">Add Billing Email</span>
                   </button>
                 )}
               </Mutation>
-            </React.Fragment>
+            </div>
           );
         }}
       </Query>
