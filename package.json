@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.4.20",
+  "version": "0.4.21",
   "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
   "scripts": {
