@@ -47,6 +47,7 @@ const FETCH_UNIT_APPS = gql`
         planid {
           id
           price
+          options
           features
           name
           appid {
@@ -130,6 +131,7 @@ class AppListInner extends React.Component<Props, State> {
         endtime,
         planid: {
           name: planName,
+          options,
           appid: { name: appName, id: appId }
         }
       } = boughtplan;
@@ -162,7 +164,8 @@ class AppListInner extends React.Component<Props, State> {
               <td>{endSat}</td>
               <td className="naked-button-holder">
                 <i className="fas fa-eye" title="Show" />
-                <i
+                <button
+                  disabled={options && options.external ? true : false}
                   onClick={() =>
                     showPopup({
                       header: "Upgrade Plan",
@@ -176,9 +179,11 @@ class AppListInner extends React.Component<Props, State> {
                       }
                     })
                   }
-                  className="fas fa-sort-amount-up"
+                  type="button"
                   title="Upgrade"
-                />
+                  className="naked-button">
+                  <i className="fas fa-sort-amount-up" />
+                </button>
                 <Mutation mutation={!endtime ? CANCEL_PLAN : REACTIVATE_PLAN}>
                   {mutation => (
                     <i

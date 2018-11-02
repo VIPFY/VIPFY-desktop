@@ -119,6 +119,11 @@ $shadow-color: #f0f3ff;
       color: $vipfy-secondary-color;
       transition: color 0.5s ease-in-out 0.1s;
     }
+
+    &:disabled {
+      cursor: not-allowed;
+      color: #ccc;
+    }
   }
 }
 

@@ -80,7 +80,6 @@ class ChangePlan extends React.Component<Props, State> {
 
   handleSubmit = updatePlan => {
     const { values, selectedPlan, amount, prices } = this.state;
-    console.log(this.state);
     const features = {};
     selectedPlan.features
       .map(more => more.features.filter(feature => feature.addable).map(feature => feature))
@@ -92,22 +91,14 @@ class ChangePlan extends React.Component<Props, State> {
       features[sKey].amount = amount[sKey];
     });
 
-    console.log(features);
-
-    console.log({
-      planid: this.props.boughtPlanId,
-      features,
-      price: selectedPlan.price + Object.values(prices).reduce((acc, price) => acc + price),
-      planInputs: null
+    updatePlan({
+      variables: {
+        planid: this.props.boughtPlanId,
+        features,
+        price: selectedPlan.price + Object.values(prices).reduce((acc, price) => acc + price),
+        planInputs: null
+      }
     });
-    // updatePlan({
-    //   variables: {
-    //     planid: this.props.boughtPlanId,
-    //     features,
-    //     price: selectedPlan.price + Object.values(prices).reduce((acc, price) => acc + price),
-    //     planInputs: null
-    //   }
-    // });
     //   {
     //   "limit":{"amount":0,"value":5000},
     //   "ips":{"amount":16,"value":16},
