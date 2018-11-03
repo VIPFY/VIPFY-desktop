@@ -182,11 +182,12 @@ class Addresses extends React.Component<Props, State> {
             </div>
             <div
               className={`inside ${this.state.show ? "in" : "out"}`}
-              style={
+              /*style={
                 this.props.tag === "billing" && this.state.show
                   ? { padding: "20px" }
                   : { padding: "0px 20px" }
-              }>
+              }*/
+            >
               <Query query={FETCH_ADDRESSES} variables={this.state.variables}>
                 {({ data, loading, error }) => {
                   if (loading) {

@@ -85,7 +85,7 @@ class Invoices extends React.Component<Props, State> {
               ).format("YYYY")}`;
 
               if (thismonth !== newthismonth && thismonth !== "") {
-                console.log(thismonth, monthlyinvoices);
+                //console.log(thismonth, monthlyinvoices);
                 billmonth.push(
                   <InvoiceMonth
                     key={thismonth}
@@ -240,7 +240,7 @@ class Invoices extends React.Component<Props, State> {
                 </div>
               </div>
             );*/
-            console.log(thismonth, monthlyinvoices);
+            //console.log(thismonth, monthlyinvoices);
             return billmonth;
             /*
               return(
