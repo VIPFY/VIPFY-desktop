@@ -98,7 +98,6 @@ class Invoices extends React.Component<Props, State> {
 
               monthlyinvoices.push(
                 <React.Fragment key={`bill-${invoice.id}`}>
-                  {console.log(invoice)}
                   <div className={`invoices${invoice.refundedtime ? "-refunded" : ""}`}>
                     <span>{`${invoice.amount} ${invoice.currency.toUpperCase()}`}</span>
                     <span

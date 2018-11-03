@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { Query, Mutation } from "react-apollo";
 import GenericInputForm from "../GenericInputForm";
 import LoadingDiv from "../LoadingDiv";
+import Confirmation from "../../popups/Confirmation";
 import { ErrorComp } from "../../common/functions";
 
 const FETCH_BILLING_EMAILS = gql`
@@ -19,6 +20,14 @@ const CREATE_BILLING_EMAIL = gql`
     createEmail(emailData: $emailData, forCompany: $company, tags: ["billing"]) {
       email
       description
+    }
+  }
+`;
+
+const REMOVE_EMAIL = gql`
+  mutation onRemoveEmail($email: String!) {
+    removeBillingEmail(email: $email) {
+      ok
     }
   }
 `;
@@ -73,6 +82,34 @@ class BillingEmails extends React.Component<Props, State> {
     });
   };
 
+  showDeletion = (email: string, removeEmail: Function) => {
+    this.props.showPopup({
+      header: "Delete Email",
+      body: Confirmation,
+      props: {
+        email,
+        headline: `Please confirm removal of ${email}`,
+        submitFunction: () => {
+          removeEmail({
+            variables: { email },
+            update: proxy => {
+              // Read the data from our cache for this query.
+              const cachedData = proxy.readQuery({ query: FETCH_BILLING_EMAILS });
+              const filteredEmails = cachedData.fetchBillingEmails.filter(
+                bill => bill.email != email
+              );
+              // Write our data back to the cache.
+              proxy.writeQuery({
+                query: FETCH_BILLING_EMAILS,
+                data: { fetchBillingEmails: filteredEmails }
+              });
+            }
+          });
+        }
+      }
+    });
+  };
+
   render() {
     return (
       <Query query={FETCH_BILLING_EMAILS}>
@@ -100,37 +137,25 @@ class BillingEmails extends React.Component<Props, State> {
                 </thead>
                 <tbody>
                   {data.fetchBillingEmails.map(({ email, description }) => (
-                    <tr key={email}>
-                      <td>{email}</td>
-                      <td>{description}</td>
-                      <td className="naked-button-holder" title="Remove Email">
-                        <i
-                          onClick={() => this.showDeletion(showPopup)}
-                          className="fal fa-trash-alt"
-                        />
-                      </td>
-                    </tr>
+                    <Mutation mutation={REMOVE_EMAIL} key={email}>
+                      {mutate => (
+                        <tr>
+                          <td>{email}</td>
+                          <td>{description}</td>
+                          <td className="naked-button-holder" title={`Remove ${email}`}>
+                            <button
+                              disabled={data.fetchBillingEmails.length < 2 ? true : false}
+                              type="button"
+                              className="naked-button"
+                              onClick={() => this.showDeletion(email, mutate)}>
+                              <i className="fal fa-trash-alt" />
+                            </button>
+                          </td>
+                        </tr>
+                      )}
+                    </Mutation>
                   ))}
                 </tbody>
-                {/*<ul className="billing-emails">
-                  <li>
-                    <span>
-                      <b>Email</b>
-                    </span>
-                    <span>
-                      <b>Description</b>
-                    </span>
-                  </li>
-                  {data.fetchBillingEmails.map(({ email, description }) => (
-                    <li key={email}>
-                      <span>{email}</span>
-                      <span>{description}</span>
-                      <span className="naked-button-holder" title="Remove Email">
-                        <i onClick={() => this.showDeletion(showPopup)} className="fa fa-eraser" />
-                      </span>
-                    </li>
-                  ))}
-                  </ul>*/}
               </table>
 
               <Mutation
