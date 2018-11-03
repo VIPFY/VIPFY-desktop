@@ -57,41 +57,48 @@ class StripeForm extends React.Component<Props, State> {
         stripe: window.Stripe("pk_test_W9VDDvYKZqcmbgaz7iAcUR9j")
       });
     } else {
-      document.querySelector("#stripe-js").addEventListener("load", () => {
+      console.log(document.querySelector("#stripe-js"));
+      const bindStripe = document.querySelector("#stripe-js");
+
+      bindStripe.addEventListener("load", () => {
         this.setState({ stripe: window.Stripe("pk_test_W9VDDvYKZqcmbgaz7iAcUR9j") });
       });
     }
   }
 
   render() {
-    return (
-      <StripeProvider stripe={this.state.stripe}>
-        <Elements>
-          <Query query={FETCH_BILLING_DATA} variables={{ company: true, tag: "billing" }}>
-            {({ data, loading, error }) => {
-              if (loading) {
-                return <LoadingDiv text="Preparing Credit Card Form..." />;
-              }
+    if (this.state.stripe) {
+      return (
+        <StripeProvider stripe={this.state.stripe}>
+          <Elements>
+            <Query query={FETCH_BILLING_DATA} variables={{ company: true, tag: "billing" }}>
+              {({ data, loading, error }) => {
+                if (loading) {
+                  return <LoadingDiv text="Preparing Credit Card Form..." />;
+                }
 
-              if (error) {
-                return filterError(error);
-              }
-              console.log(data);
-              return (
-                <StripeBody
-                  {...this.props}
-                  addresses={data.fetchAddresses}
-                  emails={data.fetchBillingEmails}
-                  hasCard={this.props.hasCard}
-                  firstname={data.me.firstname}
-                  lastname={data.me.lastname}
-                />
-              );
-            }}
-          </Query>
-        </Elements>
-      </StripeProvider>
-    );
+                if (error) {
+                  return filterError(error);
+                }
+
+                return (
+                  <StripeBody
+                    {...this.props}
+                    addresses={data.fetchAddresses}
+                    emails={data.fetchBillingEmails}
+                    hasCard={this.props.hasCard}
+                    firstname={data.me.firstname}
+                    lastname={data.me.lastname}
+                  />
+                );
+              }}
+            </Query>
+          </Elements>
+        </StripeProvider>
+      );
+    } else {
+      return <LoadingDiv text="Initialising Stripe..." />;
+    }
   }
 }
 

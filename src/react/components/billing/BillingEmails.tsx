@@ -143,8 +143,13 @@ class BillingEmails extends React.Component<Props, State> {
                         <tr>
                           <td>{email}</td>
                           <td>{description}</td>
-                          <td className="naked-button-holder" title={`Remove ${email}`}>
+                          <td className="naked-button-holder">
                             <button
+                              title={
+                                fetchBillingEmails.length < 2
+                                  ? "You need at least email for billing"
+                                  : `Remove ${email}`
+                              }
                               disabled={fetchBillingEmails.length < 2 ? true : false}
                               type="button"
                               className="naked-button"
