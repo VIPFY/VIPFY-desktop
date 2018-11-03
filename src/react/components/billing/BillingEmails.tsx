@@ -4,24 +4,26 @@ import { Query, Mutation } from "react-apollo";
 import GenericInputForm from "../GenericInputForm";
 import LoadingDiv from "../LoadingDiv";
 import Confirmation from "../../popups/Confirmation";
-import { ErrorComp } from "../../common/functions";
+import { ErrorComp, filterError } from "../../common/functions";
 
-const FETCH_BILLING_EMAILS = gql`
+const FETCH_EMAILS = gql`
   {
-    fetchBillingEmails {
+    fetchEmails(forCompany: true) {
       email
       description
       verified
+      tags
     }
   }
 `;
 
-const CREATE_BILLING_EMAIL = gql`
-  mutation onCreateEmail($emailData: EmailInput!, $company: Boolean) {
-    createEmail(emailData: $emailData, forCompany: $company, tags: ["billing"]) {
+const ADD_BILLING_EMAIL = gql`
+  mutation onAddBillingEmail($email: String!) {
+    addBillingEmail(email: $email) {
       email
       description
       verified
+      tags
     }
   }
 `;
@@ -41,40 +43,27 @@ interface Props {
 interface State {}
 
 class BillingEmails extends React.Component<Props, State> {
-  addEmail = createEmail => {
+  addEmail = (createEmail, emails) => {
+    const options = emails
+      .filter(({ tags }) => (tags ? !tags.find(tag => tag == "billing") : true))
+      .map(({ email }) => ({ name: email, value: email }));
+
     this.props.showPopup({
       header: "Add Billing Email",
       body: GenericInputForm,
+      info: "Please choose the email to add",
       props: {
         fields: [
           {
             name: "email",
-            type: "email",
-            placeholder: "Enter Email",
-            label: "Billing Email",
+            type: "select",
             required: true,
-            icon: "envelope"
-          },
-          {
-            name: "description",
-            type: "text",
-            placeholder: "Enter a description",
-            label: "Description",
-            icon: "archive"
-          },
-          {
-            name: "priority",
-            type: "number",
-            placeholder: "0",
-            label: "Priority",
-            icon: "sort-numeric-up"
+            options
           }
         ],
-        handleSubmit: async values => {
+        handleSubmit: async ({ email }) => {
           try {
-            await createEmail({
-              variables: { emailData: { ...values }, company: true }
-            });
+            await createEmail({ variables: { email } });
           } catch (error) {
             throw new Error(error);
           }
@@ -96,14 +85,17 @@ class BillingEmails extends React.Component<Props, State> {
             variables: { email },
             update: proxy => {
               // Read the data from our cache for this query.
-              const cachedData = proxy.readQuery({ query: FETCH_BILLING_EMAILS });
-              const filteredEmails = cachedData.fetchBillingEmails.filter(
-                bill => bill.email != email
-              );
+              const cachedData = proxy.readQuery({ query: FETCH_EMAILS });
+              const filteredEmails = cachedData.fetchEmails.map(bill => {
+                if (bill.email == email) {
+                  bill.tags = bill.tags.filter(tag => tag != "billing");
+                }
+                return bill;
+              });
               // Write our data back to the cache.
               proxy.writeQuery({
-                query: FETCH_BILLING_EMAILS,
-                data: { fetchBillingEmails: filteredEmails }
+                query: FETCH_EMAILS,
+                data: { fetchEmails: filteredEmails }
               });
             }
           });
@@ -114,15 +106,19 @@ class BillingEmails extends React.Component<Props, State> {
 
   render() {
     return (
-      <Query query={FETCH_BILLING_EMAILS}>
+      <Query query={FETCH_EMAILS}>
         {({ data, loading, error }) => {
           if (loading) {
             return <LoadingDiv text="Fetching Emails..." />;
           }
 
-          if (error) {
-            return <ErrorComp error={error.message} />;
+          if (error || !data) {
+            return <ErrorComp error={filterError(error)} />;
           }
+
+          const fetchBillingEmails = data.fetchEmails.filter(
+            ({ tags }) => (tags ? tags.find(tag => tag == "billing") : false)
+          );
 
           return (
             <div className="inside-padding">
@@ -138,15 +134,18 @@ class BillingEmails extends React.Component<Props, State> {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.fetchBillingEmails.map(({ email, description }) => (
-                    <Mutation mutation={REMOVE_EMAIL} key={email}>
+                  {fetchBillingEmails.map(({ email, description }) => (
+                    <Mutation
+                      mutation={REMOVE_EMAIL}
+                      key={email}
+                      onCompleted={() => this.forceUpdate()}>
                       {mutate => (
                         <tr>
                           <td>{email}</td>
                           <td>{description}</td>
                           <td className="naked-button-holder" title={`Remove ${email}`}>
                             <button
-                              disabled={data.fetchBillingEmails.length < 2 ? true : false}
+                              disabled={fetchBillingEmails.length < 2 ? true : false}
                               type="button"
                               className="naked-button"
                               onClick={() => this.showDeletion(email, mutate)}>
@@ -161,17 +160,22 @@ class BillingEmails extends React.Component<Props, State> {
               </table>
 
               <Mutation
-                mutation={CREATE_BILLING_EMAIL}
-                update={(cache, { data: { createEmail } }) => {
-                  const cachedData = cache.readQuery({ query: FETCH_BILLING_EMAILS });
-                  cachedData.fetchBillingEmails.push(createEmail);
+                mutation={ADD_BILLING_EMAIL}
+                update={(cache, { data: { addBillingEmail } }) => {
+                  const cachedData = cache.readQuery({ query: FETCH_EMAILS });
+                  const fetchEmails = cachedData.fetchEmails.map(bill => {
+                    if (bill.email == addBillingEmail.email) {
+                      bill.tags = [...bill.tags, "billing"];
+                    }
+                    return bill;
+                  });
 
-                  cache.writeQuery({ query: FETCH_BILLING_EMAILS, data: cachedData });
+                  cache.writeQuery({ query: FETCH_EMAILS, data: { fetchEmails } });
                 }}>
                 {createEmail => (
                   <button
                     className="naked-button genericButton"
-                    onClick={() => this.addEmail(createEmail)}>
+                    onClick={() => this.addEmail(createEmail, data.fetchEmails)}>
                     <span className="textButton">+</span>
                     <span className="textButtonBeside">Add Billing Email</span>
                   </button>
