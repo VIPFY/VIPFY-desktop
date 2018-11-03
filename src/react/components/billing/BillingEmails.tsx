@@ -11,6 +11,7 @@ const FETCH_BILLING_EMAILS = gql`
     fetchBillingEmails {
       email
       description
+      verified
     }
   }
 `;
@@ -20,6 +21,7 @@ const CREATE_BILLING_EMAIL = gql`
     createEmail(emailData: $emailData, forCompany: $company, tags: ["billing"]) {
       email
       description
+      verified
     }
   }
 `;

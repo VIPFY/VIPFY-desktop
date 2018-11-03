@@ -28,7 +28,8 @@ $shadow-color: #f0f3ff;
       'header header'
       'pic information'
       'address address'
-      'phone phone';
+      'phone phone'
+      'email email';
     grid-template-columns: 2fr 7fr;
   }
 
@@ -68,6 +69,10 @@ $shadow-color: #f0f3ff;
 
   .phones {
     grid-area: phone;
+  }
+
+  .emails {
+    grid-area: email;
   }
 
   .app-list {

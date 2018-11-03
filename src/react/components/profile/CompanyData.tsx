@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 
 import Addresses from "./Addresses";
 import Phones from "./Phones";
+import Emails from "./Emails";
 import GenericInputForm from "../../components/GenericInputForm";
 import LoadingDiv from "../../components/LoadingDiv";
 import { AppContext } from "../../common/functions";
@@ -171,6 +172,7 @@ class CompanyData extends React.Component<Props, State> {
 
                     <Addresses showPopup={showPopup} company={fetchCompany.unit.id} />
                     <Phones showPopup={showPopup} company={fetchCompany.unit.id} />
+                    <Emails showPopup={showPopup} company={fetchCompany.unit.id} />
                   </div>
                 </div>
               );
