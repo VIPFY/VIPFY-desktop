@@ -119,7 +119,9 @@ class Invoices extends React.Component<Props, State> {
                       </a>
                       <i
                         onClick={() => this.toggleInvoice(invoice.id)}
-                        className="fal fa-file-invoice-dollar"
+                        className={`fal fa-search-${
+                          this.state.show == invoice.id ? "minus" : "plus"
+                        }`}
                         title="Show Invoice"
                       />
                     </span>

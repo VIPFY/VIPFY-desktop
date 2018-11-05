@@ -66,7 +66,7 @@ const vipfyHandler = (request, callback) => {
 const createWindow = async () => {
   try {
     autoUpdater.checkForUpdates();
-    window.setInterval(function() {
+    setInterval(function() {
       try {
         if (!disableUpdater) {
           autoUpdater.checkForUpdates();

@@ -31,6 +31,7 @@ const FETCH_BILLING_DATA = gql`
     }
 
     me {
+      id
       firstname
       lastname
     }
@@ -57,7 +58,6 @@ class StripeForm extends React.Component<Props, State> {
         stripe: window.Stripe("pk_test_W9VDDvYKZqcmbgaz7iAcUR9j")
       });
     } else {
-      console.log(document.querySelector("#stripe-js"));
       const bindStripe = document.querySelector("#stripe-js");
 
       bindStripe.addEventListener("load", () => {
