@@ -638,13 +638,15 @@
   width: 18em;
   margin: 1em;
   background-color: white;
-  box-shadow: 2px 2px 10px #ddd;
+  //box-shadow: 2px 2px 10px #ddd;
+  box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   border-radius: 3px;
   overflow: hidden;
 
   &:hover {
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.36);
+    //box-shadow: 2px 2px 10px rgba(0,0,0,0.36);
+    box-shadow: 1px 3px 6px 0px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -3611,6 +3613,10 @@ h1{
                 height: 80px;
                 width: 80px;
             }
+
+            table{
+                margin-bottom: 20px;
+            }
         }
 
         & > .gridinner{
@@ -3842,6 +3848,10 @@ h1{
 
     & > .inside{
         margin: 20px;
+
+        table{
+            margin-bottom: 20px;
+        }
     }
 }
 table{
@@ -3890,4 +3900,9 @@ table{
             transform: translateY(-5px);
           }
       }
+}
+.company-overview{
+    display: grid;
+            grid-template-columns: 2fr 7fr;
+            grid-template-areas: 'pic information';
 }

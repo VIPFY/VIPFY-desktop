@@ -96,8 +96,8 @@ class PersonalData extends React.Component<Props, State> {
                     label: "Name",
                     data: `${title ? title : ""} ${concatName(firstname, middlename, lastname)}`
                   },
-                  { label: "Birthday", data: birthday },
-                  { label: "Language", data: language },
+                  //{ label: "Birthday", data: birthday },
+                  //{ label: "Language", data: language },
                   { label: "User for", data: <Duration timestamp={createdate} /> }
                 ];
 
