@@ -104,6 +104,7 @@ class StripeBody extends React.Component<Props, State> {
         address_zip = newAddress.zip;
         address_line1 = newAddress.street;
         variables.address = newAddress;
+
         await this.setState(prevState => {
           const refetchQueries = prevState.refetchQueries;
           refetchQueries.push({
