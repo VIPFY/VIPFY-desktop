@@ -47,21 +47,28 @@ interface Props {
   hasCard: boolean;
 }
 
+let stripeToken = "pk_live_OrfeIMTOFjG5o9S5zm9iYH0x";
+
+if (process.env.DEVELOPMENT) {
+  stripeToken = "pk_test_W9VDDvYKZqcmbgaz7iAcUR9j";
+}
+
 class StripeForm extends React.Component<Props, State> {
   state = {
     stripe: null
   };
 
   componentDidMount() {
+    console.log(stripeToken);
     if (window.Stripe) {
       this.setState({
-        stripe: window.Stripe("pk_test_W9VDDvYKZqcmbgaz7iAcUR9j")
+        stripe: window.Stripe(stripeToken)
       });
     } else {
       const bindStripe = document.querySelector("#stripe-js");
 
       bindStripe.addEventListener("load", () => {
-        this.setState({ stripe: window.Stripe("pk_test_W9VDDvYKZqcmbgaz7iAcUR9j") });
+        this.setState({ stripe: window.Stripe(stripeToken) });
       });
     }
   }
