@@ -14,7 +14,7 @@
     "lint": "tslint --project tsconfig.json --type-check --force",
     "build-css": "node-sass-chokidar src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
-    "start": "npm-run-all -p watch-css start-js",
+    "start": "DEVELOPMENT=TRUE npm-run-all -p watch-css start-js",
     "publish": "npm-run-all build-css build-js"
   },
   "keywords": [],

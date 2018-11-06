@@ -99,9 +99,10 @@ class CompanyData extends React.Component<Props, State> {
                     />
                     <span>Company Data</span>
                   </div>
-                  <div className={`inside-profile ${this.state.show ? "in" : "out"}`}>
-                    <div className="pic-holder">
-                      {/*<img
+                  <div className={`inside ${this.state.show ? "in" : "out"}`}>
+                    <div className="company-overview">
+                      <div className="pic-holder" onClick={() => showPopup(picPopup)}>
+                        {/*<img
                         style={{ position: "relative" }}
                         src={`${unitPicFolder}${
                           fetchCompany.profilepicture ? fetchCompany.profilepicture : "default.png"
@@ -110,69 +111,71 @@ class CompanyData extends React.Component<Props, State> {
                         className="pic"
                         alt="Picture of your Company"
                       />*/}
-                      <div
-                        className="imagehoverable pic"
-                        style={{
-                          backgroundImage: `url(${unitPicFolder}${
-                            fetchCompany.profilepicture
-                              ? fetchCompany.profilepicture
-                              : "default.png"
-                          })`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                          position: "relative"
-                        }}>
-                        <div className="imagehover">
-                          <i className="fal fa-camera" />
-                          <span>Updaten</span>
+                        <div
+                          className="imagehoverable pic"
+                          style={{
+                            backgroundImage: `url(${unitPicFolder}${
+                              fetchCompany.profilepicture
+                                ? fetchCompany.profilepicture
+                                : "default.png"
+                            })`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            position: "relative"
+                          }}>
+                          <div className="imagehover">
+                            <i className="fal fa-camera" />
+                            <span>Updaten</span>
+                          </div>
                         </div>
+                      </div>
+
+                      <div className="information">
+                        <ul>
+                          {Object.keys(fetchCompany).map((info, key) => {
+                            if (info.match(/(unit)|(__typename)|(profilepicture)/gi)) {
+                              return;
+                            } else if (info == "legalinformation") {
+                              if (fetchCompany[info] && fetchCompany[info].vatId) {
+                                //console.log("FIRE");
+                                return (
+                                  <li key={key}>
+                                    <label>Vatnumber:</label>
+                                    <span>{fetchCompany[info].vatId}</span>
+                                  </li>
+                                );
+                              } else {
+                                return;
+                              }
+                              // Function to map through legalinformation
+                              // return;
+                              // Object.keys(fetchCompany[info]).map(item => (
+                              //   <li key={item}>
+                              //     <label>
+                              //       {`${item.substr(0, 1).toLocaleUpperCase()}${item.substr(1)}`}:
+                              //     </label>
+                              //     <span>{fetchCompany[info][item]}</span>
+                              //   </li>
+                              // ));
+                            } else {
+                              return (
+                                <li key={key}>
+                                  <label>
+                                    {`${info.substr(0, 1).toLocaleUpperCase()}${info.substr(1)}`}:
+                                  </label>
+                                  <span>{fetchCompany[info]}</span>
+                                </li>
+                              );
+                            }
+                          })}
+                        </ul>
                       </div>
                     </div>
 
-                    <div className="information">
-                      <ul>
-                        {Object.keys(fetchCompany).map((info, key) => {
-                          if (info.match(/(unit)|(__typename)|(profilepicture)/gi)) {
-                            return;
-                          } else if (info == "legalinformation") {
-                            if (fetchCompany[info] && fetchCompany[info].vatId) {
-                              //console.log("FIRE");
-                              return (
-                                <li key={key}>
-                                  <label>Vatnumber:</label>
-                                  <span>{fetchCompany[info].vatId}</span>
-                                </li>
-                              );
-                            } else {
-                              return;
-                            }
-                            // Function to map through legalinformation
-                            // return;
-                            // Object.keys(fetchCompany[info]).map(item => (
-                            //   <li key={item}>
-                            //     <label>
-                            //       {`${item.substr(0, 1).toLocaleUpperCase()}${item.substr(1)}`}:
-                            //     </label>
-                            //     <span>{fetchCompany[info][item]}</span>
-                            //   </li>
-                            // ));
-                          } else {
-                            return (
-                              <li key={key}>
-                                <label>
-                                  {`${info.substr(0, 1).toLocaleUpperCase()}${info.substr(1)}`}:
-                                </label>
-                                <span>{fetchCompany[info]}</span>
-                              </li>
-                            );
-                          }
-                        })}
-                      </ul>
-                    </div>
+                    <Addresses showPopup={showPopup} company={fetchCompany.unit.id} inner={true} />
 
-                    <Addresses showPopup={showPopup} company={fetchCompany.unit.id} />
-                    <Phones showPopup={showPopup} company={fetchCompany.unit.id} />
-                    <Emails showPopup={showPopup} company={fetchCompany.unit.id} />
+                    <Phones showPopup={showPopup} company={fetchCompany.unit.id} inner={true} />
+                    <Emails showPopup={showPopup} company={fetchCompany.unit.id} inner={true} />
                   </div>
                 </div>
               );

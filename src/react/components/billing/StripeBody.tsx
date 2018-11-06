@@ -29,6 +29,7 @@ interface State {
   submitting: boolean;
   success: string;
   showFields: boolean;
+  refetchQueries: object[];
 }
 
 interface Props {
@@ -54,7 +55,8 @@ class StripeBody extends React.Component<Props, State> {
     complete: false,
     submitting: false,
     showFields: false,
-    success: ""
+    success: "",
+    refetchQueries: [{ query: fetchCards }]
   };
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
@@ -102,6 +104,17 @@ class StripeBody extends React.Component<Props, State> {
         address_zip = newAddress.zip;
         address_line1 = newAddress.street;
         variables.address = newAddress;
+
+        await this.setState(prevState => {
+          const refetchQueries = prevState.refetchQueries;
+          refetchQueries.push({
+            query: FETCH_ADDRESSES,
+            variables: { company: true, tag: "billing" }
+          });
+
+          return { refetchQueries };
+        });
+        console.log(this.state);
       } else {
         address_city = this.props.addresses[address].address.city;
         address_country = this.props.addresses[address].country;
@@ -186,13 +199,7 @@ class StripeBody extends React.Component<Props, State> {
         mutation={ADD_PAYMENT}
         onError={error => this.setState({ error: filterError(error), submitting: false })}
         onCompleted={this.handleSuccess}
-        refetchQueries={[
-          { query: fetchCards },
-          {
-            query: Object.keys(this.state.newAddress).length > 0 ? FETCH_ADDRESSES : null,
-            variables: { company: true }
-          }
-        ]}>
+        refetchQueries={this.state.refetchQueries}>
         {(addCard, { loading }) => (
           <form
             className="generic-form"
