@@ -64,6 +64,8 @@
       require("./locationScripts/docusign.ts")();
     } else if (hostMatches(".*.?amazon.com")) {
       require("./locationScripts/aws.ts")();
+    } else if (hostMatches(".*.?teamwork.com")) {
+      require("./locationScripts/teamwork.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }

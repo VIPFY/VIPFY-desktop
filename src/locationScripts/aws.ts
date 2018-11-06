@@ -7,6 +7,7 @@ module.exports = function() {
 };
 
 function onLoad() {
+  console.log("On load");
   let loginForm = document.getElementById("loginForm");
   let loginUser = document.getElementById("resolving_input");
   let loginPass = document.getElementById("IDToken2");
@@ -20,9 +21,17 @@ function onLoad() {
   }
 }
 
-function onReady() {}
+function onReady() {
+  console.log("READY");
+  setInterval(modifyAll, 100);
+}
 
-function modifyAll() {}
+function modifyAll() {
+  if (document.getElementById("login_container").style.display !== "none") {
+    console.log("Password now");
+    loginPwd();
+  }
+}
 
 function modifySettings() {}
 
@@ -31,13 +40,11 @@ function loginUsername() {
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
-
     console.log("KEY", key);
     let username = key.username;
     document.getElementById("resolving_input").value = username;
-//    form.querySelector<HTMLInputElement>("input[name='username']")!.value = username;
+    //    form.querySelector<HTMLInputElement>("input[name='username']")!.value = username;
     document.getElementById("next_button").click();
-
   });
 }
 
@@ -46,13 +53,12 @@ function loginPwd() {
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
-
     console.log("KEY", key);
     let password = key.password;
 
-    document.getElementById("IDToken2").value = password;
-    document.getElementById("Button1").click();
-
-
+    //document.getElementById("IDToken2").value = password;
+    //document.getElementById("Button1").click();
+    document.getElementById("password").value = password;
+    document.getElementById("signin_button").click();
   });
 }
