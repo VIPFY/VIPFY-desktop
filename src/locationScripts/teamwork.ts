@@ -10,19 +10,6 @@ function onLoad() {
   if (document.location.host === "www.teamwork.com") {
     console.log("Beginning");
     document.location = "https://vipfy.teamwork.com/launchpad/login/projects";
-  }
-
-  //let loginForm = document.getElementById("loginForm");
-  //let loginUser = document.getElementById("username");
-  //let loginPass = document.getElementById("IDToken2");
-
-  /*console.log(loginForm);
-  if (loginUser) {
-    loginUsername(loginForm);
-  }
-  if (loginPass) {
-    loginPwd();
-  }*/
 }
 
 function onReady() {
@@ -51,36 +38,31 @@ function login() {
       let username = key.username;
       let password = key.password;
 
-      //document.getElementById("loginemail").value = username;
-      //document.getElementById("loginpassword").value = password;
-
-      triggerEvent(document.getElementById("loginemail"), "focus");
-
-      //document.getElementById("loginemail").value = username;
-      triggerEvent(document.getElementById("loginemail"), "keydown");
-      //triggerEvent(document.getElementById("loginemail"), "keypress(e)");
+      document.getElementById("loginemail").value = username;
       document
         .getElementById("loginemail")
-        .dispatchEvent(new KeyboardEvent("keypress", { key: "a" }));
-      triggerEvent(document.getElementById("loginemail"), "keyup");
-
-      triggerEvent(document.getElementById("loginpassword"), "focus");
-      triggerEvent(document.getElementById("loginpassword"), "keydown");
+        .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
       document.getElementById("loginpassword").value = password;
-      triggerEvent(document.getElementById("loginpassword"), "keyup");
+      document
+        .getElementById("loginpassword")
+        .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+      document.getElementById("rememberMe").click();
 
-      /*let event = document.createEvent("Event");
-      event.initEvent("keypress", true, true);
-      event.keyCode = 76;
-      document.getElementById("loginemail").dispatchEvent(event);*/
-
-      //document.querySelectorAll("button[type='submit']")[0].click();
-
-      //clickButton(document.getElementById("signIn")!);
+      clickSubmit();
     });
   } else {
     console.log("Try again");
     setTimeout(login, 100);
+  }
+}
+
+function clickSubmit() {
+  if (document.getElementsByClassName("w-button w-button--green").length > 0) {
+    console.log("KF");
+    document.getElementsByClassName("w-button w-button--green")[0].click();
+  } else {
+    console.log("K");
+    setTimeout(login, 50);
   }
 }
 
