@@ -560,7 +560,10 @@ class Login extends React.Component<Props, State> {
             <div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
               Already registered?
             </div>
-            <div className="partButton_Next" onClick={() => this.checkStep(step)}>
+            <div
+              className="partButton_Next"
+              id="registerStep1doneButton"
+              onClick={() => this.checkStep(step)}>
               Next
             </div>
           </div>
@@ -573,7 +576,10 @@ class Login extends React.Component<Props, State> {
             <div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
               Already registered?
             </div>
-            <div className="partButton_Next" onClick={() => this.checkStep(step)}>
+            <div
+              className="partButton_Next"
+              id="registerStep2doneButton"
+              onClick={() => this.checkStep(step)}>
               Next
             </div>
           </div>
@@ -586,7 +592,10 @@ class Login extends React.Component<Props, State> {
             <div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
               Already registered?
             </div>
-            <div className="partButton_Next" onClick={() => this.checkStep(step)}>
+            <div
+              className="partButton_Next"
+              id="registerStep3doneButton"
+              onClick={() => this.checkStep(step)}>
               Skip
             </div>
           </div>
@@ -599,7 +608,10 @@ class Login extends React.Component<Props, State> {
             <div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
               Already registered?
             </div>
-            <div className="partButton_Next" onClick={() => this.checkStep(step)}>
+            <div
+              className="partButton_Next"
+              id="registerSaveButton"
+              onClick={() => this.checkStep(step)}>
               {this.state.registering ? (
                 <div className="spinner loginspinner">
                   <div className="double-bounce1" />
@@ -630,7 +642,7 @@ class Login extends React.Component<Props, State> {
               <input
                 key="remail"
                 className="newInputField"
-                placeholder="bilbo@broetlin.com"
+                placeholder="user@example.com"
                 onChange={this.checkEmail}
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
@@ -643,7 +655,7 @@ class Login extends React.Component<Props, State> {
               <input
                 key="name"
                 className="newInputField"
-                placeholder="Bilbo Brötlin"
+                placeholder="John Doe"
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
                   this.nameInput = input!;
@@ -656,7 +668,7 @@ class Login extends React.Component<Props, State> {
               <input
                 key="name"
                 className="newInputField"
-                placeholder="VIPFYISGREAT"
+                placeholder=""
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
                   this.couponInput = input!;
@@ -978,7 +990,10 @@ class Login extends React.Component<Props, State> {
                     <span>Login</span>
                   )}
                 </div>
-                <div className="partButton" onClick={() => this.switchState(true)}>
+                <div
+                  className="partButton"
+                  id="registerStartButton"
+                  onClick={() => this.switchState(true)}>
                   Or Register
                 </div>
               </div>
