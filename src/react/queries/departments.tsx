@@ -56,7 +56,7 @@ export const fetchDepartmentsData = gql`
 `;
 
 export const fetchUnitApps = gql`
-  query fetchUnitApps($departmentid: Int!) {
+  query fetchUnitApps($departmentid: ID!) {
     fetchUnitApps(departmentid: $departmentid) {
       id
       usedby {
