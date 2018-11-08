@@ -43,7 +43,7 @@ import moment = require("moment");
 import TeamEmployee from "../components/teamemployee";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
-  mutation onRemoveExternalAccount($licenceid: Int!) {
+  mutation onRemoveExternalAccount($licenceid: ID!) {
     removeExternalAccount(licenceid: $licenceid) {
       ok
     }
@@ -708,7 +708,7 @@ class Team extends React.Component<Props, State> {
                                       licence.boughtplanid.id
                                     }`}
                                 </div>
-                                
+
                               </div>
                             );
                           } else {

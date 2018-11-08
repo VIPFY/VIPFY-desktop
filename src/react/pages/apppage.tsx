@@ -67,7 +67,7 @@ const WRITE_REVIEW = gql`
 `;
 
 const ADD_EXTERNAL_ACCOUNT = gql`
-  mutation onAddExternalAccount($username: String!, $password: String!, $appid: Int!) {
+  mutation onAddExternalAccount($username: String!, $password: String!, $appid: ID!) {
     addExternalAccount(username: $username, password: $password, appid: $appid) {
       ok
     }

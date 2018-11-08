@@ -58,7 +58,7 @@ export const fetchReviews = gql`
 `;
 
 export const fetchPlans = gql`
-  query FetchPlans($appid: Int!) {
+  query FetchPlans($appid: ID!) {
     fetchPlans(appid: $appid) {
       id
       price

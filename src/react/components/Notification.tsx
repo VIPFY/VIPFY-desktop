@@ -6,7 +6,7 @@ import { filterError, ErrorComp } from "../common/functions";
 import * as moment from "moment";
 
 const READ_NOTIFICATION = gql`
-  mutation onReadNotification($id: Int!) {
+  mutation onReadNotification($id: ID!) {
     readNotification(id: $id)
   }
 `;

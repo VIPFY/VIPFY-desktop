@@ -9,7 +9,7 @@ import { AppContext } from "../../common/functions";
 import { CANCEL_PLAN } from "../../mutations/products";
 
 const REACTIVATE_PLAN = gql`
-  mutation onReactivatePlan($planid: Int!) {
+  mutation onReactivatePlan($planid: ID!) {
     reactivatePlan(planid: $planid) {
       id
       totalprice
@@ -33,7 +33,7 @@ const REACTIVATE_PLAN = gql`
 `;
 
 const FETCH_UNIT_APPS = gql`
-  query onFetchUnitApps($departmentid: Int!) {
+  query onFetchUnitApps($departmentid: ID!) {
     fetchUnitApps(departmentid: $departmentid) {
       id
       licencesused

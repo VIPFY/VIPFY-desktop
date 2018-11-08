@@ -9,7 +9,7 @@ import { iconPicFolder } from "../../common/constants";
 import Confirmation from "../../popups/Confirmation";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
-  mutation onRemoveExternalAccount($licenceid: Int!) {
+  mutation onRemoveExternalAccount($licenceid: ID!) {
     removeExternalAccount(licenceid: $licenceid) {
       ok
     }
