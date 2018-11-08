@@ -8,6 +8,9 @@ interface Props {
   onDragOver: Function;
   onDrop: Function;
   onDragStart: Function;
+  onTouchStart: Function;
+  onTouchEnd: Function;
+  onMouseMove: Function;
   departmentid: number;
   removeApp: String | null;
   dragginglicence: number;
@@ -41,7 +44,9 @@ class TeamEmployee extends React.Component<Props, State> {
         <div
           className={`inside ${this.state.show ? "in" : "out"}`}
           onDragOver={e => this.props.onDragOver(e)}
-          onDrop={ev => this.props.onDrop(ev, person.id, departmentid, false)}>
+          onMouseMove={e => this.props.onDragOver(e)}
+          onDrop={ev => this.props.onDrop(ev, person.id, departmentid, false)}
+          onTouchEnd={ev => this.props.onDrop(ev, person.id, departmentid, false)}>
           <div className="inside-padding gridinner">
             <UserPicture size="picutre" unitid={person.id} />
             <div className="team-app-holders">
@@ -100,6 +105,18 @@ class TeamEmployee extends React.Component<Props, State> {
                                     person.id
                                   )
                                 }
+                                onTouchStart={ev => {
+                                  console.log("START", ev);
+
+                                  this.props.onDragStart(
+                                    ev,
+                                    licence.boughtplanid.id,
+                                    licence.boughtplanid.planid.appid,
+                                    true,
+                                    licence.id,
+                                    person.id
+                                  );
+                                }}
                                 onDragEnd={() =>
                                   this.props.teamside.setState({ dragginglicence: 0 })
                                 }>
