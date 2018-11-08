@@ -66,6 +66,10 @@
       require("./locationScripts/aws.ts")();
     } else if (hostMatches(".*.?teamwork.com")) {
       require("./locationScripts/teamwork.ts")();
+    } else if (hostMatches(".*.?atlassian.com")) {
+      require("./locationScripts/jira.ts")();
+    } else if (hostMatches(".*.?calendly.com")) {
+      require("./locationScripts/calendly.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }

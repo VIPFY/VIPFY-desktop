@@ -1,22 +1,28 @@
 import { con, todoPath, hideByQuery, redirectLinks } from "./utils/util";
 
 module.exports = function() {
-  console.log("MATCH");
+  console.log("MATCH JIRA");
   window.addEventListener("DOMContentLoaded", onReady);
   window.addEventListener("load", onLoad);
 };
 
 function onLoad() {
-  if (document.location.host === "www.teamwork.com") {
+  console.log("LOAD", document.location);
+  if (document.location.host === "id.atlassian.com") {
     console.log("Beginning");
-    document.location = "https://vipfy.teamwork.com/launchpad/login/projects";
+    //setemail();
+  }
 }
 
 function onReady() {
-  if (document.location.host === "vipfy.teamwork.com") { //TODO different projects
-    console.log("ProjectPage");
-    //LOGIN
-    login();
+  console.log("READY", document.location);
+  if (document.location.host === "id.atlassian.com") {
+    console.log("Ready");
+    if (document.getElementsByClassName("password-field")[0].className.includes("hidden")) {
+      //setemail();
+    } else {
+      setpw();
+    }
   }
 }
 
@@ -24,6 +30,37 @@ function modifyAll() {}
 
 function modifySettings() {}
 
+function setemail() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  ipcRenderer.sendToHost("getLoginData", 7);
+  ipcRenderer.on("loginData", (e, key) => {
+    console.log("KEY", key);
+    let username = key.username;
+    let password = key.password;
+
+    document.getElementById("username").value = username;
+    /*document
+        .getElementById("username")
+        .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+*/
+    document.getElementById("login-submit").click();
+  });
+}
+function setpw() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  ipcRenderer.sendToHost("getLoginData", 7);
+  ipcRenderer.on("loginData", (e, key) => {
+    console.log("KEY", key);
+    let username = key.username;
+    let password = key.password;
+    document.getElementById("password").value = password;
+    document
+      .getElementById("password")
+      .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+
+    document.getElementById("login-submit").click();
+  });
+}
 function login() {
   if (
     document.getElementById("loginemail") &&
