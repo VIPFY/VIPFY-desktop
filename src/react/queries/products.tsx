@@ -43,7 +43,7 @@ export const fetchAppById = gql`
 `;
 
 export const fetchReviews = gql`
-  query onFetchReviews($appid: Int!) {
+  query onFetchReviews($appid: ID!) {
     fetchReviews(appid: $appid) {
       stars
       reviewtext
