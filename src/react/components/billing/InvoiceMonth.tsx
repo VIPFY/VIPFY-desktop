@@ -23,8 +23,8 @@ class InvoiceMonth extends React.Component<Props, State> {
             //onClick={this.toggle}
           />
           <span>
-            Invocies for {moment(this.props.lastinvoice.billtime).format("MMM")}{" "}
-            {moment(this.props.lastinvoice.billtime).format("YYYY")}
+            Invocies for {moment(this.props.lastinvoice.billtime - 0).format("MMM")}{" "}
+            {moment(this.props.lastinvoice.billtime - 0).format("YYYY")}
           </span>
         </div>
         <div className={`inside ${this.state.show ? "in" : "out"}`}>

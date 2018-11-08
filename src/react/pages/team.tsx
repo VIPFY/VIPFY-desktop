@@ -43,7 +43,7 @@ import moment = require("moment");
 import TeamEmployee from "../components/teamemployee";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
-  mutation onRemoveExternalAccount($licenceid: Int!) {
+  mutation onRemoveExternalAccount($licenceid: ID!) {
     removeExternalAccount(licenceid: $licenceid) {
       ok
     }
@@ -663,7 +663,7 @@ class Team extends React.Component<Props, State> {
                           let noExternalApps = data.fetchUnitApps.filter(
                             app =>
                               app.boughtplan.planid.options === null &&
-                              (app.endtime === null || moment(app.endtime).isAfter(moment()))
+                              (app.endtime === null || moment(app.endtime - 0).isAfter(moment()))
                           );
                           noExternalApps.sort(function(a, b) {
                             return (

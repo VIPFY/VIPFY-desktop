@@ -160,7 +160,7 @@ function BillingHistoryChart(props) {
   return (
     <Query
       query={gql`
-        query fetchUnitApps($departmentid: Int!) {
+        query fetchUnitApps($departmentid: ID!) {
           fetchUnitApps(departmentid: $departmentid) {
             id
             boughtplan {

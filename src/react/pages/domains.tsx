@@ -83,7 +83,7 @@ const REGISTER_EXTERNAL = gql`
 `;
 
 const UPDATE_DOMAIN = gql`
-  mutation UpdateDomain($data: DD24!, $id: Int!) {
+  mutation UpdateDomain($data: DD24!, $id: ID!) {
     updateDomain(domainData: $data, id: $id) {
       ok
     }
@@ -91,7 +91,7 @@ const UPDATE_DOMAIN = gql`
 `;
 
 const DELETE_EXTERNAL = gql`
-  mutation onDeleteExternal($id: Int!) {
+  mutation onDeleteExternal($id: ID!) {
     deleteExternalDomain(id: $id) {
       ok
     }

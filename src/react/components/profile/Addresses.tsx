@@ -13,7 +13,7 @@ import { CREATE_ADDRESS } from "../../mutations/contact";
 import { FETCH_ADDRESSES } from "../../queries/contact";
 
 const UPDATE_ADDRESS = gql`
-  mutation onUpdateAddress($address: AddressInput!, $id: Int!) {
+  mutation onUpdateAddress($address: AddressInput!, $id: ID!) {
     updateAddress(address: $address, id: $id) {
       id
       address
@@ -26,7 +26,7 @@ const UPDATE_ADDRESS = gql`
 `;
 
 const DELETE_ADDRESS = gql`
-  mutation onDeleteAddress($id: Int!, $department: Boolean) {
+  mutation onDeleteAddress($id: ID!, $department: Boolean) {
     deleteAddress(id: $id, department: $department) {
       ok
     }
@@ -299,7 +299,7 @@ class Addresses extends React.Component<Props, State> {
                               name="billing"
                               value={tags ? tags.includes("billing") : false}
                               />
-                              
+
                               <CoolCheckbox
                               name="main"
                               value={tags ? tags.includes("main") : false}

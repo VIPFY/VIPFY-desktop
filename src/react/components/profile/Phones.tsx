@@ -22,7 +22,7 @@ const CREATE_PHONE = gql`
 `;
 
 const UPDATE_PHONE = gql`
-  mutation onUpdatePhone($phone: PhoneInput!, $id: Int!) {
+  mutation onUpdatePhone($phone: PhoneInput!, $id: ID!) {
     updatePhone(phone: $phone, id: $id) {
       id
       number
@@ -35,7 +35,7 @@ const UPDATE_PHONE = gql`
 `;
 
 const DELETE_PHONE = gql`
-  mutation onDeletePhone($id: Int!, $department: Boolean) {
+  mutation onDeletePhone($id: ID!, $department: Boolean) {
     deletePhone(id: $id, department: $department) {
       ok
     }

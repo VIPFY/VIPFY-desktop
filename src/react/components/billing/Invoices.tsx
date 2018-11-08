@@ -80,8 +80,8 @@ class Invoices extends React.Component<Props, State> {
             let monthlyinvoices: JSX.Element[] = [];
 
             fetchBills.forEach(invoice => {
-              let newthismonth = `${moment(invoice.billtime).format("MMM")}${moment(
-                invoice.billtime
+              let newthismonth = `${moment(invoice.billtime - 0).format("MMM")}${moment(
+                invoice.billtime - 0
               ).format("YYYY")}`;
 
               if (thismonth !== newthismonth && thismonth !== "") {
@@ -104,10 +104,10 @@ class Invoices extends React.Component<Props, State> {
                       onClick={() => this.setState({ show: 0 })}
                       title={
                         invoice.refundedtime
-                          ? `Refunded on ${moment(invoice.refundedtime).format("LLL")}`
+                          ? `Refunded on ${moment(invoice.refundedtime - 0).format("LLL")}`
                           : ""
                       }>
-                      {moment(invoice.billtime).format("LLL")}
+                      {moment(invoice.billtime - 0).format("LLL")}
                     </span>
 
                     <span className="naked-button-holder">

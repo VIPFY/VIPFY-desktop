@@ -52,7 +52,7 @@ export type AppPageState = {
 };
 
 const WRITE_REVIEW = gql`
-  mutation onWriteReview($appid: Int!, $stars: Int!, $text: String!) {
+  mutation onWriteReview($appid: ID!, $stars: Int!, $text: String!) {
     writeReview(appid: $appid, stars: $stars, text: $text) {
       stars
       reviewtext
@@ -67,7 +67,7 @@ const WRITE_REVIEW = gql`
 `;
 
 const ADD_EXTERNAL_ACCOUNT = gql`
-  mutation onAddExternalAccount($username: String!, $password: String!, $appid: Int!) {
+  mutation onAddExternalAccount($username: String!, $password: String!, $appid: ID!) {
     addExternalAccount(username: $username, password: $password, appid: $appid) {
       ok
     }

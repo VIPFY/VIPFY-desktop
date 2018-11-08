@@ -23,7 +23,7 @@ export const fetchRecommendedApps = gql`
 `;
 
 export const fetchAppById = gql`
-  query fetchAppById($id: Int!) {
+  query fetchAppById($id: ID!) {
     fetchAppById(id: $id) {
       id
       name
@@ -43,7 +43,7 @@ export const fetchAppById = gql`
 `;
 
 export const fetchReviews = gql`
-  query onFetchReviews($appid: Int!) {
+  query onFetchReviews($appid: ID!) {
     fetchReviews(appid: $appid) {
       stars
       reviewtext
@@ -58,7 +58,7 @@ export const fetchReviews = gql`
 `;
 
 export const fetchPlans = gql`
-  query FetchPlans($appid: Int!) {
+  query FetchPlans($appid: ID!) {
     fetchPlans(appid: $appid) {
       id
       price
