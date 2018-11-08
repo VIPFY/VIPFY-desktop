@@ -82,7 +82,7 @@ export const fetchUnitApps = gql`
 `;
 
 export const fetchUsersOwnLicences = gql`
-  query fetchUsersOwnLicences($unitid: Int!) {
+  query fetchUsersOwnLicences($unitid: ID!) {
     fetchUsersOwnLicences(unitid: $unitid) {
       id
       boughtplanid {
