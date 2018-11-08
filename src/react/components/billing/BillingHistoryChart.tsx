@@ -130,14 +130,14 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
           //console.log("Month", m, moment(plan.buytime), m.endOf("month"));
           //console.log(m.endOf("month"));
           let mm = m;
-          if (moment(plan.buytime).isSameOrBefore(mm.endOf("month"))) {
+          if (moment(plan.buytime - 0).isSameOrBefore(mm.endOf("month"))) {
             //console.log(moment(plan.buytime).isAfter(m.startOf("month")), plan, m);
             //console.log("BEFORE", moment(plan.buytime));
-            if (moment(plan.buytime).isAfter(mm.startOf("month"))) {
+            if (moment(plan.buytime - 0).isAfter(mm.startOf("month"))) {
               //console.log(-moment(plan.buytime).diff(m.endOf("month"), "days"), m.daysInMonth());
               //console.log("AFTER", moment(plan.buytime));
               let price =
-                (-moment(plan.buytime).diff(mm.endOf("month"), "days") / mm.daysInMonth()) *
+                (-moment(plan.buytime - 0).diff(mm.endOf("month"), "days") / mm.daysInMonth()) *
                 plan.price;
               d.data.push(price);
             } else {
