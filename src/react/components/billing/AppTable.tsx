@@ -145,7 +145,7 @@ class AppListInner extends React.Component<Props, State> {
       let endSat = "forever";
 
       if (endtime) {
-        endSat = `ends at ${moment(endtime).format("LLL")}`;
+        endSat = `ends at ${moment(endtime - 0).format("LLL")}`;
       }
 
       return (

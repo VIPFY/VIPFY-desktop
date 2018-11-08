@@ -808,7 +808,7 @@ class Team extends React.Component<Props, State> {
                           let noExternalApps = data.fetchUnitApps.filter(
                             app =>
                               app.boughtplan.planid.options === null &&
-                              (app.endtime === null || moment(app.endtime).isAfter(moment()))
+                              (app.endtime === null || moment(app.endtime - 0).isAfter(moment()))
                           );
                           noExternalApps.sort(function(a, b) {
                             return (

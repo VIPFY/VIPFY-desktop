@@ -117,7 +117,7 @@ class Notification extends React.Component<Props, State> {
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
         <p className="notificationText">{message}</p>
-        <div className="notificationTime">{moment(sendtime).format("LLL")}</div>
+        <div className="notificationTime">{moment(sendtime - 0).format("LLL")}</div>
       </div>
     ));
   }
