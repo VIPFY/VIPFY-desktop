@@ -23,7 +23,7 @@ export const fetchRecommendedApps = gql`
 `;
 
 export const fetchAppById = gql`
-  query fetchAppById($id: Int!) {
+  query fetchAppById($id: ID!) {
     fetchAppById(id: $id) {
       id
       name
