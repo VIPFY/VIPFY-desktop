@@ -7,7 +7,7 @@ module.exports = function() {
 };
 
 function onLoad() {
-  console.log("On load");
+  /*console.log("On load");
   let loginForm = document.getElementById("loginForm");
   let loginUser = document.getElementById("resolving_input");
   let loginPass = document.getElementById("IDToken2");
@@ -18,53 +18,77 @@ function onLoad() {
   }
   if (loginPass) {
     loginPwd();
-  }
+  }*/
 }
 
 function onReady() {
   console.log("READY");
-  setInterval(modifyAll, 100);
+  modifyAll();
 }
 
 function modifyAll() {
   if (
-    document.getElementById("login_container").style.display !== "none" &&
-    document.getElementById("password").value === ""
+    document.querySelector("input[name='email']") &&
+    document.querySelector("input[name='email']").value === ""
   ) {
-    console.log("Password now");
-    loginPwd();
+    console.log("Username now");
+    loginUsername();
   }
+  if (
+    document.querySelector("input[name='password']") &&
+    document.querySelector("input[name='password']").value === ""
+  ) {
+    console.log("password now");
+    loginPassword();
+  }
+  /*else if (
+    document.querySelector("input[name='email']") &&
+    document.querySelector("input[name='email']").value !== "" &&
+    clicked
+  ) {
+    console.log("click");
+    document.querySelector("input[type='submit']").click();
+    clicked = false;
+  } else {
+    //setTimeout(b => modifyAll(b), 100);
+  }
+  password
+  
+  */
+  setTimeout(modifyAll, 100);
 }
 
 function modifySettings() {}
 
 function loginUsername() {
-  console.log("filling in webex login form user");
+  console.log("filling in calendly login form user");
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
-  ipcRenderer.on("loginData", (e, key) => {
+  ipcRenderer.once("loginData", (e, key) => {
     console.log("KEY", key);
     let username = key.username;
-    document.getElementById("resolving_input").value = username;
-    //    form.querySelector<HTMLInputElement>("input[name='username']")!.value = username;
+    document.querySelector("input[name='email']").value = username;
     document
-      .getElementById("resolving_input")
-      .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
-    document.getElementById("next_button").click();
+      .querySelector("input[name='email']")
+      .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+    document.querySelector("input[type='submit']").click();
   });
 }
 
-function loginPwd() {
-  console.log("filling in webex login form password");
+function loginPassword() {
+  console.log("filling in calendly login form password");
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
-  ipcRenderer.on("loginData", (e, key) => {
-    console.log("KEY", key);
+  ipcRenderer.once("loginData", (e, key) => {
+    console.log("KEY2", key);
     let password = key.password;
 
     //document.getElementById("IDToken2").value = password;
     //document.getElementById("Button1").click();
-    document.getElementById("password").value = password;
-    document.getElementById("signin_button").click();
+    document.querySelector("input[name='password']").value = password;
+    document
+      .querySelector("input[name='password']")
+      .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+    document.querySelector("input[type='submit']").click();
   });
 }
