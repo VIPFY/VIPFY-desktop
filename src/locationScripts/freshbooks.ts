@@ -9,18 +9,20 @@ module.exports = function() {
 const { pathname } = window.location;
 
 function onLoad() {
-  alert("login");
-
-  if (pathname == "/login") {
+  if (pathname == "/login/") {
     login();
   }
+}
+
+function onReady() {
+  console.log("Ready");
 }
 
 function login() {
   // change to Appid of Freshbooks
   ipcRenderer.sendToHost("getLoginData", 11);
   ipcRenderer.on("loginData", function(e, key) {
-    let email = key.cid;
+    let email = key.username;
     let password = key.password;
 
     /** edit by pwn
@@ -36,9 +38,10 @@ function login() {
 
     let form = document.getElementById("login-form");
 
+    console.log(form);
+
     form.querySelector<HTMLInputElement>("input[name='email']")!.value = email;
     form.querySelector<HTMLInputElement>("input[name='password']")!.value = password;
-    form.querySelector<HTMLInputElement>("button[name='submit']")!.submit();
-
+    form.querySelector<HTMLInputElement>("button[name='submit']")!.click();
   });
 }
