@@ -66,6 +66,8 @@
       require("./locationScripts/aws.ts")();
     } else if (hostMatches(".*.?qbo.intuit.com")) {
       require("./locationScripts/quickbooks.ts")();
+    } else if (hostMatches(".*.?slack.com")) {
+      require("./locationScripts/slack.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
