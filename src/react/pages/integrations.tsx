@@ -51,7 +51,7 @@ class Integrations extends React.Component<Props, AppPageState> {
 
   closePopup = () => this.setState({ popup: null });
 
-  registerExternal = (name, needssubdomain) => {
+  registerExternal = (name, needssubdomain, appid) => {
     console.log("TEST");
     const fields = [
       {
@@ -96,7 +96,7 @@ class Integrations extends React.Component<Props, AppPageState> {
         handleSubmit: async values => {
           try {
             await this.props.addExternalApp({
-              variables: { ...values, appid: this.props.match.params.appid }
+              variables: { ...values, appid }
             });
 
             return true;
@@ -155,7 +155,7 @@ class Integrations extends React.Component<Props, AppPageState> {
       </div>
       <button
         className="button-external"
-        onClick={() => this.registerExternal(name, needssubdomain)}>
+        onClick={() => this.registerExternal(name, needssubdomain, id)}>
         <i className="fas fa-boxes" /> Add as External
       </button>
     </div>
