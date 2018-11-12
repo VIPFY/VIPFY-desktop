@@ -67,8 +67,18 @@ const WRITE_REVIEW = gql`
 `;
 
 const ADD_EXTERNAL_ACCOUNT = gql`
-  mutation onAddExternalAccount($username: String!, $password: String!, $appid: ID!) {
-    addExternalAccount(username: $username, password: $password, appid: $appid) {
+  mutation onAddExternalAccount(
+    $username: String!
+    $password: String!
+    $subdomain: String
+    $appid: ID!
+  ) {
+    addExternalAccount(
+      username: $username
+      password: $password
+      subdomain: $subdomain
+      appid: $appid
+    ) {
       ok
     }
   }
@@ -338,6 +348,62 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     }
   }
 
+  registerExternal = (name, needssubdomain) => {
+    const fields = [
+      {
+        name: "username",
+        type: "text",
+        label: `Please add the username at ${name}`,
+        icon: "user",
+        required: true,
+        placeholder: `Username at ${name}`
+      },
+      {
+        name: "password",
+        type: "password",
+        label: `Please add the password at ${name}`,
+        icon: "key",
+        required: true,
+        placeholder: `Password at ${name}`
+      }
+    ];
+
+    if (needssubdomain) {
+      fields.push({
+        name: "subdomain",
+        type: "text",
+        label: `Please add a subdomain for ${name}`,
+        icon: "globe",
+        required: true,
+        placeholder: `${name}.yourdomain.com`
+      });
+    }
+
+    this.setState({
+      popup: true,
+      popupBody: GenericInputForm,
+      popupHeading: "Add External App",
+      popupInfo: `Please enter your Account data from ${name}.
+      You will then be able to login to the App via Vipfy.`,
+      popupProps: {
+        fields,
+        submittingMessage: "Adding external Account...",
+        successMessage: `${name} successfully added`,
+        handleSubmit: async values => {
+          try {
+            await this.props.addExternalApp({
+              variables: { ...values, appid: this.props.match.params.appid }
+            });
+
+            return true;
+          } catch (error) {
+            throw error;
+          }
+        }
+      }
+    });
+  };
+
   render() {
     let cssClass = "paddingPage";
     if (this.props.chat - open) {
@@ -429,48 +495,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               <button
                 className="button-external"
                 type="button"
-                onClick={() => {
-                  this.setState({
-                    popup: true,
-                    popupBody: GenericInputForm,
-                    popupHeading: "Add External App",
-                    popupInfo: `Please enter your Account data from ${appDetails.name}.
-                    You will then be able to login to the App via Vipfy.`,
-                    popupProps: {
-                      fields: [
-                        {
-                          name: "username",
-                          type: "text",
-                          label: `Please add the username at ${appDetails.name}`,
-                          icon: "user",
-                          required: true,
-                          placeholder: `Username at ${appDetails.name}`
-                        },
-                        {
-                          name: "password",
-                          type: "password",
-                          label: `Please add the password at ${appDetails.name}`,
-                          icon: "key",
-                          required: true,
-                          placeholder: `Password at ${appDetails.name}`
-                        }
-                      ],
-                      submittingMessage: "Adding external Account...",
-                      successMessage: `${appDetails.name} successfully added`,
-                      handleSubmit: async ({ username, password }) => {
-                        try {
-                          await this.props.addExternalApp({
-                            variables: { username, password, appid: this.props.match.params.appid }
-                          });
-
-                          return true;
-                        } catch (error) {
-                          throw error;
-                        }
-                      }
-                    }
-                  });
-                }}>
+                onClick={() => this.registerExternal(appDetails.name, appDetails.needssubdomain)}>
                 <i className="fas fa-boxes" /> Add as External
               </button>
             </div>

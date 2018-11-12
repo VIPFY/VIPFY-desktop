@@ -73,6 +73,11 @@ $modal-wh: 50%;
     }
   }
 
+  &-body-wrapper {
+    display: flex;
+    flex-flow: column nowrap;
+  }
+
   &-close-button {
     color: #fff;
     cursor: pointer;
