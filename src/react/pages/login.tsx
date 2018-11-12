@@ -17,7 +17,6 @@ const SIGN_UP = gql`
     signUp(email: $email, name: $name, companyData: $companyData, promocode: $promocode) {
       ok
       token
-      refreshToken
     }
   }
 `;
@@ -27,7 +26,6 @@ const CREATE_COMPANY = gql`
     createCompany(name: $name, legalinformation: $legal) {
       ok
       token
-      refreshToken
     }
   }
 `;
@@ -354,11 +352,10 @@ class Login extends React.Component<Props, State> {
       const res = await this.props.register({
         variables: { email, name, companyData, promocode: this.couponInput }
       });
-      const { ok, token, refreshToken } = res.data.signUp;
+      const { ok, token } = res.data.signUp;
 
       if (ok) {
         localStorage.setItem("token", token);
-        localStorage.setItem("refreshToken", refreshToken);
       } else {
         throw new Error("Something went wrong");
       }

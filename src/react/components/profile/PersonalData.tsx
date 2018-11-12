@@ -61,7 +61,6 @@ class PersonalData extends React.Component<Props, State> {
     try {
       const res = await this.props.changePassword({ variables: { ...values } });
       await localStorage.setItem("token", res.data.changePassword.token);
-      await localStorage.setItem("refreshToken", res.data.changePassword.refreshToken);
 
       return true;
     } catch (err) {

@@ -22,8 +22,7 @@ const httpLink = createFileLink({
 // Pass the tokens to the server to authenticate the user
 const middlewareLink = setContext(() => ({
   headers: {
-    "x-token": localStorage.getItem("token"),
-    "x-refresh-token": localStorage.getItem("refreshToken")
+    "x-token": localStorage.getItem("token")
   }
 }));
 
@@ -35,14 +34,9 @@ const afterwareLink = new ApolloLink((operation, forward) => {
     } = operation.getContext();
     if (headers) {
       const token = headers.get("x-token");
-      const refreshToken = headers.get("x-refresh-token");
 
       if (token) {
         localStorage.setItem("token", token);
-      }
-
-      if (refreshToken) {
-        localStorage.setItem("refreshToken", refreshToken);
       }
     }
 
@@ -56,8 +50,7 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
     connectionParams: () => ({
-      token: localStorage.getItem("token"),
-      refreshToken: localStorage.getItem("refreshToken")
+      token: localStorage.getItem("token")
     })
   }
 });

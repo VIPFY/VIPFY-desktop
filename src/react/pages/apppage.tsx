@@ -70,13 +70,13 @@ const ADD_EXTERNAL_ACCOUNT = gql`
   mutation onAddExternalAccount(
     $username: String!
     $password: String!
-    $subdomain: String
+    $loginurl: String
     $appid: ID!
   ) {
     addExternalAccount(
       username: $username
       password: $password
-      subdomain: $subdomain
+      loginurl: $loginurl
       appid: $appid
     ) {
       ok
@@ -370,7 +370,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
 
     if (needssubdomain) {
       fields.push({
-        name: "subdomain",
+        name: "loginurl",
         type: "text",
         label: `Please add a subdomain for ${name}`,
         icon: "globe",
