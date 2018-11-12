@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.4.24",
+  "version": "0.5.1",
   "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
   "scripts": {
@@ -40,7 +40,7 @@
             "iconUrl": "https://vipfy.store/favicon.ico",
             "loadingGif": "./src/images/Ladeanimation_Vipfy_transparent.gif",
             "setupIcon": "./iconTransparent.ico",
-            "sign_with_params": "/a /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
+            "signWithParams": "/a /n VIPFY /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
           }
         },
         {
@@ -72,7 +72,7 @@
           "config": {
             "host": "http://release.vipfy.store:3030",
             "appId": "1",
-            "channelId": "98c61756053f11b6429ce49805bd7553",
+            "channelId": "4e2105365ea5c7e823cb7af42450b29a",
             "token": "4a3db0e625fbb3aec657f0e033bb8dd1"
           }
         }
