@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.4.23",
+  "version": "0.4.24",
   "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
   "scripts": {
@@ -14,7 +14,7 @@
     "lint": "tslint --project tsconfig.json --type-check --force",
     "build-css": "node-sass-chokidar src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
-    "start": "DEVELOPMENT=TRUE npm-run-all -p watch-css start-js",
+    "start": "npm-run-all -p watch-css start-js",
     "publish": "npm-run-all build-css build-js"
   },
   "keywords": [],
@@ -39,7 +39,8 @@
             "name": "vipfydesktop",
             "iconUrl": "https://vipfy.store/favicon.ico",
             "loadingGif": "./src/images/Ladeanimation_Vipfy_transparent.gif",
-            "setupIcon": "./iconTransparent.ico"
+            "setupIcon": "./iconTransparent.ico",
+            "sign_with_params": "/a /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
           }
         },
         {
