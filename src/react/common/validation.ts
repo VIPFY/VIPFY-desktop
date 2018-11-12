@@ -118,6 +118,12 @@ export const domainValidation = {
   error: "Only characters, numbers and hyphens allowed!"
 };
 
+export const subDomainValidation = {
+  check: testValue =>
+    !/^[\u00C0-\u017F\w]+\.[\u00C0-\u017F\w]+\.[\u00C0-\u017F\w]+$/g.test(testValue),
+  error: "Must be this format: app.domain.tld"
+};
+
 export const fullDomainNameValidation = {
   check: testValue => !/^[a-zA-Z0-9-]{1,}\.[a-zA-Z]{2,}$/g.test(testValue),
   error: "Must be in this format: example.com"

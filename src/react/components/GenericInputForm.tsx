@@ -3,6 +3,7 @@ import * as Dropzone from "react-dropzone";
 import { times } from "lodash";
 import { filterError } from "../common/functions";
 import LoadingDiv from "../components/LoadingDiv";
+import {debounce} from "lodash"
 
 interface Props {
   fields: object[];
@@ -16,7 +17,7 @@ interface Props {
 }
 
 interface State {
-  values: object;
+  values: any;
   inputFocus: object;
   errors: object;
   validate: object;
@@ -42,7 +43,10 @@ class GenericInputForm extends React.Component<Props, State> {
     super(props);
     this.genericForm = React.createRef();
     this.state = INITIAL_STATE;
+    this.validateInput = debounce(this.validateInput, 1000);
   }
+
+  genericForm: React.RefObject<HTMLFormElement>
 
   componentDidMount() {
     if (this.props.defaultValues) {
@@ -66,6 +70,18 @@ class GenericInputForm extends React.Component<Props, State> {
     }));
   };
 
+  validateInput = (validation, name) => {
+    if (validation.check(this.state.values[name])) {
+      this.setState(prevState => ({
+        errors: { ...prevState.errors, [name]: validation.error }
+      }))
+    } else {
+      this.setState(prevState => ({
+        errors: { ...prevState.errors, [name]: "" }
+      }))
+    }
+  }
+
   handleChange = async (e, validation) => {
     const { name, value, type } = e.target;
     if (type == "checkbox") {
@@ -78,14 +94,8 @@ class GenericInputForm extends React.Component<Props, State> {
         values: { ...prevState.values, [name]: value }
       }));
 
-      if (
-        this.state.values[name].length > 0 &&
-        validation &&
-        validation.check(this.state.values[name])
-      ) {
-        this.setState(prevState => ({
-          errors: { ...prevState.errors, [name]: validation.error }
-        }));
+      if (this.state.values[name].length > 0 && validation) {
+        this.validateInput(validation, name)
       } else if (
         this.genericForm.current.elements[name].required &&
         this.state.values[name].length < 1
@@ -174,7 +184,7 @@ class GenericInputForm extends React.Component<Props, State> {
                     type="checkbox"
                     className="cool-checkbox"
                     id={`cool-checkbox-${name}`}
-                    onChange={this.handleChange}
+                    onChange={e =>this.handleChange(e, validate)}
                     name={name}
                     required={required}
                   />
@@ -193,8 +203,7 @@ class GenericInputForm extends React.Component<Props, State> {
               return (
                 <select
                   name={name}
-                  ref={this.inputField}
-                  onChange={this.handleChange}
+                  onChange={e =>this.handleChange(e, validate)}
                   value={values[name] ? values[name] : ""}
                   required={required}
                   className="generic-dropdown">
@@ -212,8 +221,7 @@ class GenericInputForm extends React.Component<Props, State> {
               return (
                 <select
                   name={name}
-                  ref={this.inputField}
-                  onChange={this.handleChange}
+                  onChange={e =>this.handleChange(e, validate)}
                   value={values[name] ? values[name] : ""}
                   required={required}
                   className="generic-dropdown">
@@ -242,6 +250,32 @@ class GenericInputForm extends React.Component<Props, State> {
                   onBlur={this.offlight}
                   required={required}
                 />
+              );
+            }
+
+            case "subDomain": {
+              return (
+                <div className="combo-holder">
+                  <select
+                    name="protocol"
+                    onChange={(e) => this.handleChange(e, validate)}
+                    required={required}
+                    className="generic-dropdown">
+                    <option value="https">https://</option>
+                    <option value="http">http://</option>
+                  </select>
+                  <input
+                  className="searchbar"
+                  name={name}
+                  placeholder={placeholder}
+                  type="text"
+                  value={values[name] ? values[name] : ""}
+                  onChange={e => this.handleChange(e, validate)}
+                  onFocus={this.highlight}
+                  onBlur={this.offlight}
+                  required={required}
+                />
+                </div>
               );
             }
 
@@ -306,7 +340,7 @@ class GenericInputForm extends React.Component<Props, State> {
                         className="cbx"
                         id="agb-checkbox"
                         required={required}
-                        onChange={this.handleChange}
+                        onChange={e => this.handleChange(e, validate)}
                       />
                       <label htmlFor="agb-checkbox" className="check">
                         <svg width="18px" height="18px" viewBox="0 0 18 18">
@@ -446,7 +480,7 @@ class GenericInputForm extends React.Component<Props, State> {
         onSubmit={this.onSubmit}
         ref={this.genericForm}
         className="generic-form"
-        formNoValidate={true}>
+        >
         {this.renderFields(this.props.fields)}
         {asyncError ? (
           <div className="generic-async-error">{asyncError}</div>

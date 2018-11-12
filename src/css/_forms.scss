@@ -4,6 +4,18 @@
   height: calc(100% - 5em);
 }
 
+.combo-holder {
+  display: flex;
+
+  select {
+    width: auto;
+  }
+
+  input {
+    width: 12rem;
+  }
+}
+
 .generic-dropdown {
   border: 0;
   margin-left: 1em;
@@ -11,9 +23,6 @@
   padding: 5px 0;
   width: 15em;
   transition: all 0.5s ease-in;
-
-  option {
-  }
 }
 
 .generic-button-holder {
