@@ -35,8 +35,10 @@ class Popup extends React.Component<Props, State> {
               </div>
             </div>
 
-            {info ? <div id="popup-info">{info}</div> : ""}
-            <PopupBody {...bodyProps} onClose={onClose} />
+            <div className="popup-body-wrapper">
+              {info ? <div id="popup-info">{info}</div> : ""}
+              <PopupBody {...bodyProps} onClose={onClose} />
+            </div>
           </div>
         </div>
       );

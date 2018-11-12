@@ -29,6 +29,7 @@ export const fetchAppById = gql`
       name
       logo
       description
+      needssubdomain
       website
       images
       avgstars
