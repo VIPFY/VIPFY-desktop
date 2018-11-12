@@ -16,6 +16,7 @@ import AddReview from "../popups/addReview";
 import LoadingPopup from "../popups/loadingPopup";
 import draftToHtml from "draftjs-to-html";
 import { ErrorComp } from "../common/functions";
+import { subDomainValidation } from "../common/validation";
 
 export type AppPageProps = {
   employees: number;
@@ -371,11 +372,12 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     if (needssubdomain) {
       fields.push({
         name: "loginurl",
-        type: "text",
+        type: "subDomain",
         label: `Please add a subdomain for ${name}`,
         icon: "globe",
         required: true,
-        placeholder: `${name}.yourdomain.com`
+        placeholder: `${name}.domain.com`,
+        validate: subDomainValidation
       });
     }
 
@@ -387,13 +389,16 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
       You will then be able to login to the App via Vipfy.`,
       popupProps: {
         fields,
+        defaultValues: needssubdomain ? { protocol: "https" } : null,
         submittingMessage: "Adding external Account...",
         successMessage: `${name} successfully added`,
         handleSubmit: async values => {
           try {
-            await this.props.addExternalApp({
-              variables: { ...values, appid: this.props.match.params.appid }
-            });
+            const loginurl = `${values.protocol}://${values.loginurl}`;
+
+            // await this.props.addExternalApp({
+            //   variables: { ...values, loginurl, appid: this.props.match.params.appid }
+            // });
 
             return true;
           } catch (error) {
