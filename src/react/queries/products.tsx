@@ -8,6 +8,7 @@ export const fetchApps = gql`
       name
       logo
       icon
+      needssubdomain
     }
   }
 `;

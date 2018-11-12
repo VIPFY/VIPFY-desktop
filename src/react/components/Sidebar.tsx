@@ -109,6 +109,13 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         important: false
       },
       {
+        label: "External Accounts",
+        location: "integrations",
+        icon: "shapes",
+        show: true,
+        important: false
+      },
+      {
         label: "Domains",
         location: "domains",
         icon: "atlas",
