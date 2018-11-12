@@ -8,8 +8,9 @@ module.exports = function() {
 
 const { pathname } = window.location;
 
+function onReady() {}
+
 function onLoad() {
-  alert("login");
 
   if (pathname.includes("/login")) {
     login();
@@ -18,14 +19,14 @@ function onLoad() {
 
 function login() {
   // change to Appid of Freshbooks
-  ipcRenderer.sendToHost("getLoginData", 11);
+  ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", function(e, key) {
     let email = key.cid;
     let password = key.password;
 
     document.getElementById<HTMLInputElement>("ius-userid")!.value = email;
     document.getElementById<HTMLInputElement>("ius-password")!.value = password;
-    document.getElementById<HTMLInputElement>("ius-signin-label-checkbox")!.checked = true;
+    document.getElementById<HTMLInputElement>("ius-remember")!.checked = true;
     document.getElementById<HTMLInputElement>("ius-sign-in-submit-btn")!.click();
 
   });
