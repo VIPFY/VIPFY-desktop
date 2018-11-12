@@ -24,8 +24,7 @@ class Message extends React.Component<Props, State> {
     try {
       const headers = new Headers({
         "Content-Type": "application/json",
-        "x-token": localStorage.getItem("token"),
-        "x-refresh-token": localStorage.getItem("refreshToken")
+        "x-token": localStorage.getItem("token")
       });
 
       const config = {

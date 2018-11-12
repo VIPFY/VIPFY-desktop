@@ -87,7 +87,6 @@ class App extends React.Component<AppProps, AppState> {
     this.setState(INITIAL_STATE); // clear state
     this.props.client.cache.reset(); // clear graphql cache
     localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
     this.props.history.push("/");
     location.reload();
   };
@@ -95,11 +94,10 @@ class App extends React.Component<AppProps, AppState> {
   logMeIn = async (email: string, password: string) => {
     try {
       const res = await this.props.signIn({ variables: { email, password } });
-      const { ok, token, refreshToken } = res.data.signIn;
+      const { ok, token } = res.data.signIn;
 
       if (ok) {
         localStorage.setItem("token", token);
-        localStorage.setItem("refreshToken", refreshToken);
         await this.setState({ login: true });
 
         return true;
@@ -107,7 +105,6 @@ class App extends React.Component<AppProps, AppState> {
     } catch (err) {
       this.setState({ login: false, error: filterError(err) });
       localStorage.setItem("token", "");
-      localStorage.setItem("refreshToken", "");
       console.log("LoginError", err);
 
       return filterError(err);

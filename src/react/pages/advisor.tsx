@@ -11,7 +11,6 @@ const CreateCompany = gql`
     createCompany(name: $name) {
       ok
       token
-      refreshToken
     }
   }
 `;
@@ -144,9 +143,8 @@ class Advisor extends React.Component<Props, State> {
       console.log("ADDCOMP1", this, name);
       const res = await this.props.cc({ variables: { name } });
       console.log("RES", res);
-      const { ok, token, refreshToken } = res.data.createCompany;
+      const { token } = res.data.createCompany;
       localStorage.setItem("token", token);
-      localStorage.setItem("refreshToken", refreshToken);
       return;
     } catch (err) {
       console.log("ADDCOMP2", this);
@@ -962,14 +960,13 @@ class Advisor extends React.Component<Props, State> {
 
     try {
       const res = await this.props.cc({ variables:  {name: this.state.companyname}  });
-      const { ok, token, refreshToken } = res.data.createCompany;
+      const {  token } = res.data.createCompany;
       //console.log(res.data.createCompany);
       localStorage.setItem("token", token);
-      localStorage.setItem("refreshToken", refreshToken);
 
-      const res2 = await this.props.cA({ variables: {addressData: {country: this.state.addressCountry, state: this.state.addressState, city: this.state.addressCity, zip: this.state.addressZip, street: this.state.addressStreet, tags: ["main"]}, department: true}});
+       await this.props.cA({ variables: {addressData: {country: this.state.addressCountry, state: this.state.addressState, city: this.state.addressCity, zip: this.state.addressZip, street: this.state.addressStreet, tags: ["main"]}, department: true}});
 
-      const res3 = await this.props.uSD({ variables: {data: {...statisticdata} }});
+       await this.props.uSD({ variables: {data: {...statisticdata} }});
 
 
       this.props.moveTo("/area/advisor/personfacts")

@@ -5,7 +5,6 @@ export const signInUser = gql`
     signIn(email: $email, password: $password) {
       ok
       token
-      refreshToken
     }
   }
 `;
@@ -137,7 +136,6 @@ export const CHANGE_PASSWORD = gql`
     changePassword(pw: $pw, newPw: $newPw, confirmPw: $confirmPw) {
       ok
       token
-      refreshToken
     }
   }
 `;
