@@ -31,12 +31,10 @@ function loginUsername() {
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
-
     console.log("KEY", key);
     let username = key.username;
     document.getElementById("username").value = username;
     document.querySelector<HTMLInputElement>("button[type='submit']")!.click();
-
   });
 }
 
@@ -45,13 +43,13 @@ function loginPwd(form: Element) {
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
-
     console.log("KEY", key);
     let password = key.password;
 
     document.getElementById("password").value = password;
+    document
+      .getElementById("password")
+      .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
     form.querySelector<HTMLInputElement>("button[data-qa='submit-password']")!.submit();
-
-
   });
 }

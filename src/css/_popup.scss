@@ -37,6 +37,7 @@ $modal-wh: 50%;
   justify-content: center;
   align-items: center;
   padding: 2em;
+  flex-wrap: wrap;
 
   @keyframes fly-in {
     0% {

@@ -29,7 +29,7 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 class Duration extends React.Component<Props, State> {
   render() {
     const now = moment(new Date());
-    const date = moment(this.props.timestamp);
+    const date = moment(this.props.timestamp - 0);
     const duration = moment.duration(date.diff(now));
 
     const prefix = this.props.prefix || "";

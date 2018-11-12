@@ -56,7 +56,7 @@ export const fetchDepartmentsData = gql`
 `;
 
 export const fetchUnitApps = gql`
-  query fetchUnitApps($departmentid: Int!) {
+  query fetchUnitApps($departmentid: ID!) {
     fetchUnitApps(departmentid: $departmentid) {
       id
       usedby {
@@ -82,7 +82,7 @@ export const fetchUnitApps = gql`
 `;
 
 export const fetchUsersOwnLicences = gql`
-  query fetchUsersOwnLicences($unitid: Int!) {
+  query fetchUsersOwnLicences($unitid: ID!) {
     fetchUsersOwnLicences(unitid: $unitid) {
       id
       boughtplanid {

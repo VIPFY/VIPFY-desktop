@@ -43,7 +43,7 @@ import moment = require("moment");
 import TeamEmployee from "../components/teamemployee";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
-  mutation onRemoveExternalAccount($licenceid: Int!) {
+  mutation onRemoveExternalAccount($licenceid: ID!) {
     removeExternalAccount(licenceid: $licenceid) {
       ok
     }
@@ -602,166 +602,19 @@ class Team extends React.Component<Props, State> {
             key={key}
             person={person}
             onDragOver={this.onDragOver}
+            onMouseMove={this.onDragOver}
             onDrop={this.onDrop}
+            onTouchEnd={this.onDrop}
             departmentid={departmentid}
             removeApp={this.state.removeApp}
             dragginglicence={this.state.dragginglicence}
             onDragStart={this.onDragStart}
+            onTouchStart={this.onDragStart}
             teamside={this}
             addingAppUser={this.state.addingAppUser}
             addingAppName={this.state.addingAppName}
           />
         );
-        {
-          /*employeeArray.push(
-          <div
-            key={key}
-            className="Cemployee"
-            onDragOver={e => this.onDragOver(e)}
-            onDrop={ev => this.onDrop(ev, person.id, departmentid, false)}>
-            <div className="infoHolder" onClick={() => this.showEmployee(person.id, departmentid)}>
-              <UserPicture size="picutre" unitid={person.id} />
-              <div className="namebox">
-                <div className="name">
-                  <UserName unitid={person.id} />
-                </div>
-                {person.position ? <div className="position">{person.position}</div> : ""}
-              </div>
-            </div>
-            <div className="apps">
-              <Query
-                query={fetchUsersOwnLicences}
-                variables={{ unitid: person.id }}
-                fetchPolicy="network-only">
-                {({ loading, error, data }) => {
-                  if (loading) {
-                    return "Loading...";
-                  }
-                  if (error) {
-                    return `Error! ${error.message}`;
-                  }
-
-                  //console.log("DATA", data);
-                  let appArray: JSX.Element[] = [];
-
-                  if (data.fetchUsersOwnLicences) {
-                    if (data.fetchUsersOwnLicences[0]) {
-                      data.fetchUsersOwnLicences.forEach((licence, key) => {
-                        if (this.state.removeApp === `${person.id}-${licence.id}`) {
-                          appArray.push(
-                            <div className="EApp" key="newApp">
-                              <div className="spinner right-profile-image">
-                                <div className="double-bounce1" />
-                                <div className="double-bounce2" />
-                              </div>
-                              <div className="employeeName">
-                                {licence.boughtplanid.planid.appid.name}
-                              </div>
-                              <span className="revokelicence">removing...</span>
-                            </div>
-                          );
-                        } else {
-                          if (
-                            !(
-                              licence.boughtplanid.planid.options &&
-                              licence.boughtplanid.planid.options.external
-                            )
-                          ) {
-                            appArray.push(
-                              <div
-                                className={`EApp dragable ${
-                                  this.state.dragginglicence == licence.id ? "dragging" : ""
-                                }`}
-                                key={key}
-                                draggable
-                                onDragStart={ev =>
-                                  this.onDragStart(
-                                    ev,
-                                    licence.boughtplanid.id,
-                                    licence.boughtplanid.planid.appid,
-                                    true,
-                                    licence.id,
-                                    person.id
-                                  )
-                                }
-                                onDragEnd={() => this.setState({ dragginglicence: 0 })}>
-                                <img
-                                  className="right-profile-image"
-                                  style={{
-                                    float: "left"
-                                  }}
-                                  src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
-                                    .boughtplanid.planid.appid.icon ||
-                                    "21062018-htv58-scarlett-jpeg"}`}
-                                />
-                                {licence.boughtplanid.planid.options &&
-                                licence.boughtplanid.planid.options.external ? (
-                                  <div className="ribbon-small ribbon-small-top-right">
-                                    <span>E</span>
-                                  </div>
-                                ) : (
-                                  ""
-                                )}
-                                <div className="employeeName">
-                                  {licence.boughtplanid.alias ||
-                                    `${licence.boughtplanid.planid.appid.name} ${
-                                      licence.boughtplanid.id
-                                    }`}
-                                </div>
-                                
-                              </div>
-                            );
-                          } else {
-                            appArray.push(
-                              <div className="EApp" key={key}>
-                                <img
-                                  className="right-profile-image"
-                                  style={{
-                                    float: "left"
-                                  }}
-                                  src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
-                                    .boughtplanid.planid.appid.icon ||
-                                    "21062018-htv58-scarlett-jpeg"}`}
-                                />
-                                {licence.boughtplanid.planid.options &&
-                                licence.boughtplanid.planid.options.external ? (
-                                  <div className="ribbon-small ribbon-small-top-right">
-                                    <span>E</span>
-                                  </div>
-                                ) : (
-                                  ""
-                                )}
-                                <div className="employeeName">
-                                  {licence.boughtplanid.alias ||
-                                    `${licence.boughtplanid.planid.appid.name} ${
-                                      licence.boughtplanid.id
-                                    }`}
-                                </div>
-                              </div>
-                            );
-                          }
-                        }
-                      });
-                    }
-                  }
-                  if (this.state.addingAppUser === person.id) {
-                    appArray.push(
-                      <div className="EApp" key="newApp">
-                        <div className="spinner right-profile-image">
-                          <div className="double-bounce1" />
-                          <div className="double-bounce2" />
-                        </div>
-                        <div className="employeeName">{this.state.addingAppName}</div>
-                      </div>
-                    );
-                  }
-                  return appArray;
-                }}
-              </Query>
-            </div>
-          </div>
-              );*/
-        }
       });
       return employeeArray;
     } else {
@@ -786,6 +639,8 @@ class Team extends React.Component<Props, State> {
                 <div
                   className="availableApps"
                   onDrop={ev => this.onDrop(ev, null, null, true)}
+                  onTouchEnd={ev => this.onDrop(ev, null, null, true)}
+                  onMouseMove={e => this.onDragOver(e)}
                   onDragOver={e => this.onDragOver(e)}>
                   <div className="heading">Move app tile to add app to user</div>
                   <div className="appHolder">
@@ -808,7 +663,7 @@ class Team extends React.Component<Props, State> {
                           let noExternalApps = data.fetchUnitApps.filter(
                             app =>
                               app.boughtplan.planid.options === null &&
-                              (app.endtime === null || moment(app.endtime).isAfter(moment()))
+                              (app.endtime === null || moment(app.endtime - 0).isAfter(moment()))
                           );
                           noExternalApps.sort(function(a, b) {
                             return (
@@ -826,6 +681,9 @@ class Team extends React.Component<Props, State> {
                               draggable
                               className={`PApp ${this.state.dragging == app.id ? "dragging" : ""}`}
                               onDragStart={ev =>
+                                this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
+                              }
+                              onTouchStart={ev =>
                                 this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
                               }
                               onDragEnd={() => this.setState({ dragging: 0 })}

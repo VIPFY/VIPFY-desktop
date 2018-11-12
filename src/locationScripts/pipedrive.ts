@@ -50,7 +50,7 @@ function onReady() {
 function login() {
   ipcRenderer.sendToHost("getLoginData", 4);
   ipcRenderer.on("loginData", function(e, key) {
-    let email = key.email;
+    let email = key.username;
     let password = key.password;
     document.querySelector<HTMLInputElement>("input[name='login']")!.value = email;
     document.querySelector<HTMLInputElement>("input[name='password']")!.value = password;

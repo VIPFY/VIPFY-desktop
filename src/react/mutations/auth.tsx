@@ -15,7 +15,7 @@ export const addCreateEmployee = gql`
     $email: String!
     $password: String!
     $name: HumanName!
-    $departmentid: Int!
+    $departmentid: ID!
   ) {
     addCreateEmployee(
       email: $email
@@ -29,7 +29,7 @@ export const addCreateEmployee = gql`
 `;
 
 export const addSubDepartment = gql`
-  mutation addSubDepartment($name: String!, $departmentid: Int!) {
+  mutation addSubDepartment($name: String!, $departmentid: ID!) {
     addSubDepartment(name: $name, departmentid: $departmentid) {
       ok
     }
@@ -37,7 +37,7 @@ export const addSubDepartment = gql`
 `;
 
 export const editDepartment = gql`
-  mutation editDepartmentName($departmentid: Int!, $name: String!) {
+  mutation editDepartmentName($departmentid: ID!, $name: String!) {
     editDepartmentName(departmentid: $departmentid, name: $name) {
       ok
     }
@@ -45,7 +45,7 @@ export const editDepartment = gql`
 `;
 
 export const deleteSubDepartment = gql`
-  mutation deleteSubDepartment($departmentid: Int!) {
+  mutation deleteSubDepartment($departmentid: ID!) {
     deleteSubDepartment(departmentid: $departmentid) {
       ok
     }
@@ -53,7 +53,7 @@ export const deleteSubDepartment = gql`
 `;
 
 export const addEmployee = gql`
-  mutation addEmployee($unitid: Int!, $departmentid: Int!) {
+  mutation addEmployee($unitid: ID!, $departmentid: ID!) {
     addEmployee(unitid: $unitid, departmentid: $departmentid) {
       ok
     }
@@ -61,7 +61,7 @@ export const addEmployee = gql`
 `;
 
 export const removeEmployee = gql`
-  mutation removeEmployee($unitid: Int!, $departmentid: Int!) {
+  mutation removeEmployee($unitid: ID!, $departmentid: ID!) {
     removeEmployee(unitid: $unitid, departmentid: $departmentid) {
       ok
     }
@@ -69,7 +69,7 @@ export const removeEmployee = gql`
 `;
 
 export const fireEmployee = gql`
-  mutation fireEmployee($unitid: Int!) {
+  mutation fireEmployee($unitid: ID!) {
     fireEmployee(unitid: $unitid) {
       ok
     }
@@ -78,8 +78,8 @@ export const fireEmployee = gql`
 
 export const distributeLicenceToDepartment = gql`
   mutation distributeLicenceToDepartment(
-    $departmentid: Int!
-    $boughtplanid: Int!
+    $departmentid: ID!
+    $boughtplanid: ID!
     $licencetype: String!
   ) {
     distributeLicenceToDepartment(
@@ -97,7 +97,7 @@ export const distributeLicenceToDepartment = gql`
 `;
 
 export const revokeLicencesFromDepartment = gql`
-  mutation revokeLicencesFromDepartment($departmentid: Int!, $boughtplanid: Int!) {
+  mutation revokeLicencesFromDepartment($departmentid: ID!, $boughtplanid: ID!) {
     revokeLicencesFromDepartment(departmentid: $departmentid, boughtplanid: $boughtplanid) {
       ok
     }
@@ -105,7 +105,7 @@ export const revokeLicencesFromDepartment = gql`
 `;
 
 export const distributeLicence = gql`
-  mutation distributeLicence($boughtplanid: Int!, $unitid: Int!, $departmentid: Int!) {
+  mutation distributeLicence($boughtplanid: ID!, $unitid: ID!, $departmentid: ID!) {
     distributeLicence(boughtplanid: $boughtplanid, unitid: $unitid, departmentid: $departmentid) {
       ok
       error {
@@ -117,7 +117,7 @@ export const distributeLicence = gql`
 `;
 
 export const revokeLicence = gql`
-  mutation revokeLicence($licenceid: Int!) {
+  mutation revokeLicence($licenceid: ID!) {
     revokeLicence(licenceid: $licenceid) {
       ok
     }

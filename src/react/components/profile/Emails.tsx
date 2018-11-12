@@ -229,7 +229,7 @@ class Emails extends React.Component<Props, State> {
       <div className={this.props.inner ? "genericInsideHolder" : "genericHolder"}>
         <div className="header" onClick={this.toggle}>
           <i className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`} />
-          <span>Phones</span>
+          <span>Emails</span>
         </div>
 
         <div className={`inside ${this.state.show ? "in" : "out"}`}>

@@ -17,7 +17,7 @@ export const agreeToLicence = gql`
 `;
 
 export const CANCEL_PLAN = gql`
-  mutation onCancelPlan($planid: Int!) {
+  mutation onCancelPlan($planid: ID!) {
     cancelPlan(planid: $planid) {
       id
       totalprice

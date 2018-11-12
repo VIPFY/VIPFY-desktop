@@ -103,7 +103,7 @@ function BillingPie(props) {
   return (
     <Query
       query={gql`
-        query fetchUnitApps($departmentid: Int!) {
+        query fetchUnitApps($departmentid: ID!) {
           fetchUnitApps(departmentid: $departmentid) {
             id
             boughtplan {
@@ -172,7 +172,7 @@ function BillingPie(props) {
         return (
           <React.Fragment>
             <span className="nextBillHeading">
-              {`Next scheduled bill on 
+              {`Next scheduled bill on
               ${moment()
                 .add(1, "month")
                 .startOf("month")
