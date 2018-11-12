@@ -343,25 +343,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         }
         break;
 
-      case "getLoginData":
-        {
-          let licence = this.state.licenceId;
-          let result = await this.props.client.query({
-            query: gql`
-          {
-            createLoginLink(licenceid: ${licence}) {
-              loginLink
-            }
-          }
-          `,
-            fetchPolicy: "no-cache"
-          });
-          console.log("LOGIN LINK", result);
-          let link = result.data.createLoginLink.loginLink;
-          this.setState({ setUrl: link });
-        }
-        break;
-
       case "getCustomerData":
         {
           e.target.send("customerData", {
