@@ -7,17 +7,21 @@ module.exports = function() {
 };
 
 function onLoad() {
-  if (document.location.host === "www.teamwork.com") {
-    console.log("Beginning");
-    document.location = "https://vipfy.teamwork.com/launchpad/login/projects";
+  console.log("Load");
+  //if (document.location.host === "www.teamwork.com") {
+  //  console.log("Beginning");
+  //  document.location = "https://vipfy.teamwork.com/launchpad/login/projects";
+  //}
 }
 
 function onReady() {
-  if (document.location.host === "vipfy.teamwork.com") { //TODO different projects
-    console.log("ProjectPage");
-    //LOGIN
-    login();
-  }
+  console.log("Ready");
+  //if (document.location.host === "vipfy.teamwork.com") {
+  //TODO different projects
+  console.log("ProjectPage");
+  //LOGIN
+  login();
+  //}
 }
 
 function modifyAll() {}
@@ -33,7 +37,7 @@ function login() {
     console.log("filling in webex login form password");
     let ipcRenderer = require("electron").ipcRenderer;
     ipcRenderer.sendToHost("getLoginData", 7);
-    ipcRenderer.on("loginData", (e, key) => {
+    ipcRenderer.once("loginData", (e, key) => {
       console.log("KEY", key);
       let username = key.username;
       let password = key.password;
@@ -51,7 +55,6 @@ function login() {
       clickSubmit();
     });
   } else {
-    console.log("Try again");
     setTimeout(login, 100);
   }
 }

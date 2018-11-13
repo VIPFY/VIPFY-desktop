@@ -9,13 +9,18 @@ module.exports = function() {
 const { pathname } = window.location;
 
 function onLoad() {
-  if (pathname == "/login/") {
+  if (document.getElementById("signin_form")) {
     login();
   }
 }
 
 function onReady() {
   console.log("Ready");
+  setInterval(modifyAll, 100);
+}
+
+function modifyAll() {
+  document.getElementById("winssb1_banner").style.display = "none";
 }
 
 function login() {
@@ -36,12 +41,17 @@ function login() {
     document.querySelector<HTMLInputElement>('button[class="button-primary large  block "]')!.submit();
     **/
 
-    let form = document.getElementById("login-form");
+    // let form = document.getElementById("signin_form");
 
-    console.log(form);
+    //console.log(form);
 
-    form.querySelector<HTMLInputElement>("input[name='email']")!.value = email;
+    document.getElementById("email").value = email;
+    document.getElementById("password").value = password;
+
+    document.getElementById("signin_btn").click();
+
+    /*form.querySelector<HTMLInputElement>("input[name='email']")!.value = email;
     form.querySelector<HTMLInputElement>("input[name='password']")!.value = password;
-    form.querySelector<HTMLInputElement>("button[name='submit']")!.click();
+    form.querySelector<HTMLInputElement>("button[name='submit']")!.click();*/
   });
 }
