@@ -70,6 +70,8 @@
       require("./locationScripts/slack.ts")();
     } else if (hostMatches(".*.?realtimeboard.com")) {
       require("./locationScripts/realtimeboard.ts")();
+    } else if (hostMatches(".*.?37signals.com")) {
+      require("./locationScripts/basecamp.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
