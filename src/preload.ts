@@ -68,6 +68,8 @@
       require("./locationScripts/quickbooks.ts")();
     } else if (hostMatches(".*.?slack.com")) {
       require("./locationScripts/slack.ts")();
+    } else if (hostMatches(".*.?realtimeboard.com")) {
+      require("./locationScripts/realtimeboard.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
