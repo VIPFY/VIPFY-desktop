@@ -74,6 +74,8 @@
       require("./locationScripts/basecamp.ts")();
     } else if (hostMatches(".*.?humanity.com")) {
       require("./locationScripts/humanity.ts")();
+    } else if (hostMatches(".*.?qualaroo.com")) {
+      require("./locationScripts/qualaroo.ts")();
     } else if (hostMatches(".*.?infusionsoft.com")) {
       require("./locationScripts/infusion.ts")();
     } else {
