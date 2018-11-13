@@ -23,10 +23,9 @@ function login() {
     let email = key.username;
     let password = key.password;
 
-    document.getElementById('emailAddress')!.value = email;
+    document.getElementById('user')!.value = email;
     document.getElementById('password')!.value = password;
-    document.getElementById("rememberMe").checked = true;
-    document.getElementById("submit")!.click();
+    document.getElementById("login")!.click();
 
   });
 }
