@@ -28,8 +28,18 @@
 }*/
 
 @font-face {
-    font-family: "Segoe MDL2";
-    src: url(./webfonts/SegMDL2.ttf) format("truetype")
+  font-family: "Segoe MDL2";
+  src: url(./webfonts/SegMDL2.ttf) format("truetype")
+}
+
+.credits,
+.free-month {
+  margin: auto;
+  font-size: 0.85rem;
+}
+
+.buy-credits {
+  cursor: pointer;
 }
 
 .confirmation-dialog {
@@ -1116,8 +1126,6 @@
     position: relative;
 }
 
-
-
 .chatBar {
     width: 15rem;
     position: fixed;
@@ -1135,6 +1143,8 @@
 .right-infos {
   display: flex;
   flex-flow: row nowrap;
+  justify-content: space-between;
+  min-width: 30rem;
 }
 
 .navigation-right-infos{
