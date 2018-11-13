@@ -1,14 +1,15 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import gql from "graphql-tag";
-import { withApollo } from "react-apollo";
+import * as moment from "moment";
+import { withApollo, Query } from "react-apollo";
 import Notification from "../components/Notification";
-import { filterError, sleep, refetchQueries } from "../common/functions";
+import { filterError, sleep, refetchQueries, AppContext } from "../common/functions";
 import { fetchLicences } from "../queries/auth";
 import { FETCH_DOMAINS } from "./domains";
-import { fetchUnitApps } from "../queries/departments";
 import { fetchCards } from "../queries/billing";
 import UserPicture from "../components/UserPicture";
+import PlanHolder from "../components/PlanHolder";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -18,6 +19,62 @@ const NOTIFICATION_SUBSCRIPTION = gql`
       message
       icon
       changed
+    }
+  }
+`;
+
+const FETCH_CREDIT_DATA = gql`
+  {
+    fetchCredits {
+      id
+      amount
+      currency
+      spentfor
+    }
+
+    fetchCompany {
+      createdate
+    }
+
+    fetchPlans(appid: 66) {
+      id
+      price
+      appid {
+        id
+        options
+        features
+        name
+        options
+        logo
+        icon
+      }
+      features
+      name
+      currency
+      numlicences
+      teaserdescription
+      options
+      optional
+      payperiod
+      gotoplan {
+        id
+        numlicences
+        currency
+        price
+        optional
+        payperiod
+        name
+        teaserdescription
+        options
+      }
+    }
+
+    fetchVipfyPlan {
+      id
+      plan: planid {
+        id
+        name
+      }
     }
   }
 `;
@@ -37,7 +94,7 @@ interface Props {
   subscribeToMore: Function;
   toggleSidebar: Function;
   toggleChat: Function;
-  userid: number;
+  id: number;
 }
 
 interface State {
@@ -46,12 +103,14 @@ interface State {
   notify: boolean;
 }
 
+const INITIALSTATE = {
+  searchFocus: false,
+  showNotification: false,
+  notify: false
+};
+
 class Navigation extends React.Component<Props, State> {
-  state = {
-    searchFocus: false,
-    showNotification: false,
-    notify: false
-  };
+  state = INITIALSTATE;
 
   setApp = (boughtplan: number) => this.props.setApp(boughtplan);
 
@@ -149,17 +208,16 @@ class Navigation extends React.Component<Props, State> {
   toggleSearch = searchFocus => this.setState({ searchFocus });
 
   render() {
-    const { chatOpen, sideBarOpen, data, error, loading, toggleSidebar } = this.props;
+    const { chatOpen, sideBarOpen, data } = this.props;
 
-    if (loading) {
+    if (this.props.loading) {
       return "Initialising Navigation...";
     }
 
-    if (error) {
-      return filterError(error);
+    if (this.props.error) {
+      return filterError(this.props.error);
     }
 
-    //console.log("P", this.props);
     return (
       <div
         className={`navigation ${chatOpen ? "chat-open" : ""}
@@ -183,6 +241,63 @@ class Navigation extends React.Component<Props, State> {
         </div>
 
         <div className="right-infos">
+          <Query query={FETCH_CREDIT_DATA}>
+            {({ data, error, loading }) => {
+              if (loading) {
+                return "Fetching Credits...";
+              }
+
+              if (error || !data) {
+                return filterError(error);
+              }
+
+              const vipfyPlan = data.fetchVipfyPlan.plan.name;
+              const { fetchCredits } = data;
+              const expiry = moment(parseInt(data.fetchCompany.createdate)).add(1, "months");
+
+              return (
+                <React.Fragment>
+                  <div className="free-month">
+                    {moment().isAfter(expiry) ? (
+                      vipfyPlan
+                    ) : (
+                      <div>{`Free for ${moment().to(expiry, true)}`}</div>
+                    )}
+                  </div>
+                  <div className="credits">
+                    {fetchCredits && fetchCredits > 0 ? (
+                      `${fetchCredits.amount} Vipfy ${fetchCredits.currency}`
+                    ) : (
+                      <AppContext.Consumer>
+                        {({ showPopup }) => (
+                          <span
+                            className="buy-credits"
+                            onClick={() =>
+                              showPopup({
+                                header: "Choose a Vipfy Plan",
+                                body: PlanHolder,
+                                props: {
+                                  currentPlan: 125,
+                                  buttonText: "Select",
+                                  plans: data.fetchPlans,
+                                  updateUpperState: selectedPlan => {
+                                    console.log(selectedPlan);
+                                    this.setState({ ...INITIALSTATE, selectedPlan, touched: true });
+                                  }
+                                }
+                              })
+                            }>
+                            Buy Vipfy credits
+                          </span>
+                        )}
+                      </AppContext.Consumer>
+                    )}
+                  </div>
+                </React.Fragment>
+              );
+            }}
+          </Query>
+
           <div className="right-profile-holder">
             <div className="pic-and-name" onClick={() => this.goTo("profile")}>
               <UserPicture size="right-profile-image" unitid={this.props.id} />
@@ -198,7 +313,7 @@ class Navigation extends React.Component<Props, State> {
                 className={`right-profile-notifications ${this.state.notify ? "notify-user" : ""}`}>
                 <i className="far fa-bell" />
                 <span className="notification-amount">
-                  {!loading && !data && !data.fetchNotifications
+                  {!this.props.loading && !data && !data.fetchNotifications
                     ? 0
                     : data.fetchNotifications.length}
                 </span>

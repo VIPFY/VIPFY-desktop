@@ -58,7 +58,8 @@ const Welcome = (props: Props) => {
     { name: "name", type: "text", icon: "building", disabled: true },
     { name: "formatted_address", type: "text", icon: "address-card" },
     { name: "website", type: "text", icon: "home" },
-    { name: "international_phone_number", type: "text", icon: "phone" }
+    { name: "international_phone_number", type: "text", icon: "phone" },
+    { name: "promocode", type: "text", placeholder: "promocode", icon: "hand-holding-usd" }
   ];
 
   if (industry) {
