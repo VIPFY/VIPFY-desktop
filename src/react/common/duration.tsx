@@ -8,7 +8,6 @@ interface Props {
   prefix?: string | null;
   postfix?: string | null;
 }
-interface State {}
 
 const shortEnglishHumanizer = humanizeDuration.humanizer({
   language: "shortEn",
@@ -26,20 +25,16 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
   }
 });
 
-class Duration extends React.Component<Props, State> {
-  render() {
-    const now = moment(new Date());
-    const date = moment(this.props.timestamp - 0);
-    const duration = moment.duration(date.diff(now));
+export default (props: Props) => {
+  const now = moment(new Date());
+  const date = moment(props.timestamp - 0);
+  const duration = moment.duration(date.diff(now));
 
-    const prefix = this.props.prefix || "";
-    const postfix = this.props.postfix || "";
+  const prefix = props.prefix || "";
+  const postfix = props.postfix || "";
 
-    const formattedDate = date.format("LLL");
-    const formattedDuration = duration._isValid ? prefix + duration.humanize() + postfix : "never";
+  const formattedDate = date.format("LLL");
+  const formattedDuration = duration._isValid ? prefix + duration.humanize() + postfix : "never";
 
-    return <span title={formattedDate}>{formattedDuration}</span>;
-  }
-}
-
-export default Duration;
+  return <span title={formattedDate}>{formattedDuration}</span>;
+};

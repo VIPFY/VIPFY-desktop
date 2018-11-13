@@ -68,6 +68,22 @@
       require("./locationScripts/quickbooks.ts")();
     } else if (hostMatches(".*.?slack.com")) {
       require("./locationScripts/slack.ts")();
+    } else if (hostMatches(".*.?realtimeboard.com")) {
+      require("./locationScripts/realtimeboard.ts")();
+    } else if (hostMatches(".*.?37signals.com")) {
+      require("./locationScripts/basecamp.ts")();
+    } else if (hostMatches(".*.?humanity.com")) {
+      require("./locationScripts/humanity.ts")();
+    } else if (hostMatches(".*.?qualaroo.com")) {
+      require("./locationScripts/qualaroo.ts")();
+    } else if (hostMatches(".*.?infusionsoft.com")) {
+      require("./locationScripts/infusion.ts")();
+    } else if (hostMatches(".*.?buzzsumo.com")) {
+      require("./locationScripts/buzzsumo.ts")();
+    } else if (hostMatches(".*.?logmeininc.com")) {
+      require("./locationScripts/gotomeeting.ts")();
+    } else if (hostMatches(".*.?trello.com")) {
+      require("./locationScripts/trello.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }

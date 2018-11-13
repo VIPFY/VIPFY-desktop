@@ -5,16 +5,10 @@ import gql from "graphql-tag";
 import { updateUser } from "../mutations/auth";
 import { emailRegex, countries, industries, subIndustries } from "../common/constants";
 import { filterError } from "../common/functions";
-import { valueFromAST } from "graphql";
 
 const SIGN_UP = gql`
-  mutation onSignUp(
-    $email: String!
-    $name: NameInput!
-    $companyData: CompanyInput!
-    $promocode: String
-  ) {
-    signUp(email: $email, name: $name, companyData: $companyData, promocode: $promocode) {
+  mutation onSignUp($email: String!, $name: NameInput!, $companyData: CompanyInput!) {
+    signUp(email: $email, name: $name, companyData: $companyData) {
       ok
       token
     }
@@ -141,7 +135,6 @@ class Login extends React.Component<Props, State> {
   companyInput: HTMLInputElement;
   vatInput: HTMLInputElement;
   countrySelect: HTMLSelectElement;
-  couponInput: HTMLSelectElement;
 
   componentDidMount() {
     if (this.props.error) {
@@ -346,7 +339,7 @@ class Login extends React.Component<Props, State> {
       }
 
       const res = await this.props.register({
-        variables: { email, name, companyData, promocode: this.couponInput }
+        variables: { email, name, companyData }
       });
       const { ok, token } = res.data.signUp;
 
@@ -652,19 +645,6 @@ class Login extends React.Component<Props, State> {
                 //onKeyPress={e => this.handleEnter(e, 1)}
                 ref={input => {
                   this.nameInput = input!;
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: "1rem" }}>
-              <label>Promocode:</label>
-              <input
-                key="name"
-                className="newInputField"
-                placeholder=""
-                //onKeyPress={e => this.handleEnter(e, 1)}
-                ref={input => {
-                  this.couponInput = input!;
                 }}
               />
             </div>
