@@ -80,6 +80,8 @@
       require("./locationScripts/infusion.ts")();
     } else if (hostMatches(".*.?buzzsumo.com")) {
       require("./locationScripts/buzzsumo.ts")();
+    } else if (hostMatches(".*.?logmeininc.com")) {
+      require("./locationScripts/gotomeeting.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
