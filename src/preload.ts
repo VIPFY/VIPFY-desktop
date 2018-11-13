@@ -82,6 +82,8 @@
       require("./locationScripts/buzzsumo.ts")();
     } else if (hostMatches(".*.?logmeininc.com")) {
       require("./locationScripts/gotomeeting.ts")();
+    } else if (hostMatches(".*.?trello.com")) {
+      require("./locationScripts/trello.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
