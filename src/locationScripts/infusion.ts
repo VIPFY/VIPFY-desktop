@@ -12,7 +12,7 @@ function onReady() {}
 
 function onLoad() {
 
-  if (pathname == "/signin") {
+  if (pathname == "/login") {
     login();
   }
 }
@@ -24,8 +24,7 @@ function login() {
     let password = key.password;
 
     document.getElementById("username")!.value = email;
-    document.querySelector<HTMLInputElement>("button[data-role='next_button']")!.click();
-    document.querySelector<HTMLInputElement>("input[name='password']")!.value = password;
-    document.querySelector<HTMLInputElement>("form[data-behavior='login_form']")!.submit();
+    document.getElementById("password")!.value = password;
+    document.querySelector<HTMLInputElement>("button[class='btn btn-primary btn-block']")!.click();
   });
 }

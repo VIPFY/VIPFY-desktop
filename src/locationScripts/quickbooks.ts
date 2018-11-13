@@ -17,7 +17,6 @@ function onLoad() {
 }
 
 function login() {
-  // change to Appid of Freshbooks
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", function(e, key) {
     let email = key.username;
