@@ -83,6 +83,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       }' });});`;
       script3.id = "ze-snippet3";
       script3.async = false;
+
       document.head.appendChild(script3);
 
       this.setState({ script3 });

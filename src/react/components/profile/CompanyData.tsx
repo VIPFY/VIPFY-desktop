@@ -87,7 +87,7 @@ class CompanyData extends React.Component<Props, State> {
               if (error) {
                 return filterError(error);
               }
-
+              console.log(fetchCompany);
               return (
                 <div className="genericHolder">
                   <div className="header" onClick={this.toggle}>

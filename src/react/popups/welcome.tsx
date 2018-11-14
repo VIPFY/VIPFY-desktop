@@ -79,7 +79,7 @@ const Welcome = (props: Props) => {
     fields.push({ name: "companyStage", type: "text", icon: "chess-rook", disabled: true });
   }
 
-  const handleSubmit = async ({ name, website, international_phone_number }) => {
+  const handleSubmit = async ({ name, website, international_phone_number, promocode }) => {
     try {
       const p1 = props.uploadData({
         variables: {
@@ -87,7 +87,8 @@ const Welcome = (props: Props) => {
             name,
             address_components: proposal.address_components,
             website,
-            international_phone_number
+            international_phone_number,
+            promocode
           }
         }
       });

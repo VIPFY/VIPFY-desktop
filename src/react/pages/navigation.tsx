@@ -253,6 +253,7 @@ class Navigation extends React.Component<Props, State> {
 
               const vipfyPlan = data.fetchVipfyPlan.plan.name;
               const { fetchCredits } = data;
+              console.log(fetchCredits);
               const expiry = moment(parseInt(data.fetchCompany.createdate)).add(1, "months");
 
               return (
@@ -265,7 +266,7 @@ class Navigation extends React.Component<Props, State> {
                     )}
                   </div>
                   <div className="credits">
-                    {fetchCredits && fetchCredits > 0 ? (
+                    {fetchCredits && fetchCredits.amount > 0 ? (
                       `${fetchCredits.amount} Vipfy ${fetchCredits.currency}`
                     ) : (
                       <AppContext.Consumer>
