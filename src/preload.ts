@@ -84,6 +84,8 @@
       require("./locationScripts/gotomeeting.ts")();
     } else if (hostMatches(".*.?trello.com")) {
       require("./locationScripts/trello.ts")();
+    } else if (hostMatches(".*.?calendly.com")) {
+      require("./locationScripts/calendly.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
