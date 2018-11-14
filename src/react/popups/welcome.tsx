@@ -3,6 +3,8 @@ import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 import GenericInputFrom from "../components/GenericInputForm";
 import { industries, subIndustries } from "../common/constants";
+import { APPLY_PROMOCODE } from "../mutations/auth";
+
 const UPLOAD_DATA = gql`
   mutation onSaveProposalData($data: ProposalInput!) {
     saveProposalData(data: $data) {
@@ -39,6 +41,7 @@ interface Props {
   uploadData: Function;
   updateStatisticData: Function;
   disableWelcome: Function;
+  applyPromocode: Function;
 }
 
 const Welcome = (props: Props) => {
@@ -87,14 +90,17 @@ const Welcome = (props: Props) => {
             name,
             address_components: proposal.address_components,
             website,
-            international_phone_number,
-            promocode
+            international_phone_number
           }
         }
       });
       const p2 = props.updateStatisticData({ variables: { data: statisticData } });
-
       await Promise.all([p1, p2]);
+
+      if (promocode) {
+        await props.applyPromocode({ variables: { promocode } });
+      }
+
       props.disableWelcome();
     } catch (error) {
       throw new Error(error);
@@ -141,6 +147,9 @@ const Welcome = (props: Props) => {
 export default compose(
   graphql(UPDATE_STATISTIC_DATA, {
     name: "updateStatisticData"
+  }),
+  graphql(APPLY_PROMOCODE, {
+    name: "applyPromocode"
   }),
   graphql(UPLOAD_DATA, { name: "uploadData" })
 )(Welcome);

@@ -153,10 +153,10 @@ class UserSecurityTableInner extends React.Component<Props, State> {
             <span>{`${user.unitid.firstname} ${user.unitid.lastname}`}</span>
           </td>
           <td>
-            <Duration timestamp={user.lastactive} postfix=" ago" />
+            <Duration timestamp={parseInt(user.lastactive)} postfix=" ago" />
           </td>
           <td>
-            <Duration timestamp={user.createdate} postfix=" ago" />
+            <Duration timestamp={parseInt(user.createdate)} postfix=" ago" />
           </td>
           <td>{user.passwordlength === null ? "unknown" : user.passwordlength}</td>
           <td>{user.passwordstrength === null ? "unknown" : user.passwordstrength + "/4"}</td>

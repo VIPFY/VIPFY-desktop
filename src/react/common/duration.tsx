@@ -4,7 +4,7 @@ import humanizeDuration = require("humanize-duration");
 import moment = require("moment");
 
 interface Props {
-  timestamp: Date | moment.Moment | string;
+  timestamp: Date | moment.Moment | string | number;
   prefix?: string | null;
   postfix?: string | null;
 }
@@ -26,8 +26,8 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 });
 
 export default (props: Props) => {
-  const now = moment(new Date());
-  const date = moment(props.timestamp - 0);
+  const now = moment();
+  const date = moment(props.timestamp);
   const duration = moment.duration(date.diff(now));
 
   const prefix = props.prefix || "";

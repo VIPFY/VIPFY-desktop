@@ -97,7 +97,7 @@ class PersonalData extends React.Component<Props, State> {
                   },
                   //{ label: "Birthday", data: birthday },
                   //{ label: "Language", data: language },
-                  { label: "User for", data: <Duration timestamp={createdate} /> }
+                  { label: "User for", data: <Duration timestamp={parseInt(createdate)} /> }
                 ];
 
                 const picProps: {

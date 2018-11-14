@@ -10,6 +10,7 @@ import { FETCH_DOMAINS } from "./domains";
 import { fetchCards } from "../queries/billing";
 import UserPicture from "../components/UserPicture";
 import PlanHolder from "../components/PlanHolder";
+import Duration from "../common/duration";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -30,10 +31,12 @@ const FETCH_CREDIT_DATA = gql`
       amount
       currency
       spentfor
+      expires
     }
 
     fetchCompany {
       createdate
+      promocode
     }
 
     fetchPlans(appid: 66) {
@@ -189,6 +192,13 @@ class Navigation extends React.Component<Props, State> {
             ...options
           });
           break;
+
+        case "promocode":
+          await client.query({
+            query: FETCH_CREDIT_DATA,
+            ...options
+          });
+          break;
       }
     }
   }
@@ -223,6 +233,9 @@ class Navigation extends React.Component<Props, State> {
         className={`navigation ${chatOpen ? "chat-open" : ""}
         ${sideBarOpen ? "side-bar-open" : ""}`}>
         <div className="leftNavigation">
+          <span className="beta">
+            ATTENTION, this is a Beta version! Not all functionality is provided.
+          </span>
           {/*<span onClick={toggleSidebar} className="fas fa-bars barIcon" />*/}
           {/*<div
             className={
@@ -253,48 +266,59 @@ class Navigation extends React.Component<Props, State> {
 
               const vipfyPlan = data.fetchVipfyPlan.plan.name;
               const { fetchCredits } = data;
-              console.log(fetchCredits);
               const expiry = moment(parseInt(data.fetchCompany.createdate)).add(1, "months");
 
               return (
-                <React.Fragment>
-                  <div className="free-month">
-                    {moment().isAfter(expiry) ? (
-                      vipfyPlan
-                    ) : (
-                      <div>{`Free for ${moment().to(expiry, true)}`}</div>
-                    )}
-                  </div>
-                  <div className="credits">
-                    {fetchCredits && fetchCredits.amount > 0 ? (
-                      `${fetchCredits.amount} Vipfy ${fetchCredits.currency}`
-                    ) : (
-                      <AppContext.Consumer>
-                        {({ showPopup }) => (
+                <AppContext.Consumer>
+                  {({ showPopup }) => (
+                    <React.Fragment>
+                      <div
+                        className="free-month"
+                        onClick={() =>
+                          showPopup({
+                            header: "Choose a Vipfy Plan",
+                            body: PlanHolder,
+                            props: {
+                              currentPlan: 125,
+                              buttonText: "Select",
+                              plans: data.fetchPlans,
+                              updateUpperState: selectedPlan => {
+                                console.log(selectedPlan);
+                                this.setState({ ...INITIALSTATE, selectedPlan, touched: true });
+                              }
+                            }
+                          })
+                        }>
+                        {moment().isAfter(expiry) ? (
+                          vipfyPlan
+                        ) : (
+                          <div>{`${moment().to(expiry, true)} left on free trial`}</div>
+                        )}
+                      </div>
+                      <div className="credits">
+                        {data.fetchCompany.promocode ? (
+                          fetchCredits && fetchCredits.amount > 0 ? (
+                            <div className="credits-holder">
+                              <span>{`${fetchCredits.amount} Vipfy ${fetchCredits.currency}`}</span>
+                              <span className="credits-holder-duration">
+                                expires{" "}
+                                <Duration timestamp={parseInt(fetchCredits.expires)} prefix="in " />
+                              </span>
+                            </div>
+                          ) : (
+                            ""
+                          )
+                        ) : (
                           <span
-                            className="buy-credits"
-                            onClick={() =>
-                              showPopup({
-                                header: "Choose a Vipfy Plan",
-                                body: PlanHolder,
-                                props: {
-                                  currentPlan: 125,
-                                  buttonText: "Select",
-                                  plans: data.fetchPlans,
-                                  updateUpperState: selectedPlan => {
-                                    console.log(selectedPlan);
-                                    this.setState({ ...INITIALSTATE, selectedPlan, touched: true });
-                                  }
-                                }
-                              })
-                            }>
-                            Buy Vipfy credits
+                            className="free-month"
+                            onClick={() => this.props.history.push("/area/profile")}>
+                            Use Promocode
                           </span>
                         )}
-                      </AppContext.Consumer>
-                    )}
-                  </div>
-                </React.Fragment>
+                      </div>
+                    </React.Fragment>
+                  )}
+                </AppContext.Consumer>
               );
             }}
           </Query>

@@ -7,10 +7,11 @@ import Phones from "./Phones";
 import Emails from "./Emails";
 import GenericInputForm from "../../components/GenericInputForm";
 import LoadingDiv from "../../components/LoadingDiv";
-import { AppContext } from "../../common/functions";
+import { AppContext, sleep } from "../../common/functions";
 import { filterError } from "../../common/functions";
 import { unitPicFolder } from "../../common/constants";
 import { me } from "../../queries/auth";
+import { APPLY_PROMOCODE } from "../../mutations/auth";
 import { FETCH_COMPANY } from "../../queries/departments";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -21,30 +22,27 @@ const UPDATE_PIC = gql`
   }
 `;
 
-const APPLY_PROMOCODE = gql`
-  mutation onApplyPromocode($promocode: String!) {
-    applyPromocode(promocode: $promocode) {
-      ok
-    }
-  }
-`;
-
 interface Props {
   toggle: Function;
   updatePic: Function;
   company: number;
+  applyPromocode: Function;
   client: ApolloClient<InMemoryCache>;
 }
 
 interface State {
   show: boolean;
   promocode: string;
+  submitting: boolean;
+  error: null | string;
 }
 
 class CompanyData extends React.Component<Props, State> {
   state = {
     show: true,
-    promocode: ""
+    promocode: "",
+    submitting: false,
+    error: null
   };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
@@ -66,11 +64,16 @@ class CompanyData extends React.Component<Props, State> {
     }
   };
 
-  handleSubmit = async () => {
+  handleSubmit = async e => {
+    e.preventDefault();
+    await this.setState({ submitting: true, error: null });
     try {
       await this.props.applyPromocode({ variables: { promocode: this.state.promocode } });
+
+      await sleep(2000);
+      await this.setState({ submitting: false });
     } catch (error) {
-      console.log(error);
+      await this.setState({ submitting: false, error: filterError(error) });
     }
   };
 
@@ -105,7 +108,7 @@ class CompanyData extends React.Component<Props, State> {
               if (error || !fetchCompany) {
                 return filterError(error);
               }
-              console.log(this.state.promocode);
+
               return (
                 <div className="genericHolder">
                   <div className="header" onClick={this.toggle}>
@@ -185,6 +188,7 @@ class CompanyData extends React.Component<Props, State> {
                                       <form onSubmit={this.handleSubmit} className="inline-form">
                                         <input
                                           type="text"
+                                          disabled={this.state.submitting}
                                           style={{ fontSize: "12px", color: "#000" }}
                                           className="inline-searchbar"
                                           value={this.state.promocode}
@@ -194,12 +198,14 @@ class CompanyData extends React.Component<Props, State> {
                                           }
                                         />
                                         <button
+                                          disabled={this.state.submitting}
                                           title="submit"
                                           className="naked-button"
                                           type="submit">
                                           <i className="fal fa-barcode-alt" />
                                         </button>
                                       </form>
+                                      <span className="inline-error">{this.state.error}</span>
                                     </span>
                                   )}
                                 </li>

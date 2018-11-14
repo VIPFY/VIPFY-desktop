@@ -156,3 +156,11 @@ export const forgotPassword = gql`
     }
   }
 `;
+
+export const APPLY_PROMOCODE = gql`
+  mutation onApplyPromocode($promocode: String!) {
+    applyPromocode(promocode: $promocode) {
+      ok
+    }
+  }
+`;
