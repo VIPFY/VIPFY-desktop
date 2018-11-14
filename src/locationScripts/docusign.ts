@@ -6,6 +6,7 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
 function onLoad() {
   let loginForm = document.getElementById("login");
   let loginUser = document.getElementById("username");
@@ -20,9 +21,22 @@ function onLoad() {
   }
 }
 
-function onReady() {}
+function onReady() {
+  setInterval(modifyAll, 100);
+}
 
-function modifyAll() {}
+function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (document.getElementById("username") || document.getElementById("password")) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
+}
 
 function modifySettings() {}
 

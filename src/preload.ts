@@ -88,6 +88,8 @@
       require("./locationScripts/calendly.ts")();
     } else if (hostMatches(".*.?teamwork.com")) {
       require("./locationScripts/teamwork.ts")();
+    } else if (hostMatches(".*.?asana.com")) {
+      require("./locationScripts/asana.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }

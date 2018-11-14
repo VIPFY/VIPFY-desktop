@@ -200,7 +200,8 @@ class Integrations extends React.Component<Props, AppPageState> {
               <React.Fragment>
                 <button className="naked-button genericButton" onClick={() => this.clickSend()}>
                   <span className="textButton">
-                    <i className="fal fa-paper-plane" />
+                    {/*<i className="fal fa-paper-plane" />*/}
+                    <i className="fal fa-poll-people" />
                   </span>
                 </button>
                 <input
