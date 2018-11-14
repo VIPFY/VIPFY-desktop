@@ -76,13 +76,16 @@ class Area extends React.Component<AreaProps, AreaState> {
     script.onload = () => {
       const script3 = document.createElement("script");
 
-      script3.innerHTML = `zE(function() {zE.identify({name: '${meme.data.me.firstname} ${
-        meme.data.me.lastname
-      }',email: '${meme.data.me.emails[0].email}', organization: '${
-        meme.data.me.company.name
-      }' });});`;
+      const datascript = JSON.stringify({
+        name: `${meme.data.me.firstname} ${meme.data.me.lastname}`,
+        email: `${meme.data.me.emails[0].email}`,
+        organization: `${meme.data.me.company.name}`
+      });
+      console.log(datascript);
+      script3.innerHTML = `zE(function() {zE.identify(${datascript});});`;
       script3.id = "ze-snippet3";
       script3.async = false;
+
       document.head.appendChild(script3);
 
       this.setState({ script3 });
