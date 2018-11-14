@@ -20,6 +20,10 @@ export type AppPageState = {
   popupProps: object;
   popupPropsold: object;
   popupInfo: string;
+  searchopen: Boolean;
+  searchstring: String;
+  voteopen: Boolean;
+  votestring: String;
 };
 
 const ADD_EXTERNAL_ACCOUNT = gql`
@@ -46,7 +50,11 @@ class Integrations extends React.Component<Props, AppPageState> {
     popupHeading: "",
     popupProps: {},
     popupPropsold: {},
-    popupInfo: ""
+    popupInfo: "",
+    searchopen: false,
+    searchstring: "",
+    voteopen: false,
+    votestring: ""
   };
 
   closePopup = () => this.setState({ popup: null });
@@ -108,8 +116,11 @@ class Integrations extends React.Component<Props, AppPageState> {
     });
   };
 
-  renderLoading(apps) {
-    if (apps) {
+  renderLoading(appsunfiltered) {
+    if (appsunfiltered) {
+      //console.log("UF", appsunfiltered);
+      const apps = appsunfiltered.filter(element => element.name.includes(this.state.searchstring));
+      //console.log("A", apps);
       apps.sort(function(a, b) {
         let nameA = a.name.toUpperCase(); // ignore upper and lowercase
         let nameB = b.name.toUpperCase(); // ignore upper and lowercase
@@ -125,22 +136,94 @@ class Integrations extends React.Component<Props, AppPageState> {
       });
       return (
         <div className="integrations">
-          {apps.length > 0 ? (
-            apps.map(appDetails => this.renderAppCard(appDetails))
-          ) : (
-            <div className="nothingHere">
-              <div className="h1">Nothing here :(</div>
-              <div className="h2">
-                That commonly means that you don't have enough rights or that VIPFY is not available
-                in your country.
-              </div>
+          {/*<div className="appIntegration">
+            <div className="captionIntegration">
+              <h3>Search</h3>
             </div>
-          )}
+          </div>*/}
+          <div className="externalSearch">
+            {this.state.searchopen ? (
+              <React.Fragment>
+                <button
+                  className="naked-button genericButton"
+                  onClick={() => this.setState({ searchopen: false })}>
+                  <span className="textButton">
+                    <i className="fal fa-search" />
+                  </span>
+                </button>
+                <input
+                  onChange={e => this.setState({ searchstring: e.target.value })}
+                  autoFocus={true}
+                  className="inputBoxField"
+                />
+              </React.Fragment>
+            ) : (
+              <button
+                className="naked-button genericButton"
+                onClick={() => this.setState({ searchopen: true, searchstring: "" })}>
+                <span className="textButton">
+                  <i className="fal fa-search" />
+                </span>
+                <span className="textButtonBeside">Start Search</span>
+              </button>
+            )}
+          </div>
+          {this.showapps(apps)}
+          <div className="externalSearch">
+            {this.state.voteopen ? (
+              <React.Fragment>
+                <button
+                  className="naked-button genericButton"
+                  onClick={() => this.setState({ voteopen: false })}>
+                  <span className="textButton">
+                    <i className="fal fa-paper-plane" />
+                  </span>
+                </button>
+                <input
+                  onChange={e => this.setState({ votestring: e.target.value })}
+                  autoFocus={true}
+                  className="inputBoxField"
+                />
+              </React.Fragment>
+            ) : (
+              <button
+                className="naked-button genericButton"
+                onClick={() => this.setState({ voteopen: true, votestring: "" })}>
+                <span className="textButton">
+                  <i className="fal fa-poll-people" />
+                </span>
+                <span className="textButtonBeside">Vote for the next integration</span>
+              </button>
+            )}
+          </div>
         </div>
       );
     }
     return <LoadingDiv text="Preparing marketplace" legalText="Just a moment please" />;
   }
+
+  showapps = apps => {
+    if (apps.length > 0) {
+      return apps.map(appDetails => this.renderAppCard(appDetails));
+    }
+    if (this.state.searchstring === "") {
+      return (
+        <div className="nothingHere">
+          <div className="h1">Nothing here :(</div>
+          <div className="h2">
+            That commonly means that you don't have enough rights or that VIPFY is not available in
+            your country.
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="nothingHere">
+        <div className="h1">Nothing here :(</div>
+        <div className="h2">We have no apps that fits your search.</div>
+      </div>
+    );
+  };
 
   renderAppCard = ({ id, logo, name, teaserdescription, needssubdomain }) => (
     <div className="appIntegration" key={id}>
