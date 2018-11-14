@@ -145,6 +145,11 @@ class Login extends React.Component<Props, State> {
     }
   }
 
+  openExternal = (e, url) => {
+    e.preventDefault();
+    require("electron").shell.openExternal(url);
+  };
+
   handleClickOutside = () => {
     this.setState({ possibleAddresses: [] });
   };
@@ -657,13 +662,27 @@ class Login extends React.Component<Props, State> {
                 style={{ display: "none" }}
                 onChange={e => this.setState({ agreementa: e.target.checked })}
               />
-              <label htmlFor="CheckBox" className="check">
+              <label htmlFor="CheckBox" className="check agreementBoxReg">
                 <svg width="18px" height="18px" viewBox="0 0 18 18">
                   <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
                   <polyline points="1 9 7 14 15 4" />
                 </svg>
-                <span className="agreementSentence">
-                  I agree to the Terms of Service and Privacy Agreement of VIPFY.
+                <span
+                  className="agreementSentenceReg"
+                  style={{ lineHeight: "18px", height: "18px", top: "-5px" }}>
+                  I agree to the{" "}
+                  <span
+                    style={{ color: "#20BAA9" }}
+                    onClick={e => this.openExternal(e, "https://vipfy.store/tos")}>
+                    Terms of Service
+                  </span>{" "}
+                  and{" "}
+                  <span
+                    style={{ color: "#20BAA9" }}
+                    onClick={e => this.openExternal(e, "https://vipfy.store/pa")}>
+                    Privacy Agreement
+                  </span>{" "}
+                  of VIPFY.
                 </span>
               </label>
             </div>
@@ -774,12 +793,15 @@ class Login extends React.Component<Props, State> {
                       style={{ display: "none" }}
                       onChange={e => this.setState({ agreementb: e.target.checked, isEU: false })}
                     />
-                    <label htmlFor="CheckBox2" className="check">
+                    <label
+                      htmlFor="CheckBox2"
+                      className="check agreementBoxReg"
+                      style={{ textAlign: "left", display: "flex" }}>
                       <svg width="18px" height="18px" viewBox="0 0 18 18">
                         <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
                         <polyline points="1 9 7 14 15 4" />
                       </svg>
-                      <span className="agreementSentence">
+                      <span className="agreementSentenceReg">
                         I confirm to act as a business and be able to accept invoices without VAT.
                       </span>
                     </label>
@@ -850,8 +872,10 @@ class Login extends React.Component<Props, State> {
       case 4:
         return (
           <div className="partForm partForm_Register">
-            <div className="chooseStage" style={{ marginBottom: "1.5rem" }}>
-              <div className="Heading">Please choose the industry of your company</div>
+            <div className="chooseStage" style={{ marginBottom: "1.5rem", width: "24em" }}>
+              <div className="Heading" style={{ fontSize: "0.8em", marginRight: "0.5em" }}>
+                Please choose the industry of your company
+              </div>
               <div className="optionHolder">
                 <select
                   placeholder="Select Industry"
