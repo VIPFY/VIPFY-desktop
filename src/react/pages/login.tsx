@@ -149,11 +149,7 @@ class Login extends React.Component<Props, State> {
     this.setState({ possibleAddresses: [] });
   };
 
-  cheat() {
-    this.emailInput.value = "nv@vipfy.com";
-    this.passInput.value = "12345678";
-    this.handleEnter(null, null, true);
-  }
+  cheat() {}
 
   searchCompany = async e => {
     const company = e.target.value;
