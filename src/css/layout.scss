@@ -3235,6 +3235,7 @@ h1{
         .chooseStage {
           display: flex;
           margin-bottom: 1rem;
+          justify-content: flex-end;
 
           .optionHolder {
             width: 21rem;
@@ -3954,3 +3955,12 @@ table{
     width: 30%;
     text-align: center;
 }
+.agreementBoxReg{
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+}
+.agreementSentenceReg{
+    font-size: 0.8rem;
+    margin-left: 0.4rem;
+  }
