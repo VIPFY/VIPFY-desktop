@@ -6,6 +6,7 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
 const { pathname } = window.location;
 
 function onLoad() {
@@ -20,6 +21,16 @@ function onReady() {
 }
 
 function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (document.getElementById("signin_form")) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
   document.getElementById("winssb1_banner").style.display = "none";
 }
 

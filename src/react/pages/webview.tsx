@@ -261,7 +261,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   onDidNavigate(url: string): void {
     console.log("DidNavigate", url);
     this.setState({ currentUrl: url });
-    this.showLoadingScreen();
+    //this.showLoadingScreen();
   }
 
   onLoadCommit(event: any): void {
@@ -371,7 +371,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           await this.setState({ interactions });
         }
         break;
-
+      case "showLoading": {
+        console.log("ShowLoading");
+        this.showLoadingScreen();
+        break;
+      }
+      case "hideLoading": {
+        console.log("HideLoading");
+        this.hideLoadingScreen();
+        break;
+      }
       default:
         console.log("No case applied", e.channel);
     }
@@ -425,25 +434,25 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           style={{ visibility: this.state.showLoadingScreen ? "hidden" : "visible" }}
           onDidFailLoad={(code, desc, url, isMain) => {
             if (isMain) {
-              this.hideLoadingScreen();
+              //this.hideLoadingScreen();
             }
             console.log(`failed loading ${url}: ${code} ${desc}`);
           }}
           onLoadCommit={e => this.onLoadCommit(e)}
           onNewWindow={e => this.onNewWindow(e)}
-          onWillNavigate={e => console.log("WillNavigate", e)}
-          onDidStartLoading={e => console.log("DidStartLoading", e)}
-          onDidStartNavigation={e => console.log("DidStartNavigation", e)}
-          onDidFinishLoad={e => console.log("DidFinishLoad", e)}
-          onDidStopLoading={e => console.log("DidStopLoading", e)}
+          //onWillNavigate={e => console.log("WillNavigate", e)}
+          //onDidStartLoading={e => console.log("DidStartLoading", e)}
+          //onDidStartNavigation={e => console.log("DidStartNavigation", e)}
+          //onDidFinishLoad={e => console.log("DidFinishLoad", e)}
+          //onDidStopLoading={e => console.log("DidStopLoading", e)}
           onDomReady={e => {
-            console.log("DomReady", e);
-            this.maybeHideLoadingScreen();
+            //console.log("DomReady", e);
+            //this.maybeHideLoadingScreen();
             if (!e.target.isDevToolsOpened()) {
               e.target.openDevTools();
             }
           }}
-          onDialog={e => console.log("Dialog", e)}
+          //onDialog={e => console.log("Dialog", e)}
           onIpcMessage={e => this.onIpcMessage(e)}
         />
         {this.state.popup ? (

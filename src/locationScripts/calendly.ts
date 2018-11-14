@@ -6,56 +6,47 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
-function onLoad() {
-  /*console.log("On load");
-  let loginForm = document.getElementById("loginForm");
-  let loginUser = document.getElementById("resolving_input");
-  let loginPass = document.getElementById("IDToken2");
+let loading: boolean | null = true;
+let waitedalittle = false;
 
-  console.log(loginForm);
-  if (loginUser) {
-    loginUsername();
-  }
-  if (loginPass) {
-    loginPwd();
-  }*/
-}
+function onLoad() {}
 
 function onReady() {
-  console.log("READY");
-  modifyAll();
+  //console.log("READY");
+  setInterval(modifyAll, 100);
 }
 
 function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
   if (
     document.querySelector("input[name='email']") &&
     document.querySelector("input[name='email']").value === ""
   ) {
-    console.log("Username now");
+    //console.log("Username now");
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    waitedalittle = false;
     loginUsername();
+    return;
   }
   if (
     document.querySelector("input[name='password']") &&
     document.querySelector("input[name='password']").value === ""
   ) {
-    console.log("password now");
+    //console.log("password now");
     loginPassword();
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    waitedalittle = false;
+    return;
   }
-  /*else if (
-    document.querySelector("input[name='email']") &&
-    document.querySelector("input[name='email']").value !== "" &&
-    clicked
-  ) {
-    console.log("click");
-    document.querySelector("input[type='submit']").click();
-    clicked = false;
-  } else {
-    //setTimeout(b => modifyAll(b), 100);
+  //console.log(waitedalittle, loading);
+  if (waitedalittle && loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  } else if (loading) {
+    waitedalittle = true;
   }
-  password
-  
-  */
-  setTimeout(modifyAll, 100);
 }
 
 function modifySettings() {}
@@ -83,8 +74,6 @@ function loginPassword() {
     console.log("KEY2", key);
     let password = key.password;
 
-    //document.getElementById("IDToken2").value = password;
-    //document.getElementById("Button1").click();
     document.querySelector("input[name='password']").value = password;
     document
       .querySelector("input[name='password']")

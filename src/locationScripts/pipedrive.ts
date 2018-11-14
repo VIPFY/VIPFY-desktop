@@ -35,6 +35,7 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
 function onLoad() {
   if (window.location.pathname == "/auth/login") {
     login();
@@ -60,6 +61,17 @@ function login() {
 }
 
 function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (window.location.pathname == "/auth/login") {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
+
   if (!support) {
     //redirect to own marketplace
     //the following should apply to most instances, but there are occasional exceptions

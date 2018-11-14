@@ -6,14 +6,35 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
+let clicked: boolean = false;
 const { pathname } = window.location;
 
-function onReady() {}
+function onReady() {
+  setInterval(modifyAll, 100);
+}
+
+function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (!clicked && document.getElementById("ius-userid")) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    clicked = true;
+    login();
+    return;
+  }
+  if (loading && !document.getElementById("ius-userid")) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+    clicked = false;
+  }
+}
 
 function onLoad() {
-  if (pathname.includes("/login")) {
-    login();
-  }
+  //ipcRenderer.sendToHost("hideLoading");
+  //if (pathname.includes("/login")) {
+  // login();
+  //}
 }
 
 function login() {
@@ -22,7 +43,7 @@ function login() {
     let email = key.username;
     let password = key.password;
 
-    document.getElementById<HTMLInputElement>("ius-userid")!.value = email;
+    document.getElementById("ius-userid")!.value = email;
     document
       .getElementById("ius-userid")
       .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));

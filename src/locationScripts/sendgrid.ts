@@ -1,11 +1,12 @@
 import { ipcRenderer } from "electron";
-import { hideByQuery, support} from "./utils/util";
+import { hideByQuery, support } from "./utils/util";
 
 module.exports = function() {
   window.addEventListener("DOMContentLoaded", onReady);
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
 const { pathname } = window.location;
 
 function onLoad() {
@@ -15,9 +16,7 @@ function onLoad() {
 }
 
 function onReady() {
-
   setInterval(modifyAll, 100);
-
 }
 
 function login() {
@@ -27,18 +26,36 @@ function login() {
     const username = key.username;
     const password = key.password;
 
-    document.querySelector<HTMLInputElement>("input[id='usernameContainer-input-id']")!.value = username;
-    document.querySelector<HTMLInputElement>("input[id='passwordContainer-input-id']")!.value = password;
+    document.querySelector<HTMLInputElement>(
+      "input[id='usernameContainer-input-id']"
+    )!.value = username;
+    document.querySelector<HTMLInputElement>(
+      "input[id='passwordContainer-input-id']"
+    )!.value = password;
     document.querySelector<HTMLInputElement>("button[type='submit']")!.click();
   });
 }
 
 function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (document.querySelector<HTMLInputElement>("input[id='passwordContainer-input-id']")) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
+
   if (!support) {
     hideByQuery('a[href="https://app.sendgrid.com/settings/account"]', true);
     hideByQuery('a[href="https://app.sendgrid.com/settings/teammates"]', true);
     hideByQuery('a[href="https://app.sendgrid.com/settings/auth"]', true);
-    hideByQuery('a[href="https://sendgrid.com/docs/User_Guide/Marketing_Campaigns/index.html"]', true);
+    hideByQuery(
+      'a[href="https://sendgrid.com/docs/User_Guide/Marketing_Campaigns/index.html"]',
+      true
+    );
     hideByQuery('li[data-logout="logout"]', false);
   }
 }

@@ -6,12 +6,27 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
 const { pathname } = window.location;
 
-function onReady() {}
+function onReady() {
+  setInterval(modifyAll, 100);
+}
+
+function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (document.getElementById("user_session_password")) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
+}
 
 function onLoad() {
-
   if (pathname == "/signin") {
     login();
   }
@@ -27,6 +42,5 @@ function login() {
     document.getElementById("user_session_password")!.value = password;
     document.getElementById("user_session_remember_me").checked = true;
     document.getElementById("user_session_submit")!.click();
-
   });
 }

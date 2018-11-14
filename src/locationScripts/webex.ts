@@ -6,6 +6,8 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
+
 function onLoad() {
   let loginForm = document.getElementById("loginForm");
   let loginUser = document.getElementById("username");
@@ -20,9 +22,22 @@ function onLoad() {
   }
 }
 
-function onReady() {}
+function onReady() {
+  setInterval(modifyAll, 100);
+}
 
-function modifyAll() {}
+function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (document.getElementById("loginForm") || document.getElementById("IDToken2")) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
+}
 
 function modifySettings() {}
 
@@ -31,13 +46,11 @@ function loginUsername(form: Element) {
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
-
     console.log("KEY", key);
     let username = key.username;
 
     form.querySelector<HTMLInputElement>("input[name='username']")!.value = username;
     document.getElementById("login-btn-next").click();
-
   });
 }
 
@@ -46,13 +59,10 @@ function loginPwd() {
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
-
     console.log("KEY", key);
     let password = key.password;
 
     document.getElementById("IDToken2").value = password;
     document.getElementById("Button1").click();
-
-
   });
 }

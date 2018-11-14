@@ -6,6 +6,7 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
 const { pathname } = window.location;
 
 function onLoad() {
@@ -15,7 +16,21 @@ function onLoad() {
 }
 
 function onReady() {
-  console.log("Ready");
+  //console.log("Ready");
+  setInterval(modifyAll, 100);
+}
+
+function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (document.getElementById("login-form")) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
 }
 
 function login() {

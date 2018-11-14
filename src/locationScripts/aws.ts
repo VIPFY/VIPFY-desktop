@@ -6,6 +6,8 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
+
 function onLoad() {
   console.log("On load");
   let loginForm = document.getElementById("loginForm");
@@ -14,10 +16,12 @@ function onLoad() {
 
   console.log(loginForm);
   if (loginUser) {
-    loginUsername();
+    //loginUsername();
+    console.log("loginuser");
   }
   if (loginPass) {
-    loginPwd();
+    //loginPwd();
+    console.log("loginpass");
   }
 }
 
@@ -27,19 +31,49 @@ function onReady() {
 }
 
 function modifyAll() {
+  //Username
+  let ipcRenderer = require("electron").ipcRenderer;
   if (
-    document.getElementById("login_container").style.display !== "none" &&
-    document.getElementById("password").value === ""
+    document.getElementById("signin_container") &&
+    document.getElementById("signin_container")!.style.display !== "none" &&
+    document.getElementById("resolving_input")!.value === ""
   ) {
-    console.log("Password now");
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    console.log(
+      "loginusername",
+      document.getElementById("signin_container"),
+      document.getElementById("signin_container")!.style.display !== "none",
+      document.getElementById("resolving_input")!.value
+    );
+    loginUsername();
+  } else if (
+    document.getElementById("login_container") &&
+    document.getElementById("login_container")!.style.display !== "none" &&
+    document.getElementById("password")!.value === ""
+  ) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    console.log(
+      "Password now",
+      document.getElementById("login_container"),
+      document.getElementById("login_container")!.style.display !== "none",
+      document.getElementById("password")!.value
+    );
     loginPwd();
+  } else {
+    if (loading) {
+      console.log("hide");
+      ipcRenderer.sendToHost("hideLoading");
+    }
+    loading = false;
   }
 }
 
 function modifySettings() {}
 
 function loginUsername() {
-  console.log("filling in webex login form user");
+  console.log("filling in aws login form user");
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {
@@ -49,13 +83,19 @@ function loginUsername() {
     //    form.querySelector<HTMLInputElement>("input[name='username']")!.value = username;
     document
       .getElementById("resolving_input")
+      .dispatchEvent(new Event("keypress", { bubbles: true, cancelable: true }));
+    document
+      .getElementById("resolving_input")
       .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+    document
+      .getElementById("resolving_input")
+      .dispatchEvent(new Event("propertychange", { bubbles: true, cancelable: true }));
     document.getElementById("next_button").click();
   });
 }
 
 function loginPwd() {
-  console.log("filling in webex login form password");
+  console.log("filling in aws login form password");
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("getLoginData", 7);
   ipcRenderer.on("loginData", (e, key) => {

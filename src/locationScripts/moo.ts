@@ -4,7 +4,7 @@ module.exports = function() {
   window.addEventListener("DOMContentLoaded", onReady);
   window.addEventListener("load", onLoad);
 };
-
+let loading: boolean | null = true;
 function onLoad() {
   if (window.location.pathname.indexOf("/account/signin.php") !== -1) {
     login();
@@ -37,6 +37,17 @@ function modifyAll() {
   hideByQuery('a[href="https://vipfy-test.pipedrive.com/users/add"]', false);
   hideByQuery('input[name="user[email]"]', true);
   hideByQuery('a[href="/settings/sso"]', true);*/
+
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (window.location.pathname.indexOf("/account/signin.php") !== -1) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
 }
 
 function login() {

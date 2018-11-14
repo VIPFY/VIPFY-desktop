@@ -70,22 +70,24 @@
       require("./locationScripts/slack.ts")();
     } else if (hostMatches(".*.?realtimeboard.com")) {
       require("./locationScripts/realtimeboard.ts")();
-    } else if (hostMatches(".*.?37signals.com")) {
+    } else if (hostMatches(".*.?37signals.com") || hostMatches(".*.basecamp.com")) {
       require("./locationScripts/basecamp.ts")();
     } else if (hostMatches(".*.?humanity.com")) {
       require("./locationScripts/humanity.ts")();
     } else if (hostMatches(".*.?qualaroo.com")) {
       require("./locationScripts/qualaroo.ts")();
-    } else if (hostMatches(".*.?infusionsoft.com")) {
+    } else if (hostMatches(".*.?infusionsoft.com") || hostMatches(".*.?infusionsoft.app")) {
       require("./locationScripts/infusion.ts")();
     } else if (hostMatches(".*.?buzzsumo.com")) {
       require("./locationScripts/buzzsumo.ts")();
-    } else if (hostMatches(".*.?logmeininc.com")) {
+    } else if (hostMatches(".*.?logmeininc.com") || hostMatches(".*.?gotomeeting.com")) {
       require("./locationScripts/gotomeeting.ts")();
     } else if (hostMatches(".*.?trello.com")) {
       require("./locationScripts/trello.ts")();
     } else if (hostMatches(".*.?calendly.com")) {
       require("./locationScripts/calendly.ts")();
+    } else if (hostMatches(".*.?teamwork.com")) {
+      require("./locationScripts/teamwork.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }

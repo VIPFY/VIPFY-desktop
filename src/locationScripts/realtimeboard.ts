@@ -6,6 +6,7 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
 const { pathname } = window.location;
 
 function onLoad() {
@@ -14,7 +15,22 @@ function onLoad() {
   }
 }
 
-function onReady() {}
+function onReady() {
+  setInterval(modifyAll, 100);
+}
+
+function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (document.querySelector<HTMLInputElement>("input[name='password']")) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
+}
 
 function login() {
   // change to Appid of Freshbooks

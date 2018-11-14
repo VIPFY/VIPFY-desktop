@@ -6,6 +6,8 @@ module.exports = function() {
   window.addEventListener("load", onLoad);
 };
 
+let loading: boolean | null = true;
+
 function onLoad() {
   console.log("Load");
   //if (document.location.host === "www.teamwork.com") {
@@ -21,10 +23,26 @@ function onReady() {
   console.log("ProjectPage");
   //LOGIN
   login();
+  setInterval(modifyAll, 100);
   //}
 }
 
-function modifyAll() {}
+function modifyAll() {
+  let ipcRenderer = require("electron").ipcRenderer;
+  if (
+    document.getElementById("loginemail") &&
+    document.getElementById("loginpassword") &&
+    document.querySelectorAll("button[type='submit']")[0]
+  ) {
+    ipcRenderer.sendToHost("showLoading");
+    loading = true;
+    return;
+  }
+  if (loading) {
+    ipcRenderer.sendToHost("hideLoading");
+    loading = false;
+  }
+}
 
 function modifySettings() {}
 
