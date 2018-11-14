@@ -29,6 +29,7 @@ $modal-wh: 50%;
   opacity: 0;
   background-color: #fff;
   min-height: 25%;
+  max-height: 75%;
   position: relative;
   width: $modal-wh;
   border-radius: 3px;
@@ -101,4 +102,9 @@ $modal-wh: 50%;
     margin: 1rem;
     font-size: large;
   }
+}
+.popup-body-wrapper{
+  overflow-y: auto;
+    max-height: 70vh;
+    width: 100%;
 }
