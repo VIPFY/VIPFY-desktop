@@ -7,8 +7,8 @@ $plan-background: #ccc;
   grid-auto-flow: dense;
   margin: 2rem;*/
   display: flex;
-    flex-flow: column;
-    padding: 48px;
+  flex-flow: column;
+  padding: 48px;
 }
 
 .payment-data-holder {
@@ -53,6 +53,7 @@ $plan-background: #ccc;
   justify-content: center;
   flex-wrap: wrap;
 }
+
 .nextBillHeading{
   width: 100%;
   font-size: 1.5em;

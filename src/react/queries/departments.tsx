@@ -7,6 +7,7 @@ export const FETCH_COMPANY = gql`
       name
       legalinformation
       employees
+      promocode
       unit: unitid {
         id
       }

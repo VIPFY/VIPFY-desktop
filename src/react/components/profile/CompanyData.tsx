@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query, graphql, withApollo } from "react-apollo";
+import { Query, compose, graphql, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
 import Addresses from "./Addresses";
@@ -21,6 +21,14 @@ const UPDATE_PIC = gql`
   }
 `;
 
+const APPLY_PROMOCODE = gql`
+  mutation onApplyPromocode($promocode: String!) {
+    applyPromocode(promocode: $promocode) {
+      ok
+    }
+  }
+`;
+
 interface Props {
   toggle: Function;
   updatePic: Function;
@@ -30,11 +38,13 @@ interface Props {
 
 interface State {
   show: boolean;
+  promocode: string;
 }
 
 class CompanyData extends React.Component<Props, State> {
   state = {
-    show: true
+    show: true,
+    promocode: ""
   };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
@@ -53,6 +63,14 @@ class CompanyData extends React.Component<Props, State> {
       return true;
     } catch (err) {
       return err;
+    }
+  };
+
+  handleSubmit = async () => {
+    try {
+      await this.props.applyPromocode({ variables: { promocode: this.state.promocode } });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -84,10 +102,10 @@ class CompanyData extends React.Component<Props, State> {
                 return <LoadingDiv text="Fetching Company Data..." />;
               }
 
-              if (error) {
+              if (error || !fetchCompany) {
                 return filterError(error);
               }
-              console.log(fetchCompany);
+              console.log(this.state.promocode);
               return (
                 <div className="genericHolder">
                   <div className="header" onClick={this.toggle}>
@@ -137,7 +155,6 @@ class CompanyData extends React.Component<Props, State> {
                               return;
                             } else if (info == "legalinformation") {
                               if (fetchCompany[info] && fetchCompany[info].vatId) {
-                                //console.log("FIRE");
                                 return (
                                   <li key={key}>
                                     <label>Vatnumber:</label>
@@ -157,6 +174,36 @@ class CompanyData extends React.Component<Props, State> {
                               //     <span>{fetchCompany[info][item]}</span>
                               //   </li>
                               // ));
+                            } else if (info == "promocode") {
+                              return (
+                                <li key={key}>
+                                  <label>Promocode:</label>
+                                  {fetchCompany[info] ? (
+                                    <span>{fetchCompany[info]}</span>
+                                  ) : (
+                                    <span>
+                                      <form onSubmit={this.handleSubmit} className="inline-form">
+                                        <input
+                                          type="text"
+                                          style={{ fontSize: "12px", color: "#000" }}
+                                          className="inline-searchbar"
+                                          value={this.state.promocode}
+                                          placeholder="Please enter a promocode"
+                                          onChange={e =>
+                                            this.setState({ promocode: e.target.value })
+                                          }
+                                        />
+                                        <button
+                                          title="submit"
+                                          className="naked-button"
+                                          type="submit">
+                                          <i className="fal fa-barcode-alt" />
+                                        </button>
+                                      </form>
+                                    </span>
+                                  )}
+                                </li>
+                              );
                             } else {
                               return (
                                 <li key={key}>
@@ -187,4 +234,7 @@ class CompanyData extends React.Component<Props, State> {
   }
 }
 
-export default graphql(UPDATE_PIC, { name: "updatePic" })(withApollo(CompanyData));
+export default compose(
+  graphql(APPLY_PROMOCODE, { name: "applyPromocode" }),
+  graphql(UPDATE_PIC, { name: "updatePic" })
+)(withApollo(CompanyData));
