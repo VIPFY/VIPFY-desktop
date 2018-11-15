@@ -46,6 +46,19 @@ class AppList extends React.Component<Props, State> {
           if (error) {
             return filterError(error);
           }
+          fetchLicences.sort(function(a, b) {
+            let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+            let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+
+            // namen müssen gleich sein
+            return 0;
+          });
           return (
             <div className="genericHolder">
               <div className="header" onClick={this.toggle}>

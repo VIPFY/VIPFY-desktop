@@ -23,6 +23,19 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     let appLogos: JSX.Element[] = [];
     //console.log("PL", this.props, licences);
     if (licences) {
+      licences.sort(function(a, b) {
+        let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // namen müssen gleich sein
+        return 0;
+      });
       licences.forEach((licence, key) => {
         let cssClass = "sidebar-link";
         if (this.props.location.pathname === `/area/app/${licence.id}`) {
