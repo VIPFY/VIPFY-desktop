@@ -4043,3 +4043,22 @@ table{
     border-bottom: 1px solid;
     padding: 0px;
 }
+.domainAroundLeft{
+    line-height: 1.5em;
+    padding: 2px;
+    margin-bottom: 1px;
+    background-color: #eee;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+.domainAroundRight{
+    line-height: 1.5em;
+    padding: 2px;
+    margin-bottom: 1px;
+    background-color: #eee;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.textRight{
+    text-align: right;
+}
