@@ -72,7 +72,7 @@ class Integrations extends React.Component<Props, AppPageState> {
 
   closePopup = () => this.setState({ popup: null });
 
-  registerExternal = (name, needssubdomain, appid) => {
+  registerExternal = (name, needssubdomain, appid, options) => {
     console.log("TEST");
     const fields = [
       {
@@ -135,7 +135,8 @@ class Integrations extends React.Component<Props, AppPageState> {
         appname: name,
         appid: appid,
         needsubdomain: needssubdomain,
-        addAccount: this.addAccount
+        addAccount: this.addAccount,
+        options: options
       }
     });
   };
@@ -260,6 +261,7 @@ class Integrations extends React.Component<Props, AppPageState> {
 
   showapps = apps => {
     if (apps.length > 0) {
+      console.log("APPS", apps);
       return apps.map(appDetails => this.renderAppCard(appDetails));
     }
     if (this.state.searchstring === "") {
@@ -281,7 +283,7 @@ class Integrations extends React.Component<Props, AppPageState> {
     );
   };
 
-  renderAppCard = ({ id, logo, name, teaserdescription, needssubdomain }) => (
+  renderAppCard = ({ id, logo, name, teaserdescription, needssubdomain, options }) => (
     <div className="appIntegration" key={id}>
       <div
         className="appIntegrationLogo"
@@ -294,13 +296,14 @@ class Integrations extends React.Component<Props, AppPageState> {
       </div>
       <button
         className="button-external"
-        onClick={() => this.registerExternal(name, needssubdomain, id)}>
+        onClick={() => this.registerExternal(name, needssubdomain, id, options)}>
         <i className="fas fa-boxes" /> Add as External
       </button>
     </div>
   );
 
   render() {
+    const bodyprops = { ...this.state.popupProps, showloading: this.state.showloading };
     return (
       <div>
         {this.renderLoading(this.props.products.allApps)}
@@ -308,10 +311,9 @@ class Integrations extends React.Component<Props, AppPageState> {
           <Popup
             popupHeader={this.state.popupHeading}
             popupBody={this.state.popupBody}
-            bodyProps={this.state.popupProps}
+            bodyProps={bodyprops}
             onClose={this.closePopup}
             info={this.state.popupInfo}
-            showloading={this.state.showloading}
           />
         ) : (
           ""

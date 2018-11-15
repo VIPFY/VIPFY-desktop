@@ -23,6 +23,7 @@ interface State {
   password: String;
   subdomain: String;
   focus: number;
+  options?: Object;
 }
 
 class ShowEmployee extends Component<Props, State> {
@@ -59,8 +60,28 @@ class ShowEmployee extends Component<Props, State> {
     await this.setState({ focus: fieldid });
   };
 
+  addAccountTHIS = () => {
+    if (this.props.needsubdomain) {
+      this.props.addAccount(
+        this.state.username,
+        this.state.password,
+        `${this.props.options.predomain}${this.state.subdomain}${this.props.options.afterdomain}`,
+        this.props.appid
+      );
+    } else {
+      this.props.addAccount(
+        this.state.username,
+        this.state.password,
+        this.state.subdomain,
+        this.props.appid
+      );
+    }
+  };
+
   render() {
     const { clipboard } = require("electron");
+
+    //console.log("P", this.props);
 
     if (this.props.showloading) {
       return <h3>Adding your account</h3>;
@@ -129,19 +150,21 @@ class ShowEmployee extends Component<Props, State> {
             <div className={`inside ${this.state.showsubdomain ? "in" : "out"}`}>
               <div
                 className="inside-padding"
-                style={{ display: "flex", justifyContent: "space-around" }}>
-                <div className="field" style={{ width: "20em" }}>
+                style={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
+                <div className="domainAroundLeft">{this.props.options.predomain}</div>
+                <div className="field" style={{ width: "10em" }}>
                   <div className="label">Subdomain:</div>
                   <GenericInputField
-                    fieldClass="inputBoxField inputBoxUnderline"
+                    fieldClass="inputBoxField inputBoxUnderline textRight"
                     divClass=""
-                    placeholder="Please insert your subdomain"
+                    placeholder="Your subdomain"
                     onBlur={value => this.setState({ subdomain: value })}
                     focus={this.state.focus === 1}
                     onEnter={() => this.onEnter(2)}
                     onClick={() => this.onEnter(1)}
                   />
                 </div>
+                <div className="domainAroundRight">{this.props.options.afterdomain}</div>
               </div>
             </div>
           </div>
@@ -185,14 +208,7 @@ class ShowEmployee extends Component<Props, State> {
                   onBlur={value => this.setState({ password: value })}
                   onChange={value => this.setState({ password: value })}
                   focus={this.state.focus === 3}
-                  onEnter={() =>
-                    this.props.addAccount(
-                      this.state.username,
-                      this.state.password,
-                      this.state.subdomain,
-                      this.props.appid
-                    )
-                  }
+                  onEnter={() => this.addAccountTHIS()}
                   onClick={() => this.onEnter(3)}
                 />
               </div>
@@ -213,14 +229,7 @@ class ShowEmployee extends Component<Props, State> {
 
           <button
             className="naked-button genericButton"
-            onClick={() =>
-              this.props.addAccount(
-                this.state.username,
-                this.state.password,
-                this.state.subdomain,
-                this.props.appid
-              )
-            }
+            onClick={() => this.addAccountTHIS()}
             style={{
               marginLeft: "0.5em",
               backgroundColor:
