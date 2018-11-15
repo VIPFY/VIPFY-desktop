@@ -241,6 +241,7 @@ class GenericInputForm extends React.Component<Props, State> {
               return (
                 <textarea
                   className=""
+                  id={name}
                   rows={5}
                   cols={50}
                   name={name}
@@ -426,6 +427,7 @@ class GenericInputForm extends React.Component<Props, State> {
             default: {
               return (
                 <input
+                  id={name}
                   className="searchbar"
                   name={name}
                   placeholder={placeholder}
@@ -447,14 +449,6 @@ class GenericInputForm extends React.Component<Props, State> {
         const picCheck = type == "picture";
         return (
           <div key={name} className={`searchbarHolder ${inputFocus[name] ? "searchbarFocus" : ""}`}>
-            {picCheck ? (
-              ""
-            ) : (
-              <div className="searchbarButton">
-                <i className={`fas fa-${icon}`} />
-              </div>
-            )}
-
             {type == "checkbox" || picCheck ? (
               ""
             ) : (
@@ -462,6 +456,9 @@ class GenericInputForm extends React.Component<Props, State> {
                 htmlFor={name}
                 className={errors[name] ? "generic-error-field" : ""}
                 style={picCheck ? { width: "100%" } : {}}>
+                <div className="searchbarButton">
+                  <i className={`fas fa-${icon}`} />
+                </div>
                 {picCheck ? "" : label}
               </label>
             )}
