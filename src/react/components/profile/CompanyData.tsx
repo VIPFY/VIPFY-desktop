@@ -7,7 +7,7 @@ import Phones from "./Phones";
 import Emails from "./Emails";
 import GenericInputForm from "../../components/GenericInputForm";
 import LoadingDiv from "../../components/LoadingDiv";
-import { AppContext, sleep } from "../../common/functions";
+import { AppContext } from "../../common/functions";
 import { filterError } from "../../common/functions";
 import { unitPicFolder } from "../../common/constants";
 import { me } from "../../queries/auth";
@@ -92,7 +92,7 @@ class CompanyData extends React.Component<Props, State> {
       body: GenericInputForm,
       props: picProps
     };
-
+    console.log(this.state);
     return (
       <AppContext.Consumer>
         {({ showPopup }) => (
