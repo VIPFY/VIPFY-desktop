@@ -54,6 +54,19 @@ class Dashboard extends React.Component<Props, {}> {
     let appLogos: JSX.Element[] = [];
 
     if (licences) {
+      licences.sort(function(a, b) {
+        let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // namen müssen gleich sein
+        return 0;
+      });
       if (licences.length > 0) {
         licences.forEach((licence, key) => {
           appLogos.push(

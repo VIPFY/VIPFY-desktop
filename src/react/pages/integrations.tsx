@@ -6,6 +6,7 @@ import { fetchApps } from "../queries/products";
 import LoadingDiv from "../components/LoadingDiv";
 import GenericInputForm from "../components/GenericInputForm";
 import Popup from "../components/Popup";
+import addExternal from "../popups/addExternal";
 
 interface Props {
   history: any;
@@ -25,6 +26,7 @@ export type AppPageState = {
   searchstring: String;
   voteopen: Boolean;
   votestring: String;
+  showloading: boolean;
 };
 
 const ADD_EXTERNAL_ACCOUNT = gql`
@@ -64,7 +66,8 @@ class Integrations extends React.Component<Props, AppPageState> {
     searchopen: false,
     searchstring: "",
     voteopen: false,
-    votestring: ""
+    votestring: "",
+    showloading: false
   };
 
   closePopup = () => this.setState({ popup: null });
@@ -101,7 +104,7 @@ class Integrations extends React.Component<Props, AppPageState> {
       });
     }
 
-    this.setState({
+    /*this.setState({
       popup: true,
       popupBody: GenericInputForm,
       popupHeading: "Add External App",
@@ -123,7 +126,34 @@ class Integrations extends React.Component<Props, AppPageState> {
           }
         }
       }
+    });*/
+    this.setState({
+      popup: true,
+      popupBody: addExternal,
+      popupHeading: "Add External Account",
+      popupProps: {
+        appname: name,
+        appid: appid,
+        needsubdomain: needssubdomain,
+        addAccount: this.addAccount
+      }
     });
+  };
+
+  addAccount = async (username, password, subdomain, appid) => {
+    //console.log(username, password, subdomain, appid);
+    this.setState({ showloading: true });
+    try {
+      await this.props.addExternalApp({
+        variables: { username, password, loginurl: subdomain, appid }
+      });
+      this.closePopup();
+      this.setState({ showloading: false });
+      return true;
+    } catch (error) {
+      this.setState({ showloading: true });
+      throw error;
+    }
   };
 
   clickSend = async () => {
@@ -147,7 +177,7 @@ class Integrations extends React.Component<Props, AppPageState> {
 
   renderLoading(appsunfiltered) {
     if (appsunfiltered) {
-      //console.log("UF", appsunfiltered);
+      console.log("UF", appsunfiltered);
       const apps = appsunfiltered.filter(element =>
         element.name.toLowerCase().includes(this.state.searchstring.toLowerCase())
       );
@@ -281,6 +311,7 @@ class Integrations extends React.Component<Props, AppPageState> {
             bodyProps={this.state.popupProps}
             onClose={this.closePopup}
             info={this.state.popupInfo}
+            showloading={this.state.showloading}
           />
         ) : (
           ""

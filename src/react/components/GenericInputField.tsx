@@ -21,6 +21,7 @@ interface Props {
   placeholder?: string;
   errorInputClass?: string;
   forcedTld?: string;
+  type?: string;
 }
 
 interface State {
@@ -133,6 +134,7 @@ class GenericInputField extends Component<Props, State> {
         )}
         {this.props.symbol ? <div className={this.props.symbolClass}>{this.props.symbol}</div> : ""}
         <input
+          type={this.props.type}
           onFocus={() => this.toggleInput(true)}
           onBlur={() => this.toggleInput(false)}
           className={this.props.fieldClass}
