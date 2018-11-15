@@ -10,13 +10,11 @@ class ShowEmployee extends Component {
   };
 
   render() {
-    console.log("Add", this.props);
-
     return (
       <div className="addEmployeeHolderP">
         <span className="heading">Do you want to delete {this.props.name}?</span>
 
-        <div className="checkoutButton" onClick={() => this.closePopup()}>
+        <div className="checkoutButton" onClick={() => this.props.onClose()}>
           Cancel
         </div>
         <div className="checkoutButton" onClick={() => this.delEmp()}>

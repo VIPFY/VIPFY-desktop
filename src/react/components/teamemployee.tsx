@@ -2,6 +2,7 @@ import * as React from "react";
 import UserPicture from "../components/UserPicture";
 import { Query } from "react-apollo";
 import { fetchUsersOwnLicences } from "../queries/departments";
+import { con } from "../../locationScripts/utils/util";
 
 interface Props {
   person: { firstname: String; lastname: String; id: number };
@@ -17,6 +18,7 @@ interface Props {
   teamside: Object;
   addingAppUser: number | null;
   addingAppName: String | null;
+  onEmployeeClick?: Function;
 }
 interface State {
   show: Boolean;
@@ -48,7 +50,12 @@ class TeamEmployee extends React.Component<Props, State> {
           onDrop={ev => this.props.onDrop(ev, person.id, departmentid, false)}
           onTouchEnd={ev => this.props.onDrop(ev, person.id, departmentid, false)}>
           <div className="inside-padding gridinner">
-            <UserPicture size="picutre" unitid={person.id} />
+            <UserPicture
+              size="picutre"
+              unitid={person.id}
+              onClick={this.props.onEmployeeClick}
+              departmentid={departmentid}
+            />
             <div className="team-app-holders">
               <Query
                 query={fetchUsersOwnLicences}

@@ -18,6 +18,8 @@ export default function UserPicture(props: {
   size: string;
   style?: any;
   updateable?: any;
+  onClick?: Function;
+  departmentid?: number | null;
 }): JSX.Element {
   if (props.unitid === null || props.unitid === undefined) {
     return <span />;
@@ -38,6 +40,7 @@ export default function UserPicture(props: {
         const user = data.fetchPublicUser;
         const picture = user.profilepicture ? unitPicFolder + user.profilepicture : defaultPic;
         const style = {
+          cursor: props.onClick ? "pointer" : "",
           backgroundImage: `url(${picture})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -45,7 +48,14 @@ export default function UserPicture(props: {
           ...customStyle
         };
         return (
-          <div className={`imagehoverable ${props.size}`} style={style}>
+          <div
+            className={`imagehoverable ${props.size}`}
+            style={style}
+            onClick={() => {
+              if (props.onClick) {
+                props.onClick(props.unitid, props.departmentid);
+              }
+            }}>
             {props.updateable ? (
               <div className="imagehover">
                 <i className="fal fa-camera" />

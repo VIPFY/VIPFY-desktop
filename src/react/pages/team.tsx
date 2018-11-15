@@ -613,6 +613,7 @@ class Team extends React.Component<Props, State> {
             teamside={this}
             addingAppUser={this.state.addingAppUser}
             addingAppName={this.state.addingAppName}
+            onEmployeeClick={this.showEmployee}
           />
         );
       });
