@@ -61,7 +61,7 @@ class ShowEmployee extends Component<Props, State> {
   };
 
   addAccountTHIS = () => {
-    if (this.props.needsubdomain) {
+    if (this.props.needsubdomain && this.props.options) {
       this.props.addAccount(
         this.state.username,
         this.state.password,
@@ -151,11 +151,15 @@ class ShowEmployee extends Component<Props, State> {
               <div
                 className="inside-padding"
                 style={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
-                <div className="domainAroundLeft">{this.props.options.predomain}</div>
-                <div className="field" style={{ width: "10em" }}>
+                <div className="domainAroundLeft">
+                  {this.props.options ? this.props.options.predomain : ""}
+                </div>
+                <div className="field" style={{ width: this.props.options ? "10em" : "20em" }}>
                   <div className="label">Subdomain:</div>
                   <GenericInputField
-                    fieldClass="inputBoxField inputBoxUnderline textRight"
+                    fieldClass={`inputBoxField inputBoxUnderline ${
+                      this.props.options ? "textRight" : ""
+                    }`}
                     divClass=""
                     placeholder="Your subdomain"
                     onBlur={value => this.setState({ subdomain: value })}
@@ -164,7 +168,9 @@ class ShowEmployee extends Component<Props, State> {
                     onClick={() => this.onEnter(1)}
                   />
                 </div>
-                <div className="domainAroundRight">{this.props.options.afterdomain}</div>
+                <div className="domainAroundRight">
+                  {this.props.options ? this.props.options.afterdomain : ""}
+                </div>
               </div>
             </div>
           </div>
