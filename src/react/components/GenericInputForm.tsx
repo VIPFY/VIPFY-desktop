@@ -203,6 +203,7 @@ class GenericInputForm extends React.Component<Props, State> {
               return (
                 <select
                   name={name}
+                  id={name}
                   onChange={e =>this.handleChange(e, validate)}
                   value={values[name] ? values[name] : ""}
                   required={required}
@@ -221,6 +222,7 @@ class GenericInputForm extends React.Component<Props, State> {
               return (
                 <select
                   name={name}
+                  id={name}
                   onChange={e =>this.handleChange(e, validate)}
                   value={values[name] ? values[name] : ""}
                   required={required}
@@ -457,6 +459,7 @@ class GenericInputForm extends React.Component<Props, State> {
               ""
             ) : (
               <label
+                htmlFor={name}
                 className={errors[name] ? "generic-error-field" : ""}
                 style={picCheck ? { width: "100%" } : {}}>
                 {picCheck ? "" : label}

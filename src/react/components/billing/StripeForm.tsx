@@ -12,7 +12,6 @@ import gql from "graphql-tag";
 import StripeBody from "./StripeBody";
 import LoadingDiv from "../LoadingDiv";
 import { filterError } from "../../common/functions";
-import { me } from "../../queries/auth";
 
 const FETCH_BILLING_DATA = gql`
   query onFetchBillingData($company: Boolean, $tag: String) {
