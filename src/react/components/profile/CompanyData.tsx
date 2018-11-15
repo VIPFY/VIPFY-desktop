@@ -69,9 +69,6 @@ class CompanyData extends React.Component<Props, State> {
     await this.setState({ submitting: true, error: null });
     try {
       await this.props.applyPromocode({ variables: { promocode: this.state.promocode } });
-
-      await sleep(2000);
-      await this.setState({ submitting: false });
     } catch (error) {
       await this.setState({ submitting: false, error: filterError(error) });
     }
