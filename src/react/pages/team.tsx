@@ -660,7 +660,6 @@ class Team extends React.Component<Props, State> {
                         let appArray: JSX.Element[] = [];
 
                         if (data.fetchUnitApps) {
-                          //console.log(data.fetchUnitApps);
                           let noExternalApps = data.fetchUnitApps.filter(
                             app =>
                               app.boughtplan.planid.options === null &&
@@ -706,8 +705,9 @@ class Team extends React.Component<Props, State> {
                                 style={{
                                   float: "left"
                                 }}
-                                src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.appicon ||
-                                  "21062018-htv58-scarlett-jpeg"}`}
+                                src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                                  app.appicon
+                                }`}
                               />
                               <div className="employeeName">
                                 {app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`}
