@@ -34,6 +34,7 @@ class FirstLogin extends React.Component<FirstLoginProps, FirstLoginState> {
       this.setState({ error: err.message, loading: false });
     }
   }
+
   private abort(): void {
     this.props.logMeOut();
   }
@@ -49,8 +50,8 @@ class FirstLogin extends React.Component<FirstLoginProps, FirstLoginState> {
               <div className="partForm partForm_TOS">
                 <div className="flowtext">
                   With VIPFY you can use many services. Your administrator decides which services
-                  you can use. If you need access to additional services, simpy request them through
-                  the marketplace or ask your administrator. <br />
+                  you can use. If you need access to additional services, simply request them
+                  through the marketplace or ask your administrator. <br />
                   Please be aware that your administrator could access any data you enter through
                   VIPFY.
                 </div>

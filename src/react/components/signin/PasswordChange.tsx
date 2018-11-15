@@ -89,11 +89,13 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
 
               <div className="partForm partForm_ChangePassword">
                 <div className="Heading" style={{ marginBottom: "1.5rem" }}>
-                  Please change your password to continue
+                  Your initial password has been sent to your email.
+                  <br />
+                  Please replace it to continue.
                 </div>
                 <div style={{ marginBottom: "1.5rem" }}>
                   <label>
-                    Old Password:
+                    Initial Password:
                     <input
                       className="newInputField"
                       style={{ right: "0", position: "absolute" }}
