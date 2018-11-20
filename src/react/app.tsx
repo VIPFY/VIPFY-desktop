@@ -42,7 +42,6 @@ interface AppState {
   error: string;
   firstLogin: boolean;
   placeid: string;
-  statisticData: object;
   popup: PopUp;
 }
 
@@ -60,8 +59,7 @@ const INITIAL_STATE = {
   error: "",
   firstLogin: false,
   placeid: "",
-  popup: INITIAL_POPUP,
-  statisticData: {}
+  popup: INITIAL_POPUP
 };
 
 class App extends React.Component<AppProps, AppState> {
@@ -113,8 +111,8 @@ class App extends React.Component<AppProps, AppState> {
 
   moveTo = (path: string) => this.props.history.push(`/area/${path}`);
 
-  welcomeNewUser = (placeid: string, statisticData: object) => {
-    this.setState({ firstLogin: true, placeid, statisticData });
+  welcomeNewUser = (placeid: string) => {
+    this.setState({ firstLogin: true, placeid });
   };
 
   renderComponents = () => {
@@ -165,7 +163,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    const { placeid, firstLogin, statisticData, popup } = this.state;
+    const { placeid, firstLogin, popup } = this.state;
 
     return (
       <AppContext.Provider
@@ -173,7 +171,6 @@ class App extends React.Component<AppProps, AppState> {
           showPopup: (data: PopUp) => this.renderPopup(data),
           firstLogin,
           placeid,
-          statisticData,
           disableWelcome: () => this.setState({ firstLogin: false })
         }}
         className="full-size">
