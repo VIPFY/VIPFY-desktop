@@ -15,18 +15,9 @@ const SIGN_UP = gql`
   }
 `;
 
-const CREATE_COMPANY = gql`
-  mutation onCreateCompany($name: String!, $legal: LegalInput!) {
-    createCompany(name: $name, legalinformation: $legal) {
-      ok
-      token
-    }
-  }
-`;
-
-const CREATE_ADDRESS = gql`
-  mutation onCreateAddress($addressData: AddressInput!, $department: Boolean) {
-    createAddress(addressData: $addressData, department: $department) {
+const UPDATE_STATISTIC_DATA = gql`
+  mutation onUpdateStatisticData($data: StatisticInput!) {
+    updateStatisticData(data: $data) {
       ok
     }
   }
@@ -57,13 +48,12 @@ interface Props {
   register: Function;
   login: Function;
   moveTo: Function;
-  createCompany: Function;
   updateUser: Function;
-  createAddress: Function;
   searchCompany: Function;
   afterRegistration: Function;
   checkEmail: Function;
   checkVat: Function;
+  updateStatisticData: Function;
 }
 
 interface State {
@@ -305,7 +295,7 @@ class Login extends React.Component<Props, State> {
   registerSave = async () => {
     await this.setState({ registering: true });
 
-    const { vatId, agreementa, agreementb, email } = this.state;
+    const { vatId, agreementa, agreementb, email, address } = this.state;
     try {
       if (!agreementa) {
         throw new Error("Please agree our Terms of Service and Privacy Settings");
@@ -321,10 +311,7 @@ class Login extends React.Component<Props, State> {
         }
       };
 
-      const name = {
-        firstname: "not set",
-        lastname: ""
-      };
+      const name = { firstname: "not set", lastname: "" };
 
       if (this.state.name != "") {
         const nameArray = this.state.name.split(" ");
@@ -341,6 +328,10 @@ class Login extends React.Component<Props, State> {
           name.middlename = middleArray.join(" ");
           name.lastname = nameArray[nameArray.length - 1];
         }
+      }
+
+      if (address) {
+        companyData.placeid = address;
       }
 
       const res = await this.props.register({
@@ -361,7 +352,9 @@ class Login extends React.Component<Props, State> {
         companyStage: this.state.selectedOption
       };
 
-      this.props.afterRegistration(this.state.address, statisticdata);
+      await this.props.updateStatisticData({ variables: { data: statisticdata } });
+
+      this.props.afterRegistration(address);
 
       return this.props.moveTo("dashboard/newuser");
     } catch (err) {
@@ -770,7 +763,7 @@ class Login extends React.Component<Props, State> {
                   </option>
                   {countries.map(({ value, name }) => (
                     <option
-                      key={value}
+                      key={name}
                       value={value}
                       selected={this.state.countryCode == value ? true : false}>
                       {name}
@@ -838,6 +831,9 @@ class Login extends React.Component<Props, State> {
                         this.vatInput = input!;
                       }}
                     />
+                    <span className="agreementSentenceReg">
+                      Tipp: You probably have this on your website in the legal section
+                    </span>
                   </label>
                 </div>
               )
@@ -1028,17 +1024,14 @@ class Login extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(CREATE_COMPANY, {
-    name: "createCompany"
-  }),
   graphql(SIGN_UP, {
     name: "register"
   }),
   graphql(updateUser, {
     name: "updateUser"
   }),
-  graphql(CREATE_ADDRESS, {
-    name: "createAddress"
+  graphql(UPDATE_STATISTIC_DATA, {
+    name: "updateStatisticData"
   }),
   graphql(CHECK_EMAIL, { name: "checkEmail" }),
   graphql(CHECK_VAT, { name: "checkVat" }),
