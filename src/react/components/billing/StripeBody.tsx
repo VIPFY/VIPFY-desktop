@@ -7,7 +7,6 @@ import LoadingDiv from "../../components/LoadingDiv";
 import { fetchCards } from "../../queries/billing";
 import { filterError, ErrorComp } from "../../common/functions";
 import { addressFields } from "../../common/constants";
-import { FieldsOnCorrectType } from "graphql/validation/rules/FieldsOnCorrectType";
 import { FETCH_ADDRESSES } from "../../queries/contact";
 
 const ADD_PAYMENT = gql`
@@ -170,7 +169,7 @@ class StripeBody extends React.Component<Props, State> {
           <select {...field} onChange={this.handleNewAddress} className="billing-dropdown">
             <option value=""> </option>
             {field.options.map(({ value, name }) => (
-              <option key={value} value={value}>
+              <option key={name} value={value}>
                 {name}
               </option>
             ))}
