@@ -59,6 +59,7 @@ class StripeForm extends React.Component<Props, State> {
 
   componentDidMount() {
     console.log(stripeToken);
+
     if (window.Stripe) {
       this.setState({
         stripe: window.Stripe(stripeToken)
