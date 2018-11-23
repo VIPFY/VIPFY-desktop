@@ -60,7 +60,7 @@ class DepartmentAddApp extends Component {
                         float: "left"
                       }}
                       src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.appicon ||
-                        "21062018-htv58-scarlett-jpeg"}`}
+                        "21352134123123-vipfy-fdgd43asfa"}`}
                     />
                     <div className="employeeName">
                       {app.appname} {app.boughtplan.id}

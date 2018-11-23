@@ -28,3 +28,21 @@ export const fetchCards = gql`
     }
   }
 `;
+
+export const FETCH_ALL_BOUGHTPLANS = gql`
+  query onFetchAllBoughtplansFromCompany($appid: ID!, $external: Boolean) {
+    fetchAllBoughtPlansFromCompany(appid: $appid, external: $external) {
+      id
+      alias
+      key
+      plan: planid {
+        id
+        app: appid {
+          id
+          name
+          icon
+        }
+      }
+    }
+  }
+`;

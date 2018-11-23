@@ -30,19 +30,34 @@ export type AppPageState = {
 };
 
 const ADD_EXTERNAL_ACCOUNT = gql`
-  mutation onAddExternalAccount(
+  mutation onAddExternalLicence(
     $username: String!
     $password: String!
     $loginurl: String
+    $price: Float
     $appid: ID!
+    $boughtplanid: ID!
+    $touser: ID
   ) {
-    addExternalAccount(
+    addExternalLicence(
       username: $username
       password: $password
       loginurl: $loginurl
+      price: $price
       appid: $appid
+      boughtplanid: $boughtplanid
+      touser: $touser
     ) {
       ok
+    }
+  }
+`;
+
+const ADD_EXTERNAL_PLAN = gql`
+  mutation onAddExternalBoughtPlan($appid: ID!, $alias: String, $price: Float, $loginurl: String) {
+    addExternalBoughtPlan(appid: $appid, alias: $alias, price: $price, loginurl: $loginurl) {
+      id
+      alias
     }
   }
 `;
@@ -70,10 +85,9 @@ class Integrations extends React.Component<Props, AppPageState> {
     showloading: false
   };
 
-  closePopup = () => this.setState({ popup: null });
+  closePopup = () => this.setState({ popup: false });
 
   registerExternal = (name, needssubdomain, appid, options) => {
-    console.log("TEST");
     const fields = [
       {
         name: "username",
