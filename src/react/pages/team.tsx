@@ -380,7 +380,7 @@ class Team extends React.Component<Props, State> {
                 float: "left"
               }}
               src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${app.icon ||
-                "21062018-htv58-scarlett-jpeg"}`}
+                "21352134123123-vipfy-fdgd43asfa"}`}
             />
             <div className="employeeName">{app.name}</div>
             <div className="employeeTags">

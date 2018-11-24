@@ -4,7 +4,6 @@ import { graphql, compose } from "react-apollo";
 
 import { fetchApps } from "../queries/products";
 import LoadingDiv from "../components/LoadingDiv";
-import GenericInputForm from "../components/GenericInputForm";
 import Popup from "../components/Popup";
 import addExternal from "../popups/addExternal";
 
@@ -12,6 +11,7 @@ interface Props {
   history: any;
   products: any;
   addExternalApp: Function;
+  addExternalPlan: Function;
   addVote: Function;
 }
 
@@ -30,19 +30,34 @@ export type AppPageState = {
 };
 
 const ADD_EXTERNAL_ACCOUNT = gql`
-  mutation onAddExternalAccount(
+  mutation onAddExternalLicence(
     $username: String!
     $password: String!
     $loginurl: String
+    $price: Float
     $appid: ID!
+    $boughtplanid: ID!
+    $touser: ID
   ) {
-    addExternalAccount(
+    addExternalLicence(
       username: $username
       password: $password
       loginurl: $loginurl
+      price: $price
       appid: $appid
+      boughtplanid: $boughtplanid
+      touser: $touser
     ) {
       ok
+    }
+  }
+`;
+
+const ADD_EXTERNAL_PLAN = gql`
+  mutation onAddExternalBoughtPlan($appid: ID!, $alias: String, $price: Float, $loginurl: String) {
+    addExternalBoughtPlan(appid: $appid, alias: $alias, price: $price, loginurl: $loginurl) {
+      id
+      alias
     }
   }
 `;
@@ -70,10 +85,9 @@ class Integrations extends React.Component<Props, AppPageState> {
     showloading: false
   };
 
-  closePopup = () => this.setState({ popup: null });
+  closePopup = () => this.setState({ popup: false });
 
   registerExternal = (name, needssubdomain, appid, options) => {
-    console.log("TEST");
     const fields = [
       {
         name: "username",
@@ -141,18 +155,30 @@ class Integrations extends React.Component<Props, AppPageState> {
     });
   };
 
-  addAccount = async (username, password, subdomain, appid) => {
-    //console.log(username, password, subdomain, appid);
-    this.setState({ showloading: true });
+  addAccount = async values => {
     try {
+      const { subdomain: loginurl, alias, boughtplanid, ...data } = values;
+      let id = boughtplanid;
+      this.setState({ showloading: true });
+
+      if (boughtplanid == 0) {
+        const newPlan = await this.props.addExternalPlan({
+          variables: { alias, loginurl, appid: values.appid }
+        });
+
+        id = newPlan.data.addExternalBoughtPlan.id;
+      }
+
       await this.props.addExternalApp({
-        variables: { username, password, loginurl: subdomain, appid }
+        variables: { ...data, loginurl, boughtplanid: id }
       });
-      this.closePopup();
+
+      setTimeout(() => this.closePopup(), 1000);
       this.setState({ showloading: false });
+
       return true;
     } catch (error) {
-      this.setState({ showloading: true });
+      this.setState({ showloading: false });
       throw error;
     }
   };
@@ -325,6 +351,7 @@ class Integrations extends React.Component<Props, AppPageState> {
 
 export default compose(
   graphql(ADD_EXTERNAL_ACCOUNT, { name: "addExternalApp" }),
+  graphql(ADD_EXTERNAL_PLAN, { name: "addExternalPlan" }),
   graphql(ADD_VOTE, { name: "addVote" }),
   graphql(fetchApps, {
     name: "products"

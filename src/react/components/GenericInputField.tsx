@@ -2,13 +2,13 @@ import * as React from "react";
 import { Component } from "react";
 
 interface Props {
-  default?: String;
-  error?: String;
+  default?: string;
+  error?: string;
   focus?: Boolean;
   onBlur?: Function;
   noteditable?: Boolean;
   onChange?: Function;
-  inputType?: String;
+  inputType?: string;
   onEnter?: Function;
   divFocusClass?: string;
   divClass?: string;

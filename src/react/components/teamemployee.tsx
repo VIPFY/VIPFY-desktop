@@ -134,7 +134,7 @@ class TeamEmployee extends React.Component<Props, State> {
                                   }}
                                   src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
                                     .boughtplanid.planid.appid.icon ||
-                                    "21062018-htv58-scarlett-jpeg"}`}
+                                    "21352134123123-vipfy-fdgd43asfa"}`}
                                 />
                                 {licence.boughtplanid.planid.options &&
                                 licence.boughtplanid.planid.options.external ? (
@@ -172,7 +172,7 @@ class TeamEmployee extends React.Component<Props, State> {
                                   }}
                                   src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
                                     .boughtplanid.planid.appid.icon ||
-                                    "21062018-htv58-scarlett-jpeg"}`}
+                                    "21352134123123-vipfy-fdgd43asfa"}`}
                                 />
                                 {licence.boughtplanid.planid.options &&
                                 licence.boughtplanid.planid.options.external ? (
