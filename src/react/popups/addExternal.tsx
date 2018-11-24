@@ -31,7 +31,8 @@ interface State {
   password: string;
   subdomain: string;
   focus: number;
-  options?: Object;
+  error: string;
+  success: boolean;
 }
 
 class ShowEmployee extends React.Component<Props, State> {
@@ -49,7 +50,9 @@ class ShowEmployee extends React.Component<Props, State> {
     username: "",
     password: "",
     subdomain: "",
-    focus: 0
+    focus: 0,
+    error: "",
+    success: false
   };
 
   componentDidMount = async () => {
@@ -62,33 +65,30 @@ class ShowEmployee extends React.Component<Props, State> {
   toggleField = (name: keyof State): void =>
     this.setState(prevState => ({ ...prevState, [name]: !prevState[name] }));
 
-  onEnter = async fieldid => {
-    await this.setState({ focus: fieldid });
-  };
+  onEnter = (fieldid: number): void => this.setState({ focus: fieldid });
 
-  addAccountTHIS = () => {
-    if (this.props.needsubdomain && this.props.options) {
-      this.props.addAccount(
-        this.state.username,
-        this.state.password,
-        `${this.props.options.predomain}${this.state.subdomain}${this.props.options.afterdomain}`,
-        this.props.appid
-      );
-    } else {
-      this.props.addAccount(
-        this.state.username,
-        this.state.password,
-        this.state.subdomain,
-        this.props.appid
-      );
+  addAccountTHIS = async (): Promise<any> => {
+    try {
+      const { username, password, subdomain, boughtplanid, alias } = this.state;
+      const { appid, options } = this.props;
+      const args = { username, password, alias, boughtplanid, appid, subdomain };
+
+      if (boughtplanid == 0 && this.props.needsubdomain && this.props.options) {
+        args.subdomain = `${options.predomain}${subdomain}${options.afterdomain}`;
+      }
+
+      await this.props.addAccount({ ...args, subdomain });
+      this.setState({ success: true });
+    } catch (error) {
+      this.setState({ error: filterError(error) });
     }
   };
 
   render() {
     const { clipboard } = require("electron");
-    const { options, appid } = this.props;
-    const { username, password, pw1, pw2, pw3, showPlanFields } = this.state;
-    console.log("P", this.state);
+    const { options, appid, showloading } = this.props;
+    const { username, password, pw1, pw2, pw3, subdomain, showPlanFields } = this.state;
+
     const passwordProposals = [pw1, pw2, pw3];
     let step = 1;
 
@@ -97,11 +97,8 @@ class ShowEmployee extends React.Component<Props, State> {
       username !== "" &&
       password &&
       password !== "" &&
-      (this.state.subdomain != "" || this.state.boughtplanid > 0);
-
-    if (this.props.showloading) {
-      return <h3>Adding your account</h3>;
-    }
+      (subdomain ? subdomain != "" : true) &&
+      (showPlanFields ? true : this.state.boughtplanid > 0);
 
     return (
       <React.Fragment>
@@ -115,7 +112,7 @@ class ShowEmployee extends React.Component<Props, State> {
             <i
               className={`button-hide fas fa-angle-${this.state.showpwchange ? "left" : "down"}`}
             />
-            <span>{`Step ${step++}: Change your password to a non-standad secure one`}</span>
+            <span>{`Step ${step++}: Change your password to a non-standard secure one`}</span>
           </div>
 
           <div className={`inside ${this.state.showpwchange ? "in" : "out"}`}>
@@ -200,7 +197,10 @@ class ShowEmployee extends React.Component<Props, State> {
                     )}
                     <button
                       onClick={() =>
-                        this.setState(prevState => ({ showPlanFields: !prevState.showPlanFields }))
+                        this.setState(prevState => ({
+                          showPlanFields: !prevState.showPlanFields,
+                          boughtplanid: 0
+                        }))
                       }
                       className="naked-button genericButton"
                       style={{
@@ -313,41 +313,52 @@ class ShowEmployee extends React.Component<Props, State> {
           </div>
         </div>
         <div className="centerText">
-          <button
-            className="naked-button genericButton"
-            onClick={() => this.props.onClose()}
-            style={{ marginRight: "0.5em", backgroundColor: "#c73544" }}>
-            <span className="textButton">
-              {/*<i className="fal fa-long-arrow-alt-left" />*/}
-              <i className="fal fa-times" />
-            </span>
-            <span className="textButtonBesideLeft">Cancel</span>
-          </button>
+          {this.state.success ? (
+            ""
+          ) : (
+            <button
+              disabled={showloading}
+              className="naked-button genericButton"
+              onClick={() => this.props.onClose()}
+              style={{
+                marginRight: "0.5em",
+                backgroundColor: showloading ? "#ccc" : "#c73544",
+                cursor: showloading ? "not-allowed" : "pointer"
+              }}>
+              <span className="textButton">
+                {/*<i className="fal fa-long-arrow-alt-left" />*/}
+                <i className="fal fa-times" />
+              </span>
+              <span className="textButtonBesideLeft">Cancel</span>
+            </button>
+          )}
 
           <button
             className="naked-button genericButton"
-            onClick={() => this.addAccountTHIS()}
+            onClick={this.addAccountTHIS}
+            disabled={!fieldsCheck || showloading || this.state.success}
             style={{
               marginLeft: "0.5em",
-              backgroundColor: fieldsCheck ? "" : "#c5c5c5"
+              backgroundColor: fieldsCheck ? "" : "#c5c5c5",
+              cursor: fieldsCheck && !showloading ? "pointer" : "not-allowed"
             }}>
-            <span className="textButton">
-              <i className="fal fa-check" />
-            </span>
+            {this.state.success ? (
+              <span className="textButton-success">
+                <i className="fal fa-box-check" />
+                Account successfully added
+              </span>
+            ) : (
+              <span className="textButton">
+                <i className={showloading ? "fas fa-spinner fa-spin" : "fal fa-check"} />
+              </span>
+            )}
             <span className="textButtonBeside">
               {fieldsCheck ? "Add Account" : "Please fill out all required fields"}
             </span>
           </button>
         </div>
 
-        {/*<span className="heading">Do you want to delete {this.props.name}?</span>
-
-        <div className="checkoutButton" onClick={() => this.props.closePopup()}>
-          Cancel
-        </div>
-        <div className="checkoutButton" onClick={() => this.delEmp()}>
-          Delete
-    </div>*/}
+        {this.state.error ? <ErrorComp error={this.state.error} /> : ""}
       </React.Fragment>
     );
   }

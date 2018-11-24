@@ -27,6 +27,14 @@
   border-radius: 10px;
 }*/
 
+@keyframes button-success {
+  from {
+    width: 16px;
+  } to {
+    width: 80px;
+  }
+}
+
 @font-face {
   font-family: "Segoe MDL2";
   src: url(./webfonts/SegMDL2.ttf) format("truetype");
@@ -3732,12 +3740,18 @@ h1{
         font-weight: 500;
     }
 
-    & > .textButton{
-        font-size: 15px;
-    font-weight: 500;
-    width: 16px;
-    line-height: 16px;
-    text-align: center;
+    & > .textButton {
+      font-size: 15px;
+      font-weight: 500;
+      width: 16px;
+      line-height: 16px;
+      text-align: center;
+
+      &-success {
+        overflow: hidden;
+        white-space: nowrap;
+        animation: button-success 500ms linear;
+      }
     }
 
     & > .textButtonBeside{
