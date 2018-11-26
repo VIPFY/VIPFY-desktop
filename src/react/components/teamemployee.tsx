@@ -47,8 +47,8 @@ class TeamEmployee extends React.Component<Props, State> {
           className={`inside ${this.state.show ? "in" : "out"}`}
           onDragOver={e => this.props.onDragOver(e)}
           onMouseMove={e => this.props.onDragOver(e)}
-          onDrop={ev => this.props.onDrop(ev, person.id, departmentid, false)}
-          onTouchEnd={ev => this.props.onDrop(ev, person.id, departmentid, false)}>
+          onDrop={ev => this.props.onDrop(ev, person, departmentid, false)}
+          onTouchEnd={ev => this.props.onDrop(ev, person, departmentid, false)}>
           <div className="inside-padding gridinner">
             <UserPicture
               size="picutre"

@@ -28,6 +28,7 @@ import Security from "./security";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
+import AppAdmin from "./appadmin";
 
 interface AreaProps {
   history: any[];
@@ -150,7 +151,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "marketplace/:appid/:action", component: AppPage },
       { path: "integrations", component: Integrations },
       //{ path: "support", component: SupportPage },
-      { path: "error", component: ErrorPage }
+      { path: "error", component: ErrorPage },
+      { path: "appadmin", component: AppAdmin }
     ];
 
     return (
