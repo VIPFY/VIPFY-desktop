@@ -3,3 +3,4 @@ package-lock.json
 out
 .cache
 src/**/*.css
+.env
