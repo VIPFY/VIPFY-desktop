@@ -19,7 +19,8 @@ import {
   fetchDepartments,
   fetchDepartmentsData,
   fetchUsersOwnLicences,
-  fetchUnitApps
+  fetchUnitApps,
+  fetchAllAppsEnhanced
 } from "../queries/departments";
 import {
   addCreateEmployee,
@@ -41,6 +42,7 @@ import UserName from "../components/UserName";
 
 import moment = require("moment");
 import TeamEmployee from "../components/teamemployee";
+import AppDrop from "../popups/appDrop";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onRemoveExternalAccount($licenceid: ID!) {
@@ -66,13 +68,15 @@ interface State {
   popup: any;
   popupProps: any;
   popupBody: any;
-  update: number;
   popupHeading: string;
+  update: number;
+
   addingAppUser: any;
   addingAppName: any;
   removeApp: any;
   dragging: number;
   dragginglicence: number;
+  searchString: string;
 }
 
 class Team extends React.Component<Props, State> {
@@ -95,7 +99,8 @@ class Team extends React.Component<Props, State> {
     addingAppName: null,
     removeApp: null,
     dragging: 0,
-    dragginglicence: 0
+    dragginglicence: 0,
+    searchString: ""
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
@@ -574,6 +579,19 @@ class Team extends React.Component<Props, State> {
     ev.dataTransfer.setData("personid", personid);
   };
 
+  onDragAppStart = (ev, id, remove, name, needsubdomain) => {
+    if (remove) {
+      this.setState({ dragginglicence: id });
+    } else {
+      this.setState({ dragging: id });
+    }
+
+    ev.dataTransfer.setData("id", id);
+    ev.dataTransfer.setData("remove", remove);
+    ev.dataTransfer.setData("name", name);
+    ev.dataTransfer.setData("needsubdomain", needsubdomain);
+  };
+
   onDrop = (ev, person, department, removearea) => {
     let id = ev.dataTransfer.getData("id");
     let appname = ev.dataTransfer.getData("appname");
@@ -591,6 +609,37 @@ class Team extends React.Component<Props, State> {
     }
   };
 
+  onDropApp = (ev, person, department, removearea) => {
+    let id = ev.dataTransfer.getData("id");
+    let remove = ev.dataTransfer.getData("remove");
+    let name = ev.dataTransfer.getData("name");
+    let needsubdomain = ev.dataTransfer.getData("needsubdomain");
+
+    if (remove && removearea) {
+      console.log("DROPDELETE", id, remove, person, removearea);
+    }
+    if (!(remove && removearea)) {
+      console.log("DROP", id, remove, person, removearea, needsubdomain);
+
+      this.setState({
+        popup: true,
+        popupProps: {
+          onClose: this.closePopup,
+          appid: id,
+          appname: name,
+          userid: person.id,
+          username: `${person.firstname} ${person.lastname}`,
+          department: department,
+          needsubdomain: needsubdomain === "true"
+        },
+        popupBody: AppDrop,
+        popupHeading: `Your ${name} Teams | ${person.firstname} ${person.lastname}`
+      });
+    }
+
+    console.log("DROP", id, remove, person, removearea);
+  };
+
   showEmployees(data, departmentid, state) {
     if (data.employees) {
       let employeeArray: JSX.Element[] = [];
@@ -603,8 +652,8 @@ class Team extends React.Component<Props, State> {
             person={person}
             onDragOver={this.onDragOver}
             onMouseMove={this.onDragOver}
-            onDrop={this.onDrop}
-            onTouchEnd={this.onDrop}
+            onDrop={this.onDropApp}
+            onTouchEnd={this.onDropApp}
             departmentid={departmentid}
             removeApp={this.state.removeApp}
             dragginglicence={this.state.dragginglicence}
@@ -646,7 +695,7 @@ class Team extends React.Component<Props, State> {
                   <div className="heading">Move app tile to add app to user</div>
                   <div className="appHolder">
                     <Query
-                      query={fetchUnitApps}
+                      query={fetchAllAppsEnhanced}
                       variables={{ departmentid: company.unit.id }}
                       fetchPolicy="network-only">
                       {({ loading, error, data }) => {
@@ -659,7 +708,80 @@ class Team extends React.Component<Props, State> {
 
                         let appArray: JSX.Element[] = [];
 
+                        if (data.fetchAllAppsEnhanced) {
+                          let applist = data.fetchAllAppsEnhanced;
+                          applist.sort(function(a, b) {
+                            if (a.name > b.name) {
+                              return 1;
+                            }
+                            if (a.name < b.name) {
+                              return -1;
+                            }
+                            // a muss gleich b sein
+                            return 0;
+                          });
+
+                          const filteredlist = applist.filter(
+                            app =>
+                              !(app.hidden || app.disabled) &&
+                              ((app.hasboughtplan && this.state.searchString === "") ||
+                                (app.name
+                                  .toLowerCase()
+                                  .includes(this.state.searchString.toLowerCase()) &&
+                                  !(this.state.searchString === "")))
+                          );
+                          console.log("fL", filteredlist);
+                          appArray = filteredlist.map((app, key) => (
+                            <div
+                              draggable
+                              className={`PApp ${this.state.dragging == app.id ? "dragging" : ""}`}
+                              style={{ backgroundColor: app.hasboughtplan ? "" : "#20BAA9" }}
+                              onDragStart={ev =>
+                                this.onDragAppStart(ev, app.id, false, app.name, app.needssubdomain)
+                              }
+                              /*onTouchStart={ev =>
+                                this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
+                              }*/
+                              onDragEnd={() => this.setState({ dragging: 0 })}
+                              key={key}
+                              /*onClick={() =>
+                                this.props.showPopup({
+                                  header:
+                                    app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`,
+                                  body: BoughtplanView,
+                                  props: {
+                                    appname:
+                                      app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`,
+                                    app
+                                  }
+                                })
+                              }*/
+                            >
+                              <img
+                                className="right-profile-image"
+                                style={{
+                                  float: "left"
+                                }}
+                                src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                                  app.icon
+                                }`}
+                              />
+                              <div className="employeeName">{app.name}</div>
+                              <span className="explain">Move to add to user</span>
+                              <div
+                                className={`fas ${
+                                  app.hasboughtplan ? "fa-ellipsis-v" : "fa-shopping-cart"
+                                } menuteam `}
+                              />
+                            </div>
+                          ));
+                        }
+
                         if (data.fetchUnitApps) {
+                          let apps: { appid: number }[] = [];
+
+                          console.log("Unitapps", data.fetchUnitApps);
+
                           let noExternalApps = data.fetchUnitApps.filter(
                             app =>
                               app.boughtplan.planid.options === null &&
@@ -717,7 +839,26 @@ class Team extends React.Component<Props, State> {
                             </div>
                           ));
                         }
-                        return appArray;
+                        return (
+                          <React.Fragment>
+                            <div className="PAppSearch">
+                              <button
+                                className="naked-button genericButton"
+                                /*onClick={() => this.setState({ searchopen: false })}*/
+                                style={{ float: "left" }}>
+                                <span className="textButton">
+                                  <i className="fal fa-search" />
+                                </span>
+                              </button>
+                              <input
+                                onChange={e => this.setState({ searchString: e.target.value })}
+                                autoFocus={true}
+                                className="inputBoxFieldTeams"
+                              />
+                            </div>
+                            {appArray}
+                          </React.Fragment>
+                        );
                       }}
                     </Query>
                   </div>

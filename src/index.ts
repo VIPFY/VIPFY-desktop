@@ -115,6 +115,7 @@ const createWindow = async () => {
   });
 
   mainWindow.once("ready-to-show", () => {
+    mainWindow.webContents.setZoomFactor(1.0);
     mainWindow.show();
   });
 

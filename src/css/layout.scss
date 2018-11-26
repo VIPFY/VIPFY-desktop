@@ -1110,7 +1110,7 @@
         font-size: 1em;
         overflow: hidden;
         overflow-wrap: unset;
-        font-weight: 500;
+        font-weight: 300;
     }
   }
 
@@ -1199,6 +1199,8 @@
   margin-right: 0.5rem;
   border-radius: 1rem;
   background-color: #eee;
+  margin-left: 2px;
+    margin-top: 2px;
 }
 
 .right-profile-first-name {
@@ -1922,8 +1924,9 @@
     font-size: 0.75rem;
     font-weight: bold;
     float: left;
-    line-height: 32px;
-    max-width: 120px;
+    line-height: 36px;
+    max-width: 100px;
+    height: 36px;
 }
 .employeeTags {
     font-size: 0.75rem;
@@ -3785,6 +3788,22 @@ h1{
     &:hover > .textButtonBesideLeft{
         opacity: 100;
     }
+
+    & > .textButtonBesideBottom{
+        position: absolute;
+        top: 34px;
+        color: #c6c6c6;
+        line-height: 32px;
+        width: 300px;
+        text-align: center;
+        opacity: 0;
+        transition: all 0.2s ease-in-out;
+        left: -134px;
+    }
+
+    &:hover > .textButtonBesideBottom{
+        opacity: 100;
+    }
 }
 
 .topright{
@@ -3949,7 +3968,7 @@ table{
         transition: all 300ms ease-in-out;
         margin: 8px;
         width: 160px;
-        height: 32px;
+        height: 36px;
 
     .revokelicence {
         cursor: pointer;
@@ -4125,3 +4144,91 @@ table{
 .textRight{
     text-align: right;
 }
+.inputBoxFieldTeams{
+    float: left;
+    width: calc(100% - 40px);
+    line-height: 31px;
+    padding: 0;
+    border: 0px;
+    color: #357AA5;
+    font-family: 'Montserrat', sans-serif;
+    border-bottom: 1px solid;
+    padding-left: 8px;
+}
+.PAppSearch{
+    width: 11rem;
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    cursor: move;
+    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    transition: all 300ms ease-in-out;
+}
+.ribbonHeaderHolder {
+    top: 0px;
+    right: 0px;
+    position: absolute;
+    overflow: hidden;
+    height: 2rem;
+    width: 2rem;
+    border-radius: 3px;
+  }
+  .ribbonHeader {
+    height: 2em;
+    overflow: hidden;
+    position: absolute;
+    width: 5em;
+    font-size: 0.75rem;
+    padding: 0.25rem;
+    background-color: #34b3a4;
+    color: #34b3a4;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    text-align: center;
+    top: -1rem;
+    right: -1.7rem;
+    transform: rotate(45deg);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .employeeShower{
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+    cursor: pointer;
+    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    transition: all 300ms ease-in-out;
+    margin: 8px;
+    width: 160px;
+    height: 36px;
+
+    .img{
+        float: left;
+        height: 2rem;
+    width: 2rem;
+    margin-right: 0.5rem;
+    border-radius: 1rem;
+    background-color: #eee;
+    margin-left: 2px;
+    margin-top: 2px;
+    user-drag: none;
+    user-select: none;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    }
+    .name{
+        font-size: 0.75rem;
+    font-weight: bold;
+    float: left;
+    line-height: 36px;
+    max-width: 100px;
+    height: 36px;
+    }
+  }
