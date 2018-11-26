@@ -90,6 +90,8 @@
       require("./locationScripts/teamwork.ts")();
     } else if (hostMatches(".*.?asana.com")) {
       require("./locationScripts/asana.ts")();
+    } else if (hostMatches(".*.?shopify.de")) {
+      require("./locationScripts/shopify.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
