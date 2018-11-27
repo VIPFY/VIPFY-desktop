@@ -119,9 +119,15 @@ export const fetchUsersOwnLicences = gql`
   }
 `;
 
+<<<<<<< HEAD
 export const fetchAllBoughtPlansFromCompany = gql`
   query fetchAllBoughtPlansFromCompany($appid: ID!) {
     fetchAllBoughtPlansFromCompany(appid: $appid) {
+=======
+export const fetchAllBoughtplansFromCompany = gql`
+  query fetchAllBoughtplansFromCompany($appid: ID!) {
+    fetchAllBoughtplansFromCompany(appid: $appid) {
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
       id
       alias
       description
@@ -134,7 +140,10 @@ export const fetchAllBoughtPlansFromCompany = gql`
         id
         key
         options
+<<<<<<< HEAD
         endtime
+=======
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
         unitid {
           id
           firstname

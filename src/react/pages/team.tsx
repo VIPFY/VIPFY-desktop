@@ -667,6 +667,7 @@ class Team extends React.Component<Props, State> {
     }
   };
 
+<<<<<<< HEAD
   suspendLicence = async (licenceid, fromuser) => {
     this.setState({ removeApp: `${fromuser}-${licenceid}` });
     try {
@@ -702,6 +703,8 @@ class Team extends React.Component<Props, State> {
     this.setState({ removeApp: null, popup: null });
   };
 
+=======
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
   onDropApp = (ev, person, department, removearea) => {
     //console.log("DROP1");
     //this.setState({ dragginglicence: 0, removeid: -1 });
@@ -722,11 +725,15 @@ class Team extends React.Component<Props, State> {
           appname: appname,
           username: personname,
           teamname: teamname,
+<<<<<<< HEAD
           external: external === "true",
           suspendLicence: this.suspendLicence,
           deleteLicenceAt: this.deleteLicenceAt,
           licenceid,
           remove: this.state.removeApp
+=======
+          external: external === "true"
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
         },
         popupBody: RemoveLicence,
         popupHeading: `Remove access ${appname} (${teamname}) from ${personname}`
@@ -751,8 +758,12 @@ class Team extends React.Component<Props, State> {
             username: personname,
             teamname: teamname,
             newusername: `${person.firstname} ${person.lastname}`,
+<<<<<<< HEAD
             external: external === "true",
             remove: this.state.removeApp
+=======
+            external: external === "true"
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
           },
           popupBody: MoveLicence,
           popupHeading: `Move access ${appname} (${teamname}) from ${personname} to ${

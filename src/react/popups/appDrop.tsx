@@ -1,7 +1,11 @@
 import * as React from "react";
 import { Component } from "react";
 import gql from "graphql-tag";
+<<<<<<< HEAD
 import { fetchAllBoughtPlansFromCompany } from "../queries/departments";
+=======
+import { fetchAllBoughtplansFromCompany } from "../queries/departments";
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
 import { graphql, compose, Query } from "react-apollo";
 
 import { distributeLicence, revokeLicence } from "../mutations/auth";
@@ -11,7 +15,10 @@ import GenericInputField from "../components/GenericInputField";
 
 import { CANCEL_PLAN } from "../mutations/products";
 import AddAccount from "../popups/addAccount";
+<<<<<<< HEAD
 import moment = require("moment");
+=======
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
 
 const CHANGE_ALIAS = gql`
   mutation setBoughtPlanAlias($boughtplanid: ID!, $alias: String!) {
@@ -192,7 +199,11 @@ class AppDrop extends Component<Props, State> {
       case 0:
         return (
           <Query
+<<<<<<< HEAD
             query={fetchAllBoughtPlansFromCompany}
+=======
+            query={fetchAllBoughtplansFromCompany}
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
             variables={{ appid: this.props.appid }}
             fetchPolicy="network-only">
             {({ data, loading, error }) => {
@@ -203,6 +214,7 @@ class AppDrop extends Component<Props, State> {
                 return `Error! ${error.message}`;
               }
               let holder: JSX.Element[] = [];
+<<<<<<< HEAD
               if (data.fetchAllBoughtPlansFromCompany) {
                 data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {
                   let licencesArray: JSX.Element[] = [];
@@ -211,6 +223,12 @@ class AppDrop extends Component<Props, State> {
                     if (licence.endtime && licence.endtime < moment()) {
                       return;
                     }
+=======
+              if (data.fetchAllBoughtplansFromCompany) {
+                data.fetchAllBoughtplansFromCompany.forEach((boughtplan, key) => {
+                  let licencesArray: JSX.Element[] = [];
+                  boughtplan.licences.forEach((licence, key2) => {
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
                     if (licence.unitid && licence.unitid.profilepicture) {
                       licencesArray.push(
                         <div key={key2} className="employeeShower">
@@ -232,14 +250,23 @@ class AppDrop extends Component<Props, State> {
                         <div
                           key={key2}
                           className="employeeShower"
+<<<<<<< HEAD
                           onClick={() => {
+=======
+                          onClick={() =>
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
                             this.distributeLicence(
                               boughtplan.id,
                               this.props.userid,
                               this.props.department
+<<<<<<< HEAD
                             );
                             this.props.onClose();
                           }}>
+=======
+                            )
+                          }>
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
                           <div
                             className="name"
                             style={{ textAlign: "center", width: "100%", maxWidth: "100%" }}>
@@ -265,8 +292,12 @@ class AppDrop extends Component<Props, State> {
                           this.props.appid
                         )*/
                         this.setState({
+<<<<<<< HEAD
                           popuptype: 2,
                           boughtplanid: boughtplan.id
+=======
+                          popuptype: 2
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
                         })
                       }>
                       <span className="textButton">+</span>
@@ -485,7 +516,11 @@ class AppDrop extends Component<Props, State> {
         console.log("TYPE 5");
         return (
           <Query
+<<<<<<< HEAD
             query={fetchAllBoughtPlansFromCompany}
+=======
+            query={fetchAllBoughtplansFromCompany}
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
             variables={{ appid: this.props.appid }}
             fetchPolicy="network-only">
             {({ data, loading, error }) => {
@@ -496,8 +531,13 @@ class AppDrop extends Component<Props, State> {
                 return `Error! ${error.message}`;
               }
               let holder: JSX.Element[] = [];
+<<<<<<< HEAD
               if (data.fetchAllBoughtPlansFromCompany) {
                 data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {
+=======
+              if (data.fetchAllBoughtplansFromCompany) {
+                data.fetchAllBoughtplansFromCompany.forEach((boughtplan, key) => {
+>>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
                   let licencesArray: JSX.Element[] = [];
                   boughtplan.licences.forEach((licence, key2) => {
                     if (licence.unitid && licence.unitid.profilepicture) {
