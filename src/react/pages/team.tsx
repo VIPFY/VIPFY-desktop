@@ -54,6 +54,48 @@ const REMOVE_EXTERNAL_ACCOUNT = gql`
     }
   }
 `;
+
+const SUSPEND_LICENCE = gql`
+  mutation suspendLicence($licenceid: ID!, $fromuser: ID!, $clear: Boolean) {
+    suspendLicence(licenceid: $licenceid, fromuser: $fromuser, clear: $clear) {
+      ok
+    }
+  }
+`;
+
+const CLEAR_LICENCE = gql`
+  mutation clearLicence($licenceid: ID!) {
+    clearLicence(licenceid: $licenceid) {
+      ok
+    }
+  }
+`;
+
+const DELETE_LICENCE_AT = gql`
+  mutation deleteLicenceAt($licenceid: ID!, $time: Date!) {
+    deleteLicenceAt(licenceid: $licenceid, time: $time) {
+      date
+    }
+  }
+`;
+
+const DELETE_BOUGHTPLAN_AT = gql`
+  mutation deleteBoughtPlanAt($licenceid: ID!, $time: Date!) {
+    deleteBoughtPlanAt(licenceid: $licenceid, time: $time) {
+      date
+    }
+  }
+`;
+
+/*revokeLicence(licenceid: ID!): Response!
+# Remove the user from a licence and optionally delete the key
+suspendLicence(licenceid: ID!, fromuser: ID, clear: Boolean): Response!
+# Delete the key from a licence
+clearLicence(licenceid: ID!): Response!
+# Deletes a licence on a set date, if it is after the normal cancel period
+deleteLicenceAt(licenceid: ID!, time: Date!): Date!
+# Deletes a boughtPlan on a set date, if it is after the normal cancel period
+deleteBoughtPlanAt(boughtplanid: ID!, time: Date!): Date!*/
 interface Props {
   showPopup: Function;
 }
@@ -1023,5 +1065,9 @@ export default compose(
   graphql(revokeLicencesFromDepartment, {
     name: "revokeLicencesFromDepartment"
   }),
-  graphql(REMOVE_EXTERNAL_ACCOUNT, { name: "removeExternalAccount" })
+  graphql(REMOVE_EXTERNAL_ACCOUNT, { name: "removeExternalAccount" }),
+  graphql(SUSPEND_LICENCE, { name: "suspendLicence" }),
+  graphql(CLEAR_LICENCE, { name: "clearLicence" }),
+  graphql(DELETE_LICENCE_AT, { name: "deleteLicenceAt" }),
+  graphql(DELETE_BOUGHTPLAN_AT, { name: "deleteBoughtplanAt" })
 )(Team);

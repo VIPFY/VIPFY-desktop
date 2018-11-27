@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export default ({ name, value }) => (
+export default ({ name, value, onChange }) => (
   <div className="generic-checkbox-holder">
     <input
       type="checkbox"
@@ -8,6 +8,7 @@ export default ({ name, value }) => (
       id={`cool-checkbox-${name}`}
       defaultChecked={value ? true : false}
       name={name}
+      onChange={e => onChange(e)}
     />
     <label htmlFor={`cool-checkbox-${name}`} className="generic-form-checkbox">
       <svg width="18px" height="18px" viewBox="0 0 18 18">
