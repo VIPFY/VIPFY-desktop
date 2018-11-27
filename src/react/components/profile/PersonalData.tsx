@@ -34,9 +34,7 @@ interface State {
 }
 
 class PersonalData extends React.Component<Props, State> {
-  state = {
-    show: true
-  };
+  state = { show: true };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
