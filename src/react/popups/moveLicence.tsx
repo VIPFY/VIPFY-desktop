@@ -8,10 +8,7 @@ interface Props {
   newusername: string;
   onClose: Function;
   external: boolean;
-<<<<<<< HEAD
   remove: string;
-=======
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
 }
 
 interface State {
@@ -25,7 +22,6 @@ class MoveLicence extends Component<Props, State> {
 
   render() {
     console.log("Remove", this.props, this.state);
-<<<<<<< HEAD
     if (this.props.remove) {
       return <div>Removing...</div>;
     }
@@ -48,25 +44,6 @@ class MoveLicence extends Component<Props, State> {
           ) : (
             <div className="switchHolder">
               {/*<div className="switchOption">Keep Data</div>
-=======
-
-    return (
-      <div>
-        <h4>
-          Move access of {this.props.appname} ({this.props.teamname}) from {this.props.username} to{" "}
-          {this.props.newusername}
-        </h4>
-        {this.props.external ? (
-          <div className="centerText">
-            <div style={{ width: "50%", textAlign: "center", marginBottom: "20px" }}>
-              Since this is an external account, we will simply move the existing account to the new
-              user.
-            </div>
-          </div>
-        ) : (
-          <div className="switchHolder">
-            <div className="switchOption">Keep Data</div>
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
             <div className="onoffswitch">
               <input
                 type="checkbox"
@@ -81,7 +58,6 @@ class MoveLicence extends Component<Props, State> {
                 <span className="onoffswitch-switch" />
               </label>
             </div>
-<<<<<<< HEAD
         <div className="switchOption">Delete Data</div>*/}
               <div className="generic-checkbox-holder">
                 <input
@@ -102,12 +78,6 @@ class MoveLicence extends Component<Props, State> {
             </div>
           )}
         </div>
-=======
-            <div className="switchOption">Delete Data</div>
-          </div>
-        )}
-
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
         <div className="centerText">
           <button
             className="naked-button genericButton"

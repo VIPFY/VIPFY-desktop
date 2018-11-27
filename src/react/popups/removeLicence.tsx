@@ -11,14 +11,11 @@ interface Props {
   teamname: string;
   onClose: Function;
   external: boolean;
-<<<<<<< HEAD
   suspendLicence: Function;
   deleteLicenceAt: Function;
   licenceid: number;
   userid: number;
   remove: string;
-=======
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
 }
 
 interface State {
@@ -32,7 +29,6 @@ class RemoveLicence extends Component<Props, State> {
     licence: true
   };
 
-<<<<<<< HEAD
   remove = () => {
     if (this.state.licence) {
       this.props.deleteLicenceAt(this.props.licenceid, this.props.userid);
@@ -62,21 +58,6 @@ class RemoveLicence extends Component<Props, State> {
           ) : (
             <div className="switchHolder">
               {/*<div className="switchOption">Keep Data</div>
-=======
-  render() {
-    console.log("Remove", this.props, this.state);
-
-    return (
-      <div>
-        <h4>
-          Remove access to {this.props.appname} ({this.props.teamname}) from {this.props.username}
-        </h4>
-        {this.props.external ? (
-          ""
-        ) : (
-          <div className="switchHolder">
-            <div className="switchOption">Keep Data</div>
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
             <div className="onoffswitch">
               <input
                 type="checkbox"
@@ -90,7 +71,6 @@ class RemoveLicence extends Component<Props, State> {
                 <span className="onoffswitch-inner" />
                 <span className="onoffswitch-switch" />
               </label>
-<<<<<<< HEAD
         </div>
         <div className="switchOption">Delete Data</div>*/}
 
@@ -114,14 +94,6 @@ class RemoveLicence extends Component<Props, State> {
           )}
           <div className="switchHolder">
             {/*<div className="switchOption">Keep Licence</div>
-=======
-            </div>
-            <div className="switchOption">Delete Data</div>
-          </div>
-        )}
-        <div className="switchHolder">
-          <div className="switchOption">Keep Licence</div>
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
           <div className="onoffswitch">
             <input
               type="checkbox"
@@ -135,7 +107,6 @@ class RemoveLicence extends Component<Props, State> {
               <span className="onoffswitch-inner" />
               <span className="onoffswitch-switch" />
             </label>
-<<<<<<< HEAD
       </div>
     <div className="switchOption">Delete Licence</div>*/}
 
@@ -156,11 +127,6 @@ class RemoveLicence extends Component<Props, State> {
               </label>
             </div>
           </div>
-=======
-          </div>
-
-          <div className="switchOption">Delete Licence</div>
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
         </div>
         <div className="centerText">
           <button
@@ -175,10 +141,7 @@ class RemoveLicence extends Component<Props, State> {
           <button
             className="naked-button genericButton"
             //onClick={() => this.addAccountTHIS()}
-<<<<<<< HEAD
             onClick={() => this.remove()}
-=======
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
             style={{
               marginLeft: "0.5em"
             }}>
