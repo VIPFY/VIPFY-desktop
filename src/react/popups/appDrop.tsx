@@ -35,6 +35,7 @@ interface Props {
   department: number;
   client: any;
   needsubdomain: boolean;
+  popuptype: number;
 }
 
 interface State {
@@ -81,7 +82,7 @@ const ADD_EXTERNAL_PLAN = gql`
 class AppDrop extends Component<Props, State> {
   state = {
     loading: false,
-    popuptype: 0,
+    popuptype: this.props.popuptype || 0,
     alias: "",
     boughtplanid: 0,
     boughtplanname: ""
@@ -96,7 +97,7 @@ class AppDrop extends Component<Props, State> {
         }
       });
       this.setState({
-        popuptype: 0
+        popuptype: this.props.popuptype || 0
       });
     } catch (err) {
       console.log("ERROR", err);
@@ -111,7 +112,7 @@ class AppDrop extends Component<Props, State> {
         }
       });
       this.setState({
-        popuptype: 0
+        popuptype: this.props.popuptype || 0
       });
     } catch (err) {
       console.log("ERROR", err);
@@ -185,7 +186,7 @@ class AppDrop extends Component<Props, State> {
     if (this.state.loading) {
       return <div>Please wait...</div>;
     }
-    console.log("PROPS", this.props);
+    console.log("PROPS", this.props, this.state);
     switch (this.state.popuptype) {
       case 0:
         return (
@@ -201,12 +202,7 @@ class AppDrop extends Component<Props, State> {
                 return `Error! ${error.message}`;
               }
               let holder: JSX.Element[] = [];
-              console.log("CHECK", data, loading, error);
               if (data.fetchAllBoughtplansFromCompany) {
-                console.log("CHECK2", data, loading, error);
-
-                console.log(data.fetchAllBoughtplansFromCompany);
-
                 data.fetchAllBoughtplansFromCompany.forEach((boughtplan, key) => {
                   let licencesArray: JSX.Element[] = [];
                   boughtplan.licences.forEach((licence, key2) => {
@@ -362,7 +358,7 @@ class AppDrop extends Component<Props, State> {
             <div className="centerText">
               <button
                 className="naked-button genericButton"
-                onClick={() => this.props.onClose()}
+                onClick={() => this.setState({ popuptype: this.props.popuptype || 0 })}
                 style={{ marginRight: "0.5em", backgroundColor: "#c73544" }}>
                 <span className="textButton">
                   {/*<i className="fal fa-long-arrow-alt-left" />*/}
@@ -374,7 +370,7 @@ class AppDrop extends Component<Props, State> {
               <button
                 className="naked-button genericButton"
                 onClick={() => this.delete()}
-                style={{ backgroundColor: "#c73544" }}>
+                style={{ backgroundColor: "#117f91" }}>
                 <span className="textButton">
                   <i className="fal fa-trash-alt" />
                 </span>
@@ -400,7 +396,7 @@ class AppDrop extends Component<Props, State> {
       case 2:
         return (
           <AddAccount
-            onClose={() => this.setState({ popuptype: 0 })}
+            onClose={() => this.setState({ popuptype: this.props.popuptype || 0 })}
             appname={this.props.appname}
             addAccount={(username, password, loginurl, appid) =>
               this.addExternalLicence(
@@ -419,7 +415,6 @@ class AppDrop extends Component<Props, State> {
           />
         );
       case 3:
-        console.log(this.props);
         return (
           <div className="addEmployeeHolderP" style={{ paddingBottom: "5rem" }}>
             <div className="field">
@@ -435,7 +430,7 @@ class AppDrop extends Component<Props, State> {
             <div className="centerText">
               <button
                 className="naked-button genericButton"
-                onClick={() => this.setState({ popuptype: 0 })}
+                onClick={() => this.setState({ popuptype: this.props.popuptype || 0 })}
                 style={{ marginRight: "0.5em", backgroundColor: "#c73544" }}>
                 <span className="textButton">
                   {/*<i className="fal fa-long-arrow-alt-left" />*/}
@@ -460,8 +455,8 @@ class AppDrop extends Component<Props, State> {
         );
       case 4:
         return (
-          <ShowEmployee
-            onClose={() => this.setState({ popuptype: 0 })}
+          <AddAccount
+            onClose={() => this.setState({ popuptype: this.props.popuptype || 0 })}
             appname={this.props.appname}
             addAccount={(username, password, loginurl, appid) =>
               this.addExternalBoughtPlan(
@@ -478,6 +473,103 @@ class AppDrop extends Component<Props, State> {
             showloading={false}
             needsubdomain={this.props.needsubdomain}
           />
+        );
+      case 5:
+        console.log("TYPE 5");
+        return (
+          <Query
+            query={fetchAllBoughtplansFromCompany}
+            variables={{ appid: this.props.appid }}
+            fetchPolicy="network-only">
+            {({ data, loading, error }) => {
+              if (loading) {
+                return "Loading...";
+              }
+              if (error) {
+                return `Error! ${error.message}`;
+              }
+              let holder: JSX.Element[] = [];
+              if (data.fetchAllBoughtplansFromCompany) {
+                data.fetchAllBoughtplansFromCompany.forEach((boughtplan, key) => {
+                  let licencesArray: JSX.Element[] = [];
+                  boughtplan.licences.forEach((licence, key2) => {
+                    if (licence.unitid && licence.unitid.profilepicture) {
+                      licencesArray.push(
+                        <div key={key2} className="employeeShower">
+                          <div
+                            className="img"
+                            style={{
+                              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                                licence.unitid.profilepicture
+                              })`
+                            }}
+                          />
+                          <div className="name">
+                            {licence.unitid.firstname} {licence.unitid.lastname}
+                          </div>
+                        </div>
+                      );
+                    } else {
+                      licencesArray.push(
+                        <div key={key2} className="employeeShower">
+                          <div
+                            className="name"
+                            style={{ textAlign: "center", width: "100%", maxWidth: "100%" }}>
+                            Unused Licence
+                          </div>
+                        </div>
+                      );
+                    }
+                  });
+
+                  holder.push(
+                    <div className="genericHolder" key={key}>
+                      <div
+                        className="header"
+                        onClick={() =>
+                          this.setState({
+                            popuptype: 1,
+                            boughtplanid: boughtplan.id,
+                            boughtplanname: boughtplan.alias || this.props.appname
+                          })
+                        }>
+                        <i
+                          className="button-hide"
+                          //onClick={this.toggle}
+                        />
+                        <span>
+                          {boughtplan.alias ? boughtplan.alias : this.props.appname}{" "}
+                          {boughtplan.planid.options && boughtplan.planid.options.external
+                            ? "(External)"
+                            : ""}
+                        </span>
+                        {boughtplan.planid.options && boughtplan.planid.options.external ? (
+                          <div className="ribbonHeaderHolder">
+                            <div className="ribbonHeader">E</div>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                        <div
+                          className="fas fa-ellipsis-v"
+                          style={{ position: "absolute", right: "8px", lineHeight: "2em" }}
+                        />
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                        {licencesArray}
+                      </div>
+                    </div>
+                  );
+                });
+              }
+              return (
+                <div>
+                  <h2>Your {this.props.appname} Teams</h2>
+                  {holder}
+                </div>
+              );
+            }}
+          </Query>
         );
       default:
         return <div>ANOTHER TYPE</div>;
