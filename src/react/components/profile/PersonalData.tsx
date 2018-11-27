@@ -2,23 +2,21 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { graphql, compose, Query, withApollo } from "react-apollo";
 
-import Addresses from "./Addresses";
-import Phones from "./Phones";
 import LoadingDiv from "../../components/LoadingDiv";
 import GenericInputForm from "../../components/GenericInputForm";
+import UserPicture from "../UserPicture";
+import Duration from "../../common/duration";
 
 import { CHANGE_PASSWORD } from "../../mutations/auth";
 import { AppContext, concatName, filterError, refetchQueries } from "../../common/functions";
 import { unitPicFolder } from "../../common/constants";
 import { me } from "../../queries/auth";
 import { QUERY_USER } from "../../queries/user";
-import UserPicture from "../UserPicture";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import Duration from "../../common/duration";
 
 const UPDATE_PIC = gql`
-  mutation UpdatePic($file: File!) {
+  mutation UpdatePic($file: Upload!) {
     updateProfilePic(file: $file)
   }
 `;

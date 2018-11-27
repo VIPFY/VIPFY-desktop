@@ -17,7 +17,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 const UPDATE_PIC = gql`
-  mutation onUpdatePic($file: File!) {
+  mutation onUpdatePic($file: Upload!) {
     updateCompanyPic(file: $file)
   }
 `;
