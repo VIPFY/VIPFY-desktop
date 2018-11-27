@@ -2,7 +2,7 @@ import { ApolloClient } from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
 import { WebSocketLink } from "apollo-link-ws";
 import { setContext } from "apollo-link-context";
-import createFileLink from "./createFileLink";
+import { createUploadLink } from "apollo-upload-client";
 import { onError } from "apollo-link-error";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -13,7 +13,7 @@ const SERVER_PORT = process.env.SERVER_PORT || 4000;
 const secure = SERVER_NAME == "localhost" ? "" : "s";
 
 const cache = new InMemoryCache();
-const httpLink = createFileLink({
+const httpLink = createUploadLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
   //uri: `https://us-central1-vipfy-148316.cloudfunctions.net/backend/graphql`,
   credentials: "same-origin"

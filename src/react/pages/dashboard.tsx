@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query, Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import Welcome from "../popups/welcome";
 import LoadingDiv from "../components/LoadingDiv";
@@ -199,6 +199,21 @@ class Dashboard extends React.Component<Props, {}> {
     return (
       <div className="dashboard-working">
         <div className="dashboardHeading">
+          <Mutation
+            mutation={gql`
+              mutation test($time: Date!) {
+                deleteBoughtPlanAt(boughtplanid: 799, time: $time)
+              }
+            `}>
+            {(
+              mutate,
+              { onCompleted = data => console.log(data), onError = data => console.error(data) }
+            ) => (
+              <button type="button" onClick={() => mutate({ variables: { time: Date.now() } })}>
+                Click
+              </button>
+            )}
+          </Mutation>
           <div>My Apps</div>
         </div>
         <div className="appsTile">{this.showApps(licences.fetchLicences)}</div>
