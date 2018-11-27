@@ -41,12 +41,13 @@ class TeamEmployee extends React.Component<Props, State> {
             className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
             //onClick={this.toggle}
           />
+          {/*<div className="button-right fas fa-ellipsis-v" />*/}
           <span>{employeename}</span>
         </div>
         <div
           className={`inside ${this.state.show ? "in" : "out"}`}
-          onDragOver={e => this.props.onDragOver(e)}
-          onMouseMove={e => this.props.onDragOver(e)}
+          onDragOver={e => this.props.onDragOver(e, person.id)}
+          onMouseMove={e => this.props.onDragOver(e, person.id)}
           onDrop={ev => this.props.onDrop(ev, person, departmentid, false)}
           onTouchEnd={ev => this.props.onDrop(ev, person, departmentid, false)}>
           <div className="inside-padding gridinner">
@@ -105,14 +106,15 @@ class TeamEmployee extends React.Component<Props, State> {
                                 onDragStart={ev =>
                                   this.props.onDragStart(
                                     ev,
-                                    licence.boughtplanid.id,
-                                    licence.boughtplanid.planid.appid,
-                                    true,
                                     licence.id,
-                                    person.id
+                                    licence.boughtplanid.alias,
+                                    person.id,
+                                    employeename,
+                                    licence.boughtplanid.planid.appid.name,
+                                    false
                                   )
                                 }
-                                onTouchStart={ev => {
+                                /*onTouchStart={ev => {
                                   console.log("START", ev);
 
                                   this.props.onDragStart(
@@ -123,10 +125,13 @@ class TeamEmployee extends React.Component<Props, State> {
                                     licence.id,
                                     person.id
                                   );
-                                }}
+                                }}*/
                                 onDragEnd={() =>
                                   this.props.teamside.setState({ dragginglicence: 0 })
-                                }>
+                                }
+                                onMouseDown={() => {
+                                  this.props.teamside.setState({ removeid: person.id });
+                                }}>
                                 <img
                                   className="right-profile-image"
                                   style={{
@@ -164,7 +169,29 @@ class TeamEmployee extends React.Component<Props, State> {
                             );
                           } else {
                             appArray.push(
-                              <div className="EApp" key={key}>
+                              <div
+                                className={`EApp dragable ${
+                                  this.props.dragginglicence == licence.id ? "dragging" : ""
+                                }`}
+                                key={key}
+                                draggable
+                                onDragStart={ev =>
+                                  this.props.onDragStart(
+                                    ev,
+                                    licence.id,
+                                    licence.boughtplanid.alias,
+                                    person.id,
+                                    employeename,
+                                    licence.boughtplanid.planid.appid.name,
+                                    true
+                                  )
+                                }
+                                onDragEnd={() =>
+                                  this.props.teamside.setState({ dragginglicence: 0, removeid: -1 })
+                                }
+                                onMouseDown={() => {
+                                  this.props.teamside.setState({ removeid: person.id });
+                                }}>
                                 <img
                                   className="right-profile-image"
                                   style={{
