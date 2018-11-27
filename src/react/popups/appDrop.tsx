@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import gql from "graphql-tag";
-import { fetchAllBoughtplansFromCompany } from "../queries/departments";
+import { fetchAllBoughtPlansFromCompany } from "../queries/departments";
 import { graphql, compose, Query } from "react-apollo";
 
 import { distributeLicence, revokeLicence } from "../mutations/auth";
@@ -11,6 +11,7 @@ import GenericInputField from "../components/GenericInputField";
 
 import { CANCEL_PLAN } from "../mutations/products";
 import AddAccount from "../popups/addAccount";
+import moment = require("moment");
 
 const CHANGE_ALIAS = gql`
   mutation setBoughtPlanAlias($boughtplanid: ID!, $alias: String!) {
@@ -191,7 +192,7 @@ class AppDrop extends Component<Props, State> {
       case 0:
         return (
           <Query
-            query={fetchAllBoughtplansFromCompany}
+            query={fetchAllBoughtPlansFromCompany}
             variables={{ appid: this.props.appid }}
             fetchPolicy="network-only">
             {({ data, loading, error }) => {
@@ -202,10 +203,14 @@ class AppDrop extends Component<Props, State> {
                 return `Error! ${error.message}`;
               }
               let holder: JSX.Element[] = [];
-              if (data.fetchAllBoughtplansFromCompany) {
-                data.fetchAllBoughtplansFromCompany.forEach((boughtplan, key) => {
+              if (data.fetchAllBoughtPlansFromCompany) {
+                data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {
                   let licencesArray: JSX.Element[] = [];
+                  console.log("L", boughtplan.licences);
                   boughtplan.licences.forEach((licence, key2) => {
+                    if (licence.endtime && licence.endtime < moment()) {
+                      return;
+                    }
                     if (licence.unitid && licence.unitid.profilepicture) {
                       licencesArray.push(
                         <div key={key2} className="employeeShower">
@@ -227,13 +232,14 @@ class AppDrop extends Component<Props, State> {
                         <div
                           key={key2}
                           className="employeeShower"
-                          onClick={() =>
+                          onClick={() => {
                             this.distributeLicence(
                               boughtplan.id,
                               this.props.userid,
                               this.props.department
-                            )
-                          }>
+                            );
+                            this.props.onClose();
+                          }}>
                           <div
                             className="name"
                             style={{ textAlign: "center", width: "100%", maxWidth: "100%" }}>
@@ -259,7 +265,8 @@ class AppDrop extends Component<Props, State> {
                           this.props.appid
                         )*/
                         this.setState({
-                          popuptype: 2
+                          popuptype: 2,
+                          boughtplanid: boughtplan.id
                         })
                       }>
                       <span className="textButton">+</span>
@@ -478,7 +485,7 @@ class AppDrop extends Component<Props, State> {
         console.log("TYPE 5");
         return (
           <Query
-            query={fetchAllBoughtplansFromCompany}
+            query={fetchAllBoughtPlansFromCompany}
             variables={{ appid: this.props.appid }}
             fetchPolicy="network-only">
             {({ data, loading, error }) => {
@@ -489,8 +496,8 @@ class AppDrop extends Component<Props, State> {
                 return `Error! ${error.message}`;
               }
               let holder: JSX.Element[] = [];
-              if (data.fetchAllBoughtplansFromCompany) {
-                data.fetchAllBoughtplansFromCompany.forEach((boughtplan, key) => {
+              if (data.fetchAllBoughtPlansFromCompany) {
+                data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {
                   let licencesArray: JSX.Element[] = [];
                   boughtplan.licences.forEach((licence, key2) => {
                     if (licence.unitid && licence.unitid.profilepicture) {

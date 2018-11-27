@@ -56,7 +56,7 @@ const REMOVE_EXTERNAL_ACCOUNT = gql`
 `;
 
 const SUSPEND_LICENCE = gql`
-  mutation suspendLicence($licenceid: ID!, $fromuser: ID!, $clear: Boolean) {
+  mutation suspendLicence($licenceid: ID!, $fromuser: ID, $clear: Boolean) {
     suspendLicence(licenceid: $licenceid, fromuser: $fromuser, clear: $clear) {
       ok
     }
@@ -73,17 +73,13 @@ const CLEAR_LICENCE = gql`
 
 const DELETE_LICENCE_AT = gql`
   mutation deleteLicenceAt($licenceid: ID!, $time: Date!) {
-    deleteLicenceAt(licenceid: $licenceid, time: $time) {
-      date
-    }
+    deleteLicenceAt(licenceid: $licenceid, time: $time)
   }
 `;
 
 const DELETE_BOUGHTPLAN_AT = gql`
   mutation deleteBoughtPlanAt($licenceid: ID!, $time: Date!) {
-    deleteBoughtPlanAt(licenceid: $licenceid, time: $time) {
-      date
-    }
+    deleteBoughtPlanAt(licenceid: $licenceid, time: $time)
   }
 `;
 
@@ -98,6 +94,11 @@ deleteLicenceAt(licenceid: ID!, time: Date!): Date!
 deleteBoughtPlanAt(boughtplanid: ID!, time: Date!): Date!*/
 interface Props {
   showPopup: Function;
+  suspendLicence: Function;
+  removeExternalAccount: Function;
+  clearLicence: Function;
+  deleteLicenceAt: Function;
+  deleteBoughtplanAt: Function;
 }
 
 interface State {
@@ -666,6 +667,41 @@ class Team extends React.Component<Props, State> {
     }
   };
 
+  suspendLicence = async (licenceid, fromuser) => {
+    this.setState({ removeApp: `${fromuser}-${licenceid}` });
+    try {
+      await this.props.suspendLicence({
+        variables: { licenceid, fromuser },
+        refetchQueries: [
+          { query: fetchLicences },
+          { query: fetchUsersOwnLicences, variables: { unitid: fromuser } }
+        ]
+      });
+    } catch (err) {
+      this.showPopup(err.message || "Something went really wrong");
+    }
+    this.setState({ removeApp: null, popup: null });
+  };
+
+  deleteLicenceAt = async (licenceid, fromuser) => {
+    this.setState({ removeApp: `${fromuser}-${licenceid}` });
+    try {
+      await this.props.suspendLicence({
+        variables: { licenceid, fromuser }
+      });
+      await this.props.deleteLicenceAt({
+        variables: { licenceid, time: moment() },
+        refetchQueries: [
+          { query: fetchLicences },
+          { query: fetchUsersOwnLicences, variables: { unitid: fromuser } }
+        ]
+      });
+    } catch (err) {
+      this.showPopup(err.message || "Something went really wrong");
+    }
+    this.setState({ removeApp: null, popup: null });
+  };
+
   onDropApp = (ev, person, department, removearea) => {
     //console.log("DROP1");
     //this.setState({ dragginglicence: 0, removeid: -1 });
@@ -686,7 +722,11 @@ class Team extends React.Component<Props, State> {
           appname: appname,
           username: personname,
           teamname: teamname,
-          external: external === "true"
+          external: external === "true",
+          suspendLicence: this.suspendLicence,
+          deleteLicenceAt: this.deleteLicenceAt,
+          licenceid,
+          remove: this.state.removeApp
         },
         popupBody: RemoveLicence,
         popupHeading: `Remove access ${appname} (${teamname}) from ${personname}`
@@ -711,7 +751,8 @@ class Team extends React.Component<Props, State> {
             username: personname,
             teamname: teamname,
             newusername: `${person.firstname} ${person.lastname}`,
-            external: external === "true"
+            external: external === "true",
+            remove: this.state.removeApp
           },
           popupBody: MoveLicence,
           popupHeading: `Move access ${appname} (${teamname}) from ${personname} to ${

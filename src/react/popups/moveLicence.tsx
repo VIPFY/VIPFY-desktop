@@ -8,6 +8,7 @@ interface Props {
   newusername: string;
   onClose: Function;
   external: boolean;
+  remove: string;
 }
 
 interface State {
@@ -21,7 +22,9 @@ class MoveLicence extends Component<Props, State> {
 
   render() {
     console.log("Remove", this.props, this.state);
-
+    if (this.props.remove) {
+      return <div>Removing...</div>;
+    }
     return (
       <div>
         <div className="genericHolder">

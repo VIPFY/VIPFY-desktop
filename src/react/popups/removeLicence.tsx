@@ -8,6 +8,11 @@ interface Props {
   teamname: string;
   onClose: Function;
   external: boolean;
+  suspendLicence: Function;
+  deleteLicenceAt: Function;
+  licenceid: number;
+  userid: number;
+  remove: string;
 }
 
 interface State {
@@ -21,8 +26,20 @@ class RemoveLicence extends Component<Props, State> {
     licence: true
   };
 
+  remove = () => {
+    if (this.state.licence) {
+      this.props.deleteLicenceAt(this.props.licenceid, this.props.userid);
+    } else {
+      this.props.suspendLicence(this.props.licenceid, this.props.userid);
+    }
+  };
+
   render() {
     console.log("Remove", this.props, this.state);
+
+    if (this.props.remove) {
+      return <div>Removing...</div>;
+    }
 
     return (
       <div>
@@ -103,7 +120,7 @@ class RemoveLicence extends Component<Props, State> {
                   <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
                   <polyline points="1 9 7 14 15 4" />
                 </svg>
-                <span>Fully Delete Licence</span>
+                <span>Terminate Licence at next possible date</span>
               </label>
             </div>
           </div>
@@ -121,6 +138,7 @@ class RemoveLicence extends Component<Props, State> {
           <button
             className="naked-button genericButton"
             //onClick={() => this.addAccountTHIS()}
+            onClick={() => this.remove()}
             style={{
               marginLeft: "0.5em"
             }}>
