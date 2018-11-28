@@ -1,9 +1,6 @@
 import * as React from "react";
 import { Component } from "react";
-<<<<<<< HEAD
 import CoolCheckbox from "../components/CoolCheckbox";
-=======
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
 
 interface Props {
   appname: string;
@@ -21,15 +18,18 @@ interface Props {
 interface State {
   data: boolean;
   licence: boolean;
+  remove: boolean;
 }
 
 class RemoveLicence extends Component<Props, State> {
   state = {
     data: true,
-    licence: true
+    licence: true,
+    remove: false
   };
 
   remove = () => {
+    this.setState({ remove: true });
     if (this.state.licence) {
       this.props.deleteLicenceAt(this.props.licenceid, this.props.userid);
     } else {
@@ -40,7 +40,7 @@ class RemoveLicence extends Component<Props, State> {
   render() {
     console.log("Remove", this.props, this.state);
 
-    if (this.props.remove) {
+    if (this.props.remove || this.state.remove) {
       return <div>Removing...</div>;
     }
 
