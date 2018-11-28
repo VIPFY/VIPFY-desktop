@@ -1,11 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import gql from "graphql-tag";
-<<<<<<< HEAD
 import { fetchAllBoughtPlansFromCompany } from "../queries/departments";
-=======
-import { fetchAllBoughtplansFromCompany } from "../queries/departments";
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
 import { graphql, compose, Query } from "react-apollo";
 
 import { distributeLicence, revokeLicence } from "../mutations/auth";
@@ -15,10 +11,7 @@ import GenericInputField from "../components/GenericInputField";
 
 import { CANCEL_PLAN } from "../mutations/products";
 import AddAccount from "../popups/addAccount";
-<<<<<<< HEAD
 import moment = require("moment");
-=======
->>>>>>> c33b23b50f2e230f14d555cb5fda01c6152969e9
 
 const CHANGE_ALIAS = gql`
   mutation setBoughtPlanAlias($boughtplanid: ID!, $alias: String!) {
@@ -52,6 +45,7 @@ interface State {
   alias: string;
   boughtplanid: number;
   boughtplanname: string;
+  error: string;
 }
 
 const ADD_EXTERNAL_ACCOUNT = gql`
@@ -93,7 +87,8 @@ class AppDrop extends Component<Props, State> {
     popuptype: this.props.popuptype || 0,
     alias: "",
     boughtplanid: 0,
-    boughtplanname: ""
+    boughtplanname: "",
+    error: ""
   };
 
   save = async () => {
@@ -130,14 +125,20 @@ class AppDrop extends Component<Props, State> {
   distributeLicence = async (boughtplanid, unitid, departmentid) => {
     this.setState({ loading: true });
     try {
-      await this.props.distributeLicence({
+      const res = await this.props.distributeLicence({
         variables: { boughtplanid, unitid, departmentid },
         refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
       });
+      console.log("RES", res);
+      if (!res.data.distributeLicence.ok) {
+        this.setState({ error: res.data.distributeLicence.error.message });
+      } else {
+        this.props.onClose();
+      }
     } catch (err) {
+      this.setState({ error: err });
       console.log("ERROR DIS", err);
     }
-    this.props.onClose();
   };
 
   addExternalLicence = async (boughtplanid, unitid, username, password, loginurl, price, appid) => {
@@ -147,10 +148,11 @@ class AppDrop extends Component<Props, State> {
         variables: { username, password, loginurl, price, appid, boughtplanid, touser: unitid },
         refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
       });
+      this.props.onClose();
     } catch (err) {
+      this.setState({ error: err });
       console.log("ERROR DIS", err);
     }
-    this.props.onClose();
   };
 
   addExternalBoughtPlan = async (appid, alias, price, loginurl, unitid, username, password) => {
@@ -191,6 +193,9 @@ class AppDrop extends Component<Props, State> {
   };
 
   render() {
+    if (this.state.error !== "") {
+      return <div>Something went wrong. {this.state.error}</div>;
+    }
     if (this.state.loading) {
       return <div>Please wait...</div>;
     }
@@ -215,7 +220,13 @@ class AppDrop extends Component<Props, State> {
                   let licencesArray: JSX.Element[] = [];
                   console.log("L", boughtplan.licences);
                   boughtplan.licences.forEach((licence, key2) => {
-                    if (licence.endtime && licence.endtime < moment()) {
+                    console.log(
+                      "LE",
+                      licence.endtime,
+                      moment(),
+                      moment(licence.endtime - 0).isBefore(moment())
+                    );
+                    if (licence.endtime && moment(licence.endtime - 0).isBefore(moment())) {
                       return;
                     }
                     if (licence.unitid && licence.unitid.profilepicture) {
@@ -245,7 +256,6 @@ class AppDrop extends Component<Props, State> {
                               this.props.userid,
                               this.props.department
                             );
-                            this.props.onClose();
                           }}>
                           <div
                             className="name"
