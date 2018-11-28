@@ -82,6 +82,21 @@ export const fetchUnitApps = gql`
   }
 `;
 
+export const fetchAllAppsEnhanced = gql`
+  query fetchAllAppsEnhanced {
+    fetchAllAppsEnhanced {
+      id
+      description
+      name
+      icon
+      hasboughtplan
+      hidden
+      disabled
+      needssubdomain
+    }
+  }
+`;
+
 export const fetchUsersOwnLicences = gql`
   query fetchUsersOwnLicences($unitid: ID!) {
     fetchUsersOwnLicences(unitid: $unitid) {
@@ -98,6 +113,33 @@ export const fetchUsersOwnLicences = gql`
             name
             icon
           }
+        }
+      }
+    }
+  }
+`;
+
+export const fetchAllBoughtPlansFromCompany = gql`
+  query fetchAllBoughtPlansFromCompany($appid: ID!) {
+    fetchAllBoughtPlansFromCompany(appid: $appid) {
+      id
+      alias
+      description
+      key
+      planid {
+        id
+        options
+      }
+      licences {
+        id
+        key
+        options
+        endtime
+        unitid {
+          id
+          firstname
+          lastname
+          profilepicture
         }
       }
     }

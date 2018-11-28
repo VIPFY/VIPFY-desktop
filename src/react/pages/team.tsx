@@ -19,7 +19,8 @@ import {
   fetchDepartments,
   fetchDepartmentsData,
   fetchUsersOwnLicences,
-  fetchUnitApps
+  fetchUnitApps,
+  fetchAllAppsEnhanced
 } from "../queries/departments";
 import {
   addCreateEmployee,
@@ -41,6 +42,10 @@ import UserName from "../components/UserName";
 
 import moment = require("moment");
 import TeamEmployee from "../components/teamemployee";
+import AppDrop from "../popups/appDrop";
+import RemoveLicence from "../popups/removeLicence";
+import MoveLicence from "../popups/moveLicence";
+import { license } from "pjson";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onRemoveExternalAccount($licenceid: ID!) {
@@ -49,8 +54,51 @@ const REMOVE_EXTERNAL_ACCOUNT = gql`
     }
   }
 `;
+
+const SUSPEND_LICENCE = gql`
+  mutation suspendLicence($licenceid: ID!, $fromuser: ID, $clear: Boolean) {
+    suspendLicence(licenceid: $licenceid, fromuser: $fromuser, clear: $clear) {
+      ok
+    }
+  }
+`;
+
+const CLEAR_LICENCE = gql`
+  mutation clearLicence($licenceid: ID!) {
+    clearLicence(licenceid: $licenceid) {
+      ok
+    }
+  }
+`;
+
+const DELETE_LICENCE_AT = gql`
+  mutation deleteLicenceAt($licenceid: ID!, $time: Date!) {
+    deleteLicenceAt(licenceid: $licenceid, time: $time)
+  }
+`;
+
+const DELETE_BOUGHTPLAN_AT = gql`
+  mutation deleteBoughtPlanAt($licenceid: ID!, $time: Date!) {
+    deleteBoughtPlanAt(licenceid: $licenceid, time: $time)
+  }
+`;
+
+/*revokeLicence(licenceid: ID!): Response!
+# Remove the user from a licence and optionally delete the key
+suspendLicence(licenceid: ID!, fromuser: ID, clear: Boolean): Response!
+# Delete the key from a licence
+clearLicence(licenceid: ID!): Response!
+# Deletes a licence on a set date, if it is after the normal cancel period
+deleteLicenceAt(licenceid: ID!, time: Date!): Date!
+# Deletes a boughtPlan on a set date, if it is after the normal cancel period
+deleteBoughtPlanAt(boughtplanid: ID!, time: Date!): Date!*/
 interface Props {
   showPopup: Function;
+  suspendLicence: Function;
+  removeExternalAccount: Function;
+  clearLicence: Function;
+  deleteLicenceAt: Function;
+  deleteBoughtplanAt: Function;
 }
 
 interface State {
@@ -66,13 +114,16 @@ interface State {
   popup: any;
   popupProps: any;
   popupBody: any;
-  update: number;
   popupHeading: string;
+  update: number;
+
   addingAppUser: any;
   addingAppName: any;
   removeApp: any;
   dragging: number;
   dragginglicence: number;
+  searchString: string;
+  removeid: number;
 }
 
 class Team extends React.Component<Props, State> {
@@ -95,7 +146,9 @@ class Team extends React.Component<Props, State> {
     addingAppName: null,
     removeApp: null,
     dragging: 0,
-    dragginglicence: 0
+    dragginglicence: 0,
+    searchString: "",
+    removeid: -1
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
@@ -179,7 +232,6 @@ class Team extends React.Component<Props, State> {
 
       this.closePopup();
     } catch (err) {
-      //console.log("aEA", err, email, departmentid);
       this.showPopup(err.message || "Something went really wrong");
     }
   };
@@ -192,7 +244,6 @@ class Team extends React.Component<Props, State> {
       });
       this.closePopup();
     } catch (err) {
-      //console.log("dEA", err, unitid, departmentid);
       this.showPopup(err.message || "Something went really wrong");
     }
   };
@@ -556,12 +607,14 @@ class Team extends React.Component<Props, State> {
     //this.setState({ newDepartment: "" });
   };
 
-  onDragOver = ev => {
-    ev.preventDefault();
+  onDragOver = (ev, removeid) => {
+    //console.log(this.state.removeid, removeid);
+    if (this.state.removeid !== removeid) {
+      ev.preventDefault();
+    }
   };
 
   onDragStart = (ev, id, app, remove, licenceid, personid) => {
-    console.log(ev, id, app, remove, licenceid, personid);
     if (remove) {
       this.setState({ dragginglicence: licenceid });
     } else {
@@ -574,42 +627,195 @@ class Team extends React.Component<Props, State> {
     ev.dataTransfer.setData("personid", personid);
   };
 
+  onDragAppStart = (ev, id, remove, name, needsubdomain) => {
+    if (remove) {
+      this.setState({ dragginglicence: id });
+    } else {
+      this.setState({ dragging: id, removeid: 0 });
+    }
+
+    ev.dataTransfer.setData("id", id);
+    ev.dataTransfer.setData("remove", remove);
+    ev.dataTransfer.setData("name", name);
+    ev.dataTransfer.setData("needsubdomain", needsubdomain);
+  };
+
+  onDragLicenceStart = (ev, licenceid, teamname, personid, personname, appname, external) => {
+    //console.log("DRAG START");
+    this.setState({ dragginglicence: licenceid, removeid: personid });
+    ev.dataTransfer.setData("licenceid", licenceid);
+    ev.dataTransfer.setData("remove", "true");
+    ev.dataTransfer.setData("teamname", teamname);
+    ev.dataTransfer.setData("personid", personid);
+    ev.dataTransfer.setData("personname", personname);
+    ev.dataTransfer.setData("appname", appname);
+    ev.dataTransfer.setData("external", external);
+  };
+
   onDrop = (ev, person, department, removearea) => {
+    //console.log("DROP2");
     let id = ev.dataTransfer.getData("id");
     let appname = ev.dataTransfer.getData("appname");
     let remove = ev.dataTransfer.getData("remove");
     let licenceid = ev.dataTransfer.getData("licenceid");
     let personid = ev.dataTransfer.getData("personid");
 
-    //console.log(id, appname, remove, ev, person, department, removearea);
     if (remove == "true" && removearea) {
-      //console.log("REMOVE", remove);
       this.revokeLicence(licenceid, personid);
     } else if (remove == "false" && !removearea) {
-      //console.log("distributeLicence");
       this.distributeLicence(id, person, department, appname);
     }
+  };
+
+  suspendLicence = async (licenceid, fromuser) => {
+    this.setState({ removeApp: `${fromuser}-${licenceid}` });
+    try {
+      await this.props.suspendLicence({
+        variables: { licenceid, fromuser },
+        refetchQueries: [
+          { query: fetchLicences },
+          { query: fetchUsersOwnLicences, variables: { unitid: fromuser } }
+        ]
+      });
+    } catch (err) {
+      this.showPopup(err.message || "Something went really wrong");
+    }
+    this.setState({ removeApp: null, popup: null });
+  };
+
+  deleteLicenceAt = async (licenceid, fromuser) => {
+    this.setState({ removeApp: `${fromuser}-${licenceid}` });
+    try {
+      await this.props.suspendLicence({
+        variables: { licenceid, fromuser }
+      });
+      await this.props.deleteLicenceAt({
+        variables: { licenceid, time: moment() },
+        refetchQueries: [
+          { query: fetchLicences },
+          { query: fetchUsersOwnLicences, variables: { unitid: fromuser } }
+        ]
+      });
+    } catch (err) {
+      this.showPopup(err.message || "Something went really wrong");
+    }
+    this.setState({ removeApp: null, popup: null });
+  };
+
+  onDropApp = (ev, person, department, removearea) => {
+    //console.log("DROP1");
+    //this.setState({ dragginglicence: 0, removeid: -1 });
+    let remove = ev.dataTransfer.getData("remove");
+
+    if (remove === "true" && removearea) {
+      let licenceid = ev.dataTransfer.getData("licenceid");
+      let teamname = ev.dataTransfer.getData("teamname");
+      let appname = ev.dataTransfer.getData("appname");
+      let personid = ev.dataTransfer.getData("personid");
+      let personname = ev.dataTransfer.getData("personname");
+      let external = ev.dataTransfer.getData("external");
+      this.setState({
+        popup: true,
+        popupProps: {
+          onClose: this.closePopup,
+          userid: personid,
+          appname: appname,
+          username: personname,
+          teamname: teamname,
+          external: external === "true",
+          suspendLicence: this.suspendLicence,
+          deleteLicenceAt: this.deleteLicenceAt,
+          licenceid,
+          remove: this.state.removeApp
+        },
+        popupBody: RemoveLicence,
+        popupHeading: `Remove access ${appname} (${teamname}) from ${personname}`
+      });
+      return;
+    }
+
+    if (remove === "true") {
+      let licenceid = ev.dataTransfer.getData("licenceid");
+      let teamname = ev.dataTransfer.getData("teamname");
+      let appname = ev.dataTransfer.getData("appname");
+      let personid = ev.dataTransfer.getData("personid");
+      let personname = ev.dataTransfer.getData("personname");
+      let external = ev.dataTransfer.getData("external");
+      if (personid !== person.id) {
+        this.setState({
+          popup: true,
+          popupProps: {
+            onClose: this.closePopup,
+            userid: personid,
+            appname: appname,
+            username: personname,
+            teamname: teamname,
+            newusername: `${person.firstname} ${person.lastname}`,
+            external: external === "true",
+            remove: this.state.removeApp
+          },
+          popupBody: MoveLicence,
+          popupHeading: `Move access ${appname} (${teamname}) from ${personname} to ${
+            person.firstname
+          } ${person.lastname}`
+        });
+      }
+      return;
+    }
+
+    if (!removearea) {
+      let id = ev.dataTransfer.getData("id");
+      let name = ev.dataTransfer.getData("name");
+      let needsubdomain = ev.dataTransfer.getData("needsubdomain");
+
+      this.setState({
+        popup: true,
+        popupProps: {
+          onClose: this.closePopup,
+          appid: id,
+          appname: name,
+          userid: person.id,
+          username: `${person.firstname} ${person.lastname}`,
+          department: department,
+          needsubdomain: needsubdomain === "true"
+        },
+        popupBody: AppDrop,
+        popupHeading: `Your ${name} Teams | ${person.firstname} ${person.lastname}`
+      });
+    }
+  };
+
+  appClick = app => {
+    this.setState({
+      popup: true,
+      popupProps: {
+        onClose: this.closePopup,
+        appid: app.id,
+        appname: app.name,
+        popuptype: 5
+      },
+      popupBody: AppDrop,
+      popupHeading: `Your ${app.name} Teams`
+    });
   };
 
   showEmployees(data, departmentid, state) {
     if (data.employees) {
       let employeeArray: JSX.Element[] = [];
       data.employees.forEach((person, key) => {
-        //console.log("PERSON", person);
-        console.log(person);
         employeeArray.push(
           <TeamEmployee
             key={key}
             person={person}
             onDragOver={this.onDragOver}
             onMouseMove={this.onDragOver}
-            onDrop={this.onDrop}
-            onTouchEnd={this.onDrop}
+            onDrop={this.onDropApp}
+            onTouchEnd={this.onDropApp}
             departmentid={departmentid}
             removeApp={this.state.removeApp}
             dragginglicence={this.state.dragginglicence}
-            onDragStart={this.onDragStart}
-            onTouchStart={this.onDragStart}
+            onDragStart={this.onDragLicenceStart}
+            onTouchStart={this.onDragLicenceStart}
             teamside={this}
             addingAppUser={this.state.addingAppUser}
             addingAppName={this.state.addingAppName}
@@ -639,14 +845,14 @@ class Team extends React.Component<Props, State> {
               <div className="teamPageHolder">
                 <div
                   className="availableApps"
-                  onDrop={ev => this.onDrop(ev, null, null, true)}
-                  onTouchEnd={ev => this.onDrop(ev, null, null, true)}
-                  onMouseMove={e => this.onDragOver(e)}
-                  onDragOver={e => this.onDragOver(e)}>
+                  onDrop={ev => this.onDropApp(ev, null, null, true)}
+                  //onTouchEnd={ev => this.onDrop(ev, null, null, true)}
+                  onMouseMove={e => this.onDragOver(e, 0)}
+                  onDragOver={e => this.onDragOver(e, 0)}>
                   <div className="heading">Move app tile to add app to user</div>
                   <div className="appHolder">
                     <Query
-                      query={fetchUnitApps}
+                      query={fetchAllAppsEnhanced}
                       variables={{ departmentid: company.unit.id }}
                       fetchPolicy="network-only">
                       {({ loading, error, data }) => {
@@ -659,7 +865,66 @@ class Team extends React.Component<Props, State> {
 
                         let appArray: JSX.Element[] = [];
 
+                        if (data.fetchAllAppsEnhanced) {
+                          let applist = data.fetchAllAppsEnhanced;
+                          applist.sort(function(a, b) {
+                            if (a.name > b.name) {
+                              return 1;
+                            }
+                            if (a.name < b.name) {
+                              return -1;
+                            }
+                            // a muss gleich b sein
+                            return 0;
+                          });
+
+                          const filteredlist = applist.filter(
+                            app =>
+                              !(app.hidden || app.disabled) &&
+                              ((app.hasboughtplan && this.state.searchString === "") ||
+                                (app.name
+                                  .toLowerCase()
+                                  .includes(this.state.searchString.toLowerCase()) &&
+                                  !(this.state.searchString === "")))
+                          );
+                          appArray = filteredlist.map((app, key) => (
+                            <div
+                              draggable
+                              className={`PApp ${this.state.dragging == app.id ? "dragging" : ""}`}
+                              style={{ backgroundColor: app.hasboughtplan ? "" : "#20BAA9" }}
+                              onDragStart={ev =>
+                                this.onDragAppStart(ev, app.id, false, app.name, app.needssubdomain)
+                              }
+                              /*onTouchStart={ev =>
+                                this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
+                              }*/
+                              onDragEnd={() => this.setState({ dragging: 0, removeid: -1 })}
+                              key={key}
+                              onClick={() => this.appClick(app)}
+                              onMouseDown={() => this.setState({ removeid: 0 })}>
+                              <img
+                                className="right-profile-image"
+                                style={{
+                                  float: "left"
+                                }}
+                                src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                                  app.icon
+                                }`}
+                              />
+                              <div className="employeeName">{app.name}</div>
+                              <span className="explain">Move to add to user</span>
+                              <div
+                                className={`fas ${
+                                  app.hasboughtplan ? "fa-ellipsis-v" : "fa-shopping-cart"
+                                } menuteam `}
+                              />
+                            </div>
+                          ));
+                        }
+
                         if (data.fetchUnitApps) {
+                          let apps: { appid: number }[] = [];
+
                           let noExternalApps = data.fetchUnitApps.filter(
                             app =>
                               app.boughtplan.planid.options === null &&
@@ -717,7 +982,26 @@ class Team extends React.Component<Props, State> {
                             </div>
                           ));
                         }
-                        return appArray;
+                        return (
+                          <React.Fragment>
+                            <div className="PAppSearch">
+                              <button
+                                className="naked-button genericButton"
+                                /*onClick={() => this.setState({ searchopen: false })}*/
+                                style={{ float: "left" }}>
+                                <span className="textButton">
+                                  <i className="fal fa-search" />
+                                </span>
+                              </button>
+                              <input
+                                onChange={e => this.setState({ searchString: e.target.value })}
+                                autoFocus={true}
+                                className="inputBoxFieldTeams"
+                              />
+                            </div>
+                            {appArray}
+                          </React.Fragment>
+                        );
                       }}
                     </Query>
                   </div>
@@ -746,7 +1030,7 @@ class Team extends React.Component<Props, State> {
                         )
                       : ""}
                   </div>
-                  <div className="teamHolder companyHeader">
+                  <div className="companyHeader">
                     <button
                       className="naked-button genericButton"
                       onClick={() => this.addEmployeeP(company.unit.id)}>
@@ -822,5 +1106,9 @@ export default compose(
   graphql(revokeLicencesFromDepartment, {
     name: "revokeLicencesFromDepartment"
   }),
-  graphql(REMOVE_EXTERNAL_ACCOUNT, { name: "removeExternalAccount" })
+  graphql(REMOVE_EXTERNAL_ACCOUNT, { name: "removeExternalAccount" }),
+  graphql(SUSPEND_LICENCE, { name: "suspendLicence" }),
+  graphql(CLEAR_LICENCE, { name: "clearLicence" }),
+  graphql(DELETE_LICENCE_AT, { name: "deleteLicenceAt" }),
+  graphql(DELETE_BOUGHTPLAN_AT, { name: "deleteBoughtplanAt" })
 )(Team);

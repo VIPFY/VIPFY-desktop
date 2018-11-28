@@ -141,7 +141,14 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         icon: "ambulance",
         show: true,
         important: false
-      }
+      } /*,
+      {
+        label: "AppAdmin",
+        location: "appadmin",
+        icon: "screwdriver",
+        show: true,
+        important: false
+      }*/
     ];
 
     return (
