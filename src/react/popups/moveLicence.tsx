@@ -9,20 +9,30 @@ interface Props {
   onClose: Function;
   external: boolean;
   remove: string;
+  moveLicence: Function;
+  licenceid: number;
+  userid: number;
+  newuserid: number;
 }
 
 interface State {
   data: boolean;
+  remove: boolean;
 }
 
 class MoveLicence extends Component<Props, State> {
   state = {
-    data: true
+    data: true,
+    remove: false
+  };
+
+  move = () => {
+    this.props.moveLicence(this.props.licenceid, this.props.userid, this.props.newuserid);
   };
 
   render() {
     console.log("Remove", this.props, this.state);
-    if (this.props.remove) {
+    if (this.props.remove || this.state.remove) {
       return <div>Removing...</div>;
     }
     return (
@@ -90,7 +100,7 @@ class MoveLicence extends Component<Props, State> {
           </button>
           <button
             className="naked-button genericButton"
-            //onClick={() => this.addAccountTHIS()}
+            onClick={() => this.move()}
             style={{
               marginLeft: "0.5em"
             }}>

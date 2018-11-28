@@ -702,6 +702,24 @@ class Team extends React.Component<Props, State> {
     this.setState({ removeApp: null, popup: null });
   };
 
+  /*moveLicence = async (licenceid, userid, newuserid) => {
+    try {
+      await this.props.suspendLicence({
+        variables: { licenceid, fromuser: userid }
+      });
+      const res = await this.props.distributeLicence({
+        variables: { boughtplanid, unitid: newuserid, departmentid },
+        refetchQueries: [
+          { query: fetchUsersOwnLicences, variables: { unitid: userid } },
+          { query: fetchUsersOwnLicences, variables: { unitid: newuserid } }
+        ]
+      });
+    } catch (err) {
+      this.showPopup(err.message || "Something went really wrong");
+    }
+    this.setState({ removeApp: null, popup: null });
+  };*/
+
   onDropApp = (ev, person, department, removearea) => {
     //console.log("DROP1");
     //this.setState({ dragginglicence: 0, removeid: -1 });
@@ -734,7 +752,7 @@ class Team extends React.Component<Props, State> {
       return;
     }
 
-    if (remove === "true") {
+    /*if (remove === "true") {
       let licenceid = ev.dataTransfer.getData("licenceid");
       let teamname = ev.dataTransfer.getData("teamname");
       let appname = ev.dataTransfer.getData("appname");
@@ -761,9 +779,9 @@ class Team extends React.Component<Props, State> {
         });
       }
       return;
-    }
+    }*/
 
-    if (!removearea) {
+    if (!removearea && remove !== "true") {
       let id = ev.dataTransfer.getData("id");
       let name = ev.dataTransfer.getData("name");
       let needsubdomain = ev.dataTransfer.getData("needsubdomain");

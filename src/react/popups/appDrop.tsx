@@ -218,15 +218,16 @@ class AppDrop extends Component<Props, State> {
               if (data.fetchAllBoughtPlansFromCompany) {
                 data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {
                   let licencesArray: JSX.Element[] = [];
-                  console.log("L", boughtplan.licences);
+                  //console.log("L", boughtplan.licences);
                   boughtplan.licences.forEach((licence, key2) => {
                     console.log(
                       "LE",
                       licence.endtime,
+                      moment(licence.endtime),
                       moment(),
-                      moment(licence.endtime - 0).isBefore(moment())
+                      moment(licence.endtime).isBefore(moment())
                     );
-                    if (licence.endtime && moment(licence.endtime - 0).isBefore(moment())) {
+                    if (licence.endtime && moment(licence.endtime).isBefore(moment())) {
                       return;
                     }
                     if (licence.unitid && licence.unitid.profilepicture) {
