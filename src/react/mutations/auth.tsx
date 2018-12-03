@@ -104,8 +104,8 @@ export const revokeLicencesFromDepartment = gql`
 `;
 
 export const distributeLicence = gql`
-  mutation distributeLicence($boughtplanid: ID!, $unitid: ID!, $departmentid: ID!) {
-    distributeLicence(boughtplanid: $boughtplanid, unitid: $unitid, departmentid: $departmentid) {
+  mutation distributeLicence($licenceid: ID!, $unitid: ID!, $departmentid: ID!) {
+    distributeLicence(licenceid: $licenceid, unitid: $unitid, departmentid: $departmentid) {
       ok
       error {
         code

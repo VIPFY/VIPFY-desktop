@@ -21,6 +21,12 @@ const CHANGE_ALIAS = gql`
   }
 `;
 
+const DELETE_BOUGHTPLAN_AT = gql`
+  mutation deleteBoughtPlanAt($boughtplanid: ID!, $time: Date!) {
+    deleteBoughtPlanAt(boughtplanid: $boughtplanid, time: $time)
+  }
+`;
+
 interface Props {
   onClose: Function;
   appid: number;
@@ -32,7 +38,7 @@ interface Props {
   addExternalLicence: Function;
   addExternalBoughtPlan: Function;
   changeAlias: Function;
-  cancelPlan: Function;
+  deleteBoughtPlanAt: Function;
   department: number;
   client: any;
   needsubdomain: boolean;
@@ -109,9 +115,10 @@ class AppDrop extends Component<Props, State> {
 
   delete = async () => {
     try {
-      await this.props.cancelPlan({
+      await this.props.deleteBoughtPlanAt({
         variables: {
-          planid: this.state.boughtplanid
+          boughtplanid: this.state.boughtplanid,
+          time: moment()
         }
       });
       this.setState({
@@ -122,11 +129,11 @@ class AppDrop extends Component<Props, State> {
     }
   };
 
-  distributeLicence = async (boughtplanid, unitid, departmentid) => {
+  distributeLicence = async (licenceid, unitid, departmentid) => {
     this.setState({ loading: true });
     try {
       const res = await this.props.distributeLicence({
-        variables: { boughtplanid, unitid, departmentid },
+        variables: { licenceid, unitid, departmentid },
         refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
       });
       console.log("RES", res);
@@ -217,6 +224,9 @@ class AppDrop extends Component<Props, State> {
               let holder: JSX.Element[] = [];
               if (data.fetchAllBoughtPlansFromCompany) {
                 data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {
+                  if (boughtplan.endtime && moment(boughtplan.endtime - 0).isBefore(moment())) {
+                    return;
+                  }
                   let licencesArray: JSX.Element[] = [];
                   //console.log("L", boughtplan.licences);
                   boughtplan.licences.forEach((licence, key2) => {
@@ -253,7 +263,7 @@ class AppDrop extends Component<Props, State> {
                           className="employeeShower"
                           onClick={() => {
                             this.distributeLicence(
-                              boughtplan.id,
+                              licence.id,
                               this.props.userid,
                               this.props.department
                             );
@@ -516,8 +526,25 @@ class AppDrop extends Component<Props, State> {
               let holder: JSX.Element[] = [];
               if (data.fetchAllBoughtPlansFromCompany) {
                 data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {
+                  console.log(
+                    "BI",
+                    boughtplan,
+                    moment(boughtplan.endtime - 0),
+                    moment(boughtplan.endtime - 0).isBefore(moment())
+                  );
+                  if (boughtplan.endtime && moment(boughtplan.endtime - 0).isBefore(moment())) {
+                    return;
+                  }
+                  //HOTFIX
+                  if (boughtplan.endtime) {
+                    return;
+                  }
                   let licencesArray: JSX.Element[] = [];
                   boughtplan.licences.forEach((licence, key2) => {
+                    console.log("LI", licence.id, licence.endtime);
+                    if (licence.endtime && moment(licence.endtime).isBefore(moment())) {
+                      return;
+                    }
                     if (licence.unitid && licence.unitid.profilepicture) {
                       licencesArray.push(
                         <div key={key2} className="employeeShower">
@@ -614,8 +641,8 @@ export default compose(
   graphql(ADD_EXTERNAL_PLAN, {
     name: "addExternalBoughtPlan"
   }),
-  graphql(CANCEL_PLAN, {
-    name: "cancelPlan"
+  graphql(DELETE_BOUGHTPLAN_AT, {
+    name: "deleteBoughtPlanAt"
   }),
   graphql(CHANGE_ALIAS, {
     name: "changeAlias"
