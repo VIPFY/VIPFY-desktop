@@ -13,6 +13,7 @@ interface Props {
   licenceid: number;
   userid: number;
   newuserid: number;
+  departmentId: number;
 }
 
 interface State {
@@ -27,7 +28,12 @@ class MoveLicence extends Component<Props, State> {
   };
 
   move = () => {
-    this.props.moveLicence(this.props.licenceid, this.props.userid, this.props.newuserid);
+    this.props.moveLicence(
+      this.props.licenceid,
+      this.props.userid,
+      this.props.newuserid,
+      this.props.departmentId
+    );
   };
 
   render() {
