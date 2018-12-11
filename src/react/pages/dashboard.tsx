@@ -32,7 +32,7 @@ interface Props {
 
 class Dashboard extends React.Component<Props, {}> {
   componentDidMount() {
-    if (this.props.firstLogin) {
+    if (this.props.firstLogin || true) {
       this.props.showPopup({
         header: "Welcome to Vipfy",
         body: Welcome,

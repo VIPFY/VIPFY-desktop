@@ -142,6 +142,7 @@ class App extends React.Component<AppProps, AppState> {
                 setName={this.setName}
                 logMeOut={this.logMeOut}
                 showPopup={data => this.renderPopup(data)}
+                moveTo={this.moveTo}
                 {...data.me}
                 employees={data.me.company.employees}
                 profilepicture={data.me.profilepicture || data.me.company.profilepicture}

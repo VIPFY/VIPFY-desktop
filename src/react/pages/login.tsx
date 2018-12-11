@@ -5,6 +5,11 @@ import gql from "graphql-tag";
 import { updateUser } from "../mutations/auth";
 import { emailRegex, countries, industries, subIndustries } from "../common/constants";
 import { filterError } from "../common/functions";
+import ReactPasswordStrength from "react-password-strength";
+import { me } from "../queries/auth";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { ApolloClient } from "apollo-client";
+import { CHANGE_PASSWORD } from "../mutations/auth";
 
 const SIGN_UP = gql`
   mutation onSignUp($email: String!, $name: NameInput!, $companyData: CompanyInput!) {
@@ -54,12 +59,13 @@ interface Props {
   checkEmail: Function;
   checkVat: Function;
   updateStatisticData: Function;
+  client: ApolloClient<InMemoryCache>;
 }
 
 interface State {
   loginMove: boolean;
   forgotMove: boolean;
-  error: string;
+  error: string | null;
   errorbool: boolean;
   focus: number;
   login: boolean;
@@ -72,7 +78,7 @@ interface State {
   agreementa: boolean;
   agreementb: boolean;
   companyname: string;
-  email: string;
+  email: string | null;
   industry: string;
   country: string;
   countryCode: string;
@@ -84,6 +90,11 @@ interface State {
   address: string;
   possibleAddresses: string[];
   vatId: string;
+  oldPassword: string;
+  newPassword: string | null;
+  newPasswordValid: boolean;
+  repeatPassword: string | null;
+  loading: boolean;
 }
 
 class Login extends React.Component<Props, State> {
@@ -103,7 +114,7 @@ class Login extends React.Component<Props, State> {
     agreementa: false,
     agreementb: false,
     companyname: "",
-    email: "",
+    email: null,
     industry: "",
     country: "",
     countryCode: "OT",
@@ -114,7 +125,12 @@ class Login extends React.Component<Props, State> {
     name: "",
     address: "",
     possibleAddresses: [],
-    vatId: ""
+    vatId: "",
+    oldPassword: "",
+    newPassword: null,
+    newPasswordValid: false,
+    repeatPassword: null,
+    loading: false
   };
 
   emailInput: HTMLInputElement;
@@ -125,6 +141,8 @@ class Login extends React.Component<Props, State> {
   companyInput: HTMLInputElement;
   vatInput: HTMLInputElement;
   countrySelect: HTMLSelectElement;
+  pw1Input: HTMLSelectElement;
+  pw2Input: HTMLSelectElement;
 
   componentDidMount() {
     if (this.props.error) {
@@ -133,6 +151,56 @@ class Login extends React.Component<Props, State> {
         errorbool: true
       });
     }
+  }
+
+  private passwordChanged(
+    { score, password, isValid }: { score: number; password: string; isValid: boolean },
+    feedback: any
+  ): void {
+    this.setState({ newPasswordValid: isValid, newPassword: password });
+  }
+
+  private repeatPasswordChanged(e: React.ChangeEvent<HTMLInputElement>): void {
+    const v = e.target.value;
+    this.setState({ repeatPassword: v });
+  }
+
+  private oldPasswordChanged(e: React.ChangeEvent<HTMLInputElement>): void {
+    const v = e.target.value;
+    this.setState({ oldPassword: v });
+  }
+
+  private async confirm(): Promise<void> {
+    if (!this.canSubmit()) {
+      return;
+    }
+    await this.setState({ error: null, loading: true });
+    try {
+      await this.props.client.mutate({
+        mutation: CHANGE_PASSWORD,
+        variables: {
+          pw: this.state.oldPassword,
+          newPw: this.state.newPassword,
+          confirmPw: this.state.repeatPassword
+        }
+      });
+      await this.props.client.query({ query: me, fetchPolicy: "network-only" });
+    } catch (err) {
+      this.setState({ error: err.message, loading: false });
+    }
+    await this.setState({ email: null, newPassword: null, repeatPassword: null });
+  }
+
+  private abort(): void {
+    this.props.logMeOut();
+  }
+
+  private canSubmit(): boolean {
+    return (
+      (this.state.email &&
+        this.state.newPasswordValid &&
+        this.state.newPassword == this.state.repeatPassword) === true
+    );
   }
 
   openExternal = (e, url) => {
@@ -208,7 +276,7 @@ class Login extends React.Component<Props, State> {
       if (email.includes("@") && email.includes(".")) {
         await this.props.checkEmail({ variables: { email: e.target.value } });
       }
-      this.setState({ error: "", errorbool: false });
+      this.setState({ error: "", errorbool: false, email });
     } catch (error) {
       this.setState({
         error: filterError(error),
@@ -987,7 +1055,7 @@ class Login extends React.Component<Props, State> {
                   className="partButton"
                   id="registerStartButton"
                   onClick={() => this.switchState(true)}>
-                  Or Register
+                  New here?
                 </div>
               </div>
             </div>
@@ -999,10 +1067,10 @@ class Login extends React.Component<Props, State> {
             />
             <div className="partHolder">
               <div className="stepShower">
-                {this.showStep(this.state.registerStep, 1)}
+                {/*this.showStep(this.state.registerStep, 1)}
                 {this.showStep(this.state.registerStep, 2)}
                 {this.showStep(this.state.registerStep, 3)}
-                {this.showStep(this.state.registerStep, 4)}
+            {this.showStep(this.state.registerStep, 4)*/}
               </div>
               <div className="partHeading_Register">
                 <div>Welcome to VIPFY</div>
@@ -1013,8 +1081,83 @@ class Login extends React.Component<Props, State> {
                 }>
                 {this.state.error}
               </div>
-              {this.registerForm(this.state.registerStep)}
-              {this.showButtons(this.state.registerStep)}
+              {/*this.registerForm(this.state.registerStep)}
+              {this.showButtons(this.state.registerStep)*/}
+              <div className="partForm partForm_Register">
+                <div style={{ marginBottom: "1rem" }}>
+                  <label>Your Email:</label>
+                  <input
+                    key="remail"
+                    className="newInputField"
+                    placeholder="user@example.com"
+                    onChange={this.checkEmail}
+                    //onKeyPress={e => this.handleEnter(e, 1)}
+                    ref={input => {
+                      this.remailInput = input!;
+                    }}
+                  />
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                  <label>
+                    New Password:
+                    <ReactPasswordStrength
+                      className="passwordStrength"
+                      minLength={8}
+                      minScore={2}
+                      scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+                      tooShortWord={"too short"}
+                      inputProps={{
+                        name: "password_input",
+                        autoComplete: "off",
+                        placeholder: "Your Future Password",
+                        className: "newInputField"
+                      }}
+                      changeCallback={(state, feedback) => this.passwordChanged(state, feedback)}
+                    />
+                  </label>
+                </div>
+                <div style={{ marginBottom: "1rem", position: "relative" }}>
+                  <label>
+                    <div style={{ float: "right" }}>
+                      <input
+                        className="newInputField"
+                        style={{ right: "0" }}
+                        placeholder="Your Future Password"
+                        type="password"
+                        autoComplete="off"
+                        onChange={e => this.repeatPasswordChanged(e)}
+                      />
+                      {this.state.newPassword !== null &&
+                      this.state.repeatPassword !== null &&
+                      this.state.newPassword !== this.state.repeatPassword ? (
+                        <span className="inputError">Doesn't match</span>
+                      ) : (
+                        <span />
+                      )}
+                    </div>
+                    <div style={{ float: "right" }}>Repeat:</div>
+                  </label>
+                </div>
+              </div>
+              <div className="registerButtons">
+                <div className="partButton_ToLogin" onClick={() => this.switchState(false)}>
+                  Already registered?
+                </div>
+                {this.canSubmit() ? (
+                  <div className="partButton_Next" onClick={() => this.conplete()}>
+                    {this.state.loading ? (
+                      <div className="spinner loginspinner">
+                        <div className="double-bounce1" />
+                        <div className="double-bounce2" />
+                      </div>
+                    ) : (
+                      "Complete Setup"
+                    )}
+                  </div>
+                ) : (
+                  <div className="partButton_Next buttonDisabled">Complete Setup</div>
+                )}
+              </div>
             </div>
           </div>
         </div>

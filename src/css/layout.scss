@@ -3131,7 +3131,7 @@ h1{
                 top: 7.5rem;
                 display: flex;
                 flex-flow: column;
-                max-width: 25rem;
+                max-width: 26rem;
             }
             &_ChangePassword {
                 left: 3rem;
@@ -4371,3 +4371,317 @@ table{
       }
     }
   }
+
+
+.welcomeBackground{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100vh - 32px);
+    background-color: #f5f5f5;
+}
+.welcomeModal{
+    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
+    width: 1000px;
+    height: 75%;
+    border-radius: 10px;
+    background-color: white;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+
+    .left{
+        width: 50%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .mapIcon{
+            height: 100px;
+            width: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            background-image: linear-gradient(to top right, #34b3a4, #357AA5);
+            color: white;
+            border-radius: 3px;
+        }
+    }
+
+    .right{
+        width: 50%;
+        height: 100%;
+        position: relative;
+        background-color: #253647;
+        color: white;
+
+        h2{
+            font-weight: 300;
+        }
+
+        .logo{
+            background-image: url(./images/Vipfy_Logo_Links_Weiss_HG_Dunkel.svg);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            height: 20px;
+            top: 50px;
+            position: absolute;
+            width: 100px;
+            left: 50px;
+        }
+
+        .formHolder{
+            margin-top: 110px;
+            margin-left: 50px;
+
+            .selectHolder{
+                max-height: 400px;
+                max-width: 400px;
+                overflow-y: auto;
+
+                &::-webkit-scrollbar-thumb {
+                    background: #20BAA9;
+                }
+                &::-webkit-scrollbar-track {
+                    background: #117f91;
+                }
+                &::-webkit-scrollbar {
+                    width: 5px;
+                }
+
+                .selectOption{
+                    line-height: 20px;
+                    cursor: pointer;
+                    padding-right: 5px;
+                    padding-bottom: 2px;
+                    padding-top: 2px;
+                    padding-left: 5px;
+                    display: flex;
+                    align-items: center;
+                    font-size: 13px;
+                    max-width: 400px;
+
+                    &:hover{
+                        background-color: #34b3a4;
+                    }
+
+                    .selectInputHolder{
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        width: calc(100% - 20px);
+
+                        .selectSpan{
+                            font-size: 10px;
+                        }
+
+                        .selectInput {
+                            padding: 0;
+                            background-color: transparent;
+                            border: none;
+                            width: 65%;
+                            border-bottom: 1px solid white;
+                            color: white;
+                            font-family: "Roboto";
+
+                            &:focus{
+                                outline: 0;
+                            }
+
+                            &::-webkit-input-placeholder{
+                                color: #f5f5f5
+                            }
+                        }
+                    }
+                    .selectCheck {
+                        height: 20px;
+                        width: 20px;
+                        margin-right: 5px;
+                        border-radius: 3px;
+                        border: 1px solid white;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .dropzoneWelcome{
+
+                        border-color: #f5f5f5;
+                        border-radius: 3px;
+                        /*border-style: dashed;*/
+                        cursor: pointer;
+                        height: 100px;
+                        width: 100px;
+                        border-width: 2px;
+
+                        input{
+                            width: 100px;
+                        }
+
+                        .previewUpload{
+                            position: relative;
+                            width: 100px;
+                            height: 100px;
+                            border-radius: 3px;
+                        }
+
+                        .textUpload{
+                            bottom: 5px;
+                            color: white;
+                            position: absolute;
+                            width: 100%;
+                            font-size: 10px;
+                            text-align: center;
+                            line-height: 12px;
+                        }
+
+                        .profileimagePlaceholder{
+                            height: 100px;
+                            width: 100px;
+                            border-radius: 3px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            font-size: 30px;
+                            background-image: linear-gradient(to top right, #34b3a4, #357AA5);
+                            color: white;
+
+                            &:hover{
+                                i{
+                                -webkit-animation: upload-bounce 1.0s infinite ease-in-out;
+                                animation: upload-bounce 1.0s infinite ease-in-out;
+                                }
+                            }
+
+                            @keyframes upload-bounce {
+                                0%, 100% {
+                                    margin-bottom: 0px;
+                                } 50% {
+                                    margin-bottom: 20px;
+                                }
+                              }
+                        }
+                        .deleteProfileimage{
+                            position: absolute;
+                            top: 5px;
+                            right: 5px;
+
+                            &:hover{
+                                color: #34b3a4;
+                            }
+                        }
+                    }
+
+                    .nextWelcome{
+                        height: 125px;
+                        width: 125px;
+                        .previewUpload{
+                            height: 125px;
+                            width: 125px;
+                            .profileimagePlaceholder{
+                                height: 125px;
+                                width: 125px;
+                                font-size: 30px;
+                            }
+                            .textUpload{
+                                font-size: 11px;
+                                margin: 5px;
+                                width: 115px;
+                            }
+                        }
+                    }
+                }
+                .active{
+                    background-color: #357AA5;
+                }
+
+                .noSelect{
+                    cursor: initial;
+
+                    &:hover{
+                    background: none !important;
+                    }
+                }
+            }
+        }
+
+        .welcomeButtons{
+            position: absolute;
+            display: flex;
+            bottom: 50px;
+            left: 50px;
+            width: 400px;
+            justify-content: space-between;
+
+            .sameWidthButton{
+                width: 50px;
+                display: flex;
+                justify-content: center;
+            }
+
+            .buttonDisabled{
+                background-color: #f5f5f5;
+                border-radius: 3px;
+                color: #253647;
+                display: flex;
+                align-items: center;
+                transition: all 0.2s ease-in-out;
+                position: relative;
+                overflow: hidden;
+            }
+        }
+        .genericInputField{
+            border: 0;
+            padding-left: 0.2rem;
+            padding-right: 0.2rem;
+            padding-top: 0;
+            padding-bottom: 0;
+            width: 20em;
+            border-bottom: 1px solid #20BAA9;
+            background-color: transparent;
+            color: white;
+            font-family: "Roboto";
+            font-weight: 300;
+
+            &::placeholder {
+                color: white;
+            }
+
+            &:focus{
+                outline: 0;
+            }
+        }
+        .smallButton{
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    }
+    .welcomeProgress{
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 10px;
+        display: flex;
+        
+        .element {
+            width: calc(1000px / 5);
+            height: 10px;
+            border-right: 1px solid white;
+            border-left: 1px solid white;
+            /*background-color: #20baa9;*/
+            background-color: #f5f5f5;
+            transition: 500ms ease-in-out;
+        }
+    }
+}
+.welcomeError{
+    position: absolute;
+    bottom: 100px;
+    right: 50px;
+    font-size: 14px;
+    color: #c73544;
+}
