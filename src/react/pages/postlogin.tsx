@@ -8,10 +8,12 @@ import { ApolloClient } from "apollo-client";
 import { CHANGE_PASSWORD } from "../mutations/auth";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
+import Welcome from "../pages/welcome";
 
 interface PostLoginProps {
   logMeOut: Function;
   client: ApolloClient<InMemoryCache>;
+  moveTo: Function;
 }
 
 interface PostLoginState {}
@@ -21,7 +23,7 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
 
   render() {
     return (
-      <Query query={me}>
+      <Query query={me} fetchPolicy="network-only">
         {({ data, loading, error }) => {
           if (loading) {
             return <LoadingDiv text="Preparing Vipfy for you" />;
@@ -29,6 +31,12 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
 
           if (error) {
             return <div>There was an error</div>;
+          }
+
+          console.log("POSTLOGIN", data.me);
+
+          if (!data.me.company.setupfinished) {
+            return <Welcome {...this.props} />;
           }
 
           if (data.me.firstlogin) {

@@ -18,7 +18,7 @@ export const countries = [
   { value: "FI", name: "Finland", isEU: true },
   { value: "FR", name: "France", isEU: true },
   { value: "DE", name: "Germany", isEU: true },
-  { value: "DE", name: "Deutschland", isEU: true },
+  //{ value: "DE", name: "Deutschland", isEU: true },
   { value: "GR", name: "Greece", isEU: true },
   { value: "HU", name: "Hungary", isEU: true },
   { value: "IE", name: "Ireland", isEU: true },

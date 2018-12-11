@@ -15,6 +15,7 @@ export const me = gql`
       lastname
       isadmin
       profilepicture
+      country
       company {
         unit: unitid {
           id
@@ -22,6 +23,7 @@ export const me = gql`
         profilepicture
         employees
         name
+        setupfinished
       }
       needspasswordchange
       firstlogin
