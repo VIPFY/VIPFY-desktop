@@ -164,3 +164,12 @@ export const APPLY_PROMOCODE = gql`
     }
   }
 `;
+
+export const REDEEM_SETUPTOKEN = gql`
+  mutation RedeemSetupToken($setuptoken: String!) {
+    redeemSetupToken(setuptoken: $setuptoken) {
+      ok
+      token
+    }
+  }
+`;

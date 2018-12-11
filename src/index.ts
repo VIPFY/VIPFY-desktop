@@ -5,6 +5,13 @@ import installExtension, {
 } from "electron-devtools-installer";
 import { enableLiveReload } from "electron-compile";
 import path = require("path");
+import Store = require("electron-store");
+
+const store = new Store();
+const key = getSetupKey();
+if (key !== false) {
+  store.set("setupkey", key);
+}
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -62,6 +69,54 @@ const vipfyHandler = (request, callback) => {
 
   callback({ path: path.normalize(`${app.getAppPath()}/src/blank.html`) });
 };
+
+function getSetupKey() {
+  try {
+    const i = process.argv.findIndex(arg => arg == "--squirrel-install");
+    if (i == -1 || process.argv.length - 1 == i) {
+      return false;
+    }
+
+    const installerExe = process.argv[i + 2];
+    const candidateKey = installerExe
+      .split("-")
+      .slice(-1)[0]
+      .split(".")[0];
+
+    if (candidateKey.length !== 21) {
+      return false;
+    }
+
+    if (!checkSetupKey(candidateKey)) {
+      return false;
+    }
+
+    return candidateKey;
+  } catch (e) {
+    return false;
+  }
+}
+
+function checkSetupKey(key) {
+  try {
+    const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    let sum = 0;
+    for (let i = 0; i < 20; i++) {
+      let index = alphabet.indexOf(key[i]);
+      if (index === -1) {
+        return false;
+      }
+      sum *= 7; // 7 is prime
+      sum += index + 1;
+    }
+    sum %= alphabet.length;
+
+    let checksum = alphabet[sum];
+    return key[20] === checksum;
+  } catch (e) {
+    return false;
+  }
+}
 
 const createWindow = async () => {
   try {
