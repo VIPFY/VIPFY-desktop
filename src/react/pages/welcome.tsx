@@ -16,6 +16,12 @@ const UPDATE_PIC = gql`
   }
 `;
 
+const UPDATE_LOGO = gql`
+  mutation updateCompanyPic($file: Upload!) {
+    updateCompanyPic(file: $file)
+  }
+`;
+
 const SEARCH_COMPANY = gql`
   mutation onSearchAddressByCompanyName($company: String!) {
     searchAddressByCompanyName(input: $company)
@@ -61,6 +67,8 @@ interface Props {
   checkVat: Function;
   country: String;
   setupFinished: Function;
+  updateUserpicture: Function;
+  updateCompanyLogo: Function;
 }
 
 interface State {
@@ -130,6 +138,21 @@ class Welcome extends React.Component<Props, State> {
       if (files.type.includes("image/")) {
         console.log(files);
         this.setState({ profilepicture: files, error: null });
+      } else {
+        console.log("ERROR");
+        this.setState({ error: "You can only upload images!" });
+      }
+    } else {
+      this.setState({ error: "You can only upload images!" });
+    }
+  };
+
+  handleDropCompany = files => {
+    console.log("DROP", files);
+    if (files) {
+      if (files.type.includes("image/")) {
+        console.log(files);
+        this.setState({ companypicture: files, error: null });
       } else {
         console.log("ERROR");
         this.setState({ error: "You can only upload images!" });
@@ -236,6 +259,17 @@ class Welcome extends React.Component<Props, State> {
           username: this.state.name
         }
       });
+      if (this.state.profilepicture) {
+        console.log(this.state.profilepicture);
+        await this.props.updateUserpicture({
+          variables: { file: this.state.profilepicture }
+        });
+      }
+      if (this.state.companypicture) {
+        await this.props.updateCompanyLogo({
+          variables: { file: this.state.companypicture }
+        });
+      }
       await this.props.client.query({ query: me, fetchPolicy: "network-only" });
       switch (option) {
         case 1:
@@ -516,7 +550,7 @@ class Welcome extends React.Component<Props, State> {
                     type="file"
                     multiple={false}
                     className="dropzoneWelcome"
-                    onDrop={([fileToUpload]) => this.handleDrop(fileToUpload)}>
+                    onDrop={([fileToUpload]) => this.handleDropCompany(fileToUpload)}>
                     <div className="previewUpload">
                       {this.state.companypicture ? (
                         <React.Fragment>
@@ -731,5 +765,7 @@ export default compose(
   graphql(SEARCH_COMPANY, { name: "searchCompany" }),
   graphql(CHECK_VAT, { name: "checkVat" }),
   graphql(SETUP_FINISHED, { name: "setupFinished" }),
+  graphql(UPDATE_PIC, { name: "updateUserpicture" }),
+  graphql(UPDATE_LOGO, { name: "updateCompanyLogo" }),
   withApollo
 )(Welcome);

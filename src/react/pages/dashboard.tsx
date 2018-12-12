@@ -31,7 +31,7 @@ interface Props {
 }
 
 class Dashboard extends React.Component<Props, {}> {
-  componentDidMount() {
+  /*componentDidMount() {
     if (this.props.firstLogin || true) {
       this.props.showPopup({
         header: "Welcome to Vipfy",
@@ -44,7 +44,7 @@ class Dashboard extends React.Component<Props, {}> {
         }
       });
     }
-  }
+  }*/
 
   setApp = (licence: number) => this.props.setApp(licence);
 
