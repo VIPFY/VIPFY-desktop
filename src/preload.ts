@@ -92,6 +92,84 @@
       require("./locationScripts/asana.ts")();
     } else if (hostMatches(".*.?shopify.de")) {
       require("./locationScripts/shopify.ts")();
+    } else if (hostMatches(".*.?expensify.com")) {
+      require("./locationScripts/expensify.ts")();
+    } else if (hostMatches(".*.?typeform.com")) {
+      require("./locationScripts/typeform.ts")();
+    } else if (hostMatches(".*.?surveysparrow.com")) {
+      require("./locationScripts/surveysparrow.ts")();
+    } else if (hostMatches(".*.?openproject.com")) {
+      require("./locationScripts/openproject.ts")();
+    } else if (hostMatches(".*.?getminute.com")) {
+      require("./locationScripts/getminute.ts")();
+    } else if (hostMatches(".*.?supersaas.de")) {
+      require("./locationScripts/supersaas.ts")();
+    } else if (hostMatches(".*.?smartlook.com")) {
+      require("./locationScripts/smartlook.ts")();
+    } else if (hostMatches(".*.?papershift.com")) {
+      require("./locationScripts/papershift.ts")();
+    } else if (hostMatches(".*.?sevdesk.de")) {
+      require("./locationScripts/sevdesk.ts")();
+    } else if (hostMatches(".*.?freshworks.com")) {
+      require("./locationScripts/freshworks.ts")();
+    } else if (hostMatches(".*.?wunderlist.com")) {
+      require("./locationScripts/wunderlist.ts")();
+    } else if (hostMatches(".*.?freedcamp.com")) {
+      require("./locationScripts/freedcamp.ts")();
+    } else if (hostMatches(".*.?zoho.com")) {
+      require("./locationScripts/zoho.ts")();
+    } else if (hostMatches(".*.?pipelinedeals.com")) {
+      require("./locationScripts/pipelinedeals.ts")();
+    } else if (hostMatches(".*.?agilecrm.com")) {
+      require("./locationScripts/agilecrm.ts")();
+    } else if (hostMatches(".*.?ladesk.com")) {
+      require("./locationScripts/liveagent.ts")();
+    } else if (hostMatches(".*.?livechatinc.com")) {
+      require("./locationScripts/livechat.ts")();
+    } else if (hostMatches(".*.?groovehq.com")) {
+      require("./locationScripts/groove.ts")();
+    } else if (hostMatches(".*.?scoop.it")) {
+      require("./locationScripts/scoop.ts")();
+    } else if (hostMatches(".*.?instapage.com")) {
+      require("./locationScripts/instapage.ts")();
+    } else if (hostMatches(".*.?landingi.com")) {
+      require("./locationScripts/landingi.ts")();
+    } else if (hostMatches(".*.?vwo.com")) {
+      require("./locationScripts/vwo.ts")();
+    } else if (hostMatches(".*.?appcues.com")) {
+      require("./locationScripts/appcues.ts")();
+    } else if (hostMatches(".*.?inlinemanual.com")) {
+      require("./locationScripts/inlinemanual.ts")();
+    } else if (hostMatches(".*.?hotjar.com")) {
+      require("./locationScripts/hotjar.ts")();
+    } else if (hostMatches(".*.?fullstory.com")) {
+      require("./locationScripts/fullstory.ts")();
+    } else if (hostMatches(".*.?mailchimp.com")) {
+      require("./locationScripts/mailchimp.ts")();
+    } else if (hostMatches(".*.?shortstackapp.com")) {
+      require("./locationScripts/shortstack.ts")();
+    } else if (hostMatches(".*.?amplitude.com")) {
+      require("./locationScripts/amplitude.ts")();
+    } else if (hostMatches(".*.?mixpanel.com")) {
+      require("./locationScripts/mixpanel.ts")();
+    } else if (hostMatches(".*.?statcounter.com")) {
+      require("./locationScripts/statcounter.ts")();
+    } else if (hostMatches(".*.?woopra.com")) {
+      require("./locationScripts/woopra.ts")();
+    } else if (hostMatches(".*.?gosquared.com")) {
+      require("./locationScripts/gosquared.ts")();
+    } else if (hostMatches(".*.?seranking.com")) {
+      require("./locationScripts/seranking.ts")();
+    } else if (hostMatches(".*.?socialbakers.com")) {
+      require("./locationScripts/socialbakers.ts")();
+    } else if (hostMatches(".*.?facebook.com")) {
+      require("./locationScripts/facebook.ts")();
+    } else if (hostMatches(".*.?instagram.com")) {
+      require("./locationScripts/instagram.ts")();
+    } else if (hostMatches(".*.?twitter.com")) {
+      require("./locationScripts/twitter.ts")();
+    } else if (hostMatches(".*.?linkedin.com")) {
+      require("./locationScripts/linkedin.ts")();
     } else {
       con.log(`No Script for ${hostname}`);
     }
