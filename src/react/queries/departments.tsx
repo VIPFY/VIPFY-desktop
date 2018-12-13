@@ -126,6 +126,7 @@ export const fetchAllBoughtPlansFromCompany = gql`
       alias
       description
       key
+      endtime
       planid {
         id
         options
