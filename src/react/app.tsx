@@ -1,8 +1,9 @@
 import * as React from "react";
 import { withRouter } from "react-router";
 import { graphql, Query, withApollo } from "react-apollo";
+import Store = require("electron-store");
 
-import { signInUser } from "./mutations/auth";
+import { signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
 import { AppContext, refetchQueries } from "./common/functions";
 import { filterError } from "./common/functions";
@@ -68,7 +69,28 @@ class App extends React.Component<AppProps, AppState> {
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
     this.props.history.push("/area");
+    this.redeemSetupToken();
   }
+
+  redeemSetupToken = async () => {
+    try {
+      const store = new Store();
+      if (!store.has("setupkey")) {
+        return;
+      }
+      const setuptoken = store.get("setupkey");
+      const res = await this.props.client.mutate({
+        mutation: REDEEM_SETUPTOKEN,
+        variables: { setuptoken }
+      });
+      const { ok, token } = res.data.redeemSetupToken;
+      localStorage.setItem("token", token);
+      this.setState({ login: true });
+      store.delete("setuptoken");
+    } catch (err) {
+      console.log("setup token error", err);
+    }
+  };
 
   setName = async () => {
     // legacy function, call refetchQueries directly instead
