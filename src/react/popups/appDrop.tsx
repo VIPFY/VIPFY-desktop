@@ -43,6 +43,7 @@ interface Props {
   client: any;
   needsubdomain: boolean;
   popuptype: number;
+  app?: any;
 }
 
 interface State {
@@ -445,8 +446,9 @@ class AppDrop extends Component<Props, State> {
               )
             }
             appid={this.props.appid}
+            app={this.props.app}
             showloading={false}
-            needsubdomain={this.props.needsubdomain}
+            needsubdomain={this.props.app.needssubdomain}
           />
         );
       case 3:
@@ -506,7 +508,8 @@ class AppDrop extends Component<Props, State> {
             }
             appid={this.props.appid}
             showloading={false}
-            needsubdomain={this.props.needsubdomain}
+            app={this.props.app}
+            needsubdomain={this.props.app.needssubdomain}
           />
         );
       case 5:

@@ -124,6 +124,7 @@ interface State {
   dragginglicence: number;
   searchString: string;
   removeid: number;
+  draggingapp: any;
 }
 
 class Team extends React.Component<Props, State> {
@@ -148,7 +149,8 @@ class Team extends React.Component<Props, State> {
     dragging: 0,
     dragginglicence: 0,
     searchString: "",
-    removeid: -1
+    removeid: -1,
+    draggingapp: null
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
@@ -627,17 +629,19 @@ class Team extends React.Component<Props, State> {
     ev.dataTransfer.setData("personid", personid);
   };
 
-  onDragAppStart = (ev, id, remove, name, needsubdomain) => {
+  onDragAppStart = (ev, app, remove) => {
     if (remove) {
-      this.setState({ dragginglicence: id });
+      this.setState({ dragginglicence: app.id, draggingapp: app });
     } else {
-      this.setState({ dragging: id, removeid: 0 });
+      this.setState({ dragging: app.id, removeid: 0, draggingapp: app });
     }
 
-    ev.dataTransfer.setData("id", id);
+    console.log("Drag", app);
+
+    ev.dataTransfer.setData("id", app.id);
     ev.dataTransfer.setData("remove", remove);
-    ev.dataTransfer.setData("name", name);
-    ev.dataTransfer.setData("needsubdomain", needsubdomain);
+    ev.dataTransfer.setData("name", app.name);
+    ev.dataTransfer.setData("needsubdomain", app.needssubdomain);
   };
 
   onDragLicenceStart = (ev, licenceid, teamname, personid, personname, appname, external) => {
@@ -791,6 +795,8 @@ class Team extends React.Component<Props, State> {
       let name = ev.dataTransfer.getData("name");
       let needsubdomain = ev.dataTransfer.getData("needsubdomain");
 
+      console.log("DRAGGINGAPP", this.state.draggingapp);
+
       this.setState({
         popup: true,
         popupProps: {
@@ -800,7 +806,8 @@ class Team extends React.Component<Props, State> {
           userid: person.id,
           username: `${person.firstname} ${person.lastname}`,
           department: department,
-          needsubdomain: needsubdomain === "true"
+          needsubdomain: needsubdomain === "true",
+          app: this.state.draggingapp
         },
         popupBody: AppDrop,
         popupHeading: `Your ${name} Teams | ${person.firstname} ${person.lastname}`
@@ -915,9 +922,7 @@ class Team extends React.Component<Props, State> {
                               draggable
                               className={`PApp ${this.state.dragging == app.id ? "dragging" : ""}`}
                               style={{ backgroundColor: app.hasboughtplan ? "" : "#20BAA9" }}
-                              onDragStart={ev =>
-                                this.onDragAppStart(ev, app.id, false, app.name, app.needssubdomain)
-                              }
+                              onDragStart={ev => this.onDragAppStart(ev, app, false)}
                               /*onTouchStart={ev =>
                                 this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
                               }*/

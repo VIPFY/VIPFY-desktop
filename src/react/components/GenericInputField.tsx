@@ -106,6 +106,7 @@ class GenericInputField extends Component<Props, State> {
   }
   handleEnter(e) {
     //console.log("ENTER");
+    console.log(e);
     if (e.key === "Enter" && this.props.onEnter) {
       this.props.onEnter();
     }
@@ -142,6 +143,7 @@ class GenericInputField extends Component<Props, State> {
           value={this.state.value}
           onChange={e => this.changeValue(e)}
           onKeyPress={e => this.handleEnter(e)}
+          onKeyDown={e => this.handleEnter(4)}
           ref={input => {
             this.nameInput = input;
           }}
