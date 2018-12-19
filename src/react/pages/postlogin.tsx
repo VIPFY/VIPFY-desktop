@@ -23,7 +23,7 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
 
   render() {
     return (
-      <Query query={me} fetchPolicy="network-only">
+      <Query query={me}>
         {({ data, loading, error }) => {
           if (loading) {
             return <LoadingDiv text="Preparing Vipfy for you" />;
