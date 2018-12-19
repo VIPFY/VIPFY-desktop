@@ -1051,11 +1051,12 @@
   background-color: #253647;
   /*background-image: radial-gradient(farthest-corner at 0px 100%, #20BAA9 0%, #117f91 50%);*/
   height: calc(100vh - 32px);
-  position: fixed;
+  //position: fixed;
   transition: width 0.6s ease-in-out;
   width:  $sidebar-width;
   z-index: 300;
   overflow-y: auto;
+  float: left;
 
   &-logo {
     background-image: $newlogo;
@@ -1081,6 +1082,7 @@
     list-style: none;
     padding: 0.5rem;
     padding-left: 1rem;
+    position: relative;
 
     &:hover {
       background-color: #20BAA9;
@@ -4684,4 +4686,33 @@ table{
     right: 50px;
     font-size: 14px;
     color: #c73544;
+}
+
+.highlightElement{
+    z-index: 20000;
+    background-color: #253647;
+    box-shadow: 0px 0px 15px 0px white;
+}
+
+.tutorialPopup{
+    position: fixed;
+    left: 10px;
+    background-color: white;
+    color: #253647;
+    z-index: 20000;
+    border-radius: 3px;
+    padding: 5px;
+
+    &:after {right: 100%;
+    top: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(15, 213, 9, 0);
+    border-right-color: #0fd509;
+    border-width: 20px;
+    margin-top: -20px;}
 }

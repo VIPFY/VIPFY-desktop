@@ -14,6 +14,7 @@ import Login from "./pages/login";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
+import gql from "graphql-tag";
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -62,6 +63,17 @@ const INITIAL_STATE = {
   placeid: "",
   popup: INITIAL_POPUP
 };
+
+const tutorial = gql`
+  {
+    tutorialSteps {
+      id
+      page
+      steptext
+      highlightelement
+    }
+  }
+`;
 
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
@@ -189,28 +201,39 @@ class App extends React.Component<AppProps, AppState> {
     const { placeid, firstLogin, popup } = this.state;
 
     return (
-      <AppContext.Provider
-        value={{
-          showPopup: (data: PopUp) => this.renderPopup(data),
-          firstLogin,
-          placeid,
-          disableWelcome: () => this.setState({ firstLogin: false })
+      <Query query={tutorial}>
+        {({ data, loading, error }) => {
+          if (error) {
+            console.log("TutError", error);
+          }
+          console.log("TUTORIAL", data);
+          return (
+            <AppContext.Provider
+              value={{
+                showPopup: (data: PopUp) => this.renderPopup(data),
+                firstLogin,
+                placeid,
+                disableWelcome: () => this.setState({ firstLogin: false }),
+                data
+              }}
+              className="full-size">
+              {this.renderComponents()}
+              {popup.show ? (
+                <Popup
+                  popupHeader={popup.header}
+                  popupBody={popup.body}
+                  bodyProps={popup.props}
+                  onClose={this.closePopup}
+                  type={popup.type}
+                  info={popup.info}
+                />
+              ) : (
+                ""
+              )}
+            </AppContext.Provider>
+          );
         }}
-        className="full-size">
-        {this.renderComponents()}
-        {popup.show ? (
-          <Popup
-            popupHeader={popup.header}
-            popupBody={popup.body}
-            bodyProps={popup.props}
-            onClose={this.closePopup}
-            type={popup.type}
-            info={popup.info}
-          />
-        ) : (
-          ""
-        )}
-      </AppContext.Provider>
+      </Query>
     );
   }
 }
