@@ -241,17 +241,21 @@ class AppDrop extends Component<Props, State> {
                     if (licence.endtime && moment(licence.endtime).isBefore(moment())) {
                       return;
                     }
-                    if (licence.unitid && licence.unitid.profilepicture) {
+                    if (licence.unitid) {
                       licencesArray.push(
                         <div key={key2} className="employeeShower">
-                          <div
-                            className="img"
-                            style={{
-                              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                licence.unitid.profilepicture
-                              })`
-                            }}
-                          />
+                          {licence.unitid.profilepicture ? (
+                            <div
+                              className="img"
+                              style={{
+                                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                                  licence.unitid.profilepicture
+                                })`
+                              }}
+                            />
+                          ) : (
+                            ""
+                          )}
                           <div className="name">
                             {licence.unitid.firstname} {licence.unitid.lastname}
                           </div>
