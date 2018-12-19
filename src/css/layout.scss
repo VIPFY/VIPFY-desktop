@@ -269,6 +269,7 @@
     transition: margin-left 0.6s ease-in-out;
     position: relative;
     z-index: 200;
+    user-select: none;
 }
 .navigationButton{
     font-size: 2em;
@@ -1093,6 +1094,7 @@
       color: #fff;
       overflow: hidden;
       /*padding-top: 2em;*/
+      user-select: none;
     }
 
     &-important {
@@ -1184,7 +1186,7 @@
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
-  min-width: 30rem;
+  /*min-width: 30rem;*/
 }
 
 .navigation-right-infos{
@@ -4438,9 +4440,11 @@ table{
         .formHolder{
             margin-top: 110px;
             margin-left: 50px;
+            position: relative;
+            height: calc(100% - 120px);
 
             .selectHolder{
-                max-height: 400px;
+                max-height: calc(100% - 165px);
                 max-width: 400px;
                 overflow-y: auto;
 
