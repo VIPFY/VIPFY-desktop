@@ -165,7 +165,10 @@ class AddAccount extends Component<Props, State> {
                       this.props.app ? "textRight" : ""
                     }`}
                     placeholder="Your subdomain"
-                    onChange={value => this.setState({ subdomain: value })}
+                    onChange={e => {
+                      const subdomain = e.target.value;
+                      this.setState({ subdomain });
+                    }}
                     autoFocus={true}
                   />
                 </div>
@@ -198,7 +201,10 @@ class AddAccount extends Component<Props, State> {
                 <input
                   className="inputBoxField inputBoxUnderline"
                   placeholder="Please insert your username/email"
-                  onChange={value => this.setState({ username: value })}
+                  onChange={e => {
+                    const username = e.target.value;
+                    this.setState({ username });
+                  }}
                   autoFocus={this.props.needsubdomain ? false : true}
                 />
               </div>
@@ -208,7 +214,10 @@ class AddAccount extends Component<Props, State> {
                   className="inputBoxField inputBoxUnderline"
                   placeholder="Please insert your password"
                   type="password"
-                  onChange={value => this.setState({ password: value })}
+                  onChange={e => {
+                    const password = e.target.value;
+                    this.setState({ password });
+                  }}
                 />
               </div>
             </div>
