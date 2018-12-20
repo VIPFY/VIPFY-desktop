@@ -112,7 +112,14 @@ class Welcome extends React.Component<Props, State> {
     const company = "Pizzeria Italia";
 
     //if (company.length > 2) {
-    const predictions = await this.props.searchCompany({ variables: { company } });
+    const predictions = await this.props.client.query({
+      query: gql`
+        {
+          searchAddressByCompanyName
+        }
+      `
+    });
+    //console.log
     console.log(predictions);
     this.setState({ predictions });
     //this.setState({ possibleAddresses: addresses.data.searchAddressByCompanyName });
