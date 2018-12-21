@@ -132,15 +132,28 @@ class TeamEmployee extends React.Component<Props, State> {
                                 onMouseDown={() => {
                                   this.props.teamside.setState({ removeid: person.id });
                                 }}>
-                                <img
-                                  className="right-profile-image"
-                                  style={{
-                                    float: "left"
-                                  }}
-                                  src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
-                                    .boughtplanid.planid.appid.icon ||
-                                    "21352134123123-vipfy-fdgd43asfa"}`}
-                                />
+                                {licence.boughtplanid.planid.appid.icon ? (
+                                  <img
+                                    className="right-profile-image"
+                                    style={{
+                                      float: "left"
+                                    }}
+                                    src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
+                                      .boughtplanid.planid.appid.icon ||
+                                      "21352134123123-vipfy-fdgd43asfa"}`}
+                                  />
+                                ) : (
+                                  <div
+                                    className="fal fa-rocket right-profile-image"
+                                    style={{
+                                      float: "left",
+                                      lineHeight: "2rem",
+                                      width: "2rem",
+                                      textAlign: "center",
+                                      fontSize: "1rem"
+                                    }}
+                                  />
+                                )}
                                 {licence.boughtplanid.planid.options &&
                                 licence.boughtplanid.planid.options.external ? (
                                   <div className="ribbon-small ribbon-small-top-right">
@@ -192,15 +205,28 @@ class TeamEmployee extends React.Component<Props, State> {
                                 onMouseDown={() => {
                                   this.props.teamside.setState({ removeid: person.id });
                                 }}>
-                                <img
-                                  className="right-profile-image"
-                                  style={{
-                                    float: "left"
-                                  }}
-                                  src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
-                                    .boughtplanid.planid.appid.icon ||
-                                    "21352134123123-vipfy-fdgd43asfa"}`}
-                                />
+                                {licence.boughtplanid.planid.appid.icon ? (
+                                  <img
+                                    className="right-profile-image"
+                                    style={{
+                                      float: "left"
+                                    }}
+                                    src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
+                                      .boughtplanid.planid.appid.icon ||
+                                      "21352134123123-vipfy-fdgd43asfa"}`}
+                                  />
+                                ) : (
+                                  <div
+                                    className="fal fa-rocket right-profile-image"
+                                    style={{
+                                      float: "left",
+                                      lineHeight: "2rem",
+                                      width: "2rem",
+                                      textAlign: "center",
+                                      fontSize: "1rem"
+                                    }}
+                                  />
+                                )}
                                 {licence.boughtplanid.planid.options &&
                                 licence.boughtplanid.planid.options.external ? (
                                   <div className="ribbon-small ribbon-small-top-right">
