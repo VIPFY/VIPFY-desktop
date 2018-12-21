@@ -46,6 +46,7 @@ import AppDrop from "../popups/appDrop";
 import RemoveLicence from "../popups/removeLicence";
 import MoveLicence from "../popups/moveLicence";
 import { license } from "pjson";
+import { AppContext } from "../common/functions";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onRemoveExternalAccount($licenceid: ID!) {
@@ -124,6 +125,8 @@ interface State {
   dragginglicence: number;
   searchString: string;
   removeid: number;
+  employeeElement: boolean;
+  appElement: boolean;
 }
 
 class Team extends React.Component<Props, State> {
@@ -148,7 +151,9 @@ class Team extends React.Component<Props, State> {
     dragging: 0,
     dragginglicence: 0,
     searchString: "",
-    removeid: -1
+    removeid: -1,
+    employeeElement: false,
+    appElement: false
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
@@ -822,7 +827,7 @@ class Team extends React.Component<Props, State> {
     });
   };
 
-  showEmployees(data, departmentid, state) {
+  showEmployees(data, departmentid, state, addRenderElement) {
     if (data.employees) {
       let employeeArray: JSX.Element[] = [];
       data.employees.forEach((person, key) => {
@@ -843,6 +848,7 @@ class Team extends React.Component<Props, State> {
             addingAppUser={this.state.addingAppUser}
             addingAppName={this.state.addingAppName}
             onEmployeeClick={this.showEmployee}
+            addRenderElement={addRenderElement}
           />
         );
       });
@@ -854,237 +860,287 @@ class Team extends React.Component<Props, State> {
 
   render() {
     return (
-      <Query query={me}>
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <LoadingDiv text="Loading Data" />;
-          }
-          if (error) {
-            return <div>Error loading data</div>;
-          }
-          const { company } = data.me;
-          if (company) {
-            return (
-              <div className="teamPageHolder">
-                <div
-                  className="availableApps"
-                  onDrop={ev => this.onDropApp(ev, null, null, true)}
-                  //onTouchEnd={ev => this.onDrop(ev, null, null, true)}
-                  onMouseMove={e => this.onDragOver(e, 0)}
-                  onDragOver={e => this.onDragOver(e, 0)}>
-                  <div className="heading">Move app tile to add app to user</div>
-                  <div className="appHolder">
-                    <Query
-                      query={fetchAllAppsEnhanced}
-                      variables={{ departmentid: company.unit.id }}
-                      fetchPolicy="network-only">
-                      {({ loading, error, data }) => {
-                        if (loading) {
-                          return "Loading...";
-                        }
-                        if (error) {
-                          return `Error! ${error.message}`;
-                        }
-
-                        let appArray: JSX.Element[] = [];
-
-                        if (data.fetchAllAppsEnhanced) {
-                          let applist = data.fetchAllAppsEnhanced;
-                          applist.sort(function(a, b) {
-                            if (a.name > b.name) {
-                              return 1;
+      <AppContext.Consumer>
+        {context => (
+          <Query query={me}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <LoadingDiv text="Loading Data" />;
+              }
+              if (error) {
+                return <div>Error loading data</div>;
+              }
+              const { company } = data.me;
+              if (company) {
+                return (
+                  <div className="teamPageHolder">
+                    <div
+                      className="availableApps"
+                      onDrop={ev => this.onDropApp(ev, null, null, true)}
+                      //onTouchEnd={ev => this.onDrop(ev, null, null, true)}
+                      onMouseMove={e => this.onDragOver(e, 0)}
+                      onDragOver={e => this.onDragOver(e, 0)}
+                      ref={el =>
+                        context.addRenderElement({ key: "availableAppselement", element: el })
+                      }>
+                      <div className="heading">Move app tile to add app to user</div>
+                      <div className="appHolder">
+                        <Query
+                          query={fetchAllAppsEnhanced}
+                          variables={{ departmentid: company.unit.id }}
+                          fetchPolicy="network-only">
+                          {({ loading, error, data }) => {
+                            if (loading) {
+                              return "Loading...";
                             }
-                            if (a.name < b.name) {
-                              return -1;
+                            if (error) {
+                              return `Error! ${error.message}`;
                             }
-                            // a muss gleich b sein
-                            return 0;
-                          });
 
-                          const filteredlist = applist.filter(
-                            app =>
-                              !(app.hidden || app.disabled) &&
-                              ((app.hasboughtplan && this.state.searchString === "") ||
-                                (app.name
-                                  .toLowerCase()
-                                  .includes(this.state.searchString.toLowerCase()) &&
-                                  !(this.state.searchString === "")))
-                          );
-                          appArray = filteredlist.map((app, key) => (
-                            <div
-                              draggable
-                              className={`PApp ${this.state.dragging == app.id ? "dragging" : ""}`}
-                              style={{ backgroundColor: app.hasboughtplan ? "" : "#20BAA9" }}
-                              onDragStart={ev =>
-                                this.onDragAppStart(ev, app.id, false, app.name, app.needssubdomain)
-                              }
-                              /*onTouchStart={ev =>
+                            let appArray: JSX.Element[] = [];
+
+                            if (data.fetchAllAppsEnhanced) {
+                              let applist = data.fetchAllAppsEnhanced;
+                              applist.sort(function(a, b) {
+                                if (a.name > b.name) {
+                                  return 1;
+                                }
+                                if (a.name < b.name) {
+                                  return -1;
+                                }
+                                // a muss gleich b sein
+                                return 0;
+                              });
+
+                              const filteredlist = applist.filter(
+                                app =>
+                                  !(app.hidden || app.disabled) &&
+                                  ((app.hasboughtplan && this.state.searchString === "") ||
+                                    (app.name
+                                      .toLowerCase()
+                                      .includes(this.state.searchString.toLowerCase()) &&
+                                      !(this.state.searchString === "")))
+                              );
+                              appArray = filteredlist.map((app, key) => (
+                                <div
+                                  draggable
+                                  className={`PApp ${
+                                    this.state.dragging == app.id ? "dragging" : ""
+                                  }`}
+                                  style={{ backgroundColor: app.hasboughtplan ? "" : "#20BAA9" }}
+                                  onDragStart={ev =>
+                                    this.onDragAppStart(
+                                      ev,
+                                      app.id,
+                                      false,
+                                      app.name,
+                                      app.needssubdomain
+                                    )
+                                  }
+                                  /*onTouchStart={ev =>
                                 this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
                               }*/
-                              onDragEnd={() => this.setState({ dragging: 0, removeid: -1 })}
-                              key={key}
-                              onClick={() => this.appClick(app)}
-                              onMouseDown={() => this.setState({ removeid: 0 })}>
-                              <img
-                                className="right-profile-image"
-                                style={{
-                                  float: "left"
-                                }}
-                                src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                                  app.icon
-                                }`}
-                              />
-                              <div className="employeeName">{app.name}</div>
-                              <span className="explain">Move to add to user</span>
-                              <div
-                                className={`fas ${
-                                  app.hasboughtplan ? "fa-ellipsis-v" : "fa-shopping-cart"
-                                } menuteam `}
-                              />
-                            </div>
-                          ));
-                        }
+                                  onDragEnd={() => this.setState({ dragging: 0, removeid: -1 })}
+                                  key={key}
+                                  onClick={() => this.appClick(app)}
+                                  onMouseDown={() => this.setState({ removeid: 0 })}>
+                                  <img
+                                    className="right-profile-image"
+                                    style={{
+                                      float: "left"
+                                    }}
+                                    src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                                      app.icon
+                                    }`}
+                                  />
+                                  <div className="employeeName">{app.name}</div>
+                                  <span className="explain">Move to add to user</span>
+                                  <div
+                                    className={`fas ${
+                                      app.hasboughtplan ? "fa-ellipsis-v" : "fa-shopping-cart"
+                                    } menuteam `}
+                                  />
+                                </div>
+                              ));
+                            }
 
-                        if (data.fetchUnitApps) {
-                          let apps: { appid: number }[] = [];
+                            if (data.fetchUnitApps) {
+                              let apps: { appid: number }[] = [];
 
-                          let noExternalApps = data.fetchUnitApps.filter(
-                            app =>
-                              app.boughtplan.planid.options === null &&
-                              (app.endtime === null || moment(app.endtime - 0).isAfter(moment()))
-                          );
-                          noExternalApps.sort(function(a, b) {
-                            return (
-                              (a.boughtplan.alias
-                                ? a.boughtplan.alias
-                                : `${a.appname} ${a.boughtplan.id}`) >
-                              (b.boughtplan.alias
-                                ? b.boughtplan.alias
-                                : `${b.appname} ${b.boughtplan.id}`)
-                            );
-                          });
-                          appArray = noExternalApps.map((app, key) => (
-                            <div
-                              title={`${app.licencesused} of ${app.licencestotal} licences used`}
-                              draggable
-                              className={`PApp ${this.state.dragging == app.id ? "dragging" : ""}`}
-                              onDragStart={ev =>
-                                this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
-                              }
-                              onTouchStart={ev =>
-                                this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
-                              }
-                              onDragEnd={() => this.setState({ dragging: 0 })}
-                              key={key}
-                              onClick={() =>
-                                this.props.showPopup({
-                                  header:
-                                    app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`,
-                                  body: BoughtplanView,
-                                  props: {
-                                    appname:
-                                      app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`,
-                                    app
+                              let noExternalApps = data.fetchUnitApps.filter(
+                                app =>
+                                  app.boughtplan.planid.options === null &&
+                                  (app.endtime === null ||
+                                    moment(app.endtime - 0).isAfter(moment()))
+                              );
+                              noExternalApps.sort(function(a, b) {
+                                return (
+                                  (a.boughtplan.alias
+                                    ? a.boughtplan.alias
+                                    : `${a.appname} ${a.boughtplan.id}`) >
+                                  (b.boughtplan.alias
+                                    ? b.boughtplan.alias
+                                    : `${b.appname} ${b.boughtplan.id}`)
+                                );
+                              });
+                              appArray = noExternalApps.map((app, key) => (
+                                <div
+                                  title={`${app.licencesused} of ${
+                                    app.licencestotal
+                                  } licences used`}
+                                  draggable
+                                  className={`PApp ${
+                                    this.state.dragging == app.id ? "dragging" : ""
+                                  }`}
+                                  onDragStart={ev =>
+                                    this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
                                   }
-                                })
-                              }>
-                              <img
-                                className="right-profile-image"
-                                style={{
-                                  float: "left"
-                                }}
-                                src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                                  app.appicon
-                                }`}
-                              />
-                              <div className="employeeName">
-                                {app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`}
-                              </div>
-                              <span className="explain">Move to add to user</span>
-                              <div className="fas fa-ellipsis-v menuteam" />
-                            </div>
-                          ));
-                        }
-                        return (
-                          <React.Fragment>
-                            <div className="PAppSearch">
-                              <button
-                                className="naked-button genericButton"
-                                /*onClick={() => this.setState({ searchopen: false })}*/
-                                style={{ float: "left" }}>
-                                <span className="textButton">
-                                  <i className="fal fa-search" />
-                                </span>
-                              </button>
-                              <input
-                                onChange={e => this.setState({ searchString: e.target.value })}
-                                autoFocus={true}
-                                className="inputBoxFieldTeams"
-                              />
-                            </div>
-                            {appArray}
-                          </React.Fragment>
-                        );
-                      }}
-                    </Query>
-                  </div>
-                </div>
-                <div className="teamHolder">
-                  <div className="companyHeader">
-                    <div className="companyLogo">
-                      {company.profilepicture ? (
-                        <img
-                          src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                            company.profilepicture
-                          }`}
+                                  onTouchStart={ev =>
+                                    this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
+                                  }
+                                  onDragEnd={() => this.setState({ dragging: 0 })}
+                                  key={key}
+                                  onClick={() =>
+                                    this.props.showPopup({
+                                      header:
+                                        app.boughtplan.alias ||
+                                        `${app.appname} ${app.boughtplan.id}`,
+                                      body: BoughtplanView,
+                                      props: {
+                                        appname:
+                                          app.boughtplan.alias ||
+                                          `${app.appname} ${app.boughtplan.id}`,
+                                        app
+                                      }
+                                    })
+                                  }>
+                                  <img
+                                    className="right-profile-image"
+                                    style={{
+                                      float: "left"
+                                    }}
+                                    src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                                      app.appicon
+                                    }`}
+                                  />
+                                  <div className="employeeName">
+                                    {app.boughtplan.alias || `${app.appname} ${app.boughtplan.id}`}
+                                  </div>
+                                  <span className="explain">Move to add to user</span>
+                                  <div className="fas fa-ellipsis-v menuteam" />
+                                </div>
+                              ));
+                            }
+                            return (
+                              <React.Fragment>
+                                <div className="PAppSearch">
+                                  <button
+                                    className="naked-button genericButton"
+                                    /*onClick={() => this.setState({ searchopen: false })}*/
+                                    style={{ float: "left" }}>
+                                    <span className="textButton">
+                                      <i className="fal fa-search" />
+                                    </span>
+                                  </button>
+                                  <input
+                                    onChange={e => this.setState({ searchString: e.target.value })}
+                                    autoFocus={true}
+                                    className="inputBoxFieldTeams"
+                                  />
+                                </div>
+                                <div
+                                  draggable
+                                  className="PApp"
+                                  style={{display: "none"}}
+                                  ref={el =>
+                                    context.addRenderElement({ key: "testappelement", element: el })
+                                  }>
+                                  <div
+                                    className="right-profile-image"
+                                    style={{
+                                      float: "left"
+                                    }}>
+                                    <span
+                                      className="fal fa-rocket"
+                                      style={{
+                                        width: "32px",
+                                        lineHeight: "32px",
+                                        textAlign: "center"
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="employeeName">Testapp</div>
+                                  <div className="fas fa-ellipsis-v menuteam" />
+                                </div>
+                                {appArray}
+                              </React.Fragment>
+                            );
+                          }}
+                        </Query>
+                      </div>
+                    </div>
+                    <div className="teamHolder">
+                      <div className="companyHeader">
+                        <div className="companyLogo">
+                          {company.profilepicture ? (
+                            <img
+                              src={`https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                                company.profilepicture
+                              }`}
+                            />
+                          ) : (
+                            ""
+                          )}
+                        </div>
+                        <div className="companyName">{company.name}</div>
+                      </div>
+                      <div className="companyEmployees">
+                        {this.props.departmentsdata.fetchDepartmentsData
+                          ? this.showEmployees(
+                              this.props.departmentsdata.fetchDepartmentsData[0],
+                              company.unit.id,
+                              this.state.update,
+                              context.addRenderElement
+                            )
+                          : ""}
+                      </div>
+                      <div className="companyHeader">
+                        <button
+                          className="naked-button genericButton"
+                          onClick={() => this.addEmployeeP(company.unit.id)}
+                          ref={el =>
+                            context.addRenderElement({ key: "addEmployeeelement", element: el })
+                          }>
+                          <span className="textButton">+</span>
+                          <span className="textButtonBeside">Add Employee</span>
+                        </button>
+                      </div>
+
+                      {/*<div className="UMS">
+                  {this.props.departmentsdata.fetchDepartmentsData
+                    ? this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData[0], 2)
+                    : ""}
+                  </div>*/}
+                      {this.state.popup ? (
+                        <Popup
+                          popupHeader={this.state.popupHeading}
+                          popupBody={this.state.popupBody}
+                          bodyProps={this.state.popupProps}
+                          onClose={this.closePopup}
                         />
                       ) : (
                         ""
                       )}
                     </div>
-                    <div className="companyName">{company.name}</div>
                   </div>
-                  <div className="companyEmployees">
-                    {this.props.departmentsdata.fetchDepartmentsData
-                      ? this.showEmployees(
-                          this.props.departmentsdata.fetchDepartmentsData[0],
-                          company.unit.id,
-                          this.state.update
-                        )
-                      : ""}
-                  </div>
-                  <div className="companyHeader">
-                    <button
-                      className="naked-button genericButton"
-                      onClick={() => this.addEmployeeP(company.unit.id)}>
-                      <span className="textButton">+</span>
-                      <span className="textButtonBeside">Add Employee</span>
-                    </button>
-                  </div>
-
-                  {/*<div className="UMS">
-                  {this.props.departmentsdata.fetchDepartmentsData
-                    ? this.showNewDepartments(this.props.departmentsdata.fetchDepartmentsData[0], 2)
-                    : ""}
-                  </div>*/}
-                  {this.state.popup ? (
-                    <Popup
-                      popupHeader={this.state.popupHeading}
-                      popupBody={this.state.popupBody}
-                      bodyProps={this.state.popupProps}
-                      onClose={this.closePopup}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </div>
-            );
-          } else {
-            return <div />;
-          }
-        }}
-      </Query>
+                );
+              } else {
+                return <div />;
+              }
+            }}
+          </Query>
+        )}
+      </AppContext.Consumer>
     );
   }
 }

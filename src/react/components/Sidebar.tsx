@@ -11,6 +11,7 @@ export type SidebarProps = {
   logMeOut: () => void;
   isadmin: boolean;
   toggleSidebar: Function;
+  moveTo: Function;
 };
 
 export type SidebarState = {
@@ -19,7 +20,8 @@ export type SidebarState = {
 
 class Sidebar extends Component<SidebarProps, SidebarState> {
   references: { key; element }[] = [];
-  goTo = view => this.props.history.push(`/area/${view}`);
+  //goTo = view => this.props.history.push(`/area/${view}`);
+  goTo = view => this.props.moveTo(view);
 
   showApps = licences => {
     let appLogos: JSX.Element[] = [];
@@ -79,7 +81,16 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     return appLogos;
   };
 
-  renderLink = ({ label, location, icon, show, important, highlight }, tutorialSteps) => {
+  addReferences = (key, element, addRenderElement) => {
+    this.references.push({ key, element });
+    addRenderElement({ key, element });
+  };
+
+  renderLink = (
+    { label, location, icon, show, important, highlight },
+    tutorialSteps,
+    addRenderElement
+  ) => {
     let cssClass = "sidebar-link";
     if (important) {
       cssClass += " sidebar-link-important";
@@ -91,9 +102,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
       cssClass += " sidebar-active";
     }
 
-    if (highlight === tutorialSteps[0].highlightelement) {
+    /*if (tutorialSteps && highlight === tutorialSteps[0].highlightelement) {
       cssClass += " highlightElement";
-    }
+    }*/
 
     if (show) {
       return (
@@ -105,14 +116,16 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             ref={el =>
               this.references.find(e => e.key === highlight)
                 ? ""
-                : this.references.push({ key: highlight, element: el })
+                : this.addReferences(highlight, el, addRenderElement)
             }>
             <span className={`fal fa-${icon} sidebar-icons`} />
             <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
               {label}
             </span>
           </li>
-          {highlight === tutorialSteps[0].highlightelement && tutorialSteps[0].steptext ? (
+          {/*tutorialSteps &&
+          highlight === tutorialSteps[0].highlightelement &&
+          tutorialSteps[0].steptext ? (
             <div
               className="tutorialPopup"
               style={{
@@ -128,7 +141,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             </div>
           ) : (
             ""
-          )}
+          )*/}
         </React.Fragment>
       );
     }
@@ -217,11 +230,13 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
       <AppContext.Consumer>
         {context => (
           <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
-            {console.log("SIDEBAR", context)}
+            {/*console.log("SIDEBAR", context)*/}
             {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
             <ul className="sidebar-link-holder">
               <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
-              {sidebarLinks.map(link => this.renderLink(link, context.data.tutorialSteps))}
+              {sidebarLinks.map(link =>
+                this.renderLink(link, context.data.tutorialSteps, context.addRenderElement)
+              )}
               <li className="sidebarfree" />
               {this.showApps(this.props.licences.fetchLicences)}
               <li
@@ -236,7 +251,8 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
               {/*this.renderLink({ label: "Advisor", location: "advisor", icon: "envelope", show: true })*/}
             </ul>
             <div className="versionnumber">Version {pjson.version}</div>
-            {console.log("TOP", this.references)}
+            {/*console.log("TOP", this.references)*/}
+            {/*context.setrenderElements(this.references)*/}
           </div>
         )}
       </AppContext.Consumer>

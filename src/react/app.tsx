@@ -15,6 +15,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
 import gql from "graphql-tag";
+import Tutorial from "./tutorials/basicTutorial";
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -45,6 +46,9 @@ interface AppState {
   firstLogin: boolean;
   placeid: string;
   popup: PopUp;
+  showTutorial: boolean;
+  renderElements: { key: string; element: any }[];
+  page: string;
 }
 
 const INITIAL_POPUP = {
@@ -61,7 +65,10 @@ const INITIAL_STATE = {
   error: "",
   firstLogin: false,
   placeid: "",
-  popup: INITIAL_POPUP
+  popup: INITIAL_POPUP,
+  showTutorial: false,
+  renderElements: [],
+  page: "dashboard"
 };
 
 const tutorial = gql`
@@ -70,13 +77,16 @@ const tutorial = gql`
       id
       page
       steptext
-      highlightelement
+      renderoptions
+      nextstep
     }
   }
 `;
 
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
+
+  references: { key; element }[] = [];
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
@@ -143,10 +153,14 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
-  moveTo = (path: string) => this.props.history.push(`/area/${path}`);
+  moveTo = (path: string) => {
+    console.log("moveTO", path);
+    this.setState({ page: path });
+    this.props.history.push(`/area/${path}`);
+  };
 
   welcomeNewUser = (placeid: string) => {
-    this.setState({ firstLogin: true, placeid });
+    this.setState({ firstLogin: true, placeid, showTutorial: true });
   };
 
   renderComponents = () => {
@@ -159,6 +173,7 @@ class App extends React.Component<AppProps, AppState> {
             }
 
             if (error) {
+              console.log("ERROR", error);
               this.props.client.cache.reset(); //clear graphql cache
 
               return (
@@ -197,8 +212,22 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
+  showTutorial = showTutorial => {
+    this.setState({ showTutorial });
+  };
+
+  setrenderElements = references => {
+    this.setState({ renderElements: references });
+  };
+
+  addRenderElement = reference => {
+    if (!this.references.find(e => e.key === reference.key)) {
+      this.references.push(reference);
+    }
+  };
+
   render() {
-    const { placeid, firstLogin, popup } = this.state;
+    const { placeid, firstLogin, popup, showTutorial, page } = this.state;
 
     return (
       <Query query={tutorial}>
@@ -214,10 +243,24 @@ class App extends React.Component<AppProps, AppState> {
                 firstLogin,
                 placeid,
                 disableWelcome: () => this.setState({ firstLogin: false }),
-                data
+                renderTutorial: e => this.renderTutorial(e),
+                setrenderElements: e => this.setrenderElements(e),
+                data,
+                addRenderElement: e => this.addRenderElement(e)
               }}
               className="full-size">
               {this.renderComponents()}
+              {console.log("REFERENCES", this.references)}
+              {showTutorial ? (
+                <Tutorial
+                  tutorialdata={data}
+                  renderElements={this.references}
+                  showTutorial={this.showTutorial}
+                  page={page}
+                />
+              ) : (
+                ""
+              )}
               {popup.show ? (
                 <Popup
                   popupHeader={popup.header}
