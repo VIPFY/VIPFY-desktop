@@ -1,187 +1,127 @@
 import * as React from "react";
-import { Query, compose, graphql } from "react-apollo";
-import gql from "graphql-tag";
+import { Query } from "react-apollo";
 
+import AppTile from "../../components/AppTile";
 import LoadingDiv from "../../components/LoadingDiv";
-import { filterError } from "../../common/functions";
+import { filterError, ErrorComp } from "../../common/functions";
 import { fetchLicences } from "../../queries/auth";
-import { iconPicFolder } from "../../common/constants";
-import Confirmation from "../../popups/Confirmation";
 
-const REMOVE_EXTERNAL_ACCOUNT = gql`
-  mutation onRemoveExternalAccount($licenceid: ID!) {
-    removeExternalAccount(licenceid: $licenceid) {
-      ok
-    }
-  }
-`;
 interface Props {
-  setApp: Function;
-  showPopup: Function;
-  removeExternal: Function;
+  setApp?: Function;
+  showPopup?: Function;
+  licences: any[];
 }
 
 interface State {
   removeApp: number;
   show: Boolean;
+  dragItem: number | null;
+  licences: any[];
 }
 
 class AppList extends React.Component<Props, State> {
   state = {
     removeApp: 0,
-    show: true
+    show: true,
+    dragItem: null,
+    licences: []
   };
+
+  componentDidMount() {
+    this.setState({ licences: this.props.licences });
+  }
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
+  dragStartFunction = (item): void => this.setState({ dragItem: item });
+  dragEndFunction = (): void => this.setState({ dragItem: null });
+
+  handleDrop = (id): void => {
+    const { dragItem, licences } = this.state;
+
+    const newLicences = licences.map(licence => {
+      if (licence.id == id) {
+        return licences.find(item => item.id == dragItem!);
+      } else if (licence.id == dragItem!) {
+        return licences.find(item => item.id == id);
+      } else {
+        return licence;
+      }
+    });
+
+    this.setState({ licences: newLicences });
+  };
+
+  removeLicence = (licenceid): void => this.setState({ removeApp: licenceid });
+
   render() {
-    //console.log(this.state.removeApp);
+    const { show, dragItem, licences } = this.state;
+
     return (
-      <Query query={fetchLicences}>
-        {({ loading, error, data: { fetchLicences } }) => {
-          if (loading) {
-            return <LoadingDiv text="Fetching Apps..." />;
-          }
-
-          if (error) {
-            return filterError(error);
-          }
-          fetchLicences.sort(function(a, b) {
-            let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-            let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-            if (nameA < nameB) {
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
-            }
-
-            // namen müssen gleich sein
-            return 0;
-          });
-          return (
-            <div className="genericHolder">
-              <div className="header" onClick={this.toggle}>
-                <i
-                  className={`button-hide fas ${
-                    this.state.show ? "fa-angle-left" : "fa-angle-down"
-                  }`}
-                  //onClick={this.toggle}
-                />
-                <span>Apps</span>
-              </div>
-              <div className={`inside ${this.state.show ? "in" : "out"}`}>
-                <div className="profileAppsHolder">
-                  {fetchLicences.map((licence, key) => {
-                    if (
-                      licence.boughtplanid.planid.options &&
-                      licence.boughtplanid.planid.options.external
-                    ) {
-                      if (this.state.removeApp === licence.id) {
-                        return (
-                          <div className="profileApps" key={`useableLogo-${key}`}>
-                            <i className="fal fa-trash-alt shaking" />
-                            <div className="name">
-                              <span>Removing</span>
-                            </div>
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <div
-                            className="profileApps"
-                            key={`useableLogo-${key}`}
-                            onClick={() =>
-                              this.props.showPopup({
-                                header: "Remove external account",
-                                body: Confirmation,
-                                props: {
-                                  headline: "Please confirm removal of this account",
-                                  submitFunction: async licenceid => {
-                                    await this.props.removeExternal({
-                                      variables: { licenceid }
-                                    });
-                                    this.setState({ removeApp: licenceid });
-                                  },
-                                  type: `External account - ${
-                                    licence.boughtplanid.planid.appid.name
-                                  }`,
-                                  id: licence.id
-                                }
-                              })
-                            }
-                            style={{
-                              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                                licence.boughtplanid.planid.appid.icon
-                              })`
-                            }}>
-                            <div className="ribbon ribbon-top-right">
-                              <span>external</span>
-                            </div>
-                            <div className="name">
-                              <span>{licence.boughtplanid.planid.appid.name}</span>
-                              {licence.boughtplanid.planid.options &&
-                              licence.boughtplanid.planid.options.external ? (
-                                <i className="fal fa-trash-alt" />
-                              ) : (
-                                ""
-                              )}
-                            </div>
-                          </div>
-                        );
-                      }
-                    } else {
-                      return (
-                        <div
-                          className="profileApps"
-                          key={`useableLogo-${key}`}
-                          style={{
-                            backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                              licence.boughtplanid.planid.appid.icon
-                            })`
-                          }}>
-                          <div className="name">
-                            <span>{licence.boughtplanid.planid.appid.name}</span>
-                            {licence.boughtplanid.planid.options &&
-                            licence.boughtplanid.planid.options.external ? (
-                              <i className="fas fa-trash" />
-                            ) : (
-                              ""
-                            )}
-                          </div>
-                        </div>
-                      );
-                    }
-                  })}
-                </div>
-                {/*<ul className="app-accordion">
-            {Object.keys(fetchLicences).map((item, key) => {
-              const {
-                boughtplanid: {
-                  planid: { appid: app }
-                }
-              } = fetchLicences[item];
-              const image = `url(${iconPicFolder}${app.icon})`;
-
-              return (
-                <li key={key} onClick={() => props.setApp(fetchLicences[item].id)}>
-                  <span className="app-list-item-pic before" style={{ backgroundImage: image }} />
-
-                  <div className="app-content">
-                    <label>{app.name}</label>
-                    <p>{app.teaserdescription}</p>
+      <div className="genericHolder">
+        <div className="header" onClick={this.toggle}>
+          <i className={`button-hide fas ${show ? "fa-angle-left" : "fa-angle-down"}`} />
+          <span>Apps</span>
+        </div>
+        <div className={`inside ${show ? "in" : "out"}`}>
+          <div className="profile-app-holder">
+            {licences.map(licence => {
+              if (this.state.removeApp === licence.id) {
+                return (
+                  <div className="profile-app" key={`useableLogo-${licence.id}`}>
+                    <i className="fal fa-trash-alt shaking" />
+                    <div className="name">
+                      <span>Removing</span>
+                    </div>
                   </div>
-                </li>
-              );
+                );
+              } else {
+                return (
+                  <AppTile
+                    key={licence.id}
+                    dragItem={dragItem}
+                    removeLicence={this.removeLicence}
+                    dragStartFunction={this.dragStartFunction}
+                    dragEndFunction={this.dragEndFunction}
+                    handleDrop={this.handleDrop}
+                    licence={licence}
+                  />
+                );
+              }
             })}
-          </ul>*/}
-              </div>
-            </div>
-          );
-        }}
-      </Query>
+          </div>
+        </div>
+      </div>
     );
   }
 }
 
-export default compose(graphql(REMOVE_EXTERNAL_ACCOUNT, { name: "removeExternal" }))(AppList);
+export default (props: { setApp: Function; showPopup: Function }) => (
+  <Query query={fetchLicences}>
+    {({ data, loading, error }) => {
+      if (loading) {
+        return <LoadingDiv text="Fetching Apps..." />;
+      }
+      if (error || !data) {
+        return <ErrorComp error={filterError(error)} />;
+      }
+
+      const licences = data.fetchLicences.sort((a, b) => {
+        let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // namen müssen gleich sein
+        return 0;
+      });
+
+      return <AppList {...props} licences={licences} />;
+    }}
+  </Query>
+);

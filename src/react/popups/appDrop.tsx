@@ -1,18 +1,15 @@
 import * as React from "react";
 import { Component } from "react";
 import gql from "graphql-tag";
-import { fetchAllBoughtPlansFromCompany } from "../queries/departments";
+import moment = require("moment");
 import { graphql, compose, Query } from "react-apollo";
 
+import { fetchAllBoughtPlansFromCompany } from "../queries/departments";
 import { distributeLicence, revokeLicence } from "../mutations/auth";
-
 import { fetchUsersOwnLicences } from "../queries/departments";
 import GenericInputField from "../components/GenericInputField";
-
-import { CANCEL_PLAN } from "../mutations/products";
 import AddAccount from "../popups/addAccount";
-import moment = require("moment");
-import UserPicture from "../../../out/make/VIPFY Desktop-win32-x64-0.4.3/resources/app/src/react/components/UserPicture";
+import UserPicture from "../components/UserPicture";
 
 const CHANGE_ALIAS = gql`
   mutation setBoughtPlanAlias($boughtplanid: ID!, $alias: String!) {
