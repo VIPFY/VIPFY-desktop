@@ -27,6 +27,7 @@ export const me = gql`
       }
       needspasswordchange
       firstlogin
+      config
     }
   }
 `;
@@ -35,6 +36,7 @@ export const fetchLicences = gql`
   query onFetchLicence {
     fetchLicences {
       id
+      endtime
       boughtplanid {
         id
         alias

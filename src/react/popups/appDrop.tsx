@@ -10,6 +10,7 @@ import { fetchUsersOwnLicences } from "../queries/departments";
 import GenericInputField from "../components/GenericInputField";
 import AddAccount from "../popups/addAccount";
 import UserPicture from "../components/UserPicture";
+import { fetchLicences, me } from "../queries/auth";
 
 const CHANGE_ALIAS = gql`
   mutation setBoughtPlanAlias($boughtplanid: ID!, $alias: String!) {
@@ -191,7 +192,11 @@ class AppDrop extends Component<Props, State> {
     try {
       await this.props.revokeLicence({
         variables: { licenceid },
-        refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
+        refetchQueries: [
+          { query: fetchUsersOwnLicences, variables: { unitid } },
+          { query: me },
+          { query: fetchLicences }
+        ]
       });
     } catch (err) {
       console.log("ERROR REV", err);

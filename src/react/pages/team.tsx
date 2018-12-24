@@ -585,7 +585,7 @@ class Team extends React.Component<Props, State> {
   revokeLicencesFromDepartment = async (departmentid, boughtplanid) => {
     const res = await this.props.revokeLicencesFromDepartment({
       variables: { departmentid, boughtplanid },
-      refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }]
+      refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }, { query: me }]
     });
     if (res.data.revokeLicencesFromDepartment.error || !res.data.revokeLicencesFromDepartment.ok) {
       this.showPopup(
@@ -678,6 +678,7 @@ class Team extends React.Component<Props, State> {
         variables: { licenceid, fromuser },
         refetchQueries: [
           { query: fetchLicences },
+          { query: me },
           { query: fetchUsersOwnLicences, variables: { unitid: fromuser } }
         ]
       });
@@ -691,7 +692,8 @@ class Team extends React.Component<Props, State> {
     this.setState({ removeApp: `${fromuser}-${licenceid}` });
     try {
       await this.props.suspendLicence({
-        variables: { licenceid, fromuser }
+        variables: { licenceid, fromuser },
+        refetchQueries: [{ query: me }, { query: fetchLicences }]
       });
       await this.props.deleteLicenceAt({
         variables: { licenceid, time: moment() },
@@ -710,7 +712,8 @@ class Team extends React.Component<Props, State> {
     console.log("MOVE", licenceid, userid, newuserid, departmentid);
     try {
       await this.props.suspendLicence({
-        variables: { licenceid, fromuser: userid }
+        variables: { licenceid, fromuser: userid },
+        refetchQueries: [{ query: me }, { query: fetchLicences }]
       });
       const res = await this.props.distributeLicence({
         variables: { licenceid, unitid: newuserid, departmentid },

@@ -1,27 +1,33 @@
 import * as React from "react";
-import { Query } from "react-apollo";
-
+import { Query, graphql } from "react-apollo";
+import gql from "graphql-tag";
 import AppTile from "../../components/AppTile";
 import LoadingDiv from "../../components/LoadingDiv";
 import { filterError, ErrorComp } from "../../common/functions";
-import { fetchLicences } from "../../queries/auth";
+import { fetchLicences, me } from "../../queries/auth";
+import moment = require("moment");
 
 interface Props {
   setApp?: Function;
   showPopup?: Function;
   licences: any[];
+  saveLayout: Function;
 }
 
 interface State {
-  removeApp: number;
   show: Boolean;
   dragItem: number | null;
   licences: any[];
 }
 
-class AppList extends React.Component<Props, State> {
+const SAVE_LAYOUT = gql`
+  mutation onSaveAppLayout($layout: [String]!) {
+    saveAppLayout(layout: $layout)
+  }
+`;
+
+class AppListHolder extends React.Component<Props, State> {
   state = {
-    removeApp: 0,
     show: true,
     dragItem: null,
     licences: []
@@ -31,12 +37,18 @@ class AppList extends React.Component<Props, State> {
     this.setState({ licences: this.props.licences });
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.licences.length != this.props.licences.length) {
+      this.setState({ licences: this.props.licences });
+    }
+  }
+
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
   dragStartFunction = (item): void => this.setState({ dragItem: item });
   dragEndFunction = (): void => this.setState({ dragItem: null });
 
-  handleDrop = (id): void => {
+  handleDrop = async id => {
     const { dragItem, licences } = this.state;
 
     const newLicences = licences.map(licence => {
@@ -50,12 +62,20 @@ class AppList extends React.Component<Props, State> {
     });
 
     this.setState({ licences: newLicences });
+    try {
+      const layout = newLicences.map(licence => licence.id);
+      await this.props.saveLayout({ variables: { layout }, refetchQueries: [{ query: me }] });
+    } catch (error) {
+      console.log(error);
+    }
   };
-
-  removeLicence = (licenceid): void => this.setState({ removeApp: licenceid });
 
   render() {
     const { show, dragItem, licences } = this.state;
+
+    if (licences.length == 0) {
+      return <div>No Apps for you yet</div>;
+    }
 
     return (
       <div className="genericHolder">
@@ -65,30 +85,18 @@ class AppList extends React.Component<Props, State> {
         </div>
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
-            {licences.map(licence => {
-              if (this.state.removeApp === licence.id) {
-                return (
-                  <div className="profile-app" key={`useableLogo-${licence.id}`}>
-                    <i className="fal fa-trash-alt shaking" />
-                    <div className="name">
-                      <span>Removing</span>
-                    </div>
-                  </div>
-                );
-              } else {
-                return (
-                  <AppTile
-                    key={licence.id}
-                    dragItem={dragItem}
-                    removeLicence={this.removeLicence}
-                    dragStartFunction={this.dragStartFunction}
-                    dragEndFunction={this.dragEndFunction}
-                    handleDrop={this.handleDrop}
-                    licence={licence}
-                  />
-                );
-              }
-            })}
+            {licences.map(licence => (
+              <AppTile
+                key={licence.id}
+                updateLayout={this.props.saveLayout}
+                dragItem={dragItem}
+                removeLicence={this.removeLicence}
+                dragStartFunction={this.dragStartFunction}
+                dragEndFunction={this.dragEndFunction}
+                handleDrop={this.handleDrop}
+                licence={licence}
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -96,32 +104,40 @@ class AppList extends React.Component<Props, State> {
   }
 }
 
+const AppList = graphql(SAVE_LAYOUT, { name: "saveLayout" })(AppListHolder);
+
 export default (props: { setApp: Function; showPopup: Function }) => (
   <Query query={fetchLicences}>
-    {({ data, loading, error }) => {
-      if (loading) {
-        return <LoadingDiv text="Fetching Apps..." />;
-      }
-      if (error || !data) {
-        return <ErrorComp error={filterError(error)} />;
-      }
+    {({ data, loading, error }) => (
+      <Query
+        //prettier-ignore
+        query={gql` { me { config } } `}>
+        {({ data: { me }, loading: l2, error: e2 }) => {
+          if (l2 || loading) {
+            return <LoadingDiv text="Fetching Apps..." />;
+          }
 
-      const licences = data.fetchLicences.sort((a, b) => {
-        let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        if (nameA < nameB) {
-          return -1;
-        }
+          if (e2 || !me || error || !data) {
+            return <ErrorComp error={filterError(e2 || error)} />;
+          }
 
-        if (nameA > nameB) {
-          return 1;
-        }
+          const licences = me.config.layout.map(id =>
+            data.fetchLicences.find(item => item.id == id)
+          );
 
-        // namen müssen gleich sein
-        return 0;
-      });
+          const filteredLicences = licences.filter(licence => {
+            if (!licence) {
+              return false;
+            } else if (!licence.endtime) {
+              return true;
+            } else {
+              return moment().isBefore(licence.endtime);
+            }
+          });
 
-      return <AppList {...props} licences={licences} />;
-    }}
+          return <AppList {...props} licences={filteredLicences} />;
+        }}
+      </Query>
+    )}
   </Query>
 );

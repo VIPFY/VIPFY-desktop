@@ -4,6 +4,8 @@ import gql from "graphql-tag";
 import Confirmation from "../popups/Confirmation";
 import { iconPicFolder } from "../common/constants";
 import { AppContext } from "../common/functions";
+import { fetchLicences, me } from "../queries/auth";
+import moment = require("moment");
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -12,7 +14,6 @@ const REMOVE_EXTERNAL_ACCOUNT = gql`
 `;
 
 interface Props {
-  removeLicence: Function;
   dragStartFunction: Function;
   dragEndFunction: Function;
   dragItem: number | null;
@@ -37,6 +38,9 @@ class AppTile extends React.Component<Props, State> {
       <AppContext>
         {({ showPopup }) => (
           <div
+            className={`profile-app${dragItem == id ? " hold" : ""}${
+              this.state.entered ? " hovered" : ""
+            }`}
             draggable={true}
             onDragStart={() => this.props.dragStartFunction(id)}
             onDragOver={e => {
@@ -52,9 +56,6 @@ class AppTile extends React.Component<Props, State> {
               this.setState({ entered: false });
               this.props.handleDrop(id);
             }}
-            className={`profile-app${dragItem == id ? " hold" : ""}${
-              this.state.entered ? " hovered" : ""
-            }`}
             style={{ backgroundImage: `url(${iconPicFolder}${planid.appid.icon})` }}>
             {planid.options && planid.options.external && (
               <div className="ribbon ribbon-top-right">
@@ -77,10 +78,9 @@ class AppTile extends React.Component<Props, State> {
                             headline: "Please confirm removal of this account",
                             submitFunction: async licenceid => {
                               await deleteLicenceAt({
-                                variables: { licenceid, time: Date.now() }
+                                variables: { licenceid, time: moment() },
+                                refetchQueries: [{ query: fetchLicences }, { query: me }]
                               });
-
-                              this.props.removeLicence(licenceid);
                             },
                             type: `External account - ${planid.appid.name}`,
                             id
