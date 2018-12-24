@@ -19,6 +19,7 @@ interface Props {
   dragItem: number | null;
   licence: any;
   handleDrop: Function;
+  removeLicence: Function;
 }
 
 interface State {

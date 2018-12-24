@@ -1,6 +1,10 @@
 import * as React from "react";
-import { Component } from "react";
-import pjson = require("pjson");
+import { Query } from "react-apollo";
+import * as pjson from "pjson";
+import * as moment from "moment";
+import LoadingDiv from "./LoadingDiv";
+import { ErrorComp, filterError } from "../common/functions";
+import { me, fetchLicences } from "../queries/auth";
 
 export type SidebarProps = {
   history: any[];
@@ -12,31 +16,51 @@ export type SidebarProps = {
   toggleSidebar: Function;
 };
 
-export type SidebarState = {
-  app: string;
-};
+class Sidebar extends React.Component<SidebarProps, { dragItem: number | null }> {
+  state = {
+    dragItem: null
+  };
 
-class Sidebar extends Component<SidebarProps, SidebarState> {
-  goTo = view => this.props.history.push(`/area/${view}`);
+  dragStartFunction = (item): void => this.setState({ dragItem: item });
+  dragEndFunction = (): void => this.setState({ dragItem: null });
+
+  handleDrop = async (id, licences) => {
+    const { dragItem } = this.state;
+
+    const newLicences = licences.map(licence => {
+      if (licence.id == id) {
+        return licences.find(item => item.id == dragItem!);
+      } else if (licence.id == dragItem!) {
+        return licences.find(item => item.id == id);
+      } else {
+        return licence;
+      }
+    });
+
+    try {
+      const layout = newLicences.map(licence => licence.id);
+      await this.props.saveLayout({ variables: { layout }, refetchQueries: [{ query: me }] });
+    } catch (error) {
+      console.log(error);
+    }
+
+    return newLicences;
+  };
 
   showApps = licences => {
     let appLogos: JSX.Element[] = [];
-    //console.log("PL", this.props, licences);
     if (licences) {
-      licences.sort(function(a, b) {
-        let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        if (nameA < nameB) {
-          return -1;
+      const filteredLicences = licences.filter(licence => {
+        if (!licence) {
+          return false;
+        } else if (!licence.endtime) {
+          return true;
+        } else {
+          return moment().isBefore(licence.endtime);
         }
-        if (nameA > nameB) {
-          return 1;
-        }
-
-        // namen müssen gleich sein
-        return 0;
       });
-      licences.forEach((licence, key) => {
+
+      filteredLicences.forEach((licence, key) => {
         let cssClass = "sidebar-link";
         if (this.props.location.pathname === `/area/app/${licence.id}`) {
           cssClass += " sidebar-active";
@@ -82,6 +106,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     if (important) {
       cssClass += " sidebar-link-important";
     }
+
     if (
       this.props.location.pathname === `/area/${location}` ||
       `${this.props.location.pathname}/dashboard` === `/area/${location}`
@@ -91,7 +116,10 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
 
     if (show) {
       return (
-        <li key={location} className={cssClass} onClick={() => this.goTo(location)}>
+        <li
+          key={location}
+          className={cssClass}
+          onClick={() => this.props.history.push(`/area/${location}`)}>
           <span className={`fal fa-${icon} sidebar-icons`} />
           <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
             {label}
@@ -158,6 +186,17 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
           <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
           {sidebarLinks.map(link => this.renderLink(link))}
           <li className="sidebarfree" />
+          {/* <Query query={me}>
+            {({ data, loading, error }) => {
+              if (loading || this.props.licences.loading) {
+                return <LoadingDiv text="Fetching data..." />;
+              }
+              if (error || !data) {
+                return <ErrorComp error={filterError(error)} />;
+              }
+              return this.showApps(this.props.licences.fetchLicences, data.me);
+            }}
+          </Query> */}
           {this.showApps(this.props.licences.fetchLicences)}
           <li className="sidebar-link sidebar-link-important" onClick={() => this.props.logMeOut()}>
             <span className="fal fa-sign-out-alt sidebar-icons" />
