@@ -1,30 +1,25 @@
 import * as React from "react";
 import { Query, graphql } from "react-apollo";
-import gql from "graphql-tag";
 import AppTile from "../../components/AppTile";
 import LoadingDiv from "../../components/LoadingDiv";
 import { filterError, ErrorComp } from "../../common/functions";
-import { fetchLicences, me } from "../../queries/auth";
+import { fetchLicences, me, GET_USER_CONFIG } from "../../queries/auth";
+import { SAVE_LAYOUT } from "../../mutations/auth";
 import moment = require("moment");
+import { Licence } from "../../interfaces";
 
 interface Props {
   setApp?: Function;
   showPopup?: Function;
-  licences: any[];
+  licences: Licence[];
   saveLayout: Function;
 }
 
 interface State {
   show: Boolean;
   dragItem: number | null;
-  licences: any[];
+  licences: Licence[];
 }
-
-const SAVE_LAYOUT = gql`
-  mutation onSaveAppLayout($layout: [String]!) {
-    saveAppLayout(layout: $layout)
-  }
-`;
 
 class AppListHolder extends React.Component<Props, State> {
   state = {
@@ -45,10 +40,10 @@ class AppListHolder extends React.Component<Props, State> {
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
-  dragStartFunction = (item): void => this.setState({ dragItem: item });
+  dragStartFunction = (item: number): void => this.setState({ dragItem: item });
   dragEndFunction = (): void => this.setState({ dragItem: null });
 
-  handleDrop = async id => {
+  handleDrop = async (id: number) => {
     const { dragItem, licences } = this.state;
 
     const newLicences = licences.map(licence => {
@@ -63,8 +58,11 @@ class AppListHolder extends React.Component<Props, State> {
 
     this.setState({ licences: newLicences });
     try {
-      const layout = newLicences.map(licence => licence.id);
-      await this.props.saveLayout({ variables: { layout }, refetchQueries: [{ query: me }] });
+      const horizontal = newLicences.map(licence => licence.id);
+      await this.props.saveLayout({
+        variables: { horizontal },
+        refetchQueries: [{ query: GET_USER_CONFIG }]
+      });
     } catch (error) {
       console.log(error);
     }
@@ -111,7 +109,7 @@ export default (props: { setApp: Function; showPopup: Function }) => (
     {({ data, loading, error }) => (
       <Query
         //prettier-ignore
-        query={gql` { me { config } } `}>
+        query={GET_USER_CONFIG}>
         {({ data: { me }, loading: l2, error: e2 }) => {
           if (l2 || loading) {
             return <LoadingDiv text="Fetching Apps..." />;
@@ -121,9 +119,13 @@ export default (props: { setApp: Function; showPopup: Function }) => (
             return <ErrorComp error={filterError(e2 || error)} />;
           }
 
-          const licences = me.config.layout.map(id =>
-            data.fetchLicences.find(item => item.id == id)
-          );
+          let licences = data.fetchLicences;
+
+          if (me.config && me.config.horizontal) {
+            licences = me.config.horizontal.map(id =>
+              data.fetchLicences.find(item => item.id == id)
+            );
+          }
 
           const filteredLicences = licences.filter(licence => {
             if (!licence) {

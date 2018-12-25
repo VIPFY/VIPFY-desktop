@@ -1082,9 +1082,31 @@
     list-style: none;
     padding: 0.5rem;
     padding-left: 1rem;
+    transition: all 200ms ease-in-out;
 
     &:hover {
       background-color: #20BAA9;
+    }
+
+    @keyframes fadeInSidebar {
+      0% {
+        opacity: 0;
+      }
+      
+      80% {
+        opacity: 1;
+      }
+    }
+
+    &-app {
+      @extend .sidebar-link;
+      animation: fadeInSidebar 200ms ease-out normal backwards;
+
+      @for $x from 1 through 40 {
+        &:nth-child(#{$x}) {
+          animation-delay: $x * 50ms;
+        }
+      }
     }
 
     &-holder {
@@ -1095,6 +1117,18 @@
       overflow: hidden;
       /*padding-top: 2em;*/
       user-select: none;
+
+      .hold {
+        border: solid $vipfy-primary-color 1px;
+        opacity: 0.3;
+        transition: all 300ms ease-in-out;
+      }
+  
+      .hovered {
+        opacity: 0.4;
+        border-style: dotted;
+        transition: all 300ms ease-in-out;
+      }
     }
 
     &-important {

@@ -6,6 +6,7 @@ import { iconPicFolder } from "../common/constants";
 import { AppContext } from "../common/functions";
 import { fetchLicences, me } from "../queries/auth";
 import moment = require("moment");
+import { Licence } from "../interfaces";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -17,7 +18,7 @@ interface Props {
   dragStartFunction: Function;
   dragEndFunction: Function;
   dragItem: number | null;
-  licence: any;
+  licence: Licence;
   handleDrop: Function;
   removeLicence: Function;
 }

@@ -1,5 +1,13 @@
 import gql from "graphql-tag";
 
+export const GET_USER_CONFIG = gql`
+  {
+    me {
+      config
+    }
+  }
+`;
+
 export const me = gql`
   {
     me {
