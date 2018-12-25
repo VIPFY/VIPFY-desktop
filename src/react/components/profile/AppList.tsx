@@ -8,6 +8,11 @@ import { SAVE_LAYOUT } from "../../mutations/auth";
 import moment = require("moment");
 import { Licence } from "../../interfaces";
 
+export interface Preview {
+  name: string;
+  pic: string;
+}
+
 interface Props {
   setApp?: Function;
   showPopup?: Function;
@@ -18,6 +23,7 @@ interface Props {
 interface State {
   show: Boolean;
   dragItem: number | null;
+  preview: Preview;
   licences: Licence[];
 }
 
@@ -25,6 +31,7 @@ class AppListHolder extends React.Component<Props, State> {
   state = {
     show: true,
     dragItem: null,
+    preview: { name: "", pic: "" },
     licences: []
   };
 
@@ -37,6 +44,8 @@ class AppListHolder extends React.Component<Props, State> {
       this.setState({ licences: this.props.licences });
     }
   }
+
+  setPreview = (preview: Preview) => this.setState({ preview });
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
@@ -69,7 +78,7 @@ class AppListHolder extends React.Component<Props, State> {
   };
 
   render() {
-    const { show, dragItem, licences } = this.state;
+    const { show, dragItem, licences, preview } = this.state;
 
     if (licences.length == 0) {
       return <div>No Apps for you yet</div>;
@@ -86,6 +95,8 @@ class AppListHolder extends React.Component<Props, State> {
             {licences.map(licence => (
               <AppTile
                 key={licence.id}
+                preview={preview}
+                setPreview={this.setPreview}
                 updateLayout={this.props.saveLayout}
                 dragItem={dragItem}
                 removeLicence={this.removeLicence}

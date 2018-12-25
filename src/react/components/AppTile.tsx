@@ -7,6 +7,7 @@ import { AppContext } from "../common/functions";
 import { fetchLicences, me } from "../queries/auth";
 import moment = require("moment");
 import { Licence } from "../interfaces";
+import { Preview } from "./profile/AppList";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -21,6 +22,8 @@ interface Props {
   licence: Licence;
   handleDrop: Function;
   removeLicence: Function;
+  setPreview: (preview: Preview) => void;
+  preview: Preview;
 }
 
 interface State {
@@ -35,6 +38,8 @@ class AppTile extends React.Component<Props, State> {
   render() {
     // prettier-ignore
     const { dragItem, licence: { id, boughtplanid: { planid, alias } } } = this.props;
+    const name = alias ? alias : planid.appid.name;
+    const clearPreview = { name: "", pic: "" };
 
     return (
       <AppContext>
@@ -48,17 +53,29 @@ class AppTile extends React.Component<Props, State> {
             onDragOver={e => {
               e.preventDefault();
               this.setState({ entered: true });
+              this.props.setPreview({ pic: planid.appid.icon, name });
             }}
-            onDragLeave={() => this.setState({ entered: false })}
+            onDragLeave={() => {
+              this.setState({ entered: false });
+              this.props.setPreview(clearPreview);
+            }}
             onDragEnd={() => {
               this.setState({ entered: false });
+              this.props.setPreview(clearPreview);
               this.props.dragEndFunction();
             }}
             onDrop={() => {
               this.setState({ entered: false });
               this.props.handleDrop(id);
+              this.props.setPreview(clearPreview);
             }}
-            style={{ backgroundImage: `url(${iconPicFolder}${planid.appid.icon})` }}>
+            style={{
+              backgroundImage: `url(${iconPicFolder}${
+                this.props.preview.pic && dragItem == id
+                  ? this.props.preview.pic
+                  : planid.appid.icon
+              })`
+            }}>
             {planid.options && planid.options.external && (
               <div className="ribbon ribbon-top-right">
                 <span>external</span>
@@ -66,7 +83,9 @@ class AppTile extends React.Component<Props, State> {
             )}
 
             <div className="name">
-              <span>{alias ? alias : planid.appid.name}</span>
+              <span>
+                {this.props.preview.name && dragItem == id ? this.props.preview.name : name}
+              </span>
               {planid.options && planid.options.external && (
                 <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
                   {deleteLicenceAt => (
