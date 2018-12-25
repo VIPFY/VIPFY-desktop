@@ -34,7 +34,7 @@ class AppTile extends React.Component<Props, State> {
 
   render() {
     // prettier-ignore
-    const { dragItem, licence: { id, boughtplanid: { planid } } } = this.props;
+    const { dragItem, licence: { id, boughtplanid: { planid, alias } } } = this.props;
 
     return (
       <AppContext>
@@ -66,7 +66,7 @@ class AppTile extends React.Component<Props, State> {
             )}
 
             <div className="name">
-              <span>{planid.appid.name}</span>
+              <span>{alias ? alias : planid.appid.name}</span>
               {planid.options && planid.options.external && (
                 <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
                   {deleteLicenceAt => (
