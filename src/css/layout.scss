@@ -1,3 +1,4 @@
+@import './fa_pro_all_5.5.0';
 @import './constants.scss';
 @import './buttons.scss';
 @import './forms.scss';
@@ -9,7 +10,7 @@
 @import './messages.scss';
 @import './profile.scss';
 @import './editor.scss';
-@import './fa_pro_all_5.5.0';
+@import './service-creation.scss';
 
 /*::-webkit-scrollbar {
   width: 0.5em;
@@ -399,21 +400,19 @@
 }
 
 #loading-screen {
-  /*background-color: #fff;*/
   background-image: url('./images/Ladeanimation_Vipfy_transparent.gif');
   background-position: calc(50% - 2.5rem) calc(50% - 3rem);
   background-size: 5rem;
   background-repeat: no-repeat;
-  /*max-height: 15rem;
-  margin-bottom: 4rem;*/
   display: block;
   height: 100%;
   width: 100%;
   display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
+
 .loadingLogoHolder{
     position: relative;
     width: 5rem;

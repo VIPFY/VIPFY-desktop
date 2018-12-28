@@ -2,6 +2,20 @@
   display: flex;
   flex-direction: column;
   height: calc(100% - 5em);
+
+  #loading-screen {
+    background-image: url('./images/Ladeanimation_Vipfy_transparent.gif');
+    background-position: calc(50% - 2.5rem) calc(50% - 3rem);
+    background-size: 5rem;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    height: 10rem;
+    width: 10rem;
+    margin: auto;
+  }
 }
 
 .combo-holder {
@@ -192,6 +206,21 @@
   @extend .generic-dropdown;
   background: #ddd!important;
   margin-left: 0!important;
+}
+
+.color-picker {
+  margin-left: 1rem;
+  cursor: pointer;
+  border: 0;
+  outline: none;
+}
+
+.text-field {
+  margin-left: 1rem;
+  font-family: Roboto;
+  margin-right: 1rem;
+  width: 27rem;
+  outline: none;
 }
 
 .dropzone {

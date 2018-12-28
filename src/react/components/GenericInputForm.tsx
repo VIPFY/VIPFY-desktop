@@ -5,8 +5,26 @@ import { filterError } from "../common/functions";
 import LoadingDiv from "../components/LoadingDiv";
 import {debounce} from "lodash"
 
+interface Fields {
+  name: string;
+  type: string;
+  icon?: string;
+  multiple?: boolean;
+  disabled?: boolean;
+  min?: string;
+  max?: string;
+  placeholder?: string;
+  label?: string;
+  required?: boolean;
+  options?: any[];
+  validate?: Function;
+  lawLink?: string;
+  privacyLink?: string;
+  appName?: string;
+}
+
 interface Props {
-  fields: object[];
+  fields: Fields[];
   submittingMessage?: string;
   runInBackground?: boolean;
   onClose: Function;
@@ -111,7 +129,9 @@ class GenericInputForm extends React.Component<Props, State> {
     }
   };
 
-  handleDrop = files => this.setState({ values: { picture: files } });
+  handleDrop = (files, name) => {
+    this.setState(prevState => ({ values: { ...prevState.values, [name]: files } }))
+  }
 
   onSubmit = async e => {
     e.preventDefault();
@@ -126,10 +146,11 @@ class GenericInputForm extends React.Component<Props, State> {
 
         if (this.props.successMessage) {
           await this.setState({ submitting: false, success: true });
-          setTimeout(() => this.props.onClose(), 1000);
+          await setTimeout(() => this.props.onClose(), 1000);
         } else {
           this.props.onClose();
         }
+        this.setState(INITIAL_STATE)
       } catch (err) {
         this.setState({ asyncError: filterError(err), submitting: false });
       }
@@ -156,28 +177,13 @@ class GenericInputForm extends React.Component<Props, State> {
         lawLink,
         privacyLink,
         appName
-      }: {
-        name: string;
-        icon: string;
-        multiple: boolean;
-        disabled: boolean;
-        min: string;
-        max: string;
-        placeholder: string;
-        label: string;
-        required: boolean;
-        type: string;
-        options: any[];
-        validate: Function;
-        lawLink: string;
-        privacyLink: string;
-        appName: string;
-      }) => {
+      }: Fields) => {
         const field = () => {
           switch (type) {
             case "checkbox": {
               return (
                 <div className="generic-checkbox-holder">
+                  <i className={`fas fa-${icon}`} />
                   <span>{label}</span>
 
                   <input
@@ -209,7 +215,7 @@ class GenericInputForm extends React.Component<Props, State> {
                   required={required}
                   className="generic-dropdown">
                   <option value=""> </option>
-                  {options.map((option, key) => (
+                  {options && options.map((option, key) => (
                     <option key={key} value={option.value}>
                       {option.name}
                     </option>
@@ -228,7 +234,7 @@ class GenericInputForm extends React.Component<Props, State> {
                   required={required}
                   className="generic-dropdown">
                   <option value=""> </option>
-                  {options.map(({ name, value }, key) => (
+                  {options && options.map(({ name, value }, key) => (
                     <option selected={this.state.values[name] == value} key={key} value={value}>
                       {name}
                     </option>
@@ -240,7 +246,7 @@ class GenericInputForm extends React.Component<Props, State> {
             case "textField": {
               return (
                 <textarea
-                  className=""
+                  className="text-field"
                   id={name}
                   rows={5}
                   cols={50}
@@ -363,46 +369,42 @@ class GenericInputForm extends React.Component<Props, State> {
 
             case "picture": {
               const renderContent = () => {
-                if (this.state.values.picture && !multiple) {
+                if (this.state.values[name] && !multiple) {
                   return (
-                    <div>
-                      <img
-                        alt={this.state.values.picture.name}
-                        height="150px"
-                        width="150px"
-                        className="img-circle"
-                        src={this.state.values.picture.preview}
-                      />
-                      <p>Click again or drag & drop to change the pic</p>
-                    </div>
+                    <img
+                      alt={this.state.values[name].name}
+                      height="100px"
+                      width="100px"
+                      className="img-circle"
+                      src={this.state.values[name].preview}
+                    />
                   );
                 } else if (
                   multiple &&
-                  this.state.values.picture &&
-                  Array.isArray(this.state.values.picture)
+                  this.state.values[name] &&
+                  Array.isArray(this.state.values[name])
                 ) {
                   return (
                     <div className="pics-preview">
-                      {this.state.values.picture.map((file, i) => (
-                        <img
-                          key={i}
-                          alt={file.name}
-                          height="50px"
-                          width="50px"
-                          src={file.preview}
-                        />
-                      ))}
-                      <p>Click again to change the pictures to upload</p>
+                      {this.state.values[name].map((file, i) => 
+                           <img
+                            key={i}
+                            alt={file.name}
+                            height="50px"
+                            width="50px"
+                            src={file.preview}
+                          />                    
+                      )}
                     </div>
                   );
                 } else if (multiple) {
-                  return <label>Please select several pictures for upload</label>;
+                  return <label>{label ? label : "Please select several pictures for upload"}</label>;
                 } else {
-                  return <label>Drag and Drop a picture or click here</label>;
+                 return <label>{label ? label : "Click again or drag & drop to change the pic" }</label>
                 }
               };
 
-              if (this.state.submitting) {
+              if (this.state.submitting || this.state.success) {
                 return;
               }
 
@@ -413,16 +415,33 @@ class GenericInputForm extends React.Component<Props, State> {
                   accept="image/*"
                   type="file"
                   multiple={multiple ? true : false}
-                  className={this.state.values.picture ? "dropzone-preview" : "dropzone"}
+                  className={this.state.values[name] ? "dropzone-preview" : "dropzone"}
                   onDrop={
                     multiple
-                      ? filesToUpload => this.handleDrop(filesToUpload)
-                      : ([fileToUpload]) => this.handleDrop(fileToUpload)
+                      ? files => this.handleDrop(files, name)
+                      : ([file]) => this.handleDrop(file, name)
                   }>
                   {renderContent()}
                 </Dropzone>
               );
-            }
+            } break;
+
+            case "color": {
+              return (
+                <input
+                  id={name}
+                  className="color-picker"
+                  name={name}
+                  type={type}
+                  disabled={disabled}
+                  value={values[name] ? values[name] : ""}
+                  onChange={e => this.handleChange(e, validate)}
+                  onFocus={this.highlight}
+                  onBlur={this.offlight}
+                  required={required}
+                />
+              );
+            } break;
 
             default: {
               return (
@@ -448,7 +467,8 @@ class GenericInputForm extends React.Component<Props, State> {
 
         const picCheck = type == "picture";
         return (
-          <div key={name} className={`searchbarHolder ${inputFocus[name] ? "searchbarFocus" : ""}`}>
+          <div style={type == "textField" ? {flexFlow: "column",
+          alignItems: "start"}: {}} key={name} className={`searchbarHolder ${inputFocus[name] ? "searchbarFocus" : ""}`}>
             {type == "checkbox" || picCheck ? (
               ""
             ) : (

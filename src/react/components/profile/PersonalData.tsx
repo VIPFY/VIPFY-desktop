@@ -103,7 +103,7 @@ class PersonalData extends React.Component<Props, State> {
                 } = {
                   fields: [
                     {
-                      name: "profilepicture",
+                      name: "picture",
                       type: "picture",
                       required: true
                     }

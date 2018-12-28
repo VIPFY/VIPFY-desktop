@@ -2,6 +2,14 @@ import * as React from "react";
 import { Component } from "react";
 import pjson = require("pjson");
 
+interface SidebarLinks {
+  label: string;
+  location: string;
+  icon: string;
+  show: boolean;
+  important: boolean;
+}
+
 export type SidebarProps = {
   history: any[];
   setApp: (licence: number) => void;
@@ -77,7 +85,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     return appLogos;
   };
 
-  renderLink = ({ label, location, icon, show, important }: object) => {
+  renderLink = ({ label, location, icon, show, important }: SidebarLinks) => {
     let cssClass = "sidebar-link";
     if (important) {
       cssClass += " sidebar-link-important";
@@ -98,10 +106,14 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
           </span>
         </li>
       );
+    } else {
+      return;
     }
   };
 
   render() {
+    const { sideBarOpen } = this.props;
+
     const sidebarLinks = [
       { label: "Dashboard", location: "dashboard", icon: "home", show: true },
       { label: "Profile", location: "profile", icon: "alicorn", show: true },
@@ -148,22 +160,30 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         icon: "screwdriver",
         show: true,
         important: false
-      }*/
+      }*/,
+      {
+        label: "Service Creation",
+        location: "admin/service",
+        icon: "layer-plus",
+        show: this.props.isadmin,
+        important: true
+      }
     ];
 
     return (
-      <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
+      <div className={`sidebar${sideBarOpen ? "" : "-small"}`}>
         {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
         <ul className="sidebar-link-holder">
-          <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
+          <i
+            onClick={() => this.props.toggleSidebar()}
+            className={`fal fa-chevron-${sideBarOpen ? "left" : "right"} barIcon`}
+          />
           {sidebarLinks.map(link => this.renderLink(link))}
           <li className="sidebarfree" />
           {this.showApps(this.props.licences.fetchLicences)}
           <li className="sidebar-link sidebar-link-important" onClick={() => this.props.logMeOut()}>
             <span className="fal fa-sign-out-alt sidebar-icons" />
-            <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
-              Logout
-            </span>
+            <span className={`${sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>Logout</span>
           </li>
 
           {/*this.renderLink({ label: "Advisor", location: "advisor", icon: "envelope", show: true })*/}
