@@ -43,6 +43,15 @@
     }
   }
 
+  &-nav {
+    @include vipfy-button(10px);
+    background: #000;
+    
+    a {
+      color: #fff !important;
+    }
+  }
+
   &-hide {
     cursor: pointer;
     position: absolute;

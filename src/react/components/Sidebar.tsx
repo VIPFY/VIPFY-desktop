@@ -162,8 +162,8 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         important: false
       }*/,
       {
-        label: "Service Creation",
-        location: "admin/service",
+        label: "Admin",
+        location: "admin",
         icon: "layer-plus",
         show: this.props.isadmin,
         important: true

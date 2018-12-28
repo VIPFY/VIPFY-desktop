@@ -15,7 +15,8 @@ import MessageCenter from "./messagecenter";
 import Navigation from "./navigation";
 import Profile from "./profile";
 import Settings from "./settings";
-import ServiceCreation from "../components/ServiceCreation";
+import AdminDashboard from "../components/admin/Dashboard";
+import ServiceCreation from "../components/admin/ServiceCreation";
 import Sidebar from "../components/Sidebar";
 import Team from "./team";
 import Webview from "./webview";
@@ -30,6 +31,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
 import AppAdmin from "./appadmin";
+import ServiceEdit from "../components/admin/ServiceEdit";
 
 interface AreaProps {
   history: any[];
@@ -153,7 +155,9 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "integrations", component: Integrations },
       //{ path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
-      { path: "admin/service", component: ServiceCreation, admin: true },
+      { path: "admin", component: AdminDashboard, admin: true },
+      { path: "admin/service-creation", component: ServiceCreation, admin: true },
+      { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "appadmin", component: AppAdmin }
     ];
 

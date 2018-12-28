@@ -10,7 +10,7 @@
 @import './messages.scss';
 @import './profile.scss';
 @import './editor.scss';
-@import './service-creation.scss';
+@import './admin.scss';
 
 /*::-webkit-scrollbar {
   width: 0.5em;
@@ -39,6 +39,16 @@
 @font-face {
   font-family: "Segoe MDL2";
   src: url(./webfonts/SegMDL2.ttf) format("truetype");
+}
+
+a {
+  text-decoration: none;
+}
+
+ul,
+li {
+  text-decoration: none;
+  list-style: none;
 }
 
 .credits-holder {

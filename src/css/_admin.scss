@@ -1,0 +1,83 @@
+.admin {
+  margin: 2rem;
+  position: relative;
+
+  a {
+    color: #000;
+  }
+
+  .button-nav {
+    margin: 14px 0 0 30px;
+    position: absolute;
+    top: 56px;
+  }
+
+  .nav {
+    &-item {
+      transition: all 300ms ease-in-out;
+      margin-bottom: 1rem;
+
+      i {
+        margin-right: 0.5rem;
+      }
+
+      &:hover {
+        transform: translateY(1px);
+      }
+    }
+  }
+
+  .apps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    grid-gap: 1rem;
+
+    .app {
+      @include hide-overflowing-text;
+      display: flex;
+      align-items: center;
+      border: 1px solid $vipfy-primary-color;
+      padding: 1rem;
+      transition: all 300ms ease-in-out;
+      
+
+      &:hover {
+        cursor: pointer;
+        background-color: $vipfy-primary-color;
+        border-color: #fff;
+        transform: translate(3px, -3px);
+      }
+
+      img {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .generic-form {
+    .searchbarHolder {
+      .generic-checkbox-holder {
+        margin-left: 1rem;
+
+        i {
+          margin-right: 0.3rem;
+        }
+      }
+
+      .dropzone {
+        margin: 0 0 0 1rem;
+        display: flex;
+        height: 100px;
+
+        label {
+          margin: auto;
+        }
+      }
+    }
+
+    .generic-button-holder {
+      bottom: 1rem;
+      right: 9rem;
+    }
+  }
+}
