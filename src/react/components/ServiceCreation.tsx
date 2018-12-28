@@ -21,21 +21,14 @@ const UPLOAD_IMAGES = gql`
   }
 `;
 
-const UPLOAD_ICON = gql`
-  mutation onUploadAppIcon($image: Upload!, $appid: Int!) {
-    uploadAppIcon(image: $image, appid: $appid)
-  }
-`;
-
 const ServiceCreation = (props: Props) => {
-  const handleSubmit = async ({ images, icon, ...app }) => {
+  const handleSubmit = async ({ images, icon, logo, ...app }) => {
     try {
-      if (!app.logo || !icon || !images) {
+      if (!logo || !icon || !images) {
         throw new Error("Please upload pictures");
       }
-
+      app.images = [logo, icon];
       const { data } = await props.createApp({ variables: { app } });
-      await props.uploadIcon({ variables: { image: icon, appid: 79 } });
       await props.uploadImages({ variables: { images, appid: data.createApp } });
     } catch (error) {
       throw new Error(error);
@@ -137,6 +130,5 @@ const ServiceCreation = (props: Props) => {
 
 export default compose(
   graphql(CREATE_APP, { name: "createApp" }),
-  graphql(UPLOAD_IMAGES, { name: "uploadImages" }),
-  graphql(UPLOAD_ICON, { name: "uploadIcon" })
+  graphql(UPLOAD_IMAGES, { name: "uploadImages" })
 )(ServiceCreation);
