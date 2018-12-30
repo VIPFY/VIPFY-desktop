@@ -29,6 +29,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
 import AppAdmin from "./appadmin";
+import ViewHandler from "./viewhandler";
 
 interface AreaProps {
   history: any[];
@@ -43,21 +44,29 @@ interface AreaProps {
 
 interface AreaState {
   app: number;
+  licenceID: number;
+  viewID: number;
   chatOpen: boolean;
   sideBarOpen: boolean;
   domain: string;
   script: Element | null;
   script3: Element | null;
+  webviews: any[];
+  openInstancens: any;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
   state: AreaState = {
-    app: -1,
+    app: -1, //Very Old style - should be removed sometime
+    licenceID: -1, //Old style - should be removed sometime
+    viewID: -1,
     chatOpen: false,
     sideBarOpen: true,
     domain: "",
     script: null,
-    script3: null
+    script3: null,
+    webviews: [],
+    openInstancens: {}
   };
 
   componentDidMount = async () => {
@@ -91,8 +100,15 @@ class Area extends React.Component<AreaProps, AreaState> {
 
       this.setState({ script3 });
     };
+    console.log("DIDMOUNT - setSTATE", this.state.script);
     this.setState({ script });
+    console.log("DIDMOUNT - setSTATE2", this.state.script);
     document.head.appendChild(script);
+
+    //this.addWebview(1171);
+    //this.addWebview(1001);
+    //this.addWebview(1001);
+    //this.addWebview(1001);
   };
 
   componentWillUnmount() {
@@ -110,13 +126,26 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   setApp = (boughtplan: number) => {
-    console.log("SetApp to boughtplan ", boughtplan);
-    this.setState({ app: boughtplan });
-    this.props.history.push(`/area/app/${boughtplan}`);
+    if (this.state.openInstancens[boughtplan]) {
+      this.setState(prevState => {
+        const newstate = {
+          ...prevState,
+          app: boughtplan,
+          licenceID: boughtplan,
+          viewID: Object.keys(prevState.openInstancens[boughtplan])[0]
+        };
+        return newstate;
+      });
+      this.props.history.push(`/area/app/${boughtplan}`);
+    } else {
+      this.addWebview(boughtplan, true);
+      this.props.history.push(`/area/app/${boughtplan}`);
+    }
   };
 
   setDomain = (boughtplan: number, domain: string) => {
-    this.setState({ app: boughtplan, domain });
+    console.log("SET DOMAIN");
+    this.setState({ app: boughtplan, licenceID: boughtplan, domain });
     this.props.history.push(`/area/app/${boughtplan}`);
   };
 
@@ -125,11 +154,81 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.moveTo("/area/error");
   }
 
-  setSidebar = value => this.setState({ sideBarOpen: value });
+  setSidebar = value => {
+    this.setState({ sideBarOpen: value });
+  };
 
-  toggleChat = () => this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
+  toggleChat = () => {
+    console.log("CHAT");
+    this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
+  };
 
-  toggleSidebar = () => this.setState(prevState => ({ sideBarOpen: !prevState.sideBarOpen }));
+  toggleSidebar = () => {
+    this.setState(prevState => ({ sideBarOpen: !prevState.sideBarOpen }));
+  };
+
+  addWebview = (licenceID, opendirect = false) => {
+    const webviews = this.state.webviews;
+    const l = { licenceID: licenceID, plain: true, setViewTitle: this.setViewTitle };
+    const newview = <Webview {...this.state} {...this.props} {...l} />;
+    this.setState(prevState => {
+      const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
+      const l = { licenceID: licenceID, plain: true, setViewTitle: this.setViewTitle, viewID };
+      const newview = <Webview {...this.state} {...this.props} {...l} />;
+      return {
+        webviews: [
+          ...prevState.webviews,
+          {
+            key: viewID,
+            view: newview,
+            licenceID
+          }
+        ],
+        openInstancens: {
+          ...prevState.openInstancens,
+          [licenceID]:
+            prevState.openInstancens && prevState.openInstancens[licenceID]
+              ? {
+                  ...prevState.openInstancens[licenceID],
+
+                  [viewID]: { instanceTitle: "Home", instanceId: viewID }
+                }
+              : {
+                  [viewID]: { instanceTitle: "Home", instanceId: viewID }
+                }
+        },
+        app: opendirect ? licenceID : prevState.app,
+        licenceID: opendirect ? licenceID : prevState.licenceID,
+        viewID: opendirect ? viewID : prevState.viewID
+      };
+    });
+  };
+
+  setViewTitle = (title, viewID, licenceID) => {
+    this.setState(prevState => ({
+      openInstancens: {
+        ...prevState.openInstancens,
+        [licenceID]:
+          prevState.openInstancens &&
+          prevState.openInstancens[licenceID] &&
+          prevState.openInstancens[licenceID][viewID]
+            ? {
+                ...prevState.openInstancens[licenceID],
+                [viewID]: {
+                  instanceTitle: title,
+                  instanceId: viewID
+                }
+              }
+            : { ...prevState.openInstancens[licenceID] }
+      }
+    }));
+  };
+
+  setInstance = viewID => {
+    const licenceID = this.state.webviews.find(e => e.key == viewID).licenceID;
+    this.setState({ app: licenceID, licenceID, viewID });
+    this.props.history.push(`/area/app/${licenceID}`);
+  };
 
   render() {
     const { sideBarOpen, chatOpen } = this.state;
@@ -164,7 +263,10 @@ class Area extends React.Component<AreaProps, AreaState> {
                 <Sidebar
                   sideBarOpen={sideBarOpen}
                   setApp={this.setApp}
+                  viewID={this.state.viewID}
+                  openInstancens={this.state.openInstancens}
                   toggleSidebar={this.toggleSidebar}
+                  setInstance={this.setInstance}
                   {...this.props}
                   {...props}
                 />
@@ -199,13 +301,16 @@ class Area extends React.Component<AreaProps, AreaState> {
             }
           }}
         />
-        <Route render={props => <Chat chatOpen={chatOpen} {...this.props} {...props} />} />
+        {/*<Route render={props => <Chat chatOpen={chatOpen} {...this.props} {...props} />} />*/}
 
-        <Route
+        {/*<Route
           exact
           path="/area/app/:licenceid"
-          render={props => <Webview {...this.state} {...this.props} {...props} />}
-        />
+          render={props => {
+            console.log("RERENDER WEBVIEW", this.state, this.props, props);
+            return <Webview {...this.state} {...this.props} {...props} />;
+          }}
+        />*/}
 
         <Route
           exact
@@ -266,6 +371,11 @@ class Area extends React.Component<AreaProps, AreaState> {
               <Domains setDomain={this.setDomain} {...this.props} {...props} />
             </div>
           )}
+        />
+        <ViewHandler
+          showView={this.state.viewID}
+          views={this.state.webviews}
+          sideBarOpen={sideBarOpen}
         />
       </div>
     );
