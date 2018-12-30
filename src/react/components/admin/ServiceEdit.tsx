@@ -1,74 +1,96 @@
 import * as React from "react";
-import gql from "graphql-tag";
 import { Query } from "react-apollo";
 import { Link } from "react-router-dom";
 import { ErrorComp, filterError } from "../../common/functions";
 import LoadingDiv from "../LoadingDiv";
+import SearchBox from "../SearchBox";
 import { iconPicFolder } from "../../common/constants";
+import Service from "./Service";
+import { FETCH_APPS } from "./apollo";
 
 interface Props {
-  createApp: Function;
-  uploadImages: Function;
-  uploadIcon: Function;
+  apps: App[];
 }
 
-const FETCH_APPS = gql`
-  {
-    adminFetchAllApps {
-      id
-      name
-      icon
-    }
-  }
-`;
+interface App {
+  id: number;
+  name: string;
+  icon: string;
+  disabled: boolean;
+  hidden: boolean;
+}
 
-const ServiceEdit = (props: Props) => {
-  const handleSubmit = async ({ images, icon, logo, ...app }) => {
-    try {
-      if (!logo || !icon || !images) {
-        throw new Error("Please upload pictures");
-      }
+interface State {
+  apps: App[];
+  appName: string;
+  showApp: null | number;
+}
 
-      app.images = [logo, icon];
-      const { data } = await props.createApp({ variables: { app } });
-      await props.uploadImages({ variables: { images, appid: data.createApp } });
-    } catch (error) {
-      throw new Error(error);
-    }
+class ServiceEdit extends React.Component<Props, State> {
+  state = {
+    apps: [],
+    appName: "",
+    showApp: null
   };
 
-  return (
-    <section className="admin">
-      <Query query={FETCH_APPS}>
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <LoadingDiv text="Fetching data..." />;
-          }
-          if (error || !data) {
-            return <ErrorComp error={filterError(error)} />;
-          }
+  searchApp = (appName: string) => this.setState({ appName });
 
-          return (
-            <React.Fragment>
-              <h1>Select a Service to edit</h1>
-              <div className="apps">
-                {data.adminFetchAllApps.map(({ name, id, icon }) => (
-                  <div key={id} className="app">
+  render() {
+    const { showApp, appName } = this.state;
+
+    return (
+      <section className="admin">
+        <h1>Select a Service to edit</h1>
+        {showApp ? (
+          <Service appid={this.props.apps.find(app => app.id == showApp)!.id} />
+        ) : (
+          <React.Fragment>
+            <SearchBox searchFunction={this.searchApp} />
+            <div className="apps">
+              {this.props.apps
+                .filter(({ name }) => name.toLowerCase().includes(appName.toLowerCase()))
+                .map(({ name, id, icon, disabled, hidden }) => (
+                  <div
+                    title={`${disabled ? "Disabled" : ""} ${hidden ? "Hidden" : ""}`}
+                    key={id}
+                    className={`app ${disabled ? "disabled" : ""} ${hidden ? "hidden" : ""}`}
+                    onClick={() => this.setState({ showApp: id })}>
                     <img height="100px" width="100px" src={`${iconPicFolder}${icon}`} alt={name} />
                     <h3>{name}</h3>
                   </div>
                 ))}
-              </div>
-              <button className="button-nav">
-                <i className="fal fa-arrow-alt-from-right" />
-                <Link to="/area/admin">Go Back</Link>
-              </button>
-            </React.Fragment>
-          );
-        }}
-      </Query>
-    </section>
-  );
-};
+            </div>
+          </React.Fragment>
+        )}
 
-export default ServiceEdit;
+        <button
+          type="button"
+          className="button-nav"
+          onClick={() => {
+            if (showApp) {
+              this.setState({ showApp: null, appName: "" });
+            }
+          }}>
+          <i className="fal fa-arrow-alt-from-right" />
+          {showApp ? <span>Go Back</span> : <Link to="/area/admin">Go Back</Link>}
+        </button>
+      </section>
+    );
+  }
+}
+
+export default () => (
+  <Query query={FETCH_APPS}>
+    {({ data, loading, error }) => {
+      if (loading) {
+        return <LoadingDiv text="Fetching Services..." />;
+      }
+
+      if (error || !data) {
+        return <ErrorComp error={filterError(error)} />;
+      }
+
+      return <ServiceEdit apps={data.adminFetchAllApps} />;
+    }}
+  </Query>
+);

@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import { iconPicFolder, logoPicFolder } from "../../common/constants";
 
 export const fields = [
   {
@@ -47,10 +47,16 @@ export const fields = [
     label: "Service Color"
   },
   {
-    name: "external",
-    icon: "landmark-alt",
+    name: "hidden",
+    icon: "eye-slash",
     type: "checkbox",
-    label: "External"
+    label: "Hidden"
+  },
+  {
+    name: "disabled",
+    icon: "ban",
+    type: "checkbox",
+    label: "Disabled"
   },
   {
     name: "needssubdomain",
@@ -59,15 +65,64 @@ export const fields = [
     label: "Needs Subdomain"
   },
   {
+    name: "external",
+    icon: "landmark-alt",
+    type: "checkbox",
+    label: "Create an external plan"
+  },
+  {
+    name: "type",
+    icon: "project-diagram",
+    type: "number",
+    label: "Type"
+  },
+  {
+    name: "emailobject",
+    icon: "project-diagram",
+    type: "text",
+    label: "Email Object",
+    placeholder: "input[name='email']"
+  },
+  {
+    name: "buttonobject",
+    icon: "project-diagram",
+    type: "text",
+    label: "Button Object",
+    placeholder: "input[type='submit']"
+  },
+  {
+    name: "passwordobject",
+    icon: "project-diagram",
+    type: "text",
+    label: "Password Object",
+    placeholder: "input[name='password']"
+  },
+  {
+    name: "predomain",
+    icon: "project-diagram",
+    type: "text",
+    label: "Pre Domain",
+    placeholder: "https://"
+  },
+  {
+    name: "afterdomain",
+    icon: "project-diagram",
+    type: "text",
+    label: "After Domain",
+    placeholder: ".appname.com/"
+  },
+  {
     name: "logo",
     type: "picture",
     required: true,
+    folder: logoPicFolder,
     label: "Logo for the marketplace"
   },
   {
     name: "icon",
     type: "picture",
     required: true,
+    folder: iconPicFolder,
     label: "Icon for the sidebar"
   },
   {
@@ -78,9 +133,3 @@ export const fields = [
     multiple: true
   }
 ];
-
-export const UPLOAD_IMAGES = gql`
-  mutation onUploadAppImages($images: [Upload!]!, $appid: Int!) {
-    uploadAppImages(images: $images, appid: $appid)
-  }
-`;

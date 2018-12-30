@@ -3,6 +3,13 @@
   flex-direction: column;
   height: calc(100% - 5em);
 
+  .searchbarHolder {
+    input[type="number"] {
+      text-align: center;
+      width: 10rem;
+    }
+  }
+
   #loading-screen {
     background-image: url('./images/Ladeanimation_Vipfy_transparent.gif');
     background-position: calc(50% - 2.5rem) calc(50% - 3rem);
@@ -151,7 +158,7 @@
       background: rgba(34, 50, 84, 0.03);
       opacity: 0;
       transition: opacity 0.2s ease;
-      }
+  }
 
     svg {
       position: relative;
@@ -271,4 +278,101 @@
   &:nth-child(6) {
     padding-left: 0.9rem;
   }
- }
+}
+
+.edit-field {
+  height: 3rem;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+
+  i {
+    margin: 0 1rem 4px 0;
+  }
+
+  input {
+    display: block;
+    background: none;
+    outline: none;
+    font-size: 1rem;
+    border: 0;
+    border-bottom: 1px solid #bbb;
+    z-index: 2;
+    transition: all 300ms ease-in-out;
+
+    &:focus {
+      outline: none;
+      border-bottom: 1px solid $vipfy-primary-color;
+    }
+
+    &:focus + label {
+      top: 7px;
+      left: unset;
+      font-size: 0.7rem;
+      color: $vipfy-primary-color;
+    }
+  }
+
+  .text-field {
+    margin-left: 0;
+  }
+
+  .valid {
+    border-bottom: 1px solid $vipfy-primary-color;
+  }
+
+  .valid + label {
+    top: 7px;
+    left: unset;
+    font-size: 0.7rem;
+    color: $vipfy-primary-color;
+  }
+
+  label {
+    position: absolute;
+    left: 33px;
+    z-index: 1;
+    transition: all 300ms ease-in-out;
+    color: #bbb;
+  }
+
+  .error {
+    position: absolute;
+    color: red;
+    font-size: 0.7rem;
+    left: 239px;
+  }
+
+  &-textbox {
+    @extend .edit-field;
+    height: unset;
+    flex-flow: column;
+    align-items: flex-start;
+
+    .label {
+      color: #000;
+    }
+  }
+
+  &-checkbox {
+    @extend .edit-field;
+    height: unset;
+    align-items: end;
+
+    label {
+      color: #000;
+      position: relative;
+      top: unset;
+      left: unset;
+      cursor: pointer;
+    }
+
+    .generic-checkbox-holder {
+      margin-left: 1rem;
+
+      .generic-form-checkbox {
+        color: #fff;
+      }
+    }
+  }
+}

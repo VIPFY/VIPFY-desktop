@@ -126,13 +126,13 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
       },
       { label: "Security", location: "security", icon: "user-shield", show: this.props.isadmin },
       { label: "Teams", location: "team", icon: "users", show: this.props.isadmin },
-      /*{
-        label: "Marketplace",
-        location: "marketplace",
-        icon: "shopping-cart",
-        show: true,
-        important: false
-      },*/
+      // {
+      //   label: "Marketplace",
+      //   location: "marketplace",
+      //   icon: "shopping-cart",
+      //   show: true,
+      //   important: false
+      // },
       {
         label: "External Accounts",
         location: "integrations",

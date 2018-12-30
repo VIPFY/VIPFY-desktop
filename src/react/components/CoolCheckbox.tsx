@@ -6,7 +6,7 @@ export default ({ name, value, onChange }) => (
       type="checkbox"
       className="cool-checkbox"
       id={`cool-checkbox-${name}`}
-      defaultChecked={value ? true : false}
+      checked={value}
       name={name}
       onChange={e => onChange(e)}
     />

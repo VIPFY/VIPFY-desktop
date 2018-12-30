@@ -10,14 +10,14 @@ export default (props: { props: any }) => {
   return (
     <section className="admin">
       <h1>Admin Interface</h1>
-      <ul className="nav">
+      <div className="nav">
         {links.map(({ icon, link, label }) => (
-          <li className="nav-item" key={link}>
+          <Link to={`admin/${link}`} className="nav-item" key={link}>
             <i className={`fal fa-${icon}`} />
-            <Link to={`admin/${link}`}>{label}</Link>
-          </li>
+            {label}
+          </Link>
         ))}
-      </ul>
+      </div>
     </section>
   );
 };
