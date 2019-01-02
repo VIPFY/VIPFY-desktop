@@ -108,9 +108,6 @@ class Welcome extends React.Component<Props, State> {
   }
 
   searchCompany = async () => {
-    const company = "Pizzeria Italia";
-
-    //if (company.length > 2) {
     const predictions = await this.props.client.query({
       query: gql`
         {
@@ -118,15 +115,8 @@ class Welcome extends React.Component<Props, State> {
         }
       `
     });
-    //console.log
-    console.log(predictions);
+    console.log("Predictions", predictions);
     this.setState({ predictions });
-    //this.setState({ possibleAddresses: addresses.data.searchAddressByCompanyName });
-    //} else {
-    // if (this.state.possibleAddresses.length > 0) {
-    //   this.setState({ possibleAddresses: [] });
-    // }
-    // }
   };
 
   uploadPic = async ({ picture }) => {
