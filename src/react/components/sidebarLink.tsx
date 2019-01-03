@@ -8,6 +8,8 @@ interface Props {
   setTeam: Function;
   setInstance: Function;
   viewID: number;
+  dragItem: number | null;
+  entered: number | null;
 }
 
 interface State {
@@ -82,9 +84,16 @@ class SidebarLink extends React.Component<Props, State> {
 
     return (
       <li
+        className={`${cssClass}${this.props.dragItem == licence.id ? " hold" : ""}${
+          this.props.entered == licence.id ? " hovered" : ""
+        }`}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        className={cssClass}
+        draggable={true}
+        onDragStart={() => this.props.dragStartFunction(licence.id)}
+        onDragOver={this.props.dragOverFunction}
+        onDragLeave={this.props.dragLeaveFunction}
+        onDragEnd={this.props.dragEndFunction}
         ref={el => (this.el = el)}
         onClick={
           this.props.openInstancens &&

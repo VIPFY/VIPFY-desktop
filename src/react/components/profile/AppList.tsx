@@ -1,187 +1,156 @@
 import * as React from "react";
-import { Query, compose, graphql } from "react-apollo";
-import gql from "graphql-tag";
-
+import { Query, graphql } from "react-apollo";
+import AppTile from "../../components/AppTile";
 import LoadingDiv from "../../components/LoadingDiv";
-import { filterError } from "../../common/functions";
-import { fetchLicences } from "../../queries/auth";
-import { iconPicFolder } from "../../common/constants";
-import Confirmation from "../../popups/Confirmation";
+import { filterError, ErrorComp } from "../../common/functions";
+import { fetchLicences, me, GET_USER_CONFIG } from "../../queries/auth";
+import { SAVE_LAYOUT } from "../../mutations/auth";
+import moment = require("moment");
+import { Licence } from "../../interfaces";
 
-const REMOVE_EXTERNAL_ACCOUNT = gql`
-  mutation onRemoveExternalAccount($licenceid: ID!) {
-    removeExternalAccount(licenceid: $licenceid) {
-      ok
-    }
-  }
-`;
+export interface Preview {
+  name: string;
+  pic: string;
+}
+
 interface Props {
-  setApp: Function;
-  showPopup: Function;
-  removeExternal: Function;
+  setApp?: Function;
+  showPopup?: Function;
+  licences: Licence[];
+  saveLayout: Function;
 }
 
 interface State {
-  removeApp: number;
   show: Boolean;
+  dragItem: number | null;
+  preview: Preview;
+  licences: Licence[];
 }
 
-class AppList extends React.Component<Props, State> {
+class AppListHolder extends React.Component<Props, State> {
   state = {
-    removeApp: 0,
-    show: true
+    show: true,
+    dragItem: null,
+    preview: { name: "", pic: "" },
+    licences: []
   };
+
+  componentDidMount() {
+    this.setState({ licences: this.props.licences });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.licences.length != this.props.licences.length) {
+      this.setState({ licences: this.props.licences });
+    }
+  }
+
+  setPreview = (preview: Preview) => this.setState({ preview });
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
+  dragStartFunction = (item: number): void => this.setState({ dragItem: item });
+  dragEndFunction = (): void => this.setState({ dragItem: null });
+
+  handleDrop = async (id: number) => {
+    const { dragItem, licences } = this.state;
+
+    const newLicences = licences.map(licence => {
+      if (licence.id == id) {
+        return licences.find(item => item.id == dragItem!);
+      } else if (licence.id == dragItem!) {
+        return licences.find(item => item.id == id);
+      } else {
+        return licence;
+      }
+    });
+
+    this.setState({ licences: newLicences });
+    try {
+      const horizontal = newLicences.map(licence => licence.id);
+      await this.props.saveLayout({
+        variables: { horizontal },
+        refetchQueries: [{ query: GET_USER_CONFIG }]
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   render() {
-    //console.log(this.state.removeApp);
+    const { show, dragItem, licences, preview } = this.state;
+
+    if (licences.length == 0) {
+      return <div>No Apps for you yet</div>;
+    }
+
     return (
-      <Query query={fetchLicences}>
-        {({ loading, error, data: { fetchLicences } }) => {
-          if (loading) {
-            return <LoadingDiv text="Fetching Apps..." />;
-          }
-
-          if (error) {
-            return filterError(error);
-          }
-          fetchLicences.sort(function(a, b) {
-            let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-            let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-            if (nameA < nameB) {
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
-            }
-
-            // namen müssen gleich sein
-            return 0;
-          });
-          return (
-            <div className="genericHolder">
-              <div className="header" onClick={this.toggle}>
-                <i
-                  className={`button-hide fas ${
-                    this.state.show ? "fa-angle-left" : "fa-angle-down"
-                  }`}
-                  //onClick={this.toggle}
-                />
-                <span>Apps</span>
-              </div>
-              <div className={`inside ${this.state.show ? "in" : "out"}`}>
-                <div className="profileAppsHolder">
-                  {fetchLicences.map((licence, key) => {
-                    if (
-                      licence.boughtplanid.planid.options &&
-                      licence.boughtplanid.planid.options.external
-                    ) {
-                      if (this.state.removeApp === licence.id) {
-                        return (
-                          <div className="profileApps" key={`useableLogo-${key}`}>
-                            <i className="fal fa-trash-alt shaking" />
-                            <div className="name">
-                              <span>Removing</span>
-                            </div>
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <div
-                            className="profileApps"
-                            key={`useableLogo-${key}`}
-                            onClick={() =>
-                              this.props.showPopup({
-                                header: "Remove external account",
-                                body: Confirmation,
-                                props: {
-                                  headline: "Please confirm removal of this account",
-                                  submitFunction: async licenceid => {
-                                    await this.props.removeExternal({
-                                      variables: { licenceid }
-                                    });
-                                    this.setState({ removeApp: licenceid });
-                                  },
-                                  type: `External account - ${
-                                    licence.boughtplanid.planid.appid.name
-                                  }`,
-                                  id: licence.id
-                                }
-                              })
-                            }
-                            style={{
-                              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                                licence.boughtplanid.planid.appid.icon
-                              })`
-                            }}>
-                            <div className="ribbon ribbon-top-right">
-                              <span>external</span>
-                            </div>
-                            <div className="name">
-                              <span>{licence.boughtplanid.planid.appid.name}</span>
-                              {licence.boughtplanid.planid.options &&
-                              licence.boughtplanid.planid.options.external ? (
-                                <i className="fal fa-trash-alt" />
-                              ) : (
-                                ""
-                              )}
-                            </div>
-                          </div>
-                        );
-                      }
-                    } else {
-                      return (
-                        <div
-                          className="profileApps"
-                          key={`useableLogo-${key}`}
-                          style={{
-                            backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                              licence.boughtplanid.planid.appid.icon
-                            })`
-                          }}>
-                          <div className="name">
-                            <span>{licence.boughtplanid.planid.appid.name}</span>
-                            {licence.boughtplanid.planid.options &&
-                            licence.boughtplanid.planid.options.external ? (
-                              <i className="fas fa-trash" />
-                            ) : (
-                              ""
-                            )}
-                          </div>
-                        </div>
-                      );
-                    }
-                  })}
-                </div>
-                {/*<ul className="app-accordion">
-            {Object.keys(fetchLicences).map((item, key) => {
-              const {
-                boughtplanid: {
-                  planid: { appid: app }
-                }
-              } = fetchLicences[item];
-              const image = `url(${iconPicFolder}${app.icon})`;
-
-              return (
-                <li key={key} onClick={() => props.setApp(fetchLicences[item].id)}>
-                  <span className="app-list-item-pic before" style={{ backgroundImage: image }} />
-
-                  <div className="app-content">
-                    <label>{app.name}</label>
-                    <p>{app.teaserdescription}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>*/}
-              </div>
-            </div>
-          );
-        }}
-      </Query>
+      <div className="genericHolder">
+        <div className="header" onClick={this.toggle}>
+          <i className={`button-hide fas ${show ? "fa-angle-left" : "fa-angle-down"}`} />
+          <span>Apps</span>
+        </div>
+        <div className={`inside ${show ? "in" : "out"}`}>
+          <div className="profile-app-holder">
+            {licences.map(licence => (
+              <AppTile
+                key={licence.id}
+                preview={preview}
+                setPreview={this.setPreview}
+                updateLayout={this.props.saveLayout}
+                dragItem={dragItem}
+                removeLicence={this.removeLicence}
+                dragStartFunction={this.dragStartFunction}
+                dragEndFunction={this.dragEndFunction}
+                handleDrop={this.handleDrop}
+                licence={licence}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
     );
   }
 }
 
-export default compose(graphql(REMOVE_EXTERNAL_ACCOUNT, { name: "removeExternal" }))(AppList);
+const AppList = graphql(SAVE_LAYOUT, { name: "saveLayout" })(AppListHolder);
+
+export default (props: { setApp: Function; showPopup: Function }) => (
+  <Query query={fetchLicences}>
+    {({ data, loading, error }) => (
+      <Query
+        //prettier-ignore
+        query={GET_USER_CONFIG}>
+        {({ data: { me }, loading: l2, error: e2 }) => {
+          if (l2 || loading) {
+            return <LoadingDiv text="Fetching Apps..." />;
+          }
+
+          if (e2 || !me || error || !data) {
+            return <ErrorComp error={filterError(e2 || error)} />;
+          }
+
+          let licences = data.fetchLicences;
+
+          if (me.config && me.config.horizontal) {
+            licences = me.config.horizontal.map(id =>
+              data.fetchLicences.find(item => item.id == id)
+            );
+          }
+
+          const filteredLicences = licences.filter(licence => {
+            if (!licence) {
+              return false;
+            } else if (!licence.endtime) {
+              return true;
+            } else {
+              return moment().isBefore(licence.endtime);
+            }
+          });
+
+          return <AppList {...props} licences={filteredLicences} />;
+        }}
+      </Query>
+    )}
+  </Query>
+);

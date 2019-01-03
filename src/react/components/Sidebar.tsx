@@ -1,6 +1,13 @@
 import * as React from "react";
-import { Component } from "react";
-import pjson = require("pjson");
+import { compose, graphql, Query, Mutation } from "react-apollo";
+import * as pjson from "pjson";
+import * as moment from "moment";
+import LoadingDiv from "./LoadingDiv";
+import { ErrorComp, filterError } from "../common/functions";
+import { GET_USER_CONFIG, fetchLicences } from "../queries/auth";
+import { SAVE_LAYOUT } from "../mutations/auth";
+import { Licence } from "../interfaces";
+import { iconPicFolder } from "../common/constants";
 import { AppContext } from "../common/functions";
 import SidebarLink from "./sidebarLink";
 
@@ -15,42 +22,98 @@ interface SidebarLinks {
 export type SidebarProps = {
   history: any[];
   setApp: (licence: number) => void;
-  licences: any;
+  licences: Licence[];
+  location: object;
   sideBarOpen: boolean;
   logMeOut: () => void;
   isadmin: boolean;
   toggleSidebar: Function;
+  saveLayout: Mutation;
+  layout: { vertical: string[] | null };
   moveTo: Function;
   viewID: number;
   openInstancens: any;
   setInstance: Function;
 };
 
-export type SidebarState = {};
+interface State {
+  dragItem: number | null;
+  entered: number | null;
+  layout: string[];
+}
 
-class Sidebar extends Component<SidebarProps, SidebarState> {
+class SidebarHolder extends React.Component<SidebarProps, State> {
+  state = {
+    dragItem: null,
+    entered: null,
+    layout: []
+  };
+
   references: { key; element }[] = [];
-  //goTo = view => this.props.history.push(`/area/${view}`);
   goTo = view => this.props.moveTo(view);
 
-  showApps = licences => {
-    let appLogos: JSX.Element[] = [];
-    //console.log("PL", this.props, licences);
-    if (licences) {
-      licences.sort(function(a, b) {
-        let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
+  componentDidMount() {
+    if (this.props.layout && this.props.layout.vertical) {
+      this.setState({ layout: this.props.layout.vertical });
+    }
+  }
 
-        // namen müssen gleich sein
-        return 0;
+  componentDidUpdate(prevProps) {
+    if (prevProps.layout.vertical.length != this.props.layout.vertical!.length) {
+      this.setState({ layout: this.props.layout.vertical! });
+    }
+  }
+
+  dragStartFunction = (item): void => this.setState({ dragItem: item });
+  dragEndFunction = (): void => this.setState({ dragItem: null });
+
+  handleDrop = async (id, licences) => {
+    const { dragItem } = this.state;
+
+    const newLicences = licences.map(licence => {
+      if (licence.id == id) {
+        return licences.find(item => item.id == dragItem!);
+      } else if (licence.id == dragItem!) {
+        return licences.find(item => item.id == id);
+      } else {
+        return licence;
+      }
+    });
+
+    try {
+      const vertical = newLicences.map(licence => licence.id);
+      await this.props.saveLayout({
+        variables: { vertical },
+        refetchQueries: [{ query: fetchLicences }, { query: GET_USER_CONFIG }]
       });
-      licences.forEach((licence, key) => {
+
+      this.setState({ layout: vertical });
+    } catch (error) {
+      console.log(error);
+    }
+
+    return newLicences;
+  };
+
+  showApps = (fetchedLicences: Licence[]) => {
+    let appLogos: JSX.Element[] = [];
+    if (fetchedLicences) {
+      let licences = fetchedLicences;
+
+      if (this.state.layout.length > 0) {
+        licences = this.state.layout.map(id => licences.find(item => item.id == id));
+      }
+
+      const filteredLicences = licences.filter(licence => {
+        if (!licence) {
+          return false;
+        } else if (!licence.endtime) {
+          return true;
+        } else {
+          return moment().isBefore(licence.endtime);
+        }
+      });
+      filteredLicences.forEach((licence, key) => {
         appLogos.push(
           <SidebarLink
             licence={licence}
@@ -61,6 +124,18 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
             setTeam={this.props.setApp}
             setInstance={this.props.setInstance}
             viewID={this.props.viewID}
+            dragItem={this.state.dragItem}
+            entered={this.state.entered}
+            dragStartFunction={this.dragStartFunction(licence.id)}
+            dragOverFunction={e => {
+              e.preventDefault();
+              this.setState({ entered: licence.id });
+            }}
+            dragLeaveFunction={() => this.setState({ entered: null })}
+            dragEndFunction={() => {
+              this.setState({ entered: null });
+              this.dragEndFunction();
+            }}
           />
         );
       });
@@ -79,6 +154,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     if (important) {
       cssClass += " sidebar-link-important";
     }
+
     if (
       this.props.location.pathname === `/area/${location}` ||
       `${this.props.location.pathname}/dashboard` === `/area/${location}`
@@ -231,4 +307,19 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
   }
 }
 
-export default Sidebar;
+const Sidebar = graphql(SAVE_LAYOUT, { name: "saveLayout" })(SidebarHolder);
+
+export default props => (
+  <Query query={GET_USER_CONFIG}>
+    {({ data, loading, error }) => {
+      if (loading || props.licences.loading) {
+        return <LoadingDiv text="Fetching data..." />;
+      }
+
+      if (error || !data) {
+        return <ErrorComp error={error} />;
+      }
+      return <Sidebar {...props} layout={data.me.config} />;
+    }}
+  </Query>
+);

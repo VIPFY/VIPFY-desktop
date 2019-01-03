@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
-import Welcome from "../popups/welcome";
+import AppList from "../components/profile/AppList";
 import LoadingDiv from "../components/LoadingDiv";
 
 import { FETCH_COMPANY } from "../queries/departments";
-import { filterError, AppContext } from "../common/functions";
+import { filterError, ErrorComp, AppContext } from "../common/functions";
 
 const FETCH_ADDRESS_PROPOSAL = gql`
   query onFetchAddressProposal($placeid: String!) {
@@ -49,58 +49,6 @@ class Dashboard extends React.Component<Props, {}> {
   setApp = (licence: number) => this.props.setApp(licence);
 
   goTo = view => this.props.history.push(`/area${view}`);
-
-  showApps(licences) {
-    let appLogos: JSX.Element[] = [];
-
-    if (licences) {
-      licences.sort(function(a, b) {
-        let nameA = a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-
-        // namen müssen gleich sein
-        return 0;
-      });
-      if (licences.length > 0) {
-        licences.forEach((licence, key) => {
-          appLogos.push(
-            <div
-              className="logoAppsTile"
-              key={`useableLogo-${key}`}
-              onClick={() => this.setApp(licence.id)}
-              style={{
-                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                  licence.boughtplanid.planid.appid.icon
-                })`
-              }}>
-              {licence.boughtplanid.planid.options &&
-              licence.boughtplanid.planid.options.external ? (
-                <div className="ribbon ribbon-top-right">
-                  <span>external</span>
-                </div>
-              ) : (
-                ""
-              )}
-              <span className="nameAppsTile">
-                {licence.boughtplanid.alias
-                  ? licence.boughtplanid.alias
-                  : licence.boughtplanid.planid.appid.name}
-              </span>
-            </div>
-          );
-        });
-      } else {
-        return <div className="noApp">No Apps for you at the moment :(</div>;
-      }
-    }
-    return appLogos;
-  }
 
   showRec(licences) {
     let recLogo: JSX.Element[] = [];
@@ -185,27 +133,24 @@ class Dashboard extends React.Component<Props, {}> {
   }
 
   render() {
-    const { /*rcApps,*/ licences } = this.props;
-
-    if (/*rcApps.loading ||*/ licences.loading) {
-      //return <LoadingDiv text="Fetching Recommendations..." />;
+    if (this.props.licences.loading) {
       return <LoadingDiv text="Fetching Licences..." />;
     }
 
-    /*if (rcApps.error) {
-      return filterError(rcApps.error);
-    }*/
+    if (this.props.licences.error) {
+      return <ErrorComp error={filterError(this.props.licences.error)} />;
+    }
+
+    if (this.props.licences.length < 1) {
+      return <div className="noApp">No Apps for you at the moment :(</div>;
+    }
 
     return (
       <div className="dashboard-working">
         <div className="dashboardHeading">
           <div>My Apps</div>
         </div>
-        <div className="appsTile">{this.showApps(licences.fetchLicences)}</div>
-        {/*<div className="dashboardHeading">
-          <div>Our Recommendations</div>
-        </div>
-        {this.showRec(licences.fetchLicences)} //TODO Reimplement reccomendations*/}
+        <AppList />
       </div>
     );
   }

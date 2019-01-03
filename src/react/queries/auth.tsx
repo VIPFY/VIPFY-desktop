@@ -1,5 +1,13 @@
 import gql from "graphql-tag";
 
+export const GET_USER_CONFIG = gql`
+  {
+    me {
+      config
+    }
+  }
+`;
+
 export const me = gql`
   {
     me {
@@ -27,6 +35,7 @@ export const me = gql`
       }
       needspasswordchange
       firstlogin
+      config
       tutorialprogress
     }
   }
@@ -36,6 +45,7 @@ export const fetchLicences = gql`
   query onFetchLicence {
     fetchLicences {
       id
+      endtime
       boughtplanid {
         id
         alias

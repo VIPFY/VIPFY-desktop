@@ -7,7 +7,6 @@ import { graphql, compose, Query, withApollo } from "react-apollo";
 import Advisor from "./advisor";
 import AppPage from "./apppage";
 import Billing from "./billing";
-import Chat from "./chat";
 import Dashboard from "./dashboard";
 import Domains from "./domains";
 import Marketplace from "./marketplace";
@@ -23,7 +22,7 @@ import Webview from "./webview";
 import ErrorPage from "./error";
 
 import { fetchLicences, me } from "../queries/auth";
-import { fetchRecommendedApps } from "../queries/products";
+// import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
 import Security from "./security";
@@ -31,6 +30,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
 import AppAdmin from "./appadmin";
+import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
 
@@ -262,6 +262,10 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "appadmin", component: AppAdmin }
     ];
+
+    if (this.props.licences.loading) {
+      return <LoadingDiv text="Preparing Vipfy..." />;
+    }
 
     return (
       <div className="area">

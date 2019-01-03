@@ -6,6 +6,7 @@ import { fetchApps } from "../queries/products";
 import LoadingDiv from "../components/LoadingDiv";
 import Popup from "../components/Popup";
 import addExternal from "../popups/addExternal";
+import { me, fetchLicences } from "../queries/auth";
 
 interface Props {
   history: any;
@@ -170,7 +171,8 @@ class Integrations extends React.Component<Props, AppPageState> {
       }
 
       await this.props.addExternalApp({
-        variables: { ...data, loginurl, boughtplanid: id }
+        variables: { ...data, loginurl, boughtplanid: id },
+        refetchQueries: [{ query: me }, { query: fetchLicences }]
       });
 
       setTimeout(() => this.closePopup(), 1000);
