@@ -16,6 +16,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
 import gql from "graphql-tag";
 import Tutorial from "./tutorials/basicTutorial";
+import Tabs from "./components/Tabs";
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -279,6 +280,7 @@ class App extends React.Component<AppProps, AppState> {
               ) : (
                 ""
               )}
+              <Tabs />
             </AppContext.Provider>
           );
         }}

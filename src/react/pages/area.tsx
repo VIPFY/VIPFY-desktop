@@ -56,7 +56,7 @@ interface AreaState {
   script: Element | null;
   script3: Element | null;
   webviews: any[];
-  openInstancens: any;
+  openInstances: any;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -70,7 +70,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     script: null,
     script3: null,
     webviews: [],
-    openInstancens: {}
+    openInstances: {}
   };
 
   componentDidMount = async () => {
@@ -131,13 +131,13 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   setApp = (boughtplan: number) => {
-    if (this.state.openInstancens[boughtplan]) {
+    if (this.state.openInstances[boughtplan]) {
       this.setState(prevState => {
         const newstate = {
           ...prevState,
           app: boughtplan,
           licenceID: boughtplan,
-          viewID: Object.keys(prevState.openInstancens[boughtplan])[0]
+          viewID: Object.keys(prevState.openInstances[boughtplan])[0]
         };
         return newstate;
       });
@@ -189,12 +189,12 @@ class Area extends React.Component<AreaProps, AreaState> {
             licenceID
           }
         ],
-        openInstancens: {
-          ...prevState.openInstancens,
+        openInstances: {
+          ...prevState.openInstances,
           [licenceID]:
-            prevState.openInstancens && prevState.openInstancens[licenceID]
+            prevState.openInstances && prevState.openInstances[licenceID]
               ? {
-                  ...prevState.openInstancens[licenceID],
+                  ...prevState.openInstances[licenceID],
 
                   [viewID]: { instanceTitle: "Home", instanceId: viewID }
                 }
@@ -211,20 +211,20 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   setViewTitle = (title, viewID, licenceID) => {
     this.setState(prevState => ({
-      openInstancens: {
-        ...prevState.openInstancens,
+      openInstances: {
+        ...prevState.openInstances,
         [licenceID]:
-          prevState.openInstancens &&
-          prevState.openInstancens[licenceID] &&
-          prevState.openInstancens[licenceID][viewID]
+          prevState.openInstances &&
+          prevState.openInstances[licenceID] &&
+          prevState.openInstances[licenceID][viewID]
             ? {
-                ...prevState.openInstancens[licenceID],
+                ...prevState.openInstances[licenceID],
                 [viewID]: {
                   instanceTitle: title,
                   instanceId: viewID
                 }
               }
-            : { ...prevState.openInstancens[licenceID] }
+            : { ...prevState.openInstances[licenceID] }
       }
     }));
   };
@@ -277,7 +277,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                   sideBarOpen={sideBarOpen}
                   setApp={this.setApp}
                   viewID={this.state.viewID}
-                  openInstancens={this.state.openInstancens}
+                  openInstances={this.state.openInstances}
                   toggleSidebar={this.toggleSidebar}
                   setInstance={this.setInstance}
                   {...this.props}
