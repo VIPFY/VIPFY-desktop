@@ -1,5 +1,5 @@
 import * as React from "react";
-import { compose, graphql, Query, Mutation } from "react-apollo";
+import { graphql, Query, Mutation } from "react-apollo";
 import * as pjson from "pjson";
 import * as moment from "moment";
 import LoadingDiv from "./LoadingDiv";
@@ -17,6 +17,7 @@ interface SidebarLinks {
   icon: string;
   show: boolean;
   important: boolean;
+  highlight: any;
 }
 
 export type SidebarProps = {
@@ -69,7 +70,8 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
 
   handleDrop = async (id, licences) => {
     const { dragItem } = this.state;
-
+    console.log("BOOM");
+    this.setState({ entered: null });
     const newLicences = licences.map(licence => {
       if (licence.id == id) {
         return licences.find(item => item.id == dragItem!);
@@ -113,10 +115,12 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
           return moment().isBefore(licence.endtime);
         }
       });
+
       filteredLicences.forEach((licence, key) => {
         appLogos.push(
           <SidebarLink
             licence={licence}
+            filteredLicences={filteredLicences}
             key={`ServiceLogo-${key}`}
             openInstancens={this.props.openInstancens}
             sideBarOpen={this.props.sideBarOpen}
@@ -126,11 +130,12 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
             viewID={this.props.viewID}
             dragItem={this.state.dragItem}
             entered={this.state.entered}
-            dragStartFunction={this.dragStartFunction(licence.id)}
+            dragStartFunction={this.dragStartFunction}
             dragOverFunction={e => {
               e.preventDefault();
               this.setState({ entered: licence.id });
             }}
+            handleDrop={this.handleDrop}
             dragLeaveFunction={() => this.setState({ entered: null })}
             dragEndFunction={() => {
               this.setState({ entered: null });
@@ -141,7 +146,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
       });
     }
 
-    return appLogos;
+    return <div onDrop={() => this.handleDrop}>{appLogos}</div>;
   };
 
   addReferences = (key, element, addRenderElement) => {
@@ -149,7 +154,10 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
     addRenderElement({ key, element });
   };
 
-  renderLink = ({ label, location, icon, show, important, highlight }, addRenderElement) => {
+  renderLink = (
+    { label, location, icon, show, important, highlight }: SidebarLinks,
+    addRenderElement
+  ) => {
     let cssClass = "sidebar-link";
     if (important) {
       cssClass += " sidebar-link-important";

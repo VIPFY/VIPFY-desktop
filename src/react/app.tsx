@@ -66,7 +66,7 @@ const INITIAL_STATE = {
   firstLogin: false,
   placeid: "",
   popup: INITIAL_POPUP,
-  showTutorial: true,
+  showTutorial: false,
   renderElements: [],
   page: "dashboard"
 };

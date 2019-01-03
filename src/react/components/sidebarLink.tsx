@@ -10,6 +10,7 @@ interface Props {
   viewID: number;
   dragItem: number | null;
   entered: number | null;
+  dragStartFunction: Function;
 }
 
 interface State {
@@ -20,6 +21,7 @@ class SidebarLink extends React.Component<Props, State> {
   state = {
     hover: false
   };
+
   showInstances = licence => {
     if (this.props.openInstancens && this.props.openInstancens[licence.id]) {
       const instances = Object.keys(this.props.openInstancens[licence.id]);
@@ -76,7 +78,7 @@ class SidebarLink extends React.Component<Props, State> {
 
   render() {
     const { licence, openInstancens, sideBarOpen, active, setTeam } = this.props;
-
+    console.log(this.props);
     let cssClass = "sidebar-link";
     if (active) {
       cssClass += " sidebar-active";
@@ -89,11 +91,12 @@ class SidebarLink extends React.Component<Props, State> {
         }`}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
+        onDrop={() => this.props.handleDrop(licence.id, this.props.filteredLicences)}
         draggable={true}
         onDragStart={() => this.props.dragStartFunction(licence.id)}
-        onDragOver={this.props.dragOverFunction}
-        onDragLeave={this.props.dragLeaveFunction}
-        onDragEnd={this.props.dragEndFunction}
+        onDragOver={e => this.props.dragOverFunction(e)}
+        onDragLeave={() => this.props.dragLeaveFunction}
+        onDragEnd={() => this.props.dragEndFunction}
         ref={el => (this.el = el)}
         onClick={
           this.props.openInstancens &&
