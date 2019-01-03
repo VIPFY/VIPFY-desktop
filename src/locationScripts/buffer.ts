@@ -9,7 +9,7 @@ module.exports = function() {
 let loading: boolean | null = true;
 
 function onLoad() {
-  if (document.getElementById("pass")) {
+  if (document.getElementById("password")) {
     let ipcRenderer = require("electron").ipcRenderer;
     //ipcRenderer.sendToHost("hideLoading");
 
@@ -29,22 +29,20 @@ function onLoad() {
         .getElementById("email")
         .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
 
-      document.getElementById("pass")!.value = password;
+      document.getElementById("password")!.value = password;
 
       document
-        .getElementById("pass")
+        .getElementById("password")
         .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
 
       document
-        .getElementById("pass")
+        .getElementById("password")
         .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
 
-      clickButton(document.getElementById("u_0_2"));
+      clickButton(document.querySelector<HTMLInputElement>("input[type='submit']"));
     });
-  } else if (document.getElementById("bluebarRoot")) {
-    hideLoading();
   } else {
-    setTimeout(onLoad, 50);
+    hideLoading();
   }
 }
 
@@ -53,7 +51,7 @@ function onReady() {
 }
 
 function hideLoading() {
-  if (document.getElementById("pass")) {
+  if (document.getElementById("password")) {
     setTimeout(hideLoading, 100);
   } else {
     let ipcRenderer = require("electron").ipcRenderer;

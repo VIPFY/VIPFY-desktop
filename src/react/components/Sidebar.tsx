@@ -2,6 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import pjson = require("pjson");
 import { AppContext } from "../common/functions";
+import SidebarLink from "./sidebarLink";
 
 export type SidebarProps = {
   history: any[];
@@ -12,11 +13,12 @@ export type SidebarProps = {
   isadmin: boolean;
   toggleSidebar: Function;
   moveTo: Function;
+  viewID: number;
+  openInstancens: any;
+  setInstance: Function;
 };
 
-export type SidebarState = {
-  app: string;
-};
+export type SidebarState = {};
 
 class Sidebar extends Component<SidebarProps, SidebarState> {
   references: { key; element }[] = [];
@@ -41,39 +43,17 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         return 0;
       });
       licences.forEach((licence, key) => {
-        let cssClass = "sidebar-link";
-        if (this.props.location.pathname === `/area/app/${licence.id}`) {
-          cssClass += " sidebar-active";
-        }
-
         appLogos.push(
-          <li
-            className={cssClass}
+          <SidebarLink
+            licence={licence}
             key={`ServiceLogo-${key}`}
-            onClick={() => this.props.setApp(licence.id)}>
-            <span
-              className="service-logo-small"
-              style={{
-                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                  licence.boughtplanid.planid.appid.icon
-                })`
-              }}>
-              {licence.boughtplanid.planid.options &&
-              licence.boughtplanid.planid.options.external ? (
-                <div className="ribbon-small ribbon-small-top-right">
-                  <span>E</span>
-                </div>
-              ) : (
-                ""
-              )}
-            </span>
-
-            <span className={this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}>
-              {licence.boughtplanid.alias
-                ? licence.boughtplanid.alias
-                : licence.boughtplanid.planid.appid.name}
-            </span>
-          </li>
+            openInstancens={this.props.openInstancens}
+            sideBarOpen={this.props.sideBarOpen}
+            active={this.props.location.pathname === `/area/app/${licence.id}`}
+            setTeam={this.props.setApp}
+            setInstance={this.props.setInstance}
+            viewID={this.props.viewID}
+          />
         );
       });
     }

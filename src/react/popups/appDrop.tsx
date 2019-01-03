@@ -12,6 +12,7 @@ import GenericInputField from "../components/GenericInputField";
 import { CANCEL_PLAN } from "../mutations/products";
 import AddAccount from "../popups/addAccount";
 import moment = require("moment");
+import UserPicture from "../components/UserPicture";
 
 const CHANGE_ALIAS = gql`
   mutation setBoughtPlanAlias($boughtplanid: ID!, $alias: String!) {
@@ -43,6 +44,7 @@ interface Props {
   client: any;
   needsubdomain: boolean;
   popuptype: number;
+  app?: any;
 }
 
 interface State {
@@ -240,17 +242,10 @@ class AppDrop extends Component<Props, State> {
                     if (licence.endtime && moment(licence.endtime).isBefore(moment())) {
                       return;
                     }
-                    if (licence.unitid && licence.unitid.profilepicture) {
+                    if (licence.unitid) {
                       licencesArray.push(
                         <div key={key2} className="employeeShower">
-                          <div
-                            className="img"
-                            style={{
-                              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                licence.unitid.profilepicture
-                              })`
-                            }}
-                          />
+                          <UserPicture size="img" unitid={licence.unitid.id} />
                           <div className="name">
                             {licence.unitid.firstname} {licence.unitid.lastname}
                           </div>
@@ -445,8 +440,9 @@ class AppDrop extends Component<Props, State> {
               )
             }
             appid={this.props.appid}
+            app={this.props.app}
             showloading={false}
-            needsubdomain={this.props.needsubdomain}
+            needsubdomain={this.props.app.needssubdomain}
           />
         );
       case 3:
@@ -506,7 +502,8 @@ class AppDrop extends Component<Props, State> {
             }
             appid={this.props.appid}
             showloading={false}
-            needsubdomain={this.props.needsubdomain}
+            app={this.props.app}
+            needsubdomain={this.props.app.needssubdomain}
           />
         );
       case 5:
@@ -545,17 +542,10 @@ class AppDrop extends Component<Props, State> {
                     if (licence.endtime && moment(licence.endtime).isBefore(moment())) {
                       return;
                     }
-                    if (licence.unitid && licence.unitid.profilepicture) {
+                    if (licence.unitid) {
                       licencesArray.push(
                         <div key={key2} className="employeeShower">
-                          <div
-                            className="img"
-                            style={{
-                              backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                licence.unitid.profilepicture
-                              })`
-                            }}
-                          />
+                          <UserPicture size="img" unitid={licence.unitid.id} />
                           <div className="name">
                             {licence.unitid.firstname} {licence.unitid.lastname}
                           </div>

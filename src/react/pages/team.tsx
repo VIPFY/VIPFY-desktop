@@ -127,6 +127,7 @@ interface State {
   removeid: number;
   employeeElement: boolean;
   appElement: boolean;
+  draggingapp: any;
 }
 
 class Team extends React.Component<Props, State> {
@@ -154,6 +155,7 @@ class Team extends React.Component<Props, State> {
     removeid: -1,
     employeeElement: false,
     appElement: false
+    draggingapp: null
   };
 
   toggleSearch = bool => this.setState({ searchFocus: bool });
@@ -632,17 +634,19 @@ class Team extends React.Component<Props, State> {
     ev.dataTransfer.setData("personid", personid);
   };
 
-  onDragAppStart = (ev, id, remove, name, needsubdomain) => {
+  onDragAppStart = (ev, app, remove) => {
     if (remove) {
-      this.setState({ dragginglicence: id });
+      this.setState({ dragginglicence: app.id, draggingapp: app });
     } else {
-      this.setState({ dragging: id, removeid: 0 });
+      this.setState({ dragging: app.id, removeid: 0, draggingapp: app });
     }
 
-    ev.dataTransfer.setData("id", id);
+    console.log("Drag", app);
+
+    ev.dataTransfer.setData("id", app.id);
     ev.dataTransfer.setData("remove", remove);
-    ev.dataTransfer.setData("name", name);
-    ev.dataTransfer.setData("needsubdomain", needsubdomain);
+    ev.dataTransfer.setData("name", app.name);
+    ev.dataTransfer.setData("needsubdomain", app.needssubdomain);
   };
 
   onDragLicenceStart = (ev, licenceid, teamname, personid, personname, appname, external) => {
@@ -796,6 +800,8 @@ class Team extends React.Component<Props, State> {
       let name = ev.dataTransfer.getData("name");
       let needsubdomain = ev.dataTransfer.getData("needsubdomain");
 
+      console.log("DRAGGINGAPP", this.state.draggingapp);
+
       this.setState({
         popup: true,
         popupProps: {
@@ -805,7 +811,8 @@ class Team extends React.Component<Props, State> {
           userid: person.id,
           username: `${person.firstname} ${person.lastname}`,
           department: department,
-          needsubdomain: needsubdomain === "true"
+          needsubdomain: needsubdomain === "true",
+          app: this.state.draggingapp
         },
         popupBody: AppDrop,
         popupHeading: `Your ${name} Teams | ${person.firstname} ${person.lastname}`
@@ -931,10 +938,8 @@ class Team extends React.Component<Props, State> {
                                   onDragStart={ev =>
                                     this.onDragAppStart(
                                       ev,
-                                      app.id,
-                                      false,
-                                      app.name,
-                                      app.needssubdomain
+                                      app,
+                                      false
                                     )
                                   }
                                   /*onTouchStart={ev =>
@@ -944,15 +949,28 @@ class Team extends React.Component<Props, State> {
                                   key={key}
                                   onClick={() => this.appClick(app)}
                                   onMouseDown={() => this.setState({ removeid: 0 })}>
-                                  <img
-                                    className="right-profile-image"
-                                    style={{
-                                      float: "left"
-                                    }}
-                                    src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                                      app.icon
-                                    }`}
-                                  />
+                                  {app.icon ? (
+                                <img
+                                  className="right-profile-image"
+                                  style={{
+                                    float: "left"
+                                  }}
+                                  src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                                    app.icon
+                                  }`}
+                                />
+                              ) : (
+                                <div
+                                  className="fal fa-rocket right-profile-image"
+                                  style={{
+                                    float: "left",
+                                    lineHeight: "2rem",
+                                    width: "2rem",
+                                    textAlign: "center",
+                                    fontSize: "1rem"
+                                  }}
+                                />
+                              )}
                                   <div className="employeeName">{app.name}</div>
                                   <span className="explain">Move to add to user</span>
                                   <div

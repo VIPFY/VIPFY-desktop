@@ -94,6 +94,7 @@ export const fetchAllAppsEnhanced = gql`
       hidden
       disabled
       needssubdomain
+      options
     }
   }
 `;

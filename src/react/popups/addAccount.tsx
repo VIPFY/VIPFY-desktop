@@ -10,6 +10,7 @@ interface Props {
   addAccount: Function;
   appid: number;
   showloading: boolean;
+  app: any;
 }
 
 interface State {
@@ -61,11 +62,13 @@ class AddAccount extends Component<Props, State> {
   };
 
   addAccountTHIS = () => {
-    if (this.props.needsubdomain && this.props.options) {
+    if (this.props.needsubdomain && this.props.app) {
       this.props.addAccount(
         this.state.username,
         this.state.password,
-        `${this.props.options.predomain}${this.state.subdomain}${this.props.options.afterdomain}`,
+        `${this.props.app.options.predomain}${this.state.subdomain}${
+          this.props.app.options.afterdomain
+        }`,
         this.props.appid
       );
     } else {
@@ -135,7 +138,7 @@ class AddAccount extends Component<Props, State> {
             </div>
           </div>
         </div>
-
+        {console.log("C4", this.props.needsubdomain)}
         {this.props.needsubdomain ? (
           <div className="genericHolder">
             <div className="header" onClick={() => this.toggleshowsubdomain()}>
@@ -152,24 +155,25 @@ class AddAccount extends Component<Props, State> {
                 className="inside-padding"
                 style={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
                 <div className="domainAroundLeft">
-                  {this.props.options ? this.props.options.predomain : ""}
+                  {this.props.app ? this.props.app.options.predomain : ""}
                 </div>
                 <div className="field" style={{ width: this.props.options ? "10em" : "20em" }}>
                   <div className="label">Subdomain:</div>
-                  <GenericInputField
-                    fieldClass={`inputBoxField inputBoxUnderline ${
-                      this.props.options ? "textRight" : ""
+                  {console.log("C5", this.props)}
+                  <input
+                    className={`inputBoxField inputBoxUnderline ${
+                      this.props.app ? "textRight" : ""
                     }`}
-                    divClass=""
                     placeholder="Your subdomain"
-                    onBlur={value => this.setState({ subdomain: value })}
-                    focus={this.state.focus === 1}
-                    onEnter={() => this.onEnter(2)}
-                    onClick={() => this.onEnter(1)}
+                    onChange={e => {
+                      const subdomain = e.target.value;
+                      this.setState({ subdomain });
+                    }}
+                    autoFocus={true}
                   />
                 </div>
                 <div className="domainAroundRight">
-                  {this.props.options ? this.props.options.afterdomain : ""}
+                  {this.props.app ? this.props.app.options.afterdomain : ""}
                 </div>
               </div>
             </div>
@@ -194,28 +198,26 @@ class AddAccount extends Component<Props, State> {
               style={{ display: "flex", justifyContent: "space-around" }}>
               <div className="field" style={{ width: "20em" }}>
                 <div className="label">Username / Email:</div>
-                <GenericInputField
-                  fieldClass="inputBoxField inputBoxUnderline"
-                  divClass=""
+                <input
+                  className="inputBoxField inputBoxUnderline"
                   placeholder="Please insert your username/email"
-                  onBlur={value => this.setState({ username: value })}
-                  focus={this.state.focus === 2}
-                  onEnter={() => this.onEnter(3)}
-                  onClick={() => this.onEnter(2)}
+                  onChange={e => {
+                    const username = e.target.value;
+                    this.setState({ username });
+                  }}
+                  autoFocus={this.props.needsubdomain ? false : true}
                 />
               </div>
               <div className="field" style={{ width: "20em" }}>
                 <div className="label">Password:</div>
-                <GenericInputField
-                  fieldClass="inputBoxField inputBoxUnderline"
-                  divClass=""
+                <input
+                  className="inputBoxField inputBoxUnderline"
                   placeholder="Please insert your password"
                   type="password"
-                  onBlur={value => this.setState({ password: value })}
-                  onChange={value => this.setState({ password: value })}
-                  focus={this.state.focus === 3}
-                  onEnter={() => this.addAccountTHIS()}
-                  onClick={() => this.onEnter(3)}
+                  onChange={e => {
+                    const password = e.target.value;
+                    this.setState({ password });
+                  }}
                 />
               </div>
             </div>

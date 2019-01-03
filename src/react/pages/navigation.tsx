@@ -254,7 +254,7 @@ class Navigation extends React.Component<Props, State> {
         </div>
 
         <div className="right-infos">
-          <Query query={FETCH_CREDIT_DATA}>
+          {/*<Query query={FETCH_CREDIT_DATA}>
             {({ data, error, loading }) => {
               if (loading) {
                 return "Fetching Credits...";
@@ -321,7 +321,9 @@ class Navigation extends React.Component<Props, State> {
                 </AppContext.Consumer>
               );
             }}
-          </Query>
+          </Query>*/}
+
+          <div className="credits">Free in Beta</div>
 
           <div className="right-profile-holder">
             <div className="pic-and-name" onClick={() => this.goTo("profile")}>
