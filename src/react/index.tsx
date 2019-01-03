@@ -15,6 +15,7 @@ import App from "./app";
 import client, { setLogoutFunction } from "./networkInterface";
 import PasswordReset from "./components/signin/PasswordReset";
 import OuterErrorBoundary from "./error";
+import * as is from "electron-is";
 
 class Application extends React.Component {
   componentDidMount() {
@@ -26,6 +27,15 @@ class Application extends React.Component {
       document.head!.appendChild(style);
       style.innerHTML = contents;
     });
+    if (is.macOS()) {
+      document.body.classList.add("mac");
+    }
+  }
+
+  componentWillUnmount() {
+    if (is.macOS()) {
+      document.body.classList.remove("mac");
+    }
   }
 
   render = () => {
