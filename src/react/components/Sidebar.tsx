@@ -7,7 +7,6 @@ import { ErrorComp, filterError } from "../common/functions";
 import { GET_USER_CONFIG, fetchLicences } from "../queries/auth";
 import { SAVE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
-import { iconPicFolder } from "../common/constants";
 import { AppContext } from "../common/functions";
 import SidebarLink from "./sidebarLink";
 
@@ -33,21 +32,21 @@ export type SidebarProps = {
   layout: { vertical: string[] | null };
   moveTo: Function;
   viewID: number;
-  openInstancens: any;
+  openInstances: any;
   setInstance: Function;
 };
 
 interface State {
   dragItem: number | null;
-  entered: number | null;
   layout: string[];
+  licences: Licence[];
 }
 
 class SidebarHolder extends React.Component<SidebarProps, State> {
   state = {
     dragItem: null,
-    entered: null,
-    layout: []
+    layout: [],
+    licences: []
   };
 
   references: { key; element }[] = [];
@@ -55,28 +54,35 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
 
   componentDidMount() {
     if (this.props.layout && this.props.layout.vertical) {
-      this.setState({ layout: this.props.layout.vertical });
+      const initialState = { layout: this.props.layout.vertical };
+
+      if (this.props.layout.vertical.length > 0 && this.props.licences) {
+        const licences = this.props.layout.vertical.map(id =>
+          this.props.licences.find(item => item.id == id)
+        );
+        initialState.licences = licences;
+      }
+
+      this.setState(initialState);
+    } else {
+      this.setState({ licences: this.props.licences });
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.layout.vertical.length != this.props.layout.vertical!.length) {
+  componentDidUpdate({ layout }) {
+    if (layout && layout.vertical && layout.vertical.length != this.props.layout.vertical!.length) {
       this.setState({ layout: this.props.layout.vertical! });
     }
   }
 
-  dragStartFunction = (item): void => this.setState({ dragItem: item });
-  dragEndFunction = (): void => this.setState({ dragItem: null });
+  handleDrop = async id => {
+    const { dragItem, licences } = this.state;
 
-  handleDrop = async (id, licences) => {
-    const { dragItem } = this.state;
-    console.log("BOOM");
-    this.setState({ entered: null });
-    const newLicences = licences.map(licence => {
+    const newLicences = licences.map((licence: Licence) => {
       if (licence.id == id) {
-        return licences.find(item => item.id == dragItem!);
+        return licences.find((item: Licence) => item.id == dragItem!);
       } else if (licence.id == dragItem!) {
-        return licences.find(item => item.id == id);
+        return licences.find((item: Licence) => item.id == id);
       } else {
         return licence;
       }
@@ -89,64 +95,12 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         refetchQueries: [{ query: fetchLicences }, { query: GET_USER_CONFIG }]
       });
 
-      this.setState({ layout: vertical });
+      this.setState({ layout: vertical, licences: newLicences, dragItem: null });
     } catch (error) {
       console.log(error);
     }
 
     return newLicences;
-  };
-
-  showApps = (fetchedLicences: Licence[]) => {
-    let appLogos: JSX.Element[] = [];
-    if (fetchedLicences) {
-      let licences = fetchedLicences;
-
-      if (this.state.layout.length > 0) {
-        licences = this.state.layout.map(id => licences.find(item => item.id == id));
-      }
-
-      const filteredLicences = licences.filter(licence => {
-        if (!licence) {
-          return false;
-        } else if (!licence.endtime) {
-          return true;
-        } else {
-          return moment().isBefore(licence.endtime);
-        }
-      });
-
-      filteredLicences.forEach((licence, key) => {
-        appLogos.push(
-          <SidebarLink
-            licence={licence}
-            filteredLicences={filteredLicences}
-            key={`ServiceLogo-${key}`}
-            openInstancens={this.props.openInstancens}
-            sideBarOpen={this.props.sideBarOpen}
-            active={this.props.location.pathname === `/area/app/${licence.id}`}
-            setTeam={this.props.setApp}
-            setInstance={this.props.setInstance}
-            viewID={this.props.viewID}
-            dragItem={this.state.dragItem}
-            entered={this.state.entered}
-            dragStartFunction={this.dragStartFunction}
-            dragOverFunction={e => {
-              e.preventDefault();
-              this.setState({ entered: licence.id });
-            }}
-            handleDrop={this.handleDrop}
-            dragLeaveFunction={() => this.setState({ entered: null })}
-            dragEndFunction={() => {
-              this.setState({ entered: null });
-              this.dragEndFunction();
-            }}
-          />
-        );
-      });
-    }
-
-    return <div onDrop={() => this.handleDrop}>{appLogos}</div>;
   };
 
   addReferences = (key, element, addRenderElement) => {
@@ -293,7 +247,21 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
               <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
-              {this.showApps(this.props.licences.fetchLicences)}
+              {this.state.licences.length > 0 &&
+                this.state.licences.map((licence, key) => (
+                  <SidebarLink
+                    licence={licence}
+                    key={`ServiceLogo-${key}`}
+                    openInstances={this.props.openInstances}
+                    sideBarOpen={this.props.sideBarOpen}
+                    active={this.props.location.pathname === `/area/app/${licence.id}`}
+                    setTeam={this.props.setApp}
+                    setInstance={this.props.setInstance}
+                    viewID={this.props.viewID}
+                    handleDragStart={dragItem => this.setState({ dragItem })}
+                    handleDrop={this.handleDrop}
+                  />
+                ))}
               <li
                 className="sidebar-link sidebar-link-important"
                 onClick={() => this.props.logMeOut()}>
@@ -325,9 +293,22 @@ export default props => (
       }
 
       if (error || !data) {
-        return <ErrorComp error={error} />;
+        return <ErrorComp error={filterError(error)} />;
       }
-      return <Sidebar {...props} layout={data.me.config} />;
+
+      const { licences, ...moreProps } = props;
+
+      const filteredLicences = props.licences.fetchLicences.filter(licence => {
+        if (!licence) {
+          return false;
+        } else if (!licence.endtime) {
+          return true;
+        } else {
+          return moment().isBefore(licence.endtime);
+        }
+      });
+      console.log(filteredLicences, data.me.config);
+      return <Sidebar {...moreProps} licences={filteredLicences} layout={data.me.config} />;
     }}
   </Query>
 );
