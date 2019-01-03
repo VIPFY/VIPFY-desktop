@@ -1053,11 +1053,12 @@
   background-color: #253647;
   /*background-image: radial-gradient(farthest-corner at 0px 100%, #20BAA9 0%, #117f91 50%);*/
   height: calc(100vh - 32px);
-  position: fixed;
+  //position: fixed;
   transition: width 0.6s ease-in-out;
   /*width:  $sidebar-width;*/
   z-index: 300;
   /*overflow-y: auto;*/
+  float: left;
 
   &-logo {
     background-image: $newlogo;
@@ -1083,6 +1084,7 @@
     list-style: none;
     padding: 0.5rem;
     padding-left: 1rem;
+    position: relative;
 
     
 
@@ -2480,7 +2482,7 @@ option{
 .orderAddressHolder{
     margin: 0.5rem;
 }
-h1{
+/*h1{
     text-align: center;
     font-size: 25px;
     line-height: 32px;
@@ -2488,7 +2490,7 @@ h1{
     a{
       color: #20BAA9;
     }
-  }
+  }*/
 
   .price-table-wrapper{
     /*text-align: center;
@@ -4713,4 +4715,65 @@ table{
     right: 50px;
     font-size: 14px;
     color: #c73544;
+}
+
+.highlightElement{
+    z-index: 20000;
+    //background-color: #253647;
+    box-shadow: 0px 0px 15px 0px white;
+}
+
+.tutorialPopup{
+    background-color: white;
+    color: #253647;
+    z-index: 20000;
+    border-radius: 10px;
+    padding: 20px;
+
+    .holder-button{
+        display: flex;
+        justify-content: space-between;
+
+        .generic-button{
+            padding: 5px;
+            border-radius: 3px;
+            box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+            transition: all 0.6s ease-in-out;
+            color: white;
+        }
+    
+        .cancel-button{
+            background-color: #253647;
+            &:hover{
+                background-color: #c73544;
+            }
+        }
+
+        .next-button{
+            background-color: #117f91;
+            &:hover{
+                background-color: #34b3a4;
+            }
+        }
+    }
+}
+
+.tutorialPopupLeft{
+    @extend .tutorialPopup;
+    position: fixed;
+    margin-left: 20px;
+    margin-top: -10px;
+    &:after {
+        right: 100%;
+        top: 0%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+        border-color: rgba(15, 213, 9, 0);
+        border-right-color: white;
+        border-width: 15px;
+        margin-top: 10px;}
 }

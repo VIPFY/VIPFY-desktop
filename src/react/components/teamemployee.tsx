@@ -19,6 +19,7 @@ interface Props {
   addingAppUser: number | null;
   addingAppName: String | null;
   onEmployeeClick?: Function;
+  addRenderElement: Function;
 }
 interface State {
   show: Boolean;
@@ -49,7 +50,8 @@ class TeamEmployee extends React.Component<Props, State> {
           onDragOver={e => this.props.onDragOver(e, person.id)}
           onMouseMove={e => this.props.onDragOver(e, person.id)}
           onDrop={ev => this.props.onDrop(ev, person, departmentid, false)}
-          onTouchEnd={ev => this.props.onDrop(ev, person, departmentid, false)}>
+          onTouchEnd={ev => this.props.onDrop(ev, person, departmentid, false)}
+          ref={el => this.props.addRenderElement({ key: "employeeShowelement", element: el })}>
           <div className="inside-padding gridinner">
             <UserPicture
               size="picutre"
@@ -200,7 +202,10 @@ class TeamEmployee extends React.Component<Props, State> {
                                   )
                                 }
                                 onDragEnd={() =>
-                                  this.props.teamside.setState({ dragginglicence: 0, removeid: -1 })
+                                  this.props.teamside.setState({
+                                    dragginglicence: 0,
+                                    removeid: -1
+                                  })
                                 }
                                 onMouseDown={() => {
                                   this.props.teamside.setState({ removeid: person.id });

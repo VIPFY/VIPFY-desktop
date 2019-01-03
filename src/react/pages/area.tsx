@@ -40,6 +40,7 @@ interface AreaProps {
   userData: any;
   userid: number;
   client: ApolloClient<InMemoryCache>;
+  moveTo: Function;
 }
 
 interface AreaState {
@@ -120,9 +121,10 @@ class Area extends React.Component<AreaProps, AreaState> {
   }
 
   moveTo = path => {
-    if (!(this.props.location.pathname === path)) {
+    /*if (!(this.props.location.pathname === path)) {
       this.props.history.push(path);
-    }
+    }*/
+    this.props.moveTo(path);
   };
 
   setApp = (boughtplan: number) => {
@@ -231,6 +233,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   render() {
+    console.log("APPPROPS", this.props);
     const { sideBarOpen, chatOpen } = this.state;
     const routes = [
       { path: "", component: Dashboard },
