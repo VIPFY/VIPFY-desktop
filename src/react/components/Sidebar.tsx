@@ -66,11 +66,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
     addRenderElement({ key, element });
   };
 
-  renderLink = (
-    { label, location, icon, show, important, highlight },
-    tutorialSteps,
-    addRenderElement
-  ) => {
+  renderLink = ({ label, location, icon, show, important, highlight }, addRenderElement) => {
     let cssClass = "sidebar-link";
     if (important) {
       cssClass += " sidebar-link-important";
@@ -82,13 +78,9 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
       cssClass += " sidebar-active";
     }
 
-    /*if (tutorialSteps && highlight === tutorialSteps[0].highlightelement) {
-      cssClass += " highlightElement";
-    }*/
-
     if (show) {
       return (
-        <React.Fragment>
+        <React.Fragment key={location}>
           <li
             key={location}
             className={cssClass}
@@ -103,25 +95,6 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
               {label}
             </span>
           </li>
-          {/*tutorialSteps &&
-          highlight === tutorialSteps[0].highlightelement &&
-          tutorialSteps[0].steptext ? (
-            <div
-              className="tutorialPopup"
-              style={{
-                top: this.references.find(e => e.key === highlight)
-                  ? this.references.find(e => e.key === highlight)!.element.offsetTop
-                  : "",
-                left: this.references.find(e => e.key === highlight)
-                  ? this.references.find(e => e.key === highlight)!.element.offsetLeft +
-                    this.references.find(e => e.key === highlight)!.element.offsetWidth
-                  : ""
-              }}>
-              <div dangerouslySetInnerHTML={{ __html: tutorialSteps[0].steptext }} />
-            </div>
-          ) : (
-            ""
-          )*/}
         </React.Fragment>
       );
     }
@@ -210,13 +183,11 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
       <AppContext.Consumer>
         {context => (
           <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
-            {/*console.log("SIDEBAR", context)*/}
+            {console.log("SIDEBAR", context)}
             {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
             <ul className="sidebar-link-holder">
               <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
-              {sidebarLinks.map(link =>
-                this.renderLink(link, context.data.tutorialSteps, context.addRenderElement)
-              )}
+              {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
               {this.showApps(this.props.licences.fetchLicences)}
               <li

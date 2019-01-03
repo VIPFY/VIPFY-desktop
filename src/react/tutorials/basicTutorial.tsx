@@ -25,19 +25,24 @@ class Tutorial extends React.Component<Props, State> {
     page: "welcome",
     propspage: this.props.page,
     step: 1,
-    tutorialprogress: {
-      welcome: 1,
-      sidebar: 2,
-      dashboard: 11,
-      profile: null,
-      billing: null,
-      security: null,
-      team: 12,
-      marketplace: null,
-      external: null,
-      support: null,
-      appadmin: null
-    }
+    tutorialprogress:
+      this.props.tutorialdata &&
+      this.props.tutorialdata.me &&
+      this.props.tutorialdata.me.tutorialprogress
+        ? this.props.tutorialdata.me.tutorialprogress
+        : {
+            welcome: 1,
+            sidebar: 2,
+            dashboard: 11,
+            profile: null,
+            billing: null,
+            security: null,
+            team: 12,
+            marketplace: null,
+            external: null,
+            support: null,
+            appadmin: null
+          }
   };
   nextClick = step => {
     const references = this.props.renderElements;
@@ -146,7 +151,7 @@ class Tutorial extends React.Component<Props, State> {
       this.setState({ step: s, page });
     }*/
 
-    console.log("RENDER", this.state);
+    console.log("RENDER TUTORIAL", this.state);
     s = this.state.step;
     if (steps && steps[0]) {
       const { steptext, renderoptions, nextstep } = steps.find(e => e.id == s);

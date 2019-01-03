@@ -66,7 +66,7 @@ const INITIAL_STATE = {
   firstLogin: false,
   placeid: "",
   popup: INITIAL_POPUP,
-  showTutorial: false,
+  showTutorial: true,
   renderElements: [],
   page: "dashboard"
 };
@@ -79,6 +79,11 @@ const tutorial = gql`
       steptext
       renderoptions
       nextstep
+    }
+
+    me {
+      id
+      tutorialprogress
     }
   }
 `;
@@ -160,6 +165,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   welcomeNewUser = (placeid: string) => {
+    console.log("NEW USER");
     this.setState({ firstLogin: true, placeid, showTutorial: true });
   };
 
@@ -235,7 +241,7 @@ class App extends React.Component<AppProps, AppState> {
           if (error) {
             console.log("TutError", error);
           }
-          console.log("TUTORIAL", data);
+          console.log("TUTORIAL", data, "Props", this.props);
           return (
             <AppContext.Provider
               value={{
@@ -250,7 +256,7 @@ class App extends React.Component<AppProps, AppState> {
               }}
               className="full-size">
               {this.renderComponents()}
-              {console.log("REFERENCES", this.references)}
+              {console.log("REFERENCES", this.references, showTutorial)}
               {showTutorial ? (
                 <Tutorial
                   tutorialdata={data}

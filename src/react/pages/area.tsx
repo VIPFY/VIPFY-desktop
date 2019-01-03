@@ -233,6 +233,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   render() {
+    console.log("APPPROPS", this.props);
     const { sideBarOpen, chatOpen } = this.state;
     const routes = [
       { path: "", component: Dashboard },
