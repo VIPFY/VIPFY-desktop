@@ -36,6 +36,7 @@ export const me = gql`
       needspasswordchange
       firstlogin
       config
+      tutorialprogress
     }
   }
 `;

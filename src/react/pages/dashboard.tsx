@@ -188,7 +188,6 @@ export default props => (
               if (error) {
                 return filterError(error);
               }
-
               const addressProposal = { name: data.fetchCompany.name };
               return <Dashboard {...props} addressProposal={addressProposal} {...context} />;
             }}

@@ -43,6 +43,15 @@
     }
   }
 
+  &-nav {
+    @include vipfy-button(10px);
+    background: #000;
+    
+    a {
+      color: #fff !important;
+    }
+  }
+
   &-hide {
     cursor: pointer;
     position: absolute;
@@ -137,5 +146,62 @@
   &-forgot {
     font-size: 0.87rem;
     line-height: 0.87rem;
+  }
+}
+
+.search-box {
+  padding: 10px;
+  border-radius: 40px;
+  height: 40px;
+  background-color: $vipfy-primary-color;
+
+  &:hover {
+    .search-text {
+      width: 240px;
+      padding: 0 6px;
+    }
+
+    .search-button {
+      background: #fff;
+      color: $vipfy-primary-color;
+    }
+  }
+
+  .search-button {
+    color: #fff;
+    float: right;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $vipfy-primary-color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 300ms linear;
+  }
+
+  .search-text {
+    border: 0;
+    background: none;
+    outline: none;
+    float: left;
+    padding: 0;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 300ms linear;
+    line-height: 40px;
+    width: 0;
+  }
+}
+
+.search-active {
+  .search-text {
+    width: 240px;
+    padding: 0 6px;
+  }
+
+  .search-button {
+    background: #fff;
+    color: $vipfy-primary-color;
   }
 }

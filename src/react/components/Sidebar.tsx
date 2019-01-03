@@ -8,6 +8,16 @@ import { GET_USER_CONFIG, fetchLicences } from "../queries/auth";
 import { SAVE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
 import { iconPicFolder } from "../common/constants";
+import { AppContext } from "../common/functions";
+import SidebarLink from "./sidebarLink";
+
+interface SidebarLinks {
+  label: string;
+  location: string;
+  icon: string;
+  show: boolean;
+  important: boolean;
+}
 
 export type SidebarProps = {
   history: any[];
@@ -20,6 +30,10 @@ export type SidebarProps = {
   toggleSidebar: Function;
   saveLayout: Mutation;
   layout: { vertical: string[] | null };
+  moveTo: Function;
+  viewID: number;
+  openInstancens: any;
+  setInstance: Function;
 };
 
 interface State {
@@ -35,6 +49,9 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
     layout: []
   };
 
+  references: { key; element }[] = [];
+  goTo = view => this.props.moveTo(view);
+
   componentDidMount() {
     if (this.props.layout && this.props.layout.vertical) {
       this.setState({ layout: this.props.layout.vertical });
@@ -42,8 +59,8 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.layout.vertical.length != this.props.layout.vertical.length) {
-      this.setState({ layout: this.props.layout.vertical });
+    if (prevProps.layout.vertical.length != this.props.layout.vertical!.length) {
+      this.setState({ layout: this.props.layout.vertical! });
     }
   }
 
@@ -96,53 +113,30 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
           return moment().isBefore(licence.endtime);
         }
       });
-
       filteredLicences.forEach((licence, key) => {
-        let cssClass = "sidebar-link-app";
-        if (this.props.location.pathname === `/area/app/${licence.id}`) {
-          cssClass += " sidebar-active";
-        }
-
         appLogos.push(
-          <li
-            className={`${cssClass}${this.state.dragItem == licence.id ? " hold" : ""}${
-              this.state.entered == licence.id ? " hovered" : ""
-            }`}
+          <SidebarLink
+            licence={licence}
             key={`ServiceLogo-${key}`}
-            draggable={true}
-            onDragStart={() => this.dragStartFunction(licence.id)}
-            onDragOver={e => {
+            openInstancens={this.props.openInstancens}
+            sideBarOpen={this.props.sideBarOpen}
+            active={this.props.location.pathname === `/area/app/${licence.id}`}
+            setTeam={this.props.setApp}
+            setInstance={this.props.setInstance}
+            viewID={this.props.viewID}
+            dragItem={this.state.dragItem}
+            entered={this.state.entered}
+            dragStartFunction={this.dragStartFunction(licence.id)}
+            dragOverFunction={e => {
               e.preventDefault();
               this.setState({ entered: licence.id });
             }}
-            onDragLeave={() => this.setState({ entered: null })}
-            onDragEnd={() => {
+            dragLeaveFunction={() => this.setState({ entered: null })}
+            dragEndFunction={() => {
               this.setState({ entered: null });
               this.dragEndFunction();
             }}
-            onDrop={() => {
-              this.setState({ entered: null });
-              this.handleDrop(licence.id, filteredLicences);
-            }}
-            onClick={() => this.props.setApp(licence.id)}>
-            <span
-              className="service-logo-small"
-              style={{
-                backgroundImage: `url(${iconPicFolder}${licence.boughtplanid.planid.appid.icon})`
-              }}>
-              {licence.boughtplanid.planid.options && licence.boughtplanid.planid.options.external && (
-                <div className="ribbon-small ribbon-small-top-right">
-                  <span>E</span>
-                </div>
-              )}
-            </span>
-
-            <span className={this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}>
-              {licence.boughtplanid.alias
-                ? licence.boughtplanid.alias
-                : licence.boughtplanid.planid.appid.name}
-            </span>
-          </li>
+          />
         );
       });
     }
@@ -150,7 +144,12 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
     return appLogos;
   };
 
-  renderLink = ({ label, location, icon, show, important }: object) => {
+  addReferences = (key, element, addRenderElement) => {
+    this.references.push({ key, element });
+    addRenderElement({ key, element });
+  };
+
+  renderLink = ({ label, location, icon, show, important, highlight }, addRenderElement) => {
     let cssClass = "sidebar-link";
     if (important) {
       cssClass += " sidebar-link-important";
@@ -165,45 +164,83 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
 
     if (show) {
       return (
-        <li
-          key={location}
-          className={cssClass}
-          onClick={() => this.props.history.push(`/area/${location}`)}>
-          <span className={`fal fa-${icon} sidebar-icons`} />
-          <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
-            {label}
-          </span>
-        </li>
+        <React.Fragment key={location}>
+          <li
+            key={location}
+            className={cssClass}
+            onClick={() => this.goTo(location)}
+            ref={el =>
+              this.references.find(e => e.key === highlight)
+                ? ""
+                : this.addReferences(highlight, el, addRenderElement)
+            }>
+            <span className={`fal fa-${icon} sidebar-icons`} />
+            <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
+              {label}
+            </span>
+          </li>
+        </React.Fragment>
       );
+    } else {
+      return;
     }
   };
 
   render() {
+    const { sideBarOpen } = this.props;
+
     const sidebarLinks = [
-      { label: "Dashboard", location: "dashboard", icon: "home", show: true },
-      { label: "Profile", location: "profile", icon: "alicorn", show: true },
+      {
+        label: "Dashboard",
+        location: "dashboard",
+        icon: "home",
+        show: true,
+        highlight: "dashboardelement"
+      },
+      {
+        label: "Profile",
+        location: "profile",
+        icon: "alicorn",
+        show: true,
+        highlight: "profileelement"
+      },
       /*{ label: "Message Center", location: "messagecenter", icon: "envelope", show: true },*/
       {
         label: "Billing",
         location: "billing",
         icon: "file-invoice-dollar",
-        show: this.props.isadmin
+        show: this.props.isadmin,
+        highlight: "billingelement"
       },
-      { label: "Security", location: "security", icon: "user-shield", show: this.props.isadmin },
-      { label: "Teams", location: "team", icon: "users", show: this.props.isadmin },
-      /*{
+      {
+        label: "Security",
+        location: "security",
+        icon: "user-shield",
+        show: this.props.isadmin,
+        highlight: "securityelement"
+      },
+      {
+        label: "Teams",
+        location: "team",
+        icon: "users",
+        show: this.props.isadmin,
+        highlight: "teamelement"
+      },
+      {
         label: "Marketplace",
         location: "marketplace",
         icon: "shopping-cart",
         show: true,
-        important: false
-      },*/
+        important: false,
+        highlight: "marketplaceelement"
+      },
       {
         label: "External Accounts",
         location: "integrations",
         icon: "shapes",
         show: true,
-        important: false
+        important: false,
+        highlight: "integrationselement"
       },
       /*{
         label: "Domains",
@@ -217,38 +254,55 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         location: "support",
         icon: "ambulance",
         show: true,
-        important: false
-      } /*,
+        important: false,
+        highlight: "supportelement"
+      },
       {
         label: "AppAdmin",
         location: "appadmin",
         icon: "screwdriver",
         show: true,
-        important: false
-      }*/
+        important: false,
+        highlight: "appadminelement"
+      },
+      {
+        label: "Admin",
+        location: "admin",
+        icon: "layer-plus",
+        show: this.props.isadmin,
+        important: true,
+        highlight: "adminelement"
+      }
     ];
 
     return (
-      <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
-        {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
-        <ul className="sidebar-link-holder">
-          <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
-          {sidebarLinks.map(link => this.renderLink(link))}
-          <li className="sidebarfree" />
+      <AppContext.Consumer>
+        {context => (
+          <div className={`sidebar${sideBarOpen ? "" : "-small"}`}>
+            {console.log("SIDEBAR", context)}
+            {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
+            <ul className="sidebar-link-holder">
+              <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
+              {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
+              <li className="sidebarfree" />
+              {this.showApps(this.props.licences.fetchLicences)}
+              <li
+                className="sidebar-link sidebar-link-important"
+                onClick={() => this.props.logMeOut()}>
+                <span className="fal fa-sign-out-alt sidebar-icons" />
+                <span className={`${sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
+                  Logout
+                </span>
+              </li>
 
-          {this.showApps(this.props.licences.fetchLicences)}
-
-          <li className="sidebar-link sidebar-link-important" onClick={this.props.logMeOut}>
-            <span className="fal fa-sign-out-alt sidebar-icons" />
-            <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
-              Logout
-            </span>
-          </li>
-
-          {/*this.renderLink({ label: "Advisor", location: "advisor", icon: "envelope", show: true })*/}
-        </ul>
-        <div className="versionnumber">Version {pjson.version}</div>
-      </div>
+              {/*this.renderLink({ label: "Advisor", location: "advisor", icon: "envelope", show: true })*/}
+            </ul>
+            <div className="versionnumber">Version {pjson.version}</div>
+            {/*console.log("TOP", this.references)*/}
+            {/*context.setrenderElements(this.references)*/}
+          </div>
+        )}
+      </AppContext.Consumer>
     );
   }
 }

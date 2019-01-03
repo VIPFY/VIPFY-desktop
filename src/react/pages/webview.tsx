@@ -26,13 +26,18 @@ export type WebViewState = {
   intervalId: Timer | null;
   intervalId2: Timer | null;
   timeSpent: number[];
+  options: any;
+  appid: number;
 };
 
 export type WebViewProps = {
   app: number;
+  licenceID: number;
   client: ApolloClient;
   chatOpen: boolean;
   sidebBarOpen: boolean;
+  setViewTitle: Function;
+  viewID: number;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -51,35 +56,35 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     "Almost there"
   ];
 
-  constructor(props: WebViewProps) {
-    super(props);
-    this.state = {
-      setUrl: "",
-      currentUrl: "vipfy://blank",
-      inspirationalText: "Loading...",
-      legalText: "Legal Text",
-      showLoadingScreen: true,
-      t: performance.now(),
-      licenceId: props.match.params.licenceid,
-      previousLicenceId: -1,
-      unitId: -1,
-      popup: null,
-      interactions: [],
-      intervalId: null,
-      intervalId2: null,
-      timeSpent: []
-    };
-  }
+  state = {
+    setUrl: "",
+    currentUrl: "vipfy://blank",
+    inspirationalText: "Loading...",
+    legalText: "Legal Text",
+    showLoadingScreen: true,
+    t: performance.now(),
+    licenceId: this.props.licenceID,
+    previousLicenceId: -1,
+    unitId: -1,
+    popup: null,
+    interactions: [],
+    intervalId: null,
+    intervalId2: null,
+    timeSpent: [],
+    options: {},
+    appid: -1
+  };
 
   static getDerivedStateFromProps(
     nextProps: WebViewProps,
     prevState: WebViewState
   ): WebViewState | null {
-    if (nextProps.match.params.licenceid !== prevState.licenceId) {
+    //console.log("DERIVEDSTATE", prevState, nextProps);
+    if (nextProps.licenceID !== prevState.licenceId) {
       return {
         ...prevState,
         previousLicenceId: prevState.licenceId,
-        licenceId: nextProps.match.params.licenceid,
+        licenceId: nextProps.licenceID,
         showLoadingScreen: true
       };
     } else {
@@ -88,11 +93,12 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   componentDidMount() {
-    console.log("webview mounted");
+    //console.log("webview mounted");
     let intervalId = setInterval(() => this.timer1m(), 60000);
     let intervalId2 = setInterval(() => this.sendTimeSpent(), 600000);
     this.setState({ intervalId, intervalId2 });
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
+    //console.log("DIDMOUNT");
     this.switchApp();
   }
 
@@ -105,12 +111,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   async componentDidUpdate(prevProps: WebViewProps, prevState: WebViewState) {
     if (this.state.previousLicenceId !== this.state.licenceId) {
-      console.log("CHECK", this.state.previousLicenceId, this.state.licenceId);
+      //console.log("CHECK", this.state.previousLicenceId, this.state.licenceId);
       await this.setState({
         previousLicenceId: this.state.licenceId
       });
 
       // At this point, we're in the "commit" phase, so it's safe to load the new data.
+      //console.log("DIDUPDATE");
       this.switchApp();
     }
   }
@@ -134,7 +141,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         timeSpent[licenceId] += 1;
       }
     }
-    console.log("TIME SPENT", timeSpent);
+    //console.log("TIME SPENT", timeSpent);
     this.setState({ timeSpent });
   };
 
@@ -161,7 +168,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   };
 
   acceptFunction = async () => {
-    console.log("ACCEPTED LICENCE", this.state.licenceId);
+    //console.log("ACCEPTED LICENCE", this.state.licenceId);
     try {
       await this.props.client.mutate({
         mutation: gql`
@@ -175,6 +182,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       });
       this.closePopup();
       this.setState({ previousLicenceId: -1 });
+      console.log("ACCEPT");
       this.switchApp();
     } catch (err) {
       console.log(err);
@@ -182,7 +190,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   };
 
   private async switchApp(): Promise<void> {
-    console.log("switchApp", this.state.licenceId);
+    //console.log("switchApp", this.state.licenceId, this.props);
 
     const timeSpent: number[] = [];
     timeSpent[this.state.licenceId] = 0;
@@ -215,7 +223,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       `,
       fetchPolicy: "network-only"
     });
-    console.log("APP DATA", result);
+    //console.log("APP DATA", result);
     let licence = result.data.fetchLicences[0];
     if (!licence) {
       return;
@@ -239,7 +247,12 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         "You first have to agree to the licence terms. Unfortunately this isn't implemented yet"
       );*/
     }
-
+    /*console.log(
+      "CHECK SESSION ",
+      licence.unit.id,
+      this.state.unitId,
+      licence.unit.id !== this.state.unitId
+    );*/
     if (licence.unit.id !== this.state.unitId) {
       await new Promise((resolve, reject) => {
         session.fromPartition("services").clearStorageData({}, () => {
@@ -249,36 +262,50 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
     let loginurl = licence.boughtPlan.plan.app.loginurl;
     if (licence.key && licence.key.loginurl) {
-      console.log(licence.key.loginurl);
+      //console.log(licence.key.loginurl);
       loginurl = licence.key.loginurl;
     }
+    //console.log("SET STATE");
     this.setState({
       setUrl: loginurl,
-      unitId: licence.unit.id
+      unitId: licence.unit.id,
+      options: licence.boughtPlan.plan.app.options,
+      appid: licence.boughtPlan.plan.app.id
     });
   }
 
   onDidNavigate(url: string): void {
     console.log("DidNavigate", url);
-    this.setState({ currentUrl: url });
+    //this.setState({ currentUrl: url });
     //this.showLoadingScreen();
   }
 
   onLoadCommit(event: any): void {
-    console.log("LoadCommit", event);
+    /*console.log(
+      "LoadCommit",
+      event,
+      this,
+      event.srcElement ? event.srcElement.getURL().substring(this.state.setUrl.length) : ""
+    );*/
+
+    this.props.setViewTitle(
+      event.srcElement ? event.srcElement.getURL() : "",
+      this.props.viewID,
+      this.props.licenceID
+    );
     if (!event.isMainFrame) {
       return;
     }
-    this.setState({ currentUrl: event.url });
+    //this.setState({ currentUrl: event.url });
   }
 
   hideLoadingScreen(): void {
-    console.log("Loading Screen Hidden", performance.now() - this.state.t);
+    //console.log("Loading Screen Hidden", performance.now() - this.state.t);
     this.setState({ showLoadingScreen: false });
   }
 
   showLoadingScreen(): void {
-    console.log("Show Loading Screen");
+    //console.log("Show Loading Screen");
     this.setState({
       showLoadingScreen: true,
       inspirationalText:
@@ -317,7 +344,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   async onIpcMessage(e): Promise<void> {
-    console.log("onIpcMessage", e);
+    console.log("onIpcMessage", e, e.senderId);
 
     switch (e.channel) {
       case "getLoginData":
@@ -333,9 +360,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           `
           });
 
-          console.log("LICENCE", result);
+          console.log("LICENCE FETCHED");
           let { key } = result.data.fetchLicences[0];
-          console.log("chosen key", key);
           if (key === null) {
             window.alert("invalid licence");
           }
@@ -372,13 +398,62 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         }
         break;
       case "showLoading": {
-        console.log("ShowLoading");
+        //console.log("ShowLoading");
         this.showLoadingScreen();
         break;
       }
       case "hideLoading": {
-        console.log("HideLoading");
+        //console.log("HideLoading");
         this.hideLoadingScreen();
+        break;
+      }
+      case "startLoginIn": {
+        console.log("StartLoginIN");
+        break;
+      }
+      case "getLoginDetails": {
+        console.log("GETDETAILS");
+        let result = await this.props.client.query({
+          query: gql`
+        {
+          fetchLicences(licenceid: ${this.state.licenceId}) {
+            key
+          }
+        }
+        `
+        });
+
+        console.log("LICENCE FETCHED");
+        let { key } = result.data.fetchLicences[0];
+        if (key === null) {
+          window.alert("invalid licence");
+        }
+        if (this.state.options) {
+          e.target.send("loginDetails", {
+            appid: this.state.appid,
+            type: this.state.options.type,
+            emailobject: this.state.options.emailobject,
+            passwordobject: this.state.options.passwordobject,
+            buttonobject: this.state.options.buttonobject,
+            emailtype: this.state.options.emailtype,
+            passwordtype: this.state.options.passwordtype,
+            buttontype: this.state.options.buttontype,
+            emailpassobject: this.state.options.emailpassobject,
+            button1type: this.state.options.button1type,
+            button2type: this.state.options.button2type,
+            button1object: this.state.options.button1object,
+            button2object: this.state.options.button2object,
+            hideobject: this.state.options.hideobject,
+            nopassobject: this.state.options.nopassobject,
+            key
+          });
+        } else {
+          e.target.send("loginDetails", {
+            appid: this.state.appid,
+            type: 0,
+            key
+          });
+        }
         break;
       }
       default:
@@ -414,7 +489,12 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         );
     }
 
-    console.log("setUrl", this.state.setUrl);
+    //console.log("setUrl", this.state.setUrl);
+    //initWebContentContextMenu();
+
+    if (this.props.plain) {
+      cssClass = "";
+    }
 
     return (
       <div className={cssClass}>
@@ -424,14 +504,14 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           ""
         )}
         <WebView
-          id="webview"
+          id={`webview-${this.props.viewID}`}
           preload="./preload-launcher.js"
           webpreferences="webSecurity=no"
           className={cssClassWeb}
           src={this.state.setUrl}
           partition="services"
-          onDidNavigate={e => this.onDidNavigate(e.target.src)}
-          style={{ visibility: this.state.showLoadingScreen ? "hidden" : "visible" }}
+          //onDidNavigate={e => this.onDidNavigate(e.target.src)}
+          //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
           onDidFailLoad={(code, desc, url, isMain) => {
             if (isMain) {
               //this.hideLoadingScreen();
@@ -440,11 +520,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           }}
           onLoadCommit={e => this.onLoadCommit(e)}
           onNewWindow={e => this.onNewWindow(e)}
-          //onWillNavigate={e => console.log("WillNavigate", e)}
-          //onDidStartLoading={e => console.log("DidStartLoading", e)}
-          //onDidStartNavigation={e => console.log("DidStartNavigation", e)}
-          //onDidFinishLoad={e => console.log("DidFinishLoad", e)}
-          //onDidStopLoading={e => console.log("DidStopLoading", e)}
+          //onWillNavigate={e => console.log("WillNavigate", e.target.src)}
+          //onDidStartLoading={e => console.log("DidStartLoading", e.target.src)}
+          //onDidStartNavigation={e => console.log("DidStartNavigation", e.target.src)}
+          //onDidFinishLoad={e => console.log("DidFinishLoad", e.target.src)}
+          //onDidStopLoading={e => console.log("DidStopLoading", e.target.src)}
           onDomReady={e => {
             //console.log("DomReady", e);
             //this.maybeHideLoadingScreen();
@@ -454,6 +534,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           }}
           //onDialog={e => console.log("Dialog", e)}
           onIpcMessage={e => this.onIpcMessage(e)}
+          //onConsoleMessage={e => console.log("LOGCONSOLE", e.message)}
+          //onDidNavigateInPage={e => console.log("DIDNAVIGATEINPAGE", e)}
         />
         {this.state.popup ? (
           <Popup
