@@ -33,8 +33,6 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
             return <div>There was an error</div>;
           }
 
-          console.log("POSTLOGIN", data.me);
-
           if (!data.me.company.setupfinished) {
             return <Welcome {...this.props} />;
           }

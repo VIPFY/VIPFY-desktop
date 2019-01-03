@@ -34,6 +34,7 @@ export const fetchDepartments = gql`
     }
   }
 `;
+
 export const fetchDepartmentsData = gql`
   {
     fetchDepartmentsData {

@@ -27,6 +27,7 @@ export const me = gql`
       }
       needspasswordchange
       firstlogin
+      tutorialprogress
     }
   }
 `;
