@@ -62,10 +62,9 @@ interface Props {
   client: ApolloClient<InMemoryCache>;
   updatePic: Function;
   userid: number;
-  searchCompany: Function;
   companyName?: string;
   checkVat: Function;
-  country: String;
+  country: string;
   setupFinished: Function;
   updateUserpicture: Function;
   updateCompanyLogo: Function;
@@ -81,7 +80,7 @@ interface State {
   vatoption: number;
   profilepicture: any;
   error: string | null;
-  predictions: any;
+  predictions: { data: any } | null;
   placeId: string | null;
   ownAddress: string | null;
   companypicture: any;
@@ -109,18 +108,15 @@ class Welcome extends React.Component<Props, State> {
   }
 
   searchCompany = async () => {
-    const company = "Pizzeria Italia";
-
-    //if (company.length > 2) {
-    const predictions = await this.props.searchCompany({ variables: { company } });
-    console.log(predictions);
+    const predictions = await this.props.client.query({
+      query: gql`
+        {
+          searchAddressByCompanyName
+        }
+      `
+    });
+    console.log("Predictions", predictions);
     this.setState({ predictions });
-    //this.setState({ possibleAddresses: addresses.data.searchAddressByCompanyName });
-    //} else {
-    // if (this.state.possibleAddresses.length > 0) {
-    //   this.setState({ possibleAddresses: [] });
-    // }
-    // }
   };
 
   uploadPic = async ({ picture }) => {
@@ -410,7 +406,7 @@ class Welcome extends React.Component<Props, State> {
             <h2>Choose your company?</h2>
             <div className="selectHolder">
               {this.state.predictions
-                ? this.state.predictions.data.searchAddressByCompanyName.map(element => (
+                ? this.state.predictions!.data.searchAddressByCompanyName.map(element => (
                     <div
                       className={`selectOption ${
                         this.state.placeId === element.place_id ? "active" : ""
@@ -445,7 +441,7 @@ class Welcome extends React.Component<Props, State> {
                     />
                   </div>
                 ) : this.state.predictions &&
-                  this.state.predictions.data.searchAddressByCompanyName.length > 0 ? (
+                  this.state.predictions!.data.searchAddressByCompanyName.length > 0 ? (
                   "None of the above."
                 ) : (
                   "Insert your adress"
@@ -762,7 +758,6 @@ class Welcome extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(SEARCH_COMPANY, { name: "searchCompany" }),
   graphql(CHECK_VAT, { name: "checkVat" }),
   graphql(SETUP_FINISHED, { name: "setupFinished" }),
   graphql(UPDATE_PIC, { name: "updateUserpicture" }),
