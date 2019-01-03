@@ -56,13 +56,11 @@ export default function UserPicture(props: {
                 props.onClick(props.unitid, props.departmentid);
               }
             }}>
-            {props.updateable ? (
+            {props.updateable && (
               <div className="imagehover">
                 <i className="fal fa-camera" />
-                <span>Updaten</span>
+                <span>Update</span>
               </div>
-            ) : (
-              ""
             )}
           </div>
         );

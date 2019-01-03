@@ -4,6 +4,14 @@ import pjson = require("pjson");
 import { AppContext } from "../common/functions";
 import SidebarLink from "./sidebarLink";
 
+interface SidebarLinks {
+  label: string;
+  location: string;
+  icon: string;
+  show: boolean;
+  important: boolean;
+}
+
 export type SidebarProps = {
   history: any[];
   setApp: (licence: number) => void;
@@ -97,10 +105,14 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
           </li>
         </React.Fragment>
       );
+    } else {
+      return;
     }
   };
 
   render() {
+    const { sideBarOpen } = this.props;
+
     const sidebarLinks = [
       {
         label: "Dashboard",
@@ -176,13 +188,21 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
         show: true,
         important: false,
         highlight: "appadminelement"
+      },
+      {
+        label: "Admin",
+        location: "admin",
+        icon: "layer-plus",
+        show: this.props.isadmin,
+        important: true,
+        highlight: "adminelement"
       }
     ];
 
     return (
       <AppContext.Consumer>
         {context => (
-          <div className={`sidebar${this.props.sideBarOpen ? "" : "-small"}`}>
+          <div className={`sidebar${sideBarOpen ? "" : "-small"}`}>
             {console.log("SIDEBAR", context)}
             {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
             <ul className="sidebar-link-holder">
@@ -194,7 +214,7 @@ class Sidebar extends Component<SidebarProps, SidebarState> {
                 className="sidebar-link sidebar-link-important"
                 onClick={() => this.props.logMeOut()}>
                 <span className="fal fa-sign-out-alt sidebar-icons" />
-                <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
+                <span className={`${sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
                   Logout
                 </span>
               </li>

@@ -1,0 +1,183 @@
+.admin {
+  margin: 0 2rem 2rem;
+  position: relative;
+
+  h1 {
+    margin-bottom: 3rem;
+  }
+
+  a {
+    color: #000;
+  }
+
+  .button-nav {
+    margin: 14px 0 0 30px;
+    position: absolute;
+    top: 56px;
+  }
+
+  .search-box {
+    position: absolute;
+    top: 58px;
+    right: 26px;
+  }
+
+  .nav {
+    display: flex;
+    flex-flow: column;
+
+    &-item {
+      transition: all 300ms ease-in-out;
+      margin-bottom: 1rem;
+
+      i {
+        margin-right: 0.5rem;
+        
+        &:hover {
+          text-shadow: 3px 3px rgba(0, 0, 0, 0.2);
+          font-weight: 400;
+        }
+      }
+
+      &:hover {
+        transform: translateY(1px);
+      }
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {   
+      transform: scale(0);
+    }
+    70% {   
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .apps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    grid-gap: 1rem;
+
+    .app {
+      @include hide-overflowing-text;
+      display: flex;
+      align-items: center;
+      border: 1px solid $vipfy-primary-color;
+      padding: 1rem;
+      transition: all 300ms ease-in-out;
+      animation: fadeIn 300ms ease-out normal backwards;
+
+      @for $x from 1 through 40 {
+        &:nth-child(#{$x}) {
+          animation-delay: $x * 50ms;
+        }
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: $vipfy-primary-color;
+        border-color: #fff;
+        transform: translate(3px, -3px);
+      }
+
+      img {
+        margin-right: 5px;
+      }
+    }
+
+    .disabled {
+      background: #bbb;
+      color: #fff;
+    }
+
+    .hidden {
+      opacity: 0.5;
+    }
+  }
+
+  .generic-form {
+    .searchbarHolder {
+      .generic-checkbox-holder {
+        margin-left: 1rem;
+
+        i {
+          margin-right: 0.3rem;
+        }
+      }
+
+      .dropzone {
+        margin: 0 0 0 1rem;
+        display: flex;
+        height: 100px;
+
+        label {
+          margin: auto;
+        }
+      }
+    }
+
+    .generic-button-holder {
+      right: 9rem;
+
+      .generic-cancel-button {
+        display: none;
+      }
+    }
+  }
+
+  .service {
+    margin-left: 2rem;
+    display: grid;
+    grid-template-rows: repeat(auto-fill, minmax(2rem, 1fr));
+    grid-row-gap: 1rem;
+    
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      grid-gap: 1rem;
+
+      .header {
+        color: $vipfy-primary-color;
+        grid-column: 1 / -1;
+      }
+
+      i {
+        justify-self: center;
+        align-self: center;
+        cursor: pointer;
+        transition: all 300ms ease-in-out;
+
+        &:hover {
+          text-shadow: 2px 2px 30px #999;
+        }
+      }
+    }
+
+    .pic-holder {
+      display: flex;
+      align-items: center;
+
+      .imagehoverable {
+        width: 100px;
+        height: 100px;
+        cursor: pointer;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+      }
+
+      .alt {
+        cursor: pointer;
+      }
+
+      label {
+        margin-left: 1rem;
+        color: $vipfy-primary-color;
+      }
+    }
+  }
+}

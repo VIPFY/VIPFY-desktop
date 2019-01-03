@@ -15,6 +15,8 @@ import MessageCenter from "./messagecenter";
 import Navigation from "./navigation";
 import Profile from "./profile";
 import Settings from "./settings";
+import AdminDashboard from "../components/admin/Dashboard";
+import ServiceCreation from "../components/admin/ServiceCreation";
 import Sidebar from "../components/Sidebar";
 import Team from "./team";
 import Webview from "./webview";
@@ -29,6 +31,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
 import AppAdmin from "./appadmin";
+import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
 
 interface AreaProps {
@@ -254,6 +257,9 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "integrations", component: Integrations },
       //{ path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
+      { path: "admin", component: AdminDashboard, admin: true },
+      { path: "admin/service-creation", component: ServiceCreation, admin: true },
+      { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "appadmin", component: AppAdmin }
     ];
 
@@ -321,33 +327,37 @@ class Area extends React.Component<AreaProps, AreaState> {
           render={props => <SupportPage {...this.state} {...this.props} {...props} />}
         />
 
-        {routes.map(({ path, component }) => {
+        {routes.map(({ path, component, admin }) => {
           const RouteComponent = component;
 
-          return (
-            <Route
-              key={path}
-              exact
-              path={`/area/${path}`}
-              render={props => (
-                <div
-                  className={`${
-                    !this.props.location.pathname.includes("advisor") ? "full-working" : ""
-                  } ${chatOpen ? "chat-open" : ""} ${
-                    sideBarOpen && !props.location.pathname.includes("advisor")
-                      ? "side-bar-open"
-                      : ""
-                  }`}>
-                  <RouteComponent
-                    setApp={this.setApp}
-                    {...this.props}
-                    {...props}
-                    moveTo={this.moveTo}
-                  />
-                </div>
-              )}
-            />
-          );
+          if (admin && this.props.company.unit.id != 14) {
+            return;
+          } else {
+            return (
+              <Route
+                key={path}
+                exact
+                path={`/area/${path}`}
+                render={props => (
+                  <div
+                    className={`${
+                      !this.props.location.pathname.includes("advisor") ? "full-working" : ""
+                    } ${chatOpen ? "chat-open" : ""} ${
+                      sideBarOpen && !props.location.pathname.includes("advisor")
+                        ? "side-bar-open"
+                        : ""
+                    }`}>
+                    <RouteComponent
+                      setApp={this.setApp}
+                      {...this.props}
+                      {...props}
+                      moveTo={this.moveTo}
+                    />
+                  </div>
+                )}
+              />
+            );
+          }
         })}
 
         <Route
