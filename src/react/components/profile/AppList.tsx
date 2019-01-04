@@ -150,15 +150,7 @@ export default (props: { setApp: Function; showPopup: Function }) => (
             );
           }
 
-          const filteredLicences = licences.filter(licence => {
-            if (!licence) {
-              return false;
-            } else if (!licence.endtime) {
-              return true;
-            } else {
-              return moment().isBefore(licence.endtime);
-            }
-          });
+          const filteredLicences = licences;
 
           return <AppList {...props} licences={filteredLicences} />;
         }}
