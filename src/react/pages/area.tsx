@@ -44,6 +44,7 @@ interface AreaProps {
   userid: number;
   client: ApolloClient<InMemoryCache>;
   moveTo: Function;
+  sidebarloaded: Function;
 }
 
 interface AreaState {

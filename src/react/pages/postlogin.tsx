@@ -14,6 +14,7 @@ interface PostLoginProps {
   logMeOut: Function;
   client: ApolloClient<InMemoryCache>;
   moveTo: Function;
+  sidebarloaded: Function;
 }
 
 interface PostLoginState {}
