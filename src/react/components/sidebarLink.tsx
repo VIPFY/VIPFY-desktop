@@ -1,30 +1,34 @@
 import * as React from "react";
+import { Licence } from "../interfaces";
 
 interface Props {
   licence: any;
-  openInstancens: any;
+  openInstances: any;
   sideBarOpen: boolean;
   active: boolean;
   setTeam: Function;
   setInstance: Function;
   viewID: number;
-  dragItem: number | null;
-  entered: number | null;
-  dragStartFunction: Function;
+  handleDrop: Function;
+  handleDragStart: Function;
 }
 
 interface State {
   hover: boolean;
+  dragging: boolean;
+  entered: boolean;
 }
 
 class SidebarLink extends React.Component<Props, State> {
   state = {
-    hover: false
+    hover: false,
+    dragging: false,
+    entered: false
   };
 
-  showInstances = licence => {
-    if (this.props.openInstancens && this.props.openInstancens[licence.id]) {
-      const instances = Object.keys(this.props.openInstancens[licence.id]);
+  showInstances = (licence: Licence) => {
+    if (this.props.openInstances && this.props.openInstances[licence.id]) {
+      const instances = Object.keys(this.props.openInstances[licence.id]);
       if (instances.length > 1) {
         return (
           <React.Fragment>
@@ -50,22 +54,20 @@ class SidebarLink extends React.Component<Props, State> {
               {instances.map(e => {
                 return (
                   <div
-                    key={this.props.openInstancens[licence.id][e].instanceId}
+                    key={this.props.openInstances[licence.id][e].instanceId}
                     className="instance"
                     style={{
                       backgroundColor:
-                        this.props.viewID === this.props.openInstancens[licence.id][e].instanceId
+                        this.props.viewID === this.props.openInstances[licence.id][e].instanceId
                           ? "#20BAA9"
                           : ""
                     }}
                     onClick={() =>
-                      this.props.viewID === this.props.openInstancens[licence.id][e].instanceId
+                      this.props.viewID === this.props.openInstances[licence.id][e].instanceId
                         ? null
-                        : this.props.setInstance(
-                            this.props.openInstancens[licence.id][e].instanceId
-                          )
+                        : this.props.setInstance(this.props.openInstances[licence.id][e].instanceId)
                     }>
-                    {this.props.openInstancens[licence.id][e].instanceTitle}
+                    {this.props.openInstances[licence.id][e].instanceTitle}
                   </div>
                 );
               })}
@@ -77,8 +79,7 @@ class SidebarLink extends React.Component<Props, State> {
   };
 
   render() {
-    const { licence, openInstancens, sideBarOpen, active, setTeam } = this.props;
-    //console.log(this.props);
+    const { licence, openInstances, sideBarOpen, active, setTeam } = this.props;
     let cssClass = "sidebar-link";
     if (active) {
       cssClass += " sidebar-active";
@@ -86,23 +87,32 @@ class SidebarLink extends React.Component<Props, State> {
 
     return (
       <li
-        className={`${cssClass}${this.props.dragItem == licence.id ? " hold" : ""}${
-          this.props.entered == licence.id ? " hovered" : ""
+        className={`${cssClass} ${this.state.dragging ? "hold" : ""} ${
+          this.state.entered ? "hovered" : ""
         }`}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        onDrop={() => this.props.handleDrop(licence.id, this.props.filteredLicences)}
+        onDrop={() => {
+          this.setState({ entered: false });
+          this.props.handleDrop(licence.id);
+        }}
         draggable={true}
-        onDragStart={() => this.props.dragStartFunction(licence.id)}
-        onDragOver={e => this.props.dragOverFunction(e)}
-        onDragLeave={() => this.props.dragLeaveFunction}
-        onDragEnd={() => this.props.dragEndFunction}
+        onDragStart={() => {
+          this.props.handleDragStart(licence.id);
+          this.setState({ dragging: true });
+        }}
+        onDragOver={e => {
+          e.preventDefault();
+          this.setState({ entered: true });
+        }}
+        onDragLeave={() => this.setState({ entered: false })}
+        onDragEnd={() => this.setState({ dragging: false })}
         ref={el => (this.el = el)}
         onClick={
-          this.props.openInstancens &&
-          (!this.props.openInstancens[licence.id] ||
-            (this.props.openInstancens[licence.id] &&
-              Object.keys(openInstancens[licence.id]).length == 1))
+          this.props.openInstances &&
+          (!this.props.openInstances[licence.id] ||
+            (this.props.openInstances[licence.id] &&
+              Object.keys(openInstances[licence.id]).length == 1))
             ? () => {
                 setTeam(licence.id);
               }
