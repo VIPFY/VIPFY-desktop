@@ -37,7 +37,7 @@ class UsageStatistics extends React.Component<Props, State> {
             <span>Teams</span>
           </div>
           <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
-            <AppTable {...this.props} />
+            <BoughtplanUsage {...this.props} />
           </div>
         </div>
       </div>
