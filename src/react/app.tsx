@@ -49,6 +49,7 @@ interface AppState {
   showTutorial: boolean;
   renderElements: { key: string; element: any }[];
   page: string;
+  sidebarloaded: boolean;
 }
 
 const INITIAL_POPUP = {
@@ -68,7 +69,8 @@ const INITIAL_STATE = {
   popup: INITIAL_POPUP,
   showTutorial: false,
   renderElements: [],
-  page: "dashboard"
+  page: "dashboard",
+  sidebarloaded: false
 };
 
 const tutorial = gql`
@@ -175,6 +177,7 @@ class App extends React.Component<AppProps, AppState> {
         <Query query={me} fetchPolicy="network-only">
           {({ data, loading, error }) => {
             if (loading) {
+              console.log("LOADING");
               return <LoadingDiv text="Preparing Vipfy for you" />;
             }
 
@@ -194,6 +197,7 @@ class App extends React.Component<AppProps, AppState> {
 
             return (
               <PostLogin
+                sidebarloaded={this.sidebarloaded}
                 setName={this.setName}
                 logMeOut={this.logMeOut}
                 showPopup={data => this.renderPopup(data)}
@@ -222,6 +226,10 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({ showTutorial });
   };
 
+  sidebarloaded = () => {
+    this.setState({ sidebarloaded: true });
+  };
+
   setrenderElements = references => {
     this.setState({ renderElements: references });
   };
@@ -233,7 +241,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    const { placeid, firstLogin, popup, showTutorial, page } = this.state;
+    const { placeid, firstLogin, popup, showTutorial, page, sidebarloaded } = this.state;
 
     return (
       <Query query={tutorial}>
@@ -257,7 +265,7 @@ class App extends React.Component<AppProps, AppState> {
               className="full-size">
               {this.renderComponents()}
               {console.log("REFERENCES", this.references, showTutorial)}
-              {showTutorial ? (
+              {showTutorial && sidebarloaded ? (
                 <Tutorial
                   tutorialdata={data}
                   renderElements={this.references}

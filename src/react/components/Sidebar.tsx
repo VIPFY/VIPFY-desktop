@@ -35,6 +35,7 @@ export type SidebarProps = {
   viewID: number;
   openInstancens: any;
   setInstance: Function;
+  sidebarloaded: Function;
 };
 
 interface State {
@@ -57,11 +58,17 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
     if (this.props.layout && this.props.layout.vertical) {
       this.setState({ layout: this.props.layout.vertical });
     }
+    this.props.sidebarloaded();
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.layout.vertical.length != this.props.layout.vertical!.length) {
+    if (
+      prevProps.layout &&
+      prevProps.layout.length &&
+      prevProps.layout.vertical.length != this.props.layout.vertical!.length
+    ) {
       this.setState({ layout: this.props.layout.vertical! });
+      console.log("UPDATE SIDEBAR");
     }
   }
 
@@ -70,7 +77,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
 
   handleDrop = async (id, licences) => {
     const { dragItem } = this.state;
-    console.log("BOOM");
+    //console.log("BOOM");
     this.setState({ entered: null });
     const newLicences = licences.map(licence => {
       if (licence.id == id) {
@@ -287,7 +294,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
       <AppContext.Consumer>
         {context => (
           <div className={`sidebar${sideBarOpen ? "" : "-small"}`}>
-            {console.log("SIDEBAR", context)}
+            {/*console.log("SIDEBAR", context)*/}
             {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
             <ul className="sidebar-link-holder">
               <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />

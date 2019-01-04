@@ -24,7 +24,8 @@ class Tutorial extends React.Component<Props, State> {
   state = {
     page: "welcome",
     propspage: this.props.page,
-    step: 1,
+    step: null,
+    references: this.props.renderElements || [],
     tutorialprogress:
       this.props.tutorialdata &&
       this.props.tutorialdata.me &&
@@ -44,7 +45,74 @@ class Tutorial extends React.Component<Props, State> {
             appadmin: null
           }
   };
+
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): State | null {
+    function checkstep(step, first = true) {
+      let s = -1;
+      if (!step) {
+        if (nextProps.tutorialdata.me.tutorialprogress[prevState.page]) {
+          console.log("1");
+          s = nextProps.tutorialdata.me.tutorialprogress[prevState.page];
+        } else if (prevState.page === "welcome" && first) {
+          console.log("2");
+          s = nextProps.tutorialdata.me.tutorialprogress[nextProps.page];
+        } else if (nextProps.tutorialdata.me.tutorialprogress.sidebar) {
+          console.log("3");
+          s = nextProps.tutorialdata.me.tutorialprogress.sidebar;
+        } else {
+          console.log("4");
+          return -1;
+        }
+        return checkstep(s, false);
+      } else {
+        return step;
+      }
+    }
+
+    console.log("UPDATE FROM PROPS", nextProps, prevState);
+    if (
+      (nextProps.tutorialdata &&
+        nextProps.tutorialdata.me &&
+        nextProps.tutorialdata.me.tutorialprogress) ||
+      nextProps.renderElements
+    ) {
+      const r = checkstep(prevState.step);
+      console.log("CHECKSTEP", r);
+
+      console.log("UPDATE IN STATE");
+      const o = {
+        ...prevState,
+        tutorialprogress:
+          nextProps.tutorialdata &&
+          nextProps.tutorialdata.me &&
+          nextProps.tutorialdata.me.tutorialprogress
+            ? nextProps.tutorialdata.me.tutorialprogress
+            : {
+                welcome: 1,
+                sidebar: 2,
+                dashboard: 11,
+                profile: null,
+                billing: null,
+                security: null,
+                team: 12,
+                marketplace: null,
+                external: null,
+                support: null,
+                appadmin: null
+              },
+        references: nextProps.renderElements || [],
+        step: r
+      };
+
+      console.log("UPDATE IN STATE2", o);
+      return o;
+    } else {
+      return prevState;
+    }
+  }
+
   nextClick = step => {
+    console.log("NEXT CLICK", this.state);
     const references = this.props.renderElements;
     const steps = this.props.tutorialdata.tutorialSteps;
 
@@ -83,36 +151,6 @@ class Tutorial extends React.Component<Props, State> {
         this.closeTutorial();
       }
     }
-
-    /*if ((!step || step == 0) && page !== "sidebar") {
-      switch (page) {
-        case "dashboard":
-          step = 7;
-          break;
-        case "profile":
-          step = 8;
-          break;
-        case "billing":
-          step = 9;
-          break;
-        case "security":
-          step = 10;
-          break;
-        case "team":
-          step = 0;
-          break;
-        default:
-          step = 0;
-      }
-      this.setState({ step, page: "sidebar" });
-    }
-    if (step) {
-      this.setState({ step });
-      this.props.renderTutorial(step);
-    } else {
-      this.setState({ step: 0 });
-      this.props.renderTutorial(0);
-    }*/
   };
 
   closeTutorial = async () => {
@@ -120,120 +158,122 @@ class Tutorial extends React.Component<Props, State> {
       variables: { tutorialprogress: this.state.tutorialprogress }
     });
     console.log("UPDATE STATE", a);
+    const references = this.props.renderElements;
+    const steps = this.props.tutorialdata.tutorialSteps;
+    if (steps && steps[0]) {
+      console.log("Remove Highlights for ", this.state.step);
+      const { renderoptions } = steps.find(e => e.id == this.state.step);
+      if (renderoptions.highlightelement) {
+        references.find(e => e.key === renderoptions.highlightelement)!.element.style.zIndex = "";
+        references.find(e => e.key === renderoptions.highlightelement)!.element.style.boxShadow =
+          "";
+      }
+    }
     this.props.showTutorial(false);
   };
 
-  renderTutorial = step => {
+  renderTutorial = (step, state) => {
     let s = this.state.step;
     const steps = this.props.tutorialdata ? this.props.tutorialdata.tutorialSteps : [];
-    const references = this.props.renderElements;
-
-    /*if (this.state.page !== page) {
-      if (steps && steps[0]) {
-        const st = this.state.step;
-        const { renderoptions } = steps.find(e => e.id == st);
-        if (renderoptions.highlightelement) {
-          references.find(e => e.key === renderoptions.highlightelement)!.element.style.zIndex = "";
-          references.find(e => e.key === renderoptions.highlightelement)!.element.style.boxShadow =
-            "";
-        }
-      }
-      switch (page) {
-        case "dashboard":
-          s = 11;
-          break;
-        case "team":
-          s = 12;
-          break;
-        default:
-          s = 1;
-      }
-      this.setState({ step: s, page });
-    }*/
-
-    console.log("RENDER TUTORIAL", this.state);
-    s = this.state.step;
+    let references = this.state.references;
     if (steps && steps[0]) {
       const { steptext, renderoptions, nextstep } = steps.find(e => e.id == s);
-      switch (renderoptions.align) {
-        case "left":
-          references.find(e => e.key === renderoptions.highlightelement)!.element.style.zIndex =
-            "20000";
-          references.find(e => e.key === renderoptions.highlightelement)!.element.style.boxShadow =
-            "0px 0px 15px 0px white";
-          return (
-            <div
-              className="tutorialPopupLeft"
-              style={{
-                top: references.find(e => e.key === renderoptions.highlightelement)
-                  ? references.find(e => e.key === renderoptions.highlightelement)!.element
-                      .offsetTop
-                  : "",
-                left: references.find(e => e.key === renderoptions.highlightelement)
-                  ? references.find(e => e.key === renderoptions.highlightelement)!.element
-                      .offsetLeft +
+      if (references.find(e => e.key == renderoptions.highlightelement)) {
+        switch (renderoptions.align) {
+          case "left":
+            references.find(e => e.key == renderoptions.highlightelement)!.element.style.zIndex =
+              "20000";
+            references.find(
+              e => e.key === renderoptions.highlightelement
+            )!.element.style.boxShadow = "0px 0px 15px 0px white";
+            console.log(
+              "LEFT:",
+              references.find(e => e.key === renderoptions.highlightelement)
+                ? references.find(e => e.key === renderoptions.highlightelement)!.element.offsetTop
+                : "",
+              references.find(e => e.key === renderoptions.highlightelement)
+                ? references.find(e => e.key === renderoptions.highlightelement)!.element
+                    .offsetLeft +
                     references.find(e => e.key === renderoptions.highlightelement)!.element
                       .offsetWidth
-                  : ""
-              }}>
-              <div dangerouslySetInnerHTML={{ __html: steptext }} />
+                : ""
+            );
+            return (
               <div
-                className="holder-button"
+                className="tutorialPopupLeft"
                 style={{
-                  justifyContent:
-                    this.state.page !== "sidebar" || nextstep ? "space-between" : "flex-end"
+                  top: references.find(e => e.key === renderoptions.highlightelement)
+                    ? references.find(e => e.key === renderoptions.highlightelement)!.element
+                        .offsetTop
+                    : "",
+                  left: references.find(e => e.key === renderoptions.highlightelement)
+                    ? references.find(e => e.key === renderoptions.highlightelement)!.element
+                        .offsetLeft +
+                      references.find(e => e.key === renderoptions.highlightelement)!.element
+                        .offsetWidth
+                    : ""
                 }}>
-                {this.state.page !== "sidebar" || nextstep ? (
+                <div dangerouslySetInnerHTML={{ __html: steptext }} />
+                <div
+                  className="holder-button"
+                  style={{
+                    justifyContent:
+                      this.state.page !== "sidebar" || nextstep ? "space-between" : "flex-end"
+                  }}>
+                  {this.state.page !== "sidebar" || nextstep ? (
+                    <button
+                      className="naked-button generic-button cancel-button"
+                      onClick={() => this.closeTutorial()}>
+                      End Tutorial
+                    </button>
+                  ) : (
+                    ""
+                  )}
                   <button
-                    className="naked-button generic-button cancel-button"
-                    onClick={() => this.closeTutorial()}>
-                    End Tutorial
+                    className="naked-button generic-button next-button"
+                    onClick={() => this.nextClick(nextstep)}>
+                    {renderoptions.nexttext}
                   </button>
-                ) : (
-                  ""
-                )}
-                <button
-                  className="naked-button generic-button next-button"
-                  onClick={() => this.nextClick(nextstep)}>
-                  {renderoptions.nexttext}
-                </button>
+                </div>
               </div>
-            </div>
-          );
-          break;
-        default:
-          return (
-            <div className="tutorialPopup">
-              <div dangerouslySetInnerHTML={{ __html: steptext }} />
-              <div
-                className="holder-button"
-                style={{
-                  justifyContent:
-                    this.state.page !== "sidebar" || nextstep ? "space-between" : "flex-end"
-                }}>
-                {this.state.page !== "sidebar" || nextstep ? (
+            );
+            break;
+          default:
+            return (
+              <div className="tutorialPopup">
+                <div dangerouslySetInnerHTML={{ __html: steptext }} />
+                <div
+                  className="holder-button"
+                  style={{
+                    justifyContent:
+                      this.state.page !== "sidebar" || nextstep ? "space-between" : "flex-end"
+                  }}>
+                  {this.state.page !== "sidebar" || nextstep ? (
+                    <button
+                      className="naked-button generic-button cancel-button"
+                      onClick={() => this.closeTutorial()}>
+                      End Tutorial
+                    </button>
+                  ) : (
+                    ""
+                  )}
                   <button
-                    className="naked-button generic-button cancel-button"
-                    onClick={() => this.closeTutorial()}>
-                    End Tutorial
+                    className="naked-button generic-button next-button"
+                    onClick={() => this.nextClick(nextstep)}>
+                    {renderoptions.nexttext}
                   </button>
-                ) : (
-                  ""
-                )}
-                <button
-                  className="naked-button generic-button next-button"
-                  onClick={() => this.nextClick(nextstep)}>
-                  {renderoptions.nexttext}
-                </button>
+                </div>
               </div>
-            </div>
-          );
+            );
+        }
+      } else {
+        //this.closeTutorial();
       }
     }
   };
 
   componentDidUpdate() {
-    console.log("UPDATE");
+    console.log("UPDATE", this.props.renderElements);
 
     console.log("TUTPROPS", this.props);
     if (
@@ -276,7 +316,8 @@ class Tutorial extends React.Component<Props, State> {
   }
 
   render() {
-    return <div id="overlay">{this.renderTutorial(this.state.step)}</div>;
+    console.log("START TUT", this.props);
+    return <div id="overlay">{this.renderTutorial(this.state.step, this.state)}</div>;
   }
 }
 
