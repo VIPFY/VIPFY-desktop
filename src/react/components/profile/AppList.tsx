@@ -35,6 +35,8 @@ class AppListHolder extends React.Component<Props, State> {
     licences: []
   };
 
+  oneapp = false;
+
   componentDidMount() {
     this.setState({ licences: this.props.licences });
   }
@@ -92,20 +94,30 @@ class AppListHolder extends React.Component<Props, State> {
         </div>
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
-            {licences.map(licence => (
-              <AppTile
-                key={licence.id}
-                preview={preview}
-                setPreview={this.setPreview}
-                updateLayout={this.props.saveLayout}
-                dragItem={dragItem}
-                removeLicence={this.removeLicence}
-                dragStartFunction={this.dragStartFunction}
-                dragEndFunction={this.dragEndFunction}
-                handleDrop={this.handleDrop}
-                licence={licence}
-              />
-            ))}
+            {licences.map(licence => {
+              if (
+                licence.disabled ||
+                (licence.endtime ? moment().isBefore(licence.endtime) : false)
+              ) {
+                return "";
+              }
+              this.oneapp = true;
+              return (
+                <AppTile
+                  key={licence.id}
+                  preview={preview}
+                  setPreview={this.setPreview}
+                  updateLayout={this.props.saveLayout}
+                  dragItem={dragItem}
+                  removeLicence={this.removeLicence}
+                  dragStartFunction={this.dragStartFunction}
+                  dragEndFunction={this.dragEndFunction}
+                  handleDrop={this.handleDrop}
+                  licence={licence}
+                />
+              );
+            })}
+            {this.oneapp ? "" : <div>No useable Apps for you at the moment</div>}
           </div>
         </div>
       </div>

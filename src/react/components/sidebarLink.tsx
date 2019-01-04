@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
+import * as moment from "moment";
 
 interface Props {
   licence: any;
@@ -80,6 +81,15 @@ class SidebarLink extends React.Component<Props, State> {
 
   render() {
     const { licence, openInstances, sideBarOpen, active, setTeam } = this.props;
+
+    if (
+      !licence ||
+      licence.disabled ||
+      (licence.endtime ? moment().isBefore(licence.endtime) : false)
+    ) {
+      return "";
+    }
+
     let cssClass = "sidebar-link";
     if (active) {
       cssClass += " sidebar-active";

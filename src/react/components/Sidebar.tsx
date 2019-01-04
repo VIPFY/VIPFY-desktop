@@ -1,7 +1,6 @@
 import * as React from "react";
 import { graphql, Query, Mutation } from "react-apollo";
 import * as pjson from "pjson";
-import * as moment from "moment";
 import LoadingDiv from "./LoadingDiv";
 import { ErrorComp, filterError } from "../common/functions";
 import { GET_USER_CONFIG, fetchLicences } from "../queries/auth";
@@ -250,6 +249,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
               <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
+              {console.log("VERARSCHE", this.state.licences, this.state.licences.length > 0)}
               {this.state.licences.length > 0 &&
                 this.state.licences.map((licence, key) => (
                   <SidebarLink
@@ -301,15 +301,7 @@ export default props => (
 
       const { licences, ...moreProps } = props;
 
-      const filteredLicences = props.licences.fetchLicences.filter(licence => {
-        if (!licence) {
-          return false;
-        } else if (!licence.endtime) {
-          return true;
-        } else {
-          return moment().isBefore(licence.endtime);
-        }
-      });
+      const filteredLicences = props.licences.fetchLicences;
       console.log(filteredLicences, data.me.config);
       return <Sidebar {...moreProps} licences={filteredLicences} layout={data.me.config} />;
     }}
