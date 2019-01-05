@@ -65,7 +65,8 @@
         {
           "name": "@electron-forge/maker-dmg",
           "config": {
-            "icon": "./iconTransparent.icns"
+            "icon": "./iconTransparent.icns",
+            "background": "./dmgBackground.png"
           }
         }
       ],
