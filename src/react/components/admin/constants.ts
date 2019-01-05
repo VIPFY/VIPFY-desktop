@@ -97,6 +97,13 @@ export const fields = [
     label: "Password Object",
     placeholder: "input[name='password']"
   },
+  /*{
+    name: "errorobject",
+    icon: "project-diagram",
+    type: "text",
+    label: "Error Object",
+    placeholder: "input[name='error']"
+  },*/
   {
     name: "predomain",
     icon: "project-diagram",
