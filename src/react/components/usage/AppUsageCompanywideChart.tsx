@@ -25,6 +25,9 @@ class AppUsageCompanywideChartInner extends React.Component<Props, State> {
     if (!this.props.data.fetchTotalAppUsage) {
       return <div>Error fetching data</div>;
     }
+    if (this.props.data.fetchTotalAppUsage.length == 0) {
+      return <div>Use any app to see statistics about app usage here</div>;
+    }
 
     console.log("DATA", this.props.data.fetchTotalAppUsage);
 
