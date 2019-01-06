@@ -715,6 +715,10 @@ class Tutorial extends React.Component<Props, State> {
       "RENDER TUTORIAL",
       this.state,
       this.props,
+      this.state.tutorialSave,
+      this.state.tutorialSave == {},
+      this.state.tutorialSave.closed,
+      !this.props.reshow,
       this.state.tutorialSave == {} || (this.state.tutorialSave.closed && !this.props.reshow)
     );
     if (this.state.tutorialSave == {} || (this.state.tutorialSave.closed && !this.props.reshow)) {
