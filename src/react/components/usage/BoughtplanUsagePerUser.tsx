@@ -10,8 +10,8 @@ interface State {}
 
 interface Props {
   data: {
-    fetchTotalAppUsage: {
-      app: { name: string; icon: string; color: string };
+    fetchBoughtplanUsagePerUser: {
+      unit: { firstname: string; lastname: string };
       totalminutes: number;
     }[];
   };
@@ -19,24 +19,21 @@ interface Props {
   height: number;
 }
 
-class AppUsageCompanywideChartInner extends React.Component<Props, State> {
+class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
   render() {
     //console.log("CHARTPROPS", this.props);
-    if (!this.props.data.fetchTotalAppUsage) {
+    if (!this.props.data.fetchBoughtplanUsagePerUser) {
       return <div>Error fetching data</div>;
     }
-    if (this.props.data.fetchTotalAppUsage.length == 0) {
-      return <div>Use any app to see statistics about app usage here</div>;
-    }
 
-    console.log("DATA", this.props.data.fetchTotalAppUsage);
+    console.log("DATA", this.props.data.fetchBoughtplanUsagePerUser);
 
-    const d = this.props.data.fetchTotalAppUsage;
+    const d = this.props.data.fetchBoughtplanUsagePerUser;
 
-    const labels = d.map(u => u.app.name);
+    const labels = d.map(u => `${u.unit.firstname} ${u.unit.lastname}`);
     const total = d.reduce((sum, cur) => sum + cur.totalminutes, 0);
     const data = d.map(u => (u.totalminutes / total) * 100);
-    const colors = d.map(u => u.app.color);
+    //const colors = d.map(u => u.app.color);
 
     const max = Math.max(...data);
     const numTicks = max / 5;
@@ -82,7 +79,7 @@ class AppUsageCompanywideChartInner extends React.Component<Props, State> {
               opacity: 0.9
             }
           },
-          colors: colors,
+          //colors: colors,
           stroke: {
             width: 1,
             colors: ["#e4e6e8"]
@@ -138,22 +135,33 @@ class AppUsageCompanywideChartInner extends React.Component<Props, State> {
   }
 }
 
-function AppUsageCompanywideChart(props) {
-  //console.log("PROPS", props);
+function BoughtplanUsagePerUser(props) {
   return (
     <Query
       query={gql`
-        query fetchTotalAppUsage {
-          fetchTotalAppUsage {
-            app {
-              name
-              icon
-              color
+        query fetchBoughtplanUsagePerUser($starttime: Date!, $endtime: Date!, $boughtplanid: ID!) {
+          fetchBoughtplanUsagePerUser(
+            starttime: $starttime
+            endtime: $endtime
+            boughtplanid: $boughtplanid
+          ) {
+            unit {
+              id
+              firstname
+              middlename
+              lastname
+              title
+              profilepicture
             }
             totalminutes
           }
         }
-      `}>
+      `}
+      variables={{
+        starttime: "2018-01-01",
+        endtime: "2019-02-01",
+        boughtplanid: props.boughtplanid
+      }}>
       {({ data, loading, error }) => {
         if (loading) {
           return <div>Loading</div>;
@@ -163,7 +171,7 @@ function AppUsageCompanywideChart(props) {
         }
         return (
           <ResizeAware style={{ width: "100%" }}>
-            <AppUsageCompanywideChartInner {...props} data={data} />
+            <BoughtplanUsagePerUserInner {...props} data={data} />
           </ResizeAware>
         );
       }}
@@ -171,4 +179,4 @@ function AppUsageCompanywideChart(props) {
   );
 }
 
-export default AppUsageCompanywideChart;
+export default BoughtplanUsagePerUser;

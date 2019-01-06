@@ -164,7 +164,9 @@ class AppListInner extends React.Component<Props, State> {
                 <button
                   title="show details"
                   className="naked-button"
-                  onClick={() => this.props.history.push(`/usage/boughtplan/${boughtplan.id}`)}>
+                  onClick={() =>
+                    this.props.history.push(`/area/usage/boughtplan/${boughtplan.id}`)
+                  }>
                   <i className="fal fa-tachometer-alt-slow" />
                 </button>
                 <button

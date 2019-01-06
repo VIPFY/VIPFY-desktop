@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import AppTable from "../components/billing/AppTable";
+import BoughtplanUsagePerUser from "../components/usage/BoughtplanUsagePerUser";
 
 interface Props {
   company: any;
@@ -20,14 +20,14 @@ class UsageStatistics extends React.Component<Props, State> {
     showBoughtplans: true
   };
 
-  toggleShowCostDistribution = (): void =>
+  toggleShowBoughtplans = (): void =>
     this.setState(prevState => ({ showBoughtplans: !prevState.showBoughtplans }));
 
   render() {
     return (
       <div>
         <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowCostDistribution()}>
+          <div className="header" onClick={() => this.toggleShowBoughtplans()}>
             <i
               className={`button-hide fas ${
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
@@ -37,7 +37,10 @@ class UsageStatistics extends React.Component<Props, State> {
             <span>Teams</span>
           </div>
           <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
-            <BoughtplanUsage {...this.props} />
+            <BoughtplanUsagePerUser
+              {...this.props}
+              boughtplanid={this.props.match.params.boughtplanid}
+            />
           </div>
         </div>
       </div>
