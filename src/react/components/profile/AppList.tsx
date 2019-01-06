@@ -114,6 +114,7 @@ class AppListHolder extends React.Component<Props, State> {
                   dragEndFunction={this.dragEndFunction}
                   handleDrop={this.handleDrop}
                   licence={licence}
+                  setTeam={this.props.setApp}
                 />
               );
             })}

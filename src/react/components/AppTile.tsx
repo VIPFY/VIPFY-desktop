@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
-import Confirmation from "../popups/Confirmation";
+import EditLicence from "../popups/EditLicence";
 import { iconPicFolder } from "../common/constants";
 import { AppContext } from "../common/functions";
 import { fetchLicences, me } from "../queries/auth";
@@ -24,6 +24,7 @@ interface Props {
   removeLicence: Function;
   setPreview: (preview: Preview) => void;
   preview: Preview;
+  setTeam?: Function;
 }
 
 interface State {
@@ -45,6 +46,7 @@ class AppTile extends React.Component<Props, State> {
       <AppContext>
         {({ showPopup }) => (
           <div
+            onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
             className={`profile-app${dragItem == id ? " hold" : ""}${
               this.state.entered ? " hovered" : ""
             }`}
@@ -90,24 +92,26 @@ class AppTile extends React.Component<Props, State> {
                 <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
                   {deleteLicenceAt => (
                     <i
-                      className="fal fa-trash-alt"
-                      onClick={() =>
+                      className="fal fa-edit"
+                      onClick={e => {
+                        e.stopPropagation();
                         showPopup({
-                          header: "Remove external account",
-                          body: Confirmation,
+                          header: `Edit licence of Team: ${name}`,
+                          body: EditLicence,
                           props: {
-                            headline: "Please confirm removal of this account",
-                            submitFunction: async licenceid => {
+                            closeFunction: () => showPopup(null),
+                            teamname: name,
+                            appname: planid.appid.name,
+                            deleteFunction: async licenceid => {
                               await deleteLicenceAt({
                                 variables: { licenceid, time: moment() },
                                 refetchQueries: [{ query: fetchLicences }, { query: me }]
                               });
                             },
-                            type: `External account - ${planid.appid.name}`,
                             id
                           }
-                        })
-                      }
+                        });
+                      }}
                     />
                   )}
                 </Mutation>
