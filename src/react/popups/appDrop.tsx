@@ -136,7 +136,6 @@ class AppDrop extends Component<Props, State> {
         variables: { licenceid, unitid, departmentid },
         refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
       });
-      console.log("RES", res);
       if (!res.data.distributeLicence.ok) {
         this.setState({ error: res.data.distributeLicence.error.message });
       } else {
@@ -169,7 +168,6 @@ class AppDrop extends Component<Props, State> {
         variables: { appid, alias, price, loginurl },
         refetchQueries: [{ query: fetchUsersOwnLicences, variables: { unitid } }]
       });
-      console.log("RES", res);
       await this.props.addExternalLicence({
         variables: {
           username,
@@ -210,7 +208,6 @@ class AppDrop extends Component<Props, State> {
     if (this.state.loading) {
       return <div>Please wait...</div>;
     }
-    console.log("PROPS", this.props, this.state);
     switch (this.state.popuptype) {
       case 0:
         return (
@@ -232,15 +229,7 @@ class AppDrop extends Component<Props, State> {
                     return;
                   }
                   let licencesArray: JSX.Element[] = [];
-                  //console.log("L", boughtplan.licences);
                   boughtplan.licences.forEach((licence, key2) => {
-                    console.log(
-                      "LE",
-                      licence.endtime,
-                      moment(licence.endtime),
-                      moment(),
-                      moment(licence.endtime).isBefore(moment())
-                    );
                     if (licence.endtime && moment(licence.endtime).isBefore(moment())) {
                       return;
                     }
@@ -280,15 +269,6 @@ class AppDrop extends Component<Props, State> {
                       className="naked-button genericButton"
                       style={{ height: "32px", margin: "8px", marginRight: "208px" }}
                       onClick={() =>
-                        /*this.addExternalLicence(
-                          boughtplan.id,
-                          this.props.userid,
-                          "tester@vipfy.store",
-                          "2018vipfy!",
-                          null,
-                          null,
-                          this.props.appid
-                        )*/
                         this.setState({
                           popuptype: 2,
                           boughtplanid: boughtplan.id
@@ -509,7 +489,6 @@ class AppDrop extends Component<Props, State> {
           />
         );
       case 5:
-        console.log("TYPE 5");
         return (
           <Query
             query={fetchAllBoughtPlansFromCompany}
@@ -525,12 +504,6 @@ class AppDrop extends Component<Props, State> {
               let holder: JSX.Element[] = [];
               if (data.fetchAllBoughtPlansFromCompany) {
                 data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {
-                  console.log(
-                    "BI",
-                    boughtplan,
-                    moment(boughtplan.endtime - 0),
-                    moment(boughtplan.endtime - 0).isBefore(moment())
-                  );
                   if (boughtplan.endtime && moment(boughtplan.endtime - 0).isBefore(moment())) {
                     return;
                   }
@@ -540,7 +513,6 @@ class AppDrop extends Component<Props, State> {
                   }
                   let licencesArray: JSX.Element[] = [];
                   boughtplan.licences.forEach((licence, key2) => {
-                    console.log("LI", licence.id, licence.endtime);
                     if (licence.endtime && moment(licence.endtime).isBefore(moment())) {
                       return;
                     }

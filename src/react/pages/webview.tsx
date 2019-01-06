@@ -114,9 +114,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           : this.state.errorshowed
           ? console.log("Timeout", this.state.errorshowed, this.state.loggedIn)
           : this.setState({
-              error: `The Login takes too much time. Please check with our support.${
-                this.state.loggedIn
-              }| ${this.state.errorshowed}`,
+              error: "The Login takes too much time. Please check with our support.",
               loggedIn: true
             }),
       20000

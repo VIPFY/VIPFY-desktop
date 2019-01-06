@@ -72,14 +72,11 @@ class TeamEmployee extends React.Component<Props, State> {
                   if (error) {
                     return `Error! ${error.message}`;
                   }
-
-                  //console.log("DATA", data);
                   let appArray: JSX.Element[] = [];
 
                   if (data.fetchUsersOwnLicences) {
                     if (data.fetchUsersOwnLicences[0]) {
                       data.fetchUsersOwnLicences.forEach((licence, key) => {
-                        console.log("TEAMLICENCE", licence);
                         if (
                           licence.disabled ||
                           (licence.endtime ? moment().isBefore(licence.endtime) : false)
@@ -124,18 +121,6 @@ class TeamEmployee extends React.Component<Props, State> {
                                     false
                                   )
                                 }
-                                /*onTouchStart={ev => {
-                                  console.log("START", ev);
-
-                                  this.props.onDragStart(
-                                    ev,
-                                    licence.boughtplanid.id,
-                                    licence.boughtplanid.planid.appid,
-                                    true,
-                                    licence.id,
-                                    person.id
-                                  );
-                                }}*/
                                 onDragEnd={() =>
                                   this.props.teamside.setState({ dragginglicence: 0 })
                                 }

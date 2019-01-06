@@ -84,7 +84,6 @@ class PersonalData extends React.Component<Props, State> {
             createdate,
             tutorialprogress
           } = data.me;
-          console.log("PROFIL SEITE", data.me);
           return (
             <AppContext.Consumer>
               {({ showPopup, addRenderElement, setreshowTutorial }) => {

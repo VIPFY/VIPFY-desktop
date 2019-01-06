@@ -41,7 +41,6 @@ class EditLicence extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("EDIT LICENCE", this.props);
     return (
       <div className="confirmation-dialog">
         <h2>Edit your Licence of Team: {this.props.teamname}</h2>
