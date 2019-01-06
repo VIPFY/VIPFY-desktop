@@ -1,9 +1,10 @@
 .admin {
-  margin: 0 2rem 2rem;
+  margin: 2rem 2rem 0 2rem;
   position: relative;
 
   h1 {
     margin-bottom: 3rem;
+    margin-left: 10rem;
   }
 
   a {
@@ -11,9 +12,9 @@
   }
 
   .button-nav {
-    margin: 14px 0 0 30px;
     position: absolute;
-    top: 56px;
+    top: -2px;
+    margin-left: 35px;
   }
 
   .search-box {

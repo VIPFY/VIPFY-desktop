@@ -300,7 +300,7 @@ class App extends React.Component<AppProps, AppState> {
               ) : (
                 ""
               )}
-              {popup.show ? (
+              {popup.show && (
                 <Popup
                   popupHeader={popup.header}
                   popupBody={popup.body}
@@ -309,8 +309,6 @@ class App extends React.Component<AppProps, AppState> {
                   type={popup.type}
                   info={popup.info}
                 />
-              ) : (
-                ""
               )}
             </AppContext.Provider>
           );

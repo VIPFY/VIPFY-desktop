@@ -33,6 +33,7 @@ import AppAdmin from "./appadmin";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
+import Tabs from "../components/Tabs";
 
 interface AreaProps {
   history: any[];
@@ -57,7 +58,9 @@ interface AreaState {
   script: Element | null;
   script3: Element | null;
   webviews: any[];
+  oldWebViews: any[];
   openInstances: any;
+  activeTab: null | object;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -71,7 +74,9 @@ class Area extends React.Component<AreaProps, AreaState> {
     script: null,
     script3: null,
     webviews: [],
-    openInstances: {}
+    oldWebViews: [],
+    openInstances: {},
+    activeTab: null
   };
 
   componentDidMount = async () => {
@@ -188,6 +193,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           {
             key: viewID,
             view: newview,
+            instanceTitle: "Login",
             licenceID
           }
         ],
@@ -198,10 +204,10 @@ class Area extends React.Component<AreaProps, AreaState> {
               ? {
                   ...prevState.openInstances[licenceID],
 
-                  [viewID]: { instanceTitle: "Home", instanceId: viewID }
+                  [viewID]: { instanceTitle: "Login", instanceId: viewID }
                 }
               : {
-                  [viewID]: { instanceTitle: "Home", instanceId: viewID }
+                  [viewID]: { instanceTitle: "Login", instanceId: viewID }
                 }
         },
         app: opendirect ? licenceID : prevState.app,
@@ -227,8 +233,29 @@ class Area extends React.Component<AreaProps, AreaState> {
                 }
               }
             : { ...prevState.openInstances[licenceID] }
-      }
+      },
+      webviews: prevState.webviews.map(view => {
+        if (view.key == viewID) {
+          view.instanceTitle = title;
+        }
+        return view;
+      })
     }));
+  };
+
+  closeInstance = (viewID: number, licenceID: number) => {
+    this.setState(prevState => {
+      const webviews = prevState.webviews.filter(view => view.key != viewID);
+      const { openInstances } = prevState;
+
+      if (openInstances[licenceID].length > 1) {
+        delete openInstances[licenceID][viewID];
+      } else {
+        delete openInstances[licenceID];
+      }
+
+      return { webviews, openInstances };
+    });
   };
 
   setInstance = viewID => {
@@ -237,8 +264,45 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.props.history.push(`/area/app/${licenceID}`);
   };
 
+  handleDragStart = (viewID: number) => {
+    this.setState(prevState => {
+      const activeTab = prevState.webviews.find(tab => tab.key == viewID);
+
+      return { activeTab, oldWebViews: prevState.webviews };
+    });
+  };
+
+  handleDragOver = async (viewID: number) => {
+    await this.setState(prevState => {
+      const webviews = prevState.webviews.map(tab => {
+        if (tab.key == viewID) {
+          return prevState.activeTab;
+        } else if (prevState.activeTab!.key == tab.key) {
+          return prevState.webviews.find(tab => tab.key == viewID);
+        } else {
+          return tab;
+        }
+      });
+      return { webviews };
+    });
+  };
+
+  handleDragLeave = async () => await this.setState({ webviews: this.state.oldWebViews });
+
+  handleDragEnd = () => this.setState({ activeTab: null, webviews: this.state.oldWebViews });
+
+  handleClose = (viewID: number, licenceID: number) => {
+    this.setState(prevState => {
+      const webviews = prevState.webviews.filter(view => view.key != viewID);
+
+      return { webviews };
+    });
+
+    this.closeInstance(viewID, licenceID);
+  };
+
   render() {
-    console.log("APPPROPS", this.props);
+    console.log("APPOPROPS", this.props, this.state);
     const { sideBarOpen, chatOpen } = this.state;
     const routes = [
       { path: "", component: Dashboard },
@@ -395,6 +459,17 @@ class Area extends React.Component<AreaProps, AreaState> {
           showView={this.state.viewID}
           views={this.state.webviews}
           sideBarOpen={sideBarOpen}
+        />
+        <Tabs
+          tabs={this.state.webviews}
+          setInstance={this.setInstance}
+          viewID={this.state.viewID}
+          closeTab={this.closeInstance}
+          handleDragStart={this.handleDragStart}
+          handleDragOver={this.handleDragOver}
+          handleDragEnd={this.handleDragEnd}
+          handleDragLeave={this.handleDragLeave}
+          handleClose={this.handleClose}
         />
       </div>
     );

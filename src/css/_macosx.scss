@@ -1,12 +1,15 @@
-.mac #titlebar {
-  height: 37px;
-  border-bottom: 1px solid black;
+.mac {
+  #titlebar {
+    height: 37px;
+    border-bottom: 1px solid black;
+  }
+
+  .sidebar-logo {
+    display: none;
+  }
+  
+  #window-controls {
+    display: none;
+  }
 }
 
-.mac .sidebar-logo {
-  display: none;
-}
-
-.mac #window-controls {
-  display: none;
-}
