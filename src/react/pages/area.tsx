@@ -45,6 +45,7 @@ interface AreaProps {
   userid: number;
   client: ApolloClient<InMemoryCache>;
   moveTo: Function;
+  sidebarloaded: Function;
 }
 
 interface AreaState {
@@ -136,6 +137,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   setApp = (boughtplan: number) => {
+    console.log("Set App", boughtplan);
     if (this.state.openInstances[boughtplan]) {
       this.setState(prevState => {
         const newstate = {

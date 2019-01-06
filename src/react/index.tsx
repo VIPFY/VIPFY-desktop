@@ -21,11 +21,11 @@ class Application extends React.Component {
   componentDidMount() {
     // inline styles to make them available to smartlook
     const style = document.createElement("style");
-    fs.readFile(__dirname + "/../css/layout.css", "utf8", function(err, contents) {
-      //console.log(err);
-      //console.log(contents);
-      document.head!.appendChild(style);
+    fs.readFile(__dirname + "/../css/layout.css", "utf8", (err, contents) => {
       style.innerHTML = contents;
+      document.head!.appendChild(style);
+      // use setTimeout to allow some time for layouting
+      window.setTimeout(() => this.forceUpdate(), 0);
     });
     if (is.macOS()) {
       document.body.classList.add("mac");

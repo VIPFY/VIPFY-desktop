@@ -34,6 +34,7 @@ export type SidebarProps = {
   viewID: number;
   openInstances: any;
   setInstance: Function;
+  sidebarloaded: Function;
 };
 
 interface State {
@@ -67,11 +68,13 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
     } else {
       this.setState({ licences: this.props.licences });
     }
+    this.props.sidebarloaded();
   }
 
   componentDidUpdate({ layout }) {
     if (layout && layout.vertical && layout.vertical.length != this.props.layout.vertical!.length) {
       this.setState({ layout: this.props.layout.vertical! });
+      console.log("UPDATE SIDEBAR");
     }
   }
 
@@ -241,7 +244,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
       <AppContext.Consumer>
         {context => (
           <div className={`sidebar${sideBarOpen ? "" : "-small"}`}>
-            {console.log("SIDEBAR", context)}
+            {/*console.log("SIDEBAR", context)*/}
             {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
             <ul className="sidebar-link-holder">
               <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
