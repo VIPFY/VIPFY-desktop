@@ -121,7 +121,7 @@ class AppUsageCompanywideChartInner extends React.Component<Props, State> {
               title: {
                 formatter: (series, opt) => labels[opt.dataPointIndex]
               },
-              formatter: x => x.toFixed(2) + "%"
+              formatter: (x, opt) => `${x.toFixed(2)}%`
             }
           }
           /*tooltip: {

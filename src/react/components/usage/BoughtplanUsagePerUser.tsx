@@ -3,6 +3,7 @@ import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
 import Chart from "react-apexcharts";
 import ResizeAware from "react-resize-aware";
+import humanizeDuration = require("humanize-duration");
 
 import moment = require("moment");
 
@@ -19,6 +20,22 @@ interface Props {
   height: number;
 }
 
+const shortEnglishHumanizer = humanizeDuration.humanizer({
+  language: "shortEn",
+  languages: {
+    shortEn: {
+      y: () => "y",
+      mo: () => "mo",
+      w: () => "w",
+      d: () => "d",
+      h: () => "h",
+      m: () => "min",
+      s: () => "s",
+      ms: () => "ms"
+    }
+  }
+});
+
 class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
   render() {
     //console.log("CHARTPROPS", this.props);
@@ -34,6 +51,11 @@ class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
     const total = d.reduce((sum, cur) => sum + cur.totalminutes, 0);
     const data = d.map(u => (u.totalminutes / total) * 100);
     //const colors = d.map(u => u.app.color);
+    const absoluteValues = d.map(u =>
+      shortEnglishHumanizer(u.totalminutes * 60 * 1000, {
+        largest: 2
+      })
+    );
 
     const max = Math.max(...data);
     const numTicks = max / 5;
@@ -41,7 +63,7 @@ class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
     const series = [{ data }];
     const height = d.length * 25 + 100;
 
-    console.log("DATA RESULT", series, height, numTicks);
+    console.log("DATA RESULT", series, height, numTicks, absoluteValues);
 
     return (
       <Chart
@@ -116,19 +138,14 @@ class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
             },
             y: {
               title: {
-                formatter: (series, opt) => labels[opt.dataPointIndex]
+                formatter: (series, opt) =>
+                  `${labels[opt.dataPointIndex]}: ${absoluteValues[opt.dataPointIndex]}`
               },
-              formatter: x => x.toFixed(2) + "%"
+              formatter: (x, opt) => {
+                return `${x.toFixed(2)}%`;
+              }
             }
           }
-          /*tooltip: {
-            x: {
-              formatter: x => {
-                return moment(x).format("MMMM YYYY");
-              }
-            },
-            y: { formatter: y => (y === 0 ? "" : "$" + `${y.toFixed(2)}`.padStart(3, " ")) }
-          }*/
         }}
       />
     );

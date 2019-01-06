@@ -27,7 +27,10 @@ class UsageStatistics extends React.Component<Props, State> {
     return (
       <div>
         <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowBoughtplans()}>
+          <div
+            className="header"
+            onClick={() => this.toggleShowBoughtplans()}
+            style={{ backgroundColor: "#e4e6e8" }}>
             <i
               className={`button-hide fas ${
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
