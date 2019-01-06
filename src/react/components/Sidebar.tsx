@@ -50,7 +50,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
     licences: []
   };
 
-  references: { key; element }[] = [];
+  //references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
   componentDidMount() {
@@ -107,8 +107,20 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
   };
 
   addReferences = (key, element, addRenderElement) => {
-    this.references.push({ key, element });
+    // this.references.push({ key, element });
     addRenderElement({ key, element });
+  };
+
+  maybeaddHighlightReference = (location, highlight, el, addRenderElement) => {
+    if (
+      this.props.location.pathname === `/area/${location}` ||
+      `${this.props.location.pathname}/dashboard` === `/area/${location}`
+    ) {
+      console.log("ACTIVE", el);
+      this.addReferences("active", el, addRenderElement);
+    }
+
+    this.addReferences(highlight, el, addRenderElement);
   };
 
   renderLink = (
@@ -121,8 +133,8 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
     }
 
     if (
-      this.props.location.pathname === `/area/${location}` ||
-      `${this.props.location.pathname}/dashboard` === `/area/${location}`
+      this.props.location.pathname.startsWith(`/area/${location}`) ||
+      `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
     ) {
       cssClass += " sidebar-active";
     }
@@ -134,11 +146,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
             key={location}
             className={cssClass}
             onClick={() => this.goTo(location)}
-            ref={el =>
-              this.references.find(e => e.key === highlight)
-                ? ""
-                : this.addReferences(highlight, el, addRenderElement)
-            }>
+            ref={el => this.maybeaddHighlightReference(location, highlight, el, addRenderElement)}>
             <span className={`fal fa-${icon} sidebar-icons`} />
             <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
               {label}
@@ -243,7 +251,9 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
     return (
       <AppContext.Consumer>
         {context => (
-          <div className={`sidebar${sideBarOpen ? "" : "-small"}`}>
+          <div
+            className={`sidebar${sideBarOpen ? "" : "-small"}`}
+            ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
             {/*console.log("SIDEBAR", context)*/}
             {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
             <ul className="sidebar-link-holder">

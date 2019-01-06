@@ -9,6 +9,7 @@ import { QUERY_USER } from "../queries/user";
 import { me } from "../queries/auth";
 import * as Dropzone from "react-dropzone";
 import { any } from "async";
+import GenericInputField from "../components/GenericInputField";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
@@ -433,12 +434,28 @@ class Welcome extends React.Component<Props, State> {
                 {this.state.placeId === "OWN" ? (
                   <div className="selectInputHolder">
                     <span className="selectSpan">Company Address:</span>
-                    <input
-                      className="selectInput"
-                      autoFocus={true}
-                      onChange={e => this.setState({ ownAddress: e.target.value })}
-                      placeholder="Street, Zip, City"
-                    />
+                    <div>
+                      <input
+                        className="selectInput"
+                        autoFocus={true}
+                        onChange={e => this.setState({ ownAddress: e.target.value })}
+                        placeholder="Street, Zip, City"
+                      />
+                      <GenericInputField
+                        fieldClass="inputBoxField"
+                        divClass=""
+                        placeholder={this.props.appname}
+                        onBlur={value => this.setState({ alias: value })}
+                        default={this.props.appname}
+                      />
+                      <GenericInputField
+                        fieldClass="inputBoxField"
+                        divClass=""
+                        placeholder={this.props.appname}
+                        onBlur={value => this.setState({ alias: value })}
+                        default={this.props.appname}
+                      />
+                    </div>
                   </div>
                 ) : this.state.predictions &&
                   this.state.predictions!.data.searchAddressByCompanyName.length > 0 ? (

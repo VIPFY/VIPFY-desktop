@@ -81,11 +81,13 @@ class PersonalData extends React.Component<Props, State> {
             title,
             birthday,
             language,
-            createdate
+            createdate,
+            tutorialprogress
           } = data.me;
+          console.log("PROFIL SEITE", data.me);
           return (
             <AppContext.Consumer>
-              {({ showPopup }) => {
+              {({ showPopup, addRenderElement, setreshowTutorial }) => {
                 const information = [
                   {
                     label: "Name",
@@ -156,7 +158,9 @@ class PersonalData extends React.Component<Props, State> {
                 };
 
                 return (
-                  <div className="genericHolder">
+                  <div
+                    className="genericHolder"
+                    ref={el => addRenderElement({ key: "profilePersonalHolder", element: el })}>
                     <div className="header" onClick={this.toggle}>
                       <i
                         className={`button-hide fas ${
@@ -170,7 +174,13 @@ class PersonalData extends React.Component<Props, State> {
                       <div
                         className="pic-holder" //{`pic-holder ${this.state.show ? "in" : "out"}`}
                         onClick={() => showPopup(picPopup)}>
-                        <UserPicture size="pic" unitid={this.props.id} updateable={true} />
+                        <UserPicture
+                          size="pic"
+                          unitid={this.props.id}
+                          updateable={true}
+                          addRenderElement={addRenderElement}
+                          elementName="profilePicture"
+                        />
                       </div>
 
                       <div className="information">
@@ -181,9 +191,61 @@ class PersonalData extends React.Component<Props, State> {
                               <span>{data}</span>
                             </li>
                           ))}
+                          <li>
+                            <label>Tutorials</label>
+                            <span>
+                              <button
+                                className="naked-button reshow-button"
+                                onClick={() => setreshowTutorial("welcome")}>
+                                Welcome
+                              </button>
+                              <button
+                                className="naked-button reshow-button"
+                                onClick={() => setreshowTutorial("sidebar")}>
+                                Sidebar
+                              </button>
+                              <button
+                                className="naked-button reshow-button"
+                                onClick={() => setreshowTutorial("dashboard")}
+                                ref={el => addRenderElement({ key: "tutorials", element: el })}>
+                                Dashboard
+                              </button>
+                              <button
+                                className="naked-button reshow-button"
+                                onClick={() => setreshowTutorial("profile")}>
+                                Profile
+                              </button>
+                              {/*<button
+                                className="naked-button reshow-button"
+                                onClick={() => setreshowTutorial(1)}>
+                                Billing
+                              </button>
+                              <button
+                                className="naked-button reshow-button"
+                                onClick={() => setreshowTutorial(1)}>
+                                Security
+                              </button>
+                              <button
+                                className="naked-button reshow-button"
+                                onClick={() => setreshowTutorial(1)}>
+                                Teams
+                              </button>
+                              <button
+                                className="naked-button reshow-button"
+                                onClick={() => setreshowTutorial(1)}>
+                                External Accounts
+                              </button>
+                              <button
+                                className="naked-button reshow-button"
+                                onClick={() => setreshowTutorial(1)}>
+                                Support
+                              </button>*/}
+                            </span>
+                          </li>
 
                           <li>
                             <button
+                              ref={el => addRenderElement({ key: "changePassword", element: el })}
                               className="naked-button genericButton topright"
                               onClick={() => showPopup(passwordPopup)}>
                               <i className="fal fa-key" />

@@ -20,6 +20,8 @@ export default function UserPicture(props: {
   updateable?: any;
   onClick?: Function;
   departmentid?: number | null;
+  addRenderElement?: Function;
+  elementName?: string;
 }): JSX.Element {
   if (props.unitid === null || props.unitid === undefined) {
     return <span />;
@@ -49,6 +51,11 @@ export default function UserPicture(props: {
         };
         return (
           <div
+            ref={el =>
+              props.addRenderElement && props.elementName
+                ? props.addRenderElement({ key: props.elementName, element: el })
+                : ""
+            }
             className={`imagehoverable ${props.size}`}
             style={style}
             onClick={() => {
