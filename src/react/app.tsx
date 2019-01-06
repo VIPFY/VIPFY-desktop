@@ -50,6 +50,7 @@ interface AppState {
   renderElements: { key: string; element: any }[];
   page: string;
   sidebarloaded: boolean;
+  reshow: string | null;
 }
 
 const INITIAL_POPUP = {
@@ -67,10 +68,11 @@ const INITIAL_STATE = {
   firstLogin: false,
   placeid: "",
   popup: INITIAL_POPUP,
-  showTutorial: false,
+  showTutorial: true,
   renderElements: [],
   page: "dashboard",
-  sidebarloaded: false
+  sidebarloaded: false,
+  reshow: null
 };
 
 const tutorial = gql`
@@ -234,7 +236,27 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({ renderElements: references });
   };
 
+  setreshowTutorial = section => {
+    console.log("setreshowTutorial", section);
+    switch (section) {
+      case "dashboard":
+        this.moveTo("dashboard");
+        break;
+      case "profile":
+        this.moveTo("profile");
+        break;
+
+      default:
+    }
+    this.setState({ reshow: section });
+  };
+
   addRenderElement = reference => {
+    let index = this.references.findIndex(e => e.key == reference.key);
+    if (index !== -1) {
+      this.references.splice(index, 1);
+    }
+
     if (!this.references.find(e => e.key === reference.key)) {
       this.references.push(reference);
     }
@@ -260,17 +282,20 @@ class App extends React.Component<AppProps, AppState> {
                 renderTutorial: e => this.renderTutorial(e),
                 setrenderElements: e => this.setrenderElements(e),
                 data,
-                addRenderElement: e => this.addRenderElement(e)
+                addRenderElement: e => this.addRenderElement(e),
+                setreshowTutorial: this.setreshowTutorial
               }}
               className="full-size">
               {this.renderComponents()}
               {console.log("REFERENCES", this.references, showTutorial)}
-              {showTutorial && sidebarloaded ? (
+              {sidebarloaded ? (
                 <Tutorial
                   tutorialdata={data}
                   renderElements={this.references}
                   showTutorial={this.showTutorial}
                   page={page}
+                  reshow={this.state.reshow}
+                  setreshowTutorial={this.setreshowTutorial}
                 />
               ) : (
                 ""
