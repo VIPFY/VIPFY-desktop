@@ -4688,6 +4688,8 @@ table{
     }
 
     .tutorialContent{
+        padding-bottom: 20px;
+
         h1{
             margin: 0;
         }
@@ -4848,4 +4850,18 @@ table{
     font-size: 0.8em !important;
     top: -1.4em !important;
     color: white !important;
+  }
+
+  .editLicenceHolder{
+      .register-input{
+          color: #253647;
+          border-bottom-color:#253647;
+          width: 400px;
+      }
+      label{
+          color: #253647;
+      }
+      .flying-label{
+        color: #253647 !important;
+      }
   }
