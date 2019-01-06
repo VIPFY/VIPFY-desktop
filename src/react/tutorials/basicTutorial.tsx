@@ -241,7 +241,10 @@ class Tutorial extends React.Component<Props, State> {
     if (steps && steps[0]) {
       console.log("Remove Highlights for ", this.state.step);
       const { renderoptions } = steps.find(e => e.id == this.state.step);
-      if (renderoptions.highlightelement) {
+      if (
+        renderoptions.highlightelement &&
+        references.find(e => e.key === renderoptions.highlightelement)
+      ) {
         references.find(e => e.key === renderoptions.highlightelement)!.element.style.zIndex = "";
         references.find(e => e.key === renderoptions.highlightelement)!.element.style.boxShadow =
           "";
@@ -681,7 +684,10 @@ class Tutorial extends React.Component<Props, State> {
         console.log("Remove Highlights for ", currentstep);
         const { renderoptions } = steps.find(e => e.id == currentstep);
         console.log("Remove Highlights for ", currentstep, renderoptions, references);
-        if (renderoptions.highlightelement) {
+        if (
+          renderoptions.highlightelement &&
+          references.find(e => e.key === renderoptions.highlightelement).element
+        ) {
           references.find(e => e.key === renderoptions.highlightelement)!.element.style.zIndex = "";
           references.find(e => e.key === renderoptions.highlightelement)!.element.style.boxShadow =
             "";
@@ -706,22 +712,12 @@ class Tutorial extends React.Component<Props, State> {
 
   render() {
     console.log(
-      "START TUT",
-      this.props,
+      "RENDER TUTORIAL",
       this.state,
-      this.state.tutorialSave.closed ||
-        (this.state.tutorialSave.welcome &&
-          this.state.tutorialSave.dashboard &&
-          this.state.tutorialSave.sidebar),
-      this.props.reshow
+      this.props,
+      this.state.tutorialSave == {} || (this.state.tutorialSave.closed && !this.props.reshow)
     );
-    if (
-      (this.state.tutorialSave.closed ||
-        (this.state.tutorialSave.welcome &&
-          this.state.tutorialSave.dashboard &&
-          this.state.tutorialSave.sidebar)) &&
-      !this.props.reshow
-    ) {
+    if (this.state.tutorialSave == {} || (this.state.tutorialSave.closed && !this.props.reshow)) {
       return "";
     } else {
       return <div id="overlay">{this.renderTutorial(this.state.step, this.state)}</div>;
