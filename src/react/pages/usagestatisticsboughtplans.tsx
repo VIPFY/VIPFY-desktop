@@ -1,4 +1,6 @@
 import * as React from "react";
+import { graphql, Query, withApollo } from "react-apollo";
+import gql from "graphql-tag";
 
 import BoughtplanUsagePerUser from "../components/usage/BoughtplanUsagePerUser";
 
@@ -8,22 +10,36 @@ interface Props {
 }
 
 interface State {
-  bills: any[];
   error: string;
   showBoughtplans: Boolean;
+  teamname: string | null;
 }
 
 class UsageStatistics extends React.Component<Props, State> {
   state = {
-    bills: [],
     error: "",
-    showBoughtplans: true
+    showBoughtplans: true,
+    teamname: null
   };
 
   toggleShowBoughtplans = (): void =>
     this.setState(prevState => ({ showBoughtplans: !prevState.showBoughtplans }));
 
   render() {
+    const boughtplan = this.props.client.readFragment({
+      id: `BoughtPlan:${this.props.match.params.boughtplanid}`,
+      fragment: gql`
+        fragment myTodo on BoughtPlan {
+          id
+          alias
+        }
+      `
+    });
+    let teamname = null;
+    if (boughtplan && boughtplan.alias) {
+      teamname = boughtplan.alias;
+    }
+    console.log(this.props.match.params.boughtplanid, teamname);
     return (
       <div>
         <div className="genericHolder">
@@ -37,7 +53,7 @@ class UsageStatistics extends React.Component<Props, State> {
               }`}
               //onClick={this.toggle}
             />
-            <span>Teams</span>
+            <span>Time spent in {teamname ? teamname : "[failed to fetch name]"} this month</span>
           </div>
           <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
             <BoughtplanUsagePerUser
@@ -51,4 +67,4 @@ class UsageStatistics extends React.Component<Props, State> {
   }
 }
 
-export default UsageStatistics;
+export default withApollo(UsageStatistics);
