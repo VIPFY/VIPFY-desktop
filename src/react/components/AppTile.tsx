@@ -15,6 +15,12 @@ const REMOVE_EXTERNAL_ACCOUNT = gql`
   }
 `;
 
+const UPDATE_CREDENTIALS = gql`
+  mutation onUpdateCredentials($licenceid: ID!, $username: String, $password: String) {
+    updateCredentials(licenceid: $licenceid, username: $username, password: $password)
+  }
+`;
+
 interface Props {
   dragStartFunction: Function;
   dragEndFunction: Function;
@@ -91,28 +97,35 @@ class AppTile extends React.Component<Props, State> {
               {planid.options && planid.options.external && (
                 <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
                   {deleteLicenceAt => (
-                    <i
-                      className="fal fa-edit"
-                      onClick={e => {
-                        e.stopPropagation();
-                        showPopup({
-                          header: `Edit licence of Team: ${name}`,
-                          body: EditLicence,
-                          props: {
-                            closeFunction: () => showPopup(null),
-                            teamname: name,
-                            appname: planid.appid.name,
-                            deleteFunction: async licenceid => {
-                              await deleteLicenceAt({
-                                variables: { licenceid, time: moment() },
-                                refetchQueries: [{ query: fetchLicences }, { query: me }]
-                              });
-                            },
-                            id
-                          }
-                        });
-                      }}
-                    />
+                    <Mutation mutation={UPDATE_CREDENTIALS}>
+                      {updateCredentials => (
+                        <i
+                          className="fal fa-edit"
+                          onClick={e => {
+                            e.stopPropagation();
+                            showPopup({
+                              header: `Edit licence of Team: ${name}`,
+                              body: EditLicence,
+                              props: {
+                                closeFunction: () => showPopup(null),
+                                teamname: name,
+                                appname: planid.appid.name,
+                                deleteFunction: async licenceid => {
+                                  await deleteLicenceAt({
+                                    variables: { licenceid, time: moment() },
+                                    refetchQueries: [{ query: fetchLicences }, { query: me }]
+                                  });
+                                },
+                                submitFunction: async variables => {
+                                  await updateCredentials({ variables });
+                                },
+                                id
+                              }
+                            });
+                          }}
+                        />
+                      )}
+                    </Mutation>
                   )}
                 </Mutation>
               )}
