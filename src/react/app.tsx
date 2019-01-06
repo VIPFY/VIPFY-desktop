@@ -264,31 +264,30 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { placeid, firstLogin, popup, showTutorial, page, sidebarloaded } = this.state;
-
+    let showtutorial = true;
     return (
-      <Query query={tutorial}>
-        {({ data, loading, error }) => {
-          if (error) {
-            console.log("TutError", error);
-          }
-          console.log("TUTORIAL", data, "Props", this.props);
-          return (
-            <AppContext.Provider
-              value={{
-                showPopup: (data: PopUp) => this.renderPopup(data),
-                firstLogin,
-                placeid,
-                disableWelcome: () => this.setState({ firstLogin: false }),
-                renderTutorial: e => this.renderTutorial(e),
-                setrenderElements: e => this.setrenderElements(e),
-                data,
-                addRenderElement: e => this.addRenderElement(e),
-                setreshowTutorial: this.setreshowTutorial
-              }}
-              className="full-size">
-              {this.renderComponents()}
-              {console.log("REFERENCES", this.references, showTutorial)}
-              {sidebarloaded ? (
+      <AppContext.Provider
+        value={{
+          showPopup: (data: PopUp) => this.renderPopup(data),
+          firstLogin,
+          placeid,
+          disableWelcome: () => this.setState({ firstLogin: false }),
+          renderTutorial: e => this.renderTutorial(e),
+          setrenderElements: e => this.setrenderElements(e),
+          addRenderElement: e => this.addRenderElement(e),
+          setreshowTutorial: this.setreshowTutorial
+        }}
+        className="full-size">
+        {this.renderComponents()}
+        {console.log("REFERENCES", this.references, showTutorial)}
+        {sidebarloaded && showtutorial && localStorage.getItem("token") ? (
+          <Query query={tutorial}>
+            {({ data, loading, error }) => {
+              if (error) {
+                showtutorial = false;
+                console.log("TutError", error);
+              }
+              return (
                 <Tutorial
                   tutorialdata={data}
                   renderElements={this.references}
@@ -297,23 +296,23 @@ class App extends React.Component<AppProps, AppState> {
                   reshow={this.state.reshow}
                   setreshowTutorial={this.setreshowTutorial}
                 />
-              ) : (
-                ""
-              )}
-              {popup.show && (
-                <Popup
-                  popupHeader={popup.header}
-                  popupBody={popup.body}
-                  bodyProps={popup.props}
-                  onClose={this.closePopup}
-                  type={popup.type}
-                  info={popup.info}
-                />
-              )}
-            </AppContext.Provider>
-          );
-        }}
-      </Query>
+              );
+            }}
+          </Query>
+        ) : (
+          ""
+        )}
+        {popup.show && (
+          <Popup
+            popupHeader={popup.header}
+            popupBody={popup.body}
+            bodyProps={popup.props}
+            onClose={this.closePopup}
+            type={popup.type}
+            info={popup.info}
+          />
+        )}
+      </AppContext.Provider>
     );
   }
 }
