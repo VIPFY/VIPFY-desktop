@@ -1,12 +1,12 @@
 import * as React from "react";
-import { ErrorComp, filterError } from "../common/functions";
-import LoadingDiv from "../components/LoadingDiv";
+import { filterError } from "../common/functions";
 
 interface Props {
   onClose: Function;
   id: number;
   deleteFunction: Function;
   closeFunction: Function;
+  submitFunction: Function;
   teamname: string;
   appname: string;
 }
@@ -32,8 +32,19 @@ class EditLicence extends React.Component<Props, State> {
 
   handleSubmit = async () => {
     try {
+      const { email, password } = this.state;
+      const values = { licenceid: this.props.id };
+
+      if (email) {
+        values.username = email;
+      }
+
+      if (password) {
+        values.password = password;
+      }
+
       await this.setState({ loading: true });
-      await this.props.submitFunction(this.props.id);
+      await this.props.submitFunction(values);
       this.props.onClose();
     } catch (err) {
       this.setState({ error: filterError(err), loading: false });
@@ -41,7 +52,6 @@ class EditLicence extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("EDIT LICENCE", this.props);
     return (
       <div className="confirmation-dialog">
         <h2>Edit your Licence of Team: {this.props.teamname}</h2>
@@ -55,7 +65,7 @@ class EditLicence extends React.Component<Props, State> {
                   emailFocus: true
                 })
               }
-              id="street"
+              id="name"
               className="register-input"
               value={this.state.email}
               onBlur={() => this.setState({ emailFocus: false })}
@@ -63,8 +73,8 @@ class EditLicence extends React.Component<Props, State> {
             />
             <label
               className={this.state.email != "" || this.state.emailFocus ? "flying-label" : ""}
-              htmlFor="street">
-              Email-Adress for your {this.props.appname}-account
+              htmlFor="name">
+              Username for your {this.props.appname}-account
             </label>
           </div>
 
@@ -76,7 +86,8 @@ class EditLicence extends React.Component<Props, State> {
                   passwordFocus: true
                 })
               }
-              id="zip"
+              id="password"
+              type="password"
               className="register-input"
               value={this.state.password}
               onBlur={() => this.setState({ passwordFocus: false })}
@@ -86,7 +97,7 @@ class EditLicence extends React.Component<Props, State> {
               className={
                 this.state.password != "" || this.state.passwordFocus ? "flying-label" : ""
               }
-              htmlFor="zip">
+              htmlFor="password">
               Password for your {this.props.appname}-account
             </label>
           </div>
