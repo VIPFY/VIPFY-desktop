@@ -20,7 +20,8 @@ import Team from "./team";
 import Webview from "./webview";
 import ErrorPage from "./error";
 import UsageStatistics from "./usagestatistics";
-import UsageStatisticsBoughtplan from "./usagestatisticsboughtplan";
+//import UsageStatisticsBoughtplan from "./usagestatisticsboughtplan";
+const UsageStatisticsBoughtplan = {};
 
 import { fetchLicences, me } from "../queries/auth";
 import { fetchRecommendedApps } from "../queries/products";
