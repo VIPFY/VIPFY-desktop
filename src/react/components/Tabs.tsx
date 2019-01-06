@@ -1,23 +1,37 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-interface Props {}
-interface State {}
+import Tab from "./Tab";
+import { AsyncAutoTaskFunctionWithoutDependencies } from "async";
+
+interface Props {
+  tabs: any[];
+  setInstance: Function;
+  viewID: number;
+  closeTab: Function;
+  handleClose: Function;
+  handleDragStart: Function;
+  handleDragOver: Function;
+  handleDragEnd: Function;
+  handleDragLeave: Function;
+}
 
 const header = document.getElementById("header-react")!;
 
-export default () => ReactDOM.createPortal(<Tabs />, header);
+export default (props: Props) => ReactDOM.createPortal(<Tabs {...props} />, header);
 
-class Tabs extends React.Component<Props, State> {
-  render() {
-    return (
-      <ul className="tabs">
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-        <li>4</li>
-        <li>5</li>
-        <li>6</li>
-      </ul>
-    );
-  }
-}
+const Tabs = (props: Props) => (
+  <ul id="titlebar-tabs">
+    {props.tabs.length > 0 &&
+      props.tabs.map((view, key) => (
+        <Tab
+          {...props}
+          key={key}
+          active={view.key == props.viewID}
+          viewID={view.key}
+          licenceid={view.licenceID}
+          title={view.instanceTitle}
+          closeTab={props.handleClose}
+        />
+      ))}
+  </ul>
+);

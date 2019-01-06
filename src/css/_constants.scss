@@ -103,6 +103,11 @@ $rccs-valid-font-size: 0.4rem;
   transition: max-height 0.6s ease-in-out;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+}
+
 .in {
   @include toggleHeight(200rem);
 }
