@@ -266,7 +266,12 @@ class Welcome extends React.Component<Props, State> {
           vatoption: this.state.vatoption,
           vatnumber: this.state.vatnumber,
           placeId: this.state.placeId,
-          ownAdress: this.state.ownAddress,
+          ownAdress: `
+            street: ${this.state.street},
+            zip: ${this.state.zip},
+            city: ${this.state.city},
+            country: ${this.state.country}
+          `,
           username: this.state.name
         }
       });
