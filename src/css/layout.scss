@@ -4649,7 +4649,7 @@ table{
             justify-content: space-between;
 
             .sameWidthButton{
-                width: 50px;
+                /*width: 50px;*/
                 display: flex;
                 justify-content: center;
             }
@@ -4699,7 +4699,7 @@ table{
         display: flex;
         
         .element {
-            width: calc(1000px / 5);
+            width: calc(1000px / 4);
             height: 10px;
             border-right: 1px solid white;
             border-left: 1px solid white;
@@ -4879,3 +4879,37 @@ table{
         border-width: 15px;
         margin-right: 10px;}
 }
+
+.input-holder {
+    position: relative;
+    margin-top: 1rem;
+  
+    .register-input {
+      font-size: 1em;
+      padding: 0.5em 1em;
+      background-color: transparent;
+      border: 0;
+      color: #fff;
+      border-bottom: 2px solid #fff;
+      width: 200px;
+      transition: all 0.4s ease-in-out;
+      outline: none;
+    }
+  
+    label {
+      font-family: "Roboto", sans-serif;
+      position: absolute;
+      color: #fff;
+      top: 0;
+      left: 0;
+      font-size: 1em;
+      padding: 0.5em 1em;
+      transition: all 0.4s ease-in-out;
+    }
+  }
+  
+  .flying-label {
+    font-size: 0.8em !important;
+    top: -1.4em !important;
+    color: white !important;
+  }
