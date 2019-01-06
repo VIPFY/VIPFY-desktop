@@ -85,6 +85,13 @@ interface State {
   placeId: string | null;
   ownAddress: string | null;
   companypicture: any;
+  street: string | null;
+  streetfocus: boolean;
+  zip: string | null;
+  zipfocus: boolean;
+  city: string | null;
+  cityfocus: boolean;
+  countryfocus: boolean;
 }
 
 class Welcome extends React.Component<Props, State> {
@@ -101,7 +108,14 @@ class Welcome extends React.Component<Props, State> {
     predictions: null,
     placeId: null,
     ownAddress: null,
-    companypicture: null
+    companypicture: null,
+    street: null,
+    streetfocus: false,
+    city: null,
+    cityfocus: false,
+    countryfocus: false,
+    zipfocus: false,
+    zip: null
   };
 
   componentDidMount() {
@@ -427,15 +441,20 @@ class Welcome extends React.Component<Props, State> {
                 : ""}
               <div
                 className={`selectOption ${this.state.placeId === "OWN" ? "active" : ""}`}
+                style={this.state.placeId === "OWN" ? { justifyContent: "space-around" } : {}}
                 onClick={() => this.setState({ placeId: "OWN" })}>
                 <div className="selectCheck">
                   {this.state.placeId === "OWN" ? <i className="fal fa-check" /> : ""}
                 </div>
                 {this.state.placeId === "OWN" ? (
-                  <div className="selectInputHolder">
-                    <span className="selectSpan">Company Address:</span>
+                  <div
+                    className="selectInputHolder"
+                    style={{ padding: "30px", flexFlow: "column", maxWidth: "200px" }}>
+                    <span className="selectSpan" style={{ fontSize: "15px" }}>
+                      Company Address:
+                    </span>
                     <div>
-                      <input
+                      {/*<input
                         className="selectInput"
                         autoFocus={true}
                         onChange={e => this.setState({ ownAddress: e.target.value })}
@@ -444,17 +463,115 @@ class Welcome extends React.Component<Props, State> {
                       <GenericInputField
                         fieldClass="inputBoxField"
                         divClass=""
-                        placeholder={this.props.appname}
-                        onBlur={value => this.setState({ alias: value })}
-                        default={this.props.appname}
+                        placeholder="Street / No."
+                        onBlur={value => this.setState({ street: value })}
                       />
                       <GenericInputField
                         fieldClass="inputBoxField"
                         divClass=""
-                        placeholder={this.props.appname}
-                        onBlur={value => this.setState({ alias: value })}
-                        default={this.props.appname}
-                      />
+                        placeholder="City"
+                        onBlur={value => this.setState({ city: value })}
+                      />*/}
+                      {/*Street Name and Number*/}
+                      <div className="input-holder ">
+                        <input
+                          onFocus={() =>
+                            this.setState({
+                              streetfocus: true
+                            })
+                          }
+                          id="street"
+                          className="register-input"
+                          value={this.state.street || ""}
+                          onBlur={() => this.setState({ streetfocus: false })}
+                          onChange={e => this.setState({ street: e.target.value })}
+                        />
+                        <label
+                          className={
+                            (this.state.street && this.state.street != "") || this.state.streetfocus
+                              ? "flying-label"
+                              : ""
+                          }
+                          htmlFor="street">
+                          Street Name and Number
+                        </label>
+                      </div>
+
+                      {/*Zip*/}
+                      <div className="input-holder ">
+                        <input
+                          onFocus={() =>
+                            this.setState({
+                              zipfocus: true
+                            })
+                          }
+                          id="zip"
+                          className="register-input"
+                          value={this.state.zip || ""}
+                          onBlur={() => this.setState({ zipfocus: false })}
+                          onChange={e => this.setState({ zip: e.target.value })}
+                        />
+                        <label
+                          className={
+                            (this.state.zip && this.state.zip != "") || this.state.zipfocus
+                              ? "flying-label"
+                              : ""
+                          }
+                          htmlFor="zip">
+                          Zip Code
+                        </label>
+                      </div>
+
+                      {/*City*/}
+                      <div className="input-holder ">
+                        <input
+                          onFocus={() =>
+                            this.setState({
+                              cityfocus: true
+                            })
+                          }
+                          id="city"
+                          className="register-input"
+                          value={this.state.city || ""}
+                          onBlur={() => this.setState({ cityfocus: false })}
+                          onChange={e => this.setState({ city: e.target.value })}
+                        />
+                        <label
+                          className={
+                            (this.state.city && this.state.city != "") || this.state.cityfocus
+                              ? "flying-label"
+                              : ""
+                          }
+                          htmlFor="city">
+                          City
+                        </label>
+                      </div>
+
+                      {/*Country*/}
+                      <div className="input-holder ">
+                        <input
+                          onFocus={() =>
+                            this.setState({
+                              countryfocus: true
+                            })
+                          }
+                          id="country"
+                          className="register-input"
+                          value={this.state.country || ""}
+                          onBlur={() => this.setState({ countryfocus: false })}
+                          onChange={e => this.setState({ country: e.target.value })}
+                        />
+                        <label
+                          className={
+                            (this.state.country && this.state.country != "") ||
+                            this.state.countryfocus
+                              ? "flying-label"
+                              : ""
+                          }
+                          htmlFor="country">
+                          Country
+                        </label>
+                      </div>
                     </div>
                   </div>
                 ) : this.state.predictions &&
@@ -656,7 +773,7 @@ class Welcome extends React.Component<Props, State> {
             Next
           </button>
         ) : (
-          <div className="sameWidthButton buttonDisabled">Next</div>
+          <div className="sameWidthButton genericButton buttonDisabled">Next</div>
         );
       case 2:
         return this.state.vatoption === 2 ||
@@ -668,18 +785,30 @@ class Welcome extends React.Component<Props, State> {
             Next
           </button>
         ) : (
-          <div className="sameWidthButton buttonDisabled">Next</div>
+          <div className="sameWidthButton genericButton buttonDisabled">Next</div>
         );
       case 3:
         return (this.state.placeId !== null && this.state.placeId !== "OWN") ||
-          (this.state.placeId === "OWN" && this.state.ownAddress !== null) ? (
+          (this.state.placeId === "OWN" &&
+            this.state.street !== null &&
+            this.state.zip !== null &&
+            this.state.city !== null &&
+            this.state.country !== null) ? (
           <button
             className="naked-button genericButton sameWidthButton"
             onClick={() => this.save(this.state.show)}>
             Next
           </button>
         ) : (
-          <div className="sameWidthButton buttonDisabled">Next</div>
+          <div className="sameWidthButton genericButton buttonDisabled">Next</div>
+        );
+      case 4:
+        return (
+          <button
+            className="naked-button genericButton sameWidthButton"
+            onClick={() => this.finalSave(3)}>
+            Finish Setup
+          </button>
         );
       case 5:
         return;
@@ -704,7 +833,7 @@ class Welcome extends React.Component<Props, State> {
             <div className="logo" />
             {this.componentRight(this.state.show)}
             <div className="welcomeButtons">
-              {this.state.show === 5 ? (
+              {this.state.show === 4 ? (
                 ""
               ) : (
                 <button
@@ -757,7 +886,7 @@ class Welcome extends React.Component<Props, State> {
                   : {}
               }
             />
-            <div
+            {/*<div
               className="element"
               style={
                 this.state.show === 5
@@ -766,7 +895,7 @@ class Welcome extends React.Component<Props, State> {
                   ? { backgroundColor: "#357AA5" }
                   : {}
               }
-            />
+            />*/}
           </div>
         </div>
       </div>
