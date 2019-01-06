@@ -264,7 +264,7 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { placeid, firstLogin, popup, showTutorial, page, sidebarloaded } = this.state;
-
+    let showtutorial = true;
     return (
       <AppContext.Provider
         value={{
@@ -280,18 +280,14 @@ class App extends React.Component<AppProps, AppState> {
         className="full-size">
         {this.renderComponents()}
         {console.log("REFERENCES", this.references, showTutorial)}
-        <Query query={tutorial}>
-          {({ data, loading, error }) => {
-            if (error) {
-              console.log("TutError", error);
-            }
-
-            if (loading) {
-              return <LoadingDiv text="Fetching tutorial data..." />;
-            }
-
-            return (
-              sidebarloaded && (
+        {sidebarloaded && showtutorial && localStorage.getItem("token") ? (
+          <Query query={tutorial}>
+            {({ data, loading, error }) => {
+              if (error) {
+                showtutorial = false;
+                console.log("TutError", error);
+              }
+              return (
                 <Tutorial
                   tutorialdata={data}
                   renderElements={this.references}
@@ -300,10 +296,12 @@ class App extends React.Component<AppProps, AppState> {
                   reshow={this.state.reshow}
                   setreshowTutorial={this.setreshowTutorial}
                 />
-              )
-            );
-          }}
-        </Query>
+              );
+            }}
+          </Query>
+        ) : (
+          ""
+        )}
         {popup.show && (
           <Popup
             popupHeader={popup.header}
