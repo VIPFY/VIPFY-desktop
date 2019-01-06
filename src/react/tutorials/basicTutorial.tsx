@@ -709,6 +709,7 @@ class Tutorial extends React.Component<Props, State> {
       "START TUT",
       this.props,
       this.state,
+      this.state.tutorialSave,
       this.state.tutorialSave.closed ||
         (this.state.tutorialSave.welcome &&
           this.state.tutorialSave.dashboard &&
@@ -716,11 +717,12 @@ class Tutorial extends React.Component<Props, State> {
       this.props.reshow
     );
     if (
-      (this.state.tutorialSave.closed ||
+      this.state.tutorialSave == {} ||
+      ((this.state.tutorialSave.closed ||
         (this.state.tutorialSave.welcome &&
           this.state.tutorialSave.dashboard &&
           this.state.tutorialSave.sidebar)) &&
-      !this.props.reshow
+        !this.props.reshow)
     ) {
       return "";
     } else {
