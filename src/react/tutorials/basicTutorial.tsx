@@ -64,15 +64,19 @@ class Tutorial extends React.Component<Props, State> {
     };
     function checkstep(step, first = true) {
       let s = -1;
-      console.log("checkstep", step, first, nextProps.tutorialdata.me, prevState);
+      //console.log("checkstep", step, first, nextProps.tutorialdata.me, prevState);
       if (!step) {
         if (
+          nextProps.tutorialdata &&
+          nextProps.tutorialdata.me &&
           nextProps.tutorialdata.me.tutorialprogress &&
           nextProps.tutorialdata.me.tutorialprogress[prevState.page]
         ) {
           console.log("1");
           s = nextProps.tutorialdata.me.tutorialprogress[prevState.page];
         } else if (
+          nextProps.tutorialdata &&
+          nextProps.tutorialdata.me &&
           nextProps.tutorialdata.me.tutorialprogress &&
           prevState.page === "welcome" &&
           first
@@ -80,6 +84,8 @@ class Tutorial extends React.Component<Props, State> {
           console.log("2");
           s = nextProps.tutorialdata.me.tutorialprogress[nextProps.page];
         } else if (
+          nextProps.tutorialdata &&
+          nextProps.tutorialdata.me &&
           nextProps.tutorialdata.me.tutorialprogress &&
           nextProps.tutorialdata.me.tutorialprogress.sidebar
         ) {
