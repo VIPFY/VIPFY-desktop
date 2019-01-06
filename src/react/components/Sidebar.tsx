@@ -220,6 +220,13 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         important: false
       },*/
       {
+        label: "Usage Statistics",
+        location: "usage",
+        icon: "chart-line",
+        show: this.props.isadmin,
+        important: false
+      },
+      {
         label: "Support",
         location: "support",
         icon: "ambulance",

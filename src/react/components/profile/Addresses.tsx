@@ -106,8 +106,8 @@ class Addresses extends React.Component<Props, State> {
       const address: { tags: string[]; department?: boolean } = { tags: [] };
 
       Object.values(e.target.childNodes).forEach(node => {
-        if (node.name) {
-          address[node.name] = node.value;
+        if (node.childNodes[0].name) {
+          address[node.childNodes[0].name] = node.childNodes[0].value;
         } else {
           if (node.childNodes["0"].childNodes["0"].checked) {
             address.tags.push("billing");

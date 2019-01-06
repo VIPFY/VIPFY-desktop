@@ -20,6 +20,8 @@ import Sidebar from "../components/Sidebar";
 import Team from "./team";
 import Webview from "./webview";
 import ErrorPage from "./error";
+import UsageStatistics from "./usagestatistics";
+import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 
 import { fetchLicences, me } from "../queries/auth";
 // import { fetchRecommendedApps } from "../queries/products";
@@ -321,6 +323,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "marketplace/:appid/", component: AppPage },
       { path: "marketplace/:appid/:action", component: AppPage },
       { path: "integrations", component: Integrations },
+      { path: "usage", component: UsageStatistics },
+      { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan },
       //{ path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
       { path: "admin", component: AdminDashboard, admin: true },

@@ -105,17 +105,16 @@ class AppListInner extends React.Component<Props, State> {
         <thead>
           <tr>
             <th>App Name</th>
-            <th>Plan Name</th>
-            <th>Alias</th>
-            <th>ID</th>
+            {/*<th>Plan Name</th>*/}
+            <th>Team Name</th>
             <th>
               Licences
               <br />
               Used
             </th>
             <th>Time Spend this Month</th>
-            <th>Price per Month</th>
-            <th>Runs Until</th>
+            {/*<th>Price per Month</th>
+            <th>Runs Until</th>*/}
             <th />
           </tr>
         </thead>
@@ -153,17 +152,23 @@ class AppListInner extends React.Component<Props, State> {
           {({ showPopup }) => (
             <tr>
               <td>{appName}</td>
-              <td>{planName}</td>
+              {/*<td>{planName}</td>*/}
               <td>{boughtplan.alias}</td>
-              <td>{boughtplan.id}</td>
               <td>
-                {licencesused}/{licencestotal}
+                <sup>{licencesused}</sup>/<sub>{licencestotal}</sub>
               </td>
               <td>{totalDur}</td>
-              <td>${boughtplan.totalprice}</td>
-              <td>{endSat}</td>
+              {/*<td>${boughtplan.totalprice}</td>
+              <td>{endSat}</td>*/}
               <td className="naked-button-holder">
-                <i className="fal fa-tachometer-alt-slow" title="Show" />
+                <button
+                  title="show details"
+                  className="naked-button"
+                  onClick={() =>
+                    this.props.history.push(`/area/usage/boughtplan/${boughtplan.id}`)
+                  }>
+                  <i className="fal fa-tachometer-alt-slow" />
+                </button>
                 <button
                   disabled={options && options.external}
                   onClick={() =>
