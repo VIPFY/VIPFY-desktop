@@ -73,7 +73,6 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
   componentDidUpdate({ layout }) {
     if (layout && layout.vertical && layout.vertical.length != this.props.layout.vertical!.length) {
       this.setState({ layout: this.props.layout.vertical! });
-      console.log("UPDATE SIDEBAR");
     }
   }
 
@@ -115,7 +114,6 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
       this.props.location.pathname === `/area/${location}` ||
       `${this.props.location.pathname}/dashboard` === `/area/${location}`
     ) {
-      console.log("ACTIVE", el);
       this.addReferences("active", el, addRenderElement);
     }
 
@@ -253,13 +251,10 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
           <div
             className={`sidebar${sideBarOpen ? "" : "-small"}`}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
-            {/*console.log("SIDEBAR", context)*/}
-            {/*<div className={`sidebar-logo ${this.props.sideBarOpen ? "" : "sidebar-logo-small"}`} />*/}
             <ul className="sidebar-link-holder">
               <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
-              {console.log("VERARSCHE", this.state.licences, this.state.licences.length > 0)}
               {this.state.licences.length > 0 &&
                 this.state.licences.map((licence, key) => (
                   <SidebarLink
@@ -283,12 +278,8 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
                   Logout
                 </span>
               </li>
-
-              {/*this.renderLink({ label: "Advisor", location: "advisor", icon: "envelope", show: true })*/}
             </ul>
             <div className="versionnumber">Version {pjson.version}</div>
-            {/*console.log("TOP", this.references)*/}
-            {/*context.setrenderElements(this.references)*/}
           </div>
         )}
       </AppContext.Consumer>
@@ -312,7 +303,6 @@ export default props => (
       const { licences, ...moreProps } = props;
 
       const filteredLicences = props.licences.fetchLicences;
-      console.log(filteredLicences, data.me.config);
       return <Sidebar {...moreProps} licences={filteredLicences} layout={data.me.config} />;
     }}
   </Query>
