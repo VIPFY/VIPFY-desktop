@@ -10,6 +10,7 @@ import LoadingDiv from "../components/LoadingDiv";
 import { STATUS_CODES } from "http";
 import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
+import ErrorPopup from "../popups/errorPopup";
 
 export type WebViewState = {
   setUrl: string;
@@ -28,6 +29,9 @@ export type WebViewState = {
   timeSpent: number[];
   options: any;
   appid: number;
+  error: string | null;
+  loggedIn: boolean;
+  errorshowed: boolean;
 };
 
 export type WebViewProps = {
@@ -72,7 +76,10 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     intervalId2: null,
     timeSpent: [],
     options: {},
-    appid: -1
+    appid: -1,
+    error: null,
+    loggedIn: false,
+    errorshowed: false
   };
 
   static getDerivedStateFromProps(
@@ -100,6 +107,20 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
     //console.log("DIDMOUNT");
     this.switchApp();
+    setTimeout(
+      () =>
+        this.state.loggedIn
+          ? true
+          : this.state.errorshowed
+          ? console.log("Timeout", this.state.errorshowed, this.state.loggedIn)
+          : this.setState({
+              error: `The Login takes too much time. Please check with our support.${
+                this.state.loggedIn
+              }| ${this.state.errorshowed}`,
+              loggedIn: true
+            }),
+      20000
+    );
   }
 
   componentWillUnmount() {
@@ -126,7 +147,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     this.setState({ popup: type });
   };
   closePopup = () => {
-    this.setState({ popup: null });
+    this.setState({ popup: null, error: null, errorshowed: true });
+    console.log("Close Popup", this.state.errorshowed);
   };
 
   timer1m = () => {
@@ -407,12 +429,40 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         this.hideLoadingScreen();
         break;
       }
+      case "loggedIn": {
+        //console.log("HideLoading");
+        this.setState({ loggedIn: true });
+        break;
+      }
+      case "errorDetected": {
+        console.log("errorDetected");
+        this.setState({
+          error:
+            "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+          errorshowed: true,
+          loggedIn: true
+        });
+        this.hideLoadingScreen();
+        break;
+      }
       case "startLoginIn": {
         console.log("StartLoginIN");
         break;
       }
       case "getLoginDetails": {
         console.log("GETDETAILS");
+        let round = e.args[0];
+        /*if (round > 10) {
+          console.log("STOP RETRY Webview");
+          this.setState({
+            error:
+              "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+            errorshowed: true,
+            loggedIn: true
+          });
+          this.hideLoadingScreen();
+        }*/
+        console.log(round);
         let result = await this.props.client.query({
           query: gql`
         {
@@ -445,6 +495,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             button2object: this.state.options.button2object,
             hideobject: this.state.options.hideobject,
             nopassobject: this.state.options.nopassobject,
+            errorobject: this.state.options.errorobject,
+            rememberobject: this.state.options.rememberobject,
+            loggedIn: this.state.loggedIn,
             key
           });
         } else {
@@ -537,6 +590,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           //onConsoleMessage={e => console.log("LOGCONSOLE", e.message)}
           //onDidNavigateInPage={e => console.log("DIDNAVIGATEINPAGE", e)}
         />
+        {this.state.error ? (
+          <Popup
+            popupHeader={"Uupps, sorry it seems that we can't look you in"}
+            popupBody={ErrorPopup}
+            bodyProps={{ sentence: this.state.error }}
+            onClose={this.closePopup}
+          />
+        ) : (
+          ""
+        )}
         {this.state.popup ? (
           <Popup
             popupHeader={this.state.popup.type}

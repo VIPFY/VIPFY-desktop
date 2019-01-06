@@ -2,6 +2,7 @@ import * as React from "react";
 import UserPicture from "../components/UserPicture";
 import { Query } from "react-apollo";
 import { fetchUsersOwnLicences } from "../queries/departments";
+import moment = require("moment");
 import { con } from "../../locationScripts/utils/util";
 
 interface Props {
@@ -78,6 +79,13 @@ class TeamEmployee extends React.Component<Props, State> {
                   if (data.fetchUsersOwnLicences) {
                     if (data.fetchUsersOwnLicences[0]) {
                       data.fetchUsersOwnLicences.forEach((licence, key) => {
+                        console.log("TEAMLICENCE", licence);
+                        if (
+                          licence.disabled ||
+                          (licence.endtime ? moment().isBefore(licence.endtime) : false)
+                        ) {
+                          return;
+                        }
                         if (this.props.removeApp === `${person.id}-${licence.id}`) {
                           appArray.push(
                             <div className="EApp" key="newApp">
@@ -264,7 +272,11 @@ class TeamEmployee extends React.Component<Props, State> {
                       </div>
                     );
                   }
-                  return appArray;
+                  if (appArray.length > 0) {
+                    return appArray;
+                  } else {
+                    return <div>No useable apps yet</div>;
+                  }
                 }}
               </Query>
             </div>

@@ -28,7 +28,9 @@ import { type } from "os";
   document.addEventListener("keydown", didInteraction, true);
   document.addEventListener("scroll", didInteraction, true);
 
-  window.addEventListener("load", getLoginDetails);
+  window.addEventListener("load", function() {
+    getLoginDetails(0);
+  });
 
   setInterval(() => timer(), 30000);
   setTimeout(() => timer(), 5000);
@@ -40,16 +42,16 @@ import { type } from "os";
       require("./locationScripts/vipfy.ts")();
     } else if (hostMatches("(www.)?dropbox.com")) {
       require("./locationScripts/dropbox.ts")();
-    } else if (hostMatches(".*.?pipedrive.com")) {
-      require("./locationScripts/pipedrive.ts")();
-    } else if (hostMatches(".*.?wrike.com")) {
-      require("./locationScripts/wrike.ts")();
+      //} else if (hostMatches(".*.?pipedrive.com")) {  //Nachschauen woran es liegt
+      //  require("./locationScripts/pipedrive.ts")();
+      //} else if (hostMatches(".*.?wrike.com")) {
+      //  require("./locationScripts/wrike.ts")();
     } else if (hostMatches(".*.?google.com")) {
       require("./locationScripts/googledocs.ts")();
     } else if (hostMatches(".*.?weebly(cloud?).com")) {
       require("./locationScripts/weebly.ts")();
-    } else if (hostMatches(".*.?moo.com")) {
-      require("./locationScripts/moo.ts")();
+      //} else if (hostMatches(".*.?moo.com")) {
+      //  require("./locationScripts/moo.ts")();
     } else if (hostMatches(".*.?domaindiscount24.com")) {
       require("./locationScripts/dd24.ts")();
     } else if (hostMatches(".*.?sendgrid.com")) {
@@ -88,8 +90,6 @@ import { type } from "os";
       require("./locationScripts/buzzsumo.ts")();
     } else if (hostMatches(".*.?logmeininc.com") || hostMatches(".*.?gotomeeting.com")) {
       require("./locationScripts/gotomeeting.ts")();
-      //} else if (hostMatches(".*.?trello.com")) {
-      //  require("./locationScripts/trello.ts")();
     } else if (hostMatches(".*.?calendly.com")) {
       require("./locationScripts/calendly.ts")();
     } else if (hostMatches(".*.?teamwork.com")) {
@@ -110,16 +110,12 @@ import { type } from "os";
       require("./locationScripts/getminute.ts")();
     } else if (hostMatches(".*.?supersaas.de")) {
       require("./locationScripts/supersaas.ts")();
-      //} else if (hostMatches(".*.?smartlook.com")) {
-      //  require("./locationScripts/smartlook.ts")();
     } else if (hostMatches(".*.?papershift.com")) {
       require("./locationScripts/papershift.ts")();
     } else if (hostMatches(".*.?sevdesk.de")) {
       require("./locationScripts/sevdesk.ts")();
     } else if (hostMatches(".*.?freshworks.com")) {
       require("./locationScripts/freshworks.ts")();
-      //} else if (hostMatches(".*.?wunderlist.com")) {
-      //  require("./locationScripts/wunderlist.ts")();
     } else if (hostMatches(".*.?freedcamp.com")) {
       require("./locationScripts/freedcamp.ts")();
     } else if (hostMatches(".*.?zoho.com")) {
@@ -218,8 +214,6 @@ import { type } from "os";
       require("./locationScripts/slido.ts")();
     } else if (hostMatches(".*.?glisser.com")) {
       require("./locationScripts/glisser.ts")();
-      //} else if (hostMatches(".*.?eventbrite.com")) {
-      //  require("./locationScripts/eventbrite.ts")();
     } else if (hostMatches(".*.?eventzilla.net")) {
       require("./locationScripts/eventzilla.ts")();
     } else if (hostMatches(".*.?grenadine.co")) {
@@ -247,17 +241,38 @@ import { type } from "os";
   // }
   //});
 }
-function getLoginDetails() {
+function getLoginDetails(askfordata) {
   let repeatpossible = true;
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("startLoginIn");
   ipcRenderer.send("TESTMESSAGE");
 
-  ipcRenderer.sendToHost("getLoginDetails", 7);
+  ipcRenderer.sendToHost("getLoginDetails", askfordata);
   console.log("GETD");
   ipcRenderer.once("loginDetails", (e, key) => {
     console.log("ONCE");
     console.log("LOGINDETAILS", key);
+
+    if (
+      askfordata > 50 ||
+      (document.querySelector<HTMLInputElement>(key.errorobject) ||
+        document.getElementById(key.errorobject))
+    ) {
+      console.log(
+        "STOP RETRY",
+        askfordata,
+        document.querySelector<HTMLInputElement>(key.errorobject) ||
+          document.getElementById(key.errorobject)
+      );
+      ipcRenderer.sendToHost("errorDetected");
+      return;
+    }
+
+    if (key.loggedIn) {
+      ipcRenderer.sendToHost("hideLoading");
+      console.log("already loggedIn");
+      return;
+    }
 
     if (key.type) {
       if (
@@ -265,6 +280,7 @@ function getLoginDetails() {
         (document.querySelector<HTMLInputElement>(key.passwordobject) ||
           document.getElementById(key.passwordobject))
       ) {
+        askfordata++;
         console.log(
           "TYPE 1|2",
           key.type == 1,
@@ -277,45 +293,57 @@ function getLoginDetails() {
         let password = key.key.password;
 
         if (key.emailtype ? key.emailtype == 1 : key.type == 1) {
+          document
+            .querySelector<HTMLInputElement>(key.emailobject)!
+            .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
           document.querySelector<HTMLInputElement>(key.emailobject)!.value = username;
 
           document
-            .querySelector<HTMLInputElement>(key.emailobject)
+            .querySelector<HTMLInputElement>(key.emailobject)!
             .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
 
           document
-            .querySelector<HTMLInputElement>(key.emailobject)
+            .querySelector<HTMLInputElement>(key.emailobject)!
             .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
         } else {
+          document
+            .getElementById(key.emailobject)!
+            .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
           document.getElementById(key.emailobject)!.value = username;
           document
-            .getElementById(key.emailobject)
+            .getElementById(key.emailobject)!
             .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
 
           document
-            .getElementById(key.emailobject)
+            .getElementById(key.emailobject)!
             .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
         }
 
         if (key.passwordtype ? key.passwordtype == 1 : key.type == 1) {
+          document
+            .querySelector<HTMLInputElement>(key.passwordobject)!
+            .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
           document.querySelector<HTMLInputElement>(key.passwordobject)!.value = password;
 
           document
-            .querySelector<HTMLInputElement>(key.passwordobject)
+            .querySelector<HTMLInputElement>(key.passwordobject)!
             .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
 
           document
-            .querySelector<HTMLInputElement>(key.passwordobject)
+            .querySelector<HTMLInputElement>(key.passwordobject)!
             .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
         } else {
+          document
+            .getElementById(key.passwordobject)!
+            .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
           document.getElementById(key.passwordobject)!.value = password;
 
           document
-            .getElementById(key.passwordobject)
+            .getElementById(key.passwordobject)!
             .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
 
           document
-            .getElementById(key.passwordobject)
+            .getElementById(key.passwordobject)!
             .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
         }
 
@@ -325,53 +353,76 @@ function getLoginDetails() {
           clickButton(document.getElementById(key.buttonobject));
         }
         repeatpossible = false;
-      } else if (key.type == 3) {
+      } else if (key.type == 3 || key.type == 4) {
         console.log("TYPE 3");
         //Two Steps
         ipcRenderer.sendToHost("showLoading");
         let username = key.key.username;
         let password = key.key.password;
 
+        console.log(
+          (document.querySelector<HTMLInputElement>(key.emailobject)
+            ? document.querySelector<HTMLInputElement>(key.emailobject)!.value == ""
+            : false || document.getElementById(key.emailobject)
+            ? document.getElementById(key.emailobject)!.value == ""
+            : false) &&
+            !(
+              document.querySelector<HTMLInputElement>(key.passwordobject) ||
+              document.getElementById(key.passwordobject)
+            )
+        );
+
         if (
-          (document.querySelector<HTMLInputElement>(key.emailobject) ||
-            document.getElementById(key.emailobject)) &&
+          (document.querySelector<HTMLInputElement>(key.emailobject)
+            ? document.querySelector<HTMLInputElement>(key.emailobject)!.value == ""
+            : false || document.getElementById(key.emailobject)
+            ? document.getElementById(key.emailobject)!.value == ""
+            : false) &&
           !(
             document.querySelector<HTMLInputElement>(key.passwordobject) ||
             document.getElementById(key.passwordobject)
           )
         ) {
+          console.log("EMAIL AND NO PASSWORD");
+          askfordata++;
           if (key.emailtype ? key.emailtype == 1 : key.type == 1) {
+            document
+              .querySelector<HTMLInputElement>(key.emailobject)!
+              .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
             document.querySelector<HTMLInputElement>(key.emailobject)!.value = username;
 
             document
-              .querySelector<HTMLInputElement>(key.emailobject)
+              .querySelector<HTMLInputElement>(key.emailobject)!
               .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
 
             document
-              .querySelector<HTMLInputElement>(key.emailobject)
+              .querySelector<HTMLInputElement>(key.emailobject)!
               .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
           } else {
+            document
+              .getElementById(key.emailobject)!
+              .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
             document.getElementById(key.emailobject)!.value = username;
             document
-              .getElementById(key.emailobject)
+              .getElementById(key.emailobject)!
               .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
 
             document
-              .getElementById(key.emailobject)
+              .getElementById(key.emailobject)!
               .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
           }
 
           if (key.button1object) {
             if (key.button1type == 1) {
-              clickButton(document.querySelector<HTMLInputElement>(key.button1object));
+              clickButton(document.querySelector<HTMLInputElement>(key.button1object)!);
             } else {
-              clickButton(document.getElementById(key.button1object));
+              clickButton(document.getElementById(key.button1object)!);
             }
           } else {
             if (key.buttontype == 1) {
-              clickButton(document.querySelector<HTMLInputElement>(key.buttonobject));
+              clickButton(document.querySelector<HTMLInputElement>(key.buttonobject)!);
             } else {
-              clickButton(document.getElementById(key.buttonobject));
+              clickButton(document.getElementById(key.buttonobject)!);
             }
           }
         }
@@ -399,75 +450,116 @@ function getLoginDetails() {
             document.querySelector<HTMLInputElement>(key.emailpassobject) ||
             document.getElementById(key.emailpassobject) ||
             key.nopassobject) &&
-          (document.querySelector<HTMLInputElement>(key.passwordobject) ||
-            document.getElementById(key.passwordobject))
+          (document.querySelector<HTMLInputElement>(key.passwordobject)
+            ? document.querySelector<HTMLInputElement>(key.passwordobject)!.value == ""
+            : false || document.getElementById(key.passwordobject)
+            ? document.getElementById(key.passwordobject)!.value == ""
+            : false)
         ) {
-          repeatpossible = false;
+          console.log("EMAIL AND PASSWORD");
+          askfordata++;
+          if (key.type == 3) {
+            repeatpossible = false;
+          }
           if (key.passwordtype ? key.passwordtype == 1 : key.type == 1) {
+            document
+              .querySelector<HTMLInputElement>(key.passwordobject)!
+              .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
             document.querySelector<HTMLInputElement>(key.passwordobject)!.value = password;
 
             document
-              .querySelector<HTMLInputElement>(key.passwordobject)
+              .querySelector<HTMLInputElement>(key.passwordobject)!
               .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
 
             document
-              .querySelector<HTMLInputElement>(key.passwordobject)
+              .querySelector<HTMLInputElement>(key.passwordobject)!
               .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
           } else {
+            document
+              .getElementById(key.passwordobject)!
+              .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
             document.getElementById(key.passwordobject)!.value = password;
 
             document
-              .getElementById(key.passwordobject)
+              .getElementById(key.passwordobject)!
               .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
 
             document
-              .getElementById(key.passwordobject)
+              .getElementById(key.passwordobject)!
               .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
           }
 
           if (key.button2object) {
             if (key.button2type == 1) {
-              clickButton(document.querySelector<HTMLInputElement>(key.button2object));
+              clickButton(document.querySelector<HTMLInputElement>(key.button2object)!);
             } else {
-              clickButton(document.getElementById(key.button2object));
+              clickButton(document.getElementById(key.button2object)!);
             }
           } else {
             if (key.buttontype == 1) {
-              clickButton(document.querySelector<HTMLInputElement>(key.buttonobject));
+              clickButton(document.querySelector<HTMLInputElement>(key.buttonobject)!);
             } else {
-              clickButton(document.getElementById(key.buttonobject));
+              clickButton(document.getElementById(key.buttonobject)!);
             }
           }
+        }
+        if (key.type == 4 && document.querySelector<HTMLInputElement>(key.rememberobject)) {
+          clickButton(document.querySelector<HTMLInputElement>(key.rememberobject)!);
+          repeatpossible = false;
         }
       }
       hideLoading();
 
       if (
-        (key.repeat || key.type == 3) &&
+        (key.repeat || key.type == 3 || key.type == 4) &&
         repeatpossible &&
         !(
           document.querySelector<HTMLInputElement>(key.hideobject) ||
           document.getElementById(key.hideobject)
         )
       ) {
-        setTimeout(getLoginDetails, 50);
+        setTimeout(function() {
+          getLoginDetails(askfordata);
+        }, 50);
       }
 
-      function hideLoading() {
+      function hideLoading(r = 0) {
         if (
           ((key.type == 1 || key.type == 2 || key.hidetype == 1 || key.hidetype == 2) &&
             key.hidetype != 3 &&
             (document.querySelector<HTMLInputElement>(key.passwordobject) ||
-              document.getElementById(key.passwordobject))) ||
-          ((key.type == 3 || key.hidetype == 3) &&
+              document.getElementById(key.passwordobject)) &&
+            !(
+              document.querySelector<HTMLInputElement>(key.errorobject) ||
+              document.getElementById(key.errorobject)
+            )) ||
+          ((key.type == 3 || key.hidetype == 3 || key.type == 4 || key.hidetype == 4) &&
             !(
               document.querySelector<HTMLInputElement>(key.hideobject) ||
               document.getElementById(key.hideobject)
-            ))
+            ) &&
+            !(
+              document.querySelector<HTMLInputElement>(key.errorobject) ||
+              document.getElementById(key.errorobject)
+            ) &&
+            r <= 50)
         ) {
-          setTimeout(hideLoading, 50);
+          console.log(
+            "Still Hiding",
+            document.querySelector<HTMLInputElement>(key.errorobject) ||
+              document.getElementById(key.errorobject)
+          );
+          setTimeout(() => hideLoading(r++), 50);
+        } else if (
+          document.querySelector<HTMLInputElement>(key.errorobject) ||
+          document.getElementById(key.errorobject) ||
+          r > 50
+        ) {
+          ipcRenderer.sendToHost("errorDetected");
+          return;
         } else {
           let ipcRenderer = require("electron").ipcRenderer;
+          ipcRenderer.sendToHost("loggedIn");
           ipcRenderer.sendToHost("hideLoading");
         }
       }

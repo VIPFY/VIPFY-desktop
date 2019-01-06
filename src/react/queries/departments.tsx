@@ -103,6 +103,8 @@ export const fetchUsersOwnLicences = gql`
   query fetchUsersOwnLicences($unitid: ID!) {
     fetchUsersOwnLicences(unitid: $unitid) {
       id
+      disabled
+      endtime
       boughtplanid {
         id
         alias
