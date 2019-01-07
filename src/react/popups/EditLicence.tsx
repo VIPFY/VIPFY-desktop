@@ -30,7 +30,7 @@ class EditLicence extends React.Component<Props, State> {
     passwordFocus: false
   };
 
-  handleSubmit = async () => {
+  handleUpdate = async () => {
     try {
       const { email, password } = this.state;
       const values = { licenceid: this.props.id };
@@ -45,6 +45,15 @@ class EditLicence extends React.Component<Props, State> {
 
       await this.setState({ loading: true });
       await this.props.submitFunction(values);
+      this.props.onClose();
+    } catch (err) {
+      this.setState({ error: filterError(err), loading: false });
+    }
+  };
+
+  handleDelete = async () => {
+    try {
+      await this.props.deleteFunction(this.props.id);
       this.props.onClose();
     } catch (err) {
       this.setState({ error: filterError(err), loading: false });
@@ -108,7 +117,7 @@ class EditLicence extends React.Component<Props, State> {
             disabled={this.state.loading}
             type="button"
             className="generic-cancel-button"
-            onClick={() => this.props.onClose}>
+            onClick={this.props.onClose}>
             <i className="fas fa-long-arrow-alt-left" /> Cancel
           </button>
 
@@ -116,7 +125,7 @@ class EditLicence extends React.Component<Props, State> {
             disabled={this.state.loading}
             type="button"
             className="generic-cancel-button"
-            onClick={() => this.handleSubmit}>
+            onClick={this.handleDelete}>
             <i className="fal fa-trash-alt" /> Delete Licence to next possible date
           </button>
 
@@ -124,7 +133,7 @@ class EditLicence extends React.Component<Props, State> {
             type="submit"
             disabled={this.state.loading}
             className="generic-submit-button"
-            onClick={this.handleSubmit}>
+            onClick={this.handleUpdate}>
             <i className="fas fa-check-circle" /> Confirm
           </button>
         </div>
