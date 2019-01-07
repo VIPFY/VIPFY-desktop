@@ -548,8 +548,6 @@ class Team extends React.Component<Props, State> {
     this.togglePApps(departmentid);
   };
   distributeLicence = async (boughtplanid, unitid, departmentid, appname) => {
-    //this.showLoading("We are adding the App to the user account.")
-    //console.log("APPNAME", appname)
     this.setState({ addingAppUser: unitid, addingAppName: appname });
     const res = await this.props.distributeLicence({
       variables: { boughtplanid, unitid, departmentid },
@@ -562,14 +560,9 @@ class Team extends React.Component<Props, State> {
       this.showPopup(res.data.distributeLicence.error.message || "Something went really wrong");
     }
     this.setState({ addingAppUser: null, addingAppName: null });
-    //this.closePopup();
-    //this.toggleEmployeeInfo(0, 0);
-    //this.setState({ update: this.state.update + 1 });
   };
 
   revokeLicence = async (licenceid, unitid) => {
-    //console.log("REVOKE", licenceid)
-    //this.showLoading("We are removing the app from the user account.")
     this.setState({ removeApp: `${unitid}-${licenceid}` });
     try {
       await this.props.revokeLicence({
@@ -610,12 +603,9 @@ class Team extends React.Component<Props, State> {
       this.showPopup(res.data.deleteSubDepartment.error.message || "Something went really wrong");
     }
     this.closePopup();
-    //this.toggleDA(0);
-    //this.setState({ newDepartment: "" });
   };
 
   onDragOver = (ev, removeid) => {
-    //console.log(this.state.removeid, removeid);
     if (this.state.removeid !== removeid) {
       ev.preventDefault();
     }
@@ -641,8 +631,6 @@ class Team extends React.Component<Props, State> {
       this.setState({ dragging: app.id, removeid: 0, draggingapp: app });
     }
 
-    console.log("Drag", app);
-
     ev.dataTransfer.setData("id", app.id);
     ev.dataTransfer.setData("remove", remove);
     ev.dataTransfer.setData("name", app.name);
@@ -650,7 +638,6 @@ class Team extends React.Component<Props, State> {
   };
 
   onDragLicenceStart = (ev, licenceid, teamname, personid, personname, appname, external) => {
-    //console.log("DRAG START");
     this.setState({ dragginglicence: licenceid, removeid: personid });
     ev.dataTransfer.setData("licenceid", licenceid);
     ev.dataTransfer.setData("remove", "true");
@@ -662,7 +649,6 @@ class Team extends React.Component<Props, State> {
   };
 
   onDrop = (ev, person, department, removearea) => {
-    //console.log("DROP2");
     let id = ev.dataTransfer.getData("id");
     let appname = ev.dataTransfer.getData("appname");
     let remove = ev.dataTransfer.getData("remove");
@@ -720,6 +706,7 @@ class Team extends React.Component<Props, State> {
         variables: { licenceid, fromuser: userid },
         refetchQueries: [{ query: me }, { query: fetchLicences }]
       });
+      console.log("Middle")
       const res = await this.props.distributeLicence({
         variables: { licenceid, unitid: newuserid, departmentid },
         refetchQueries: [
@@ -734,8 +721,6 @@ class Team extends React.Component<Props, State> {
   };
 
   onDropApp = (ev, person, department, removearea) => {
-    //console.log("DROP1");
-    //this.setState({ dragginglicence: 0, removeid: -1 });
     let remove = ev.dataTransfer.getData("remove");
 
     if (remove === "true" && removearea) {
@@ -1114,6 +1099,17 @@ class Team extends React.Component<Props, State> {
                           )}
                         </div>
                         <div className="companyName">{company.name}</div>
+                      </div>
+                      <div className="companyHeader">
+                        <button
+                          className="naked-button genericButton"
+                          onClick={() => this.addEmployeeP(company.unit.id)}
+                          ref={el =>
+                            context.addRenderElement({ key: "addEmployeeelement", element: el })
+                          }>
+                          <span className="textButton">+</span>
+                          <span className="textButtonBeside">Add Employee</span>
+                        </button>
                       </div>
                       <div className="companyEmployees">
                         {this.props.departmentsdata.fetchDepartmentsData

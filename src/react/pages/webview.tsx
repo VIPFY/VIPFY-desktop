@@ -62,7 +62,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   state = {
     setUrl: "",
-    currentUrl: "vipfy://blank",
+    currentUrl: null,
     inspirationalText: "Loading...",
     legalText: "Legal Text",
     showLoadingScreen: true,
@@ -114,9 +114,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           : this.state.errorshowed
           ? console.log("Timeout", this.state.errorshowed, this.state.loggedIn)
           : this.setState({
-              error: `The Login takes too much time. Please check with our support.${
-                this.state.loggedIn
-              }| ${this.state.errorshowed}`,
+              error: "The Login takes too much time. Please check with our support.",
               loggedIn: true
             }),
       20000
@@ -148,7 +146,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   };
   closePopup = () => {
     this.setState({ popup: null, error: null, errorshowed: true });
-    console.log("Close Popup", this.state.errorshowed);
   };
 
   timer1m = () => {
@@ -163,7 +160,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         timeSpent[licenceId] += 1;
       }
     }
-    //console.log("TIME SPENT", timeSpent);
     this.setState({ timeSpent });
   };
 
@@ -190,7 +186,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   };
 
   acceptFunction = async () => {
-    //console.log("ACCEPTED LICENCE", this.state.licenceId);
     try {
       await this.props.client.mutate({
         mutation: gql`
@@ -212,8 +207,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   };
 
   private async switchApp(): Promise<void> {
-    //console.log("switchApp", this.state.licenceId, this.props);
-
+    console.log(`SWITCH APP webview-${this.props.viewID}`, this.state);
     const timeSpent: number[] = [];
     timeSpent[this.state.licenceId] = 0;
     this.sendTimeSpent(timeSpent);
@@ -245,7 +239,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       `,
       fetchPolicy: "network-only"
     });
-    //console.log("APP DATA", result);
     let licence = result.data.fetchLicences[0];
     if (!licence) {
       return;
@@ -265,29 +258,18 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         acceptFunction: this.acceptFunction
       });
       return;
-      /*window.alert(
-        "You first have to agree to the licence terms. Unfortunately this isn't implemented yet"
-      );*/
     }
-    /*console.log(
-      "CHECK SESSION ",
-      licence.unit.id,
-      this.state.unitId,
-      licence.unit.id !== this.state.unitId
-    );*/
-    if (licence.unit.id !== this.state.unitId) {
+    /*if (licence.unit.id !== this.state.unitId) {
       await new Promise((resolve, reject) => {
         session.fromPartition("services").clearStorageData({}, () => {
           resolve();
         });
       });
-    }
+    }*/
     let loginurl = licence.boughtPlan.plan.app.loginurl;
     if (licence.key && licence.key.loginurl) {
-      //console.log(licence.key.loginurl);
       loginurl = licence.key.loginurl;
     }
-    //console.log("SET STATE");
     this.setState({
       setUrl: loginurl,
       unitId: licence.unit.id,
@@ -298,7 +280,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   onDidNavigate(url: string): void {
     console.log("DidNavigate", url);
-    //this.setState({ currentUrl: url });
+    //this.setState(prevState => (prevState.currentUrl != url ? { currentUrl: url } : null));
+    //this.showLoadingScreen();
+  }
+
+  onDidNavigateInPage(url: string): void {
+    console.log("DidNavigateInPage", url);
+    //this.setState(prevState => (prevState.currentUrl != url ? { currentUrl: url } : null));
     //this.showLoadingScreen();
   }
 
@@ -515,6 +503,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   render() {
+    console.log(`RENDER webview-${this.props.viewID}`, this.state);
+
     let cssClass = "marginLeft";
     if (this.props.chatOpen) {
       cssClass += " chat-open";
@@ -561,9 +551,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           preload="./preload-launcher.js"
           webpreferences="webSecurity=no"
           className={cssClassWeb}
-          src={this.state.setUrl}
+          src={this.state.currentUrl || this.state.setUrl}
           partition="services"
-          //onDidNavigate={e => this.onDidNavigate(e.target.src)}
+          onDidNavigate={e => this.onDidNavigate(e.target.src)}
           //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
           onDidFailLoad={(code, desc, url, isMain) => {
             if (isMain) {
@@ -575,7 +565,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           onNewWindow={e => this.onNewWindow(e)}
           //onWillNavigate={e => console.log("WillNavigate", e.target.src)}
           //onDidStartLoading={e => console.log("DidStartLoading", e.target.src)}
-          //onDidStartNavigation={e => console.log("DidStartNavigation", e.target.src)}
+          onDidStartNavigation={e => console.log("DidStartNavigation", e.target.src)}
           //onDidFinishLoad={e => console.log("DidFinishLoad", e.target.src)}
           //onDidStopLoading={e => console.log("DidStopLoading", e.target.src)}
           onDomReady={e => {
@@ -588,7 +578,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           //onDialog={e => console.log("Dialog", e)}
           onIpcMessage={e => this.onIpcMessage(e)}
           //onConsoleMessage={e => console.log("LOGCONSOLE", e.message)}
-          //onDidNavigateInPage={e => console.log("DIDNAVIGATEINPAGE", e)}
+          onDidNavigateInPage={e => this.onDidNavigateInPage(e.target.src)}
         />
         {this.state.error ? (
           <Popup

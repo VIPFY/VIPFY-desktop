@@ -64,7 +64,6 @@ class Tutorial extends React.Component<Props, State> {
     };
     function checkstep(step, first = true) {
       let s = -1;
-      //console.log("checkstep", step, first, nextProps.tutorialdata.me, prevState);
       if (!step) {
         if (
           nextProps.tutorialdata &&
@@ -72,7 +71,6 @@ class Tutorial extends React.Component<Props, State> {
           nextProps.tutorialdata.me.tutorialprogress &&
           nextProps.tutorialdata.me.tutorialprogress[prevState.page]
         ) {
-          console.log("1");
           s = nextProps.tutorialdata.me.tutorialprogress[prevState.page];
         } else if (
           nextProps.tutorialdata &&
@@ -81,7 +79,6 @@ class Tutorial extends React.Component<Props, State> {
           prevState.page === "welcome" &&
           first
         ) {
-          console.log("2");
           s = nextProps.tutorialdata.me.tutorialprogress[nextProps.page];
         } else if (
           nextProps.tutorialdata &&
@@ -89,10 +86,8 @@ class Tutorial extends React.Component<Props, State> {
           nextProps.tutorialdata.me.tutorialprogress &&
           nextProps.tutorialdata.me.tutorialprogress.sidebar
         ) {
-          console.log("3");
           s = nextProps.tutorialdata.me.tutorialprogress.sidebar;
         } else {
-          console.log("4");
           return sectionsStarts[prevState.page];
         }
         return checkstep(s, false);
@@ -100,8 +95,6 @@ class Tutorial extends React.Component<Props, State> {
         return step;
       }
     }
-
-    console.log("UPDATE FROM PROPS", nextProps, prevState);
     if (
       (nextProps.tutorialdata &&
         nextProps.tutorialdata.me &&
@@ -112,17 +105,10 @@ class Tutorial extends React.Component<Props, State> {
       let r = 1;
       r = nextProps.reshow ? sectionsStarts[nextProps.reshow] : checkstep(prevState.step);
       const page = nextProps.reshow ? nextProps.reshow : prevState.page;
-      console.log("CHECKSTEP", r);
-
-      console.log("UPDATE IN STATE");
       const o = {
         ...prevState,
         page,
-        tutorialprogress: /*nextProps.tutorialdata &&
-          nextProps.tutorialdata.me &&
-          nextProps.tutorialdata.me.tutorialprogress
-            ? nextProps.tutorialdata.me.tutorialprogress
-            : */ {
+        tutorialprogress: {
           welcome: 1,
           sidebar: 2,
           dashboard: 11,
@@ -144,8 +130,6 @@ class Tutorial extends React.Component<Props, State> {
             ? nextProps.tutorialdata.me.tutorialprogress
             : prevState.tutorialSave
       };
-
-      console.log("UPDATE IN STATE2", o);
       return o;
     } else {
       return prevState;
@@ -153,7 +137,6 @@ class Tutorial extends React.Component<Props, State> {
   }
 
   endSection = async section => {
-    console.log("END SECTION START", section, this.state);
     const a = await this.props.updateTutorialProgress({
       variables: { tutorialprogress: { ...this.state.tutorialSave, [section]: true } }
     });
@@ -167,17 +150,13 @@ class Tutorial extends React.Component<Props, State> {
       };
       return newstate;
     });
-
-    console.log("END SECTION", section, this.state);
   };
 
   nextClick = step => {
-    console.log("NEXT CLICK", this.state);
     const references = this.props.renderElements;
     const steps = this.props.tutorialdata.tutorialSteps;
 
     if (steps && steps[0]) {
-      console.log("Remove Highlights for ", this.state.step);
       const { renderoptions } = steps.find(e => e.id == this.state.step);
       if (renderoptions.highlightelement) {
         references.find(e => e.key === renderoptions.highlightelement)!.element.style.zIndex = "";
@@ -204,8 +183,6 @@ class Tutorial extends React.Component<Props, State> {
       updatedprogress[this.state.page] = null;
       this.setState({ tutorialprogress: updatedprogress });
 
-      console.log("NEXTSTEP TEST", this.state);
-
       if (this.state.tutorialprogress[this.state.page]) {
         this.setState({
           step: this.state.tutorialprogress[this.state.page],
@@ -216,12 +193,6 @@ class Tutorial extends React.Component<Props, State> {
           step: this.sectionsStarts[this.props.page],
           page: this.props.page
         });
-        console.log(
-          "NEXTSTEP TEST 2",
-          this.state,
-          this.props.page,
-          this.state.tutorialprogress[this.props.page]
-        );
       } else if (this.state.tutorialprogress.sidebar) {
         this.setState({ step: this.state.tutorialprogress.sidebar, page: "sidebar" });
       } else {
@@ -235,11 +206,9 @@ class Tutorial extends React.Component<Props, State> {
       variables: { tutorialprogress: { ...this.state.tutorialSave, closed: true } }
     });
     this.setState({ tutorialSave: { ...this.state.tutorialSave, closed: true } });
-    console.log("UPDATE STATE", a);
     const references = this.props.renderElements;
     const steps = this.props.tutorialdata.tutorialSteps;
     if (steps && steps[0]) {
-      console.log("Remove Highlights for ", this.state.step);
       const { renderoptions } = steps.find(e => e.id == this.state.step);
       if (
         renderoptions.highlightelement &&
@@ -258,7 +227,6 @@ class Tutorial extends React.Component<Props, State> {
     let stepArray: JSX.Element[] = [];
     const stepsa = steps.filter(s => s.page == this.state.page);
     stepsa.sort((a, b) => a.renderoptions.orderkey > b.renderoptions.orderkey);
-    console.log("sorted", stepsa);
     stepsa.forEach(s => {
       stepArray.push(
         <button
@@ -296,7 +264,6 @@ class Tutorial extends React.Component<Props, State> {
     const steps = this.props.tutorialdata ? this.props.tutorialdata.tutorialSteps : [];
     let references = this.state.references;
     if (steps && steps[0] && this.state.step) {
-      console.log("TESTSTEPS", steps, this.state.step, this.props);
       const { steptext, renderoptions, nextstep } = steps.find(e => e.id == s);
       const stepcount = steps.filter(s => s.page == this.state.page).length;
       if (references.find(e => e.key == renderoptions.highlightelement)) {
@@ -359,7 +326,6 @@ class Tutorial extends React.Component<Props, State> {
                     ""
                   )}
                   <div className="tutorialSectionHolder">
-                    {console.log("TEST STEPS", steps, this.state.page)}
                     <div className="tutorialSectionShower">{this.state.page}</div>
                     {stepcount > 1 ? (
                       <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
@@ -377,11 +343,6 @@ class Tutorial extends React.Component<Props, State> {
             );
             break;
           case "below":
-            console.log(
-              "RenderingFirst",
-              references.find(e => e.key === renderoptions.highlightelement),
-              renderoptions.highlightelement
-            );
             references.find(e => e.key == renderoptions.highlightelement)!.element.style.zIndex =
               "20000";
             references.find(
@@ -392,28 +353,6 @@ class Tutorial extends React.Component<Props, State> {
                 e => e.key === renderoptions.highlightelement
               )!.element.style.position = "relative";
             }
-
-            console.log(
-              "Rendering",
-              references.find(e => e.key === renderoptions.highlightelement),
-              renderoptions.highlightelement,
-              {
-                top: references.find(e => e.key === renderoptions.highlightelement)
-                  ? this.calculateTop(
-                      references.find(e => e.key === renderoptions.highlightelement)!.element,
-                      30,
-                      2
-                    )
-                  : "",
-                left: references.find(e => e.key === renderoptions.highlightelement)
-                  ? this.calculateLeft(
-                      references.find(e => e.key === renderoptions.highlightelement)!.element,
-                      10,
-                      0
-                    )
-                  : ""
-              }
-            );
             return (
               <div
                 className="tutorialPopupBelow"
@@ -462,7 +401,6 @@ class Tutorial extends React.Component<Props, State> {
                     ""
                   )}
                   <div className="tutorialSectionHolder">
-                    {console.log("TEST STEPS", steps, this.state.page)}
                     <div className="tutorialSectionShower">{this.state.page}</div>
                     {stepcount > 1 ? (
                       <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
@@ -542,7 +480,6 @@ class Tutorial extends React.Component<Props, State> {
                     ""
                   )}
                   <div className="tutorialSectionHolder">
-                    {console.log("TEST STEPS", steps, this.state.page)}
                     <div className="tutorialSectionShower">{this.state.page}</div>
                     {stepcount > 1 ? (
                       <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
@@ -592,7 +529,6 @@ class Tutorial extends React.Component<Props, State> {
                     ""
                   )}
                   <div className="tutorialSectionHolder">
-                    {console.log("TEST STEPS", steps, this.state.page)}
                     <div className="tutorialSectionShower">{this.state.page}</div>
                     {stepcount > 1 ? (
                       <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
@@ -610,8 +546,6 @@ class Tutorial extends React.Component<Props, State> {
             );
         }
       } else {
-        //this.closeTutorial();
-        console.log("No Highlight", renderoptions);
         return (
           <div className="tutorialPopup">
             <div className="tutorialCloseButton" onClick={() => this.closeTutorial()}>
@@ -643,7 +577,6 @@ class Tutorial extends React.Component<Props, State> {
                 ""
               )}
               <div className="tutorialSectionHolder">
-                {console.log("TEST STEPS", steps, this.state.page)}
                 <div className="tutorialSectionShower">{this.state.page}</div>
                 {stepcount > 1 ? (
                   <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
@@ -664,16 +597,12 @@ class Tutorial extends React.Component<Props, State> {
   };
 
   componentDidUpdate() {
-    console.log("UPDATE", this.props.renderElements);
-
-    console.log("TUTPROPS", this.props);
     if (
       this.state.propspage !== this.props.page &&
       this.state.page !== "welcome" &&
       this.state.tutorialprogress[this.props.page] &&
       !this.props.reshow
     ) {
-      console.log("Update", this.state.page, this.props.page);
       const references = this.props.renderElements;
 
       const steps = this.props.tutorialdata ? this.props.tutorialdata.tutorialSteps : [];
@@ -681,9 +610,7 @@ class Tutorial extends React.Component<Props, State> {
       const currentpage = this.state.page;
 
       if (steps && steps[0]) {
-        console.log("Remove Highlights for ", currentstep);
         const { renderoptions } = steps.find(e => e.id == currentstep);
-        console.log("Remove Highlights for ", currentstep, renderoptions, references);
         if (
           renderoptions.highlightelement &&
           references.find(e => e.key === renderoptions.highlightelement).element
@@ -691,10 +618,6 @@ class Tutorial extends React.Component<Props, State> {
           references.find(e => e.key === renderoptions.highlightelement)!.element.style.zIndex = "";
           references.find(e => e.key === renderoptions.highlightelement)!.element.style.boxShadow =
             "";
-          console.log(
-            "ZINDEX",
-            references.find(e => e.key === renderoptions.highlightelement)!.element.style
-          );
         }
       }
       const nextstep = steps.find(e => e.id == currentstep).nextstep;
@@ -711,16 +634,6 @@ class Tutorial extends React.Component<Props, State> {
   }
 
   render() {
-    console.log(
-      "RENDER TUTORIAL",
-      this.state,
-      this.props,
-      this.state.tutorialSave,
-      this.state.tutorialSave == {},
-      this.state.tutorialSave.closed,
-      !this.props.reshow,
-      this.state.tutorialSave == {} || (this.state.tutorialSave.closed && !this.props.reshow)
-    );
     if (this.state.tutorialSave == {} || (this.state.tutorialSave.closed && !this.props.reshow)) {
       return "";
     } else {
