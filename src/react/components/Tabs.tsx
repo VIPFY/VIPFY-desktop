@@ -1,13 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import Tab from "./Tab";
-import { AsyncAutoTaskFunctionWithoutDependencies } from "async";
 
 interface Props {
   tabs: any[];
   setInstance: Function;
   viewID: number;
-  closeTab: Function;
   handleClose: Function;
   handleDragStart: Function;
   handleDragOver: Function;

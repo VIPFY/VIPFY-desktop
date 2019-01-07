@@ -238,6 +238,8 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   closeInstance = (viewID: number, licenceID: number) => {
+    console.log("CLOSE TAB", viewID, licenceID, this.state.viewID);
+
     this.setState(prevState => {
       const webviews = prevState.webviews.filter(view => view.key != viewID);
       const { openInstances } = prevState;
@@ -250,6 +252,10 @@ class Area extends React.Component<AreaProps, AreaState> {
 
       return { webviews, openInstances };
     });
+
+    if (this.state.viewID == viewID) {
+      this.props.moveTo("dashboard");
+    }
   };
 
   setInstance = viewID => {
@@ -449,7 +455,6 @@ class Area extends React.Component<AreaProps, AreaState> {
           tabs={this.state.webviews}
           setInstance={this.setInstance}
           viewID={this.state.viewID}
-          closeTab={this.closeInstance}
           handleDragStart={this.handleDragStart}
           handleDragOver={this.handleDragOver}
           handleDragEnd={this.handleDragEnd}
