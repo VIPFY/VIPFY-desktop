@@ -10,7 +10,6 @@ interface Props {
   rcApps: any;
   setApp: Function;
   moveTo: Function;
-  showPopup: Function;
   licences: any;
   placeid?: string;
   disableWelcome: Function;
@@ -39,7 +38,7 @@ export default (props: Props) => {
       <div className="dashboardHeading">
         <div>My Apps</div>
       </div>
-      <AppList showPopup={props.showPopup} setApp={setApp} />
+      <AppList licences={props.licences.fetchLicences} setApp={setApp} />
     </div>
   );
 };
