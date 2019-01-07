@@ -207,7 +207,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   };
 
   private async switchApp(): Promise<void> {
-    console.log(`SWITCH APP webview-${this.props.viewID}`, this.state);
+    //console.log(`SWITCH APP webview-${this.props.viewID}`, this.state);
     const timeSpent: number[] = [];
     timeSpent[this.state.licenceId] = 0;
     this.sendTimeSpent(timeSpent);
@@ -503,7 +503,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   render() {
-    console.log(`RENDER webview-${this.props.viewID}`, this.state);
+    //console.log(`RENDER webview-${this.props.viewID}`, this.state);
 
     let cssClass = "marginLeft";
     if (this.props.chatOpen) {
