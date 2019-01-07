@@ -238,23 +238,34 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   closeInstance = (viewID: number, licenceID: number) => {
-    console.log("CLOSE TAB", viewID, licenceID, this.state.viewID);
+    console.log("CLOSE TAB", viewID, licenceID, this.state);
+
+    const position = this.state.webviews.findIndex(view => view.key == viewID);
 
     this.setState(prevState => {
       const webviews = prevState.webviews.filter(view => view.key != viewID);
       const { openInstances } = prevState;
 
-      if (openInstances[licenceID].length > 1) {
-        delete openInstances[licenceID][viewID];
-      } else {
-        delete openInstances[licenceID];
+      if (openInstances[licenceID]) {
+        if (openInstances[licenceID].length > 1) {
+          delete openInstances[licenceID][viewID];
+        } else {
+          delete openInstances[licenceID];
+        }
       }
 
       return { webviews, openInstances };
     });
 
     if (this.state.viewID == viewID) {
-      this.props.moveTo("dashboard");
+      this.setState(prevState => {
+        if (prevState.webviews[position]) {
+          return { ...prevState, viewID: prevState.webviews[position].key };
+        } else {
+          this.props.moveTo("dashboard");
+          return prevState;
+        }
+      });
     }
   };
 
