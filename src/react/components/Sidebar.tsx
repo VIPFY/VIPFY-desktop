@@ -246,7 +246,10 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
             className={`sidebar${sideBarOpen ? "" : "-small"}`}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
             <ul className="sidebar-link-holder">
-              <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
+              <span
+                onClick={() => this.props.toggleSidebar()}
+                className={`fal fa-angle-left sidebar-nav-icon${sideBarOpen ? "" : "-turn"}`}
+              />
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
               {orderedLicences.length > 0 &&
