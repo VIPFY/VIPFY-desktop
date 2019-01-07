@@ -49,9 +49,8 @@ class CompanyData extends React.Component<Props, State> {
 
   uploadPic = async ({ picture }) => {
     try {
-      await this.props.updatePic({
-        variables: { file: picture }
-      });
+      await this.props.updatePic({ variables: { file: picture }, refetchQueries: ["me"] });
+
       this.props.client.query({ query: me, fetchPolicy: "network-only" });
       this.props.client.query({
         query: FETCH_COMPANY,
@@ -78,7 +77,7 @@ class CompanyData extends React.Component<Props, State> {
     const picProps: { fields: object[]; handleSubmit: Function; submittingMessage: string } = {
       fields: [
         {
-          name: "profilepicture",
+          name: "picture",
           type: "picture",
           required: true
         }
