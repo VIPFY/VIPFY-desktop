@@ -20,7 +20,6 @@ interface Props {
   rcApps: any;
   setApp: Function;
   moveTo: Function;
-  showPopup: Function;
   licences: any;
   placeid?: string;
   firstLogin: boolean;
@@ -30,32 +29,30 @@ interface Props {
   statisticData: object;
 }
 
-class Dashboard extends React.Component<Props, {}> {
-  setApp = (licence: number) => this.props.setApp(licence);
+const Dashboard = (props: Props) => {
+  const setApp = (licence: number) => props.setApp(licence);
 
-  render() {
-    if (this.props.licences.loading) {
-      return <LoadingDiv text="Fetching Licences..." />;
-    }
-
-    if (this.props.licences.error) {
-      return <ErrorComp error={filterError(this.props.licences.error)} />;
-    }
-
-    if (this.props.licences.length < 1) {
-      return <div className="noApp">No Apps for you at the moment :(</div>;
-    }
-
-    return (
-      <div className="dashboard-working">
-        <div className="dashboardHeading">
-          <div>My Apps</div>
-        </div>
-        <AppList setApp={this.setApp} />
-      </div>
-    );
+  if (props.licences.loading) {
+    return <LoadingDiv text="Fetching Licences..." />;
   }
-}
+
+  if (props.licences.error) {
+    return <ErrorComp error={filterError(props.licences.error)} />;
+  }
+
+  if (props.licences.length < 1) {
+    return <div className="noApp">No Apps for you at the moment :(</div>;
+  }
+
+  return (
+    <div className="dashboard-working">
+      <div className="dashboardHeading">
+        <div>My Apps</div>
+      </div>
+      <AppList licences={props.licences.fetchLicences} setApp={setApp} />
+    </div>
+  );
+};
 
 export default props => (
   <AppContext.Consumer>
