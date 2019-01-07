@@ -43,7 +43,6 @@ interface PopUp {
 interface AppState {
   login: boolean;
   error: string;
-  firstLogin: boolean;
   placeid: string;
   popup: PopUp;
   showTutorial: boolean;
@@ -65,7 +64,6 @@ const INITIAL_POPUP = {
 const INITIAL_STATE = {
   login: false,
   error: "",
-  firstLogin: false,
   placeid: "",
   popup: INITIAL_POPUP,
   showTutorial: true,
@@ -167,10 +165,6 @@ class App extends React.Component<AppProps, AppState> {
     this.props.history.push(`/area/${path}`);
   };
 
-  welcomeNewUser = (placeid: string) => {
-    this.setState({ firstLogin: true, placeid, showTutorial: true });
-  };
-
   renderComponents = () => {
     if (localStorage.getItem("token")) {
       return (
@@ -210,19 +204,8 @@ class App extends React.Component<AppProps, AppState> {
         </Query>
       );
     } else {
-      return (
-        <Login
-          afterRegistration={this.welcomeNewUser}
-          login={this.logMeIn}
-          moveTo={this.moveTo}
-          error={this.state.error}
-        />
-      );
+      return <Login login={this.logMeIn} moveTo={this.moveTo} error={this.state.error} />;
     }
-  };
-
-  showTutorial = showTutorial => {
-    this.setState({ showTutorial });
   };
 
   sidebarloaded = () => {
@@ -259,15 +242,12 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    const { placeid, firstLogin, popup, showTutorial, page, sidebarloaded } = this.state;
-    let showtutorial = true;
+    const { placeid, popup, page, sidebarloaded } = this.state;
     return (
       <AppContext.Provider
         value={{
           showPopup: (data: PopUp) => this.renderPopup(data),
-          firstLogin,
           placeid,
-          disableWelcome: () => this.setState({ firstLogin: false }),
           renderTutorial: e => this.renderTutorial(e),
           setrenderElements: e => this.setrenderElements(e),
           addRenderElement: e => this.addRenderElement(e),
@@ -275,17 +255,21 @@ class App extends React.Component<AppProps, AppState> {
         }}
         className="full-size">
         {this.renderComponents()}
-        {sidebarloaded && showtutorial && localStorage.getItem("token") ? (
+        {sidebarloaded && localStorage.getItem("token") && (
           <Query query={tutorial}>
             {({ data, loading, error }) => {
               if (error) {
-                showtutorial = false;
+                return null;
               }
+
+              if (loading) {
+                return null;
+              }
+
               return (
                 <Tutorial
                   tutorialdata={data}
                   renderElements={this.references}
-                  showTutorial={this.showTutorial}
                   page={page}
                   reshow={this.state.reshow}
                   setreshowTutorial={this.setreshowTutorial}
@@ -293,8 +277,6 @@ class App extends React.Component<AppProps, AppState> {
               );
             }}
           </Query>
-        ) : (
-          ""
         )}
         {popup.show && (
           <Popup

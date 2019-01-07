@@ -5,7 +5,6 @@ import gql from "graphql-tag";
 interface Props {
   tutorialdata: any[];
   renderElements: { key: string; element: any }[];
-  showTutorial: Function;
   page: string;
   updateTutorialProgress: Function;
   reshow: string | null;
