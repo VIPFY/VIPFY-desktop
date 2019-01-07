@@ -100,7 +100,7 @@ class Tab extends React.Component<Props, State> {
               title={title}
               onClick={() => setInstance(viewID)}>
               <img src={`${iconPicFolder}${icon}`} />
-              <span>{alias ? alias : appname}</span>
+              <div>{alias ? alias : appname}</div>
               <i onClick={this.handleClose} className="fal fa-times fa-1x" />
             </li>
           );
