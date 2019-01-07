@@ -75,7 +75,7 @@ class AppListHolder extends React.Component<Props, State> {
   render() {
     const { show, dragItem, preview } = this.state;
     const { licences, layout } = this.props;
-
+    console.log("APPLIST ALL", licences);
     if (licences.length == 0) {
       return <div>No Apps for you yet</div>;
     }
@@ -136,7 +136,7 @@ export default (props: { setApp: Function; licences: Licence[] }) => (
       if (error || !me) {
         return <ErrorComp error={filterError(error)} />;
       }
-
+      console.log("APPLIST", props);
       return (
         <AppList
           {...props}
