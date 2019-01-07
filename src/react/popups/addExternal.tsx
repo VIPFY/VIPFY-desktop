@@ -285,28 +285,26 @@ class ShowEmployee extends React.Component<Props, State> {
               style={{ display: "flex", justifyContent: "space-around" }}>
               <div className="field" style={{ width: "20em" }}>
                 <div className="label">Username / Email:</div>
-                <GenericInputField
-                  fieldClass="inputBoxField inputBoxUnderline"
-                  divClass=""
+                <input
+                  className="inputBoxField inputBoxUnderline"
                   placeholder="Please insert your username/email"
-                  onBlur={value => this.setState({ username: value })}
-                  focus={this.state.focus === 2}
-                  onEnter={() => this.onEnter(3)}
-                  onClick={() => this.onEnter(2)}
+                  onChange={e => {
+                    const username = e.target.value;
+                    this.setState({ username });
+                  }}
+                  autoFocus={this.props.needsubdomain ? false : true}
                 />
               </div>
               <div className="field" style={{ width: "20em" }}>
                 <div className="label">Password:</div>
-                <GenericInputField
-                  fieldClass="inputBoxField inputBoxUnderline"
-                  divClass=""
+                <input
+                  className="inputBoxField inputBoxUnderline"
                   placeholder="Please insert your password"
                   type="password"
-                  onBlur={value => this.setState({ password: value })}
-                  onChange={value => this.setState({ password: value })}
-                  focus={this.state.focus === 3}
-                  onEnter={() => this.addAccountTHIS()}
-                  onClick={() => this.onEnter(3)}
+                  onChange={e => {
+                    const password = e.target.value;
+                    this.setState({ password });
+                  }}
                 />
               </div>
             </div>
