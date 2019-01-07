@@ -4869,3 +4869,18 @@ table{
         color: #253647 !important;
       }
   }
+
+  .generic-button{
+        padding: 5px;
+        border-radius: 3px;
+        box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+        transition: all 0.6s ease-in-out;
+        color: white;
+  }
+  .back-button{
+    background-color: #253647;
+    grid-column: 1;
+    &:hover{
+        background-color: #275452;
+    }
+}
