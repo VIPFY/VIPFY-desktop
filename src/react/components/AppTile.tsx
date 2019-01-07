@@ -27,10 +27,10 @@ interface Props {
   dragItem: number | null;
   licence: Licence;
   handleDrop: Function;
-  removeLicence: Function;
   setPreview: (preview: Preview) => void;
   preview: Preview;
   setTeam?: Function;
+  updateLayout: Function;
 }
 
 interface State {

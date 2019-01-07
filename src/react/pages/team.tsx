@@ -13,13 +13,12 @@ import ShowEmployee from "../popups/showEmployee";
 import LoadingPopup from "../popups/loadingPopup";
 import BoughtplanView from "../popups/boughtplanView";
 
-import { fetchLicences, me } from "../queries/auth";
+import { fetchLicences, me, GET_USER_CONFIG } from "../queries/auth";
 
 import {
   fetchDepartments,
   fetchDepartmentsData,
   fetchUsersOwnLicences,
-  fetchUnitApps,
   fetchAllAppsEnhanced
 } from "../queries/departments";
 import {
@@ -35,7 +34,6 @@ import {
   revokeLicence,
   revokeLicencesFromDepartment
 } from "../mutations/auth";
-import { printIntrospectionSchema } from "graphql/utilities";
 import UserPicture from "../components/UserPicture";
 import LoadingDiv from "../components/LoadingDiv";
 import UserName from "../components/UserName";
@@ -45,7 +43,6 @@ import TeamEmployee from "../components/teamemployee";
 import AppDrop from "../popups/appDrop";
 import RemoveLicence from "../popups/removeLicence";
 import MoveLicence from "../popups/moveLicence";
-import { license } from "pjson";
 import { AppContext } from "../common/functions";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
@@ -154,7 +151,7 @@ class Team extends React.Component<Props, State> {
     searchString: "",
     removeid: -1,
     employeeElement: false,
-    appElement: false
+    appElement: false,
     draggingapp: null
   };
 
@@ -553,6 +550,7 @@ class Team extends React.Component<Props, State> {
       variables: { boughtplanid, unitid, departmentid },
       refetchQueries: [
         { query: fetchLicences },
+        { query: GET_USER_CONFIG },
         { query: fetchUsersOwnLicences, variables: { unitid } }
       ]
     });
@@ -569,6 +567,7 @@ class Team extends React.Component<Props, State> {
         variables: { licenceid },
         refetchQueries: [
           { query: fetchLicences },
+          { query: GET_USER_CONFIG },
           { query: fetchUsersOwnLicences, variables: { unitid } }
         ]
       });
@@ -583,7 +582,12 @@ class Team extends React.Component<Props, State> {
   revokeLicencesFromDepartment = async (departmentid, boughtplanid) => {
     const res = await this.props.revokeLicencesFromDepartment({
       variables: { departmentid, boughtplanid },
-      refetchQueries: [{ query: fetchDepartmentsData }, { query: fetchLicences }, { query: me }]
+      refetchQueries: [
+        { query: fetchDepartmentsData },
+        { query: fetchLicences },
+        { query: GET_USER_CONFIG },
+        { query: me }
+      ]
     });
     if (res.data.revokeLicencesFromDepartment.error || !res.data.revokeLicencesFromDepartment.ok) {
       this.showPopup(
@@ -670,6 +674,7 @@ class Team extends React.Component<Props, State> {
         refetchQueries: [
           { query: fetchLicences },
           { query: me },
+          { query: GET_USER_CONFIG },
           { query: fetchUsersOwnLicences, variables: { unitid: fromuser } }
         ]
       });
@@ -690,6 +695,7 @@ class Team extends React.Component<Props, State> {
         variables: { licenceid, time: moment() },
         refetchQueries: [
           { query: fetchLicences },
+          { query: GET_USER_CONFIG },
           { query: fetchUsersOwnLicences, variables: { unitid: fromuser } }
         ]
       });
@@ -704,14 +710,19 @@ class Team extends React.Component<Props, State> {
     try {
       await this.props.suspendLicence({
         variables: { licenceid, fromuser: userid },
-        refetchQueries: [{ query: me }, { query: fetchLicences }]
+        refetchQueries: [
+          { query: me },
+          { query: fetchLicences },
+          { query: GET_USER_CONFIG },
+          { query: fetchUsersOwnLicences, variables: { unitid: userid } }
+        ]
       });
-      console.log("Middle")
       const res = await this.props.distributeLicence({
         variables: { licenceid, unitid: newuserid, departmentid },
         refetchQueries: [
           { query: fetchUsersOwnLicences, variables: { unitid: userid } },
-          { query: fetchUsersOwnLicences, variables: { unitid: newuserid } }
+          { query: fetchUsersOwnLicences, variables: { unitid: newuserid } },
+          { query: GET_USER_CONFIG }
         ]
       });
     } catch (err) {
@@ -923,13 +934,7 @@ class Team extends React.Component<Props, State> {
                                     this.state.dragging == app.id ? "dragging" : ""
                                   }`}
                                   style={{ backgroundColor: app.hasboughtplan ? "" : "#20BAA9" }}
-                                  onDragStart={ev =>
-                                    this.onDragAppStart(
-                                      ev,
-                                      app,
-                                      false
-                                    )
-                                  }
+                                  onDragStart={ev => this.onDragAppStart(ev, app, false)}
                                   /*onTouchStart={ev =>
                                 this.onDragStart(ev, app.boughtplan.id, app, false, 0, 0)
                               }*/
@@ -938,27 +943,27 @@ class Team extends React.Component<Props, State> {
                                   onClick={() => this.appClick(app)}
                                   onMouseDown={() => this.setState({ removeid: 0 })}>
                                   {app.icon ? (
-                                <img
-                                  className="right-profile-image"
-                                  style={{
-                                    float: "left"
-                                  }}
-                                  src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                                    app.icon
-                                  }`}
-                                />
-                              ) : (
-                                <div
-                                  className="fal fa-rocket right-profile-image"
-                                  style={{
-                                    float: "left",
-                                    lineHeight: "2rem",
-                                    width: "2rem",
-                                    textAlign: "center",
-                                    fontSize: "1rem"
-                                  }}
-                                />
-                              )}
+                                    <img
+                                      className="right-profile-image"
+                                      style={{
+                                        float: "left"
+                                      }}
+                                      src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                                        app.icon
+                                      }`}
+                                    />
+                                  ) : (
+                                    <div
+                                      className="fal fa-rocket right-profile-image"
+                                      style={{
+                                        float: "left",
+                                        lineHeight: "2rem",
+                                        width: "2rem",
+                                        textAlign: "center",
+                                        fontSize: "1rem"
+                                      }}
+                                    />
+                                  )}
                                   <div className="employeeName">{app.name}</div>
                                   <span className="explain">Move to add to user</span>
                                   <div
@@ -1057,7 +1062,7 @@ class Team extends React.Component<Props, State> {
                                 <div
                                   draggable
                                   className="PApp"
-                                  style={{display: "none"}}
+                                  style={{ display: "none" }}
                                   ref={el =>
                                     context.addRenderElement({ key: "testappelement", element: el })
                                   }>

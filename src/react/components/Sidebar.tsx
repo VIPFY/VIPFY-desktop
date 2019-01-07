@@ -28,7 +28,7 @@ export type SidebarProps = {
   isadmin: boolean;
   toggleSidebar: Function;
   saveLayout: Mutation;
-  layout: { vertical: string[] | null };
+  layout: string[] | null;
   moveTo: Function;
   viewID: number;
   openInstances: any;
@@ -38,52 +38,28 @@ export type SidebarProps = {
 
 interface State {
   dragItem: number | null;
-  layout: string[];
-  licences: Licence[];
 }
 
 class SidebarHolder extends React.Component<SidebarProps, State> {
   state = {
-    dragItem: null,
-    layout: [],
-    licences: []
+    dragItem: null
   };
 
   //references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
   componentDidMount() {
-    if (this.props.layout && this.props.layout.vertical) {
-      const initialState = { layout: this.props.layout.vertical };
-
-      if (this.props.layout.vertical.length > 0 && this.props.licences) {
-        const licences = this.props.layout.vertical.map(id =>
-          this.props.licences.find(item => item.id == id)
-        );
-        initialState.licences = licences;
-      }
-
-      this.setState(initialState);
-    } else {
-      this.setState({ licences: this.props.licences });
-    }
     this.props.sidebarloaded();
   }
 
-  componentDidUpdate({ layout }) {
-    if (layout && layout.vertical && layout.vertical.length != this.props.layout.vertical!.length) {
-      this.setState({ layout: this.props.layout.vertical! });
-    }
-  }
-
   handleDrop = async id => {
-    const { dragItem, licences } = this.state;
+    const { dragItem } = this.state;
 
-    const newLicences = licences.map((licence: Licence) => {
+    const newLicences = this.props.licences.map((licence: Licence) => {
       if (licence.id == id) {
-        return licences.find((item: Licence) => item.id == dragItem!);
+        return this.props.licences.find((item: Licence) => item.id == dragItem!);
       } else if (licence.id == dragItem!) {
-        return licences.find((item: Licence) => item.id == id);
+        return this.props.licences.find((item: Licence) => item.id == id);
       } else {
         return licence;
       }
@@ -93,10 +69,14 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
       const vertical = newLicences.map(licence => licence.id);
       await this.props.saveLayout({
         variables: { vertical },
-        refetchQueries: [{ query: fetchLicences }, { query: GET_USER_CONFIG }]
+        refetchQueries: [{ query: fetchLicences }, { query: GET_USER_CONFIG }],
+        update: cache => {
+          const data = cache.readQuery({ query: GET_USER_CONFIG });
+          data.me.config.vertical = vertical;
+          cache.writeQuery({ query: GET_USER_CONFIG, data });
+        }
       });
-
-      this.setState({ layout: vertical, licences: newLicences, dragItem: null });
+      this.setState({ dragItem: null });
     } catch (error) {
       console.log(error);
     }
@@ -157,7 +137,14 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
   };
 
   render() {
-    const { sideBarOpen } = this.props;
+    const { sideBarOpen, licences, layout } = this.props;
+    let orderedLicences = licences;
+
+    if (layout && layout.length == licences.length) {
+      console.log("DICKTATOR", layout, licences.length);
+
+      orderedLicences = layout.map(id => licences.find(item => item.id == id));
+    }
 
     const sidebarLinks = [
       {
@@ -262,9 +249,8 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
               <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
-              {console.log("Licence", this.state.licences)}
-              {this.state.licences.length > 0 &&
-                this.state.licences.map((licence, key) => (
+              {orderedLicences.length > 0 &&
+                orderedLicences.map((licence, key) => (
                   <SidebarLink
                     licence={licence}
                     key={`ServiceLogo-${key}`}
@@ -310,8 +296,13 @@ export default props => (
 
       const { licences, ...moreProps } = props;
 
-      const filteredLicences = props.licences.fetchLicences;
-      return <Sidebar {...moreProps} licences={filteredLicences} layout={data.me.config} />;
+      return (
+        <Sidebar
+          {...moreProps}
+          licences={props.licences.fetchLicences}
+          layout={data.me.config && data.me.config.vertical ? data.me.config.vertical : null}
+        />
+      );
     }}
   </Query>
 );
