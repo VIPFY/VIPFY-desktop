@@ -163,13 +163,11 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   moveTo = (path: string) => {
-    console.log("moveTO", path);
     this.setState({ page: path });
     this.props.history.push(`/area/${path}`);
   };
 
   welcomeNewUser = (placeid: string) => {
-    console.log("NEW USER");
     this.setState({ firstLogin: true, placeid, showTutorial: true });
   };
 
@@ -179,7 +177,6 @@ class App extends React.Component<AppProps, AppState> {
         <Query query={me} fetchPolicy="network-only">
           {({ data, loading, error }) => {
             if (loading) {
-              console.log("LOADING");
               return <LoadingDiv text="Preparing Vipfy for you" />;
             }
 
@@ -237,7 +234,6 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   setreshowTutorial = section => {
-    console.log("setreshowTutorial", section);
     switch (section) {
       case "dashboard":
         this.moveTo("dashboard");
@@ -279,13 +275,11 @@ class App extends React.Component<AppProps, AppState> {
         }}
         className="full-size">
         {this.renderComponents()}
-        {console.log("REFERENCES", this.references, showTutorial)}
         {sidebarloaded && showtutorial && localStorage.getItem("token") ? (
           <Query query={tutorial}>
             {({ data, loading, error }) => {
               if (error) {
                 showtutorial = false;
-                console.log("TutError", error);
               }
               return (
                 <Tutorial

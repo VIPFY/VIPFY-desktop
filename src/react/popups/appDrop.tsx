@@ -202,6 +202,7 @@ class AppDrop extends Component<Props, State> {
   };
 
   render() {
+    console.log("APP DROP", this.props, this.state);
     if (this.state.error !== "") {
       return <div>Something went wrong. {this.state.error}</div>;
     }
@@ -223,6 +224,7 @@ class AppDrop extends Component<Props, State> {
                 return `Error! ${error.message}`;
               }
               let holder: JSX.Element[] = [];
+              console.log("App Drop", data);
               if (data.fetchAllBoughtPlansFromCompany) {
                 data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {
                   if (boughtplan.endtime && moment(boughtplan.endtime - 0).isBefore(moment())) {
@@ -501,6 +503,7 @@ class AppDrop extends Component<Props, State> {
               if (error) {
                 return `Error! ${error.message}`;
               }
+              console.log("App Drop", data);
               let holder: JSX.Element[] = [];
               if (data.fetchAllBoughtPlansFromCompany) {
                 data.fetchAllBoughtPlansFromCompany.forEach((boughtplan, key) => {

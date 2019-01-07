@@ -175,13 +175,13 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         highlight: "profileelement"
       },
       /*{ label: "Message Center", location: "messagecenter", icon: "envelope", show: true },*/
-      {
+      /*{
         label: "Billing",
         location: "billing",
         icon: "file-invoice-dollar",
         show: this.props.isadmin,
         highlight: "billingelement"
-      },
+      },*/
       {
         label: "Security",
         location: "security",
@@ -196,14 +196,14 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         show: this.props.isadmin,
         highlight: "teamelement"
       },
-      {
+      /*{
         label: "Marketplace",
         location: "marketplace",
         icon: "shopping-cart",
         show: true,
         important: false,
         highlight: "marketplaceelement"
-      },
+      },*/
       {
         label: "External Accounts",
         location: "integrations",
@@ -234,14 +234,14 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         important: false,
         highlight: "supportelement"
       },
-      {
+      /*{
         label: "AppAdmin",
         location: "appadmin",
         icon: "screwdriver",
         show: true,
         important: false,
         highlight: "appadminelement"
-      },
+      },*/
       {
         label: "Admin",
         location: "admin",
@@ -262,6 +262,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
               <span onClick={() => this.props.toggleSidebar()} className="fal fa-bars barIcon" />
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
+              {console.log("Licence", this.state.licences)}
               {this.state.licences.length > 0 &&
                 this.state.licences.map((licence, key) => (
                   <SidebarLink

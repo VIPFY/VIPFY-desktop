@@ -87,7 +87,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     });
 
     const meme = await this.props.client.query({ query: me });
-    console.log(meme);
 
     const script = document.createElement("script");
 
@@ -103,7 +102,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         email: `${meme.data.me.emails[0].email}`,
         organization: `${meme.data.me.company.name}`
       });
-      console.log(datascript);
       script3.innerHTML = `zE(function() {zE.identify(${datascript});});`;
       script3.id = "ze-snippet3";
       script3.async = false;
@@ -112,9 +110,7 @@ class Area extends React.Component<AreaProps, AreaState> {
 
       this.setState({ script3 });
     };
-    console.log("DIDMOUNT - setSTATE", this.state.script);
     this.setState({ script });
-    console.log("DIDMOUNT - setSTATE2", this.state.script);
     document.head.appendChild(script);
 
     //this.addWebview(1171);
@@ -139,7 +135,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   setApp = (boughtplan: number) => {
-    console.log("Set App", boughtplan);
     if (this.state.openInstances[boughtplan]) {
       this.setState(prevState => {
         const newstate = {
@@ -158,13 +153,11 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   setDomain = (boughtplan: number, domain: string) => {
-    console.log("SET DOMAIN");
     this.setState({ app: boughtplan, licenceID: boughtplan, domain });
     this.props.history.push(`/area/app/${boughtplan}`);
   };
 
   componentDidCatch(error, info) {
-    console.log("ERROR", error, info);
     this.moveTo("/area/error");
   }
 
@@ -173,7 +166,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   toggleChat = () => {
-    console.log("CHAT");
     this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
   };
 
@@ -304,7 +296,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   render() {
-    console.log("APPOPROPS", this.props, this.state);
     const { sideBarOpen, chatOpen } = this.state;
     const routes = [
       { path: "", component: Dashboard },
@@ -384,16 +375,6 @@ class Area extends React.Component<AreaProps, AreaState> {
             }
           }}
         />
-        {/*<Route render={props => <Chat chatOpen={chatOpen} {...this.props} {...props} />} />*/}
-
-        {/*<Route
-          exact
-          path="/area/app/:licenceid"
-          render={props => {
-            console.log("RERENDER WEBVIEW", this.state, this.props, props);
-            return <Webview {...this.state} {...this.props} {...props} />;
-          }}
-        />*/}
 
         <Route
           exact

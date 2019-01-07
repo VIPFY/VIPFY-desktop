@@ -61,6 +61,11 @@ class UsageStatistics extends React.Component<Props, State> {
               boughtplanid={this.props.match.params.boughtplanid}
             />
           </div>
+          <button
+            className="naked-button generic-button back-button"
+            onClick={() => history.back()}>
+            Back
+          </button>
         </div>
       </div>
     );
