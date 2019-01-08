@@ -964,6 +964,7 @@ class Team extends React.Component<Props, State> {
                                       }}
                                     />
                                   )}
+                                  <i className="fal fa-grip-horizontal dragAppTeam" />
                                   <div className="employeeName">{app.name}</div>
                                   <span className="explain">Move to add to user</span>
                                   <div
