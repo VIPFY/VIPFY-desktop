@@ -54,8 +54,8 @@ import { type } from "os";
       //  require("./locationScripts/moo.ts")();
     } else if (hostMatches(".*.?domaindiscount24.com")) {
       require("./locationScripts/dd24.ts")();
-    } else if (hostMatches(".*.?sendgrid.com")) {
-      require("./locationScripts/sendgrid.ts")();
+      //} else if (hostMatches(".*.?sendgrid.com")) {
+      //  require("./locationScripts/sendgrid.ts")();
     } else if (hostMatches(".*.?freshbooks.com")) {
       require("./locationScripts/freshbooks.ts")();
     } else if (hostMatches(".*.?vistaprint.com")) {
