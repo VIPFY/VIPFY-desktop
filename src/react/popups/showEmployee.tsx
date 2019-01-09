@@ -1,8 +1,6 @@
 import * as React from "react";
-import { Component } from "react";
-import GenericInputField from "../components/GenericInputField";
 
-class ShowEmployee extends Component {
+class ShowEmployee extends React.Component {
   state = {};
 
   delEmp = () => {

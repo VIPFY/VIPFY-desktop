@@ -112,7 +112,7 @@ class AppTile extends React.Component<Props, State> {
                                 appname: planid.appid.name,
                                 deleteFunction: async licenceid => {
                                   await deleteLicenceAt({
-                                    variables: { licenceid, time: moment() },
+                                    variables: { licenceid, time: moment().utc() },
                                     refetchQueries: [{ query: fetchLicences }, { query: me }]
                                   });
                                 },

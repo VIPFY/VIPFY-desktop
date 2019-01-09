@@ -85,7 +85,7 @@ class SidebarLink extends React.Component<Props, State> {
     if (
       !licence ||
       licence.disabled ||
-      (licence.endtime ? moment().isBefore(licence.endtime) : false)
+      (licence.endtime ? moment().isAfter(licence.endtime) : false)
     ) {
       return "";
     }
