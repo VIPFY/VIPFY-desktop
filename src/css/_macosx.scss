@@ -2,13 +2,14 @@
   #titlebar {
     height: 37px;
     border-bottom: 1px solid black;
+    grid-template-rows: 37px;
   }
 
   #App {
     margin-top: 38px;
   }
   
-  #sidebar-logo {
+  #titlebar-logo {
     display: none;
   }
   
