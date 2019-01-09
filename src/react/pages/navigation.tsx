@@ -11,6 +11,7 @@ import { fetchCards } from "../queries/billing";
 import UserPicture from "../components/UserPicture";
 import PlanHolder from "../components/PlanHolder";
 import Duration from "../common/duration";
+import VoteForApp from "../popups/appVote";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -233,6 +234,27 @@ class Navigation extends React.Component<Props, State> {
         className={`navigation ${chatOpen ? "chat-open" : ""}
         ${sideBarOpen ? "side-bar-open" : ""}`}>
         <div className="leftNavigation">
+          <span>
+            <AppContext.Consumer>
+              {({ showPopup }) => (
+                <button
+                  type="button"
+                  className="naked-button genericButton"
+                  onClick={() =>
+                    showPopup({
+                      header: "Vote for new Integrations",
+                      body: VoteForApp,
+                      props: {}
+                    })
+                  }>
+                  <span className="textButton" style={{ width: "unset" }}>
+                    <i className="fal fa-poll-people" style={{ paddingRight: "0.2em" }} />
+                    Missing an Integration? Vote here
+                  </span>
+                </button>
+              )}
+            </AppContext.Consumer>
+          </span>
           {/*<span onClick={toggleSidebar} className="fas fa-bars barIcon" />*/}
           {/*<div
             className={
