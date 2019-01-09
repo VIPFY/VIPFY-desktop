@@ -151,7 +151,9 @@ class AddAccount extends Component<Props, State> {
               <div
                 className="inside-padding"
                 style={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
-                <div className="domainAroundLeft">{app && app.options.predomain}</div>
+                <div className="domainAroundLeft">
+                  {app && app.options && app.options.predomain}
+                </div>
                 <div className="field" style={{ width: app.options ? "10em" : "20em" }}>
                   <div className="label">Subdomain:</div>
                   <input
@@ -166,7 +168,9 @@ class AddAccount extends Component<Props, State> {
                     autoFocus={true}
                   />
                 </div>
-                <div className="domainAroundRight">{app && app.options.afterdomain}</div>
+                <div className="domainAroundRight">
+                  {app && app.options && app.options.afterdomain}
+                </div>
               </div>
             </div>
           </div>
