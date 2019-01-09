@@ -13,7 +13,6 @@ interface Props {
   products: any;
   addExternalApp: Function;
   addExternalPlan: Function;
-  addVote: Function;
 }
 
 export type AppPageState = {
@@ -25,8 +24,6 @@ export type AppPageState = {
   popupInfo: string;
   searchopen: Boolean;
   searchstring: String;
-  voteopen: Boolean;
-  votestring: String;
   showloading: boolean;
 };
 
@@ -63,14 +60,6 @@ const ADD_EXTERNAL_PLAN = gql`
   }
 `;
 
-const ADD_VOTE = gql`
-  mutation voteForApp($app: String!) {
-    voteForApp(app: $app) {
-      ok
-    }
-  }
-`;
-
 class Integrations extends React.Component<Props, AppPageState> {
   state: AppPageState = {
     popup: false,
@@ -81,8 +70,6 @@ class Integrations extends React.Component<Props, AppPageState> {
     popupInfo: "",
     searchopen: false,
     searchstring: "",
-    voteopen: false,
-    votestring: "",
     showloading: false
   };
 
@@ -185,25 +172,6 @@ class Integrations extends React.Component<Props, AppPageState> {
     }
   };
 
-  clickSend = async () => {
-    if (this.state.votestring !== "") {
-      try {
-        await this.props.addVote({
-          variables: { app: this.state.votestring }
-        });
-      } catch (error) {
-        throw error;
-      }
-    }
-    this.setState({ voteopen: false });
-  };
-
-  keyDown = e => {
-    if (e.key === "Enter") {
-      this.clickSend();
-    }
-  };
-
   renderLoading(appsunfiltered) {
     if (appsunfiltered) {
       console.log("UF", appsunfiltered);
@@ -254,33 +222,6 @@ class Integrations extends React.Component<Props, AppPageState> {
             )}
           </div>
           {this.showapps(apps)}
-          <div className="externalSearch">
-            {this.state.voteopen ? (
-              <React.Fragment>
-                <button className="naked-button genericButton" onClick={() => this.clickSend()}>
-                  <span className="textButton">
-                    {/*<i className="fal fa-paper-plane" />*/}
-                    <i className="fal fa-poll-people" />
-                  </span>
-                </button>
-                <input
-                  onChange={e => this.setState({ votestring: e.target.value })}
-                  autoFocus={true}
-                  className="inputBoxField"
-                  onKeyDown={e => this.keyDown(e)}
-                />
-              </React.Fragment>
-            ) : (
-              <button
-                className="naked-button genericButton"
-                onClick={() => this.setState({ voteopen: true, votestring: "" })}>
-                <span className="textButton">
-                  <i className="fal fa-poll-people" />
-                </span>
-                <span className="textButtonBeside">Vote for the next integration</span>
-              </button>
-            )}
-          </div>
         </div>
       );
     }
@@ -354,7 +295,6 @@ class Integrations extends React.Component<Props, AppPageState> {
 export default compose(
   graphql(ADD_EXTERNAL_ACCOUNT, { name: "addExternalApp" }),
   graphql(ADD_EXTERNAL_PLAN, { name: "addExternalPlan" }),
-  graphql(ADD_VOTE, { name: "addVote" }),
   graphql(fetchApps, {
     name: "products"
   })
