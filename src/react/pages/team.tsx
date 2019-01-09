@@ -1045,6 +1045,9 @@ class Team extends React.Component<Props, State> {
                             }
                             return (
                               <React.Fragment>
+                                <div style={{ fontSize: "80%", marginBottom: "0.5em" }}>
+                                  Drag&Drop items to assign them
+                                </div>
                                 <div className="PAppSearch">
                                   <button
                                     className="naked-button genericButton"
