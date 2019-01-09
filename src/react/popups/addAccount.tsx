@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Component } from "react";
 import { randomPassword } from "../common/passwordgen";
-import GenericInputField from "../components/GenericInputField";
 
 interface Props {
   onClose: Function;
@@ -83,8 +82,7 @@ class AddAccount extends Component<Props, State> {
 
   render() {
     const { clipboard } = require("electron");
-
-    //console.log("P", this.props);
+    const { app } = this.props;
 
     if (this.props.showloading) {
       return <h3>Adding your account</h3>;
@@ -138,8 +136,7 @@ class AddAccount extends Component<Props, State> {
             </div>
           </div>
         </div>
-        {console.log("C4", this.props.needsubdomain)}
-        {this.props.needsubdomain ? (
+        {this.props.needsubdomain && (
           <div className="genericHolder">
             <div className="header" onClick={() => this.toggleshowsubdomain()}>
               <i
@@ -154,12 +151,9 @@ class AddAccount extends Component<Props, State> {
               <div
                 className="inside-padding"
                 style={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
-                <div className="domainAroundLeft">
-                  {this.props.app ? this.props.app.options.predomain : ""}
-                </div>
-                <div className="field" style={{ width: this.props.options ? "10em" : "20em" }}>
+                <div className="domainAroundLeft">{app && app.options.predomain}</div>
+                <div className="field" style={{ width: app.options ? "10em" : "20em" }}>
                   <div className="label">Subdomain:</div>
-                  {console.log("C5", this.props)}
                   <input
                     className={`inputBoxField inputBoxUnderline ${
                       this.props.app ? "textRight" : ""
@@ -172,14 +166,10 @@ class AddAccount extends Component<Props, State> {
                     autoFocus={true}
                   />
                 </div>
-                <div className="domainAroundRight">
-                  {this.props.app ? this.props.app.options.afterdomain : ""}
-                </div>
+                <div className="domainAroundRight">{app && app.options.afterdomain}</div>
               </div>
             </div>
           </div>
-        ) : (
-          ""
         )}
 
         <div className="genericHolder">

@@ -156,44 +156,39 @@ class ShowEmployee extends React.Component<Props, State> {
               return (
                 <div className={`inside ${this.state.showPlans ? "in" : "out"}`}>
                   <div className="inside-padding">
-                    {data.fetchAllBoughtPlansFromCompany.length > 0 ? (
+                    {data.fetchAllBoughtPlansFromCompany.length > 0 && (
                       <h5>Choose one of the existing teams:</h5>
-                    ) : (
-                      ""
                     )}
 
                     <div className="team-app-holders">
-                      {data.fetchAllBoughtPlansFromCompany.length > 0
-                        ? data.fetchAllBoughtPlansFromCompany.map(item => (
-                            <button
-                              className={`bought-plan ${
-                                showPlanFields
-                                  ? "disabled-button"
-                                  : this.state.boughtplanid == item.id
-                                  ? "selected"
-                                  : ""
-                              }`}
-                              key={item.id}
-                              disabled={showPlanFields}
-                              onClick={() => this.setState({ boughtplanid: item.id })}>
-                              <img
-                                className="right-profile-image"
-                                style={{ float: "left" }}
-                                src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${item
-                                  .plan.app.icon || "21352134123123-vipfy-fdgd43asfa"}`}
-                              />
-                              <div className="employeeName">
-                                {item.alias ? item.alias : item.plan.app.name} {item.id}
-                              </div>
-                            </button>
-                          ))
-                        : ""}
+                      {data.fetchAllBoughtPlansFromCompany.length > 0 &&
+                        data.fetchAllBoughtPlansFromCompany.map(item => (
+                          <button
+                            className={`bought-plan ${
+                              showPlanFields
+                                ? "disabled-button"
+                                : this.state.boughtplanid == item.id
+                                ? "selected"
+                                : ""
+                            }`}
+                            key={item.id}
+                            disabled={showPlanFields}
+                            onClick={() => this.setState({ boughtplanid: item.id })}>
+                            <img
+                              className="right-profile-image"
+                              style={{ float: "left" }}
+                              src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${item
+                                .plan.app.icon || "21352134123123-vipfy-fdgd43asfa"}`}
+                            />
+                            <div className="employeeName">
+                              {item.alias ? item.alias : item.plan.app.name} {item.id}
+                            </div>
+                          </button>
+                        ))}
                     </div>
 
-                    {data.fetchAllBoughtPlansFromCompany.length > 0 ? (
+                    {data.fetchAllBoughtPlansFromCompany.length > 0 && (
                       <h5 style={{ marginTop: "14px" }}>Create a new one:</h5>
-                    ) : (
-                      ""
                     )}
                     <button
                       onClick={() =>
@@ -213,7 +208,7 @@ class ShowEmployee extends React.Component<Props, State> {
                         {showPlanFields ? "Cancel" : "Create new Team"}
                       </span>
                     </button>
-                    {showPlanFields ? (
+                    {showPlanFields && (
                       <React.Fragment>
                         <div
                           className="inside-padding float-in-left"
@@ -228,7 +223,7 @@ class ShowEmployee extends React.Component<Props, State> {
                               onChange={e => this.setState({ alias: e.target.value })}
                             />
                           </div>
-                          {this.props.needsubdomain ? (
+                          {this.props.needsubdomain && (
                             <div
                               className="inside-padding float-in-left"
                               style={{
@@ -236,9 +231,7 @@ class ShowEmployee extends React.Component<Props, State> {
                                 justifyContent: "center",
                                 alignItems: "flex-end"
                               }}>
-                              <div className="domainAroundLeft">
-                                {options ? options.predomain : ""}
-                              </div>
+                              <div className="domainAroundLeft">{options && options.predomain}</div>
                               <div className="field" style={{ width: options ? "10em" : "20em" }}>
                                 <div className="label">Subdomain:</div>
                                 <GenericInputField
@@ -257,13 +250,9 @@ class ShowEmployee extends React.Component<Props, State> {
                                 {options ? options.afterdomain : ""}
                               </div>
                             </div>
-                          ) : (
-                            ""
                           )}
                         </div>
                       </React.Fragment>
-                    ) : (
-                      ""
                     )}
                   </div>
                 </div>
