@@ -233,9 +233,6 @@ class Navigation extends React.Component<Props, State> {
         className={`navigation ${chatOpen ? "chat-open" : ""}
         ${sideBarOpen ? "side-bar-open" : ""}`}>
         <div className="leftNavigation">
-          <span className="beta">
-            ATTENTION, this is a Beta version! Not all functionality is provided.
-          </span>
           {/*<span onClick={toggleSidebar} className="fas fa-bars barIcon" />*/}
           {/*<div
             className={
