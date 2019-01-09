@@ -245,12 +245,12 @@ export const addressFields = [
     icon: "archive",
     label: "Description",
     placeholder: "A short description"
-  },
-  {
-    type: "number",
-    name: "priority",
-    placeholder: "Select Priority",
-    icon: "sort-numeric-up",
-    label: "Priority"
   }
+  // {
+  //   type: "number",
+  //   name: "priority",
+  //   placeholder: "Select Priority",
+  //   icon: "sort-numeric-up",
+  //   label: "Priority"
+  // }
 ];
