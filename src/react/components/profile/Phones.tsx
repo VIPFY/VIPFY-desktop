@@ -4,7 +4,6 @@ import { Query, compose, graphql } from "react-apollo";
 
 import Confirmation from "../../popups/Confirmation";
 import GenericInputForm from "../GenericInputForm";
-import CoolCheckbox from "../CoolCheckbox";
 import LoadingDiv from "../LoadingDiv";
 import { filterError, ErrorComp } from "../../common/functions";
 
@@ -110,12 +109,12 @@ class Phones extends React.Component<Props, State> {
             label: "Description",
             placeholder: "A short description"
           },
-          {
-            type: "number",
-            name: "priority",
-            icon: "sort-numeric-up",
-            label: "Priority"
-          },
+          // {
+          //   type: "number",
+          //   name: "priority",
+          //   icon: "sort-numeric-up",
+          //   label: "Priority"
+          // },
           {
             type: "text",
             name: "tags",
@@ -150,10 +149,8 @@ class Phones extends React.Component<Props, State> {
       const phone: { tags: string[]; department?: boolean } = { tags: [] };
 
       Object.values(e.target.childNodes).forEach(node => {
-        if (node.name) {
-          if (node.name != "verified") {
-            phone[node.name] = node.value;
-          }
+        if (node.childNodes[0].name) {
+          phone[node.childNodes[0].name] = node.childNodes[0].value;
         } else {
           if (node.childNodes["0"].childNodes["0"].checked) {
             phone.tags.push("billing");
