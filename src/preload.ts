@@ -255,6 +255,15 @@ function getLoginDetails(askfordata) {
     console.log("LOGINDETAILS", key);
 
     if (
+      document.querySelector<HTMLInputElement>(key.hideobject) ||
+      document.getElementById(key.hideobject)
+    ) {
+      ipcRenderer.sendToHost("hideLoading");
+      ipcRenderer.sendToHost("loggedIn");
+      return;
+    }
+
+    if (
       askfordata > 50 ||
       ((document.querySelector<HTMLInputElement>(key.errorobject) ||
         document.getElementById(key.errorobject)) &&
@@ -283,15 +292,6 @@ function getLoginDetails(askfordata) {
     if (key.loggedIn) {
       ipcRenderer.sendToHost("hideLoading");
       console.log("already loggedIn");
-      return;
-    }
-
-    if (
-      document.querySelector<HTMLInputElement>(key.hideobject) ||
-      document.getElementById(key.hideobject)
-    ) {
-      ipcRenderer.sendToHost("hideLoading");
-      ipcRenderer.sendToHost("loggedIn");
       return;
     }
 
