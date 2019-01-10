@@ -3980,7 +3980,7 @@ table{
 
 .team-app-holders{
     display: flex;
-    flex-wrap: wrap;
+flex-wrap: wrap;
     margin-bottom: -8px;
     margin-top: -8px;
 
@@ -4456,6 +4456,9 @@ table{
                     align-items: center;
                     font-size: 13px;
                     max-width: 400px;
+                    position: relative;
+                    padding-left: 30px;
+                    min-height: 40px;
 
                     &:hover{
                         background-color: #34b3a4;
@@ -4498,6 +4501,8 @@ table{
                         display: flex;
                         justify-content: center;
                         align-items: center;
+                        position: absolute;
+                        left: 0;
                     }
                     .dropzoneWelcome{
 
@@ -4923,7 +4928,11 @@ table{
 
   &:hover{
     .dragAppTeam{
-        opacity: 1;
+      opacity: 1;
     }
   }
+}
+
+.ssoWebview {
+  height: 300px
 }
