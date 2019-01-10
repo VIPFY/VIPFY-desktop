@@ -117,7 +117,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
               error: "The Login takes too much time. Please check with our support.",
               loggedIn: true
             }),
-      20000
+      30000
     );
   }
 
@@ -487,6 +487,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             errorobject: this.state.options.errorobject,
             rememberobject: this.state.options.rememberobject,
             emptyerrortype: this.state.options.emptyerrortype,
+            waituntil: this.state.options.waituntil,
             repeat: this.state.options.repeat,
             loggedIn: this.state.loggedIn,
             key

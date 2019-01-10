@@ -286,7 +286,36 @@ function getLoginDetails(askfordata) {
       return;
     }
 
+    if (
+      document.querySelector<HTMLInputElement>(key.hideobject) ||
+      document.getElementById(key.hideobject)
+    ) {
+      ipcRenderer.sendToHost("hideLoading");
+      ipcRenderer.sendToHost("loggedIn");
+      return;
+    }
+
+    if (
+      !(
+        document.querySelector<HTMLInputElement>(key.waituntil) ||
+        document.getElementById(key.waituntil)
+      ) &&
+      !(
+        document.querySelector<HTMLInputElement>(key.hideobject) ||
+        document.getElementById(key.hideobject)
+      )
+    ) {
+      setTimeout(() => getLoginDetails(askfordata + 1), 50);
+      return;
+    }
+
     if (key.type) {
+      console.log(
+        "TEST",
+        key.passwordobject,
+        document.getElementById(key.passwordobject),
+        document.querySelector<HTMLInputElement>(key.passwordobject)
+      );
       if (
         (key.type == 1 || key.type == 2) &&
         (document.querySelector<HTMLInputElement>(key.passwordobject) ||
