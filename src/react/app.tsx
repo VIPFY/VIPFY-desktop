@@ -161,8 +161,10 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   moveTo = (path: string) => {
-    this.setState({ page: path });
-    this.props.history.push(`/area/${path}`);
+    if (!(this.props.location.pathname === `/area/${path}`)) {
+      this.setState({ page: path });
+      this.props.history.push(`/area/${path}`);
+    }
   };
 
   renderComponents = () => {

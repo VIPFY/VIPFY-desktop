@@ -120,7 +120,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentWillUnmount() {
-    console.log("AREA UNMOUNT");
+    //console.log("AREA UNMOUNT");
     /*if (this.state.script) {
       console.log(this.state.script);
       document.head.removeChild(this.state.script);
@@ -128,6 +128,9 @@ class Area extends React.Component<AreaProps, AreaState> {
   }
 
   moveTo = path => {
+    if (!path.startsWith("app")) {
+      this.setState({ viewID: -1 });
+    }
     /*if (!(this.props.location.pathname === path)) {
       this.props.history.push(path);
     }*/
@@ -238,8 +241,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   closeInstance = (viewID: number, licenceID: number) => {
-    console.log("CLOSE TAB", viewID, licenceID, this.state);
-
     const position = this.state.webviews.findIndex(view => view.key == viewID);
 
     this.setState(prevState => {
@@ -258,14 +259,18 @@ class Area extends React.Component<AreaProps, AreaState> {
     });
 
     if (this.state.viewID == viewID) {
-      this.setState(prevState => {
-        if (prevState.webviews[position]) {
-          return { ...prevState, viewID: prevState.webviews[position].key };
-        } else {
-          this.props.moveTo("dashboard");
-          return prevState;
-        }
-      });
+      if (this.props.history.location.pathname.startsWith("/area/app/")) {
+        this.setState(prevState => {
+          if (prevState.webviews[position]) {
+            return { ...prevState, viewID: prevState.webviews[position].key };
+          } else if (prevState.webviews[0]) {
+            return { ...prevState, viewID: prevState.webviews[prevState.webviews.length - 1].key };
+          } else {
+            this.props.moveTo("dashboard");
+            return prevState;
+          }
+        });
+      }
     }
   };
 
@@ -360,6 +365,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                   setInstance={this.setInstance}
                   {...this.props}
                   {...props}
+                  moveTo={this.moveTo}
                 />
               );
             } else {
