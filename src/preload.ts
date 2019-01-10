@@ -40,8 +40,8 @@ import { type } from "os";
   try {
     if (hostMatches("(www.)?vipfy.com")) {
       require("./locationScripts/vipfy.ts")();
-    } else if (hostMatches("(www.)?dropbox.com")) {
-      require("./locationScripts/dropbox.ts")();
+      //} else if (hostMatches("(www.)?dropbox.com")) {
+      //  require("./locationScripts/dropbox.ts")();
       //} else if (hostMatches(".*.?pipedrive.com")) {  //Nachschauen woran es liegt
       //  require("./locationScripts/pipedrive.ts")();
       //} else if (hostMatches(".*.?wrike.com")) {
@@ -90,8 +90,8 @@ import { type } from "os";
       //  require("./locationScripts/buzzsumo.ts")();
       //} else if (hostMatches(".*.?logmeininc.com") || hostMatches(".*.?gotomeeting.com")) {      //NEED TO DO DB WORK
       //  require("./locationScripts/gotomeeting.ts")();
-    } else if (hostMatches(".*.?calendly.com")) {
-      require("./locationScripts/calendly.ts")();
+      //} else if (hostMatches(".*.?calendly.com")) {
+      //  require("./locationScripts/calendly.ts")();
       //} else if (hostMatches(".*.?teamwork.com")) {   //NEED TO DO DB WORK
       //  require("./locationScripts/teamwork.ts")();
       //} else if (hostMatches(".*.?asana.com")) {
@@ -243,6 +243,7 @@ import { type } from "os";
 }
 function getLoginDetails(askfordata) {
   let repeatpossible = true;
+  let clicked = false;
   let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("startLoginIn");
   ipcRenderer.send("TESTMESSAGE");
@@ -255,8 +256,19 @@ function getLoginDetails(askfordata) {
 
     if (
       askfordata > 50 ||
+      ((document.querySelector<HTMLInputElement>(key.errorobject) ||
+        document.getElementById(key.errorobject)) &&
+        !key.emptyerrortype) ||
+      (key.emptyerrortype &&
       (document.querySelector<HTMLInputElement>(key.errorobject) ||
-        document.getElementById(key.errorobject))
+        document.getElementById(key.errorobject)) &&
+      key.emptyerrortype == 1
+        ? document.querySelector<HTMLInputElement>(key.errorobject)
+          ? document.querySelector<HTMLInputElement>(key.errorobject)!.innerHtml
+          : false
+        : document.getElementById(key.errorobject)
+        ? document.getElementById(key.errorobject)!.innerHtml
+        : false)
     ) {
       console.log(
         "STOP RETRY",
@@ -353,7 +365,7 @@ function getLoginDetails(askfordata) {
           clickButton(document.getElementById(key.buttonobject));
         }
         repeatpossible = false;
-      } else if (key.type == 3 || key.type == 4) {
+      } else if (key.type == 3 || key.type == 4 || key.type == 5) {
         console.log("TYPE 3");
         //Two Steps
         ipcRenderer.sendToHost("showLoading");
@@ -373,15 +385,25 @@ function getLoginDetails(askfordata) {
         );
 
         if (
-          (document.querySelector<HTMLInputElement>(key.emailobject)
+          ((document.querySelector<HTMLInputElement>(key.emailobject)
             ? document.querySelector<HTMLInputElement>(key.emailobject)!.value == ""
             : false || document.getElementById(key.emailobject)
             ? document.getElementById(key.emailobject)!.value == ""
             : false) &&
-          !(
-            document.querySelector<HTMLInputElement>(key.passwordobject) ||
-            document.getElementById(key.passwordobject)
-          )
+            !(
+              document.querySelector<HTMLInputElement>(key.passwordobject) ||
+              document.getElementById(key.passwordobject)
+            ) &&
+            !(
+              document.querySelector<HTMLInputElement>(key.hideobject) ||
+              document.getElementById(key.hideobject)
+            )) ||
+          (key.type == 5 &&
+            !clicked &&
+            !(
+              document.querySelector<HTMLInputElement>(key.hideobject) ||
+              document.getElementById(key.hideobject)
+            ))
         ) {
           console.log("EMAIL AND NO PASSWORD");
           askfordata++;
@@ -445,16 +467,26 @@ function getLoginDetails(askfordata) {
             document.getElementById(key.passwordobject)
         );
         if (
-          (document.querySelector<HTMLInputElement>(key.emailobject) ||
+          ((document.querySelector<HTMLInputElement>(key.emailobject) ||
             document.getElementById(key.emailobject) ||
             document.querySelector<HTMLInputElement>(key.emailpassobject) ||
             document.getElementById(key.emailpassobject) ||
             key.nopassobject) &&
-          (document.querySelector<HTMLInputElement>(key.passwordobject)
-            ? document.querySelector<HTMLInputElement>(key.passwordobject)!.value == ""
-            : false || document.getElementById(key.passwordobject)
-            ? document.getElementById(key.passwordobject)!.value == ""
-            : false)
+            (document.querySelector<HTMLInputElement>(key.passwordobject)
+              ? document.querySelector<HTMLInputElement>(key.passwordobject)!.value == ""
+              : false || document.getElementById(key.passwordobject)
+              ? document.getElementById(key.passwordobject)!.value == ""
+              : false) &&
+            !(
+              document.querySelector<HTMLInputElement>(key.hideobject) ||
+              document.getElementById(key.hideobject)
+            )) ||
+          (key.type == 5 &&
+            clicked &&
+            !(
+              document.querySelector<HTMLInputElement>(key.hideobject) ||
+              document.getElementById(key.hideobject)
+            ))
         ) {
           console.log("EMAIL AND PASSWORD");
           askfordata++;
@@ -511,13 +543,16 @@ function getLoginDetails(askfordata) {
       hideLoading();
 
       if (
-        (key.repeat || key.type == 3 || key.type == 4) &&
+        (key.repeat || key.type == 3 || key.type == 4 || key.type == 5) &&
         repeatpossible &&
         !(
           document.querySelector<HTMLInputElement>(key.hideobject) ||
           document.getElementById(key.hideobject)
         )
       ) {
+        if (key.type == 5) {
+          clicked = true;
+        }
         setTimeout(function() {
           getLoginDetails(askfordata);
         }, 50);
@@ -530,29 +565,61 @@ function getLoginDetails(askfordata) {
             (document.querySelector<HTMLInputElement>(key.passwordobject) ||
               document.getElementById(key.passwordobject)) &&
             !(
-              document.querySelector<HTMLInputElement>(key.errorobject) ||
-              document.getElementById(key.errorobject)
+              ((document.querySelector<HTMLInputElement>(key.errorobject) ||
+                document.getElementById(key.errorobject)) &&
+                !key.emptyerrortype) ||
+              (key.emptyerrortype &&
+              (document.querySelector<HTMLInputElement>(key.errorobject) ||
+                document.getElementById(key.errorobject)) &&
+              key.emptyerrortype == 1
+                ? document.querySelector<HTMLInputElement>(key.errorobject)
+                  ? document.querySelector<HTMLInputElement>(key.errorobject)!.innerHtml
+                  : false
+                : document.getElementById(key.errorobject)
+                ? document.getElementById(key.errorobject)!.innerHtml
+                : false)
             )) ||
-          ((key.type == 3 || key.hidetype == 3 || key.type == 4 || key.hidetype == 4) &&
+          ((key.type == 3 ||
+            key.hidetype == 3 ||
+            key.type == 4 ||
+            key.hidetype == 4 ||
+            key.type == 5) &&
             !(
               document.querySelector<HTMLInputElement>(key.hideobject) ||
               document.getElementById(key.hideobject)
             ) &&
             !(
-              document.querySelector<HTMLInputElement>(key.errorobject) ||
-              document.getElementById(key.errorobject)
+              ((document.querySelector<HTMLInputElement>(key.errorobject) ||
+                document.getElementById(key.errorobject)) &&
+                !key.emptyerrortype) ||
+              (key.emptyerrortype &&
+              (document.querySelector<HTMLInputElement>(key.errorobject) ||
+                document.getElementById(key.errorobject)) &&
+              key.emptyerrortype == 1
+                ? document.querySelector<HTMLInputElement>(key.errorobject)
+                  ? document.querySelector<HTMLInputElement>(key.errorobject)!.innerHtml
+                  : false
+                : document.getElementById(key.errorobject)
+                ? document.getElementById(key.errorobject)!.innerHtml
+                : false)
             ) &&
             r <= 50)
         ) {
-          console.log(
-            "Still Hiding",
-            document.querySelector<HTMLInputElement>(key.errorobject) ||
-              document.getElementById(key.errorobject)
-          );
           setTimeout(() => hideLoading(r++), 50);
         } else if (
-          document.querySelector<HTMLInputElement>(key.errorobject) ||
-          document.getElementById(key.errorobject) ||
+          ((document.querySelector<HTMLInputElement>(key.errorobject) ||
+            document.getElementById(key.errorobject)) &&
+            !key.emptyerrortype) ||
+          (key.emptyerrortype &&
+          (document.querySelector<HTMLInputElement>(key.errorobject) ||
+            document.getElementById(key.errorobject)) &&
+          key.emptyerrortype == 1
+            ? document.querySelector<HTMLInputElement>(key.errorobject)
+              ? document.querySelector<HTMLInputElement>(key.errorobject)!.innerHtml
+              : false
+            : document.getElementById(key.errorobject)
+            ? document.getElementById(key.errorobject)!.innerHtml
+            : false) ||
           r > 50
         ) {
           ipcRenderer.sendToHost("errorDetected");

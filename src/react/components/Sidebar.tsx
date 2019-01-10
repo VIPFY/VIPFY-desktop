@@ -192,7 +192,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         highlight: "marketplaceelement"
       },*/
       {
-        label: "External Accounts",
+        label: "Integrating Accounts",
         location: "integrations",
         icon: "shapes",
         show: true,
@@ -220,7 +220,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         show: true,
         important: false,
         highlight: "supportelement"
-      },
+      }
       /*{
         label: "AppAdmin",
         location: "appadmin",
@@ -229,14 +229,14 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         important: false,
         highlight: "appadminelement"
       },*/
-      {
+      /*{
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
         show: this.props.isadmin,
         important: true,
         highlight: "adminelement"
-      }
+      }*/
     ];
 
     return (

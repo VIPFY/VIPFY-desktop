@@ -482,9 +482,12 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             button1object: this.state.options.button1object,
             button2object: this.state.options.button2object,
             hideobject: this.state.options.hideobject,
+            hidetype: this.state.options.hidetype,
             nopassobject: this.state.options.nopassobject,
             errorobject: this.state.options.errorobject,
             rememberobject: this.state.options.rememberobject,
+            emptyerrortype: this.state.options.emptyerrortype,
+            repeat: this.state.options.repeat,
             loggedIn: this.state.loggedIn,
             key
           });
