@@ -30,7 +30,6 @@ interface State {
   username: string;
   password: string;
   subdomain: string;
-  focus: number;
   error: string;
   success: boolean;
 }
@@ -50,7 +49,6 @@ class ShowEmployee extends React.Component<Props, State> {
     username: "",
     password: "",
     subdomain: "",
-    focus: 0,
     error: "",
     success: false
   };
@@ -65,19 +63,17 @@ class ShowEmployee extends React.Component<Props, State> {
   toggleField = (name: keyof State): void =>
     this.setState(prevState => ({ ...prevState, [name]: !prevState[name] }));
 
-  onEnter = (fieldid: number): void => this.setState({ focus: fieldid });
-
   addAccountTHIS = async (): Promise<any> => {
     try {
       const { username, password, subdomain, boughtplanid, alias } = this.state;
       const { appid, options } = this.props;
       const args = { username, password, alias, boughtplanid, appid, subdomain };
 
-      if (boughtplanid == 0 && this.props.needsubdomain && this.props.options) {
+      if (this.props.needsubdomain) {
         args.subdomain = `${options.predomain}${subdomain}${options.afterdomain}`;
       }
 
-      await this.props.addAccount({ ...args, subdomain });
+      await this.props.addAccount({ ...args });
       this.setState({ success: true });
     } catch (error) {
       this.setState({ error: filterError(error) });
@@ -248,9 +244,6 @@ class ShowEmployee extends React.Component<Props, State> {
                                   divClass=""
                                   placeholder="Your subdomain"
                                   onBlur={value => this.setState({ subdomain: value })}
-                                  focus={this.state.focus === 1}
-                                  onEnter={() => this.onEnter(2)}
-                                  onClick={() => this.onEnter(1)}
                                 />
                               </div>
                               <div className="domainAroundRight">
