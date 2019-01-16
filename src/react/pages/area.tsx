@@ -37,6 +37,7 @@ import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
 import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
+import SsoTester from "./SSOtester";
 
 interface AreaProps {
   history: any[];
@@ -345,7 +346,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "appadmin", component: AppAdmin },
-      { path: "ssoconfig", component: SsoConfigurator }
+      { path: "ssoconfig", component: SsoConfigurator },
+      { path: "ssotest", component: SsoTester }
     ];
 
     if (this.props.licences.loading) {

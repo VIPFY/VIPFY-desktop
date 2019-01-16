@@ -246,10 +246,16 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
       {
         label: "SSO Configurator",
         location: "ssoconfig",
-        icon: "layer-plus",
+        icon: "dice-d12",
         show: this.props.isadmin && config.showSsoConfig,
-        important: true,
         highlight: "ssoconfig"
+      },
+      {
+        label: "SSO Tester",
+        location: "ssotest",
+        icon: "dragon",
+        show: true,
+        highlight: "ssotest"
       }
     ];
 

@@ -25,6 +25,10 @@ interface State {
   passwordfield: string;
   confirmbutton: string;
   currentlySetting: Field;
+  logo: string;
+  icon: string;
+  logoW: number | null;
+  logoH: number | null;
 }
 
 class SsoConfigurator extends React.PureComponent<Props, State> {
@@ -36,7 +40,11 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
     usernamefield: "",
     passwordfield: "",
     confirmbutton: "",
-    currentlySetting: Field.username
+    currentlySetting: Field.username,
+    logo: "",
+    icon: "",
+    logoW: null,
+    logoH: null
   };
 
   toggleShowBoughtplans = (): void =>
@@ -103,6 +111,30 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
             <br />
             Confirm Button Field: {this.state.confirmbutton}
             <br />
+            Logo:{" "}
+            <img
+              src={this.state.logo}
+              className="checkeredBackground"
+              style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
+              onLoad={e => {
+                let t = e.target;
+                this.setState({ logoW: t.naturalWidth, logoH: t.naturalHeight });
+              }}
+            />{" "}
+            ({this.state.logoW}x{this.state.logoH})
+            <br />
+            Icon:{" "}
+            <img
+              src={this.state.icon}
+              className="checkeredBackground"
+              style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
+              onLoad={e => {
+                let t = e.target;
+                this.setState({ iconW: t.naturalWidth, iconH: t.naturalHeight });
+              }}
+            />{" "}
+            ({this.state.iconW}x{this.state.iconH})
+            <br />
             {this.state.message}
             <h3>Step 4: Select Error Message</h3>
             TODO
@@ -117,20 +149,32 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
   }
 
   onIpcMessage(e) {
+    console.log("ipc", e);
+    let id = e.args[0];
     switch (e.channel) {
-      case "gotId":
+      case "emailobject":
         {
-          let id = e.args[0];
-          if (this.state.currentlySetting == Field.username) {
-            this.setState({ usernamefield: id });
-          }
-          if (this.state.currentlySetting == Field.password) {
-            this.setState({ passwordfield: id });
-          }
-          if (this.state.currentlySetting == Field.confirm) {
-            this.setState({ confirmbutton: id });
-          }
-          //e.target.send("loginData", key);
+          this.setState({ usernamefield: id });
+        }
+        break;
+      case "passwordobject":
+        {
+          this.setState({ passwordfield: id });
+        }
+        break;
+      case "confirmbutton":
+        {
+          this.setState({ confirmbutton: id });
+        }
+        break;
+      case "logo":
+        {
+          this.setState({ logo: id });
+        }
+        break;
+      case "icon":
+        {
+          this.setState({ icon: id });
         }
         break;
       default:
