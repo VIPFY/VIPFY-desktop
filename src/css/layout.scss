@@ -1616,13 +1616,9 @@ li {
 
 .leftNavigation{
   display: flex;
-  
-  .beta {
-    margin: auto 1.2rem;
-    color: #c73544;
-    font-weight: 500;
-    font-style: italic;
-  }
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 1.2em;
 }
 
 .informationTile {
@@ -3789,7 +3785,7 @@ option{
         left: 34px;
         color: #c6c6c6;
         line-height: 32px;
-        width: 200px;
+        width: 300px;
         margin-left: 8px;
         text-align: left;
         opacity: 0;
