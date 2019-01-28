@@ -1,8 +1,12 @@
 import gql from "graphql-tag";
 
-export const SAVE_LAYOUT = gql`
-  mutation onSaveAppLayout($horizontal: [String], $vertical: [String]) {
-    saveAppLayout(horizontal: $horizontal, vertical: $vertical)
+export const UPDATE_LAYOUT = gql`
+  mutation onUpdateLayout(
+    $dragged: LicenceInput!
+    $droppedOn: LicenceInput!
+    $direction: DIRECTION!
+  ) {
+    updateLayout(dragged: $dragged, droppedOn: $droppedOn, direction: $direction)
   }
 `;
 

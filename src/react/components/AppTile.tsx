@@ -30,7 +30,6 @@ interface Props {
   setPreview: (preview: Preview) => void;
   preview: Preview;
   setTeam?: Function;
-  updateLayout: Function;
 }
 
 interface State {

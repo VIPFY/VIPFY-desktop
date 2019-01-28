@@ -4,7 +4,6 @@ export const GET_USER_CONFIG = gql`
   {
     me {
       id
-      config
     }
   }
 `;
@@ -48,6 +47,8 @@ export const fetchLicences = gql`
       id
       endtime
       disabled
+      layoutvertical
+      layouthorizontal
       boughtplanid {
         id
         alias

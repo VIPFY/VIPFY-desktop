@@ -8,6 +8,8 @@ export interface Licence {
   key: JSON;
   boughtplanid: BoughtPlan;
   unitid: User;
+  layoutvertical: number;
+  layouthorizontal: number;
 }
 
 export interface Unit {

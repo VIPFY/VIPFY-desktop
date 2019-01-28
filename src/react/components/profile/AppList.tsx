@@ -1,10 +1,8 @@
 import * as React from "react";
-import { Query, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 import AppTile from "../../components/AppTile";
-import LoadingDiv from "../../components/LoadingDiv";
-import { filterError, ErrorComp } from "../../common/functions";
-import { fetchLicences, GET_USER_CONFIG } from "../../queries/auth";
-import { SAVE_LAYOUT } from "../../mutations/auth";
+import { fetchLicences } from "../../queries/auth";
+import { UPDATE_LAYOUT } from "../../mutations/auth";
 import moment = require("moment");
 import { Licence } from "../../interfaces";
 
@@ -17,7 +15,7 @@ interface Props {
   setApp?: Function;
   layout?: string[] | null;
   licences: Licence[];
-  saveLayout: Function;
+  updateLayout: Function;
 }
 
 interface State {
@@ -26,7 +24,7 @@ interface State {
   preview: Preview;
 }
 
-class AppListHolder extends React.Component<Props, State> {
+class AppList extends React.Component<Props, State> {
   state = {
     show: true,
     dragItem: null,
@@ -44,46 +42,65 @@ class AppListHolder extends React.Component<Props, State> {
     const { dragItem } = this.state;
     const { licences } = this.props;
 
-    const newLicences = licences.map(licence => {
-      if (licence.id == id) {
-        return licences.find(item => item.id == dragItem!);
-      } else if (licence.id == dragItem!) {
-        return licences.find(item => item.id == id);
-      } else {
-        return licence;
-      }
-    });
+    const l1 = licences.find(licence => licence.id == dragItem);
+    const pos1 = licences
+      .filter(
+        licence =>
+          !licence.endtime ||
+          (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
+      )
+      .map(licence => licence.id)
+      .indexOf(dragItem);
+
+    const l2 = licences.find(licence => licence.id == id);
+    const pos2 = licences
+      .filter(
+        licence =>
+          !licence.endtime ||
+          (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
+      )
+      .map(licence => licence.id)
+      .indexOf(id);
+
+    const dragged = {
+      id: l1!.id,
+      layouthorizontal: l1.layouthorizontal ? l1.layouthorizontal : pos1
+    };
+
+    const droppedOn = {
+      id: l2!.id,
+      layouthorizontal: l2.layouthorizontal ? l2.layouthorizontal : pos2
+    };
 
     try {
-      const horizontal = newLicences.map(licence => licence.id);
-      await this.props.saveLayout({
-        variables: { horizontal },
-        refetchQueries: [{ query: fetchLicences }, { query: GET_USER_CONFIG }],
+      await this.props.updateLayout({
+        variables: { dragged, droppedOn, direction: "HORIZONTAL" },
         update: cache => {
-          const data = cache.readQuery({ query: GET_USER_CONFIG });
-          data.me.config.horizontal = horizontal;
-          cache.writeQuery({ query: GET_USER_CONFIG, data });
+          const data = cache.readQuery({ query: fetchLicences });
+          const newLicences = licences.map(licence => {
+            if (licence.id == id) {
+              return { ...l2, layouthorizontal: l1!.layouthorizontal };
+            } else if (licence.id == dragItem!) {
+              return { ...l1, layouthorizontal: l2!.layouthorizontal };
+            } else {
+              return licence;
+            }
+          });
+          data.fetchLicences = newLicences;
+          cache.writeQuery({ query: fetchLicences, data });
         }
       });
     } catch (error) {
       console.log(error);
     }
-
-    return newLicences;
   };
 
   render() {
     const { show, dragItem, preview } = this.state;
-    const { licences, layout } = this.props;
+    const { licences } = this.props;
 
     if (licences.length == 0) {
       return <div>No Apps for you yet</div>;
-    }
-
-    let orderedLicences = licences;
-
-    if (layout && layout.length == licences.length) {
-      orderedLicences = layout.map(id => licences.find(item => item.id == id));
     }
 
     return (
@@ -94,26 +111,35 @@ class AppListHolder extends React.Component<Props, State> {
         </div>
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
-            {orderedLicences.map(licence => {
-              if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
-                return "";
-              }
+            {licences
+              .sort((a, b) => {
+                if (!b.layouthorizontal) {
+                  return -1;
+                } else if (!a.layouthorizontal) {
+                  return 1;
+                } else {
+                  return a.layouthorizontal - b.layouthorizontal;
+                }
+              })
+              .map(licence => {
+                if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+                  return "";
+                }
 
-              return (
-                <AppTile
-                  key={licence.id}
-                  preview={preview}
-                  setPreview={this.setPreview}
-                  updateLayout={this.props.saveLayout}
-                  dragItem={dragItem}
-                  dragStartFunction={this.dragStartFunction}
-                  dragEndFunction={this.dragEndFunction}
-                  handleDrop={this.handleDrop}
-                  licence={licence}
-                  setTeam={this.props.setApp}
-                />
-              );
-            })}
+                return (
+                  <AppTile
+                    key={licence.id}
+                    preview={preview}
+                    setPreview={this.setPreview}
+                    dragItem={dragItem}
+                    dragStartFunction={this.dragStartFunction}
+                    dragEndFunction={this.dragEndFunction}
+                    handleDrop={this.handleDrop}
+                    licence={licence}
+                    setTeam={this.props.setApp}
+                  />
+                );
+              })}
           </div>
         </div>
       </div>
@@ -121,25 +147,4 @@ class AppListHolder extends React.Component<Props, State> {
   }
 }
 
-const AppList = graphql(SAVE_LAYOUT, { name: "saveLayout" })(AppListHolder);
-
-export default (props: { setApp: Function; licences: Licence[] }) => (
-  <Query query={GET_USER_CONFIG}>
-    {({ data: { me }, loading, error }) => {
-      if (loading) {
-        return <LoadingDiv text="Fetching Apps..." />;
-      }
-
-      if (error || !me) {
-        return <ErrorComp error={filterError(error)} />;
-      }
-
-      return (
-        <AppList
-          {...props}
-          layout={me.config && me.config.horizontal ? me.config.horizontal : null}
-        />
-      );
-    }}
-  </Query>
-);
+export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppList);
