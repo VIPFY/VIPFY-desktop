@@ -31,11 +31,17 @@ import Security from "./security";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
-import AppAdmin from "./appadmin";
+import EManager from "./emanager";
+import LManager from "./lmanager";
+import DManager from "./dmanager";
+import EShower from "./eshower";
+import LShower from "./lshower";
+import DShower from "./dshower";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
 import Tabs from "../components/Tabs";
+import EManagerAdmin from "./emanageradmin";
 
 interface AreaProps {
   history: any[];
@@ -63,6 +69,7 @@ interface AreaState {
   oldWebViews: any[];
   openInstances: any;
   activeTab: null | object;
+  adminOpen: boolean;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -78,7 +85,8 @@ class Area extends React.Component<AreaProps, AreaState> {
     webviews: [],
     oldWebViews: [],
     openInstances: {},
-    activeTab: null
+    activeTab: null,
+    adminOpen: false
   };
 
   componentDidMount = async () => {
@@ -172,6 +180,10 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
   };
 
+  toggleAdmin = () => {
+    this.setState(prevState => ({ adminOpen: !prevState.adminOpen }));
+  };
+
   toggleSidebar = () => {
     this.setState(prevState => ({ sideBarOpen: !prevState.sideBarOpen }));
   };
@@ -262,8 +274,10 @@ class Area extends React.Component<AreaProps, AreaState> {
       if (this.props.history.location.pathname.startsWith("/area/app/")) {
         this.setState(prevState => {
           if (prevState.webviews[position]) {
+            this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[position].key };
           } else if (prevState.webviews[0]) {
+            this.props.moveTo(`app/${prevState.webviews[prevState.webviews.length - 1].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[prevState.webviews.length - 1].key };
           } else {
             this.props.moveTo("dashboard");
@@ -343,7 +357,12 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
-      { path: "appadmin", component: AppAdmin }
+      { path: "emanager", component: EManager, admincomponent: EManagerAdmin },
+      { path: "lmanager", component: LManager },
+      { path: "dmanager", component: DManager },
+      { path: "emanager/:userid", component: EShower },
+      { path: "lmanager/:boughtplanid", component: LShower },
+      { path: "dmanager/:departmentid", component: DShower }
     ];
 
     if (this.props.licences.loading) {
@@ -405,12 +424,14 @@ class Area extends React.Component<AreaProps, AreaState> {
           render={props => <SupportPage {...this.state} {...this.props} {...props} />}
         />
 
-        {routes.map(({ path, component, admin }) => {
+        {routes.map(({ path, component, admincomponent, admin }) => {
           const RouteComponent = component;
+          const AdminComponent = admincomponent;
 
           if (admin && this.props.company.unit.id != 14) {
             return;
           } else {
+            console.log("ADMINCOMP", admincomponent);
             return (
               <Route
                 key={path}
@@ -431,6 +452,17 @@ class Area extends React.Component<AreaProps, AreaState> {
                       {...props}
                       moveTo={this.moveTo}
                     />
+                    {admincomponent ? (
+                      <AdminComponent
+                        adminOpen={this.state.adminOpen}
+                        setApp={this.setApp}
+                        {...this.props}
+                        {...props}
+                        moveTo={this.moveTo}
+                      />
+                    ) : (
+                      ""
+                    )}
                   </div>
                 )}
               />

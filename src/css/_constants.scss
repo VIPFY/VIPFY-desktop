@@ -15,6 +15,43 @@ $hover: #117f91;
 $hover-secondary: #991b78;
 $deleted-color: #b5a0a7;
 
+$vipfy-normaltext: #253647;
+$vipfy-darktext: #2a3949;
+$vipfy-lighttext: #415E72;
+$vipfy-grey: #f0f0f0;
+$vipfy-lightgrey: #f5f5f5;
+$vipfy-positive: #29CC94;
+$vipfy-negative: #DF3F19;
+$vipfy-infoblue: #5145E3;
+$vipfy-infolightblue: #2D84E6;
+$vipfy-lightshadow: 1px 3px 4px 0px #78787833;
+$vipfy-shadow: 1px 3px 4px 0px #78787866;
+
+@for $x from 20 through 80 {
+  .box#{$x} {
+    height: #{$x}px;
+    width: #{$x}px;
+    background-position: center;
+    background-size: cover;
+
+    &.text{
+        line-height: #{$x}px;
+        text-align: center;
+    }
+
+    &.clickable{
+      cursor: pointer;
+    }
+  }
+  .circle#{$x}{
+    height: #{$x}px;
+    width: #{$x}px;
+    border-radius: #{$x}px;
+    background-position: center;
+    background-size: cover;
+  }
+}
+
 $rccs-size: 10rem;
 $rccs-name-font-size: 0.8rem;
 $rccs-number-font-size: 0.8rem;
