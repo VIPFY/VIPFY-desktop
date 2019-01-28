@@ -217,12 +217,28 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "supportelement"
       },
       {
-        label: "AppAdmin",
-        location: "appadmin",
-        icon: "screwdriver",
-        show: config.showAppAdmin,
+        label: "Department Manager",
+        location: "dmanager",
+        icon: "hexagon",
+        show: true,
         important: false,
-        highlight: "appadminelement"
+        highlight: "dmanager"
+      },
+      {
+        label: "Employee Manager",
+        location: "emanager",
+        icon: "circle",
+        show: true,
+        important: false,
+        highlight: "emanager"
+      },
+      {
+        label: "Licence Manager",
+        location: "lmanager",
+        icon: "square",
+        show: true,
+        important: false,
+        highlight: "lmanager"
       },
       {
         label: "Admin",
