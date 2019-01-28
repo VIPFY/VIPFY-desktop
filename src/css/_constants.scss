@@ -15,7 +15,6 @@ $hover: #117f91;
 $hover-secondary: #991b78;
 $deleted-color: #b5a0a7;
 
-
 $vipfy-normaltext: #253647;
 $vipfy-darktext: #2a3949;
 $vipfy-lighttext: #415E72;
@@ -31,6 +30,31 @@ $vipfy-shadow: 1px 3px 4px 0px #78787866;
 $vipfy_mainColor: #253647;
 $vipfy_bigradius: 6px;
 $vipfy_smallradius: 3px;
+
+@for $x from 20 through 80 {
+  .box#{$x} {
+    height: #{$x}px;
+    width: #{$x}px;
+    background-position: center;
+    background-size: cover;
+
+    &.text{
+        line-height: #{$x}px;
+        text-align: center;
+    }
+
+    &.clickable{
+      cursor: pointer;
+    }
+  }
+  .circle#{$x}{
+    height: #{$x}px;
+    width: #{$x}px;
+    border-radius: #{$x}px;
+    background-position: center;
+    background-size: cover;
+  }
+}
 
 $rccs-size: 10rem;
 $rccs-name-font-size: 0.8rem;
