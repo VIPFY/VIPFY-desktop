@@ -5539,17 +5539,8 @@ flex-wrap: wrap;
     }
     .heading{
         font-weight: bold;
-        display: flex;
-        align-items: flex-end;
-
-        &.disabled{
-            color: $vipfy-disabeldtext;
-        }
     }
     .text{
-        position: relative;
-        display: flex;
-        align-items: flex-end;
         &.link{
             text-decoration: underline;
             cursor: pointer;
@@ -5662,4 +5653,6 @@ flex-wrap: wrap;
     height: 20px;
     display: flex;
     align-items: flex-end;
+    grid-template-columns: 60px 200px 1fr;
+    margin-bottom: 10px;
 }
