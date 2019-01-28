@@ -1,0 +1,83 @@
+import * as React from "react";
+import WebView = require("react-electron-web-view");
+
+interface Props {
+  url: string;
+  setResult(icon: Image | null, color: string | null);
+}
+
+interface State {
+  logo: Image | null | undefined;
+  icon: Image | null | undefined;
+  color: string | null | undefined;
+}
+
+interface Image {
+  width: number;
+  height: number;
+  data: string;
+}
+
+class LogoExtractor extends React.PureComponent<Props, State> {
+  state = {
+    logo: undefined,
+    icon: undefined,
+    color: undefined
+  };
+  render() {
+    return (
+      <WebView
+        preload="./ssoConfigPreload/findLogo.js"
+        webpreferences="webSecurity=no"
+        src={this.props.url || ""}
+        partition="ssoconfig"
+        className="invisibleWebview"
+        onIpcMessage={e => this.onIpcMessage(e)}
+      />
+    );
+  }
+
+  onIpcMessage(e) {
+    console.log("ipc", e);
+    switch (e.channel) {
+      case "logo":
+        {
+          const [data, width, height] = e.args;
+          this.setState({ logo: { data, width, height } });
+        }
+        break;
+      case "icon":
+        {
+          const [data, width, height] = e.args;
+          this.setState({ icon: { data, width, height } });
+        }
+        break;
+      case "color":
+        {
+          const color = e.args[0];
+          this.setState({ color });
+        }
+        break;
+      case "noicon":
+        {
+          this.setState(prev => (prev.icon ? { icon: prev.icon } : { icon: null }));
+        }
+        break;
+      case "nocolor":
+        {
+          this.setState(prev => (prev.color ? { color: prev.color } : { color: null }));
+        }
+        break;
+      default:
+        console.log("No case applied", e.channel);
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.state.icon !== undefined && this.state.color !== undefined) {
+      this.props.setResult(this.state.icon!, this.state.color!);
+    }
+  }
+}
+
+export default LogoExtractor;

@@ -14,65 +14,20 @@ Object.defineProperty(String.prototype, "includesAny", {
 ipcRenderer.sendToHost("loaded", null);
 
 setTimeout(function() {
-  ipcRenderer.sendToHost("emailobject", getQueryString(findEmailField()));
-  ipcRenderer.sendToHost("passwordobject", getQueryString(findPassField()));
-  ipcRenderer.sendToHost("confirmbutton", getQueryString(findConfirmButton()));
-  ipcRenderer.sendToHost("sentallbuttons", null);
-
-  findIcon();
-
-  const logo = findLogo();
-  console.log("logo", logo);
-  if (logo) ipcRenderer.sendToHost("logo", logo);
-}, 3000);
-
-function getQueryString(t) {
-  if (t === null || t === undefined) return "!NO!";
-  if (t.id) {
-    return "#" + t.id;
-  } else if (t.name && t.tagName) {
-    return `${t.tagName.toLowerCase()}[name=${t.name}]`;
-  } else if (t.tagName.toLowerCase() == "input" || t.tagName.toLowerCase() == "button") {
-    if (t.type || t.class) {
-      return `${t.tagName.toLowerCase()}[${t.type ? "type=" + t.type : ""} ${
-        t.className ? 'class="' + t.className + '"' : ""
-      }]`;
-    }
+  try {
+    findIcon();
+  } catch (err) {
+    ipcRenderer.sendToHost("noicon");
+    ipcRenderer.sendToHost("nocolor");
+    console.error(err);
   }
-  return "UNKNOWN";
-}
 
-function findForm() {
-  const forms = Array.from(document.querySelectorAll("form")).filter(
-    filterDom(["signin", "sign-in", "log"], ["oauth", "facebook", "signup", "forgot"])
-  );
-
-  return forms.length == 1 ? forms[0] : document;
-}
-
-function findPassField() {
-  const t = Array.from(findForm().querySelectorAll("input")).filter(
-    filterDom(["pass", "pw"], ["repeat", "confirm", "forgot"])
-  );
-  return t[0];
-}
-
-function findEmailField() {
-  const t = Array.from(findForm().querySelectorAll("input")).filter(
-    filterDom(["email", "user"], [])
-  );
-  return t[0];
-}
-
-function findConfirmButton() {
-  var t = Array.from(findForm().querySelectorAll("[type='submit']"));
-  if (t.length == 0) {
-    t = Array.from(
-      findForm().querySelectorAll("button, input[type='button'], [role='button']")
-    ).filter(filterDom(["sign", "log", "submit"], ["oauth", "google", "facebook", "forgot"]));
+  try {
+    //findLogo();
+  } catch (err) {
+    console.error(err);
   }
-  return t[0];
-}
+}, 2000);
 
 const attributes = [
   "name",
@@ -211,8 +166,8 @@ var iconsLeft = 0;
 var icons = [];
 const ICO = require("icojs");
 const PNG = require("pngjs").PNG;
-const Vibrant = require("node-vibrant");
 const ColorThief = require("color-thief-browser");
+
 function findIcon() {
   const possibleIcons = Array.from(document.querySelectorAll("link[rel*='icon']")).map(function(t) {
     return t.href;
@@ -230,40 +185,44 @@ function findIcon() {
       oReq.responseType = "arraybuffer";
 
       oReq.onload = function(oEvent) {
-        const arrayBuffer = oReq.response;
-        console.log("ICON", icon, ICO.isICO(arrayBuffer), isPNG(arrayBuffer));
-        if (arrayBuffer) {
-          if (ICO.isICO(arrayBuffer)) {
-            ICO.parse(arrayBuffer, "image/png").then(function(images) {
-              const largestSubfile = images.reduce(function(a, b) {
-                return a.width * a.height > b.width * b.height ? a : b;
-              });
-              console.log("largestsubfile", largestSubfile);
-              icons.push({
-                width: largestSubfile.width,
-                height: largestSubfile.height,
-                buffer: largestSubfile.buffer
-              });
-              finishIcon();
-            });
-          } else if (isPNG(arrayBuffer)) {
-            new PNG().parse(arrayBuffer, function(error, data) {
-              if (error) {
+        try {
+          const arrayBuffer = oReq.response;
+          console.log("ICON", icon, ICO.isICO(arrayBuffer), isPNG(arrayBuffer));
+          if (arrayBuffer) {
+            if (ICO.isICO(arrayBuffer)) {
+              ICO.parse(arrayBuffer, "image/png").then(function(images) {
+                const largestSubfile = images.reduce(function(a, b) {
+                  return a.width * a.height > b.width * b.height ? a : b;
+                });
+                console.log("largestsubfile", largestSubfile);
+                icons.push({
+                  width: largestSubfile.width,
+                  height: largestSubfile.height,
+                  buffer: largestSubfile.buffer
+                });
                 finishIcon();
-                return;
-              }
-              icons.push({
-                width: data.width,
-                height: data.height,
-                buffer: arrayBuffer
               });
-              console.log("newIcon", icons[icons.length - 1]);
+            } else if (isPNG(arrayBuffer)) {
+              new PNG().parse(arrayBuffer, function(error, data) {
+                if (error) {
+                  finishIcon();
+                  return;
+                }
+                icons.push({
+                  width: data.width,
+                  height: data.height,
+                  buffer: arrayBuffer
+                });
+                console.log("newIcon", icons[icons.length - 1]);
+                finishIcon();
+              });
+            } else {
               finishIcon();
-            });
+            }
           } else {
             finishIcon();
           }
-        } else {
+        } catch (err) {
           finishIcon();
         }
       };
@@ -275,10 +234,17 @@ function findIcon() {
     }
   }
 }
+
 function finishIcon() {
   iconsLeft -= 1;
   console.log("iconsleft", iconsLeft);
   if (iconsLeft === 0) {
+    if (icons.length === 0) {
+      ipcRenderer.sendToHost("noicon");
+      ipcRenderer.sendToHost("nocolor");
+      return;
+    }
+
     const largestIcon = icons.reduce(function(a, b) {
       return a.width * a.height > b.width * b.height ? a : b;
     });
@@ -287,9 +253,7 @@ function finishIcon() {
 
     findDominantColor(datastring);
 
-    console.log("selected icon", largestIcon);
-
-    ipcRenderer.sendToHost("icon", datastring);
+    ipcRenderer.sendToHost("icon", datastring, largestIcon.width, largestIcon.height);
   }
 }
 
@@ -305,6 +269,8 @@ function findDominantColor(datastring) {
   img.src = datastring;
 }
 
+// unfinished, not working implementation using Vibrant
+// const Vibrant = require("node-vibrant");
 function findDominantColorV(buffer) {
   // var img = new Image();
   // img.onload = async function() {
