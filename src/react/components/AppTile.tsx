@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import EditLicence from "../popups/EditLicence";
 import { iconPicFolder } from "../common/constants";
@@ -21,15 +21,26 @@ const UPDATE_CREDENTIALS = gql`
   }
 `;
 
+const SET_LAYOUT = gql`
+  mutation onSetLayout($horizontal: Int, $vertical: Int, $id: ID!) {
+    setLayout(layouthorizontal: $horizontal, layoutvertical: $vertical, licenceId: $id) {
+      id
+      layouthorizontal
+    }
+  }
+`;
+
 interface Props {
   dragStartFunction: Function;
   dragEndFunction: Function;
   dragItem: number | null;
+  subPosition: number;
   licence: Licence;
   handleDrop: Function;
   setPreview: (preview: Preview) => void;
   preview: Preview;
   setTeam?: Function;
+  setLayout: Function;
 }
 
 interface State {
@@ -39,6 +50,14 @@ interface State {
 class AppTile extends React.Component<Props, State> {
   state = {
     entered: false
+  };
+
+  componentDidMount = async () => {
+    if (!this.props.licence.layouthorizontal) {
+      await this.props.setLayout({
+        variables: { horizontal: this.props.subPosition, id: this.props.licence.id }
+      });
+    }
   };
 
   render() {
@@ -136,4 +155,4 @@ class AppTile extends React.Component<Props, State> {
   }
 }
 
-export default AppTile;
+export default graphql(SET_LAYOUT, { name: "setLayout" })(AppTile);

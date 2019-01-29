@@ -1,14 +1,13 @@
 import * as React from "react";
 import { graphql, Query, Mutation } from "react-apollo";
 import * as pjson from "pjson";
-import LoadingDiv from "./LoadingDiv";
-import { ErrorComp, filterError } from "../common/functions";
-import { GET_USER_CONFIG, fetchLicences } from "../queries/auth";
+import { fetchLicences } from "../queries/auth";
 import { UPDATE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
 import { AppContext } from "../common/functions";
 import SidebarLink from "./sidebarLink";
 import config from "../../configurationManager";
+import * as moment from "moment";
 
 interface SidebarLinks {
   label: string;
@@ -28,8 +27,7 @@ export type SidebarProps = {
   logMeOut: () => void;
   isadmin: boolean;
   toggleSidebar: Function;
-  saveLayout: Mutation;
-  layout: string[] | null;
+  updateLayout: Function;
   moveTo: Function;
   viewID: number;
   openInstances: any;
@@ -41,7 +39,7 @@ interface State {
   dragItem: number | null;
 }
 
-class SidebarHolder extends React.Component<SidebarProps, State> {
+class Sidebar extends React.Component<SidebarProps, State> {
   state = {
     dragItem: null
   };
@@ -55,6 +53,37 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
 
   handleDrop = async id => {
     const { dragItem } = this.state;
+    const { licences } = this.props;
+
+    const l1 = licences.find(licence => licence.id == dragItem);
+    const pos1 = licences
+      .filter(
+        licence =>
+          !licence.endtime ||
+          (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
+      )
+      .map(licence => licence.id)
+      .indexOf(dragItem!);
+
+    const l2 = licences.find(licence => licence.id == id);
+    const pos2 = licences
+      .filter(
+        licence =>
+          !licence.endtime ||
+          (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
+      )
+      .map(licence => licence.id)
+      .indexOf(id);
+
+    const dragged = {
+      id: l1!.id,
+      layoutvertical: l1!.layoutvertical ? l1!.layoutvertical : pos1
+    };
+
+    const droppedOn = {
+      id: l2!.id,
+      layoutvertical: l2!.layoutvertical ? l2!.layoutvertical : pos2
+    };
 
     const newLicences = this.props.licences.map((licence: Licence) => {
       if (licence.id == id) {
@@ -67,14 +96,21 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
     });
 
     try {
-      const vertical = newLicences.map(licence => licence.id);
-      await this.props.saveLayout({
-        variables: { vertical },
-        refetchQueries: [{ query: fetchLicences }, { query: GET_USER_CONFIG }],
+      await this.props.updateLayout({
+        variables: { dragged, droppedOn, direction: "VERTICAL" },
         update: cache => {
-          const data = cache.readQuery({ query: GET_USER_CONFIG });
-          data.me.config.vertical = vertical;
-          cache.writeQuery({ query: GET_USER_CONFIG, data });
+          const data = cache.readQuery({ query: fetchLicences });
+          const newLicences = licences.map(licence => {
+            if (licence.id == id) {
+              return { ...l2, layoutvertical: l1!.layoutvertical };
+            } else if (licence.id == dragItem!) {
+              return { ...l1, layoutvertical: l2!.layoutvertical };
+            } else {
+              return licence;
+            }
+          });
+          data.fetchLicences = newLicences;
+          cache.writeQuery({ query: fetchLicences, data });
         }
       });
       this.setState({ dragItem: null });
@@ -138,14 +174,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
   };
 
   render() {
-    const { sideBarOpen, licences, layout } = this.props;
-    let orderedLicences = licences;
-
-    if (layout && layout.length == licences.length) {
-      console.log("DICKTATOR", layout, licences.length);
-
-      orderedLicences = layout.map(id => licences.find(item => item.id == id));
-    }
+    const { sideBarOpen, licences } = this.props;
 
     const sidebarLinks = [
       {
@@ -272,21 +301,42 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
               />
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
-              {orderedLicences.length > 0 &&
-                orderedLicences.map((licence, key) => (
-                  <SidebarLink
-                    licence={licence}
-                    key={`ServiceLogo-${key}`}
-                    openInstances={this.props.openInstances}
-                    sideBarOpen={this.props.sideBarOpen}
-                    active={this.props.location.pathname === `/area/app/${licence.id}`}
-                    setTeam={this.props.setApp}
-                    setInstance={this.props.setInstance}
-                    viewID={this.props.viewID}
-                    handleDragStart={dragItem => this.setState({ dragItem })}
-                    handleDrop={this.handleDrop}
-                  />
-                ))}
+
+              {licences.length > 0 &&
+                licences
+                  .sort((a, b) => {
+                    if (!b.layoutvertical) {
+                      return -1;
+                    } else if (!a.layoutvertical) {
+                      return 1;
+                    } else {
+                      return a.layoutvertical - b.layoutvertical;
+                    }
+                  })
+                  .map(licence => {
+                    if (
+                      licence.disabled ||
+                      (licence.endtime && moment().isAfter(licence.endtime))
+                    ) {
+                      return "";
+                    }
+
+                    return (
+                      <SidebarLink
+                        licence={licence}
+                        key={`ServiceLogo-${licence.id}`}
+                        openInstances={this.props.openInstances}
+                        sideBarOpen={this.props.sideBarOpen}
+                        active={this.props.location.pathname === `/area/app/${licence.id}`}
+                        setTeam={this.props.setApp}
+                        setInstance={this.props.setInstance}
+                        viewID={this.props.viewID}
+                        handleDragStart={dragItem => this.setState({ dragItem })}
+                        handleDrop={this.handleDrop}
+                      />
+                    );
+                  })}
+
               <li
                 className="sidebar-link sidebar-link-important"
                 onClick={() => this.props.logMeOut()}>
@@ -304,28 +354,4 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
   }
 }
 
-const Sidebar = graphql(UPDATE_LAYOUT, { name: "saveLayout" })(SidebarHolder);
-
-export default props => (
-  <Query query={GET_USER_CONFIG}>
-    {({ data, loading, error }) => {
-      if (loading || props.licences.loading) {
-        return <LoadingDiv text="Fetching data..." />;
-      }
-
-      if (error || !data) {
-        return <ErrorComp error={filterError(error)} />;
-      }
-
-      const { licences, ...moreProps } = props;
-
-      return (
-        <Sidebar
-          {...moreProps}
-          licences={props.licences.fetchLicences}
-          layout={data.me.config && data.me.config.vertical ? data.me.config.vertical : null}
-        />
-      );
-    }}
-  </Query>
-);
+export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(Sidebar);
