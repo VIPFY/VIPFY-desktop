@@ -2,7 +2,7 @@ let ipcRenderer = require("electron").ipcRenderer;
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
-    for (search of searches) {
+    for (const search of searches) {
       if (this.indexOf(search) !== -1) {
         return true;
       }
@@ -57,9 +57,9 @@ function getQueryString(t) {
     return `${t.tagName.toLowerCase()}[name=${t.name}]`;
   } else if (t.tagName.toLowerCase() == "input" || t.tagName.toLowerCase() == "button") {
     if (t.type || t.class) {
-      return `${t.tagName.toLowerCase()}[${t.type ? "type=" + t.type : ""} ${
-        t.className ? 'class="' + t.className + '"' : ""
-      }]`;
+      return `${t.tagName.toLowerCase()}${t.type ? '[type="' + t.type + '"]' : ""}${
+        t.className ? '[class="' + t.className + '"]' : ""
+      }`;
     }
   }
   return "UNKNOWN";

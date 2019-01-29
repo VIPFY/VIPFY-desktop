@@ -88,7 +88,15 @@ class Manager extends React.PureComponent<Props, State> {
             setResult={(u, p, b) => this.finishStage1(u, p, b)}
           />
         )}
-        {this.state.stage == Stage.findError && <ErrorFieldExtractor url={this.props.url} />}
+        {this.state.stage == Stage.findError && (
+          <ErrorFieldExtractor
+            url={this.props.url}
+            username="nvtester@vipfy.store"
+            usernameField={this.app.email!}
+            passwordField={this.app.password!}
+            button={this.app.button}
+          />
+        )}
       </div>
     );
   }
