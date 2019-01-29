@@ -50,7 +50,7 @@ class AppList extends React.Component<Props, State> {
           (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
       )
       .map(licence => licence.id)
-      .indexOf(dragItem);
+      .indexOf(dragItem!);
 
     const l2 = licences.find(licence => licence.id == id);
     const pos2 = licences
@@ -64,12 +64,12 @@ class AppList extends React.Component<Props, State> {
 
     const dragged = {
       id: l1!.id,
-      layouthorizontal: l1.layouthorizontal ? l1.layouthorizontal : pos1
+      layouthorizontal: l1!.layouthorizontal ? l1!.layouthorizontal : pos1
     };
 
     const droppedOn = {
       id: l2!.id,
-      layouthorizontal: l2.layouthorizontal ? l2.layouthorizontal : pos2
+      layouthorizontal: l2!.layouthorizontal ? l2!.layouthorizontal : pos2
     };
 
     try {

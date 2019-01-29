@@ -85,32 +85,21 @@ class Sidebar extends React.Component<SidebarProps, State> {
       layoutvertical: l2!.layoutvertical ? l2!.layoutvertical : pos2
     };
 
-    const newLicences = this.props.licences.map((licence: Licence) => {
-      if (licence.id == id) {
-        return this.props.licences.find((item: Licence) => item.id == dragItem!);
-      } else if (licence.id == dragItem!) {
-        return this.props.licences.find((item: Licence) => item.id == id);
-      } else {
-        return licence;
-      }
-    });
-
     try {
       await this.props.updateLayout({
         variables: { dragged, droppedOn, direction: "VERTICAL" },
         update: cache => {
-          const data = cache.readQuery({ query: fetchLicences });
           const newLicences = licences.map(licence => {
             if (licence.id == id) {
-              return { ...l2, layoutvertical: l1!.layoutvertical };
+              return { ...l2, layoutvertical: dragged!.layoutvertical };
             } else if (licence.id == dragItem!) {
-              return { ...l1, layoutvertical: l2!.layoutvertical };
+              return { ...l1, layoutvertical: droppedOn!.layoutvertical };
             } else {
               return licence;
             }
           });
-          data.fetchLicences = newLicences;
-          cache.writeQuery({ query: fetchLicences, data });
+
+          cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
         }
       });
       this.setState({ dragItem: null });
@@ -304,16 +293,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
               {licences.length > 0 &&
                 licences
-                  .sort((a, b) => {
-                    if (!b.layoutvertical) {
-                      return -1;
-                    } else if (!a.layoutvertical) {
-                      return 1;
-                    } else {
-                      return a.layoutvertical - b.layoutvertical;
-                    }
-                  })
-                  .map(licence => {
+                  .sort((a, b) => a.layoutvertical - b.layoutvertical)
+                  .map((licence, key) => {
                     if (
                       licence.disabled ||
                       (licence.endtime && moment().isAfter(licence.endtime))
@@ -323,8 +304,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
                     return (
                       <SidebarLink
-                        licence={licence}
                         key={`ServiceLogo-${licence.id}`}
+                        subPosition={key}
+                        licence={licence}
                         openInstances={this.props.openInstances}
                         sideBarOpen={this.props.sideBarOpen}
                         active={this.props.location.pathname === `/area/app/${licence.id}`}
