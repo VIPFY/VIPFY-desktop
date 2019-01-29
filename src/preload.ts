@@ -241,6 +241,42 @@ import { type } from "os";
   // }
   //});
 }
+
+// convert existing keys into simplified format
+function normalizeKey(key) {
+  if (key.emailtype ? key.emailtype == 2 : key.type == 2) {
+    key.emailobject = "#" + key.emailobject;
+    key.emailtype = 1;
+  }
+  if (key.passwordtype ? key.passwordtype == 2 : key.type == 2) {
+    key.passwordobject = "#" + key.passwordobject;
+    key.passwordtype = 1;
+  }
+  if (key.buttontype ? key.buttontype == 2 : key.type == 2) {
+    key.buttonobject = "#" + key.buttonobject;
+    key.buttontype = 1;
+  }
+  if (key.button1type == 2) {
+    key.button1object = "#" + key.button1object;
+    key.button1type = 1;
+  }
+  if (key.button2type == 2) {
+    key.button2object = "#" + key.button2object;
+    key.button2type = 1;
+  }
+  if (!key.button1object) {
+    key.button1object = key.buttonobject;
+  }
+  if (!key.button2object) {
+    key.button2object = key.buttonobject;
+  }
+  if (key.emptyerrortype) {
+    key.errorobject = key.errorobject + ":not(:empty)";
+    key.emptyerrortype = undefined;
+  }
+  return key;
+}
+
 function getLoginDetails(askfordata) {
   let repeatpossible = true;
   let clicked = false;
@@ -254,37 +290,38 @@ function getLoginDetails(askfordata) {
     console.log("ONCE");
     console.log("LOGINDETAILS", key);
 
-    if (
+    key = normalizeKey(key);
+
+    let hideObject = !!(
       document.querySelector<HTMLInputElement>(key.hideobject) ||
       document.getElementById(key.hideobject)
-    ) {
+    );
+    const errorObject =
+      document.querySelector<HTMLInputElement>(key.errorobject) ||
+      document.getElementById(key.errorobject);
+    const waitUntil =
+      document.querySelector<HTMLInputElement>(key.waituntil) ||
+      document.getElementById(key.waituntil);
+
+    const emailObject = document.querySelector<HTMLInputElement>(key.emailobject);
+    const passwordObject = document.querySelector<HTMLInputElement>(key.passwordobject);
+    const buttonObject = document.querySelector<HTMLInputElement>(key.buttonobject);
+    const button1Object = document.querySelector<HTMLInputElement>(key.button1object);
+    const button2Object = document.querySelector<HTMLInputElement>(key.button2object);
+    const rememberObject = document.querySelector<HTMLInputElement>(key.rememberobject);
+
+    if (!key.hideobject) {
+      hideObject = !passwordObject;
+    }
+
+    if (hideObject) {
       ipcRenderer.sendToHost("hideLoading");
       ipcRenderer.sendToHost("loggedIn");
       return;
     }
 
-    if (
-      askfordata > 50 ||
-      ((document.querySelector<HTMLInputElement>(key.errorobject) ||
-        document.getElementById(key.errorobject)) &&
-        !key.emptyerrortype) ||
-      (key.emptyerrortype &&
-      (document.querySelector<HTMLInputElement>(key.errorobject) ||
-        document.getElementById(key.errorobject)) &&
-      key.emptyerrortype == 1
-        ? document.querySelector<HTMLInputElement>(key.errorobject)
-          ? document.querySelector<HTMLInputElement>(key.errorobject)!.innerHtml
-          : false
-        : document.getElementById(key.errorobject)
-        ? document.getElementById(key.errorobject)!.innerHtml
-        : false)
-    ) {
-      console.log(
-        "STOP RETRY",
-        askfordata,
-        document.querySelector<HTMLInputElement>(key.errorobject) ||
-          document.getElementById(key.errorobject)
-      );
+    if (askfordata > 50 || errorObject) {
+      console.log("STOP RETRY", askfordata, errorObject);
       ipcRenderer.sendToHost("errorDetected");
       return;
     }
@@ -295,104 +332,24 @@ function getLoginDetails(askfordata) {
       return;
     }
 
-    if (
-      !(
-        document.querySelector<HTMLInputElement>(key.waituntil) ||
-        document.getElementById(key.waituntil)
-      ) &&
-      !(
-        document.querySelector<HTMLInputElement>(key.hideobject) ||
-        document.getElementById(key.hideobject)
-      )
-    ) {
+    if (!waitUntil && !hideObject) {
       setTimeout(() => getLoginDetails(askfordata + 1), 50);
       return;
     }
 
     if (key.type) {
-      console.log(
-        "TEST",
-        key.passwordobject,
-        document.getElementById(key.passwordobject),
-        document.querySelector<HTMLInputElement>(key.passwordobject)
-      );
-      if (
-        (key.type == 1 || key.type == 2) &&
-        (document.querySelector<HTMLInputElement>(key.passwordobject) ||
-          document.getElementById(key.passwordobject))
-      ) {
+      console.log("TEST", key.passwordobject, passwordObject);
+      if ((key.type == 1 || key.type == 2) && passwordObject) {
         askfordata++;
-        console.log(
-          "TYPE 1|2",
-          key.type == 1,
-          key.type == 2,
-          document.querySelector<HTMLInputElement>(key.passwordobject),
-          document.getElementById(key.passwordobject)
-        );
+        console.log("TYPE 1|2", key.type == 1, key.type == 2, passwordObject);
         ipcRenderer.sendToHost("showLoading");
         let username = key.key.username;
         let password = key.key.password;
 
-        if (key.emailtype ? key.emailtype == 1 : key.type == 1) {
-          document
-            .querySelector<HTMLInputElement>(key.emailobject)!
-            .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
-          document.querySelector<HTMLInputElement>(key.emailobject)!.value = username;
+        fillFormField(emailObject!, username);
+        fillFormField(passwordObject!, password);
 
-          document
-            .querySelector<HTMLInputElement>(key.emailobject)!
-            .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-
-          document
-            .querySelector<HTMLInputElement>(key.emailobject)!
-            .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
-        } else {
-          document
-            .getElementById(key.emailobject)!
-            .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
-          document.getElementById(key.emailobject)!.value = username;
-          document
-            .getElementById(key.emailobject)!
-            .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-
-          document
-            .getElementById(key.emailobject)!
-            .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
-        }
-
-        if (key.passwordtype ? key.passwordtype == 1 : key.type == 1) {
-          document
-            .querySelector<HTMLInputElement>(key.passwordobject)!
-            .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
-          document.querySelector<HTMLInputElement>(key.passwordobject)!.value = password;
-
-          document
-            .querySelector<HTMLInputElement>(key.passwordobject)!
-            .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-
-          document
-            .querySelector<HTMLInputElement>(key.passwordobject)!
-            .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
-        } else {
-          document
-            .getElementById(key.passwordobject)!
-            .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
-          document.getElementById(key.passwordobject)!.value = password;
-
-          document
-            .getElementById(key.passwordobject)!
-            .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-
-          document
-            .getElementById(key.passwordobject)!
-            .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
-        }
-
-        if (key.buttontype ? key.buttontype == 1 : key.type == 1) {
-          clickButton(document.querySelector<HTMLInputElement>(key.buttonobject));
-        } else {
-          clickButton(document.getElementById(key.buttonobject));
-        }
+        clickButton(buttonObject!);
         repeatpossible = false;
       } else if (key.type == 3 || key.type == 4 || key.type == 5) {
         console.log("TYPE 3");
@@ -401,171 +358,33 @@ function getLoginDetails(askfordata) {
         let username = key.key.username;
         let password = key.key.password;
 
-        console.log(
-          (document.querySelector<HTMLInputElement>(key.emailobject)
-            ? document.querySelector<HTMLInputElement>(key.emailobject)!.value == ""
-            : false || document.getElementById(key.emailobject)
-            ? document.getElementById(key.emailobject)!.value == ""
-            : false) &&
-            !(
-              document.querySelector<HTMLInputElement>(key.passwordobject) ||
-              document.getElementById(key.passwordobject)
-            )
-        );
+        console.log(emailObject && emailObject!.value == "" && !passwordObject);
 
         if (
-          ((document.querySelector<HTMLInputElement>(key.emailobject)
-            ? document.querySelector<HTMLInputElement>(key.emailobject)!.value == ""
-            : false || document.getElementById(key.emailobject)
-            ? document.getElementById(key.emailobject)!.value == ""
-            : false) &&
-            !(
-              document.querySelector<HTMLInputElement>(key.passwordobject) ||
-              document.getElementById(key.passwordobject)
-            ) &&
-            !(
-              document.querySelector<HTMLInputElement>(key.hideobject) ||
-              document.getElementById(key.hideobject)
-            )) ||
-          (key.type == 5 &&
-            !clicked &&
-            !(
-              document.querySelector<HTMLInputElement>(key.hideobject) ||
-              document.getElementById(key.hideobject)
-            ))
+          (emailObject && emailObject!.value == "" && !passwordObject && !hideObject) ||
+          (key.type == 5 && !clicked && !hideObject)
         ) {
           console.log("EMAIL AND NO PASSWORD");
           askfordata++;
-          if (key.emailtype ? key.emailtype == 1 : key.type == 1) {
-            document
-              .querySelector<HTMLInputElement>(key.emailobject)!
-              .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
-            document.querySelector<HTMLInputElement>(key.emailobject)!.value = username;
+          fillFormField(emailObject!, username);
 
-            document
-              .querySelector<HTMLInputElement>(key.emailobject)!
-              .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-
-            document
-              .querySelector<HTMLInputElement>(key.emailobject)!
-              .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
-          } else {
-            document
-              .getElementById(key.emailobject)!
-              .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
-            document.getElementById(key.emailobject)!.value = username;
-            document
-              .getElementById(key.emailobject)!
-              .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-
-            document
-              .getElementById(key.emailobject)!
-              .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
-          }
-
-          if (key.button1object) {
-            if (key.button1type == 1) {
-              clickButton(document.querySelector<HTMLInputElement>(key.button1object)!);
-            } else {
-              clickButton(document.getElementById(key.button1object)!);
-            }
-          } else {
-            if (key.buttontype == 1) {
-              clickButton(document.querySelector<HTMLInputElement>(key.buttonobject)!);
-            } else {
-              clickButton(document.getElementById(key.buttonobject)!);
-            }
-          }
+          clickButton(button1Object!);
         }
 
-        console.log(
-          "CHECK TYPE 3",
-          (document.querySelector<HTMLInputElement>(key.emailobject) ||
-            document.getElementById(key.emailobject) ||
-            document.querySelector<HTMLInputElement>(key.emailpassobject) ||
-            document.getElementById(key.emailpassobject) ||
-            key.nopassobject) &&
-            (document.querySelector<HTMLInputElement>(key.passwordobject) ||
-              document.getElementById(key.passwordobject)),
-          document.querySelector<HTMLInputElement>(key.emailobject) ||
-            document.getElementById(key.emailobject) ||
-            document.querySelector<HTMLInputElement>(key.emailpassobject) ||
-            document.getElementById(key.emailpassobject) ||
-            key.nopassobject,
-          document.querySelector<HTMLInputElement>(key.passwordobject) ||
-            document.getElementById(key.passwordobject)
-        );
         if (
-          ((document.querySelector<HTMLInputElement>(key.emailobject) ||
-            document.getElementById(key.emailobject) ||
-            document.querySelector<HTMLInputElement>(key.emailpassobject) ||
-            document.getElementById(key.emailpassobject) ||
-            key.nopassobject) &&
-            (document.querySelector<HTMLInputElement>(key.passwordobject)
-              ? document.querySelector<HTMLInputElement>(key.passwordobject)!.value == ""
-              : false || document.getElementById(key.passwordobject)
-              ? document.getElementById(key.passwordobject)!.value == ""
-              : false) &&
-            !(
-              document.querySelector<HTMLInputElement>(key.hideobject) ||
-              document.getElementById(key.hideobject)
-            )) ||
-          (key.type == 5 &&
-            clicked &&
-            !(
-              document.querySelector<HTMLInputElement>(key.hideobject) ||
-              document.getElementById(key.hideobject)
-            ))
+          (passwordObject && passwordObject!.value == "" && !hideObject) ||
+          (key.type == 5 && clicked && !hideObject)
         ) {
           console.log("EMAIL AND PASSWORD");
           askfordata++;
           if (key.type == 3) {
             repeatpossible = false;
           }
-          if (key.passwordtype ? key.passwordtype == 1 : key.type == 1) {
-            document
-              .querySelector<HTMLInputElement>(key.passwordobject)!
-              .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
-            document.querySelector<HTMLInputElement>(key.passwordobject)!.value = password;
-
-            document
-              .querySelector<HTMLInputElement>(key.passwordobject)!
-              .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-
-            document
-              .querySelector<HTMLInputElement>(key.passwordobject)!
-              .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
-          } else {
-            document
-              .getElementById(key.passwordobject)!
-              .dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
-            document.getElementById(key.passwordobject)!.value = password;
-
-            document
-              .getElementById(key.passwordobject)!
-              .dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-
-            document
-              .getElementById(key.passwordobject)!
-              .dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
-          }
-
-          if (key.button2object) {
-            if (key.button2type == 1) {
-              clickButton(document.querySelector<HTMLInputElement>(key.button2object)!);
-            } else {
-              clickButton(document.getElementById(key.button2object)!);
-            }
-          } else {
-            if (key.buttontype == 1) {
-              clickButton(document.querySelector<HTMLInputElement>(key.buttonobject)!);
-            } else {
-              clickButton(document.getElementById(key.buttonobject)!);
-            }
-          }
+          fillFormField(passwordObject!, password);
+          clickButton(button2Object!);
         }
-        if (key.type == 4 && document.querySelector<HTMLInputElement>(key.rememberobject)) {
-          clickButton(document.querySelector<HTMLInputElement>(key.rememberobject)!);
+        if (key.type == 4 && rememberObject) {
+          clickButton(rememberObject!);
           repeatpossible = false;
         }
       }
@@ -574,10 +393,7 @@ function getLoginDetails(askfordata) {
       if (
         (key.repeat || key.type == 3 || key.type == 4 || key.type == 5) &&
         repeatpossible &&
-        !(
-          document.querySelector<HTMLInputElement>(key.hideobject) ||
-          document.getElementById(key.hideobject)
-        )
+        !hideObject
       ) {
         if (key.type == 5) {
           clicked = true;
@@ -588,69 +404,9 @@ function getLoginDetails(askfordata) {
       }
 
       function hideLoading(r = 0) {
-        if (
-          ((key.type == 1 || key.type == 2 || key.hidetype == 1 || key.hidetype == 2) &&
-            key.hidetype != 3 &&
-            (document.querySelector<HTMLInputElement>(key.passwordobject) ||
-              document.getElementById(key.passwordobject)) &&
-            !(
-              ((document.querySelector<HTMLInputElement>(key.errorobject) ||
-                document.getElementById(key.errorobject)) &&
-                !key.emptyerrortype) ||
-              (key.emptyerrortype &&
-              (document.querySelector<HTMLInputElement>(key.errorobject) ||
-                document.getElementById(key.errorobject)) &&
-              key.emptyerrortype == 1
-                ? document.querySelector<HTMLInputElement>(key.errorobject)
-                  ? document.querySelector<HTMLInputElement>(key.errorobject)!.innerHtml
-                  : false
-                : document.getElementById(key.errorobject)
-                ? document.getElementById(key.errorobject)!.innerHtml
-                : false)
-            )) ||
-          ((key.type == 3 ||
-            key.hidetype == 3 ||
-            key.type == 4 ||
-            key.hidetype == 4 ||
-            key.type == 5) &&
-            !(
-              document.querySelector<HTMLInputElement>(key.hideobject) ||
-              document.getElementById(key.hideobject)
-            ) &&
-            !(
-              ((document.querySelector<HTMLInputElement>(key.errorobject) ||
-                document.getElementById(key.errorobject)) &&
-                !key.emptyerrortype) ||
-              (key.emptyerrortype &&
-              (document.querySelector<HTMLInputElement>(key.errorobject) ||
-                document.getElementById(key.errorobject)) &&
-              key.emptyerrortype == 1
-                ? document.querySelector<HTMLInputElement>(key.errorobject)
-                  ? document.querySelector<HTMLInputElement>(key.errorobject)!.innerHtml
-                  : false
-                : document.getElementById(key.errorobject)
-                ? document.getElementById(key.errorobject)!.innerHtml
-                : false)
-            ) &&
-            r <= 50)
-        ) {
+        if (!hideObject && !errorObject && r <= 50) {
           setTimeout(() => hideLoading(r++), 50);
-        } else if (
-          ((document.querySelector<HTMLInputElement>(key.errorobject) ||
-            document.getElementById(key.errorobject)) &&
-            !key.emptyerrortype) ||
-          (key.emptyerrortype &&
-          (document.querySelector<HTMLInputElement>(key.errorobject) ||
-            document.getElementById(key.errorobject)) &&
-          key.emptyerrortype == 1
-            ? document.querySelector<HTMLInputElement>(key.errorobject)
-              ? document.querySelector<HTMLInputElement>(key.errorobject)!.innerHtml
-              : false
-            : document.getElementById(key.errorobject)
-            ? document.getElementById(key.errorobject)!.innerHtml
-            : false) ||
-          r > 50
-        ) {
+        } else if (errorObject || r > 50) {
           ipcRenderer.sendToHost("errorDetected");
           return;
         } else {
@@ -682,4 +438,12 @@ function triggerMouseEvent(node: HTMLElement, eventType: string): void {
   let clickEvent = document.createEvent("MouseEvents");
   clickEvent.initEvent(eventType, true, true);
   node.dispatchEvent(clickEvent);
+}
+
+function fillFormField(target: HTMLInputElement, value: string) {
+  target.dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
+  target.value = value;
+
+  target.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+  target.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
 }
