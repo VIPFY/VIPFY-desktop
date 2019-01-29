@@ -76,18 +76,17 @@ class AppList extends React.Component<Props, State> {
       await this.props.updateLayout({
         variables: { dragged, droppedOn, direction: "HORIZONTAL" },
         update: cache => {
-          const data = cache.readQuery({ query: fetchLicences });
           const newLicences = licences.map(licence => {
             if (licence.id == id) {
-              return { ...l2, layouthorizontal: l1!.layouthorizontal };
+              return { ...l2, layouthorizontal: dragged!.layouthorizontal };
             } else if (licence.id == dragItem!) {
-              return { ...l1, layouthorizontal: l2!.layouthorizontal };
+              return { ...l1, layouthorizontal: droppedOn!.layouthorizontal };
             } else {
               return licence;
             }
           });
-          data.fetchLicences = newLicences;
-          cache.writeQuery({ query: fetchLicences, data });
+
+          cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
         }
       });
     } catch (error) {
@@ -112,23 +111,16 @@ class AppList extends React.Component<Props, State> {
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
             {licences
-              .sort((a, b) => {
-                if (!b.layouthorizontal) {
-                  return -1;
-                } else if (!a.layouthorizontal) {
-                  return 1;
-                } else {
-                  return a.layouthorizontal - b.layouthorizontal;
-                }
-              })
-              .map(licence => {
+              .sort((a, b) => a.layouthorizontal - b.layouthorizontal)
+              .map((licence, key) => {
                 if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
                   return "";
                 }
 
                 return (
                   <AppTile
-                    key={licence.id}
+                    key={key}
+                    subPosition={key}
                     preview={preview}
                     setPreview={this.setPreview}
                     dragItem={dragItem}

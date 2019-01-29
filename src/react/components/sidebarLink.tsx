@@ -82,14 +82,6 @@ class SidebarLink extends React.Component<Props, State> {
   render() {
     const { licence, openInstances, sideBarOpen, active, setTeam } = this.props;
 
-    if (
-      !licence ||
-      licence.disabled ||
-      (licence.endtime ? moment().isAfter(licence.endtime) : false)
-    ) {
-      return "";
-    }
-
     let cssClass = "sidebar-link";
     if (active) {
       cssClass += " sidebar-active";
