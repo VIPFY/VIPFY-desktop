@@ -419,8 +419,6 @@ function getLoginDetails(askfordata) {
       console.log("NOTYPE");
     }
   });
-  // if (key.type !== 1) {
-  console.log("NOT 1");
 }
 
 function clickButton(targetNode: HTMLElement): void {
