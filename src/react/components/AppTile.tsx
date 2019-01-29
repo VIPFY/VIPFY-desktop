@@ -8,6 +8,7 @@ import { fetchLicences, me } from "../queries/auth";
 import moment = require("moment");
 import { Licence } from "../interfaces";
 import { Preview } from "./profile/AppList";
+import { SET_LAYOUT } from "../mutations/auth";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -18,15 +19,6 @@ const REMOVE_EXTERNAL_ACCOUNT = gql`
 const UPDATE_CREDENTIALS = gql`
   mutation onUpdateCredentials($licenceid: ID!, $username: String, $password: String) {
     updateCredentials(licenceid: $licenceid, username: $username, password: $password)
-  }
-`;
-
-const SET_LAYOUT = gql`
-  mutation onSetLayout($horizontal: Int, $vertical: Int, $id: ID!) {
-    setLayout(layouthorizontal: $horizontal, layoutvertical: $vertical, licenceId: $id) {
-      id
-      layouthorizontal
-    }
   }
 `;
 

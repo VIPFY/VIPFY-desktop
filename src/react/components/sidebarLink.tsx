@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
-import * as moment from "moment";
+import { graphql } from "react-apollo";
+import { SET_LAYOUT } from "../mutations/auth";
 
 interface Props {
   licence: any;
@@ -10,8 +11,10 @@ interface Props {
   setTeam: Function;
   setInstance: Function;
   viewID: number;
+  subPosition: number;
   handleDrop: Function;
   handleDragStart: Function;
+  setLayout: Function;
 }
 
 interface State {
@@ -25,6 +28,14 @@ class SidebarLink extends React.Component<Props, State> {
     hover: false,
     dragging: false,
     entered: false
+  };
+
+  componentDidMount = async () => {
+    if (!this.props.licence.layoutvertical) {
+      await this.props.setLayout({
+        variables: { vertical: this.props.subPosition, id: this.props.licence.id }
+      });
+    }
   };
 
   showInstances = (licence: Licence) => {
@@ -147,4 +158,4 @@ class SidebarLink extends React.Component<Props, State> {
   }
 }
 
-export default SidebarLink;
+export default graphql(SET_LAYOUT, { name: "setLayout" })(SidebarLink);
