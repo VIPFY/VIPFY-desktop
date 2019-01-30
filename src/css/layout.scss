@@ -5539,8 +5539,17 @@ flex-wrap: wrap;
     }
     .heading{
         font-weight: bold;
+        display: flex;
+        align-items: flex-end;
+
+        &.disabled{
+            color: $vipfy-disabeldtext;
+        }
     }
     .text{
+        position: relative;
+        display: flex;
+        align-items: flex-end;
         &.link{
             text-decoration: underline;
             cursor: pointer;
@@ -5655,4 +5664,80 @@ flex-wrap: wrap;
     align-items: flex-end;
     grid-template-columns: 60px 200px 1fr;
     margin-bottom: 10px;
+}
+
+.adminToolHolder{
+    position: absolute;
+    top: 80px;
+    right: -15rem;
+    width: 15rem;
+    height: calc(100vh - 80px);
+    background-color: red;
+    transition: right 0.6s ease-in-out
+}
+
+.adminButton{
+    padding: 5px;
+    border-radius: 40px;
+    box-shadow: $vipfy-lightshadow;
+    background-color: $vipfy-buttongreen;
+    transition: all 0.2s ease-in-out;
+    color: white;
+    font-size: 10px;
+    cursor: pointer;
+    margin-right: 5px;
+
+    &:hover {
+        box-shadow: $vipfy-shadow;
+        background-color: $vipfy-buttondarkgreen;
+    }
+}
+
+.adminInlineButton{
+    position: absolute;
+    left: -20px;
+    cursor: pointer;
+    line-height: 15px;
+}
+.deleteInlineButton{
+    position: absolute;
+    left: -40px;
+    cursor: pointer;
+    line-height: 15px;
+
+    &.disabled{
+        cursor: inherit;
+        color: $vipfy-disabeldtext;
+    }
+}
+.revertInlineButton{
+    position: absolute;
+    left: -60px;
+    cursor: pointer;
+    line-height: 15px;
+}
+.unsavedInline{
+    position: absolute;
+    left: 0;
+    top: 15px;
+    line-height: 15px;
+    color: #DF3F19;
+    font-size: 10px;
+    background-color: rgba(255,255,255,0.9);
+    z-index: 100;
+    padding-right: 5px;
+    box-shadow: 1px 2px 1px 0px rgba(255,255,255,0.9);
+}
+
+.inlineInput{
+    line-height: 14px;
+    border: 0px;
+    border-bottom: 1px solid $vipfy-normaltext;
+    outline: none;
+    color: $vipfy-normaltext;
+}
+.twoLineContent{
+    height: 20px;
+    display: flex;
+    align-items: flex-end;
 }
