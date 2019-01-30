@@ -39,17 +39,18 @@ console.log("starting FindErrorField");
 
 ipcRenderer.sendToHost("loaded", null);
 
-const walkDOM = function(node, func) {
+function walkDOM(node, func) {
+  if (node == null) return;
   func(node);
   node = node.firstChild;
   while (node) {
     walkDOM(node, func);
     node = node.nextSibling;
   }
-};
+}
 
-let objects = {};
-setTimeout(function() {
+function sendDomMap(tag) {
+  const objects = {};
   walkDOM(document.body, function(n1) {
     const o = createObjFromDom(n1);
     if (o === null) return;
@@ -57,31 +58,31 @@ setTimeout(function() {
   });
   console.log(Object.keys(objects).length);
   console.log(objects);
-  ipcRenderer.sendToHost("domMap", objects);
-}, 1000);
+  ipcRenderer.sendToHost("domMap", tag, objects);
+}
 
-ipcRenderer.once("loginData", (e, key) => {
+setTimeout(function() {
+  sendDomMap("before");
+  ipcRenderer.sendToHost("ready");
+}, 5000);
+
+ipcRenderer.on("loginData", (e, key) => {
   console.log("login", key);
   fillFormField(document.querySelector(key.usernameField), key.username);
+  sendDomMap(key.tagBefore);
   fillFormField(document.querySelector(key.passwordField), key.password);
+  sendDomMap(key.tagBefore);
   clickButton(document.querySelector(key.button));
 
-  objects = {};
   setTimeout(function() {
-    walkDOM(document.body, function(n1) {
-      const o = createObjFromDom(n1);
-      if (o === null) return;
-      objects[o.hash] = o;
-    });
-    console.log(Object.keys(objects).length);
-    console.log(objects);
-    ipcRenderer.sendToHost("domMap", objects);
-  }, 1000);
+    sendDomMap(key.tagAfter);
+  }, 5000);
 });
 
 const skipArgs = ["placeholder", "alt", "title", "aria-label"]; // don't use attributes likely to get translated
 const hash = require("object-hash");
 function createObjFromDom(elem) {
+  if (elem == null) return null;
   if (elem.nodeType !== 1) {
     // ELEMENT_NODE
     return null;

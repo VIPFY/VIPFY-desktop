@@ -54,7 +54,7 @@ function getQueryString(t) {
   if (t.id) {
     return "#" + t.id;
   } else if (t.name && t.tagName) {
-    return `${t.tagName.toLowerCase()}[name=${t.name}]`;
+    return `${t.tagName.toLowerCase()}[name="${t.name}"]`;
   } else if (t.tagName.toLowerCase() == "input" || t.tagName.toLowerCase() == "button") {
     if (t.type || t.class) {
       return `${t.tagName.toLowerCase()}${t.type ? '[type="' + t.type + '"]' : ""}${

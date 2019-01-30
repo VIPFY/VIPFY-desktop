@@ -166,7 +166,6 @@ var iconsLeft = 0;
 var icons = [];
 const ICO = require("icojs");
 const PNG = require("pngjs").PNG;
-const ColorThief = require("color-thief-browser");
 
 function findIcon() {
   const possibleIcons = Array.from(document.querySelectorAll("link[rel*='icon']")).map(function(t) {
@@ -257,7 +256,31 @@ function finishIcon() {
   }
 }
 
+var palette = require("get-rgba-palette");
 function findDominantColor(datastring) {
+  var img = new Image();
+  img.onload = function() {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const colors = palette(imageData.data, 3);
+
+    const dominantColor = colors.sort((a, b) => a.amount - b.amount);
+    const c = dominantColor[0];
+    const hex = `#${toHex(c[0])}${toHex(c[1])}${toHex(c[2])}`;
+
+    ipcRenderer.sendToHost("color", hex);
+  };
+  img.src = datastring;
+}
+
+// using color thief, results aren't that great
+// const ColorThief = require("color-thief-browser");
+function findDominantColorCT(datastring) {
   var img = new Image();
   img.onload = function() {
     const colorThief = new ColorThief();

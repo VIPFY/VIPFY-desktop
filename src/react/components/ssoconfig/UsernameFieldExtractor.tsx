@@ -25,7 +25,7 @@ class UsernameFieldExtractor extends React.PureComponent<Props, State> {
         webpreferences="webSecurity=no"
         src={this.props.url || ""}
         partition="ssoconfig"
-        className="notinvisibleWebview"
+        className="invisibleWebview"
         onIpcMessage={e => this.onIpcMessage(e)}
       />
     );

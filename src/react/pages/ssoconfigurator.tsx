@@ -12,49 +12,28 @@ interface State {
   error: string;
   showBoughtplans: Boolean;
 
-  app: SsoState;
-}
-
-type Selector = string;
-
-enum DiscoveryState {
-  "Initial",
-  "FindPw"
+  loginUrl: string;
+  username: string;
+  password: string;
+  running: boolean;
+  result: SsoState | null;
 }
 
 interface SsoState {
   logo: Image | null;
   icon: Image | null;
   color: string | null;
-  loginurl: string | null;
   email: Selector | null;
   password: Selector | null;
   button1: Selector | null;
   button2: Selector | null;
   button: Selector | null;
-  type: 1 | 3 | 4 | -3 | null; // -3 == 3|4
+  type: 1 | 3 | 4 | null;
   error: Selector | null;
   hide: Selector | null;
-  hidetype: 1 | 3 | null;
-  state: DiscoveryState;
 }
 
-const initialApp = {
-  logo: null,
-  icon: null,
-  color: null,
-  loginurl: null,
-  email: null,
-  password: null,
-  button1: null,
-  button2: null,
-  button: null,
-  type: null,
-  error: null,
-  hide: null,
-  hidetype: null,
-  state: DiscoveryState.Initial
-};
+type Selector = string;
 
 interface Image {
   width: number | null;
@@ -83,7 +62,11 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
     error: "",
     showBoughtplans: true,
 
-    app: { ...initialApp }
+    loginUrl: "",
+    username: "",
+    password: "",
+    running: false,
+    result: null
   };
 
   toggleShowBoughtplans = (): void =>
@@ -105,89 +88,64 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
             />
             <span>SSO Configurator</span>
           </div>
-          <Manager url={this.state.app.loginurl || ""} />
           <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
-            <h3>Step 1: Enter Login URL</h3>
             <div className="field" style={{ width: "20em" }}>
               <div className="label">Login URL</div>
               <input
                 className="inputBoxField inputBoxUnderline"
                 placeholder="The URL of the login form"
                 onChange={e => {
-                  const loginurl = e.target.value;
-                  this.setState({ app: { ...initialApp, loginurl } });
+                  const loginUrl = e.target.value;
+                  this.setState({ loginUrl, running: false, result: null });
                 }}
                 autoFocus={true}
                 style={{ width: "500px" }}
               />
             </div>
-            {/*<WebView
-              preload="./getid.js"
-              webpreferences="webSecurity=no"
-              src={this.state.app.loginurl || ""}
-              partition="ssoconfig"
-              className="ssoWebview"
-              onIpcMessage={e => this.onIpcMessage(e)}
-            />*/}
-            Username Field: {this.state.app.email}
             <br />
-            Password Field: {this.state.app.password}
-            <br />
-            Confirm Button Field: {this.state.app.button} | {this.state.app.button1} |{" "}
-            {this.state.app.button2}
-            <br />
-            Logo:{" "}
-            <img
-              src={(this.state.app.logo && this.state.app.logo!.data) || undefined}
-              className="checkeredBackground"
-              style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
-              onLoad={e => {
-                let t = e.target;
-                this.setState(prev => {
-                  const n = { ...prev };
-                  n.app.logo!.width = t.naturalWidth;
-                  n.app.logo!.height = t.naturalHeight;
-                  return n;
-                });
-              }}
-            />{" "}
-            ({this.state.app.logo && this.state.app.logo!.width}x
-            {this.state.app.logo && this.state.app.logo!.height})
-            <br />
-            Icon:{" "}
-            <img
-              src={(this.state.app.icon && this.state.app.icon!.data) || undefined}
-              className="checkeredBackground"
-              style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
-              onLoad={e => {
-                let t = e.target;
-                this.setState(prev => {
-                  const n = { ...prev };
-                  n.app.icon!.width = t.naturalWidth;
-                  n.app.icon!.height = t.naturalHeight;
-                  return n;
-                });
-              }}
-            />{" "}
-            <span
-              style={{
-                visibility: this.state.app.icon !== null ? "visible" : "hidden",
-                color: getSizeColor(this.state.app.icon, 64, 130)
-              }}>
-              ({this.state.app.icon && this.state.app.icon!.width}x
-              {this.state.app.icon && this.state.app.icon!.height})
-            </span>
-            <br />
-            Color:{" "}
-            <div
-              style={{
-                height: "1.2em",
-                width: "4em",
-                backgroundColor: this.state.app.color || "#fff",
-                display: "inline-block"
-              }}>
-              &nbsp;
+            <div className="field" style={{ width: "20em" }}>
+              <div className="label">Username</div>
+              <input
+                className="inputBoxField inputBoxUnderline"
+                onChange={e => {
+                  const username = e.target.value;
+                  this.setState({ username, running: false, result: null });
+                }}
+                style={{ width: "500px" }}
+              />
             </div>
+            <br />
+            <div className="field" style={{ width: "20em" }}>
+              <div className="label">Password</div>
+              <input
+                className="inputBoxField inputBoxUnderline"
+                type="password"
+                onChange={e => {
+                  const password = e.target.value;
+                  this.setState({ password, running: false, result: null });
+                }}
+                style={{ width: "500px" }}
+              />
+            </div>
+            <br />
+            {!this.state.running && (
+              <button type="button" onClick={() => this.setState({ running: true, result: null })}>
+                Start
+              </button>
+            )}
+            <br />
+            {this.state.running && (
+              <div>
+                <Manager
+                  url={this.state.loginUrl}
+                  username={this.state.username}
+                  password={this.state.password}
+                  setResult={r => this.setState({ result: r, running: false })}
+                />
+                <i className="fas fa-spinner fa-pulse fa-3x" />
+              </div>
+            )}
+            {this.state.result && this.renderResult()}
             <br />
           </div>
         </div>
@@ -195,65 +153,101 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
     );
   }
 
-  async setAppElement(e: Partial<SsoState>) {
-    console.log("setappelement", e, this.state);
-    return this.setState(prev => {
-      return { ...prev, app: { ...prev.app, ...e } };
-    });
-  }
-
-  onIpcMessage(e) {
-    console.log("ipc", e);
-    const a = this.state.app;
-    let id = e.args[0];
-    switch (e.channel) {
-      case "emailobject":
-        {
-          this.setAppElement({ email: id });
-        }
-        break;
-      case "passwordobject":
-        {
-          this.setAppElement({ password: id });
-        }
-        break;
-      case "nopasswordobject":
-        {
-          if (a.state == DiscoveryState.Initial) {
-          }
-          if (a.type === null) {
-            this.setAppElement({ type: -3 });
-          }
-        }
-        break;
-      case "confirmbutton":
-        {
-          this.setAppElement({ button: id });
-        }
-        break;
-      case "logo":
-        {
-          this.setAppElement({ logo: { data: id, width: null, height: null } });
-        }
-        break;
-      case "icon":
-        {
-          this.setAppElement({ icon: { data: id, width: null, height: null } });
-        }
-        break;
-      case "color":
-        {
-          this.setAppElement({ color: id });
-        }
-        break;
-      default:
-        console.log("No case applied", e.channel);
-    }
-    if (a.type === null) {
-      if (a.email && a.password) {
-        this.setAppElement({ type: 1 });
-      }
-    }
+  renderResult() {
+    let r = { ...this.state.result };
+    r.icon = undefined;
+    r.logo = undefined;
+    r.color = undefined;
+    return (
+      <div>
+        Icon:{" "}
+        <img
+          src={(this.state.result!.icon && this.state.result!.icon!.data) || undefined}
+          className="checkeredBackground"
+          style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
+        />{" "}
+        <span
+          style={{
+            visibility: this.state.result!.icon !== null ? "visible" : "hidden",
+            color: getSizeColor(this.state.result!.icon, 64, 130)
+          }}>
+          ({this.state.result!.icon && this.state.result!.icon!.width}x
+          {this.state.result!.icon && this.state.result!.icon!.height})
+        </span>
+        <br />
+        Color:{" "}
+        <div
+          style={{
+            height: "1.2em",
+            width: "4em",
+            backgroundColor: this.state.result!.color || "#fff",
+            display: "inline-block"
+          }}>
+          &nbsp;
+        </div>
+        {this.state.result!.color}
+        <br />
+        Options:
+        <br />
+        <pre>{JSON.stringify(r, null, 2)}</pre>
+      </div>
+    );
+    return (
+      <div>
+        Logo:{" "}
+        <img
+          src={(this.state.app.logo && this.state.app.logo!.data) || undefined}
+          className="checkeredBackground"
+          style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
+          onLoad={e => {
+            let t = e.target;
+            this.setState(prev => {
+              const n = { ...prev };
+              n.app.logo!.width = t.naturalWidth;
+              n.app.logo!.height = t.naturalHeight;
+              return n;
+            });
+          }}
+        />{" "}
+        ({this.state.app.logo && this.state.app.logo!.width}x
+        {this.state.app.logo && this.state.app.logo!.height})
+        <br />
+        Icon:{" "}
+        <img
+          src={(this.state.app.icon && this.state.app.icon!.data) || undefined}
+          className="checkeredBackground"
+          style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
+          onLoad={e => {
+            let t = e.target;
+            this.setState(prev => {
+              const n = { ...prev };
+              n.app.icon!.width = t.naturalWidth;
+              n.app.icon!.height = t.naturalHeight;
+              return n;
+            });
+          }}
+        />{" "}
+        <span
+          style={{
+            visibility: this.state.app.icon !== null ? "visible" : "hidden",
+            color: getSizeColor(this.state.app.icon, 64, 130)
+          }}>
+          ({this.state.app.icon && this.state.app.icon!.width}x
+          {this.state.app.icon && this.state.app.icon!.height})
+        </span>
+        <br />
+        Color:{" "}
+        <div
+          style={{
+            height: "1.2em",
+            width: "4em",
+            backgroundColor: this.state.app.color || "#fff",
+            display: "inline-block"
+          }}>
+          &nbsp;
+        </div>
+      </div>
+    );
   }
 }
 

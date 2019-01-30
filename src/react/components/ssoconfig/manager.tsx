@@ -2,7 +2,8 @@ import * as React from "react";
 import LogoExtractor from "./LogoExtractor";
 import UsernameFieldExtractor from "./UsernameFieldExtractor";
 import ErrorFieldExtractor from "./ErrorFieldExtractor";
-import app from "../../app";
+const { shell, remote } = require("electron");
+const { session } = remote;
 
 type Selector = string;
 interface Image {
@@ -14,7 +15,6 @@ interface SsoState {
   logo: Image | null;
   icon: Image | null;
   color: string | null;
-  loginurl: string | null;
   email: Selector | null;
   password: Selector | null;
   button1: Selector | null;
@@ -23,22 +23,23 @@ interface SsoState {
   type: 1 | 3 | 4 | null;
   error: Selector | null;
   hide: Selector | null;
-  hidetype: 1 | 3 | null;
 }
 
 enum Stage {
   findUsername,
   type34,
-  findError
+  findError,
+  done
 }
 
 interface Props {
   url: string;
   username: string;
+  password: string;
+  setResult(app: SsoState);
 }
 
 interface State {
-  receivedIcon: boolean;
   stage: Stage;
 }
 
@@ -46,7 +47,6 @@ const initialApp: SsoState = {
   logo: null,
   icon: null,
   color: null,
-  loginurl: null,
   email: null,
   password: null,
   button1: null,
@@ -54,22 +54,40 @@ const initialApp: SsoState = {
   button: null,
   type: null,
   error: null,
-  hide: null,
-  hidetype: null
+  hide: null
 };
 
 class Manager extends React.PureComponent<Props, State> {
   state = {
-    receivedIcon: false,
     stage: Stage.findUsername
   };
 
-  app: SsoState = { ...initialApp };
+  app: SsoState;
   receivedIcon = false;
+  receivedAllFields = false;
+
+  constructor(props: Props, context?: any) {
+    super(props, context);
+    this.reset();
+  }
+
+  reset() {
+    session.fromPartition("ssoconfig").clearStorageData();
+    this.app = { ...initialApp };
+    this.receivedIcon = false;
+    this.receivedAllFields = false;
+    this.setState({ stage: Stage.findUsername });
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props != prevProps) {
+      this.reset();
+    }
+  }
 
   async setAppElement(e: Partial<SsoState>) {
     console.log("setappelement", e, this.state);
-    this.app = { ...app, ...e };
+    this.app = { ...this.app, ...e };
   }
 
   render() {
@@ -80,6 +98,7 @@ class Manager extends React.PureComponent<Props, State> {
           setResult={(icon, color) => {
             this.setAppElement({ icon: icon, color: color });
             this.receivedIcon = true;
+            this.done();
           }}
         />
         {this.state.stage == Stage.findUsername && (
@@ -91,10 +110,12 @@ class Manager extends React.PureComponent<Props, State> {
         {this.state.stage == Stage.findError && (
           <ErrorFieldExtractor
             url={this.props.url}
-            username="nvtester@vipfy.store"
+            username={this.props.username}
+            password={this.props.password}
             usernameField={this.app.email!}
             passwordField={this.app.password!}
             button={this.app.button}
+            setResult={(e, h) => this.finishErrorHide(e, h)}
           />
         )}
       </div>
@@ -102,6 +123,7 @@ class Manager extends React.PureComponent<Props, State> {
   }
 
   finishStage1(usernameField, passwordField, button1) {
+    console.log("finishStage1", usernameField, passwordField, button1);
     if (this.state.stage !== Stage.findUsername) {
       throw new Error("unexpected stage");
     }
@@ -134,6 +156,19 @@ class Manager extends React.PureComponent<Props, State> {
       });
       this.setState({ stage: Stage.type34 });
     }
+  }
+
+  finishErrorHide(errorObject: string, hideObject: string) {
+    this.setAppElement({ error: errorObject, hide: hideObject });
+    this.receivedAllFields = true;
+    this.done();
+  }
+
+  done() {
+    if (!this.receivedAllFields && this.receivedIcon) {
+      return;
+    }
+    this.props.setResult(this.app);
   }
 }
 
