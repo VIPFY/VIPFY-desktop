@@ -6,6 +6,7 @@ import EServices from "./eservices";
 interface Props {
   showPopup: Function;
   moveTo: Function;
+  isadmin: boolean;
 }
 
 interface State {
@@ -40,7 +41,7 @@ class EShower extends React.Component<Props, State> {
           </div>
           <SelfSearchBox placeholder="Search in Employee Manager" />
         </div>
-        <EGeneral />
+        <EGeneral isadmin={this.props.isadmin} showPopup={this.props.showPopup} />
 
         <EServices />
         <div className="genericHolder">
@@ -87,6 +88,16 @@ class EShower extends React.Component<Props, State> {
               </div>
             </div>
           </div>
+        </div>
+        <div className="adminToolButton">
+          <button className="naked-button genericButton" onClick={() => this.props.toggleAdmin()}>
+            <span className="textButton">
+              <i className="fal fa-tools" />
+            </span>
+            <span className="textButtonBesideLeft">
+              {this.props.adminOpen ? "Hide Admintools" : "Show Admintools"}
+            </span>
+          </button>
         </div>
       </div>
     );

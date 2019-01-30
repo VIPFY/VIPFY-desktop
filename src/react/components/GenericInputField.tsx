@@ -22,6 +22,9 @@ interface Props {
   errorInputClass?: string;
   forcedTld?: string;
   type?: string;
+  forceprop?: boolean;
+  width?: string;
+  marginLeft?: string;
 }
 
 interface State {
@@ -47,7 +50,7 @@ class GenericInputField extends Component<Props, State> {
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (!state.valueChanged) {
+    if (!state.valueChanged || props.forceprop) {
       return { ...state, value: props.default };
     }
     if (props.inputType === "domain") {
@@ -68,7 +71,9 @@ class GenericInputField extends Component<Props, State> {
     this.setState({ inputFocus: bool });
     if (!bool) {
       this.setState({ error: null });
-      this.props.onBlur(this.state.value);
+      if (this.props.onBlur) {
+        this.props.onBlur(this.state.value);
+      }
     }
   };
 
@@ -106,7 +111,6 @@ class GenericInputField extends Component<Props, State> {
   }
   handleEnter(e) {
     //console.log("ENTER");
-    console.log(e);
     if (e.key === "Enter" && this.props.onEnter) {
       this.props.onEnter();
     }
@@ -135,6 +139,9 @@ class GenericInputField extends Component<Props, State> {
         )}
         {this.props.symbol ? <div className={this.props.symbolClass}>{this.props.symbol}</div> : ""}
         <input
+          style={
+            this.props.width ? { width: this.props.width, marginLeft: this.props.marginLeft } : {}
+          }
           type={this.props.type}
           onFocus={() => this.toggleInput(true)}
           onBlur={() => this.toggleInput(false)}
