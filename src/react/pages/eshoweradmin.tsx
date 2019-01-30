@@ -8,7 +8,7 @@ interface State {
   show: Boolean;
 }
 
-class EManagerAdmin extends React.Component<Props, State> {
+class EShowerAdmin extends React.Component<Props, State> {
   state = {
     show: true
   };
@@ -22,4 +22,4 @@ class EManagerAdmin extends React.Component<Props, State> {
   }
 }
 
-export default EManagerAdmin;
+export default EShowerAdmin;

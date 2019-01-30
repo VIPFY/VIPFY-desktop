@@ -5,6 +5,8 @@ import EmployeeShower from "../components/EmployeeShower";
 interface Props {
   showPopup: Function;
   moveTo: Function;
+  toggleAdmin: Function;
+  adminOpen: boolean;
 }
 
 interface State {
@@ -162,11 +164,13 @@ class EManager extends React.Component<Props, State> {
         />
 
         <div className="adminToolButton">
-          <button className="naked-button genericButton">
+          <button className="naked-button genericButton" onClick={() => this.props.toggleAdmin()}>
             <span className="textButton">
               <i className="fal fa-tools" />
             </span>
-            <span className="textButtonBesideLeft">Show Admintools</span>
+            <span className="textButtonBesideLeft">
+              {this.props.adminOpen ? "Hide Admintools" : "Show Admintools"}
+            </span>
           </button>
         </div>
       </div>

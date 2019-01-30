@@ -47,6 +47,7 @@ import AppAdmin from "./appadmin";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
 import { SideBarContext } from "../common/context";
 import EManagerAdmin from "./emanageradmin";
+import EShowerAdmin from "./eshoweradmin";
 
 interface AreaProps {
   history: any[];
@@ -369,7 +370,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "emanager", component: EManager, admincomponent: EManagerAdmin },
       { path: "lmanager", component: LManager },
       { path: "dmanager", component: DManager },
-      { path: "emanager/:userid", component: EShower },
+      { path: "emanager/:userid", component: EShower, admincomponent: EShowerAdmin },
       { path: "lmanager/:boughtplanid", component: LShower },
       { path: "dmanager/:departmentid", component: DShower }
     ];
@@ -482,7 +483,6 @@ class Area extends React.Component<AreaProps, AreaState> {
             if (admin && this.props.company.unit.id != 14) {
               return;
             } else {
-              console.log("ADMINCOMP", admincomponent);
               return (
                 <Route
                   key={path}
@@ -496,9 +496,12 @@ class Area extends React.Component<AreaProps, AreaState> {
                         sideBarOpen && !props.location.pathname.includes("advisor")
                           ? "side-bar-open"
                           : ""
-                      }`}>
+                      }`}
+                      style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
                       <RouteComponent
                         setApp={this.setApp}
+                        toggleAdmin={this.toggleAdmin}
+                        adminOpen={this.state.adminOpen}
                         {...this.props}
                         {...props}
                         moveTo={this.moveTo}
