@@ -1,10 +1,10 @@
 import * as React from "react";
-import { graphql, Query, Mutation } from "react-apollo";
+import { graphql } from "react-apollo";
 import * as pjson from "pjson";
 import { fetchLicences } from "../queries/auth";
 import { UPDATE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
-import { AppContext } from "../common/functions";
+import { AppContext, findItem } from "../common/functions";
 import SidebarLink from "./sidebarLink";
 import config from "../../configurationManager";
 import * as moment from "moment";
@@ -56,30 +56,14 @@ class Sidebar extends React.Component<SidebarProps, State> {
     const { licences } = this.props;
 
     const l1 = licences.find(licence => licence.id == dragItem);
-    const pos1 = licences
-      .filter(
-        licence =>
-          !licence.endtime ||
-          (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
-      )
-      .map(licence => licence.id)
-      .indexOf(dragItem!);
-
-    const l2 = licences.find(licence => licence.id == id);
-    const pos2 = licences
-      .filter(
-        licence =>
-          !licence.endtime ||
-          (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
-      )
-      .map(licence => licence.id)
-      .indexOf(id);
-
+    const pos1 = findItem(licences, dragItem);
     const dragged = {
       id: l1!.id,
       layoutvertical: l1!.layoutvertical ? l1!.layoutvertical : pos1
     };
 
+    const l2 = licences.find(licence => licence.id == id);
+    const pos2 = findItem(licences, id);
     const droppedOn = {
       id: l2!.id,
       layoutvertical: l2!.layoutvertical ? l2!.layoutvertical : pos2
@@ -299,7 +283,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                       licence.disabled ||
                       (licence.endtime && moment().isAfter(licence.endtime))
                     ) {
-                      return "";
+                      return null;
                     }
 
                     return (

@@ -2,6 +2,7 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import * as moment from "moment";
 
 export function showStars(stars) {
   const starsArray: JSX.Element[] = [];
@@ -132,3 +133,13 @@ export const refetchQueries = async (client: ApolloClient<InMemoryCache>, querie
     refetchQueries: queries
   });
 };
+
+export const findItem = (licences, item) =>
+  licences
+    .filter(
+      licence =>
+        !licence.endtime ||
+        (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
+    )
+    .map(licence => licence.id)
+    .indexOf(item!);

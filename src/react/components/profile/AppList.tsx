@@ -5,6 +5,7 @@ import { fetchLicences } from "../../queries/auth";
 import { UPDATE_LAYOUT } from "../../mutations/auth";
 import moment = require("moment");
 import { Licence } from "../../interfaces";
+import { findItem } from "../../common/functions";
 
 export interface Preview {
   name: string;
@@ -43,30 +44,14 @@ class AppList extends React.Component<Props, State> {
     const { licences } = this.props;
 
     const l1 = licences.find(licence => licence.id == dragItem);
-    const pos1 = licences
-      .filter(
-        licence =>
-          !licence.endtime ||
-          (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
-      )
-      .map(licence => licence.id)
-      .indexOf(dragItem!);
-
-    const l2 = licences.find(licence => licence.id == id);
-    const pos2 = licences
-      .filter(
-        licence =>
-          !licence.endtime ||
-          (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
-      )
-      .map(licence => licence.id)
-      .indexOf(id);
-
+    const pos1 = findItem(licences, dragItem);
     const dragged = {
       id: l1!.id,
       layouthorizontal: l1!.layouthorizontal ? l1!.layouthorizontal : pos1
     };
 
+    const l2 = licences.find(licence => licence.id == id);
+    const pos2 = findItem(licences, id);
     const droppedOn = {
       id: l2!.id,
       layouthorizontal: l2!.layouthorizontal ? l2!.layouthorizontal : pos2
