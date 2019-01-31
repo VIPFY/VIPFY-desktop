@@ -23,14 +23,15 @@ interface SsoState {
   logo: Image | null;
   icon: Image | null;
   color: string | null;
-  email: Selector | null;
-  password: Selector | null;
-  button1: Selector | null;
-  button2: Selector | null;
-  button: Selector | null;
-  type: 1 | 3 | 4 | null;
-  error: Selector | null;
-  hide: Selector | null;
+  emailobject: Selector | null;
+  passwordobject: Selector | null;
+  button1object: Selector | null;
+  button2object: Selector | null;
+  buttonobject: Selector | null;
+  type: 1 | 3 | 4 | 5 | null;
+  errorobject: Selector | null;
+  hideobject: Selector | null;
+  waituntil: Selector | null;
 }
 
 type Selector = string;
@@ -190,62 +191,6 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
         Options:
         <br />
         <pre>{JSON.stringify(r, null, 2)}</pre>
-      </div>
-    );
-    return (
-      <div>
-        Logo:{" "}
-        <img
-          src={(this.state.app.logo && this.state.app.logo!.data) || undefined}
-          className="checkeredBackground"
-          style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
-          onLoad={e => {
-            let t = e.target;
-            this.setState(prev => {
-              const n = { ...prev };
-              n.app.logo!.width = t.naturalWidth;
-              n.app.logo!.height = t.naturalHeight;
-              return n;
-            });
-          }}
-        />{" "}
-        ({this.state.app.logo && this.state.app.logo!.width}x
-        {this.state.app.logo && this.state.app.logo!.height})
-        <br />
-        Icon:{" "}
-        <img
-          src={(this.state.app.icon && this.state.app.icon!.data) || undefined}
-          className="checkeredBackground"
-          style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
-          onLoad={e => {
-            let t = e.target;
-            this.setState(prev => {
-              const n = { ...prev };
-              n.app.icon!.width = t.naturalWidth;
-              n.app.icon!.height = t.naturalHeight;
-              return n;
-            });
-          }}
-        />{" "}
-        <span
-          style={{
-            visibility: this.state.app.icon !== null ? "visible" : "hidden",
-            color: getSizeColor(this.state.app.icon, 64, 130)
-          }}>
-          ({this.state.app.icon && this.state.app.icon!.width}x
-          {this.state.app.icon && this.state.app.icon!.height})
-        </span>
-        <br />
-        Color:{" "}
-        <div
-          style={{
-            height: "1.2em",
-            width: "4em",
-            backgroundColor: this.state.app.color || "#fff",
-            display: "inline-block"
-          }}>
-          &nbsp;
-        </div>
       </div>
     );
   }

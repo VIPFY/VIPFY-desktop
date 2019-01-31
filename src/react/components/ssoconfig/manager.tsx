@@ -2,7 +2,7 @@ import * as React from "react";
 import LogoExtractor from "./LogoExtractor";
 import UsernameFieldExtractor from "./UsernameFieldExtractor";
 import ErrorFieldExtractor from "./ErrorFieldExtractor";
-const { shell, remote } = require("electron");
+const { remote } = require("electron");
 const { session } = remote;
 
 type Selector = string;
@@ -15,14 +15,15 @@ interface SsoState {
   logo: Image | null;
   icon: Image | null;
   color: string | null;
-  email: Selector | null;
-  password: Selector | null;
-  button1: Selector | null;
-  button2: Selector | null;
-  button: Selector | null;
-  type: 1 | 3 | 4 | null;
-  error: Selector | null;
-  hide: Selector | null;
+  emailobject: Selector | null;
+  passwordobject: Selector | null;
+  button1object: Selector | null;
+  button2object: Selector | null;
+  buttonobject: Selector | null;
+  type: 1 | 3 | 4 | 5 | null;
+  errorobject: Selector | null;
+  hideobject: Selector | null;
+  waituntil: Selector | null;
 }
 
 enum Stage {
@@ -47,14 +48,15 @@ const initialApp: SsoState = {
   logo: null,
   icon: null,
   color: null,
-  email: null,
-  password: null,
-  button1: null,
-  button2: null,
-  button: null,
+  emailobject: null,
+  passwordobject: null,
+  button1object: null,
+  button2object: null,
+  buttonobject: null,
   type: null,
-  error: null,
-  hide: null
+  errorobject: null,
+  hideobject: null,
+  waituntil: null
 };
 
 class Manager extends React.PureComponent<Props, State> {
@@ -112,9 +114,9 @@ class Manager extends React.PureComponent<Props, State> {
             url={this.props.url}
             username={this.props.username}
             password={this.props.password}
-            usernameField={this.app.email!}
-            passwordField={this.app.password!}
-            button={this.app.button}
+            usernameField={this.app.emailobject!}
+            passwordField={this.app.passwordobject!}
+            button={this.app.buttonobject}
             setResult={(e, h) => this.finishErrorHide(e, h)}
           />
         )}
@@ -140,26 +142,27 @@ class Manager extends React.PureComponent<Props, State> {
     if (passwordField !== null) {
       this.setAppElement({
         type: 1,
-        email: usernameField,
-        password: passwordField,
-        button: button1,
-        button1: undefined,
-        button2: undefined
+        emailobject: usernameField,
+        passwordobject: passwordField,
+        buttonobject: button1,
+        button1object: undefined,
+        button2object: undefined,
+        waituntil: usernameField
       });
       console.log("found Username and Password, initiating findError");
       this.setState({ stage: Stage.findError });
     } else {
       this.setAppElement({
-        email: usernameField,
-        button: undefined,
-        button1: button1
+        emailobject: usernameField,
+        buttonobject: undefined,
+        button1object: button1
       });
       this.setState({ stage: Stage.type34 });
     }
   }
 
   finishErrorHide(errorObject: string, hideObject: string) {
-    this.setAppElement({ error: errorObject, hide: hideObject });
+    this.setAppElement({ errorobject: errorObject, hideobject: hideObject });
     this.receivedAllFields = true;
     this.done();
   }

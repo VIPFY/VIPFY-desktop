@@ -32,6 +32,9 @@ interface Props {
   handleSubmit: Function;
   successMessage?: string;
   defaultValues?: object;
+  hideSubmitButton?: boolean;
+  hideCancelButton?: boolean;
+  submit?: boolean;   // switch to true to trigger submit from outside
 }
 
 interface State {
@@ -69,6 +72,12 @@ class GenericInputForm extends React.Component<Props, State> {
   componentDidMount() {
     if (this.props.defaultValues) {
       this.setState({ values: this.props.defaultValues });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.submit && !prevProps.submit) {
+      this.onSubmit({preventDefault: () => null})
     }
   }
 
@@ -115,7 +124,7 @@ class GenericInputForm extends React.Component<Props, State> {
       if (this.state.values[name].length > 0 && validation) {
         this.validateInput(validation, name)
       } else if (
-        this.genericForm.current.elements[name].required &&
+        this.genericForm.current!.elements[name].required &&
         this.state.values[name].length < 1
       ) {
         this.setState(prevState => ({
@@ -386,14 +395,14 @@ class GenericInputForm extends React.Component<Props, State> {
                 ) {
                   return (
                     <div className="pics-preview">
-                      {this.state.values[name].map((file, i) => 
+                      {this.state.values[name].map((file, i) =>
                            <img
                             key={i}
                             alt={file.name}
                             height="50px"
                             width="50px"
                             src={file.preview}
-                          />                    
+                          />
                       )}
                     </div>
                   );
@@ -515,26 +524,30 @@ class GenericInputForm extends React.Component<Props, State> {
         )}
 
         <div className="generic-button-holder">
-          <button
-            type="button"
-            disabled={submitting || success}
-            className="generic-cancel-button"
-            onClick={this.props.onClose}>
-            <i className="fas fa-long-arrow-alt-left" /> Cancel
-          </button>
+          {!this.props.hideCancelButton && (
+            <button
+              type="button"
+              disabled={submitting || success}
+              className="generic-cancel-button"
+              onClick={this.props.onClose}>
+              <i className="fas fa-long-arrow-alt-left" /> Cancel
+            </button>
+          )}
 
-          <button
-            type="submit"
-            disabled={
-              success ||
-              submitting ||
-              Object.keys(values).length === 0 ||
-              Object.values(errors).filter(err => err != false).length > 0
-            }
-            className="generic-submit-button">
-            <i className="fas fa-check-circle" />
-            {this.props.buttonName ? this.props.buttonName : "Submit"}
-          </button>
+          {!this.props.hideSubmitButton && (
+            <button
+              type="submit"
+              disabled={
+                success ||
+                submitting ||
+                Object.keys(values).length === 0 ||
+                Object.values(errors).filter(err => err != false).length > 0
+              }
+              className="generic-submit-button">
+              <i className="fas fa-check-circle" />
+              {this.props.buttonName ? this.props.buttonName : "Submit"}
+            </button>
+          )}
         </div>
       </form>
     );

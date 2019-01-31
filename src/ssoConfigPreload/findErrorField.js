@@ -1,4 +1,4 @@
-let ipcRenderer = require("electron").ipcRenderer;
+const ipcRenderer = require("electron").ipcRenderer;
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
@@ -30,7 +30,7 @@ function clickButton(targetNode) {
 }
 
 function triggerMouseEvent(node, eventType) {
-  let clickEvent = document.createEvent("MouseEvents");
+  const clickEvent = document.createEvent("MouseEvents");
   clickEvent.initEvent(eventType, true, true);
   node.dispatchEvent(clickEvent);
 }
