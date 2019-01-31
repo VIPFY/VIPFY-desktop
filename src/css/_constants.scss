@@ -39,6 +39,7 @@ $vipfy_smallradius: 3px;
     width: #{$x}px;
     background-position: center;
     background-size: cover;
+    border-radius: 3px;
 
     &.text{
         line-height: #{$x}px;

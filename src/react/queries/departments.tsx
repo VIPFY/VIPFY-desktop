@@ -105,6 +105,7 @@ export const fetchUsersOwnLicences = gql`
       id
       disabled
       endtime
+      starttime
       boughtplanid {
         id
         alias
