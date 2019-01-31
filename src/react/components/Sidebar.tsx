@@ -183,14 +183,14 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         show: this.props.isadmin,
         highlight: "teamelement"
       },
-      /*{
+      {
         label: "Marketplace",
         location: "marketplace",
         icon: "shopping-cart",
         show: true,
         important: false,
         highlight: "marketplaceelement"
-      },*/
+      },
       {
         label: "Integrating Accounts",
         location: "integrations",

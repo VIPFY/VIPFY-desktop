@@ -36,6 +36,7 @@ $vipfy-shadow: 1px 3px 4px 0px #78787866;
     width: #{$x}px;
     background-position: center;
     background-size: cover;
+    border-radius: 3px;
 
     &.text{
         line-height: #{$x}px;

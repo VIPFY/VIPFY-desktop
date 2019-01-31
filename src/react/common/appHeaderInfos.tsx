@@ -32,9 +32,15 @@ class AppHeaderInfos extends React.Component<Props, State> {
   render() {
     return (
       <div className="appHeaderInfos">
-        <div className="appHeaderStars">{showStars(this.props.appDetails.avgstars)}</div>
-        <div className="appHeaderName">{this.props.appDetails.name}</div>
-        <div className="appHeaderType">{this.props.appDetails.features.type}</div>
+        <div className="appHeaderStars">
+          {showStars(this.props.appDetails && this.props.appDetails.avgstars)}
+        </div>
+        <div className="appHeaderName">{this.props.appDetails && this.props.appDetails.name}</div>
+        <div className="appHeaderType">
+          {this.props.appDetails &&
+            this.props.appDetails.features &&
+            this.props.appDetails.features.type}
+        </div>
         <div className="appHeaderPriceHolder">
           {this.props.allPlans[0] ? (
             <React.Fragment>
