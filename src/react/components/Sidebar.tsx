@@ -254,7 +254,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         label: "SSO Tester",
         location: "ssotest",
         icon: "dragon",
-        show: true,
+        show: false,
         highlight: "ssotest"
       }
     ];

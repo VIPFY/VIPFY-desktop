@@ -14,7 +14,7 @@ let config = {
   showMarketplace: true,
   showAppAdmin: false,
   showAdmin: true,
-  showSsoConfig: true,
+  showSsoConfig: false,
 
   allowDevTools: true
 };

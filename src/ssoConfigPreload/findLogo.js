@@ -280,44 +280,44 @@ function findDominantColor(datastring) {
 
 // using color thief, results aren't that great
 // const ColorThief = require("color-thief-browser");
-function findDominantColorCT(datastring) {
-  var img = new Image();
-  img.onload = function() {
-    const colorThief = new ColorThief();
-    const c = colorThief.getColor(img);
-    const hex = `#${toHex(c[0])}${toHex(c[1])}${toHex(c[2])}`;
+// function findDominantColor(datastring) {
+//   var img = new Image();
+//   img.onload = function() {
+//     const colorThief = new ColorThief();
+//     const c = colorThief.getColor(img);
+//     const hex = `#${toHex(c[0])}${toHex(c[1])}${toHex(c[2])}`;
 
-    ipcRenderer.sendToHost("color", hex);
-  };
-  img.src = datastring;
-}
+//     ipcRenderer.sendToHost("color", hex);
+//   };
+//   img.src = datastring;
+// }
 
 // unfinished, not working implementation using Vibrant
 // const Vibrant = require("node-vibrant");
-function findDominantColorV(buffer) {
-  // var img = new Image();
-  // img.onload = async function() {
-  const b = Buffer.from(new Uint8Array(buffer));
-  console.log("DOMINA", b);
-  Vibrant.from(b)
-    .maxDimension(128)
-    .getPalette(function(swatch) {
-      console.log("SWATCH", swatch);
-      const s = Object.keys(swatch)
-        .reduce((acc, key) => {
-          const value = swatch[key];
-          if (!value) return acc;
-          acc.push({ popularity: value.getPopulation(), hex: value.getHex() });
-          return acc;
-        }, [])
-        .sort((a, b) => a.popularity <= b.popularity)
-        .map(color => color.hex);
-      console.log("COLOR", s);
-    });
+// function findDominantColorV(buffer) {
+//   // var img = new Image();
+//   // img.onload = async function() {
+//   const b = Buffer.from(new Uint8Array(buffer));
+//   console.log("DOMINA", b);
+//   Vibrant.from(b)
+//     .maxDimension(128)
+//     .getPalette(function(swatch) {
+//       console.log("SWATCH", swatch);
+//       const s = Object.keys(swatch)
+//         .reduce((acc, key) => {
+//           const value = swatch[key];
+//           if (!value) return acc;
+//           acc.push({ popularity: value.getPopulation(), hex: value.getHex() });
+//           return acc;
+//         }, [])
+//         .sort((a, b) => a.popularity <= b.popularity)
+//         .map(color => color.hex);
+//       console.log("COLOR", s);
+//     });
 
-  // };
-  // img.src = datastring;
-}
+//   // };
+//   // img.src = datastring;
+// }
 
 function isPNG(buffer) {
   const a = new Uint8Array(buffer);
