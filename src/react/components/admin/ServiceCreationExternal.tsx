@@ -184,17 +184,6 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
           </button>
         )}
         <br />
-        {this.state.running && (
-          <div>
-            <Manager
-              url={this.state.loginUrl}
-              username={this.state.username}
-              password={this.state.password}
-              setResult={r => this.setState({ result: r, running: false })}
-            />
-            <i className="fas fa-spinner fa-pulse fa-3x" />
-          </div>
-        )}
         {(this.state.running || this.state.result) && (
           <GenericInputForm
             onClose={() => console.log("Thx Suckers")}
@@ -207,6 +196,17 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
           />
         )}
         {this.state.result && this.renderResult()}
+        {this.state.running && (
+          <div>
+            <Manager
+              url={this.state.loginUrl}
+              username={this.state.username}
+              password={this.state.password}
+              setResult={r => this.setState({ result: r, running: false })}
+            />
+            <i className="fas fa-spinner fa-pulse fa-3x" />
+          </div>
+        )}
         {this.state.result && (
           <button type="button" onClick={() => this.setState({ submit: true })}>
             Submit
