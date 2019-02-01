@@ -12,6 +12,7 @@ import gql from "graphql-tag";
 import StripeBody from "./StripeBody";
 import LoadingDiv from "../LoadingDiv";
 import { filterError } from "../../common/functions";
+import config from "../../../configurationManager";
 
 const FETCH_BILLING_DATA = gql`
   query onFetchBillingData($company: Boolean, $tag: String) {
@@ -46,11 +47,7 @@ interface Props {
   hasCard: boolean;
 }
 
-let stripeToken = "pk_live_OrfeIMTOFjG5o9S5zm9iYH0x";
-
-if (process.env.DEVELOPMENT) {
-  stripeToken = "pk_test_W9VDDvYKZqcmbgaz7iAcUR9j";
-}
+let stripeToken = config.stripeToken;
 
 class StripeForm extends React.Component<Props, State> {
   state = {

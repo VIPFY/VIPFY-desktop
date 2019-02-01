@@ -8,6 +8,7 @@ import { SAVE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
 import { AppContext } from "../common/functions";
 import SidebarLink from "./sidebarLink";
+import config from "../../configurationManager";
 
 interface SidebarLinks {
   label: string;
@@ -158,17 +159,22 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         label: "Profile",
         location: "profile",
         icon: "alicorn",
-        show: true,
+        show: config.showProfile,
         highlight: "profileelement"
       },
-      /*{ label: "Message Center", location: "messagecenter", icon: "envelope", show: true },*/
-      /*{
+      {
+        label: "Message Center",
+        location: "messagecenter",
+        icon: "envelope",
+        show: config.showMessageCenter
+      },
+      {
         label: "Billing",
         location: "billing",
         icon: "file-invoice-dollar",
-        show: this.props.isadmin,
+        show: this.props.isadmin && config.showBilling,
         highlight: "billingelement"
-      },*/
+      },
       {
         label: "Security",
         location: "security",
@@ -183,14 +189,14 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         show: this.props.isadmin,
         highlight: "teamelement"
       },
-      /*{
+      {
         label: "Marketplace",
         location: "marketplace",
         icon: "shopping-cart",
-        show: true,
+        show: config.showMarketplace,
         important: false,
         highlight: "marketplaceelement"
-      },*/
+      },
       {
         label: "Integrating Accounts",
         location: "integrations",
@@ -220,23 +226,23 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
         show: true,
         important: false,
         highlight: "supportelement"
-      }
-      /*{
+      },
+      {
         label: "AppAdmin",
         location: "appadmin",
         icon: "screwdriver",
-        show: true,
+        show: config.showAppAdmin,
         important: false,
         highlight: "appadminelement"
-      },*/
-      /*{
+      },
+      {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
-        show: this.props.isadmin,
+        show: this.props.isadmin && config.showAdmin,
         important: true,
         highlight: "adminelement"
-      }*/
+      }
     ];
 
     return (

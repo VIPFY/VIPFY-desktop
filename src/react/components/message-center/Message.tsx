@@ -2,6 +2,7 @@ import * as React from "react";
 import axios from "axios";
 import InlineUser from "../InlineUser";
 import { filterError } from "../../common/functions";
+import AppConfig from "../../../configurationManager";
 
 interface Props {
   message: any;
@@ -37,9 +38,9 @@ class Message extends React.Component<Props, State> {
         body: JSON.stringify({ id: this.props.message.id })
       };
 
-      const secure = process.env.SERVER_NAME == "localhost" ? "" : "s";
+      const secure = AppConfig.backendSSL ? "s" : "";
       const res = await fetch(
-        `http${secure}://${process.env.SERVER_NAME}:${process.env.SERVER_PORT}/download`,
+        `http${secure}://${AppConfig.backendHost}:${AppConfig.backendPort}/download`,
         config
       );
 
