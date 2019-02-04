@@ -2,6 +2,9 @@ import * as React from "react";
 import SelfSearchBox from "../components/SelfSearchBox";
 import EGeneral from "./egeneral";
 import EServices from "./eservices";
+import { Query } from "react-apollo";
+import { QUERY_SEMIPUBLICUSER } from "../queries/user";
+import { fetchDepartmentsData } from "../queries/departments";
 
 interface Props {
   showPopup: Function;
@@ -25,25 +28,73 @@ class EShower extends React.Component<Props, State> {
   };
 
   render() {
-    const employeedata = {
-      name: "Nils Vossebein"
-    };
-    console.log("ESHOWER", this.props);
+    const employeeid = this.props.match.params.userid;
+    console.log("ESHOWER", this.props.match, this.props, this.props.match.params.userid);
     return (
       <div className="genericPage employeeManager">
-        <div className="genericPageName" style={{ justifyContent: "space-between" }}>
-          <div>
-            <span className="pagePreTitle" onClick={() => this.props.moveTo("emanager")}>
-              Employees
-            </span>
-            <span className="pageArrowTitle">></span>
-            <span className="pageMainTitle">{employeedata.name}</span>
-          </div>
-          <SelfSearchBox placeholder="Search in Employee Manager" />
-        </div>
-        <EGeneral isadmin={this.props.isadmin} showPopup={this.props.showPopup} />
+        <Query query={QUERY_SEMIPUBLICUSER} variables={{ unitid: employeeid }}>
+          {({ loading, error, data }) => {
+            if (loading) {
+              return "Loading...";
+            }
+            if (error) {
+              return `Error! ${error.message}`;
+            }
 
-        <EServices />
+            console.log("SEMIPUBLIC", data);
+            return (
+              <React.Fragment>
+                <div className="genericPageName" style={{ justifyContent: "space-between" }}>
+                  <div>
+                    <span className="pagePreTitle" onClick={() => this.props.moveTo("emanager")}>
+                      Employees
+                    </span>
+                    <span className="pageArrowTitle">></span>
+                    <span className="pageMainTitle">{`${data.adminme.firstname} ${
+                      data.adminme.lastname
+                    }`}</span>
+                  </div>
+                  <Query query={fetchDepartmentsData}>
+                    {({ loading, error, data }) => {
+                      if (loading) {
+                        return "Loading...";
+                      }
+                      if (error) {
+                        return `Error! ${error.message}`;
+                      }
+                      let possibleValues: { searchstring: string; link: string }[] = [];
+                      if (data.fetchDepartmentsData) {
+                        data.fetchDepartmentsData[0].employees.forEach((employee, k) => {
+                          possibleValues.push({
+                            searchstring: `${employee.firstname} ${employee.lastname}`,
+                            link: `emanager/${employee.id}`
+                          });
+                        });
+                        return (
+                          <SelfSearchBox
+                            placeholder="Search in Employee Manager"
+                            possibleValues={possibleValues}
+                            moveTo={this.props.moveTo}
+                          />
+                        );
+                      }
+                    }}
+                  </Query>
+                </div>
+                <EGeneral
+                  isadmin={this.props.isadmin}
+                  showPopup={this.props.showPopup}
+                  employeeid={employeeid}
+                />
+
+                <EServices
+                  employeeid={employeeid}
+                  employeename={`${data.adminme.firstname} ${data.adminme.lastname}`}
+                />
+              </React.Fragment>
+            );
+          }}
+        </Query>
         <div className="genericHolder">
           <div className="header" onClick={() => this.toggle()}>
             <i

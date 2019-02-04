@@ -2,6 +2,8 @@ import * as React from "react";
 
 interface Props {
   placeholder?: string;
+  possibleValues: { searchstring: string; link: string }[];
+  moveTo: Function;
 }
 
 interface State {
@@ -56,16 +58,7 @@ class SelfSearchBox extends React.Component<Props, State> {
   };
 
   printResults = () => {
-    const possibleValues = [
-      "Jannis Froese",
-      "Pascal Clanget",
-      "Markus Müller",
-      "Nils Vossebein",
-      "Lisa Brödlin",
-      "Anna Reindl",
-      "Jesko Dujmovic",
-      "Osama Haroon"
-    ];
+    const possibleValues = this.props.possibleValues;
 
     let numresults = 0;
     let results: JSX.Element[] = [];
@@ -73,16 +66,23 @@ class SelfSearchBox extends React.Component<Props, State> {
       for (let i = 0; i < possibleValues.length; i++) {
         if (
           numresults < 5 &&
-          possibleValues[i].toLowerCase().includes(this.state.value.toLowerCase())
+          possibleValues[i].searchstring.toLowerCase().includes(this.state.value.toLowerCase())
         ) {
-          let index = possibleValues[i].toLowerCase().indexOf(this.state.value.toLowerCase());
+          let index = possibleValues[i].searchstring
+            .toLowerCase()
+            .indexOf(this.state.value.toLowerCase());
           results.push(
-            <div key={`searchResult-${i}`} className="searchResult">
-              <span>{possibleValues[i].substring(0, index)}</span>
+            <div
+              key={`searchResult-${i}`}
+              className="searchResult"
+              onClick={() => this.props.moveTo(possibleValues[i].link)}>
+              <span>{possibleValues[i].searchstring.substring(0, index)}</span>
               <span className="resultHighlight">
-                {possibleValues[i].substring(index, index + this.state.value.length)}
+                {possibleValues[i].searchstring.substring(index, index + this.state.value.length)}
               </span>
-              <span>{possibleValues[i].substring(index + this.state.value.length)}</span>
+              <span>
+                {possibleValues[i].searchstring.substring(index + this.state.value.length)}
+              </span>
             </div>
           );
           numresults++;
