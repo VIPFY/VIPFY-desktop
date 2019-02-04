@@ -169,7 +169,9 @@ class EditFieldRDS extends React.Component<Props, State> {
           <div>
             <div className="twoLineContent">{this.props.original}</div>
             <div className="twoLineContent">
-              {this.props.original2 || `${this.props.zip} ${this.props.city}`}
+              {this.props.original2 ||
+                (this.props.zip && this.props.city && `${this.props.zip} ${this.props.city}`) ||
+                ""}
             </div>
           </div>
         ) : (

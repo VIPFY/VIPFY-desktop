@@ -51,6 +51,8 @@ export const fetchDepartmentsData = gql`
         firstname
         lastname
         profilepicture
+        isonline
+        isadmin
       }
       level
     }
@@ -120,6 +122,36 @@ export const fetchUsersOwnLicences = gql`
             disabled
           }
         }
+      }
+    }
+  }
+`;
+
+export const fetchUserLicences = gql`
+  query fetchUsersOwnLicences($unitid: ID!) {
+    fetchUsersOwnLicences(unitid: $unitid) {
+      id
+      disabled
+      endtime
+      starttime
+      boughtplanid {
+        id
+        alias
+        planid {
+          id
+          options
+          appid {
+            id
+            logo
+            name
+            icon
+          }
+        }
+      }
+      unitid {
+        id
+        firstname
+        lastname
       }
     }
   }

@@ -1,5 +1,7 @@
 import * as React from "react";
 import { relative } from "path";
+import { Query } from "react-apollo";
+import { fetchUsersOwnLicences } from "../queries/departments";
 
 interface Props {
   userdata: any;
@@ -26,12 +28,12 @@ class EmployeeShower extends React.Component<Props, State> {
     this.setState({ hoveritem: "" });
   };
 
-  showServices = () => {
+  showServices = services => {
     let numservices = 0;
     let serviceArray: JSX.Element[] = [];
     let additionalServiceArray: JSX.Element[] = [];
 
-    for (let i = 0; i < this.props.userdata.services.length; i++) {
+    for (let i = 0; i < services.length; i++) {
       if (numservices < 5) {
         serviceArray.push(
           <React.Fragment key={`s-${i}`}>
@@ -56,7 +58,9 @@ class EmployeeShower extends React.Component<Props, State> {
               <div
                 className="box35"
                 style={{
-                  backgroundImage: `url('${this.props.userdata.services[i].icon}')`,
+                  backgroundImage: `url('https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                    services[i].boughtplanid.planid.appid.icon
+                  }')`,
                   borderRadius: "3px"
                 }}
               />
@@ -66,7 +70,7 @@ class EmployeeShower extends React.Component<Props, State> {
                 style={{
                   opacity: this.state.hoveritem == `s-${i}` ? 1 : 0
                 }}>
-                {this.props.userdata.services[i].name}
+                {services[i].boughtplanid.planid.appid.name}
               </div>
             </div>
           </React.Fragment>
@@ -76,15 +80,19 @@ class EmployeeShower extends React.Component<Props, State> {
           <div
             key={`s-${i}`}
             className="additionalServices"
-            style={{ display: "flex", alignItems: "center" }}>
+            style={{ display: "flex", alignItems: "center", width: "145px" }}>
             <div
               className="box35"
               style={{
-                backgroundImage: `url('${this.props.userdata.services[i].icon}')`,
+                backgroundImage: `url('https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                  services[i].boughtplanid.planid.appid.icon
+                }')`,
                 borderRadius: "3px"
               }}
             />
-            <div style={{ marginLeft: "10px" }}>{this.props.userdata.services[i].name}</div>
+            <div style={{ marginLeft: "10px", width: "100px" }}>
+              {services[i].boughtplanid.planid.appid.name}
+            </div>
           </div>
         );
       }
@@ -261,10 +269,11 @@ class EmployeeShower extends React.Component<Props, State> {
       <div className="genericOneLineHolder">
         <div
           className="heading"
-          onClick={() => this.props.moveTo("emanager/22")}
+          onClick={() => this.props.moveTo(`emanager/${this.props.userdata.id}`)}
           style={{ cursor: "pointer" }}>
           <span>
-            {this.props.userdata.name} - {this.props.userdata.position}
+            {this.props.userdata.name}
+            {this.props.userdata.position && ` - ${this.props.userdata.position}`}
           </span>
           <button
             className="naked-button genericButton"
@@ -313,7 +322,25 @@ class EmployeeShower extends React.Component<Props, State> {
           )}
         </div>
         {this.showDepartments()}
-        {this.showServices()}
+        <Query query={fetchUsersOwnLicences} variables={{ unitid: this.props.userdata.id }}>
+          {({ loading, error, data }) => {
+            if (loading) {
+              return "Loading...";
+            }
+            if (error) {
+              return `Error! ${error.message}`;
+            }
+            let appArray: JSX.Element[] = [];
+
+            if (data.fetchUsersOwnLicences) {
+              console.log("D", data.fetchUsersOwnLicences);
+
+              {
+                return this.showServices(data.fetchUsersOwnLicences);
+              }
+            }
+          }}
+        </Query>
         <div className="genericError" style={{ gridColumn: 8, gridRow: 4 }}>
           <span>{this.props.userdata.notificationmessage}</span>
         </div>
