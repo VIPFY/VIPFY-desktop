@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 export default (props: { props: any }) => {
   const links = [
     { icon: "plus", link: "service-creation", label: "Create a new Service" },
+    { icon: "dice-d12", link: "service-creation-external", label: "Create a new External Service" },
     { icon: "pencil-alt", link: "service-edit", label: "Edit a Service" }
   ];
 

@@ -65,6 +65,20 @@ export const fields = [
     label: "Needs Subdomain"
   },
   {
+    name: "predomain",
+    icon: "project-diagram",
+    type: "text",
+    label: "Pre Domain",
+    placeholder: "https://"
+  },
+  {
+    name: "afterdomain",
+    icon: "project-diagram",
+    type: "text",
+    label: "After Domain",
+    placeholder: ".appname.com/"
+  },
+  {
     name: "external",
     icon: "landmark-alt",
     type: "checkbox",
@@ -104,20 +118,6 @@ export const fields = [
     label: "Error Object",
     placeholder: "input[name='error']"
   },*/
-  {
-    name: "predomain",
-    icon: "project-diagram",
-    type: "text",
-    label: "Pre Domain",
-    placeholder: "https://"
-  },
-  {
-    name: "afterdomain",
-    icon: "project-diagram",
-    type: "text",
-    label: "After Domain",
-    placeholder: ".appname.com/"
-  },
   {
     name: "logo",
     type: "picture",

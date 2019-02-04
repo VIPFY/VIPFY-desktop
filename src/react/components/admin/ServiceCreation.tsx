@@ -38,8 +38,10 @@ const ServiceCreation = (props: Props) => {
 
       app.images = [logo, icon];
       const options = { type, emailobject, buttonobject, passwordobject, afterdomain, predomain };
-      const { data } = await props.createApp({ variables: { app, options } });
-      await props.uploadImages({ variables: { images, appid: data.createApp } });
+      console.log("createApp", app, options);
+      console.log("images", images);
+      // const { data } = await props.createApp({ variables: { app, options } });
+      // await props.uploadImages({ variables: { images, appid: data.createApp } });
     } catch (error) {
       throw new Error(error);
     }

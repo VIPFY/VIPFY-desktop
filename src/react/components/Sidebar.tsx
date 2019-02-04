@@ -7,6 +7,7 @@ import { Licence } from "../interfaces";
 import { AppContext, findItem } from "../common/functions";
 import SidebarLink from "./sidebarLink";
 import moment = require("moment");
+import config from "../../configurationManager";
 
 interface SidebarLinks {
   label: string;
@@ -160,17 +161,22 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Profile",
         location: "profile",
         icon: "alicorn",
-        show: true,
+        show: config.showProfile,
         highlight: "profileelement"
       },
-      /*{ label: "Message Center", location: "messagecenter", icon: "envelope", show: true },*/
-      /*{
+      {
+        label: "Message Center",
+        location: "messagecenter",
+        icon: "envelope",
+        show: config.showMessageCenter
+      },
+      {
         label: "Billing",
         location: "billing",
         icon: "file-invoice-dollar",
-        show: this.props.isadmin,
+        show: this.props.isadmin && config.showBilling,
         highlight: "billingelement"
-      },*/
+      },
       {
         label: "Security",
         location: "security",
@@ -185,14 +191,14 @@ class Sidebar extends React.Component<SidebarProps, State> {
         show: this.props.isadmin,
         highlight: "teamelement"
       },
-      /*{
+      {
         label: "Marketplace",
         location: "marketplace",
         icon: "shopping-cart",
-        show: true,
+        show: config.showMarketplace,
         important: false,
         highlight: "marketplaceelement"
-      },*/
+      },
       {
         label: "Integrating Accounts",
         location: "integrations",
@@ -222,23 +228,37 @@ class Sidebar extends React.Component<SidebarProps, State> {
         show: true,
         important: false,
         highlight: "supportelement"
-      }
-      /*{
+      },
+      {
         label: "AppAdmin",
         location: "appadmin",
         icon: "screwdriver",
-        show: true,
+        show: config.showAppAdmin,
         important: false,
         highlight: "appadminelement"
-      },*/
-      /*{
+      },
+      {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
-        show: this.props.isadmin,
+        show: this.props.isadmin && config.showAdmin,
         important: true,
         highlight: "adminelement"
-      }*/
+      },
+      {
+        label: "SSO Configurator",
+        location: "ssoconfig",
+        icon: "dice-d12",
+        show: this.props.isadmin && config.showSsoConfig,
+        highlight: "ssoconfig"
+      },
+      {
+        label: "SSO Tester",
+        location: "ssotest",
+        icon: "dragon",
+        show: false,
+        highlight: "ssotest"
+      }
     ];
 
     return (
