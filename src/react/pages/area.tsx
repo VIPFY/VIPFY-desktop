@@ -36,6 +36,9 @@ import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
 import Tabs from "../components/Tabs";
+import SsoConfigurator from "./ssoconfigurator";
+import SsoTester from "./SSOtester";
+import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
 
 interface AreaProps {
   history: any[];
@@ -341,9 +344,12 @@ class Area extends React.Component<AreaProps, AreaState> {
       //{ path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
       { path: "admin", component: AdminDashboard, admin: true },
+      { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
-      { path: "appadmin", component: AppAdmin }
+      { path: "appadmin", component: AppAdmin },
+      { path: "ssoconfig", component: SsoConfigurator },
+      { path: "ssotest", component: SsoTester }
     ];
 
     if (this.props.licences.loading) {

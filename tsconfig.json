@@ -19,7 +19,8 @@
     "target": "es6",
     "jsx": "react",
     "lib": ["dom","es6","dom.iterable","scripthost"],
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
   },
   "formatCodeOptions": {
     "indentSize": 2,
