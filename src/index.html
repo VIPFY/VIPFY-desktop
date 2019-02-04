@@ -37,7 +37,8 @@
 
   <div id="App"></div>
 
-  <script>
+  <script type="text/tsx">
+    const config = require("./configurationManager.ts");
     //install context menu
     window.addEventListener("DOMContentLoaded", () => {
       //webview
@@ -49,7 +50,7 @@
       });
       //normal windows
       require("electron-context-menu")({
-        showInspectElement: true
+        showInspectElement: config.allowDevTools
       });
     });
 
