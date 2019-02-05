@@ -267,13 +267,16 @@ function findDominantColor(datastring) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const colors = palette(imageData.data, 3);
+    const colors = palette(imageData.data, 5);
 
     const dominantColor = colors.sort((a, b) => a.amount - b.amount);
     const c = dominantColor[0];
     const hex = `#${toHex(c[0])}${toHex(c[1])}${toHex(c[2])}`;
 
+    const cssColors = colors.map(c => `#${toHex(c[0])}${toHex(c[1])}${toHex(c[2])}`);
+
     ipcRenderer.sendToHost("color", hex);
+    ipcRenderer.sendToHost("colors", cssColors);
   };
   img.src = datastring;
 }

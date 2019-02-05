@@ -15,6 +15,7 @@ interface SsoState {
   logo: Image | null;
   icon: Image | null;
   color: string | null;
+  colors: string[] | null;
   emailobject: Selector | null;
   passwordobject: Selector | null;
   button1object: Selector | null;
@@ -48,6 +49,7 @@ const initialApp: SsoState = {
   logo: null,
   icon: null,
   color: null,
+  colors: null,
   emailobject: null,
   passwordobject: null,
   button1object: null,
@@ -97,8 +99,8 @@ class Manager extends React.PureComponent<Props, State> {
       <div>
         <LogoExtractor
           url={this.props.url}
-          setResult={(icon, color) => {
-            this.setAppElement({ icon: icon, color: color });
+          setResult={(icon, color, colors) => {
+            this.setAppElement({ icon: icon, color: color, colors: colors });
             this.receivedIcon = true;
             this.done();
           }}

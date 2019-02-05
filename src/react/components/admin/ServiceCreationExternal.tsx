@@ -26,6 +26,7 @@ interface SsoState {
   logo: Image | null;
   icon: Image | null;
   color: string | null;
+  colors: string[] | null;
   emailobject: Selector | null;
   passwordobject: Selector | null;
   button1object: Selector | null;
@@ -230,6 +231,7 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
     r.icon = undefined;
     r.logo = undefined;
     r.color = undefined;
+    r.colors = undefined;
     return (
       <div>
         Icon:{" "}
@@ -259,11 +261,40 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
         </div>
         {this.state.result!.color}
         <br />
+        Alternative Colors:
+        {this.renderColorChoices()}
         Options:
         <br />
         <pre>{JSON.stringify(r, null, 2)}</pre>
       </div>
     );
+  }
+
+  renderColorChoices() {
+    const res: JSX.Element[] = [];
+    for (const color of this.state.result!.colors) {
+      res.push(
+        <div key={`k${color}`} style={{paddingLeft: "1em"}}>
+          <a
+            onClick={() =>
+              this.setState(prev => ({
+                result: { ...prev.result, color };
+              }))
+            }
+          ><div
+          style={{
+            height: "1.2em",
+            width: "4em",
+            backgroundColor: color,
+            display: "inline-block"
+          }}>
+          &nbsp;
+        </div>
+        {color} (click to set)</a>
+        </div>
+      );
+    }
+    return res;
   }
 
   handleSubmit = async ({ afterdomain, predomain, ...app }) => {
@@ -273,7 +304,7 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
       const [encoding, iconDataEncoded] = b.split(",");
       const iconDataBuffer = Buffer.from(iconDataEncoded, encoding);
 
-      const { icon, logo, color, ...optionsPartial } = this.state.result!;
+      const { icon, logo, color, colors, ...optionsPartial } = this.state.result!;
       optionsPartial.type = "" + optionsPartial.type;
 
       const iconFile = new File([iconDataBuffer.buffer], `${app.name}-icon.png`, { type: mime });
