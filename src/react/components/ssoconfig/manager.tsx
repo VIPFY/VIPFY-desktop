@@ -157,18 +157,24 @@ class Manager extends React.PureComponent<Props, State> {
         buttonobject: undefined,
         button1object: button1
       });
+      console.log("this app appears to be type 3/4 and is not supported yet");
       this.setState({ stage: Stage.type34 });
     }
   }
 
   finishErrorHide(errorObject: string, hideObject: string) {
+    if (errorObject === null && hideObject === null) {
+      console.log(
+        "Neither error Object nor password object found, are you sure credentials are correct?"
+      );
+    }
     this.setAppElement({ errorobject: errorObject, hideobject: hideObject });
     this.receivedAllFields = true;
     this.done();
   }
 
   done() {
-    if (!this.receivedAllFields && this.receivedIcon) {
+    if (!this.receivedAllFields || !this.receivedIcon) {
       return;
     }
     this.props.setResult(this.app);
