@@ -209,7 +209,7 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
           </div>
         )}
         {this.state.result && (
-          <button type="button" onClick={() => this.setState({ submit: true })}>
+          <button type="button" onClick={() => this.setState({ submit: true })} style={{marginLeft: "35em"}}>
             Submit
           </button>
         )}
@@ -261,11 +261,13 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
         </div>
         {this.state.result!.color}
         <br />
-        Alternative Colors:
-        {this.renderColorChoices()}
         Options:
         <br />
         <pre>{JSON.stringify(r, null, 2)}</pre>
+        <br />
+        <br />
+        Alternative Colors:
+        {this.renderColorChoices()}
       </div>
     );
   }
