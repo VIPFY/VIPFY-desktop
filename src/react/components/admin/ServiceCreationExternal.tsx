@@ -271,12 +271,27 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
       const [, a] = this.state.result!.icon.data.split(":");
       const [mime, b] = a.split(";");
       const [encoding, iconDataEncoded] = b.split(",");
-      const iconDataBuffer = Buffer.from(iconDataEncoded, encoding);
+
+      // encoding is always base64. mime is assumed to be image/png, but other values
+      // shouldn't be a problem
+
+      // Node's Buffer behaves really weirdly. buf.buffer produces some string prefix
+      // and buf.copy is only 3 bytes. So we use atob with some parsing instead
+      const iconDataArray = new Uint8Array(
+        atob(iconDataEncoded)
+          .split("")
+          .map(function(c) {
+            return c.charCodeAt(0);
+          })
+      );
 
       const { icon, logo, color, ...optionsPartial } = this.state.result!;
       optionsPartial.type = "" + optionsPartial.type;
 
-      const iconFile = new File([iconDataBuffer.buffer], `${app.name}-icon.png`, { type: mime });
+      const iconFile = new File([iconDataArray], `${app.name}-icon.png`, { type: mime });
+      console.log("ICON", mime, encoding, iconDataEncoded, iconDataArray.length);
+      console.log("BUFFER", iconDataArray);
+      console.log("FILE", new File([iconDataArray], `${app.name}-icon.png`, { type: mime }));
       app.images = [iconFile, iconFile];
       app.color = color;
       app.external = true;
@@ -284,7 +299,7 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
       const options = { afterdomain, predomain, ...optionsPartial! };
       console.log("app", app, options);
       const { data } = await this.props.createApp({ variables: { app, options } });
-      console.log(data);
+      console.log("UPLOAD RESULT", data);
     } catch (error) {
       throw error;
     }
