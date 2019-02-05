@@ -3,13 +3,14 @@ import WebView = require("react-electron-web-view");
 
 interface Props {
   url: string;
-  setResult(icon: Image | null, color: string | null);
+  setResult(icon: Image | null, color: string | null, colors: string[] | null);
 }
 
 interface State {
   logo: Image | null | undefined;
   icon: Image | null | undefined;
   color: string | null | undefined;
+  colors: string[] | null | undefined;
 }
 
 interface Image {
@@ -22,7 +23,8 @@ class LogoExtractor extends React.PureComponent<Props, State> {
   state = {
     logo: undefined,
     icon: undefined,
-    color: undefined
+    color: undefined,
+    colors: undefined
   };
   render() {
     return (
@@ -58,6 +60,12 @@ class LogoExtractor extends React.PureComponent<Props, State> {
           this.setState({ color });
         }
         break;
+      case "colors":
+        {
+          const colors = e.args[0];
+          this.setState({ colors });
+        }
+        break;
       case "noicon":
         {
           this.setState(prev => (prev.icon ? { icon: prev.icon } : { icon: null }));
@@ -74,8 +82,12 @@ class LogoExtractor extends React.PureComponent<Props, State> {
   }
 
   componentDidUpdate() {
-    if (this.state.icon !== undefined && this.state.color !== undefined) {
-      this.props.setResult(this.state.icon!, this.state.color!);
+    if (
+      this.state.icon !== undefined &&
+      this.state.color !== undefined &&
+      this.state.colors !== undefined
+    ) {
+      this.props.setResult(this.state.icon!, this.state.color!, this.state.colors!);
     }
   }
 }

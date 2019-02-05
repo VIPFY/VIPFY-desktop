@@ -114,6 +114,8 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
               ["avatar", "name", "menu"],
               ["csrf"]
             );
+            console.log("errorObjectDom", errorObjectDom);
+            console.log("hideObjectDom", hideObjectDom);
             this.props.setResult(
               buildQuerySelector(errorObjectDom),
               buildQuerySelector(hideObjectDom)
@@ -178,10 +180,18 @@ function findPreferedTag(all: object[], none: object[], preferAll: string[], avo
   if (Object.keys(candidates).length == 0) {
     return null;
   }
-  const preferedCandidate = Object.values(candidates).find(a =>
+  let preferedCandidate = Object.values(candidates).find(a =>
     Object.values(a.attr).some(b => b.includesAny(preferAll) && !b.includesAny(avoidAll))
   );
-  return preferedCandidate || candidates[0];
+  if (!preferedCandidate) {
+    preferedCandidate = Object.values(candidates).find(a =>
+      Object.values(a.attr).some(b => !b.includesAny(avoidAll))
+    );
+  }
+  if (!preferedCandidate) {
+    preferedCandidate = candidates[0];
+  }
+  return preferedCandidate;
 }
 
 // find tags that are in all of `all` but none of `none`

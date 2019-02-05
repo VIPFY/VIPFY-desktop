@@ -52,17 +52,30 @@ setTimeout(function() {
 function getQueryString(t) {
   if (t === null || t === undefined) return null;
   if (t.id) {
-    return "#" + t.id;
+    return `[id="${t.id}"]`; // don't use #id because that fails with ids containing colons (:)
   } else if (t.name && t.tagName) {
     return `${t.tagName.toLowerCase()}[name="${t.name}"]`;
   } else if (t.tagName.toLowerCase() == "input" || t.tagName.toLowerCase() == "button") {
-    if (t.type || t.class) {
-      return `${t.tagName.toLowerCase()}${t.type ? '[type="' + t.type + '"]' : ""}${
-        t.className ? '[class="' + t.className + '"]' : ""
-      }`;
+    let s = t.tagName.toLowerCase();
+    if (t.type) {
+      s += '[type="' + t.type + '"]';
     }
+    if (document.querySelectorAll(s).length == 1) {
+      return s;
+    }
+    if (t.className) {
+      s += '[class="' + t.className + '"]';
+    }
+    return s;
+  } else if (t.attributes["role"]) {
+    let s = `${t.tagName.toLowerCase()}[role="${t.attributes["role"].value}"]`;
+    if (t.className) {
+      s += '[class="' + t.className + '"]';
+    }
+    return s;
   }
-  return "UNKNOWN";
+  console.log("don't know how to construct query string for element", t);
+  return null;
 }
 
 function findForm() {
@@ -83,7 +96,7 @@ function findPassField() {
 
 function findEmailField() {
   const t = Array.from(findForm().querySelectorAll("input")).filter(
-    filterDom(["email", "user"], [])
+    filterDom(["email", "user", "login"], ["pw", "pass"])
   );
   console.log("email", t);
   return t[0];
