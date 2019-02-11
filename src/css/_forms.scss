@@ -158,7 +158,7 @@
       background: rgba(34, 50, 84, 0.03);
       opacity: 0;
       transition: opacity 0.2s ease;
-  }
+    }
 
     svg {
       position: relative;
@@ -175,14 +175,14 @@
         stroke-dasharray: 60;
         stroke-dashoffset: 0;
         transition: all 0.3s linear;
-        }
+      }
 
       polyline {
         stroke-dasharray: 22;
         stroke-dashoffset: 66;
         transition: all 0.2s linear;
-        }
       }
+    }
   }
 }
 
@@ -373,6 +373,167 @@
       .generic-form-checkbox {
         color: #fff;
       }
+    }
+  }
+}
+
+.vipfy {
+  &-form {
+    display: flex;
+    flex-flow: column;
+
+    & > *:not(:last-child) {
+      margin-bottom: 30px;
+    }
+
+    .generic-button-holder {
+      position: relative;
+      bottom: unset;
+      right: unset;
+    }
+
+    .dropzone {
+      margin: unset;
+      margin-bottom: 20px;
+    }
+
+    .success {
+      color: $vipfy-primary-color;
+    }
+
+    .error {
+      color: $vipfy-cancel-color;
+    }
+  }
+
+  &-input-holder {
+    width: 100%;
+    position: relative;
+
+    label {
+      position: absolute;
+      left: 16px;
+    }
+  }
+
+  &-label-active {
+    transform: translateY(-12px);
+    font-size: 10px;
+    color: $vipfy-primary-color;
+    transition: all 200ms ease-in-out;
+  }
+
+  &-label-error {
+    @extend .vipfy-label-active;
+    position: absolute;
+    left: 11px;
+    transform: translateY(20px);
+    color: $vipfy-cancel-color;
+  }
+
+  &-input {
+    border: 0;
+    outline: none;
+    border-bottom: 1px solid #f5f5f5;
+
+    &:focus,
+    &-active {
+      @extend .vipfy-input;
+      border-bottom-color: $vipfy-primary-color;
+      transition: all 200ms ease-in-out;
+    }
+
+    &:disabled {
+      color:hsl(60, 3%, 62%);
+      border-bottom-color: #f5f5f5;
+      background: #fff;
+    }
+
+    &-error {
+      border: 0;
+      outline: none;
+      border-bottom: 1px solid $vipfy-cancel-color;
+      color: $vipfy-cancel-color;
+    }
+  }
+
+  &-checkbox {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    height: 18px;
+    transform: translate3d(0, 0, 0);
+    margin-bottom: 6px;
+  
+    span {
+      margin-right: 16px;
+    }
+
+    &:hover {
+      svg {
+        stroke: #117f91;
+      }
+
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      position: relative;
+      z-index: 1;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke: #c8ccd4;
+      stroke-width: 1.5;
+      transform: translate3d(0, 0, 0);
+      transition: all 0.2s ease;
+      
+      path {
+        stroke-dasharray: 60;
+        stroke-dashoffset: 0;
+        transition: all 0.3s linear;
+      }
+      
+      polyline {
+        stroke-dasharray: 22;
+        stroke-dashoffset: 66;
+        transition: all 0.2s linear;
+      }
+
+      &::before {
+        content: "";
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(34, 50, 84, 0.03);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+    }
+  
+    &-checked {
+      stroke: #117f91 !important;
+
+      path {
+        stroke-dashoffset: 60 !important;
+        transition: stroke-dashoffset 0.3s linear !important;
+      }
+
+      polyline {
+        stroke-dashoffset: 42 !important;
+        transition: stroke-dashoffset 0.2s linear !important;
+        transition-delay: 0.15s !important;
+      }
+    }
+
+    input {
+      opacity: 0;
+      position: absolute;
     }
   }
 }

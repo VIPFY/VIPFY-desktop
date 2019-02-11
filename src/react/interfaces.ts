@@ -156,3 +156,36 @@ export interface App {
   hidden: boolean;
   hasboughtplan: boolean;
 }
+
+interface Option {
+  name: string;
+  value: any;
+}
+export interface InputProps {
+  name: string;
+  form?: string;
+  label?: string;
+  icon?: string;
+  options?: string[] | Option[];
+  rows?: number;
+  cols?: number;
+  style?: object;
+  lawLink?: string;
+  privacyLink?: string;
+  appName?: string;
+  autofocus?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
+  required?: boolean;
+  type: string;
+  validate?: Function;
+  multiple?: boolean;
+  submitting?: boolean;
+  submittingMessage?: string;
+  runInBackground?: boolean;
+  success?: boolean;
+  successMessage?: string;
+  setError?: Function;
+  setValid?: Function;
+  defaultValue?: any;
+}
