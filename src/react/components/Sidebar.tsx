@@ -4,7 +4,7 @@ import * as pjson from "pjson";
 import LoadingDiv from "./LoadingDiv";
 import { ErrorComp, filterError } from "../common/functions";
 import { GET_USER_CONFIG, fetchLicences } from "../queries/auth";
-import { SAVE_LAYOUT } from "../mutations/auth";
+import { UPDATE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
 import { AppContext } from "../common/functions";
 import SidebarLink from "./sidebarLink";
@@ -304,7 +304,7 @@ class SidebarHolder extends React.Component<SidebarProps, State> {
   }
 }
 
-const Sidebar = graphql(SAVE_LAYOUT, { name: "saveLayout" })(SidebarHolder);
+const Sidebar = graphql(UPDATE_LAYOUT, { name: "saveLayout" })(SidebarHolder);
 
 export default props => (
   <Query query={GET_USER_CONFIG}>
