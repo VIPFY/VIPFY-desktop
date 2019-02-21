@@ -71,7 +71,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     try {
       await this.props.updateLayout({
-        variables: { dragged, droppedOn, direction: "VERTICAL" },
+        variables: { layouts: [droppedOn, dragged] },
         update: cache => {
           const newLicences = licences.map(licence => {
             if (licence.id == id) {

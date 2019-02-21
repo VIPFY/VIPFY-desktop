@@ -8,7 +8,7 @@ import { fetchLicences, me } from "../queries/auth";
 import moment = require("moment");
 import { Licence } from "../interfaces";
 import { Preview } from "./profile/AppList";
-import { SET_LAYOUT } from "../mutations/auth";
+import { UPDATE_LAYOUT } from "../mutations/auth";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -32,7 +32,7 @@ interface Props {
   setPreview: (preview: Preview) => void;
   preview: Preview;
   setTeam?: Function;
-  setLayout: Function;
+  updateLayout: Function;
 }
 
 interface State {
@@ -45,9 +45,11 @@ class AppTile extends React.Component<Props, State> {
   };
 
   componentDidMount = async () => {
-    if (!this.props.licence.layouthorizontal) {
-      await this.props.setLayout({
-        variables: { horizontal: this.props.subPosition, id: this.props.licence.id }
+    if (this.props.licence.layouthorizontal === null) {
+      await this.props.updateLayout({
+        variables: {
+          layouts: [{ layouthorizontal: this.props.subPosition, id: this.props.licence.id }]
+        }
       });
     }
   };
@@ -63,19 +65,24 @@ class AppTile extends React.Component<Props, State> {
         {({ showPopup }) => (
           <div
             onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
-            className={`profile-app${dragItem == id ? " hold" : ""}${
-              this.state.entered ? " hovered" : ""
+            className={`profile-app ${dragItem == id ? "hold" : ""} ${
+              this.state.entered ? "hovered" : ""
             }`}
             draggable={true}
             onDragStart={() => this.props.dragStartFunction(id)}
             onDragOver={e => {
               e.preventDefault();
-              this.setState({ entered: true });
-              this.props.setPreview({ pic: planid.appid.icon, name });
+
+              if (!this.state.entered) {
+                this.setState({ entered: true });
+                this.props.setPreview({ pic: planid.appid.icon, name });
+              }
             }}
             onDragLeave={() => {
-              this.setState({ entered: false });
-              this.props.setPreview(clearPreview);
+              if (this.state.entered) {
+                this.setState({ entered: false });
+                this.props.setPreview(clearPreview);
+              }
             }}
             onDragEnd={() => {
               this.setState({ entered: false });
@@ -83,6 +90,7 @@ class AppTile extends React.Component<Props, State> {
               this.props.dragEndFunction();
             }}
             onDrop={() => {
+              console.log("DROP");
               this.setState({ entered: false });
               this.props.handleDrop(id);
               this.props.setPreview(clearPreview);
@@ -147,4 +155,4 @@ class AppTile extends React.Component<Props, State> {
   }
 }
 
-export default graphql(SET_LAYOUT, { name: "setLayout" })(AppTile);
+export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppTile);

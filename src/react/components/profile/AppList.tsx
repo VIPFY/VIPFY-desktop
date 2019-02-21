@@ -59,7 +59,7 @@ class AppList extends React.Component<Props, State> {
 
     try {
       await this.props.updateLayout({
-        variables: { dragged, droppedOn, direction: "HORIZONTAL" },
+        variables: { layouts: [droppedOn, dragged] },
         update: cache => {
           const newLicences = licences.map(licence => {
             if (licence.id == id) {

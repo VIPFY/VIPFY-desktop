@@ -1,21 +1,8 @@
 import gql from "graphql-tag";
 
-export const SET_LAYOUT = gql`
-  mutation onSetLayout($horizontal: Int, $vertical: Int, $id: ID!) {
-    setLayout(layouthorizontal: $horizontal, layoutvertical: $vertical, licenceId: $id) {
-      id
-      layouthorizontal
-    }
-  }
-`;
-
 export const UPDATE_LAYOUT = gql`
-  mutation onUpdateLayout(
-    $dragged: LicenceInput!
-    $droppedOn: LicenceInput!
-    $direction: DIRECTION!
-  ) {
-    updateLayout(dragged: $dragged, droppedOn: $droppedOn, direction: $direction)
+  mutation onUpdateLayout($layouts: [LayoutInput]!) {
+    updateLayout(layouts: $layouts)
   }
 `;
 
