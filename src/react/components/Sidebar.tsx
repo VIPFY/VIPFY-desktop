@@ -6,6 +6,7 @@ import { UPDATE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
 import { AppContext, findItem } from "../common/functions";
 import SidebarLink from "./sidebarLink";
+import moment = require("moment");
 import config from "../../configurationManager";
 import * as moment from "moment";
 
@@ -71,7 +72,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     try {
       await this.props.updateLayout({
+<<<<<<< HEAD
         variables: { layouts: [droppedOn, dragged] },
+=======
+        variables: { dragged, droppedOn, direction: "VERTICAL" },
+>>>>>>> a4332a998b27fda4617a96403d23e5b3ef6251db
         update: cache => {
           const newLicences = licences.map(licence => {
             if (licence.id == id) {

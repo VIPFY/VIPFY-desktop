@@ -160,4 +160,8 @@ class SidebarLink extends React.Component<Props, State> {
   }
 }
 
+<<<<<<< HEAD
 export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(SidebarLink);
+=======
+export default graphql(SET_LAYOUT, { name: "setLayout" })(SidebarLink);
+>>>>>>> a4332a998b27fda4617a96403d23e5b3ef6251db
