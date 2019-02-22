@@ -5,7 +5,7 @@ import { fetchLicences } from "../../queries/auth";
 import { UPDATE_LAYOUT } from "../../mutations/auth";
 import moment = require("moment");
 import { Licence } from "../../interfaces";
-import { findItem } from "../../common/functions";
+import { layoutChange } from "../../common/functions";
 
 export interface Preview {
   name: string;
@@ -43,29 +43,17 @@ class AppList extends React.Component<Props, State> {
     const { dragItem } = this.state;
     const { licences } = this.props;
 
-    const l1 = licences.find(licence => licence.id == dragItem);
-    const pos1 = findItem(licences, dragItem);
-    const dragged = {
-      id: l1!.id,
-      layouthorizontal: l1!.layouthorizontal ? l1!.layouthorizontal : pos1
-    };
-
-    const l2 = licences.find(licence => licence.id == id);
-    const pos2 = findItem(licences, id);
-    const droppedOn = {
-      id: l2!.id,
-      layouthorizontal: l2!.layouthorizontal ? l2!.layouthorizontal : pos2
-    };
+    const layouts = layoutChange(licences, dragItem, id, "layouthorizontal");
 
     try {
       await this.props.updateLayout({
-        variables: { layouts: [droppedOn, dragged] },
+        variables: { layouts },
         update: cache => {
           const newLicences = licences.map(licence => {
-            if (licence.id == id) {
-              return { ...l2, layouthorizontal: dragged!.layouthorizontal };
-            } else if (licence.id == dragItem!) {
-              return { ...l1, layouthorizontal: droppedOn!.layouthorizontal };
+            if (licence.id == layouts[0].id) {
+              return { ...licence, layouthorizontal: layouts[0]!.layouthorizontal };
+            } else if (licence.id == layouts[1].id) {
+              return { ...licence, layouthorizontal: layouts[1]!.layouthorizontal };
             } else {
               return licence;
             }
@@ -82,10 +70,39 @@ class AppList extends React.Component<Props, State> {
   render() {
     const { show, dragItem, preview } = this.state;
     const { licences } = this.props;
+    let subPosition = 0;
 
     if (licences.length == 0) {
       return <div>No Apps for you yet</div>;
     }
+
+    const filteredLicences = licences
+      .filter(licence => {
+        if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+          return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (a.layouthorizontal === null) {
+          return 1;
+        }
+
+        if (b.layouthorizontal === null) {
+          return -1;
+        }
+
+        if (a.layouthorizontal < b.layouthorizontal) {
+          return -1;
+        }
+
+        if (a.layouthorizontal > b.layouthorizontal) {
+          return 1;
+        }
+
+        return 0;
+      });
 
     return (
       <div className="genericHolder">
@@ -95,28 +112,33 @@ class AppList extends React.Component<Props, State> {
         </div>
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
-            {licences
-              .sort((a, b) => a.layouthorizontal - b.layouthorizontal)
-              .map((licence, key) => {
-                if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
-                  return "";
-                }
+            {filteredLicences.map((licence, key) => {
+              const maxValue = filteredLicences.reduce(
+                (acc, cv) => Math.max(acc, cv.layouthorizontal),
+                0
+              );
 
-                return (
-                  <AppTile
-                    key={key}
-                    subPosition={key}
-                    preview={preview}
-                    setPreview={this.setPreview}
-                    dragItem={dragItem}
-                    dragStartFunction={this.dragStartFunction}
-                    dragEndFunction={this.dragEndFunction}
-                    handleDrop={this.handleDrop}
-                    licence={licence}
-                    setTeam={this.props.setApp}
-                  />
-                );
-              })}
+              // Make sure that every License has an index
+              if (licence.layouthorizontal || licence.layouthorizontal === 0) {
+              } else {
+                subPosition = maxValue + 1;
+                licence.layouthorizontal = subPosition;
+              }
+
+              return (
+                <AppTile
+                  key={key}
+                  preview={preview}
+                  setPreview={this.setPreview}
+                  dragItem={dragItem}
+                  dragStartFunction={this.dragStartFunction}
+                  dragEndFunction={this.dragEndFunction}
+                  handleDrop={this.handleDrop}
+                  licence={licence}
+                  setTeam={this.props.setApp}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import * as React from "react";
 import { Licence } from "../interfaces";
 import { graphql } from "react-apollo";
 import { UPDATE_LAYOUT } from "../mutations/auth";
+import { fetchLicences } from "../queries/auth";
 
 interface Props {
   licence: any;
@@ -28,16 +29,6 @@ class SidebarLink extends React.Component<Props, State> {
     hover: false,
     dragging: false,
     entered: false
-  };
-
-  componentDidMount = async () => {
-    if (!this.props.licence.layoutvertical) {
-      await this.props.updateLayout({
-        variables: {
-          layouts: [{ layoutvertical: this.props.subPosition, id: this.props.licence.id }]
-        }
-      });
-    }
   };
 
   showInstances = (licence: Licence) => {
@@ -160,8 +151,4 @@ class SidebarLink extends React.Component<Props, State> {
   }
 }
 
-<<<<<<< HEAD
 export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(SidebarLink);
-=======
-export default graphql(SET_LAYOUT, { name: "setLayout" })(SidebarLink);
->>>>>>> a4332a998b27fda4617a96403d23e5b3ef6251db

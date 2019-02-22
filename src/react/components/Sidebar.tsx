@@ -4,9 +4,8 @@ import * as pjson from "pjson";
 import { fetchLicences } from "../queries/auth";
 import { UPDATE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
-import { AppContext, findItem } from "../common/functions";
+import { AppContext, layoutChange } from "../common/functions";
 import SidebarLink from "./sidebarLink";
-import moment = require("moment");
 import config from "../../configurationManager";
 import * as moment from "moment";
 
@@ -56,33 +55,17 @@ class Sidebar extends React.Component<SidebarProps, State> {
     const { dragItem } = this.state;
     const { licences } = this.props;
 
-    const l1 = licences.find(licence => licence.id == dragItem);
-    const pos1 = findItem(licences, dragItem);
-    const dragged = {
-      id: l1!.id,
-      layoutvertical: l1!.layoutvertical ? l1!.layoutvertical : pos1
-    };
-
-    const l2 = licences.find(licence => licence.id == id);
-    const pos2 = findItem(licences, id);
-    const droppedOn = {
-      id: l2!.id,
-      layoutvertical: l2!.layoutvertical ? l2!.layoutvertical : pos2
-    };
+    const layouts = layoutChange(licences, dragItem, id, "layoutvertical");
 
     try {
       await this.props.updateLayout({
-<<<<<<< HEAD
-        variables: { layouts: [droppedOn, dragged] },
-=======
-        variables: { dragged, droppedOn, direction: "VERTICAL" },
->>>>>>> a4332a998b27fda4617a96403d23e5b3ef6251db
+        variables: { layouts },
         update: cache => {
           const newLicences = licences.map(licence => {
-            if (licence.id == id) {
-              return { ...l2, layoutvertical: dragged!.layoutvertical };
-            } else if (licence.id == dragItem!) {
-              return { ...l1, layoutvertical: droppedOn!.layoutvertical };
+            if (licence.id == layouts[0].id) {
+              return { ...licence, layoutvertical: layouts[0]!.layoutvertical };
+            } else if (licence.id == layouts[1].id) {
+              return { ...licence, layoutvertical: layouts[1]!.layoutvertical };
             } else {
               return licence;
             }
@@ -95,8 +78,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
     } catch (error) {
       console.log(error);
     }
-
-    return newLicences;
   };
 
   addReferences = (key, element, addRenderElement) => {
@@ -266,6 +247,34 @@ class Sidebar extends React.Component<SidebarProps, State> {
       }
     ];
 
+    const filteredLicences = licences
+      .filter(licence => {
+        if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+          return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (a.layoutvertical === null) {
+          return 1;
+        }
+
+        if (b.layoutvertical === null) {
+          return -1;
+        }
+
+        if (a.layoutvertical < b.layoutvertical) {
+          return -1;
+        }
+
+        if (a.layoutvertical > b.layoutvertical) {
+          return 1;
+        }
+
+        return 0;
+      });
+
     return (
       <AppContext.Consumer>
         {context => (
@@ -280,33 +289,33 @@ class Sidebar extends React.Component<SidebarProps, State> {
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
 
-              {licences.length > 0 &&
-                licences
-                  .sort((a, b) => a.layoutvertical - b.layoutvertical)
-                  .map((licence, key) => {
-                    if (
-                      licence.disabled ||
-                      (licence.endtime && moment().isAfter(licence.endtime))
-                    ) {
-                      return null;
-                    }
+              {filteredLicences.length > 0 &&
+                filteredLicences.map((licence, key) => {
+                  const maxValue = filteredLicences.reduce(
+                    (acc, cv) => Math.max(acc, cv.layoutvertical),
+                    0
+                  );
 
-                    return (
-                      <SidebarLink
-                        key={`ServiceLogo-${licence.id}`}
-                        subPosition={key}
-                        licence={licence}
-                        openInstances={this.props.openInstances}
-                        sideBarOpen={this.props.sideBarOpen}
-                        active={this.props.location.pathname === `/area/app/${licence.id}`}
-                        setTeam={this.props.setApp}
-                        setInstance={this.props.setInstance}
-                        viewID={this.props.viewID}
-                        handleDragStart={dragItem => this.setState({ dragItem })}
-                        handleDrop={this.handleDrop}
-                      />
-                    );
-                  })}
+                  // Make sure that every License has an index
+                  if (licence.layoutvertical === null) {
+                    licence.layoutvertical = maxValue + 1;
+                  }
+
+                  return (
+                    <SidebarLink
+                      key={`ServiceLogo-${licence.id}`}
+                      licence={licence}
+                      openInstances={this.props.openInstances}
+                      sideBarOpen={this.props.sideBarOpen}
+                      active={this.props.location.pathname === `/area/app/${licence.id}`}
+                      setTeam={this.props.setApp}
+                      setInstance={this.props.setInstance}
+                      viewID={this.props.viewID}
+                      handleDragStart={dragItem => this.setState({ dragItem })}
+                      handleDrop={this.handleDrop}
+                    />
+                  );
+                })}
 
               <li
                 className="sidebar-link sidebar-link-important"

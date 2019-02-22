@@ -26,13 +26,12 @@ interface Props {
   dragStartFunction: Function;
   dragEndFunction: Function;
   dragItem: number | null;
-  subPosition: number;
   licence: Licence;
   handleDrop: Function;
   setPreview: (preview: Preview) => void;
   preview: Preview;
   setTeam?: Function;
-  setLayout: Function;
+  updateLayout: Function;
 }
 
 interface State {
@@ -42,16 +41,6 @@ interface State {
 class AppTile extends React.Component<Props, State> {
   state = {
     entered: false
-  };
-
-  componentDidMount = async () => {
-    if (this.props.licence.layouthorizontal === null) {
-      await this.props.updateLayout({
-        variables: {
-          layouts: [{ layouthorizontal: this.props.subPosition, id: this.props.licence.id }]
-        }
-      });
-    }
   };
 
   render() {
@@ -64,12 +53,12 @@ class AppTile extends React.Component<Props, State> {
       <AppContext>
         {({ showPopup }) => (
           <div
+            draggable={true}
             onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
             className={`profile-app ${dragItem == id ? "hold" : ""} ${
               this.state.entered ? "hovered" : ""
             }`}
-            draggable={true}
-            onDragStart={() => this.props.dragStartFunction(id)}
+            onDrag={() => this.props.dragStartFunction(id)}
             onDragOver={e => {
               e.preventDefault();
 
@@ -90,7 +79,6 @@ class AppTile extends React.Component<Props, State> {
               this.props.dragEndFunction();
             }}
             onDrop={() => {
-              console.log("DROP");
               this.setState({ entered: false });
               this.props.handleDrop(id);
               this.props.setPreview(clearPreview);

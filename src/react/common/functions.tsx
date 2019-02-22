@@ -134,12 +134,12 @@ export const refetchQueries = async (client: ApolloClient<InMemoryCache>, querie
   });
 };
 
-export const findItem = (licences, item) =>
-  licences
-    .filter(
-      licence =>
-        !licence.endtime ||
-        (!licence.disabled && licence.endtime && moment().isBefore(licence.endtime))
-    )
-    .map(licence => licence.id)
-    .indexOf(item!);
+export const layoutChange = (licences, dragItem, dropItem, direction) => {
+  const dragged = licences.find(licence => licence.id == dragItem);
+  const droppedOn = licences.find(licence => licence.id == dropItem);
+
+  return [
+    { id: dragged!.id, [direction]: droppedOn![direction] },
+    { id: droppedOn!.id, [direction]: dragged![direction] }
+  ];
+};
