@@ -30,7 +30,6 @@ interface Props {
   setPreview: (preview: Preview) => void;
   preview: Preview;
   setTeam?: Function;
-  updateLayout: Function;
 }
 
 interface State {
@@ -52,20 +51,25 @@ class AppTile extends React.Component<Props, State> {
       <AppContext>
         {({ showPopup }) => (
           <div
-            onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
-            className={`profile-app${dragItem == id ? " hold" : ""}${
-              this.state.entered ? " hovered" : ""
-            }`}
             draggable={true}
-            onDragStart={() => this.props.dragStartFunction(id)}
+            onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
+            className={`profile-app ${dragItem == id ? "hold" : ""} ${
+              this.state.entered ? "hovered" : ""
+            }`}
+            onDrag={() => this.props.dragStartFunction(id)}
             onDragOver={e => {
               e.preventDefault();
-              this.setState({ entered: true });
-              this.props.setPreview({ pic: planid.appid.icon, name });
+
+              if (!this.state.entered) {
+                this.setState({ entered: true });
+                this.props.setPreview({ pic: planid.appid.icon, name });
+              }
             }}
             onDragLeave={() => {
-              this.setState({ entered: false });
-              this.props.setPreview(clearPreview);
+              if (this.state.entered) {
+                this.setState({ entered: false });
+                this.props.setPreview(clearPreview);
+              }
             }}
             onDragEnd={() => {
               this.setState({ entered: false });

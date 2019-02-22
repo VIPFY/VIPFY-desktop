@@ -209,8 +209,8 @@ $shadow-color: #f0f3ff;
 }*/
 
 .profile-app {
-  width: 8em;
-  height: 8em;
+  width: 8rem;
+  height: 8rem;
   cursor: pointer;
   background-position: center;
   background-repeat: no-repeat;
@@ -243,7 +243,7 @@ $shadow-color: #f0f3ff;
     }
 
     .hovered {
-      opacity: 0.1;
+      opacity: 0.6;
       border-style: dashed;
       transition: all 300ms ease-in-out;
     }

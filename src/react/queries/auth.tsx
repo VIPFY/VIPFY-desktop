@@ -1,14 +1,5 @@
 import gql from "graphql-tag";
 
-export const GET_USER_CONFIG = gql`
-  {
-    me {
-      id
-      config
-    }
-  }
-`;
-
 export const me = gql`
   {
     me {
@@ -48,6 +39,8 @@ export const fetchLicences = gql`
       id
       endtime
       disabled
+      layoutvertical
+      layouthorizontal
       boughtplanid {
         id
         alias

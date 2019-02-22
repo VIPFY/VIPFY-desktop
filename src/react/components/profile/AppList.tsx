@@ -1,12 +1,11 @@
 import * as React from "react";
-import { Query, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 import AppTile from "../../components/AppTile";
-import LoadingDiv from "../../components/LoadingDiv";
-import { filterError, ErrorComp } from "../../common/functions";
-import { fetchLicences, GET_USER_CONFIG } from "../../queries/auth";
-import { SAVE_LAYOUT } from "../../mutations/auth";
+import { fetchLicences } from "../../queries/auth";
+import { UPDATE_LAYOUT } from "../../mutations/auth";
 import moment = require("moment");
 import { Licence } from "../../interfaces";
+import { layoutChange } from "../../common/functions";
 
 export interface Preview {
   name: string;
@@ -17,7 +16,7 @@ interface Props {
   setApp?: Function;
   layout?: string[] | null;
   licences: Licence[];
-  saveLayout: Function;
+  updateLayout: Function;
 }
 
 interface State {
@@ -26,7 +25,7 @@ interface State {
   preview: Preview;
 }
 
-class AppListHolder extends React.Component<Props, State> {
+class AppList extends React.Component<Props, State> {
   state = {
     show: true,
     dragItem: null,
@@ -44,47 +43,66 @@ class AppListHolder extends React.Component<Props, State> {
     const { dragItem } = this.state;
     const { licences } = this.props;
 
-    const newLicences = licences.map(licence => {
-      if (licence.id == id) {
-        return licences.find(item => item.id == dragItem!);
-      } else if (licence.id == dragItem!) {
-        return licences.find(item => item.id == id);
-      } else {
-        return licence;
-      }
-    });
+    const layouts = layoutChange(licences, dragItem, id, "layouthorizontal");
 
     try {
-      const horizontal = newLicences.map(licence => licence.id);
-      await this.props.saveLayout({
-        variables: { horizontal },
-        refetchQueries: [{ query: fetchLicences }, { query: GET_USER_CONFIG }],
+      await this.props.updateLayout({
+        variables: { layouts },
         update: cache => {
-          const data = cache.readQuery({ query: GET_USER_CONFIG });
-          data.me.config.horizontal = horizontal;
-          cache.writeQuery({ query: GET_USER_CONFIG, data });
+          const newLicences = licences.map(licence => {
+            if (licence.id == layouts[0].id) {
+              return { ...licence, layouthorizontal: layouts[0]!.layouthorizontal };
+            } else if (licence.id == layouts[1].id) {
+              return { ...licence, layouthorizontal: layouts[1]!.layouthorizontal };
+            } else {
+              return licence;
+            }
+          });
+
+          cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
         }
       });
     } catch (error) {
       console.log(error);
     }
-
-    return newLicences;
   };
 
   render() {
     const { show, dragItem, preview } = this.state;
-    const { licences, layout } = this.props;
+    const { licences } = this.props;
+    let subPosition = 0;
 
     if (licences.length == 0) {
       return <div>No Apps for you yet</div>;
     }
 
-    let orderedLicences = licences;
+    const filteredLicences = licences
+      .filter(licence => {
+        if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+          return false;
+        }
 
-    if (layout && layout.length == licences.length) {
-      orderedLicences = layout.map(id => licences.find(item => item.id == id));
-    }
+        return true;
+      })
+      .sort((a, b) => {
+        if (a.layouthorizontal === null) {
+          return 1;
+        }
+
+        if (b.layouthorizontal === null) {
+          return -1;
+        }
+
+        if (a.layouthorizontal < b.layouthorizontal) {
+          return -1;
+        }
+
+        if (a.layouthorizontal > b.layouthorizontal) {
+          return 1;
+        }
+
+        return 0;
+      });
 
     return (
       <div className="genericHolder">
@@ -94,17 +112,24 @@ class AppListHolder extends React.Component<Props, State> {
         </div>
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
-            {orderedLicences.map(licence => {
-              if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
-                return "";
+            {filteredLicences.map((licence, key) => {
+              const maxValue = filteredLicences.reduce(
+                (acc, cv) => Math.max(acc, cv.layouthorizontal),
+                0
+              );
+
+              // Make sure that every License has an index
+              if (licence.layouthorizontal || licence.layouthorizontal === 0) {
+              } else {
+                subPosition = maxValue + 1;
+                licence.layouthorizontal = subPosition;
               }
 
               return (
                 <AppTile
-                  key={licence.id}
+                  key={key}
                   preview={preview}
                   setPreview={this.setPreview}
-                  updateLayout={this.props.saveLayout}
                   dragItem={dragItem}
                   dragStartFunction={this.dragStartFunction}
                   dragEndFunction={this.dragEndFunction}
@@ -121,25 +146,4 @@ class AppListHolder extends React.Component<Props, State> {
   }
 }
 
-const AppList = graphql(SAVE_LAYOUT, { name: "saveLayout" })(AppListHolder);
-
-export default (props: { setApp: Function; licences: Licence[] }) => (
-  <Query query={GET_USER_CONFIG}>
-    {({ data: { me }, loading, error }) => {
-      if (loading) {
-        return <LoadingDiv text="Fetching Apps..." />;
-      }
-
-      if (error || !me) {
-        return <ErrorComp error={filterError(error)} />;
-      }
-
-      return (
-        <AppList
-          {...props}
-          layout={me.config && me.config.horizontal ? me.config.horizontal : null}
-        />
-      );
-    }}
-  </Query>
-);
+export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppList);

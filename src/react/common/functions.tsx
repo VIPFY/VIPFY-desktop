@@ -2,6 +2,7 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import * as moment from "moment";
 
 export function showStars(stars) {
   const starsArray: JSX.Element[] = [];
@@ -131,4 +132,14 @@ export const refetchQueries = async (client: ApolloClient<InMemoryCache>, querie
     fetchPolicy: "no-cache",
     refetchQueries: queries
   });
+};
+
+export const layoutChange = (licences, dragItem, dropItem, direction) => {
+  const dragged = licences.find(licence => licence.id == dragItem);
+  const droppedOn = licences.find(licence => licence.id == dropItem);
+
+  return [
+    { id: dragged!.id, [direction]: droppedOn![direction] },
+    { id: droppedOn!.id, [direction]: dragged![direction] }
+  ];
 };
