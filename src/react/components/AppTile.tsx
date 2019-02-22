@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Mutation, graphql } from "react-apollo";
+import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import EditLicence from "../popups/EditLicence";
 import { iconPicFolder } from "../common/constants";
@@ -8,7 +8,6 @@ import { fetchLicences, me } from "../queries/auth";
 import moment = require("moment");
 import { Licence } from "../interfaces";
 import { Preview } from "./profile/AppList";
-import { UPDATE_LAYOUT } from "../mutations/auth";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -31,7 +30,6 @@ interface Props {
   setPreview: (preview: Preview) => void;
   preview: Preview;
   setTeam?: Function;
-  updateLayout: Function;
 }
 
 interface State {
@@ -143,4 +141,4 @@ class AppTile extends React.Component<Props, State> {
   }
 }
 
-export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppTile);
+export default AppTile;

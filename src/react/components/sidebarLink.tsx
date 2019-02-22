@@ -1,8 +1,5 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
-import { graphql } from "react-apollo";
-import { UPDATE_LAYOUT } from "../mutations/auth";
-import { fetchLicences } from "../queries/auth";
 
 interface Props {
   licence: any;
@@ -12,10 +9,8 @@ interface Props {
   setTeam: Function;
   setInstance: Function;
   viewID: number;
-  subPosition: number;
   handleDrop: Function;
   handleDragStart: Function;
-  updateLayout: Function;
 }
 
 interface State {
@@ -151,4 +146,4 @@ class SidebarLink extends React.Component<Props, State> {
   }
 }
 
-export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(SidebarLink);
+export default SidebarLink;
