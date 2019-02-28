@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query, Mutation } from "react-apollo";
 import * as moment from "moment";
 // import { shell } from "electron";
 // import * as path from "path";
@@ -14,6 +14,7 @@ import LoadingDiv from "../LoadingDiv";
 import { fetchBills } from "../../queries/billing";
 import { filterError } from "../../common/functions";
 import InvoiceMonth from "./InvoiceMonth";
+import { DOWNLOAD_INVOICE } from "../../mutations/billing";
 
 interface Props {}
 interface State {
@@ -27,33 +28,31 @@ class Invoices extends React.Component<Props, State> {
     showmonth: ""
   };
 
-  // downloadPdf = async pdfLink => {
-  //   const pathArray = pdfLink.split("/");
-  //   const fileName = pathArray[pathArray.length - 2];
-  //   const pdfPath = path.join(os.tmpdir(), fileName);
-  //   const res = await axios({
-  //     method: "GET",
-  //     url: pdfLink,
-  //     responseType: "stream"
-  //   });
+  downloadPdf = async pdfLink => {
+    const pathArray = pdfLink.split("/");
+    const fileName = pathArray[pathArray.length - 2];
+    const pdfPath = path.join(os.tmpdir(), fileName);
+    const res = await axios({
+      method: "GET",
+      url: pdfLink,
+      responseType: "stream"
+    });
 
-  //   res.data.pipe(fs.createWriteStream(pdfPath));
+    res.data.pipe(fs.createWriteStream(pdfPath));
 
-  //   await new Promise((resolve, reject) => {
-  //     res.data.on("end", () => resolve());
+    await new Promise((resolve, reject) => {
+      res.data.on("end", () => resolve());
 
-  //     res.data.on("error", () => reject());
-  //   });
+      res.data.on("error", () => reject());
+    });
 
-  //   shell.openExternal(pdfPath);
-  // };
+    shell.openExternal(pdfPath);
+  };
 
   toggleInvoice = invoice => {
     if (invoice != this.state.show) {
       this.setState({ show: invoice });
-    }
-
-    if (invoice == this.state.show) {
+    } else {
       this.setState({ show: 0 });
     }
   };
@@ -69,6 +68,7 @@ class Invoices extends React.Component<Props, State> {
           if (loading) {
             return <LoadingDiv text="Fetching data..." />;
           }
+
           if (error || !fetchBills) {
             return <ErrorComp error={filterError(error)} />;
           }
@@ -85,7 +85,6 @@ class Invoices extends React.Component<Props, State> {
               ).format("YYYY")}`;
 
               if (thismonth !== newthismonth && thismonth !== "") {
-                //console.log(thismonth, monthlyinvoices);
                 billmonth.push(
                   <InvoiceMonth
                     key={thismonth}
@@ -109,14 +108,20 @@ class Invoices extends React.Component<Props, State> {
                       }>
                       {moment(invoice.billtime - 0).format("LLL")}
                     </span>
-
+                    {console.log(invoice)}
                     <span className="naked-button-holder">
-                      <a href={invoice.pdflink} className="naked-button">
-                        <i
-                          className="fal fa-download"
-                          // onClick={() => this.downloadPdf(invoice.pdflink)}
-                        />
-                      </a>
+                      <Mutation mutation={DOWNLOAD_INVOICE}>
+                        {(downloadInvoice, { loading, error }) => (
+                          <button
+                            title="Download Invoice"
+                            className="naked-button"
+                            onClick={() => downloadInvoice({ variables: { billid: invoice.id } })}>
+                            <i className="fal fa-download" />
+                            {loading && <LoadingDiv text="Downloading Invoice..." />}
+                            {error && filterError(error)}
+                          </button>
+                        )}
+                      </Mutation>
                       <i
                         onClick={() => this.toggleInvoice(invoice.id)}
                         className={`fal fa-search-${
@@ -126,10 +131,8 @@ class Invoices extends React.Component<Props, State> {
                       />
                     </span>
                   </div>
-                  {this.state.show == invoice.id ? (
+                  {this.state.show == invoice.id && (
                     <InvoiceWebView invoice={invoice.invoicelink} />
-                  ) : (
-                    ""
                   )}
                 </React.Fragment>
               );

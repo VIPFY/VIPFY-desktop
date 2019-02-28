@@ -101,17 +101,16 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
           } else if (tag === "success") {
             this.stage = Stage.afterSuccessLogin;
             this.domSuccess.push(dom);
-
             const errorObjectDom = findPreferedTag(
               this.domError,
               [...this.domUsername, ...this.domSuccess],
-              ["err", "alert", "warn"],
+              ["err", "alert", "warn", "unsuccess"],
               ["csrf"]
             );
             const hideObjectDom = findPreferedTag(
               this.domSuccess,
               [...this.domUsername, ...this.domError],
-              ["avatar", "name", "menu"],
+              ["avatar", "name", "menu", "dashboard", "sign out"],
               ["csrf"]
             );
             console.log("errorObjectDom", errorObjectDom);
