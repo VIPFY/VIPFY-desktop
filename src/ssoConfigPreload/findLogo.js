@@ -189,7 +189,9 @@ function findIcon() {
           console.log("ICON", icon, ICO.isICO(arrayBuffer), isPNG(arrayBuffer));
           if (arrayBuffer) {
             if (ICO.isICO(arrayBuffer)) {
+              console.log("AB", arrayBuffer);
               ICO.parse(arrayBuffer, "image/png").then(function(images) {
+                console.log("I", images);
                 const largestSubfile = images.reduce(function(a, b) {
                   return a.width * a.height > b.width * b.height ? a : b;
                 });

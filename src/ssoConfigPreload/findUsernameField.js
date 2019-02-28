@@ -20,7 +20,6 @@ function doit(force) {
   const email = getQueryString(findEmailField());
   const password = getQueryString(findPassField());
   const button = getQueryString(findConfirmButton());
-
   if (force || (email !== null && password !== null && button !== null)) {
     done = true;
     ipcRenderer.sendToHost("emailobject", email);
@@ -50,6 +49,7 @@ setTimeout(function() {
 }, 15000);
 
 function getQueryString(t) {
+  console.log("I am starting");
   if (t === null || t === undefined) return null;
   if (t.id) {
     return `[id="${t.id}"]`; // don't use #id because that fails with ids containing colons (:)
@@ -57,8 +57,12 @@ function getQueryString(t) {
     return `${t.tagName.toLowerCase()}[name="${t.name}"]`;
   } else if (t.tagName.toLowerCase() == "input" || t.tagName.toLowerCase() == "button") {
     let s = t.tagName.toLowerCase();
-    if (t.type) {
-      s += '[type="' + t.type + '"]';
+    console.log("I am here");
+    console.log(t.attributes);
+    if (t.attributes["type"]) {
+      s += '[type="';
+      s += t.attributes["type"].value ? t.attributes["type"].value : t.attributes["type"];
+      s += '"]';
     }
     if (document.querySelectorAll(s).length == 1) {
       return s;
@@ -80,7 +84,7 @@ function getQueryString(t) {
 
 function findForm() {
   const forms = Array.from(document.querySelectorAll("form")).filter(
-    filterDom(["signin", "sign-in", "log"], ["oauth", "facebook", "signup", "forgot"])
+    filterDom(["signin", "sign-in", "log"], ["oauth", "facebook", "signup", "forgot", "google"])
   );
   console.log("forms", forms);
 
@@ -109,6 +113,10 @@ function findConfirmButton() {
       findForm().querySelectorAll("button, input[type='button'], [role='button']")
     ).filter(filterDom(["sign", "log", "submit"], ["oauth", "google", "facebook", "forgot"]));
   }
+  if (t.length == 0) {
+    t = Array.from(findForm().querySelectorAll("button, input[type='button'], [role='button']"));
+  }
+
   return t[0];
 }
 
@@ -119,7 +127,10 @@ const attributes = [
   "aria-roledescription",
   "placeholder",
   "ng-model",
+  "data-ng-model",
+  "data-callback",
   "class",
+  "value",
   "alt"
 ];
 
