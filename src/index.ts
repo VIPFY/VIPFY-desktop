@@ -139,10 +139,6 @@ const createWindow = async () => {
     isDevMode = true;
   }
 
-  if (isDevMode) {
-    enableLiveReload({ strategy: "react-hmr" });
-  }
-
   protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
       console.error("Failed to register vipfy protocol");
@@ -181,7 +177,8 @@ const createWindow = async () => {
   if (isDevMode) {
     await installExtension(REACT_DEVELOPER_TOOLS);
     await installExtension(APOLLO_DEVELOPER_TOOLS);
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
+    enableLiveReload({ strategy: "react-hmr" });
   }
 
   // Emitted when the window is closed.
