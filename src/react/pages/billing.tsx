@@ -12,7 +12,7 @@ import { fetchCards } from "../queries/billing";
 import { CREATE_ADDRESS } from "../mutations/contact";
 import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 import AppTable from "../components/billing/AppTable";
-import BillingEmails from "../components/billing/BillingEmails";
+import EmailList from "../components/EmailList";
 import BillingPie from "../components/billing/BillingPie";
 import Invoices from "../components/billing/Invoices";
 
@@ -31,7 +31,7 @@ interface State {
   showBillingHistory: Boolean;
   showBoughtApps: Boolean;
   showInvocies: Boolean;
-  showBillingEmails: Boolean;
+  showEmailList: Boolean;
   showCurrentCreditCard: Boolean;
 }
 
@@ -43,7 +43,7 @@ class Billing extends React.Component<Props, State> {
     showBillingHistory: true,
     showBoughtApps: true,
     showInvocies: true,
-    showBillingEmails: true,
+    showEmailList: true,
     showCurrentCreditCard: true,
     showInvoice: 0
   };
@@ -60,8 +60,8 @@ class Billing extends React.Component<Props, State> {
   toggleShowInvocies = (): void =>
     this.setState(prevState => ({ showInvocies: !prevState.showInvocies }));
 
-  toggleShowBillingEmails = (): void =>
-    this.setState(prevState => ({ showBillingEmails: !prevState.showBillingEmails }));
+  toggleShowEmailList = (): void =>
+    this.setState(prevState => ({ showEmailList: !prevState.showEmailList }));
 
   toggleShowCurrentCreditCard = (): void =>
     this.setState(prevState => ({ showCurrentCreditCard: !prevState.showCurrentCreditCard }));
@@ -93,17 +93,21 @@ class Billing extends React.Component<Props, State> {
     return (
       <div id="billing-page">
         <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowBillingEmails()}>
+          <div className="header" onClick={() => this.toggleShowEmailList()}>
             <i
               className={`button-hide fas ${
-                this.state.showBillingEmails ? "fa-angle-left" : "fa-angle-down"
+                this.state.showEmailList ? "fa-angle-left" : "fa-angle-down"
               }`}
               //onClick={this.toggle}
             />
             <span>Billing Emails</span>
           </div>
-          <div className={`inside ${this.state.showBillingEmails ? "in" : "out"}`}>
-            <BillingEmails showPopup={this.props.showPopup} />
+          <div className={`inside ${this.state.showEmailList ? "in" : "out"}`}>
+            <EmailList
+              tag="billing"
+              header="Invoices will be sent to these Email addresses"
+              showPopup={this.props.showPopup}
+            />
           </div>
         </div>
 

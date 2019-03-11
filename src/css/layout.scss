@@ -3747,17 +3747,18 @@ option{
     position: relative;
     overflow: hidden;
 
-    &:hover{
-        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-        //background-color: #117f91
-        background-color: #1697A5;
-        overflow: initial;
+    &:hover {
+      box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
+      //background-color: #117f91
+      background-color: #1697A5;
+      overflow: initial;
     }
 
-    i{
-        font-size: 16px;
-        line-height: 16px;
+    i {
+      font-size: 16px;
+      line-height: 16px;
     }
+    
     & > .textButtonInside{
         line-height: 16px;
         margin-left: 10px;

@@ -193,13 +193,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
         important: false,
         highlight: "integrationselement"
       },
-      /*{
+      {
         label: "Domains",
         location: "domains",
         icon: "atlas",
         show: this.props.isadmin,
         important: false
-      },*/
+      },
       {
         label: "Usage Statistics",
         location: "usage",

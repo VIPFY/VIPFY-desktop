@@ -25,7 +25,7 @@ const FETCH_BILLING_DATA = gql`
       tags
     }
 
-    fetchBillingEmails {
+    fetchEmailList {
       email
       description
     }
@@ -89,7 +89,7 @@ class StripeForm extends React.Component<Props, State> {
                   <StripeBody
                     {...this.props}
                     addresses={data.fetchAddresses}
-                    emails={data.fetchBillingEmails}
+                    emails={data.fetchEmailList}
                     hasCard={this.props.hasCard}
                     firstname={data.me.firstname}
                     lastname={data.me.lastname}

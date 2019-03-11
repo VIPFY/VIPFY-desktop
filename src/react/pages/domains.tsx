@@ -55,7 +55,7 @@ export const FETCH_DOMAINS = gql`
 `;
 
 const REGISTER_DOMAIN = gql`
-  mutation onRegisterDomain($domain: DD24!) {
+  mutation onRegisterDomain($domain: DomainInput!) {
     registerDomain(domainData: $domain) {
       id
       domainname
@@ -253,18 +253,13 @@ class Domains extends React.Component<Props, State> {
    *
    * @returns {JSX} The rendered headers
    */
-  renderHeaders = (headers: string[], state: string) => (
+  renderHeaders = (headers: string[]) => (
     <div className="domain-header">
       {headers.map(header => (
         <span key={header} className="domain-item">
           {header}
         </span>
       ))}
-
-      <i
-        className="fa fa-eye domain-toggle-icon"
-        onClick={() => this.setState(prevState => ({ [state]: !prevState[state] }))}
-      />
     </div>
   );
 
@@ -385,199 +380,224 @@ class Domains extends React.Component<Props, State> {
     });
 
     return (
-      <div id="domains">
-        <h1 style={{ paddingTop: 0 }}>Domains</h1>
-
-        <div className="domain-table">
-          {this.renderHeaders(headers, "showDomains")}
-          <div className={`domain-table-body ${this.state.showDomains ? "in" : "out"}`}>
-            <Query query={FETCH_DOMAINS}>
-              {({ loading, error, data }) => {
-                if (loading) {
-                  return <LoadingDiv text="Loading..." />;
-                }
-
-                if (error) {
-                  return filterError(error);
-                }
-
-                return this.renderBody(data.fetchDomains);
-              }}
-            </Query>
+      <section id="domains">
+        <div className="genericHolder">
+          <div className="header">
+            <i
+              className={`fas fa-angle-${this.state.showDomains ? "left" : "down"} button-hide`}
+              onClick={() => this.setState(prevState => ({ showDomains: !prevState.showDomains }))}
+            />
+            <span>Domains</span>
           </div>
-        </div>
-
-        <Query query={FETCH_DOMAIN_PLANS}>
-          {({ data, loading, error }) => {
-            const registerButton = (
-              <button
-                className="register-domain"
-                disabled={loading || !data}
-                type="button"
-                onClick={() => this.props.showPopup(domainPopup)}>
-                <i className="fas fa-plus" /> Register New
-              </button>
-            );
-
-            if (loading || error || !data) {
-              return registerButton;
-            }
-
-            const tlds = data.fetchPlans.filter(item => !item.name.startsWith("W"));
-            console.log("PLans", data.fetchPlans, tlds);
-            const regProps: {
-              fields: object[];
-              handleSubmit: Function;
-              runInBackground: boolean;
-              buttonName: string;
-              tlds: object[];
-            } = {
-              fields: [
-                {
-                  name: "domainName",
-                  label: "Domain",
-                  placeholder: "Enter Domain name",
-                  icon: "hdd",
-                  type: "text",
-                  validate: domainValidation,
-                  required: true
-                },
-                {
-                  name: "tld",
-                  type: "select",
-                  icon: "globe",
-                  label: "Select TLD",
-                  options: tlds.map(tld => {
-                    return {
-                      value: `.${tld.name} ${tld.price} ${tld.currency}`,
-                      name: `.${tld.name} ${tld.price} ${tld.currency}`
-                    };
-                  }),
-                  required: true
-                },
-                {
-                  name: "whoisprivacy",
-                  type: "checkbox",
-                  label: "Whois Privacy",
-                  icon: "user-secret"
-                },
-                {
-                  name: "agb",
-                  type: "agb",
-                  appName: "Domaindiscount24",
-                  lawLink: "https://www.domaindiscount24.com/en/legal/terms-and-conditions",
-                  privacyLink: "https://www.domaindiscount24.com/en/legal/privacy-policy",
-                  required: true
-                }
-              ],
-              tlds,
-              buttonName: "Buy",
-              handleSubmit: this.handleSubmit,
-              runInBackground: true
-            };
-
-            const domainPopup = {
-              header: "Domain Registration",
-              body: BuyDomain,
-              props: regProps
-            };
-
-            return registerButton;
-          }}
-        </Query>
-
-        <div className="">
-          <h1>External Domains</h1>
-          <div className="domain-table">{this.renderHeaders(externalHeaders, "showExternal")}</div>
-          <div className={`domain-table-body ${this.state.showExternal ? "in" : "out"}`}>
-            <Query query={FETCH_DOMAINS}>
-              {({ loading, error, data }) => {
-                if (loading) {
-                  return <LoadingDiv text="Loading..." />;
-                }
-
-                if (error) {
-                  return filterError(error);
-                }
-
-                return this.renderBody(data.fetchDomains, true);
-              }}
-            </Query>
-          </div>
-
-          <button
-            style={{ maxWidth: "9rem" }}
-            className="register-domain"
-            type="button"
-            onClick={() => {
-              const date = new Date();
-              const year = date.getFullYear();
-              const month = date.getUTCMonth() + 1;
-              const day = date.getDay();
-
-              const today = `${year}-${month < 10 ? `0${month}` : month}-${
-                day < 10 ? `0${day}` : day
-              }`;
-
-              const regProps: {
-                fields: object[];
-                handleSubmit: Function;
-                runInBackground: boolean;
-                submittingMessage: string;
-                buttonName: string;
-              } = {
-                fields: [
-                  {
-                    name: "domain",
-                    label: "Domain",
-                    placeholder: "Enter Domain name",
-                    icon: "hdd",
-                    type: "text",
-                    validate: fullDomainNameValidation,
-                    required: true
-                  },
-                  {
-                    name: "whoisprivacy",
-                    type: "checkbox",
-                    label: "Whois Privacy",
-                    icon: "user-secret"
-                  },
-                  {
-                    name: "createdate",
-                    type: "date",
-                    max: today,
-                    label: "Registration Date",
-                    icon: "calendar-alt",
-                    required: true
-                  },
-                  {
-                    name: "renewaldate",
-                    type: "date",
-                    min: today,
-                    label: "Renewal Date",
-                    icon: "calendar-alt",
-                    required: true
+          <div className={`domain-table ${this.state.showDomains ? "in" : "out"}`}>
+            {this.renderHeaders(headers)}
+            <div className="domain-table-body">
+              <Query query={FETCH_DOMAINS}>
+                {({ loading, error, data }) => {
+                  if (loading) {
+                    return <LoadingDiv text="Loading..." />;
                   }
-                ],
-                buttonName: "Add",
-                handleSubmit: this.handleSubmit,
-                runInBackground: false,
-                submittingMessage: "Adding External Domain..."
-              };
 
-              const domainPopup = {
-                header: "Add external Domain",
-                body: GenericInputForm,
-                props: regProps
-              };
+                  if (error) {
+                    return filterError(error);
+                  }
 
-              this.props.showPopup(domainPopup);
-            }}>
-            <i className="fas fa-plus" />
-            External Domain
-          </button>
+                  return (
+                    <React.Fragment>
+                      {this.renderBody(data.fetchDomains)}
+                      <Query query={FETCH_DOMAIN_PLANS}>
+                        {({ data, loading, error }) => {
+                          if (loading || error || !data) {
+                            return "Oops, something went wrong";
+                          }
+
+                          const tlds = data.fetchPlans.filter(item => !item.name.startsWith("W"));
+
+                          const regProps: {
+                            fields: object[];
+                            handleSubmit: Function;
+                            runInBackground: boolean;
+                            buttonName: string;
+                            tlds: object[];
+                          } = {
+                            fields: [
+                              {
+                                name: "domainName",
+                                label: "Domain",
+                                placeholder: "Enter Domain name",
+                                icon: "hdd",
+                                type: "text",
+                                validate: domainValidation,
+                                required: true
+                              },
+                              {
+                                name: "tld",
+                                type: "select",
+                                icon: "globe",
+                                label: "Select TLD",
+                                options: tlds.map(tld => {
+                                  return {
+                                    value: `.${tld.name} ${tld.price} ${tld.currency}`,
+                                    name: `.${tld.name} ${tld.price} ${tld.currency}`
+                                  };
+                                }),
+                                required: true
+                              },
+                              {
+                                name: "whoisprivacy",
+                                type: "checkbox",
+                                label: "Whois Privacy",
+                                icon: "user-secret"
+                              },
+                              {
+                                name: "agb",
+                                type: "agb",
+                                appName: "RRP Proxy",
+                                lawLink: "https://www.rrpproxy.net/Legal/Terms_and_Conditions",
+                                privacyLink: "https://www.rrpproxy.net/Legal/Privacy_Policy",
+                                required: true
+                              }
+                            ],
+                            tlds,
+                            buttonName: "Buy",
+                            handleSubmit: this.handleSubmit,
+                            runInBackground: true
+                          };
+
+                          const domainPopup = {
+                            header: "Domain Registration",
+                            body: BuyDomain,
+                            props: regProps
+                          };
+
+                          return (
+                            <button
+                              className="naked-button genericButton"
+                              disabled={loading || !data}
+                              type="button"
+                              onClick={() => this.props.showPopup(domainPopup)}>
+                              <span className="textButton">
+                                <i className="fas fa-plus" style={{ fontSize: "10px" }} />
+                              </span>
+                              <span className="textButtonBeside" style={{ lineHeight: "16px" }}>
+                                Register new Domain
+                              </span>
+                            </button>
+                          );
+                        }}
+                      </Query>
+                    </React.Fragment>
+                  );
+                }}
+              </Query>
+            </div>
+          </div>
         </div>
-      </div>
+
+        <div className="genericHolder">
+          <div className="header">
+            <i
+              className={`fas fa-angle-${this.state.showExternal ? "left" : "down"} button-hide`}
+              onClick={() =>
+                this.setState(prevState => ({ showExternal: !prevState.showExternal }))
+              }
+            />
+            <span>External Domains</span>
+          </div>
+          <div className={`domain-table ${this.state.showExternal ? "in" : "out"}`}>
+            {this.renderHeaders(externalHeaders)}
+            <div className="domain-table-body">
+              <Query query={FETCH_DOMAINS}>
+                {({ loading, error, data }) => {
+                  if (loading) {
+                    return <LoadingDiv text="Fetching Domains..." />;
+                  }
+
+                  if (error) {
+                    return filterError(error);
+                  }
+
+                  return this.renderBody(data.fetchDomains, true);
+                }}
+              </Query>
+            </div>
+            <button
+              className="naked-button genericButton"
+              type="button"
+              onClick={() => {
+                const date = new Date();
+                const year = date.getFullYear();
+                const month = date.getUTCMonth() + 1;
+                const day = date.getDay();
+
+                const today = `${year}-${month < 10 ? `0${month}` : month}-${
+                  day < 10 ? `0${day}` : day
+                }`;
+
+                const regProps: {
+                  fields: object[];
+                  handleSubmit: Function;
+                  runInBackground: boolean;
+                  submittingMessage: string;
+                  buttonName: string;
+                } = {
+                  fields: [
+                    {
+                      name: "domain",
+                      label: "Domain",
+                      placeholder: "Enter Domain name",
+                      icon: "hdd",
+                      type: "text",
+                      validate: fullDomainNameValidation,
+                      required: true
+                    },
+                    {
+                      name: "whoisprivacy",
+                      type: "checkbox",
+                      label: "Whois Privacy",
+                      icon: "user-secret"
+                    },
+                    {
+                      name: "createdate",
+                      type: "date",
+                      max: today,
+                      label: "Registration Date",
+                      icon: "calendar-alt",
+                      required: true
+                    },
+                    {
+                      name: "renewaldate",
+                      type: "date",
+                      min: today,
+                      label: "Renewal Date",
+                      icon: "calendar-alt",
+                      required: true
+                    }
+                  ],
+                  buttonName: "Add",
+                  handleSubmit: this.handleSubmit,
+                  runInBackground: false,
+                  submittingMessage: "Adding External Domain..."
+                };
+
+                const domainPopup = {
+                  header: "Add external Domain",
+                  body: GenericInputForm,
+                  props: regProps
+                };
+
+                this.props.showPopup(domainPopup);
+              }}>
+              <span className="textButton">
+                <i className="fas fa-plus" style={{ fontSize: "10px" }} />
+              </span>
+              <span className="textButtonBeside" style={{ lineHeight: "16px" }}>
+                Add external Domain
+              </span>
+            </button>
+          </div>
+        </div>
+      </section>
     );
   }
 }
