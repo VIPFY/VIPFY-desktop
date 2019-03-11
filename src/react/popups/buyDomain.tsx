@@ -97,8 +97,9 @@ class BuyDomain extends Component<Props, State> {
     });
 
     return (
-      <div className="buyDomain">
-        <div className="domainInputHolder">
+      <section className="domain-popup">
+        <h2>Please enter a domain to check whether it's available</h2>
+        {/* <div className="domainInputHolder">
           <GenericInputField
             fieldClass="inputBoxField domainInputField"
             divClass="domainInput"
@@ -110,9 +111,8 @@ class BuyDomain extends Component<Props, State> {
             forcedTld={this.state.tld}
             error={this.state.error}
           />
-          {/*<button>Check domain</button>*/}
-        </div>
-        <div className="tldHolder">{domainPrices}</div>
+        </div> */}
+        {/* <div className="tldHolder">{domainPrices}</div> */}
 
         {/*{this.state.tld === "" ? (
           <div className="agreementBox whoisPrivacyBox">Please choose a Domain</div>
@@ -138,26 +138,7 @@ class BuyDomain extends Component<Props, State> {
           </div>
         )}*/}
 
-        <div className="agreementBox whoisPrivacyBox">
-          <input
-            type="checkbox"
-            className="cbx"
-            id="Agreement"
-            style={{ display: "none" }}
-            onChange={e => this.setState({ agreement: e.target.checked })}
-          />
-          <label htmlFor="Agreement" className="check">
-            <svg width="18px" height="18px" viewBox="0 0 18 18">
-              <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
-              <polyline points="1 9 7 14 15 4" />
-            </svg>
-            <span className="whoisPrivacy">
-              I agree to the terms and services and Privacy Rules of DD24
-            </span>
-          </label>
-        </div>
-
-        <div className="buyDomainButtonHolder">
+        {/* <div className="buyDomainButtonHolder">
           <button className="__cancel" onClick={() => this.props.onClose()}>
             Cancel
           </button>
@@ -182,8 +163,8 @@ class BuyDomain extends Component<Props, State> {
             }}>
             {this.showPrice()}
           </button>
-        </div>
-      </div>
+        </div> */}
+      </section>
     );
   }
 }

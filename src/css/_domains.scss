@@ -1,10 +1,19 @@
-
-
 #domains {
   display: flex;
   flex-direction: column;
-  padding: 1em;
-  width: 95%;
+  padding: 48px;
+
+  .genericHolder {
+    max-width: 86rem;
+  }
+}
+
+.domain-table {
+  margin: 20px;
+}
+
+.domain-popup {
+
 }
 
 .register-domain {
@@ -14,37 +23,25 @@
   min-height: 26px;
 }
 
-.domain-table {
-  display: flex;
-  flex-direction: column;
-
-  &-body {
-    overflow-y: auto;
-  }
-}
-
 .domain-header {
-  // @include flex-system(center, space-between);
   display: grid;
-  grid-template-columns: 10rem repeat(8, 1fr);
+  grid-template-columns: 10rem 1fr 9rem 1fr 6rem repeat(4, 1fr);
   align-items: center;
-  background: $vipfy-primary-color;
-  color: #fff;
-  border-bottom: 2px solid $vipfy-secondary-color;
   font-weight: bold;
   position: relative;
 
   span {
     &:first-child {
       padding-left: 0;
-      
+
       &:hover {
         overflow: visible;
       }
     }
 
     &:nth-child(2),
-    &:nth-child(5)  {
+    &:nth-child(5),
+    &:last-child  {
       text-align: center;
     }
   }
@@ -67,18 +64,12 @@
   color: #000;
   font-weight: normal;
   min-height: 3em;
-  transition: 0.3s;
-
-  &:hover {
-    background: lighten($vipfy-secondary-color, 10);
-    transition: all 0.5s ease-in-out;
-  }
 }
 
 .domain-item {
   overflow: hidden;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
   text-overflow: ellipsis;
 
   &-icon {
