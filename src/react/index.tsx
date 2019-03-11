@@ -22,9 +22,9 @@ class Application extends React.Component {
   implementShortCuts = e => {
     const mainWindow = remote.getCurrentWindow();
 
-    if (e.keyCode == 82) {
+    if (e.keyCode == 82 && e.ctrlKey) {
       mainWindow.reload();
-    } else if (e.keyCode == 73) {
+    } else if (e.keyCode == 73 && e.ctrlKey && e.shiftKey) {
       if (mainWindow.isDevToolsOpened()) {
         mainWindow.webContents.closeDevTools();
       } else {
