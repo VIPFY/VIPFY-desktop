@@ -80,16 +80,20 @@ class InputField extends React.Component<InputProps, State> {
       }
 
       case "select": {
+        delete inputProps.defaultValue;
+        const { defaultValue } = this.props;
+
         return (
           <div className="vipfy-input-holder">
             <i className={`fal fa-${icon}`} />
-
             <select
               onChange={this.handleChange}
               value={value}
               {...inputProps}
               className="generic-dropdown">
-              <option value=""> </option>
+              <option value={defaultValue ? defaultValue : ""}>
+                {defaultValue ? defaultValue : " "}
+              </option>
               {options &&
                 options.map((option, key) => (
                   <option key={key} value={option}>
@@ -97,7 +101,6 @@ class InputField extends React.Component<InputProps, State> {
                   </option>
                 ))}
             </select>
-
             <label htmlFor={this.props.name} className="vipfy-label-active">
               {label}
             </label>

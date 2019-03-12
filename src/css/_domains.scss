@@ -13,7 +13,33 @@
 }
 
 .domain-popup {
+  h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
 
+  .domain-form {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.domain-check {
+  display: flex;
+
+  .vipfy-input-holder {
+    width: unset;
+
+    .generic-dropdown {
+      padding: 0;
+      margin-left: 0;
+      width: 55px;
+    }
+
+    .button-pw {
+      padding: 0 5px;
+    }
+  }
 }
 
 .register-domain {
