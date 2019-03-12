@@ -1,7 +1,19 @@
 import * as React from "react";
-import { Component } from "react";
-import GenericInputField from "../components/GenericInputField";
+import gql from "graphql-tag";
+import { Query } from "react-apollo";
+import InputField from "../components/InputField";
 
+const FETCH_DOMAIN_PLANS = gql`
+  {
+    fetchPlans(appid: 11) {
+      id
+      name
+      price
+      currency
+      features
+    }
+  }
+`;
 interface Props {
   tlds: { name: String; price: number; currency: String; features: { value: String } }[];
   onClose: Function;
@@ -16,7 +28,7 @@ interface State {
   error: String;
 }
 
-class BuyDomain extends Component<Props, State> {
+class BuyDomain extends React.Component<Props, State> {
   state = {
     domain: "",
     tld: "",
@@ -72,8 +84,6 @@ class BuyDomain extends Component<Props, State> {
   };
 
   render() {
-    console.log("buyDomain", this.props);
-
     let domainPrices: JSX.Element[] = [];
 
     this.props.tlds.forEach((tld, key) => {
@@ -98,7 +108,65 @@ class BuyDomain extends Component<Props, State> {
 
     return (
       <section className="domain-popup">
-        <h2>Please enter a domain to check whether it's available</h2>
+        <h2>Please enter a Domain name to check whether it's available</h2>
+        <Query query={FETCH_DOMAIN_PLANS}>
+          {({ data, loading, error }) => {
+            if (loading || error || !data) {
+              return "Oops, something went wrong";
+            }
+            // `.${tld.name} ${tld.price} ${tld.currency}`
+            const tlds = data.fetchPlans
+              .filter(item => !item.name.startsWith("W"))
+              .map(tld => tld.name);
+
+            const defaultValue = tlds.shift();
+            console.log("Hallo", tlds);
+            return (
+              <form
+                name="domain-form"
+                onSubmit={e => {
+                  e.preventDefault();
+                  console.log(this.tld.state.value);
+                }}>
+                <input
+                  name="domain"
+                  type="text"
+                  placeholder="Find your domain name..."
+                  onChange={e => this.setState({ domain: e.target.value })}
+                  value={this.state.domain}
+                />
+
+                <button
+                  // disabled={submitting ? true : false}
+                  type="submit"
+                  className="naked-button check-button">
+                  <i className="fas fa-check-circle" /> Check Domain
+                </button>
+
+                {/* <div className="generic-button-holder">
+            <button
+            // disabled={submitting ? true : false}
+            type="button"
+            onClick={() => {
+              this.domain.state.value = "";
+              this.tld.state.value = "";
+              this.setState({ domain: "", tld: "" });
+            }}
+            className="generic-cancel-button">
+            <i className="fas fa-long-arrow-alt-left" /> Cancel
+            </button>
+            
+            <button
+            // disabled={submitting ? true : false}
+            type="submit"
+            className="generic-submit-button">
+            <i className="fas fa-check-circle" /> Check Domain
+            </button>
+          </div> */}
+              </form>
+            );
+          }}
+        </Query>
         {/* <div className="domainInputHolder">
           <GenericInputField
             fieldClass="inputBoxField domainInputField"
