@@ -35,7 +35,7 @@ class Popup extends React.Component<Props, State> {
               </div>
             </div>
 
-            <div className="popup-body-wrapper">
+            <div className="popup-body-wrapper" style={bodyProps.style ? bodyProps.style : {}}>
               {info && info !== "" ? <div id="popup-info">{info}</div> : ""}
               <PopupBody {...bodyProps} onClose={onClose} />
             </div>

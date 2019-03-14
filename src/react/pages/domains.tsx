@@ -3,7 +3,7 @@ import { compose, graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
-import { domainValidation, fullDomainNameValidation } from "../common/validation";
+import { fullDomainNameValidation } from "../common/validation";
 import { filterError } from "../common/functions";
 import BuyDomain from "../popups/buyDomain";
 
@@ -16,23 +16,10 @@ interface Props {
   setDomain: Function;
   deleteExternal: Function;
 }
-
 interface State {
   showDomains: boolean;
   showExternal: boolean;
 }
-
-const FETCH_DOMAIN_PLANS = gql`
-  {
-    fetchPlans(appid: 11) {
-      id
-      name
-      price
-      currency
-      features
-    }
-  }
-`;
 
 export const FETCH_DOMAINS = gql`
   {
@@ -402,90 +389,36 @@ class Domains extends React.Component<Props, State> {
                     return filterError(error);
                   }
 
+                  // {
+                  //   name: "agb",
+                  //   type: "agb",
+                  //   appName: "RRP Proxy",
+                  //   lawLink: "https://www.rrpproxy.net/Legal/Terms_and_Conditions",
+                  //   privacyLink: "https://www.rrpproxy.net/Legal/Privacy_Policy",
+                  //   required: true
+                  // }
+
+                  const domainPopup = {
+                    header: "Domain Registration",
+                    body: BuyDomain,
+                    props: { style: { overflowY: "visible" } }
+                  };
+
                   return (
                     <React.Fragment>
                       {this.renderBody(data.fetchDomains)}
-                      <Query query={FETCH_DOMAIN_PLANS}>
-                        {({ data, loading, error }) => {
-                          if (loading || error || !data) {
-                            return "Oops, something went wrong";
-                          }
-
-                          const tlds = data.fetchPlans.filter(item => !item.name.startsWith("W"));
-
-                          const regProps: {
-                            fields: object[];
-                            handleSubmit: Function;
-                            runInBackground: boolean;
-                            buttonName: string;
-                            tlds: object[];
-                          } = {
-                            fields: [
-                              {
-                                name: "domainName",
-                                label: "Domain",
-                                placeholder: "Enter Domain name",
-                                icon: "hdd",
-                                type: "text",
-                                validate: domainValidation,
-                                required: true
-                              },
-                              {
-                                name: "tld",
-                                type: "select",
-                                icon: "globe",
-                                label: "Select TLD",
-                                options: tlds.map(tld => {
-                                  return {
-                                    value: `.${tld.name} ${tld.price} ${tld.currency}`,
-                                    name: `.${tld.name} ${tld.price} ${tld.currency}`
-                                  };
-                                }),
-                                required: true
-                              },
-                              {
-                                name: "whoisprivacy",
-                                type: "checkbox",
-                                label: "Whois Privacy",
-                                icon: "user-secret"
-                              },
-                              {
-                                name: "agb",
-                                type: "agb",
-                                appName: "RRP Proxy",
-                                lawLink: "https://www.rrpproxy.net/Legal/Terms_and_Conditions",
-                                privacyLink: "https://www.rrpproxy.net/Legal/Privacy_Policy",
-                                required: true
-                              }
-                            ],
-                            tlds,
-                            buttonName: "Buy",
-                            handleSubmit: this.handleSubmit,
-                            runInBackground: true
-                          };
-
-                          const domainPopup = {
-                            header: "Domain Registration",
-                            body: BuyDomain,
-                            props: regProps
-                          };
-
-                          return (
-                            <button
-                              className="naked-button genericButton"
-                              disabled={loading || !data}
-                              type="button"
-                              onClick={() => this.props.showPopup(domainPopup)}>
-                              <span className="textButton">
-                                <i className="fas fa-plus" style={{ fontSize: "10px" }} />
-                              </span>
-                              <span className="textButtonBeside" style={{ lineHeight: "16px" }}>
-                                Register new Domain
-                              </span>
-                            </button>
-                          );
-                        }}
-                      </Query>
+                      <button
+                        className="naked-button genericButton"
+                        disabled={loading || !data}
+                        type="button"
+                        onClick={() => this.props.showPopup(domainPopup)}>
+                        <span className="textButton">
+                          <i className="fas fa-plus" style={{ fontSize: "10px" }} />
+                        </span>
+                        <span className="textButtonBeside" style={{ lineHeight: "16px" }}>
+                          Register new Domain
+                        </span>
+                      </button>
                     </React.Fragment>
                   );
                 }}
