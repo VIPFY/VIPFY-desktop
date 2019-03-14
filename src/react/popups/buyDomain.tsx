@@ -1,7 +1,10 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query } from "react-apollo";
-import InputField from "../components/InputField";
+import { Mutation } from "react-apollo";
+import DomainCheck from "../components/DomainCheck";
+import { filterError } from "../common/functions";
+import { domainValidation } from "../common/validation";
+import LoadingDiv from "../components/LoadingDiv";
 
 const FETCH_DOMAIN_PLANS = gql`
   {
@@ -14,6 +17,19 @@ const FETCH_DOMAIN_PLANS = gql`
     }
   }
 `;
+
+const CHECK_DOMAIN = gql`
+  mutation onCheckDomain($domain: String!) {
+    checkDomain(domain: $domain) {
+      domain
+      price
+      currency
+      availability
+      description
+    }
+  }
+`;
+
 interface Props {
   tlds: { name: String; price: number; currency: String; features: { value: String } }[];
   onClose: Function;
@@ -22,94 +38,42 @@ interface Props {
 
 interface State {
   domain: String;
-  tld: String;
   whoisPrivacy: Boolean;
   agreement: Boolean;
+  success: Boolean;
   error: String;
+  syntaxError: String;
 }
 
 class BuyDomain extends React.Component<Props, State> {
   state = {
     domain: "",
-    tld: "",
     whoisPrivacy: false,
+    success: false,
     agreement: false,
-    error: ""
+    error: "",
+    syntaxError: ""
   };
 
-  checkForTld(value) {
-    let domain = value.split(".");
-    console.log("test", value, domain);
-    if (value === null) {
-      console.log("NULL");
-      return;
-    }
+  handleChange = e => {
+    this.setState({ domain: e.target.value });
 
-    if (domain.length > 2) {
-      this.setState({ error: "Invalid Domain", tld: "" });
-      return;
-    }
-    if (
-      domain.length === 1 ||
-      (domain.length > 1 &&
-        ("com".startsWith(domain[1]) || "org".startsWith(domain[1]) || "net".startsWith(domain[1])))
-    ) {
-      if ("com" === domain[1] || "org" === domain[1] || "net" === domain[1]) {
-        this.setState({ tld: domain[1] });
-        return;
-      }
-      if (this.state.tld !== "") {
-        this.setState({ tld: "" });
-      }
-      return;
+    if (domainValidation.check(e.target.value) && e.target.value) {
+      this.setState({ syntaxError: domainValidation.error });
     } else {
-      this.setState({ error: "We only support .com, .org & .net TLDs!", tld: "" });
-      return;
-    }
-  }
-
-  showPrice = () => {
-    if (this.state.tld) {
-      if (this.state.whoisPrivacy) {
-        let sum =
-          this.props.tlds.filter(tld => tld.name === this.state.tld)[0].price +
-          this.props.tlds.filter(tld => tld.name === this.state.tld)[0].features[0].price;
-        return `Buy for $${sum}`;
-      } else {
-        return `Buy for $${this.props.tlds.filter(tld => tld.name === this.state.tld)[0].price}`;
-      }
-    } else {
-      return "Choose Domain first";
+      this.setState({ syntaxError: "" });
     }
   };
 
   render() {
-    let domainPrices: JSX.Element[] = [];
-
-    this.props.tlds.forEach((tld, key) => {
-      if (domainPrices[0]) {
-        domainPrices.push(<span key={`s-${key}`}>|</span>);
-      }
-      domainPrices.push(
-        <span key={key} className="tldItem">
-          <span
-            className={this.state.tld === tld.name ? "tldItemSmall selectedTld" : "tldItemSmall"}
-            onClick={() => {
-              if (this.state.domain !== "") {
-                this.setState({ tld: tld.name });
-              }
-            }}>
-            <span className="tld">.{tld.name}</span>
-            <span>{`$${tld.price.toFixed(2)}/yr`}</span>
-          </span>
-        </span>
-      );
-    });
+    const { domain, syntaxError } = this.state;
 
     return (
-      <section className="domain-popup">
-        <h2>Please enter a Domain name to check whether it's available</h2>
-        <Query query={FETCH_DOMAIN_PLANS}>
+      <Mutation mutation={CHECK_DOMAIN}>
+        {(checkDomain, { error, loading, data }) => (
+          <section className="domain-popup">
+            <h2>Please enter a Domain name to check whether it's available</h2>
+            {/* <Query query={FETCH_DOMAIN_PLANS}>
           {({ data, loading, error }) => {
             if (loading || error || !data) {
               return "Oops, something went wrong";
@@ -120,30 +84,41 @@ class BuyDomain extends React.Component<Props, State> {
               .map(tld => tld.name);
 
             const defaultValue = tlds.shift();
-            console.log("Hallo", tlds);
-            return (
-              <form
-                name="domain-form"
-                onSubmit={e => {
-                  e.preventDefault();
-                  console.log(this.tld.state.value);
-                }}>
+            return ( */}
+            <form
+              className="domain-form"
+              onSubmit={async e => {
+                e.preventDefault();
+
+                await this.setState({ success: false });
+                await checkDomain({ variables: { domain } });
+                await this.setState({ success: true });
+              }}>
+              <div className="domain-search">
                 <input
                   name="domain"
+                  id="domain-search-input"
                   type="text"
-                  placeholder="Find your domain name..."
-                  onChange={e => this.setState({ domain: e.target.value })}
+                  autoFocus
+                  disabled={loading}
+                  required
+                  onChange={this.handleChange}
                   value={this.state.domain}
                 />
 
+                <label htmlFor="domain-search-input">Find your domain name...</label>
+                <span>{error ? filterError(error) : ""}</span>
+                <span className="info">{loading && !error ? "Checking availability..." : ""} </span>
+                <span>{!error && !loading && syntaxError}</span>
                 <button
-                  // disabled={submitting ? true : false}
+                  disabled={loading || syntaxError ? true : false}
                   type="submit"
                   className="naked-button check-button">
-                  <i className="fas fa-check-circle" /> Check Domain
+                  <i className={`fas fa-search fa-lg ${domain ? "filled" : ""} `} />
                 </button>
+              </div>
 
-                {/* <div className="generic-button-holder">
+              {/* <div className="generic-button-holder">
             <button
             // disabled={submitting ? true : false}
             type="button"
@@ -163,76 +138,15 @@ class BuyDomain extends React.Component<Props, State> {
             <i className="fas fa-check-circle" /> Check Domain
             </button>
           </div> */}
-              </form>
-            );
+            </form>
+            {/* );
           }}
-        </Query>
-        {/* <div className="domainInputHolder">
-          <GenericInputField
-            fieldClass="inputBoxField domainInputField"
-            divClass="domainInput"
-            placeholder="Type in your favourite domain"
-            default=""
-            inputType="domain"
-            onBlur={value => this.setState({ domain: value })}
-            onChange={value => this.checkForTld(value)}
-            forcedTld={this.state.tld}
-            error={this.state.error}
-          />
-        </div> */}
-        {/* <div className="tldHolder">{domainPrices}</div> */}
-
-        {/*{this.state.tld === "" ? (
-          <div className="agreementBox whoisPrivacyBox">Please choose a Domain</div>
-        ) : (
-          <div className="agreementBox whoisPrivacyBox">
-            <input
-              type="checkbox"
-              className="cbx"
-              id="Whois"
-              style={{ display: "none" }}
-              onChange={e => this.setState({ whoisPrivacy: e.target.checked })}
-            />
-            <label htmlFor="Whois" className="check">
-              <svg width="18px" height="18px" viewBox="0 0 18 18">
-                <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
-                <polyline points="1 9 7 14 15 4" />
-              </svg>
-              <span className="whoisPrivacy">
-                Add Whois-Privacy for{" "}
-                {this.props.tlds.filter(tld => tld.name === this.state.tld)[0].features[0].value}
-              </span>
-            </label>
-          </div>
-        )}*/}
-
-        {/* <div className="buyDomainButtonHolder">
-          <button className="__cancel" onClick={() => this.props.onClose()}>
-            Cancel
-          </button>
-          <button
-            className={this.state.agreement && this.state.tld !== "" ? "" : "__greyed"}
-            onClick={() => {
-              if (this.state.agreement && this.state.tld !== "") {
-                console.log("Submit", {
-                  domainName: this.state.domain.split(".")[0],
-                  tld: this.state.tld,
-                  whoisprivacy: this.state.whoisPrivacy,
-                  agb: this.state.agreement
-                });
-                this.props.handleSubmit({
-                  domainName: this.state.domain.split(".")[0],
-                  tld: this.state.tld,
-                  whoisprivacy: this.state.whoisPrivacy,
-                  agb: this.state.agreement
-                });
-                this.props.onClose();
-              }
-            }}>
-            {this.showPrice()}
-          </button>
-        </div> */}
-      </section>
+        </Query> */}
+            {loading && <LoadingDiv style={{ maxHeight: "300px" }} />}
+            {this.state.success && data && !error && <DomainCheck domains={data.checkDomain} />}
+          </section>
+        )}
+      </Mutation>
     );
   }
 }

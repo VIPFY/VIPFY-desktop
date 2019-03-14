@@ -2,7 +2,6 @@ import * as React from "react";
 import AppList from "../components/profile/AppList";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError } from "../common/functions";
-import Form from "../components/Form";
 
 interface Props {
   firstname: string;
