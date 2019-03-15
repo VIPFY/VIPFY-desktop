@@ -8,7 +8,6 @@ import { filterError } from "../common/functions";
 import BuyDomain from "../popups/buyDomain";
 
 interface Props {
-  registerDomain: Function;
   updateDomain: Function;
   handleSubmit: Function;
   registerExternal: Function;
@@ -37,20 +36,6 @@ export const FETCH_DOMAINS = gql`
       name
       price
       currency
-    }
-  }
-`;
-
-const REGISTER_DOMAIN = gql`
-  mutation onRegisterDomain($domain: DomainInput!) {
-    registerDomain(domainData: $domain) {
-      id
-      domainname
-      createdate
-      renewaldate
-      renewalmode
-      whoisprivacy
-      external
     }
   }
 `;
@@ -536,7 +521,6 @@ class Domains extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(REGISTER_DOMAIN, { name: "registerDomain" }),
   graphql(UPDATE_DOMAIN, { name: "updateDomain" }),
   graphql(REGISTER_EXTERNAL, { name: "registerExternalDomain" }),
   graphql(DELETE_EXTERNAL, { name: "deleteExternal" })
