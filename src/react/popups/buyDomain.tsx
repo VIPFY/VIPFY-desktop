@@ -5,15 +5,19 @@ import DomainCheck from "../components/DomainCheck";
 import { filterError } from "../common/functions";
 import { domainValidation } from "../common/validation";
 import LoadingDiv from "../components/LoadingDiv";
+import { Domain } from "../interfaces";
+import DomainShoppingCart from "../components/DomainShoppingCart";
 
-const FETCH_DOMAIN_PLANS = gql`
-  {
-    fetchPlans(appid: 11) {
+const REGISTER_DOMAIN = gql`
+  mutation onRegisterDomain($domain: DomainInput!) {
+    registerDomain(domainData: $domain) {
       id
-      name
-      price
-      currency
-      features
+      domainname
+      createdate
+      renewaldate
+      renewalmode
+      whoisprivacy
+      external
     }
   }
 `;
@@ -21,36 +25,45 @@ const FETCH_DOMAIN_PLANS = gql`
 const CHECK_DOMAIN = gql`
   mutation onCheckDomain($domain: String!) {
     checkDomain(domain: $domain) {
-      domain
-      price
-      currency
-      availability
-      description
+      domains {
+        domain
+        price
+        currency
+        availability
+        description
+      }
+      suggestions {
+        domain
+        price
+        currency
+        availability
+        description
+      }
     }
   }
 `;
 
 interface Props {
-  tlds: { name: String; price: number; currency: String; features: { value: String } }[];
   onClose: Function;
-  handleSubmit: Function;
 }
 
 interface State {
-  domain: String;
-  whoisPrivacy: Boolean;
-  agreement: Boolean;
-  success: Boolean;
-  error: String;
-  syntaxError: String;
+  domain: string;
+  success: boolean;
+  showCart: boolean;
+  domains: Domain[];
+  error: string;
+  syntaxError: string;
 }
 
 class BuyDomain extends React.Component<Props, State> {
   state = {
     domain: "",
-    whoisPrivacy: false,
     success: false,
-    agreement: false,
+    showCart: false,
+    domains: [],
+    // whoisPrivacy: false,
+    // agreement: false,
     error: "",
     syntaxError: ""
   };
@@ -65,26 +78,34 @@ class BuyDomain extends React.Component<Props, State> {
     }
   };
 
+  handleDomainClick = (domain: Domain) => {
+    this.setState(prevState => {
+      const selected = prevState.domains.find(el => el.domain == domain.domain);
+
+      if (selected) {
+        return { domains: prevState.domains.filter(el => el.domain != domain.domain) };
+      } else {
+        const { domains } = prevState;
+        domains.push(domain);
+
+        return { domains };
+      }
+    });
+  };
+
   render() {
     const { domain, syntaxError } = this.state;
+
+    if (this.state.success && this.state.showCart && this.state.domains.length > 0) {
+      return <DomainShoppingCart domains={this.state.domains} />;
+    }
 
     return (
       <Mutation mutation={CHECK_DOMAIN}>
         {(checkDomain, { error, loading, data }) => (
           <section className="domain-popup">
             <h2>Please enter a Domain name to check whether it's available</h2>
-            {/* <Query query={FETCH_DOMAIN_PLANS}>
-          {({ data, loading, error }) => {
-            if (loading || error || !data) {
-              return "Oops, something went wrong";
-            }
-            // `.${tld.name} ${tld.price} ${tld.currency}`
-            const tlds = data.fetchPlans
-              .filter(item => !item.name.startsWith("W"))
-              .map(tld => tld.name);
 
-            const defaultValue = tlds.shift();
-            return ( */}
             <form
               className="domain-form"
               onSubmit={async e => {
@@ -117,33 +138,58 @@ class BuyDomain extends React.Component<Props, State> {
                   <i className={`fas fa-search fa-lg ${domain ? "filled" : ""} `} />
                 </button>
               </div>
-
-              {/* <div className="generic-button-holder">
-            <button
-            // disabled={submitting ? true : false}
-            type="button"
-            onClick={() => {
-              this.domain.state.value = "";
-              this.tld.state.value = "";
-              this.setState({ domain: "", tld: "" });
-            }}
-            className="generic-cancel-button">
-            <i className="fas fa-long-arrow-alt-left" /> Cancel
-            </button>
-            
-            <button
-            // disabled={submitting ? true : false}
-            type="submit"
-            className="generic-submit-button">
-            <i className="fas fa-check-circle" /> Check Domain
-            </button>
-          </div> */}
             </form>
-            {/* );
-          }}
-        </Query> */}
+
             {loading && <LoadingDiv style={{ maxHeight: "300px" }} />}
-            {this.state.success && data && !error && <DomainCheck domains={data.checkDomain} />}
+            {this.state.success && data && !error && (
+              <div id="domain-shit">
+                <div className="domain-check">
+                  {data.checkDomain.domains.map(domain => (
+                    <DomainCheck
+                      select={this.handleDomainClick}
+                      key={domain.domain}
+                      domain={domain}
+                    />
+                  ))}
+                </div>
+
+                <h3>These domains could also be interesting for you</h3>
+                <div
+                  className="domain-check"
+                  style={{
+                    maxHeight: "301px",
+                    overflowY: "scroll",
+                    marginTop: "5px",
+                    marginBottom: "1rem"
+                  }}>
+                  {data.checkDomain.suggestions.map(domain => (
+                    <DomainCheck
+                      select={this.handleDomainClick}
+                      key={domain.domain}
+                      domain={domain}
+                    />
+                  ))}
+                </div>
+
+                <div className="generic-button-holder">
+                  <button
+                    type="button"
+                    className="generic-cancel-button"
+                    onClick={this.props.onClose}>
+                    <i className="fas fa-long-arrow-alt-left" /> Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={this.state.domains.length === 0}
+                    onClick={() => this.setState({ showCart: true })}
+                    className="generic-submit-button">
+                    <i className="fas fa-check-circle" />
+                    Register
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         )}
       </Mutation>

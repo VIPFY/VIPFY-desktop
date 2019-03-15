@@ -191,3 +191,11 @@ export interface InputProps {
   setValid?: Function;
   defaultValue?: any;
 }
+
+export interface Domain {
+  domain: string;
+  price: string;
+  currency: string;
+  availability: string;
+  description: string;
+}

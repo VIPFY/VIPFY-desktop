@@ -1,21 +1,19 @@
 import * as React from "react";
-
-interface Domain {
-  domain: String;
-  price: String;
-  currency: String;
-  availability: String;
-  description: String;
-}
+import { Domain } from "../interfaces";
 
 interface Props {
-  domains: Domain[];
+  domain: Domain;
+  select: Function;
 }
 
-interface State {}
+interface State {
+  selected: boolean;
+}
 
 class DomainCheck extends React.Component<Props, State> {
-  state = {};
+  state = {
+    selected: false
+  };
 
   renderAvailability = status => {
     if (status == "210") {
@@ -37,27 +35,29 @@ class DomainCheck extends React.Component<Props, State> {
     }
   };
 
+  toggleDomain = domain => {
+    if (domain.availability == "210") {
+      this.setState(prevState => ({ selected: !prevState.selected }));
+      this.props.select(domain);
+    }
+  };
+
   render() {
+    const { availability, domain: domainName } = this.props.domain;
+
     return (
-      <div className="domain-check">
-        {this.props.domains.map(domain => (
-          <div
-            onClick={() => console.log(domain)}
-            key={domain.domain}
-            className={`domain-check-item ${
-              domain.availability == "210" ? "available" : "unavailable"
-            }`}>
-            <span title={domain.availability == "210" ? "Available" : "Unavailable"}>
-              {this.renderAvailability(domain.availability)}
-            </span>
-            <span>{domain.domain}</span>
-            <span>{this.showPrice(domain)}</span>
-            <i
-              title={domain.availability == "210" ? `Register ${domain.domain}` : "Check WHOIS"}
-              className={`fal fa-${domain.availability == "210" ? "shopping-cart" : "user-tag"}`}
-            />
-          </div>
-        ))}
+      <div
+        title={availability == "210" ? `Click to register ${domainName}` : "Check WHOIS"}
+        onClick={() => this.toggleDomain(this.props.domain)}
+        className={`domain-check-item ${availability == "210" ? "" : "unavailable"} ${
+          this.state.selected ? "selected" : ""
+        }`}>
+        <span title={availability == "210" ? "Available" : "Unavailable"}>
+          {this.renderAvailability(availability)}
+        </span>
+        <span>{domainName}</span>
+        <span className="description">{this.showPrice(this.props.domain)}</span>
+        <i className={`fal fa-${availability == "210" ? "shopping-cart" : "user-tag"}`} />
       </div>
     );
   }
