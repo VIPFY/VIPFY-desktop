@@ -190,6 +190,7 @@ export interface InputProps {
   setError?: Function;
   setValid?: Function;
   defaultValue?: any;
+  handleChange?: Function;
 }
 
 export interface Domain {

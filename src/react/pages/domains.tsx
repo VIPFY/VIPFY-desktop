@@ -374,19 +374,12 @@ class Domains extends React.Component<Props, State> {
                     return filterError(error);
                   }
 
-                  // {
-                  //   name: "agb",
-                  //   type: "agb",
-                  //   appName: "RRP Proxy",
-                  //   lawLink: "https://www.rrpproxy.net/Legal/Terms_and_Conditions",
-                  //   privacyLink: "https://www.rrpproxy.net/Legal/Privacy_Policy",
-                  //   required: true
-                  // }
-
                   const domainPopup = {
                     header: "Domain Registration",
                     body: BuyDomain,
-                    props: { style: { overflowY: "visible" } }
+                    props: {
+                      whoisPrivacy: data.fetchPlans.find(plan => plan.name == "WHOIS privacy").price
+                    }
                   };
 
                   return (

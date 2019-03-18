@@ -22,7 +22,7 @@ class InputField extends React.Component<InputProps, State> {
     if (this.props.defaultValue) {
       this.setState({ value: this.props.defaultValue });
     } else if (this.props.type == "checkbox") {
-      this.setState({ value: false });
+      this.setState({ value: this.props.defaultValue ? true : false });
     } else if (this.props.type == "picture") {
       this.setState({ value: null });
     }
@@ -31,8 +31,8 @@ class InputField extends React.Component<InputProps, State> {
   handleChange = async e => {
     const { value } = e.target;
 
-    if (this.props.type == "checkbox") {
-      this.setState(prevState => ({ value: !prevState.value }));
+    if (this.props.type == "checkbox" || this.props.type == "agb") {
+      await this.setState(prevState => ({ value: !prevState.value }));
     } else {
       e.preventDefault();
       let error = "";
@@ -47,6 +47,10 @@ class InputField extends React.Component<InputProps, State> {
         }
       }
       await this.setState({ value, error });
+    }
+
+    if (this.props.handleChange) {
+      this.props.handleChange(this.state.value, this.state.error ? true : false);
     }
   };
 
@@ -204,7 +208,7 @@ class InputField extends React.Component<InputProps, State> {
                 <span
                   className="lawlink"
                   onClick={() => {
-                    require("electron").shell.openExternal(this.props.privacyLink);
+                    require("electron").shell.openExternal(this.props.placeholderprivacyLink);
                   }}>
                   Privacy
                 </span>
