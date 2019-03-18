@@ -45,6 +45,7 @@ const CHECK_DOMAIN = gql`
 
 interface Props {
   onClose: Function;
+  whoisPrivacy: number;
 }
 
 interface State {
@@ -52,6 +53,7 @@ interface State {
   success: boolean;
   showCart: boolean;
   domains: Domain[];
+  total: number;
   error: string;
   syntaxError: string;
 }
@@ -62,8 +64,8 @@ class BuyDomain extends React.Component<Props, State> {
     success: false,
     showCart: false,
     domains: [],
-    // whoisPrivacy: false,
     // agreement: false,
+    total: 0,
     error: "",
     syntaxError: ""
   };
@@ -93,11 +95,47 @@ class BuyDomain extends React.Component<Props, State> {
     });
   };
 
+  goBack = () => this.setState({ showCart: false, domains: [] });
+
+  handleRegister = e => {
+    e.preventDefault();
+    const total = this.state.domains.reduce((acc, cV) => acc + parseFloat(cV.price), 0);
+
+    this.setState({ showCart: true, total });
+  };
+
+  removeDomain = domain => {
+    this.setState(prevState => {
+      const domains = prevState.domains.filter(el => el.domain != domain);
+      const total = domains.reduce((acc, cV) => acc + parseFloat(cV.price), 0);
+
+      return { ...prevState, domains, total };
+    });
+  };
+
+  updatePrice = price => {
+    this.setState(prevState => {
+      const total = prevState.total + price;
+      total.toFixed(2);
+
+      return { ...prevState, total };
+    });
+  };
+
   render() {
     const { domain, syntaxError } = this.state;
 
     if (this.state.success && this.state.showCart && this.state.domains.length > 0) {
-      return <DomainShoppingCart domains={this.state.domains} />;
+      return (
+        <DomainShoppingCart
+          whoisPrivacyPrice={this.props.whoisPrivacy}
+          removeDomain={this.removeDomain}
+          total={this.state.total}
+          domains={this.state.domains}
+          goBack={this.goBack}
+          updatePrice={this.updatePrice}
+        />
+      );
     }
 
     return (
@@ -182,7 +220,7 @@ class BuyDomain extends React.Component<Props, State> {
                   <button
                     type="submit"
                     disabled={this.state.domains.length === 0}
-                    onClick={() => this.setState({ showCart: true })}
+                    onClick={this.handleRegister}
                     className="generic-submit-button">
                     <i className="fas fa-check-circle" />
                     Register
