@@ -11,6 +11,7 @@ interface Props {
   updateDomain: Function;
   handleSubmit: Function;
   registerExternal: Function;
+  registerDomains: Function;
   showPopup: Function;
   setDomain: Function;
   deleteExternal: Function;
@@ -41,7 +42,7 @@ export const FETCH_DOMAINS = gql`
 `;
 
 const REGISTER_EXTERNAL = gql`
-  mutation onRegisterExternal($domain: DD24!) {
+  mutation onRegisterExternal($domain: DomainInput!) {
     registerExternalDomain(domainData: $domain) {
       id
       domainname
@@ -54,8 +55,22 @@ const REGISTER_EXTERNAL = gql`
   }
 `;
 
+const REGISTER_DOMAINS = gql`
+  mutation onRegisterDomains($domains: [DomainInput!]!, $totalPrice: Float!, $agb: Boolean!) {
+    registerDomains(domainData: $domains, totalPrice: $totalPrice, agb: $agb) {
+      id
+      domainname
+      createdate
+      renewaldate
+      renewalmode
+      whoisprivacy
+      external
+    }
+  }
+`;
+
 const UPDATE_DOMAIN = gql`
-  mutation UpdateDomain($data: DD24!, $id: ID!) {
+  mutation UpdateDomain($data: DomainInput!, $id: ID!) {
     updateDomain(domainData: $data, id: $id) {
       ok
     }
@@ -118,9 +133,42 @@ class Domains extends React.Component<Props, State> {
     }
   };
 
+  registerDomains = async (domains, totalPrice, agb, fetchedDomains) => {
+    try {
+      const newDomains = domains.map(domain => ({
+        id: `-${(Math.random() + 1) * (Math.random() + 3)}`,
+        domainname: domain.domain,
+        createdate: null,
+        renewaldate: null,
+        renewalmode: domain.renewalmode,
+        whoisprivacy: domain.whoisprivacy ? true : false,
+        external: false,
+        __typename: "Domain"
+      }));
+
+      await this.props.registerDomains({
+        variables: { domains, totalPrice, agb },
+        optimisticResponse: {
+          __typename: "Mutation",
+          registerDomains: [...fetchedDomains, ...newDomains]
+        },
+        update: proxy => {
+          // Read the data from our cache for this query.
+          const cachedData = proxy.readQuery({ query: FETCH_DOMAINS });
+          cachedData.fetchDomains = [...fetchedDomains, ...newDomains];
+          // Write our data back to the cache.
+          proxy.writeQuery({ query: FETCH_DOMAINS, data: cachedData });
+        }
+      });
+    } catch (err) {
+      return err;
+    }
+  };
+
   updateDomain = async (domainData, updateField) => {
     try {
       const { id } = domainData;
+      console.log(updateField);
       await this.props.updateDomain({
         variables: {
           data: {
@@ -168,18 +216,16 @@ class Domains extends React.Component<Props, State> {
         {
           name: "whoisprivacy",
           type: "checkbox",
-          label: `Do you want to ${
-            !domain.whoisprivacy || domain.whoisprivacy == 0 ? "buy" : "cancel the"
-          } Whois Privacy for ${domain.domainname}${
-            domain.whoisprivacy == 0 ? " for 5.99 $" : ""
-          }?`,
+          label: `Do you want to ${!domain.whoisprivacy ? "buy" : "cancel the"} Whois Privacy for ${
+            domain.domainname
+          }${!domain.whoisprivacy ? " for 5.99 $" : ""}?`,
           icon: "user-secret"
         }
       ];
       handleSubmit = values => {
         if (values.whoisprivacy) {
           this.updateDomain(domain, {
-            whoisprivacy: domain.whoisprivacy == 1 ? 0 : 1
+            whoisprivacy: domain.whoisprivacy ? false : true
           });
         }
       };
@@ -251,7 +297,7 @@ class Domains extends React.Component<Props, State> {
         <div key={domain.id} className={`domain-row ${domain.createdate == null ? "pending" : ""}`}>
           <span className="domain-item domain-name">{domain.domainname}</span>
           <span className="domain-item-icon" onClick={() => this.toggleOption(domain, "whois")}>
-            <i className={`fas fa-${domain.whoisprivacy == 1 ? "check-circle" : "times-circle"}`} />
+            <i className={`fas fa-${domain.whoisprivacy ? "check-circle" : "times-circle"}`} />
           </span>
 
           <span className="domain-item">
@@ -373,12 +419,16 @@ class Domains extends React.Component<Props, State> {
                   if (error) {
                     return filterError(error);
                   }
-
+                  console.log(data);
                   const domainPopup = {
                     header: "Domain Registration",
                     body: BuyDomain,
                     props: {
-                      whoisPrivacy: data.fetchPlans.find(plan => plan.name == "WHOIS privacy").price
+                      whoisPrivacy: data.fetchPlans.find(plan => plan.name == "WHOIS privacy")
+                        .price,
+                      registerDomains: (domains, totalPrice, agb) =>
+                        this.registerDomains(domains, totalPrice, agb, data.fetchDomains),
+                      style: { overflowY: "visible" }
                     }
                   };
 
@@ -516,5 +566,6 @@ class Domains extends React.Component<Props, State> {
 export default compose(
   graphql(UPDATE_DOMAIN, { name: "updateDomain" }),
   graphql(REGISTER_EXTERNAL, { name: "registerExternalDomain" }),
+  graphql(REGISTER_DOMAINS, { name: "registerDomains" }),
   graphql(DELETE_EXTERNAL, { name: "deleteExternal" })
 )(Domains);
