@@ -8,20 +8,6 @@ import LoadingDiv from "../components/LoadingDiv";
 import { Domain } from "../interfaces";
 import DomainShoppingCart from "../components/DomainShoppingCart";
 
-const REGISTER_DOMAIN = gql`
-  mutation onRegisterDomain($domain: DomainInput!) {
-    registerDomain(domainData: $domain) {
-      id
-      domainname
-      createdate
-      renewaldate
-      renewalmode
-      whoisprivacy
-      external
-    }
-  }
-`;
-
 const CHECK_DOMAIN = gql`
   mutation onCheckDomain($domain: String!) {
     checkDomain(domain: $domain) {
@@ -46,6 +32,7 @@ const CHECK_DOMAIN = gql`
 interface Props {
   onClose: Function;
   whoisPrivacy: number;
+  registerDomains: Function;
 }
 
 interface State {
@@ -64,7 +51,6 @@ class BuyDomain extends React.Component<Props, State> {
     success: false,
     showCart: false,
     domains: [],
-    // agreement: false,
     total: 0,
     error: "",
     syntaxError: ""
@@ -97,7 +83,7 @@ class BuyDomain extends React.Component<Props, State> {
 
   goBack = () => this.setState({ showCart: false, domains: [] });
 
-  handleRegister = e => {
+  handleSubmit = e => {
     e.preventDefault();
     const total = this.state.domains.reduce((acc, cV) => acc + parseFloat(cV.price), 0);
 
@@ -122,6 +108,29 @@ class BuyDomain extends React.Component<Props, State> {
     });
   };
 
+  handleRegister = async ({ whoisPrivacy, autoRenewal, agb }) => {
+    if (agb) {
+      const domains = this.state.domains.map(({ domain, price, currency }) => {
+        const req = { domain, price, currency, renewalmode: "AUTODELETE", whoisprivacy: false };
+
+        if (whoisPrivacy.find(el => el == domain)) {
+          req.whoisprivacy = true;
+        }
+
+        if (autoRenewal.find(el => el == domain)) {
+          req.renewalmode = "AUTORENEW";
+        }
+
+        return req;
+      });
+
+      this.props.registerDomains(domains, this.state.total, agb);
+      this.props.onClose();
+    } else {
+      this.setState({ error: "Terms of Service and Privacy Notice were not confirmed!" });
+    }
+  };
+
   render() {
     const { domain, syntaxError } = this.state;
 
@@ -129,11 +138,12 @@ class BuyDomain extends React.Component<Props, State> {
       return (
         <DomainShoppingCart
           whoisPrivacyPrice={this.props.whoisPrivacy}
-          removeDomain={this.removeDomain}
           total={this.state.total}
           domains={this.state.domains}
+          removeDomain={this.removeDomain}
           goBack={this.goBack}
           updatePrice={this.updatePrice}
+          handleRegister={this.handleRegister}
         />
       );
     }
@@ -220,7 +230,7 @@ class BuyDomain extends React.Component<Props, State> {
                   <button
                     type="submit"
                     disabled={this.state.domains.length === 0}
-                    onClick={this.handleRegister}
+                    onClick={this.handleSubmit}
                     className="generic-submit-button">
                     <i className="fas fa-check-circle" />
                     Register

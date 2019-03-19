@@ -9,6 +9,7 @@ interface Props {
   goBack: Function;
   whoisPrivacyPrice: number;
   updatePrice: Function;
+  handleRegister: Function;
 }
 
 interface State {
@@ -182,7 +183,7 @@ class DomainShoppingCart extends React.Component<Props, State> {
             }
             type="submit"
             disabled={!this.state.agb}
-            onClick={() => console.log(this.state)}
+            onClick={() => this.props.handleRegister(this.state)}
             className="generic-submit-button">
             <i className="fas fa-check-circle" />
             Register Domains
