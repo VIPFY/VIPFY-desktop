@@ -7,6 +7,7 @@ import { domainValidation } from "../common/validation";
 import LoadingDiv from "../components/LoadingDiv";
 import { Domain } from "../interfaces";
 import DomainShoppingCart from "../components/DomainShoppingCart";
+import DomainTransfer from "../components/DomainTransfer";
 
 const CHECK_DOMAIN = gql`
   mutation onCheckDomain($domain: String!) {
@@ -39,8 +40,8 @@ interface State {
   domain: string;
   success: boolean;
   showCart: boolean;
+  transfer: boolean;
   domains: Domain[];
-  total: number;
   error: string;
   syntaxError: string;
 }
@@ -50,8 +51,8 @@ class BuyDomain extends React.Component<Props, State> {
     domain: "",
     success: false,
     showCart: false,
+    transfer: false,
     domains: [],
-    total: 0,
     error: "",
     syntaxError: ""
   };
@@ -85,30 +86,19 @@ class BuyDomain extends React.Component<Props, State> {
 
   handleSubmit = e => {
     e.preventDefault();
-    const total = this.state.domains.reduce((acc, cV) => acc + parseFloat(cV.price), 0);
 
-    this.setState({ showCart: true, total });
+    this.setState({ showCart: true });
   };
 
   removeDomain = domain => {
     this.setState(prevState => {
       const domains = prevState.domains.filter(el => el.domain != domain);
-      const total = domains.reduce((acc, cV) => acc + parseFloat(cV.price), 0);
 
-      return { ...prevState, domains, total };
+      return { ...prevState, domains };
     });
   };
 
-  updatePrice = price => {
-    this.setState(prevState => {
-      const total = prevState.total + price;
-      total.toFixed(2);
-
-      return { ...prevState, total };
-    });
-  };
-
-  handleRegister = async ({ whoisPrivacy, autoRenewal, agb }) => {
+  handleRegister = async ({ whoisPrivacy, autoRenewal, agb }, total) => {
     if (agb) {
       const domains = this.state.domains.map(({ domain, price, currency }) => {
         const req = { domain, price, currency, renewalmode: "AUTODELETE", whoisprivacy: false };
@@ -124,7 +114,7 @@ class BuyDomain extends React.Component<Props, State> {
         return req;
       });
 
-      this.props.registerDomains(domains, this.state.total, agb);
+      this.props.registerDomains(domains, total, agb);
       this.props.onClose();
     } else {
       this.setState({ error: "Terms of Service and Privacy Notice were not confirmed!" });
@@ -134,15 +124,25 @@ class BuyDomain extends React.Component<Props, State> {
   render() {
     const { domain, syntaxError } = this.state;
 
+    if (this.state.transfer) {
+      return (
+        <div className="domain-popup float-in-left">
+          <h2>Transfer a domain to us</h2>
+          <DomainTransfer onClose={this.props.onClose} />
+          <div onClick={() => this.setState({ transfer: false })} className="transfer-check">
+            Or register a domain instead
+          </div>
+        </div>
+      );
+    }
+
     if (this.state.success && this.state.showCart && this.state.domains.length > 0) {
       return (
         <DomainShoppingCart
           whoisPrivacyPrice={this.props.whoisPrivacy}
-          total={this.state.total}
           domains={this.state.domains}
           removeDomain={this.removeDomain}
           goBack={this.goBack}
-          updatePrice={this.updatePrice}
           handleRegister={this.handleRegister}
         />
       );
@@ -151,7 +151,7 @@ class BuyDomain extends React.Component<Props, State> {
     return (
       <Mutation mutation={CHECK_DOMAIN}>
         {(checkDomain, { error, loading, data }) => (
-          <section className="domain-popup">
+          <section className="domain-popup float-in-left">
             <h2>Please enter a Domain name to check whether it's available</h2>
 
             <form
@@ -188,10 +188,15 @@ class BuyDomain extends React.Component<Props, State> {
               </div>
             </form>
 
+            {!loading && !data && !this.state.success && (
+              <div onClick={() => this.setState({ transfer: true })} className="transfer-check">
+                Or transfer a domain to us instead
+              </div>
+            )}
             {loading && <LoadingDiv style={{ maxHeight: "300px" }} />}
             {this.state.success && data && !error && (
-              <div id="domain-shit">
-                <div className="domain-check">
+              <div>
+                <div className="domain-check" style={{ marginTop: "5px" }}>
                   {data.checkDomain.domains.map(domain => (
                     <DomainCheck
                       select={this.handleDomainClick}

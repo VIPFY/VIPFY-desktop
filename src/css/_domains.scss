@@ -19,7 +19,8 @@ $domain-check-margin: 15px;
   }
 }
 
-.domain-table {
+.domain-table,
+.domain-suggestions {
   margin: 20px;
 }
 
@@ -38,11 +39,23 @@ $domain-check-margin: 15px;
 
   .generic-button-holder {
     animation: fadeIn 1s ease-in-out forwards;
-    right: 417px;
+  }
+
+  .transfer-check {
+    margin-top: 20px;
+    color: #bbb;
+    font-size: 80%;
+    cursor: pointer;
+    transition: all 300ms ease-in-out;
+
+    &:hover {
+      color: #000;
+    }
   }
 
   .domain-form {
     display: flex;
+    flex-flow: column;
     justify-content: center;
 
     .domain-search {
@@ -83,6 +96,8 @@ $domain-check-margin: 15px;
         color: #bbb;
       }
       
+      #domain-search-auth:focus + label,
+      #domain-search-auth[value]:not([value=""]) + label,
       #domain-search-input:focus + label,
       #domain-search-input[value]:not([value=""]) + label {
         top: -7px;
@@ -113,69 +128,83 @@ $domain-check-margin: 15px;
         color: $vipfy-primary-color !important;
         font-size: 25px !important;
       }
+   
+      &:not(:first-child) {
+        margin-top: 25px;
+      }
     }
   }
+}
 
-  .domain-check {
-    margin-top: 25px;
+.domain-check {
+  margin-top: 25px;
 
-    .unavailable {
-      color: #ccc;
+  .unavailable {
+    color: #ccc;
+  }
+
+  .selected {
+    transition: all 300ms ease-in-out;
+    background-color: $vipfy-primary-color;
+  }
+
+  &-item {
+    cursor: pointer;
+    display: flex;
+    flex-flow: row;
+    background: #f5f5f5;
+    opacity: 0;
+    justify-content: space-between;
+    width: 484px;
+    padding: 5px;
+    border-bottom: 1px solid #fff;
+    transform: translateY(-27px);
+    transition: all 300ms ease-in-out;
+    animation: dropIn 300ms ease-in-out forwards;
+
+    @for $domain from 1 through 14 {
+      &:nth-child(#{$domain}) {
+        animation-delay: $domain * 50ms;
+      }
     }
 
-    .selected {
-      transition: all 300ms ease-in-out;
-      background-color: $vipfy-primary-color;
+    .description {
+      @include hide-overflowing-text;
+      margin-left: 5px;
+    }
+    
+    span {
+      &:first-child {
+        margin-right: $domain-check-margin;
+      }
+
+      &:nth-child(2) {
+        flex-grow: 1;
+      }
     }
 
-    &-item {
-      cursor: pointer;
-      display: flex;
-      flex-flow: row;
-      background: #f5f5f5;
-      opacity: 0;
-      justify-content: space-between;
-      width: 484px;
-      padding: 5px;
-      border-bottom: 1px solid #fff;
-      transform: translateY(-27px);
-      transition: all 300ms ease-in-out;
-      animation: dropIn 300ms ease-in-out forwards;
+    i {
+      margin-left: $domain-check-margin;
+    }
 
-      @for $domain from 1 through 14 {
-        &:nth-child(#{$domain}) {
-          animation-delay: $domain * 50ms;
-        }
-      }
-
-      .description {
-        @include hide-overflowing-text;
-        margin-left: 5px;
-      }
-      
-      span {
-        &:first-child {
-          margin-right: $domain-check-margin;
-        }
-
-        &:nth-child(2) {
-          flex-grow: 1;
-        }
-      }
-
-      i {
-        margin-left: $domain-check-margin;
-      }
-
-      &:hover {
-        transform: translate(5px, 3px);
-      }
+    &:hover {
+      transform: translate(5px, 3px);
     }
   }
 }
 
 .domain-shopping-cart {
   width: 400px;
+
+  h2 {
+    margin-bottom: 15px;
+  }
+
+  &-bulk {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+  }
 
   .domain-cart {
     overflow-y: scroll;
