@@ -28,6 +28,8 @@ class InputField extends React.Component<InputProps, State> {
     }
   }
 
+  externalHandleChange = async value => this.setState({ value });
+
   handleChange = async e => {
     const { value } = e.target;
 
@@ -64,8 +66,8 @@ class InputField extends React.Component<InputProps, State> {
       case "checkbox": {
         return (
           <label className="vipfy-checkbox">
-            <i className={`fal fa-${icon}`} />
-            <span>{label}</span>
+            {icon && <i className={`fal fa-${icon}`} />}
+            {label && <span>{label}</span>}
 
             <input
               type="checkbox"

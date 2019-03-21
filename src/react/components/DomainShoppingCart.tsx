@@ -4,17 +4,17 @@ import InputField from "./InputField";
 import * as moment from "moment";
 interface Props {
   domains: Domain[];
-  total: number;
   removeDomain: Function;
   goBack: Function;
   whoisPrivacyPrice: number;
-  updatePrice: Function;
   handleRegister: Function;
 }
 
 interface State {
   whoisPrivacy: string[];
   autoRenewal: string[];
+  whoisPrivacyBulk: boolean;
+  autoRenewalBulk: boolean;
   agb: boolean;
 }
 
@@ -22,6 +22,8 @@ class DomainShoppingCart extends React.Component<Props, State> {
   state = {
     whoisPrivacy: [],
     autoRenewal: [],
+    whoisPrivacyBulk: false,
+    autoRenewalBulk: true,
     agb: false
   };
 
@@ -30,8 +32,8 @@ class DomainShoppingCart extends React.Component<Props, State> {
     this.setState({ autoRenewal });
   }
 
-  handleChange = (value: any, error: boolean, name: string, field: string) => {
-    this.setState(prevState => {
+  handleChange = async (value: any, error: boolean, name: string, field: string) => {
+    await this.setState(prevState => {
       let newState = prevState[field];
 
       if (value) {
@@ -42,27 +44,106 @@ class DomainShoppingCart extends React.Component<Props, State> {
 
       return { ...prevState, [field]: newState };
     });
+
+    if (this.state[field].length == this.props.domains.length) {
+      this.setState({ [`${field}Bulk`]: true });
+      this[field].externalHandleChange(true);
+    } else {
+      this.setState({ [`${field}Bulk`]: false });
+      this[field].externalHandleChange(false);
+    }
   };
 
-  updateTotal = value => {
-    if (value) {
-      this.props.updatePrice(this.props.whoisPrivacyPrice);
-    } else {
-      this.props.updatePrice(parseFloat(`-${this.props.whoisPrivacyPrice}`));
-    }
+  computeTotal = () => {
+    let total = this.props.domains.reduce((acc, cV) => acc + parseFloat(cV.price), 0);
+    this.state.whoisPrivacy.forEach(() => {
+      total += this.props.whoisPrivacyPrice;
+    });
+
+    return total.toFixed(2);
+  };
+
+  handleBulkUpdate = async type => {
+    const field = type == "whoisPrivacy" ? "whois" : "renewal";
+
+    await this.setState(prevState => {
+      const newValue = !prevState[`${type}Bulk`];
+      this[type].externalHandleChange(newValue);
+
+      this.props.domains.forEach(({ domain }) => {
+        this[`${field}-${domain}`].externalHandleChange(newValue);
+      });
+
+      const newState = [];
+      if (!prevState[`${type}Bulk`]) {
+        this.props.domains.forEach(({ domain }) => {
+          newState.push(domain);
+        });
+      }
+
+      return { ...prevState, [type]: newState, [`${type}Bulk`]: newValue };
+    });
+  };
+
+  removeDomain = async domain => {
+    await this.props.removeDomain(domain);
+
+    this.setState(prevState => {
+      const newState = {};
+      newState.autoRenewal = prevState.autoRenewal.filter(domainName => domainName != domain);
+
+      newState.whoisPrivacy = prevState.whoisPrivacy.filter(domainName => domainName != domain);
+
+      newState.autoRenewalBulk = false;
+      if (this.props.domains.length == prevState.autoRenewal.length) {
+        newState.autoRenewalBulk = true;
+      }
+
+      newState.whoisPrivacyBulk = false;
+      if (this.props.domains.length == prevState.whoisPrivacy.length) {
+        newState.whoisPrivacyBulk = true;
+      }
+
+      return { ...prevState, ...newState };
+    });
   };
 
   render() {
     return (
       <div className="domain-shopping-cart">
         <h2>Overview</h2>
+        <div className="domain-shopping-cart-bulk">
+          <InputField
+            type="checkbox"
+            name="whoisPrivacy"
+            ref={node => (this.whoisPrivacy = node)}
+            handleChange={() => this.handleBulkUpdate("whoisPrivacy")}
+          />
+          <label onClick={() => this.handleBulkUpdate("whoisPrivacy")}>
+            {`Turn ${this.state.whoisPrivacyBulk ? "off" : "on"} WHOIS-Privacy for all domains`}
+          </label>
+        </div>
+
+        <div className="domain-shopping-cart-bulk">
+          <InputField
+            type="checkbox"
+            name="autoRenewal"
+            ref={node => (this.autoRenewal = node)}
+            defaultValue={true}
+            handleChange={() => this.handleBulkUpdate("autoRenewal")}
+          />
+          <label onClick={() => this.handleBulkUpdate("autoRenewal")}>
+            {`Turn ${this.state.autoRenewalBulk ? "off" : "on"} Auto-renew for all domains`}
+          </label>
+        </div>
+
         <div className="domain-cart">
           {this.props.domains.map(domain => (
             <div key={domain.domain} className="domain-shopping-cart-item">
               <div className="domain-shopping-cart-item-row">
                 <span>{domain.domain}</span>
                 <button
-                  onClick={() => this.props.removeDomain(domain.domain)}
+                  onClick={() => this.removeDomain(domain.domain)}
                   type="button"
                   className="naked-button check-button">
                   <i className="fal fa-trash-alt" />
@@ -89,8 +170,6 @@ class DomainShoppingCart extends React.Component<Props, State> {
                 <InputField
                   handleChange={async (value, error) => {
                     await this.handleChange(value, error, domain.domain, "whoisPrivacy");
-
-                    this.updateTotal(this[`whois-${domain.domain}`].state.value);
                   }}
                   ref={node => (this[`whois-${domain.domain}`] = node)}
                   type="checkbox"
@@ -102,14 +181,10 @@ class DomainShoppingCart extends React.Component<Props, State> {
                     // Not as evil as it looks :grin:
                     this[`whois-${domain.domain}`].state.value = !value;
 
-                    this.updateTotal(this[`whois-${domain.domain}`].state.value);
-
                     this.handleChange(!value, false, domain.domain, "whoisPrivacy");
                   }}>
                   <span className="small-header">{`WHOIS-Privacy is ${
-                    this[`whois-${domain.domain}`] && this[`whois-${domain.domain}`].state.value
-                      ? "on"
-                      : "off"
+                    this.state.whoisPrivacy.find(el => el == domain.domain) ? "on" : "off"
                   }`}</span>
                   <span>
                     By selecting WHOIS privacy, your contact information won't be public over the
@@ -153,7 +228,7 @@ class DomainShoppingCart extends React.Component<Props, State> {
 
         <div className="total">
           <span>Total:</span>
-          <span>{this.props.total.toFixed(2)}</span>
+          <span>{this.computeTotal()}</span>
         </div>
 
         <InputField
@@ -183,7 +258,7 @@ class DomainShoppingCart extends React.Component<Props, State> {
             }
             type="submit"
             disabled={!this.state.agb}
-            onClick={() => this.props.handleRegister(this.state)}
+            onClick={() => this.props.handleRegister(this.state, this.computeTotal())}
             className="generic-submit-button">
             <i className="fas fa-check-circle" />
             Register Domains

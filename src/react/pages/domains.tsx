@@ -4,8 +4,9 @@ import gql from "graphql-tag";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
 import { fullDomainNameValidation } from "../common/validation";
-import { filterError } from "../common/functions";
+import { filterError, ErrorComp } from "../common/functions";
 import BuyDomain from "../popups/buyDomain";
+import DomainCheck from "../components/DomainCheck";
 
 interface Props {
   updateDomain: Function;
@@ -19,6 +20,7 @@ interface Props {
 interface State {
   showDomains: boolean;
   showExternal: boolean;
+  showSuggestions: boolean;
 }
 
 export const FETCH_DOMAINS = gql`
@@ -37,6 +39,18 @@ export const FETCH_DOMAINS = gql`
       name
       price
       currency
+    }
+  }
+`;
+
+const FETCH_SUGGESTIONS = gql`
+  query onFetchDomainSuggestions($name: String!) {
+    fetchDomainSuggestions(name: $name) {
+      domain
+      price
+      currency
+      availability
+      description
     }
   }
 `;
@@ -88,7 +102,8 @@ const DELETE_EXTERNAL = gql`
 class Domains extends React.Component<Props, State> {
   state = {
     showDomains: true,
-    showExternal: true
+    showExternal: true,
+    showSuggestions: true
   };
 
   handleSubmit = async values => {
@@ -153,10 +168,8 @@ class Domains extends React.Component<Props, State> {
           registerDomains: [...fetchedDomains, ...newDomains]
         },
         update: proxy => {
-          // Read the data from our cache for this query.
           const cachedData = proxy.readQuery({ query: FETCH_DOMAINS });
           cachedData.fetchDomains = [...fetchedDomains, ...newDomains];
-          // Write our data back to the cache.
           proxy.writeQuery({ query: FETCH_DOMAINS, data: cachedData });
         }
       });
@@ -419,7 +432,7 @@ class Domains extends React.Component<Props, State> {
                   if (error) {
                     return filterError(error);
                   }
-                  console.log(data);
+
                   const domainPopup = {
                     header: "Domain Registration",
                     body: BuyDomain,
@@ -557,6 +570,45 @@ class Domains extends React.Component<Props, State> {
               </span>
             </button>
           </div>
+        </div>
+
+        <div className="genericHolder">
+          <div className="header">
+            <i
+              className={`fas fa-angle-${this.state.showExternal ? "left" : "down"} button-hide`}
+              onClick={() =>
+                this.setState(prevState => ({ showSuggestions: !prevState.showSuggestions }))
+              }
+            />
+            <span>Domain Suggestions</span>
+          </div>
+
+          <Query query={FETCH_SUGGESTIONS} variables={{ name: "pasquale" }}>
+            {({ data, error, loading }) => {
+              if (loading) {
+                return <LoadingDiv text="Fetching data..." />;
+              }
+
+              if (error || !data) {
+                return <ErrorComp error={filterError(error)} />;
+              }
+
+              return (
+                <div className="domain-suggestions">
+                  <h2>Maybe these domains are interesting for you</h2>
+                  <div className="domain-check">
+                    {data.fetchDomainSuggestions.map(domain => (
+                      <DomainCheck
+                        select={value => console.log(value)}
+                        key={domain.domain}
+                        domain={domain}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            }}
+          </Query>
         </div>
       </section>
     );
