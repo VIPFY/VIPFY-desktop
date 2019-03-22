@@ -114,7 +114,7 @@ class BuyDomain extends React.Component<Props, State> {
         return req;
       });
 
-      this.props.registerDomains(domains, total, agb);
+      this.props.registerDomains(domains, parseFloat(total), agb);
       this.props.onClose();
     } else {
       this.setState({ error: "Terms of Service and Privacy Notice were not confirmed!" });

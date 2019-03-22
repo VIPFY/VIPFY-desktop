@@ -9,7 +9,8 @@ import BuyDomain from "../popups/buyDomain";
 import DomainCheck from "../components/DomainCheck";
 
 interface Props {
-  updateDomain: Function;
+  setWhoisPrivacy: Function;
+  setRenewalMode: Function;
   handleSubmit: Function;
   registerExternal: Function;
   registerDomains: Function;
@@ -33,6 +34,7 @@ export const FETCH_DOMAINS = gql`
       renewalmode
       whoisprivacy
       external
+      status
     }
     fetchPlans(appid: 11) {
       id
@@ -65,6 +67,7 @@ const REGISTER_EXTERNAL = gql`
       renewalmode
       whoisprivacy
       external
+      status
     }
   }
 `;
@@ -79,14 +82,37 @@ const REGISTER_DOMAINS = gql`
       renewalmode
       whoisprivacy
       external
+      status
     }
   }
 `;
 
-const UPDATE_DOMAIN = gql`
-  mutation UpdateDomain($data: DomainInput!, $id: ID!) {
-    updateDomain(domainData: $data, id: $id) {
-      ok
+const SET_WHOIS_PRIVACY = gql`
+  mutation onSetWhoisPrivacy($id: ID!, $status: Int!) {
+    setWhoisPrivacy(id: $id, status: $status) {
+      id
+      domainname
+      createdate
+      renewaldate
+      renewalmode
+      whoisprivacy
+      external
+      status
+    }
+  }
+`;
+
+const SET_RENEWAL_MODE = gql`
+  mutation onSetRenewalMode($id: ID!, $renewalmode: RENEWALMODE!) {
+    setRenewalMode(id: $id, renewalmode: $renewalmode) {
+      id
+      domainname
+      createdate
+      renewaldate
+      renewalmode
+      whoisprivacy
+      external
+      status
     }
   }
 `;
@@ -178,43 +204,26 @@ class Domains extends React.Component<Props, State> {
     }
   };
 
-  updateDomain = async (domainData, updateField) => {
+  toggleRenewal = async domainData => {
     try {
-      const { id } = domainData;
-      console.log(updateField);
-      await this.props.updateDomain({
+      await this.props.setRenewalMode({
         variables: {
-          data: {
-            [Object.keys(updateField)[0]]: Object.values(updateField)[0]
-          },
-          id
-        },
-        optimisticResponse: {
-          __typename: "Mutation",
-          updateDomain: {
-            __typename: "Domain",
-            ok: true
-          }
-        },
-        update: proxy => {
-          // Read the data from our cache for this query.
-          const cachedData = proxy.readQuery({ query: FETCH_DOMAINS });
-          const updatedDomains = cachedData.fetchDomains.map(domain => {
-            if (domain.id == id) {
-              const updatedDomain = domain;
-              updatedDomain[Object.keys(updateField)[0]] = Object.values(updateField)[0];
-
-              return updatedDomain;
-            }
-            return domain;
-          });
-          cachedData.fetchDomains = updatedDomains;
-          // Write our data back to the cache.
-          proxy.writeQuery({ query: FETCH_DOMAINS, data: cachedData });
+          renewalmode: domainData.renewalmode,
+          id: domainData.id
         }
       });
     } catch (err) {
       return filterError(err);
+    }
+  };
+
+  toggleWhoisPrivacy = async domainData => {
+    try {
+      await this.props.setWhoisPrivacy({
+        variables: { whoisprivacy: domainData.whoisPrivacy ? 0 : 1, id: domainData.id }
+      });
+    } catch (error) {
+      return filterError(error);
     }
   };
 
@@ -225,6 +234,7 @@ class Domains extends React.Component<Props, State> {
 
     if (type == "whois") {
       header = "Change Whois Privacy";
+
       fields = [
         {
           name: "whoisprivacy",
@@ -235,11 +245,14 @@ class Domains extends React.Component<Props, State> {
           icon: "user-secret"
         }
       ];
-      handleSubmit = values => {
-        if (values.whoisprivacy) {
-          this.updateDomain(domain, {
-            whoisprivacy: domain.whoisprivacy ? false : true
+
+      handleSubmit = async () => {
+        try {
+          await this.props.setWhoisPrivacy({
+            variables: { status: domain.whoisprivacy ? 0 : 1, id: domain.id }
           });
+        } catch (error) {
+          throw new Error(error);
         }
       };
     } else {
@@ -250,14 +263,15 @@ class Domains extends React.Component<Props, State> {
           type: "select",
           label: `Select Renewalmode for ${domain.domainname}`,
           icon: "globe",
-          options: ["autorenew", "once", "autodelete"],
+          options: [
+            { name: "Auto Renewal", value: "autorenew" },
+            { name: "Auto Delete", value: "autodelete" }
+          ],
           required: true
         }
       ];
       handleSubmit = values => {
-        this.updateDomain(domain, {
-          renewalmode: values.renewalmode.toUpperCase()
-        });
+        this.toggleRenewal({ ...domain, renewalmode: values.renewalmode.toUpperCase() });
       };
     }
 
@@ -332,7 +346,7 @@ class Domains extends React.Component<Props, State> {
             onClick={() => this.toggleOption(domain, "renewalmode")}>
             <i
               className={`fas fa-${
-                domain.renewalmode == "AUTORENEWAL" ? "check-circle" : "times-circle"
+                domain.renewalmode == "AUTORENEW" ? "check-circle" : "times-circle"
               }`}
             />
           </span>
@@ -616,7 +630,8 @@ class Domains extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(UPDATE_DOMAIN, { name: "updateDomain" }),
+  graphql(SET_WHOIS_PRIVACY, { name: "setWhoisPrivacy" }),
+  graphql(SET_RENEWAL_MODE, { name: "setRenewalMode" }),
   graphql(REGISTER_EXTERNAL, { name: "registerExternalDomain" }),
   graphql(REGISTER_DOMAINS, { name: "registerDomains" }),
   graphql(DELETE_EXTERNAL, { name: "deleteExternal" })

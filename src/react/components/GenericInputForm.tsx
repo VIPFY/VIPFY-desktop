@@ -3,7 +3,7 @@ import * as Dropzone from "react-dropzone";
 import { times } from "lodash";
 import { filterError } from "../common/functions";
 import LoadingDiv from "../components/LoadingDiv";
-import {debounce} from "lodash"
+import { debounce } from "lodash";
 
 interface Fields {
   name: string;
@@ -34,7 +34,7 @@ interface Props {
   defaultValues?: object;
   hideSubmitButton?: boolean;
   hideCancelButton?: boolean;
-  submit?: boolean;   // switch to true to trigger submit from outside
+  submit?: boolean; // switch to true to trigger submit from outside
 }
 
 interface State {
@@ -67,7 +67,7 @@ class GenericInputForm extends React.Component<Props, State> {
     this.validateInput = debounce(this.validateInput, 1000);
   }
 
-  genericForm: React.RefObject<HTMLFormElement>
+  genericForm: React.RefObject<HTMLFormElement>;
 
   componentDidMount() {
     if (this.props.defaultValues) {
@@ -77,7 +77,7 @@ class GenericInputForm extends React.Component<Props, State> {
 
   componentDidUpdate(prevProps) {
     if (this.props.submit && !prevProps.submit) {
-      this.onSubmit({preventDefault: () => null})
+      this.onSubmit({ preventDefault: () => null });
     }
   }
 
@@ -101,13 +101,13 @@ class GenericInputForm extends React.Component<Props, State> {
     if (validation.check(this.state.values[name])) {
       this.setState(prevState => ({
         errors: { ...prevState.errors, [name]: validation.error }
-      }))
+      }));
     } else {
       this.setState(prevState => ({
         errors: { ...prevState.errors, [name]: "" }
-      }))
+      }));
     }
-  }
+  };
 
   handleChange = async (e, validation) => {
     const { name, value, type } = e.target;
@@ -122,7 +122,7 @@ class GenericInputForm extends React.Component<Props, State> {
       }));
 
       if (this.state.values[name].length > 0 && validation) {
-        this.validateInput(validation, name)
+        this.validateInput(validation, name);
       } else if (
         this.genericForm.current!.elements[name].required &&
         this.state.values[name].length < 1
@@ -139,8 +139,8 @@ class GenericInputForm extends React.Component<Props, State> {
   };
 
   handleDrop = (files, name) => {
-    this.setState(prevState => ({ values: { ...prevState.values, [name]: files } }))
-  }
+    this.setState(prevState => ({ values: { ...prevState.values, [name]: files } }));
+  };
 
   onSubmit = async e => {
     e.preventDefault();
@@ -159,7 +159,7 @@ class GenericInputForm extends React.Component<Props, State> {
         } else {
           this.props.onClose();
         }
-        this.setState(INITIAL_STATE)
+        this.setState(INITIAL_STATE);
       } catch (err) {
         this.setState({ asyncError: filterError(err), submitting: false });
       }
@@ -199,7 +199,7 @@ class GenericInputForm extends React.Component<Props, State> {
                     type="checkbox"
                     className="cool-checkbox"
                     id={`cool-checkbox-${name}`}
-                    onChange={e =>this.handleChange(e, validate)}
+                    onChange={e => this.handleChange(e, validate)}
                     name={name}
                     required={required}
                   />
@@ -219,16 +219,17 @@ class GenericInputForm extends React.Component<Props, State> {
                 <select
                   name={name}
                   id={name}
-                  onChange={e =>this.handleChange(e, validate)}
+                  onChange={e => this.handleChange(e, validate)}
                   value={values[name] ? values[name] : ""}
                   required={required}
                   className="generic-dropdown">
                   <option value=""> </option>
-                  {options && options.map((option, key) => (
-                    <option key={key} value={option.value}>
-                      {option.name}
-                    </option>
-                  ))}
+                  {options &&
+                    options.map((option, key) => (
+                      <option key={key} value={option.value}>
+                        {option.name}
+                      </option>
+                    ))}
                 </select>
               );
             }
@@ -238,16 +239,17 @@ class GenericInputForm extends React.Component<Props, State> {
                 <select
                   name={name}
                   id={name}
-                  onChange={e =>this.handleChange(e, validate)}
+                  onChange={e => this.handleChange(e, validate)}
                   value={values[name] ? values[name] : ""}
                   required={required}
                   className="generic-dropdown">
                   <option value=""> </option>
-                  {options && options.map(({ name, value }, key) => (
-                    <option selected={this.state.values[name] == value} key={key} value={value}>
-                      {name}
-                    </option>
-                  ))}
+                  {options &&
+                    options.map(({ name, value }, key) => (
+                      <option selected={this.state.values[name] == value} key={key} value={value}>
+                        {name}
+                      </option>
+                    ))}
                 </select>
               );
             }
@@ -276,23 +278,23 @@ class GenericInputForm extends React.Component<Props, State> {
                 <div className="combo-holder">
                   <select
                     name="protocol"
-                    onChange={(e) => this.handleChange(e, validate)}
+                    onChange={e => this.handleChange(e, validate)}
                     required={required}
                     className="generic-dropdown">
                     <option value="https">https://</option>
                     <option value="http">http://</option>
                   </select>
                   <input
-                  className="searchbar"
-                  name={name}
-                  placeholder={placeholder}
-                  type="text"
-                  value={values[name] ? values[name] : ""}
-                  onChange={e => this.handleChange(e, validate)}
-                  onFocus={this.highlight}
-                  onBlur={this.offlight}
-                  required={required}
-                />
+                    className="searchbar"
+                    name={name}
+                    placeholder={placeholder}
+                    type="text"
+                    value={values[name] ? values[name] : ""}
+                    onChange={e => this.handleChange(e, validate)}
+                    onFocus={this.highlight}
+                    onBlur={this.offlight}
+                    required={required}
+                  />
                 </div>
               );
             }
@@ -376,81 +378,91 @@ class GenericInputForm extends React.Component<Props, State> {
               );
             }
 
-            case "picture": {
-              const renderContent = () => {
-                if (this.state.values[name] && !multiple) {
-                  return (
-                    <img
-                      alt={this.state.values[name].name}
-                      height="100px"
-                      width="100px"
-                      className="img-circle"
-                      src={this.state.values[name].preview}
-                    />
-                  );
-                } else if (
-                  multiple &&
-                  this.state.values[name] &&
-                  Array.isArray(this.state.values[name])
-                ) {
-                  return (
-                    <div className="pics-preview">
-                      {this.state.values[name].map((file, i) =>
-                           <img
+            case "picture":
+              {
+                const renderContent = () => {
+                  if (this.state.values[name] && !multiple) {
+                    return (
+                      <img
+                        alt={this.state.values[name].name}
+                        height="100px"
+                        width="100px"
+                        className="img-circle"
+                        src={this.state.values[name].preview}
+                      />
+                    );
+                  } else if (
+                    multiple &&
+                    this.state.values[name] &&
+                    Array.isArray(this.state.values[name])
+                  ) {
+                    return (
+                      <div className="pics-preview">
+                        {this.state.values[name].map((file, i) => (
+                          <img
                             key={i}
                             alt={file.name}
                             height="50px"
                             width="50px"
                             src={file.preview}
                           />
-                      )}
-                    </div>
-                  );
-                } else if (multiple) {
-                  return <label>{label ? label : "Please select several pictures for upload"}</label>;
-                } else {
-                 return <label>{label ? label : "Click again or drag & drop to change the pic" }</label>
+                        ))}
+                      </div>
+                    );
+                  } else if (multiple) {
+                    return (
+                      <label>{label ? label : "Please select several pictures for upload"}</label>
+                    );
+                  } else {
+                    return (
+                      <label>
+                        {label ? label : "Click again or drag & drop to change the pic"}
+                      </label>
+                    );
+                  }
+                };
+
+                if (this.state.submitting || this.state.success) {
+                  return;
                 }
-              };
 
-              if (this.state.submitting || this.state.success) {
-                return;
+                return (
+                  <Dropzone
+                    name={name}
+                    activeClassName="dropzone-active"
+                    accept="image/*"
+                    type="file"
+                    multiple={multiple ? true : false}
+                    className={this.state.values[name] ? "dropzone-preview" : "dropzone"}
+                    onDrop={
+                      multiple
+                        ? files => this.handleDrop(files, name)
+                        : ([file]) => this.handleDrop(file, name)
+                    }>
+                    {renderContent()}
+                  </Dropzone>
+                );
               }
+              break;
 
-              return (
-                <Dropzone
-                  name={name}
-                  activeClassName="dropzone-active"
-                  accept="image/*"
-                  type="file"
-                  multiple={multiple ? true : false}
-                  className={this.state.values[name] ? "dropzone-preview" : "dropzone"}
-                  onDrop={
-                    multiple
-                      ? files => this.handleDrop(files, name)
-                      : ([file]) => this.handleDrop(file, name)
-                  }>
-                  {renderContent()}
-                </Dropzone>
-              );
-            } break;
-
-            case "color": {
-              return (
-                <input
-                  id={name}
-                  className="color-picker"
-                  name={name}
-                  type={type}
-                  disabled={disabled}
-                  value={values[name] ? values[name] : ""}
-                  onChange={e => this.handleChange(e, validate)}
-                  onFocus={this.highlight}
-                  onBlur={this.offlight}
-                  required={required}
-                />
-              );
-            } break;
+            case "color":
+              {
+                return (
+                  <input
+                    id={name}
+                    className="color-picker"
+                    name={name}
+                    type={type}
+                    disabled={disabled}
+                    value={values[name] ? values[name] : ""}
+                    onChange={e => this.handleChange(e, validate)}
+                    onFocus={this.highlight}
+                    onBlur={this.offlight}
+                    required={required}
+                  />
+                );
+              }
+              break;
 
             default: {
               return (
@@ -476,8 +488,10 @@ class GenericInputForm extends React.Component<Props, State> {
 
         const picCheck = type == "picture";
         return (
-          <div style={type == "textField" ? {flexFlow: "column",
-          alignItems: "start"}: {}} key={name} className={`searchbarHolder ${inputFocus[name] ? "searchbarFocus" : ""}`}>
+          <div
+            style={type == "textField" ? { flexFlow: "column", alignItems: "start" } : {}}
+            key={name}
+            className={`searchbarHolder ${inputFocus[name] ? "searchbarFocus" : ""}`}>
             {type == "checkbox" || picCheck ? (
               ""
             ) : (
@@ -505,11 +519,7 @@ class GenericInputForm extends React.Component<Props, State> {
     const { successMessage, submittingMessage } = this.props;
 
     return (
-      <form
-        onSubmit={this.onSubmit}
-        ref={this.genericForm}
-        className="generic-form"
-        >
+      <form onSubmit={this.onSubmit} ref={this.genericForm} className="generic-form">
         {this.renderFields(this.props.fields)}
         {asyncError ? (
           <div className="generic-async-error">{asyncError}</div>
