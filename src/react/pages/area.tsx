@@ -193,7 +193,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           {
             key: viewID,
             view: newview,
-            instanceTitle: "Login",
+            instanceTitle: "Opening new service",
             licenceID
           }
         ],
@@ -204,10 +204,10 @@ class Area extends React.Component<AreaProps, AreaState> {
               ? {
                   ...prevState.openInstances[licenceID],
 
-                  [viewID]: { instanceTitle: "Login", instanceId: viewID }
+                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
                 }
               : {
-                  [viewID]: { instanceTitle: "Login", instanceId: viewID }
+                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
                 }
         },
         app: opendirect ? licenceID : prevState.app,
@@ -366,6 +366,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                   sideBarOpen={sideBarOpen}
                   setApp={this.setApp}
                   viewID={this.state.viewID}
+                  views={this.state.webviews}
                   openInstances={this.state.openInstances}
                   toggleSidebar={this.toggleSidebar}
                   setInstance={this.setInstance}

@@ -257,7 +257,12 @@ class Integrations extends React.Component<Props, AppPageState> {
       <div
         className="appIntegrationLogo"
         style={{
-          backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${logo})`
+          backgroundImage:
+            logo.indexOf("/") != -1
+              ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                  logo
+                )})`
+              : `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${encodeURI(logo)})`
         }}
       />
       <div className="captionIntegration">
