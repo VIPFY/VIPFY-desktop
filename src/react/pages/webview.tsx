@@ -349,7 +349,10 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     console.log("onNewWindow", e);
     const protocol = require("url").parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
-      shell.openExternal(e.url);
+      //  shell.openExternal(e.url);
+      if (e.url.indexOf("wchat") == -1) {
+        this.setState({ currentUrl: e.url });
+      }
     }
   }
 
