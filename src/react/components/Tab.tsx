@@ -62,7 +62,42 @@ class Tab extends React.Component<Props, State> {
       <Query query={FETCH_APP_ICON} variables={{ licenceid }}>
         {({ data, loading, error }) => {
           if (loading || error || !data) {
-            return <span>{title}</span>;
+            return (
+              <li
+                className={`titlebar-tab ${active ? "active" : ""}`}
+                draggable={true}
+                // Workaround because clicking the middle button to close a tab caused the event to be
+                // fired twice.
+                onMouseEnter={e => {
+                  e.preventDefault();
+                  this.setState({ mouseOver: true });
+                }}
+                onMouseLeave={e => {
+                  e.preventDefault();
+                  this.setState({ mouseOver: false });
+                }}
+                onDragStart={() => this.props.handleDragStart(viewID)}
+                onDragOver={e => {
+                  e.preventDefault();
+
+                  if (!active) {
+                    this.props.handleDragOver(viewID);
+                  }
+                }}
+                onDragLeave={() => {
+                  if (!active) {
+                    this.props.handleDragLeave();
+                  }
+                }}
+                onDragEnd={() => this.props.handleDragEnd()}
+                onDrop={() => this.props.handleDragOver(viewID)}
+                title={title}
+                onClick={() => setInstance(viewID)}>
+                <img src="./images/Vipfy-white.svg" />
+                <div>{title}</div>
+                <i onClick={this.handleClose} className="fal fa-times fa-1x" />
+              </li>
+            );
           }
 
           // prettier-ignore
@@ -99,7 +134,15 @@ class Tab extends React.Component<Props, State> {
               onDrop={() => this.props.handleDragOver(viewID)}
               title={title}
               onClick={() => setInstance(viewID)}>
-              <img src={`${iconPicFolder}${icon}`} />
+              <img
+                src={
+                  icon && icon.indexOf("/") != -1
+                    ? `https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                        icon
+                      )}`
+                    : `https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(icon)}`
+                }
+              />
               <div>{alias ? alias : appname}</div>
               <i onClick={this.handleClose} className="fal fa-times fa-1x" />
             </li>

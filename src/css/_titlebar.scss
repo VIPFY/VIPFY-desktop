@@ -23,11 +23,13 @@
 
   &-tabs {
     height: 100%;
-    display: grid;
+    /*display: grid;
     grid-template-columns: repeat(auto-fill, minmax(2rem, 20rem));
     grid-auto-flow: column dense;
     justify-content: center;
-    align-items: center;
+    align-items: center;*/
+    display: flex;
+    margin-left: 50px;
   }
 
   .active {
@@ -50,6 +52,9 @@
   position: relative;
   align-items: center;
   transition: all 300ms ease-in-out;
+
+  flex-grow: 1;
+  max-width: 250px;
 
   &:hover {
     box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);

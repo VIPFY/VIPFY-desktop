@@ -37,7 +37,7 @@ import { type } from "os";
 
   //getLoginDetails();
 
-  try {
+  /*try {
     if (hostMatches("(www.)?vipfy.com")) {
       require("./locationScripts/vipfy.ts")();
       //} else if (hostMatches("(www.)?dropbox.com")) {
@@ -240,7 +240,7 @@ import { type } from "os";
   //   console.log("WUNDERLIST");
   // }
   //});
-}
+}*/
 
 // convert existing keys into simplified format
 function normalizeKey(key) {
@@ -301,7 +301,8 @@ function getLoginDetails(askfordata) {
       document.getElementById(key.errorobject);
     const waitUntil =
       document.querySelector<HTMLInputElement>(key.waituntil) ||
-      document.getElementById(key.waituntil);
+      document.getElementById(key.waituntil) ||
+      document.querySelector<HTMLInputElement>(key.emailobject);
 
     const emailObject = document.querySelector<HTMLInputElement>(key.emailobject);
     const passwordObject = document.querySelector<HTMLInputElement>(key.passwordobject);
@@ -309,6 +310,16 @@ function getLoginDetails(askfordata) {
     const button1Object = document.querySelector<HTMLInputElement>(key.button1object);
     const button2Object = document.querySelector<HTMLInputElement>(key.button2object);
     const rememberObject = document.querySelector<HTMLInputElement>(key.rememberobject);
+
+    console.log(
+      "Objects",
+      hideObject,
+      errorObject,
+      waitUntil,
+      emailObject,
+      passwordObject,
+      buttonObject
+    );
 
     if (!key.hideobject) {
       hideObject = !passwordObject;
@@ -404,9 +415,18 @@ function getLoginDetails(askfordata) {
       }
 
       function hideLoading(r = 0) {
-        if (!hideObject && !errorObject && r <= 50) {
-          setTimeout(() => hideLoading(r++), 50);
-        } else if (errorObject || r > 50) {
+        console.log(
+          "HIDING",
+          r,
+          hideObject,
+          errorObject,
+          key.hideobject,
+          document.querySelector<HTMLInputElement>(key.hideobject) ||
+            document.getElementById(key.hideobject)
+        );
+        if (!document.querySelector<HTMLInputElement>(key.hideobject) && !errorObject && r <= 50) {
+          setTimeout(() => hideLoading(++r), 50);
+        } else if (errorObject || r > 75) {
           ipcRenderer.sendToHost("errorDetected");
           return;
         } else {
