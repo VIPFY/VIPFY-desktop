@@ -68,8 +68,8 @@ export const setLogoutFunction = logoutFunc => {
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
-    graphQLErrors.map(({ message, locations, path, name }) => {
-      if (name && name.toLowerCase() == "autherror") {
+    graphQLErrors.map(({ message, locations, path, name, data }) => {
+      if (data && (data.code == 401 || data.code == 401)) {
         logout();
       }
 
