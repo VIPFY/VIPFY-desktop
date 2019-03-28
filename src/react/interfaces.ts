@@ -191,6 +191,7 @@ export interface InputProps {
   setValid?: Function;
   defaultValue?: any;
   handleChange?: Function;
+  handleKeyPress?: Function;
 }
 
 export interface Domain {

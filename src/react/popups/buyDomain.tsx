@@ -1,13 +1,13 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { Mutation } from "react-apollo";
-import DomainCheck from "../components/DomainCheck";
+import DomainCheck from "../components/domains/DomainCheck";
 import { filterError } from "../common/functions";
 import { domainValidation } from "../common/validation";
 import LoadingDiv from "../components/LoadingDiv";
 import { Domain } from "../interfaces";
-import DomainShoppingCart from "../components/DomainShoppingCart";
-import DomainTransfer from "../components/DomainTransfer";
+import DomainShoppingCart from "../components/domains/DomainShoppingCart";
+import DomainTransfer from "../components/domains/DomainTransfer";
 
 const CHECK_DOMAIN = gql`
   mutation onCheckDomain($domain: String!) {

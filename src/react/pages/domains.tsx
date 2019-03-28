@@ -6,8 +6,9 @@ import LoadingDiv from "../components/LoadingDiv";
 import { fullDomainNameValidation } from "../common/validation";
 import { filterError, ErrorComp } from "../common/functions";
 import BuyDomain from "../popups/buyDomain";
-import DomainCheck from "../components/DomainCheck";
-
+import DomainCheck from "../components/domains/DomainCheck";
+import Configuration from "../components/domains/DomainConfiguration";
+import { FETCH_DOMAINS } from "../components/domains/graphql";
 interface Props {
   setWhoisPrivacy: Function;
   setRenewalMode: Function;
@@ -23,27 +24,6 @@ interface State {
   showExternal: boolean;
   showSuggestions: boolean;
 }
-
-export const FETCH_DOMAINS = gql`
-  {
-    fetchDomains {
-      id
-      domainname
-      createdate
-      renewaldate
-      renewalmode
-      whoisprivacy
-      external
-      status
-    }
-    fetchPlans(appid: 11) {
-      id
-      name
-      price
-      currency
-    }
-  }
-`;
 
 const FETCH_SUGGESTIONS = gql`
   query onFetchDomainSuggestions($name: String!) {
@@ -83,6 +63,7 @@ const REGISTER_DOMAINS = gql`
       whoisprivacy
       external
       status
+      dns
     }
   }
 `;
@@ -98,6 +79,7 @@ const SET_WHOIS_PRIVACY = gql`
       whoisprivacy
       external
       status
+      dns
     }
   }
 `;
@@ -113,6 +95,7 @@ const SET_RENEWAL_MODE = gql`
       whoisprivacy
       external
       status
+      dns
     }
   }
 `;
@@ -180,6 +163,8 @@ class Domains extends React.Component<Props, State> {
         id: `-${(Math.random() + 1) * (Math.random() + 3)}`,
         domainname: domain.domain,
         createdate: null,
+        dns: [],
+        status: "PENDING",
         renewaldate: null,
         renewalmode: domain.renewalmode,
         whoisprivacy: domain.whoisprivacy ? true : false,
@@ -321,17 +306,18 @@ class Domains extends React.Component<Props, State> {
       const filteredDomains = data.filter(domain => domain.external == showExternal);
 
       return filteredDomains.map(domain => (
-        <div key={domain.id} className={`domain-row ${domain.createdate == null ? "pending" : ""}`}>
+        <div
+          key={domain.id}
+          className={`domain-row ${domain.status == "PENDING" ? "pending" : ""}`}>
           <span className="domain-item domain-name">{domain.domainname}</span>
+          <span className="domain-item">{domain.status}</span>
           <span className="domain-item-icon" onClick={() => this.toggleOption(domain, "whois")}>
             <i className={`fas fa-${domain.whoisprivacy ? "check-circle" : "times-circle"}`} />
           </span>
 
           <span className="domain-item">
             {domain.createdate == null ? (
-              <React.Fragment>
-                <i className="fas fa-spinner fa-spin" />
-              </React.Fragment>
+              <i className="fas fa-spinner fa-spin" />
             ) : (
               new Date(domain.createdate).toDateString()
             )}
@@ -392,7 +378,11 @@ class Domains extends React.Component<Props, State> {
                   }
                 });
               } else {
-                this.props.setDomain(domain.id, domain);
+                this.props.showPopup({
+                  header: `Configure ${domain.domainname}`,
+                  body: Configuration,
+                  props: { id: domain.id }
+                });
               }
             }}
           />
@@ -406,6 +396,7 @@ class Domains extends React.Component<Props, State> {
   render() {
     const headers: string[] = [
       "Domain",
+      "Status",
       "Whois Privacy",
       "Registration Date",
       "End Date",

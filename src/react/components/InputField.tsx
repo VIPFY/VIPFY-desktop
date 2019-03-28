@@ -298,6 +298,7 @@ class InputField extends React.Component<InputProps, State> {
 
             <input
               id={this.props.name}
+              ref={node => (this[this.props.name] = node)}
               disabled={submitting}
               type={type}
               onFocus={() => this.setState({ focus: true })}
@@ -309,10 +310,16 @@ class InputField extends React.Component<InputProps, State> {
               }
               value={value}
               onChange={this.handleChange}
+              onKeyPress={e => {
+                if (this.props.handleKeyPress) {
+                  this.props.handleKeyPress(e.key);
+                }
+              }}
               {...inputProps}
             />
             <label
               htmlFor={this.props.name}
+              onClick={() => this[this.props.name].focus()}
               className={`vipfy-label${this.state.focus || value ? "-active" : ""}`}>
               {label}
             </label>
