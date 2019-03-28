@@ -265,6 +265,34 @@ $domain-check-margin: 15px;
   }
 }
 
+.domain-configuration {
+  .dns {
+    .ns {
+      position: relative;
+      display: flex;
+      flex-flow: row nowrap;
+      width: 280px;
+      margin-top: 20px;
+
+      button {
+        margin-right: 5px;
+      }
+
+      .error {
+        color: red;
+        font-size: 80%;
+        position: absolute;
+        bottom: -15px;
+        width: 400px;
+      }
+    }
+
+    & > .naked-button {
+      margin-top: 20px;
+    }
+  }
+}
+
 .register-domain {
   @include vipfy-button(0.7rem);
   margin-top: 2rem;
@@ -274,7 +302,7 @@ $domain-check-margin: 15px;
 
 .domain-header {
   display: grid;
-  grid-template-columns: 10rem 1fr 9rem 1fr 6rem repeat(4, 1fr);
+  grid-template-columns: 10rem 1fr 1fr 9rem 1fr 6rem repeat(4, 1fr);
   align-items: center;
   font-weight: bold;
   position: relative;
@@ -335,7 +363,7 @@ $domain-check-margin: 15px;
 
   .domain-header {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(9, 1fr);
+    grid-template-rows: repeat(10, 1fr);
   }
 
   .domain-row {

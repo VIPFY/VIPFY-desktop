@@ -1,6 +1,6 @@
 import * as React from "react";
-import { filterError } from "../common/functions";
-import { fullDomainNameValidation } from "../common/validation";
+import { filterError } from "../../common/functions";
+import { fullDomainNameValidation } from "../../common/validation";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 

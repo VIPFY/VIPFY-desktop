@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Domain } from "../interfaces";
+import { Domain } from "../../interfaces";
 
 interface Props {
   domain: Domain;

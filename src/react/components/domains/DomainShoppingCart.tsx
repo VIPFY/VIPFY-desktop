@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Domain } from "../interfaces";
-import InputField from "./InputField";
+import { Domain } from "../../interfaces";
+import InputField from "../InputField";
 import * as moment from "moment";
 interface Props {
   domains: Domain[];
