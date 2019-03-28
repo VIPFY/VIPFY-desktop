@@ -381,7 +381,11 @@ class Domains extends React.Component<Props, State> {
                 this.props.showPopup({
                   header: `Configure ${domain.domainname}`,
                   body: Configuration,
-                  props: { id: domain.id }
+                  props: {
+                    id: domain.id,
+                    popupStyle: { padding: 0 },
+                    style: { alignSelf: "start" }
+                  }
                 });
               }
             }}
