@@ -41,7 +41,6 @@ interface PopUp {
 }
 
 interface AppState {
-  login: boolean;
   error: string;
   placeid: string;
   popup: PopUp;
@@ -62,7 +61,6 @@ const INITIAL_POPUP = {
 };
 
 const INITIAL_STATE = {
-  login: false,
   error: "",
   placeid: "",
   popup: INITIAL_POPUP,
@@ -114,7 +112,7 @@ class App extends React.Component<AppProps, AppState> {
       });
       const { ok, token } = res.data.redeemSetupToken;
       localStorage.setItem("token", token);
-      this.setState({ login: true });
+      this.forceUpdate();
       store.delete("setuptoken");
     } catch (err) {
       console.log("setup token error", err);
@@ -147,12 +145,12 @@ class App extends React.Component<AppProps, AppState> {
 
       if (ok) {
         localStorage.setItem("token", token);
-        await this.setState({ login: true });
+        this.forceUpdate();
 
         return true;
       }
     } catch (err) {
-      this.setState({ login: false, error: filterError(err) });
+      this.setState({ error: filterError(err) });
       localStorage.setItem("token", "");
       console.log("LoginError", err);
 
