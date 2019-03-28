@@ -266,29 +266,55 @@ $domain-check-margin: 15px;
 }
 
 .domain-configuration {
-  .dns {
-    .ns {
-      position: relative;
-      display: flex;
-      flex-flow: row nowrap;
-      width: 280px;
-      margin-top: 20px;
-
-      button {
-        margin-right: 5px;
+  .domain-navigation {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    background-color: $vipfy-primary-color;
+    color: #fff;
+    
+    li {
+      padding: 10px 0 10px 5px;
+      cursor: pointer;
+      transition: all 300ms ease-in-out;
+      
+      &:hover {
+        background-color: darken($vipfy-primary-color, 10);
       }
-
-      .error {
-        color: red;
-        font-size: 80%;
-        position: absolute;
-        bottom: -15px;
-        width: 400px;
+      
+      &:not(:last-child) {
+        border-right: 1px solid #fff;
       }
     }
+  }
 
-    & > .naked-button {
-      margin-top: 20px;
+  .ns-update {
+    margin: 2em;
+
+    .dns {
+      .ns {
+        position: relative;
+        display: flex;
+        flex-flow: row nowrap;
+        width: 280px;
+        margin-top: 20px;
+
+        button {
+          margin-right: 5px;
+        }
+
+        .error {
+          color: red;
+          font-size: 80%;
+          position: absolute;
+          bottom: -15px;
+          width: 400px;
+        }
+      }
+
+      & > .naked-button {
+        margin-top: 20px;
+      }
     }
   }
 }

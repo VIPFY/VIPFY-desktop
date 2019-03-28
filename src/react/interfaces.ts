@@ -100,9 +100,13 @@ export interface Domain {
   renewalmode: string;
   whoisprivacy: boolean;
   statisticdata: JSON;
-  dns: JSON;
+  dns: DNS;
   boughtplanid: BoughtPlan;
   external: Boolean;
+}
+
+export interface DNS {
+  nameservers: string[];
 }
 
 export interface Email {
