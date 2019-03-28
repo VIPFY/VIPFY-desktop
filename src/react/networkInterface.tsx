@@ -69,8 +69,12 @@ export const setLogoutFunction = logoutFunc => {
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.map(({ message, locations, path, name, data }) => {
-      if (data && (data.code == 401 || data.code == 401)) {
+      if (data && data.code == 401) {
         logout();
+      } else if (data && data.code == 403) {
+        return console.log(
+          `[RightsError]: Message: ${message}, Seems like a user doesn't have the neccessary rights`
+        );
       }
 
       return console.log(
