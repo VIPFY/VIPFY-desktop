@@ -120,6 +120,16 @@ function getLoginDetails(askfordata) {
       buttonObject
     );
 
+    console.log(
+      "Objects",
+      hideObject,
+      errorObject,
+      waitUntil,
+      emailObject,
+      passwordObject,
+      buttonObject
+    );
+
     if (!key.hideobject) {
       hideObject = !passwordObject;
     }
