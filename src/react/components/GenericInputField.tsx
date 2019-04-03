@@ -66,7 +66,7 @@ class GenericInputField extends Component<Props, State> {
 
   toggleInput = bool => {
     this.setState({ inputFocus: bool });
-    if (!bool) {
+    if (!bool && this.props.onBlur) {
       this.setState({ error: null });
       this.props.onBlur(this.state.value);
     }
