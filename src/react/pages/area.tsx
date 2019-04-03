@@ -39,6 +39,7 @@ import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
+import {SideBarContext} from "../common/context"
 
 interface AreaProps {
   history: any[];
@@ -358,134 +359,136 @@ class Area extends React.Component<AreaProps, AreaState> {
 
     return (
       <div className="area">
-        <Route
-          render={props => {
-            if (!this.props.location.pathname.includes("advisor")) {
+        <SideBarContext.Provider value={this.state.sideBarOpen }>
+          <Route
+            render={props => {
+              if (!this.props.location.pathname.includes("advisor")) {
+                return (
+                  <Sidebar
+                    sideBarOpen={sideBarOpen}
+                    setApp={this.setApp}
+                    viewID={this.state.viewID}
+                    views={this.state.webviews}
+                    openInstances={this.state.openInstances}
+                    toggleSidebar={this.toggleSidebar}
+                    setInstance={this.setInstance}
+                    {...this.props}
+                    licences={this.props.licences.fetchLicences}
+                    {...props}
+                    moveTo={this.moveTo}
+                  />
+                );
+              } else {
+                return "";
+              }
+            }}
+          />
+
+          <Route
+            render={props => {
+              if (!this.props.location.pathname.includes("advisor")) {
+                return (
+                  <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
+                    {res => (
+                      <Navigation
+                        chatOpen={chatOpen}
+                        sideBarOpen={sideBarOpen}
+                        setApp={this.setApp}
+                        toggleChat={this.toggleChat}
+                        toggleSidebar={this.toggleSidebar}
+                        {...this.props}
+                        {...props}
+                        {...res}
+                      />
+                    )}
+                  </Query>
+                );
+              } else {
+                return "";
+              }
+            }}
+          />
+
+          <Route
+            exact
+            path="/area/support"
+            render={props => <SupportPage {...this.state} {...this.props} {...props} />}
+          />
+
+          {routes.map(({ path, component, admin }) => {
+            const RouteComponent = component;
+
+            if (admin && this.props.company.unit.id != 14) {
+              return;
+            } else {
               return (
-                <Sidebar
-                  sideBarOpen={sideBarOpen}
-                  setApp={this.setApp}
-                  viewID={this.state.viewID}
-                  views={this.state.webviews}
-                  openInstances={this.state.openInstances}
-                  toggleSidebar={this.toggleSidebar}
-                  setInstance={this.setInstance}
-                  {...this.props}
-                  licences={this.props.licences.fetchLicences}
-                  {...props}
-                  moveTo={this.moveTo}
+                <Route
+                  key={path}
+                  exact
+                  path={`/area/${path}`}
+                  render={props => (
+                    <div
+                      className={`${
+                        !this.props.location.pathname.includes("advisor") ? "full-working" : ""
+                      } ${chatOpen ? "chat-open" : ""} ${
+                        sideBarOpen && !props.location.pathname.includes("advisor")
+                          ? "side-bar-open"
+                          : ""
+                      }`}>
+                      <RouteComponent
+                        setApp={this.setApp}
+                        {...this.props}
+                        {...props}
+                        moveTo={this.moveTo}
+                      />
+                    </div>
+                  )}
                 />
               );
-            } else {
-              return "";
             }
-          }}
-        />
+          })}
 
-        <Route
-          render={props => {
-            if (!this.props.location.pathname.includes("advisor")) {
-              return (
-                <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
-                  {res => (
-                    <Navigation
-                      chatOpen={chatOpen}
-                      sideBarOpen={sideBarOpen}
-                      setApp={this.setApp}
-                      toggleChat={this.toggleChat}
-                      toggleSidebar={this.toggleSidebar}
-                      {...this.props}
-                      {...props}
-                      {...res}
-                    />
-                  )}
-                </Query>
-              );
-            } else {
-              return "";
-            }
-          }}
-        />
+          <Route
+            exact
+            path="/area/domains/"
+            render={props => (
+              <div
+                className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                  sideBarOpen ? "side-bar-open" : ""
+                }`}>
+                <Domains setDomain={this.setDomain} {...this.props} {...props} />
+              </div>
+            )}
+          />
 
-        <Route
-          exact
-          path="/area/support"
-          render={props => <SupportPage {...this.state} {...this.props} {...props} />}
-        />
-
-        {routes.map(({ path, component, admin }) => {
-          const RouteComponent = component;
-
-          if (admin && this.props.company.unit.id != 14) {
-            return;
-          } else {
-            return (
-              <Route
-                key={path}
-                exact
-                path={`/area/${path}`}
-                render={props => (
-                  <div
-                    className={`${
-                      !this.props.location.pathname.includes("advisor") ? "full-working" : ""
-                    } ${chatOpen ? "chat-open" : ""} ${
-                      sideBarOpen && !props.location.pathname.includes("advisor")
-                        ? "side-bar-open"
-                        : ""
-                    }`}>
-                    <RouteComponent
-                      setApp={this.setApp}
-                      {...this.props}
-                      {...props}
-                      moveTo={this.moveTo}
-                    />
-                  </div>
-                )}
-              />
-            );
-          }
-        })}
-
-        <Route
-          exact
-          path="/area/domains/"
-          render={props => (
-            <div
-              className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                sideBarOpen ? "side-bar-open" : ""
-              }`}>
-              <Domains setDomain={this.setDomain} {...this.props} {...props} />
-            </div>
-          )}
-        />
-
-        <Route
-          exact
-          path="/area/domains/:domain"
-          render={props => (
-            <div
-              className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                sideBarOpen ? "side-bar-open" : ""
-              }`}>
-              <Domains setDomain={this.setDomain} {...this.props} {...props} />
-            </div>
-          )}
-        />
-        <ViewHandler
-          showView={this.state.viewID}
-          views={this.state.webviews}
-          sideBarOpen={sideBarOpen}
-        />
-        <Tabs
-          tabs={this.state.webviews}
-          setInstance={this.setInstance}
-          viewID={this.state.viewID}
-          handleDragStart={this.handleDragStart}
-          handleDragOver={this.handleDragOver}
-          handleDragEnd={this.handleDragEnd}
-          handleDragLeave={this.handleDragLeave}
-          handleClose={this.handleClose}
-        />
+          <Route
+            exact
+            path="/area/domains/:domain"
+            render={props => (
+              <div
+                className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                  sideBarOpen ? "side-bar-open" : ""
+                }`}>
+                <Domains setDomain={this.setDomain} {...this.props} {...props} />
+              </div>
+            )}
+          />
+          <ViewHandler
+            showView={this.state.viewID}
+            views={this.state.webviews}
+            sideBarOpen={sideBarOpen}
+          />
+          <Tabs
+            tabs={this.state.webviews}
+            setInstance={this.setInstance}
+            viewID={this.state.viewID}
+            handleDragStart={this.handleDragStart}
+            handleDragOver={this.handleDragOver}
+            handleDragEnd={this.handleDragEnd}
+            handleDragLeave={this.handleDragLeave}
+            handleClose={this.handleClose}
+          />
+        </AppContext.Provider>
       </div>
     );
   }
