@@ -7,6 +7,7 @@ import LoadingDiv from "../components/LoadingDiv";
 import Popup from "../components/Popup";
 import addExternal from "../popups/addExternal";
 import { me, fetchLicences } from "../queries/auth";
+import UniversalSearchBox from "../components/universalSearchBox";
 
 interface Props {
   history: any;
@@ -194,7 +195,13 @@ class Integrations extends React.Component<Props, AppPageState> {
       });
       return (
         <div className="integrations">
-          <div className="externalSearch">
+          <UniversalSearchBox
+            placeholder="Search for an service..."
+            getValue={value => this.setState({ searchstring: value })}
+            //getValue={value => console.log("searchstring:", value)}
+          />
+          <div style={{ width: "10px", height: "50px" }} />
+          {/*<div className="externalSearch">
             {this.state.searchopen ? (
               <React.Fragment>
                 <button
@@ -220,7 +227,7 @@ class Integrations extends React.Component<Props, AppPageState> {
                 <span className="textButtonBeside">Start Search</span>
               </button>
             )}
-          </div>
+            </div>*/}
           {this.showapps(apps)}
         </div>
       );
@@ -257,7 +264,12 @@ class Integrations extends React.Component<Props, AppPageState> {
       <div
         className="appIntegrationLogo"
         style={{
-          backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${logo})`
+          backgroundImage:
+            logo.indexOf("/") != -1
+              ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                  logo
+                )})`
+              : `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${encodeURI(logo)})`
         }}
       />
       <div className="captionIntegration">
