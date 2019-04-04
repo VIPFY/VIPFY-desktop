@@ -3,7 +3,10 @@ import * as React from "react";
 interface Props {
   type?: string; //high | low
   disabeld?: Boolean;
-  onClick: Function;
+  onClick?: Function;
+  closingPopup?: Boolean;
+  closingAllPopups?: Boolean;
+  additionalClickFunction?: Function;
 }
 
 interface State {}
@@ -14,14 +17,23 @@ class UniversalButton extends React.Component<Props, State> {
   click(e) {
     console.log("Clicked", e.clientX, e.target);
     if (!this.props.disabeld) {
-      this.props.onClick(e);
+      if (this.props.onClick) {
+        this.props.onClick(e);
+      }
+      if (this.props.additionalClickFunction) {
+        this.props.additionalClickFunction();
+      }
     }
   }
 
   render() {
-    console.log("Button", this.props.children);
     return (
-      <button className="cleanup universalCoverButton" onClick={e => this.click(e)}>
+      <button
+        className="cleanup universalCoverButton"
+        onClick={e => this.click(e)}
+        style={{
+          width: this.props.children.length > 6 ? this.props.children.length * 10 + 20 : 80
+        }}>
         <div
           className={`cleanup universalButton ${this.props.type ? this.props.type : ""} ${
             this.props.disabeld ? "disabled" : "useable"
