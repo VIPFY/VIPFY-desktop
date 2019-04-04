@@ -433,7 +433,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       case "errorDetected": {
         console.log("errorDetected");
         // Create the error object
-        const eventdata = {};
+        const eventdata = { state: this.state, props: this.props };
         await this.props.logError({ variables: { eventdata } });
         this.setState({
           error:
