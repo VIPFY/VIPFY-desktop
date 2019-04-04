@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import WebView = require("react-electron-web-view");
 const { shell, remote } = require("electron");
 const { session } = remote;
-import { withApollo } from "react-apollo";
+import { withApollo, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 
 import LoadingDiv from "../components/LoadingDiv";
@@ -42,7 +42,14 @@ export type WebViewProps = {
   sidebBarOpen: boolean;
   setViewTitle: Function;
   viewID: number;
+  logError: Function;
 };
+
+const LOG_SSO_ERROR = gql`
+  mutation onLogSSOError($data: JSON!) {
+    logSSOError(eventdata: $data)
+  }
+`;
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
 // TODO: move TODO page to web so webSecurity=no is no longer nessesary
@@ -422,17 +429,22 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         this.setState({ loggedIn: true });
         break;
       }
+
       case "errorDetected": {
         console.log("errorDetected");
+        // Create the error object
+        const eventdata = { state: this.state, props: this.props };
+        await this.props.logError({ variables: { eventdata } });
         this.setState({
           error:
-            "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+            "Please check your email address. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
           errorshowed: true,
           loggedIn: true
         });
         this.hideLoadingScreen();
         break;
       }
+
       case "startLoginIn": {
         console.log("StartLoginIN");
         break;
@@ -609,4 +621,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 }
 
-export default withApollo(Webview);
+export default compose(
+  withApollo,
+  graphql(LOG_SSO_ERROR, { name: "logError" })
+)(Webview);
