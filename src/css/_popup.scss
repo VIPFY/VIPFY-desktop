@@ -136,7 +136,7 @@ $modal-wh: 50%;
   max-width: 60rem;
   background: white;
   box-shadow: $vipfy-lightshadow;
-  border-radius: 3px;
+  border-radius: $vipfy_bigradius;
   position: relative;
   height: auto;
   //transform: scale(0);
@@ -151,7 +151,7 @@ $modal-wh: 50%;
   text-align: center;
   font-size: 15px;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: $vipfy_smallradius;
   transition: background-color 200ms ease-in-out;
 
   &:hover{
