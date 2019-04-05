@@ -198,7 +198,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Domains",
         location: "domains",
         icon: "atlas",
-        show: this.props.isadmin,
+        show: config.showDomains,
         important: false
       },
       {
