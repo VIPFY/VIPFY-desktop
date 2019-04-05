@@ -29,12 +29,20 @@ $vipfy-lightshadow: 1px 3px 4px 0px #78787833;
 $vipfy-shadow: 1px 3px 4px 0px #78787866;
 
 $vipfy_mainColor: #253647;
+$vipfy_bigradius: 6px;
+$vipfy_smallradius: 3px;
 
 $rccs-size: 10rem;
 $rccs-name-font-size: 0.8rem;
 $rccs-number-font-size: 0.8rem;
 $rccs-expiry-font-size: 0.6rem;
 $rccs-valid-font-size: 0.4rem;
+
+.cleanup{
+  color: $vipfy_mainColor;
+  font-family: 'Roboto', sans-serif;
+  all: unset;
+}
 
 @mixin grid-system($grids) {
   display: grid;

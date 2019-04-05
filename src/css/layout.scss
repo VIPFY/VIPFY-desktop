@@ -3702,9 +3702,9 @@ option{
         }
     }
 
-    label{
+    /*label{
         font-weight: 500;
-    }
+    }*/
 }
 
 .imagehoverable{
@@ -5026,27 +5026,28 @@ flex-wrap: wrap;
     }
 
 .lightHeading{
-    margin-bottom: 15px;
-    font-size: 28px;
+    margin-bottom: 40px;
+    font-size: 24px;
     font-weight: 200;
     display: inline-block;
 }
 .medHeading{
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 400;
     display: inline-block;
-    margin-bottom: 15px;
+    margin-bottom: 40px;
 }
 .boldHeading{
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 800;
     display: inline-block;
-    margin-bottom: 15px;
+    margin-bottom: 40px;
 }
 .spaceHeading{
     padding-left: 10px;
     padding-right: 10px;
 }
+<<<<<<< HEAD
 
 .cleanup{
     color: $vipfy_mainColor;
@@ -5054,11 +5055,12 @@ flex-wrap: wrap;
     all: unset;
 }
 
+=======
+>>>>>>> 5f6b315932f777baff88a83502d14dfe5a1e03f5
 .universalButton{
     line-height: 34px;
-    min-width: 90px;
-    max-width: 156px;
-    padding: 0px 5px;
+    min-width: 60px;
+    padding: 0px 10px;
     text-align: center;
     font-size: 16px;
     text-transform: uppercase;
@@ -5094,10 +5096,10 @@ flex-wrap: wrap;
             font-weight: 500;
             transition: background-color 200ms ease-in-out;
             &:hover{
-                box-shadow: $vipfy-lightshadow;
+                background-color: rgba(#20baa9, 0.1);
             }
             .universalCoverButton:focus > &{
-                box-shadow: $vipfy-lightshadow;
+                background-color: rgba(#20baa9, 0.1);
             }
         }
 

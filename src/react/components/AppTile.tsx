@@ -11,6 +11,7 @@ import { Preview } from "./profile/AppList";
 import PopupBase from "../popups/universalPopups/popupBase";
 import GenericInputField from "./GenericInputField";
 import UniversalButton from "./universalButtons/universalButton";
+import UniversalTextInput from "./universalForms/universalTextInput";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -40,6 +41,8 @@ interface State {
   newpopup: Boolean;
   confirmdisabled: Boolean;
   delete: Boolean;
+  email: string;
+  password: string;
 }
 
 class AppTile extends React.Component<Props, State> {
@@ -47,7 +50,9 @@ class AppTile extends React.Component<Props, State> {
     entered: false,
     newpopup: false,
     confirmdisabled: true,
-    delete: false
+    delete: false,
+    email: "",
+    password: ""
   };
 
   render() {
@@ -157,39 +162,74 @@ class AppTile extends React.Component<Props, State> {
           )}
         </AppContext>
         {this.state.newpopup ? (
-          <PopupBase close={() => this.setState({ newpopup: false })}>
-            <span className="lightHeading">Edit your licence</span>
-            <span className="boldHeading spaceHeading">></span>
-            <span className="medHeading">{name}</span>
-            <div>
-              <GenericInputField />
-              <GenericInputField />
-            </div>
-            <UniversalButton
-              type="low"
-              onClick={() => this.setState({ confirmdisabled: false, delete: true })}>
-              Delete Licence
-            </UniversalButton>
-            <UniversalButton
-              type="high"
-              disabeld={this.state.confirmdisabled}
-              onClick={() => this.setState({ confirmdisabled: true })}>
-              Confirm
-            </UniversalButton>
-          </PopupBase>
-        ) : (
-          ""
-        )}
-        {this.state.delete ? (
-          <PopupBase small={true}>
-            <p>Do you really want to delete your licence for {name}</p>
-            <UniversalButton type="low" onClick={() => this.setState({ delete: false })}>
-              No
-            </UniversalButton>
-            <UniversalButton type="low" onClick={() => console.log("Deletion not possible")}>
-              Yes
-            </UniversalButton>
-          </PopupBase>
+          <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
+            {deleteLicenceAt => (
+              <Mutation mutation={UPDATE_CREDENTIALS}>
+                {updateCredentials => (
+                  <PopupBase close={() => this.setState({ newpopup: false })}>
+                    <span className="lightHeading">Edit your licence</span>
+                    <span className="medHeading spaceHeading">></span>
+                    <span className="medHeading">{name}</span>
+                    <UniversalTextInput
+                      id={`${name}-email`}
+                      label={`Username for your ${name}-Account`}
+                      livevalue={value => this.setState({ email: value })}
+                    />
+                    <UniversalTextInput
+                      id={`${name}-password`}
+                      label={`Password for your ${name}-Account`}
+                      type="password"
+                      livevalue={value => this.setState({ password: value })}
+                    />
+                    <UniversalButton type="low" onClick={() => this.setState({ delete: true })}>
+                      Delete Licence
+                    </UniversalButton>
+                    <UniversalButton
+                      type="high"
+                      disabeld={this.state.email == "" || this.state.password == ""}
+                      closingAllPopups={true}
+                      onClick={async () => {
+                        await updateCredentials({
+                          variables: {
+                            licenceid: this.props.licence.id,
+                            username: this.state.email,
+                            password: this.state.password
+                          }
+                        });
+                      }}>
+                      Confirm
+                    </UniversalButton>
+                    {this.state.delete ? (
+                      <PopupBase
+                        small={true}
+                        close={() => this.setState({ delete: false })}
+                        closeable={false}>
+                        <p>
+                          Do you really want to delete your licence for <b>{name}</b>
+                        </p>
+                        <UniversalButton type="low" closingPopup={true}>
+                          No
+                        </UniversalButton>
+                        <UniversalButton
+                          type="low"
+                          closingAllPopups={true}
+                          onClick={async () =>
+                            await deleteLicenceAt({
+                              variables: { licenceid: this.props.licence.id, time: moment().utc() },
+                              refetchQueries: [{ query: fetchLicences }, { query: me }]
+                            })
+                          }>
+                          Yes
+                        </UniversalButton>
+                      </PopupBase>
+                    ) : (
+                      ""
+                    )}
+                  </PopupBase>
+                )}
+              </Mutation>
+            )}
+          </Mutation>
         ) : (
           ""
         )}

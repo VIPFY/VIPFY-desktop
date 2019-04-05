@@ -537,3 +537,44 @@
     }
   }
 }
+
+.universalLabelInput{
+  position: relative;
+}
+.universalTextInput{
+  width: 375px;
+  font-size: 16px;
+  font-weight: 300;
+  border-bottom: 1px solid;
+  letter-spacing: 0.02em;
+  line-height: 31px;
+  cursor: auto;
+
+  &:hover{
+    background-color: #f5f5f5;
+  }
+  &:focus + .universalLabel{
+    top: -24px;
+    font-size: 12px;
+    color: $vipfy-primary-color;
+  }
+  &[value]:not([value=""]) + .universalLabel {
+    top: -24px;
+    font-size: 12px;
+  }
+}
+.universalLabel{
+  position: absolute;
+  line-height: 32px;
+  letter-spacing: 0.02em;
+  cursor: initial;
+  font-size: 16px;
+  font-weight: 300;
+  transition: all 200ms ease-in-out;
+  left: 0;
+  top: 0;
+}
+.fieldsSeperator{
+  width: 375px;
+  height: 56px;
+}
