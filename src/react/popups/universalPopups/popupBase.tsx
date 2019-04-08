@@ -6,10 +6,13 @@ interface Props {
   small?: Boolean; //if true max-width = 30rem else max-width = 60rem
   closeall?: Function;
   closeable?: Boolean;
+  autoclosing?: number;
+  autoclosingFunction?: Function;
 }
 
 interface State {
   isopen: Boolean;
+  autoclosing: Boolean;
 }
 
 const hidePopup = {
@@ -31,11 +34,16 @@ const showBackground = {
 
 class PopupBase extends React.Component<Props, State> {
   state = {
-    isopen: false
+    isopen: false,
+    autoclosing: false
   };
 
   open(isopen) {
     this.setState({ isopen });
+    if (this.props.autoclosing) {
+      this.setState({ autoclosing: true });
+      setTimeout(() => this.props.autoclosingFunction() || null, this.props.autoclosing * 1000);
+    }
   }
 
   componentDidMount() {
@@ -58,6 +66,7 @@ class PopupBase extends React.Component<Props, State> {
     console.log("CLOSEALL");
     this.close(null, true);
     if (this.props.closeall) {
+      console.log("CloseALL", this.props.closeall);
       this.props.closeall();
     }
   }
@@ -66,55 +75,86 @@ class PopupBase extends React.Component<Props, State> {
     let popupElementArray: JSX.Element[] = [];
     let popupButtonArray: JSX.Element[] = [];
     let popupFieldsArray: JSX.Element[] = [];
-    children.forEach((element, key) => {
-      if (element && element.type && element.type.name && element.type.name == "UniversalButton") {
-        if (popupButtonArray.length > 0) {
-          popupButtonArray.push(<div key={key} className="buttonSeperator" />);
-        }
-        if (element.props.closingAllPopups) {
-          popupButtonArray.push(
-            React.cloneElement(element, { additionalClickFunction: () => this.closeall() })
-          );
-        } else if (element.props.closingPopup) {
-          popupButtonArray.push(
-            React.cloneElement(element, {
-              onClick: () => this.close(() => element.props.onClick(), true)
-            })
-          );
+    console.log("PopupBase Children", children);
+
+    if (children && children.type && children.type.toString() === React.Fragment.toString()) {
+      console.log("FRAGMENT");
+      children = children.props.children;
+    }
+
+    if (Array.isArray(children)) {
+      children.forEach((element, key) => {
+        if (
+          element &&
+          element.type &&
+          element.type.name &&
+          element.type.name == "UniversalButton"
+        ) {
+          if (popupButtonArray.length > 0) {
+            popupButtonArray.push(<div key={key} className="buttonSeperator" />);
+          }
+          if (element.props.closingAllPopups) {
+            popupButtonArray.push(
+              React.cloneElement(element, { additionalClickFunction: () => this.closeall() })
+            );
+          } else if (element.props.closingPopup) {
+            popupButtonArray.push(
+              React.cloneElement(element, {
+                onClick: () =>
+                  this.close(() => (element.props.onClick ? element.props.onClick() : null), true)
+              })
+            );
+          } else {
+            popupButtonArray.push(element);
+          }
+        } else if (
+          element &&
+          element.type &&
+          element.type.name &&
+          element.type.name == "UniversalTextInput"
+        ) {
+          if (popupFieldsArray.length > 0) {
+            popupFieldsArray.push(<div key={key} className="fieldsSeperator" />);
+          }
+          popupFieldsArray.push(element);
+        } else if (
+          element &&
+          element.type &&
+          element.type.name &&
+          element.type.name == "PopupBase"
+        ) {
+          popupElementArray.push(React.cloneElement(element, { closeall: () => this.closeall() }));
         } else {
-          popupButtonArray.push(element);
+          popupElementArray.push(element);
         }
-      } else if (
-        element &&
-        element.type &&
-        element.type.name &&
-        element.type.name == "UniversalTextInput"
-      ) {
-        if (popupFieldsArray.length > 0) {
-          popupFieldsArray.push(<div key={key} className="fieldsSeperator" />);
-        }
-        popupFieldsArray.push(element);
-      } else if (element && element.type && element.type.name && element.type.name == "PopupBase") {
-        popupElementArray.push(React.cloneElement(element, { closeall: () => this.closeall() }));
-      } else {
-        popupElementArray.push(element);
-      }
-    });
-    popupElementArray.push(
-      <div key="fields" className="fieldsPopup">
-        {popupFieldsArray}
-      </div>
-    );
-    popupElementArray.push(
-      <div key="buttons" className="buttonsPopup">
-        {popupButtonArray}
-      </div>
-    );
-    return popupElementArray;
+      });
+      popupElementArray.push(
+        <div key="fields" className="fieldsPopup">
+          {popupFieldsArray}
+        </div>
+      );
+      popupElementArray.push(
+        <div key="buttons" className="buttonsPopup">
+          {popupButtonArray}
+        </div>
+      );
+      return popupElementArray;
+    }
+    return children;
   }
 
   render() {
     console.log(this.props.children, this.props);
+    let autoclosing = {};
+    if (this.props.autoclosing) {
+      const closingtime = this.props.autoclosing * 1000;
+      autoclosing = this.state.autoclosing
+        ? { maxWidth: "0rem", transition: `max-width ${closingtime}ms linear` }
+        : this.props.small
+        ? { maxWidth: "30rem", transition: `max-width ${closingtime}ms linear` }
+        : { maxWidth: "60rem", transition: `max-width ${closingtime}ms linear` };
+    }
+
     return (
       <SideBarContext>
         {sideBarOpen => (
@@ -145,6 +185,7 @@ class PopupBase extends React.Component<Props, State> {
                   ""
                 )}
                 <div className="contentPopup">{this.renderChildren(this.props.children)}</div>
+                {this.props.autoclosing ? <div className="autoclose" style={autoclosing} /> : ""}
               </div>
             </div>
           </div>

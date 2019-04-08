@@ -141,6 +141,8 @@ $modal-wh: 50%;
   height: auto;
   //transform: scale(0);
   margin-bottom: 50px;
+  max-height: 80vh;
+  overflow: auto;
 }
 .closePopup{
   position: absolute;
@@ -165,4 +167,13 @@ $modal-wh: 50%;
   display: flex;
   justify-content: flex-end;
   margin-top: 40px;
+}
+
+.autoclose{
+  height: 8px;
+  width: 100%;
+  position: absolute;
+  background-color: #20baa9;
+  bottom: 0;
+  left: 0;
 }

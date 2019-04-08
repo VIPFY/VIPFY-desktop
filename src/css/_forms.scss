@@ -540,6 +540,7 @@
 
 .universalLabelInput{
   position: relative;
+  width: 375px;
 }
 .universalTextInput{
   width: 375px;
@@ -577,4 +578,40 @@
 .fieldsSeperator{
   width: 375px;
   height: 56px;
+}
+.inputInsideButton{
+  position: absolute;
+  right: 0px;
+  top: 4px;
+  font-size: 16px;
+  line-height: 24px;
+  width: 24px;
+  text-align: center;
+  border-radius: 3px;
+  cursor: pointer;
+
+  &:hover{
+    background-color: #f5f5f5;
+
+    .explainLayer{
+      display: block;
+    }
+  }
+
+  .explainLayer{
+    position: absolute;
+    top: -12px;
+    left: 24px;
+    cursor: auto;
+    display: none;
+
+    .explainLayerInner{
+      text-align: left;
+      padding: 5px 20px;
+      background-color: #f5f5f5;
+      border-radius: 7px;
+      width: 250px;
+      margin-left: 16px;
+    }
+  }
 }
