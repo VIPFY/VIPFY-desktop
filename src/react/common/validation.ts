@@ -114,8 +114,8 @@ export default values => {
 };
 
 export const domainValidation = {
-  check: testValue => !/^[a-zA-Z0-9-]{1,}$/g.test(testValue),
-  error: "Only characters, numbers and hyphens allowed!"
+  check: testValue => !/^[a-zA-Z0-9äöüÄÖÜ-]{1,61}(\.[a-zA-z]{0,30})?$/g.test(testValue),
+  error: "A correct domain name should look like this: vipfy.store or vipfy"
 };
 
 export const subDomainValidation = {

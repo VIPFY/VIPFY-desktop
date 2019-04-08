@@ -1,189 +1,251 @@
 import * as React from "react";
-import { Component } from "react";
-import GenericInputField from "../components/GenericInputField";
+import gql from "graphql-tag";
+import { Mutation } from "react-apollo";
+import DomainCheck from "../components/domains/DomainCheck";
+import { filterError } from "../common/functions";
+import { domainValidation } from "../common/validation";
+import LoadingDiv from "../components/LoadingDiv";
+import { Domain } from "../interfaces";
+import DomainShoppingCart from "../components/domains/DomainShoppingCart";
+import DomainTransfer from "../components/domains/DomainTransfer";
+
+const CHECK_DOMAIN = gql`
+  mutation onCheckDomain($domain: String!) {
+    checkDomain(domain: $domain) {
+      domains {
+        domain
+        price
+        currency
+        availability
+        description
+      }
+      suggestions {
+        domain
+        price
+        currency
+        availability
+        description
+      }
+    }
+  }
+`;
 
 interface Props {
-  tlds: { name: String; price: number; currency: String; features: { value: String } }[];
   onClose: Function;
-  handleSubmit: Function;
+  whoisPrivacy: number;
+  registerDomains: Function;
 }
 
 interface State {
-  domain: String;
-  tld: String;
-  whoisPrivacy: Boolean;
-  agreement: Boolean;
-  error: String;
+  domain: string;
+  success: boolean;
+  showCart: boolean;
+  transfer: boolean;
+  domains: Domain[];
+  error: string;
+  syntaxError: string;
 }
 
-class BuyDomain extends Component<Props, State> {
+class BuyDomain extends React.Component<Props, State> {
   state = {
     domain: "",
-    tld: "",
-    whoisPrivacy: false,
-    agreement: false,
-    error: ""
+    success: false,
+    showCart: false,
+    transfer: false,
+    domains: [],
+    error: "",
+    syntaxError: ""
   };
 
-  checkForTld(value) {
-    let domain = value.split(".");
-    console.log("test", value, domain);
-    if (value === null) {
-      console.log("NULL");
-      return;
-    }
+  handleChange = e => {
+    this.setState({ domain: e.target.value });
 
-    if (domain.length > 2) {
-      this.setState({ error: "Invalid Domain", tld: "" });
-      return;
-    }
-    if (
-      domain.length === 1 ||
-      (domain.length > 1 &&
-        ("com".startsWith(domain[1]) || "org".startsWith(domain[1]) || "net".startsWith(domain[1])))
-    ) {
-      if ("com" === domain[1] || "org" === domain[1] || "net" === domain[1]) {
-        this.setState({ tld: domain[1] });
-        return;
-      }
-      if (this.state.tld !== "") {
-        this.setState({ tld: "" });
-      }
-      return;
+    if (domainValidation.check(e.target.value) && e.target.value) {
+      this.setState({ syntaxError: domainValidation.error });
     } else {
-      this.setState({ error: "We only support .com, .org & .net TLDs!", tld: "" });
-      return;
+      this.setState({ syntaxError: "" });
     }
-  }
+  };
 
-  showPrice = () => {
-    if (this.state.tld) {
-      if (this.state.whoisPrivacy) {
-        let sum =
-          this.props.tlds.filter(tld => tld.name === this.state.tld)[0].price +
-          this.props.tlds.filter(tld => tld.name === this.state.tld)[0].features[0].price;
-        return `Buy for $${sum}`;
+  handleDomainClick = (domain: Domain) => {
+    this.setState(prevState => {
+      const selected = prevState.domains.find(el => el.domain == domain.domain);
+
+      if (selected) {
+        return { domains: prevState.domains.filter(el => el.domain != domain.domain) };
       } else {
-        return `Buy for $${this.props.tlds.filter(tld => tld.name === this.state.tld)[0].price}`;
+        const { domains } = prevState;
+        domains.push(domain);
+
+        return { domains };
       }
+    });
+  };
+
+  goBack = () => this.setState({ showCart: false, domains: [] });
+
+  handleSubmit = e => {
+    e.preventDefault();
+
+    this.setState({ showCart: true });
+  };
+
+  removeDomain = domain => {
+    this.setState(prevState => {
+      const domains = prevState.domains.filter(el => el.domain != domain);
+
+      return { ...prevState, domains };
+    });
+  };
+
+  handleRegister = async ({ whoisPrivacy, autoRenewal, agb }, total) => {
+    if (agb) {
+      const domains = this.state.domains.map(({ domain, price, currency }) => {
+        const req = { domain, price, currency, renewalmode: "AUTODELETE", whoisprivacy: false };
+
+        if (whoisPrivacy.find(el => el == domain)) {
+          req.whoisprivacy = true;
+        }
+
+        if (autoRenewal.find(el => el == domain)) {
+          req.renewalmode = "AUTORENEW";
+        }
+
+        return req;
+      });
+
+      this.props.registerDomains(domains, parseFloat(total), agb);
+      this.props.onClose();
     } else {
-      return "Choose Domain first";
+      this.setState({ error: "Terms of Service and Privacy Notice were not confirmed!" });
     }
   };
 
   render() {
-    console.log("buyDomain", this.props);
+    const { domain, syntaxError } = this.state;
 
-    let domainPrices: JSX.Element[] = [];
-
-    this.props.tlds.forEach((tld, key) => {
-      if (domainPrices[0]) {
-        domainPrices.push(<span key={`s-${key}`}>|</span>);
-      }
-      domainPrices.push(
-        <span key={key} className="tldItem">
-          <span
-            className={this.state.tld === tld.name ? "tldItemSmall selectedTld" : "tldItemSmall"}
-            onClick={() => {
-              if (this.state.domain !== "") {
-                this.setState({ tld: tld.name });
-              }
-            }}>
-            <span className="tld">.{tld.name}</span>
-            <span>{`$${tld.price.toFixed(2)}/yr`}</span>
-          </span>
-        </span>
+    if (this.state.transfer) {
+      return (
+        <div className="domain-popup float-in-left">
+          <h2>Transfer a domain to us</h2>
+          <DomainTransfer onClose={this.props.onClose} />
+          <div onClick={() => this.setState({ transfer: false })} className="transfer-check">
+            Or register a domain instead
+          </div>
+        </div>
       );
-    });
+    }
+
+    if (this.state.success && this.state.showCart && this.state.domains.length > 0) {
+      return (
+        <DomainShoppingCart
+          whoisPrivacyPrice={this.props.whoisPrivacy}
+          domains={this.state.domains}
+          removeDomain={this.removeDomain}
+          goBack={this.goBack}
+          handleRegister={this.handleRegister}
+        />
+      );
+    }
 
     return (
-      <div className="buyDomain">
-        <div className="domainInputHolder">
-          <GenericInputField
-            fieldClass="inputBoxField domainInputField"
-            divClass="domainInput"
-            placeholder="Type in your favourite domain"
-            default=""
-            inputType="domain"
-            onBlur={value => this.setState({ domain: value })}
-            onChange={value => this.checkForTld(value)}
-            forcedTld={this.state.tld}
-            error={this.state.error}
-          />
-          {/*<button>Check domain</button>*/}
-        </div>
-        <div className="tldHolder">{domainPrices}</div>
+      <Mutation mutation={CHECK_DOMAIN}>
+        {(checkDomain, { error, loading, data }) => (
+          <section className="domain-popup float-in-left">
+            <h2>Please enter a Domain name to check whether it's available</h2>
 
-        {/*{this.state.tld === "" ? (
-          <div className="agreementBox whoisPrivacyBox">Please choose a Domain</div>
-        ) : (
-          <div className="agreementBox whoisPrivacyBox">
-            <input
-              type="checkbox"
-              className="cbx"
-              id="Whois"
-              style={{ display: "none" }}
-              onChange={e => this.setState({ whoisPrivacy: e.target.checked })}
-            />
-            <label htmlFor="Whois" className="check">
-              <svg width="18px" height="18px" viewBox="0 0 18 18">
-                <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
-                <polyline points="1 9 7 14 15 4" />
-              </svg>
-              <span className="whoisPrivacy">
-                Add Whois-Privacy for{" "}
-                {this.props.tlds.filter(tld => tld.name === this.state.tld)[0].features[0].value}
-              </span>
-            </label>
-          </div>
-        )}*/}
+            <form
+              className="domain-form"
+              onSubmit={async e => {
+                e.preventDefault();
 
-        <div className="agreementBox whoisPrivacyBox">
-          <input
-            type="checkbox"
-            className="cbx"
-            id="Agreement"
-            style={{ display: "none" }}
-            onChange={e => this.setState({ agreement: e.target.checked })}
-          />
-          <label htmlFor="Agreement" className="check">
-            <svg width="18px" height="18px" viewBox="0 0 18 18">
-              <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z" />
-              <polyline points="1 9 7 14 15 4" />
-            </svg>
-            <span className="whoisPrivacy">
-              I agree to the terms and services and Privacy Rules of DD24
-            </span>
-          </label>
-        </div>
+                await this.setState({ success: false });
+                await checkDomain({ variables: { domain } });
+                await this.setState({ success: true });
+              }}>
+              <div className="domain-search">
+                <input
+                  name="domain"
+                  id="domain-search-input"
+                  type="text"
+                  autoFocus
+                  disabled={loading}
+                  required
+                  onChange={this.handleChange}
+                  value={this.state.domain}
+                />
 
-        <div className="buyDomainButtonHolder">
-          <button className="__cancel" onClick={() => this.props.onClose()}>
-            Cancel
-          </button>
-          <button
-            className={this.state.agreement && this.state.tld !== "" ? "" : "__greyed"}
-            onClick={() => {
-              if (this.state.agreement && this.state.tld !== "") {
-                console.log("Submit", {
-                  domainName: this.state.domain.split(".")[0],
-                  tld: this.state.tld,
-                  whoisprivacy: this.state.whoisPrivacy,
-                  agb: this.state.agreement
-                });
-                this.props.handleSubmit({
-                  domainName: this.state.domain.split(".")[0],
-                  tld: this.state.tld,
-                  whoisprivacy: this.state.whoisPrivacy,
-                  agb: this.state.agreement
-                });
-                this.props.onClose();
-              }
-            }}>
-            {this.showPrice()}
-          </button>
-        </div>
-      </div>
+                <label htmlFor="domain-search-input">Find your domain name...</label>
+                <span>{error ? filterError(error) : ""}</span>
+                <span className="info">{loading && !error ? "Checking availability..." : ""} </span>
+                <span>{!error && !loading && syntaxError}</span>
+                <button
+                  disabled={loading || syntaxError ? true : false}
+                  type="submit"
+                  className="naked-button check-button">
+                  <i className={`fas fa-search fa-lg ${domain ? "filled" : ""} `} />
+                </button>
+              </div>
+            </form>
+
+            {!loading && !data && !this.state.success && (
+              <div onClick={() => this.setState({ transfer: true })} className="transfer-check">
+                Or transfer a domain to us instead
+              </div>
+            )}
+            {loading && <LoadingDiv style={{ maxHeight: "300px" }} />}
+            {this.state.success && data && !error && (
+              <div>
+                <div className="domain-check" style={{ marginTop: "5px" }}>
+                  {data.checkDomain.domains.map(domain => (
+                    <DomainCheck
+                      select={this.handleDomainClick}
+                      key={domain.domain}
+                      domain={domain}
+                    />
+                  ))}
+                </div>
+
+                <h3>These domains could also be interesting for you</h3>
+                <div
+                  className="domain-check"
+                  style={{
+                    maxHeight: "301px",
+                    overflowY: "scroll",
+                    marginTop: "5px",
+                    marginBottom: "1rem"
+                  }}>
+                  {data.checkDomain.suggestions.map(domain => (
+                    <DomainCheck
+                      select={this.handleDomainClick}
+                      key={domain.domain}
+                      domain={domain}
+                    />
+                  ))}
+                </div>
+
+                <div className="generic-button-holder">
+                  <button
+                    type="button"
+                    className="generic-cancel-button"
+                    onClick={this.props.onClose}>
+                    <i className="fas fa-long-arrow-alt-left" /> Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={this.state.domains.length === 0}
+                    onClick={this.handleSubmit}
+                    className="generic-submit-button">
+                    <i className="fas fa-check-circle" />
+                    Register
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+      </Mutation>
     );
   }
 }

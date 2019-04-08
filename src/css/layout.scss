@@ -1379,7 +1379,6 @@ li {
   }
 }
 
-
 .notificationPopup {
   position: absolute;
   z-index: 1000;
@@ -3747,17 +3746,18 @@ option{
     position: relative;
     overflow: hidden;
 
-    &:hover{
-        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-        //background-color: #117f91
-        background-color: #1697A5;
-        overflow: initial;
+    &:hover {
+      box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
+      //background-color: #117f91
+      background-color: #1697A5;
+      overflow: initial;
     }
 
-    i{
-        font-size: 16px;
-        line-height: 16px;
+    i {
+      font-size: 16px;
+      line-height: 16px;
     }
+    
     & > .textButtonInside{
         line-height: 16px;
         margin-left: 10px;
@@ -4896,11 +4896,11 @@ flex-wrap: wrap;
   }
 
   .generic-button{
-        padding: 5px;
-        border-radius: 3px;
-        box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-        transition: all 0.6s ease-in-out;
-        color: white;
+    padding: 5px;
+    border-radius: 3px;
+    box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
+    transition: all 0.6s ease-in-out;
+    color: white;
   }
   .back-button{
     background-color: #253647;
@@ -5056,6 +5056,13 @@ flex-wrap: wrap;
     padding-left: 10px;
     padding-right: 10px;
 }
+
+.cleanup{
+    color: $vipfy_mainColor;
+    font-family: 'Roboto', sans-serif;
+    all: unset;
+}
+
 .universalButton{
     line-height: 34px;
     min-width: 60px;

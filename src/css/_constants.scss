@@ -188,6 +188,20 @@ $rccs-valid-font-size: 0.4rem;
   }
 }
 
+.float-out-right {
+  animation: float-out-right 400ms ease-in-out;
+
+  @keyframes float-out-right {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    } to {
+      opacity: 0;
+      transform: translateX(500px);
+    }
+  }
+}
+
 .float-in-left {
   animation: float-in 200ms ease-in-out;
 
