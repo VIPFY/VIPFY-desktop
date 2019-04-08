@@ -12,13 +12,15 @@ interface State {
   value: string;
   error: string | null;
   inputFocus: Boolean;
+  eyeopen: Boolean;
 }
 
 class UniversalTextInput extends React.Component<Props, State> {
   state = {
     value: "",
     error: null,
-    inputFocus: false
+    inputFocus: false,
+    eyeopen: false
   };
 
   toggleInput = bool => {
@@ -43,7 +45,13 @@ class UniversalTextInput extends React.Component<Props, State> {
       <div className="universalLabelInput">
         <input
           id={this.props.id}
-          type={this.props.type || ""}
+          type={
+            this.props.type == "password"
+              ? this.state.eyeopen
+                ? ""
+                : "password"
+              : this.props.type || ""
+          }
           onFocus={() => this.toggleInput(true)}
           onBlur={() => this.toggleInput(false)}
           className="cleanup universalTextInput"
@@ -56,6 +64,35 @@ class UniversalTextInput extends React.Component<Props, State> {
         <label htmlFor={this.props.id} className="universalLabel">
           {this.props.label}
         </label>
+        {this.props.children ? (
+          <button className="cleanup inputInsideButton" tabIndex={-1}>
+            <i className="fal fa-info" />
+            <div className="explainLayer">
+              <div className="explainLayerInner">{this.props.children}</div>
+            </div>
+          </button>
+        ) : (
+          ""
+        )}
+        {this.props.type == "password" ? (
+          this.state.eyeopen ? (
+            <button
+              className="cleanup inputInsideButton"
+              tabIndex={-1}
+              onClick={() => this.setState({ eyeopen: false })}>
+              <i className="fal fa-eye" />
+            </button>
+          ) : (
+            <button
+              className="cleanup inputInsideButton"
+              tabIndex={-1}
+              onClick={() => this.setState({ eyeopen: true })}>
+              <i className="fal fa-eye-slash" />
+            </button>
+          )
+        ) : (
+          ""
+        )}
       </div>
     );
   }

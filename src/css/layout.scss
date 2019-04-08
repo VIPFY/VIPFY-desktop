@@ -5030,18 +5030,27 @@ flex-wrap: wrap;
     font-size: 24px;
     font-weight: 200;
     display: inline-block;
+    @at-root h2#{&} {
+        font-size: 16px;
+    }
 }
 .medHeading{
     font-size: 24px;
     font-weight: 400;
     display: inline-block;
     margin-bottom: 40px;
+    @at-root h2#{&} {
+        font-size: 16px;
+    }
 }
 .boldHeading{
     font-size: 24px;
     font-weight: 800;
     display: inline-block;
     margin-bottom: 40px;
+    @at-root h2#{&} {
+        font-size: 16px;
+    }
 }
 .spaceHeading{
     padding-left: 10px;
@@ -5103,3 +5112,28 @@ flex-wrap: wrap;
 .buttonSeperator{
     width: 40px;
   }
+.universalPopup{
+    letter-spacing: 0.02em;
+    p{
+        margin-bottom: 16px;
+    }
+    .light{
+        font-size: 16px;
+        font-weight: 300;
+    }
+    .small{
+        font-size: 12px;
+        
+    }
+    .error{
+        color: #e32022;
+    }
+    .bold{
+        font-weight: 500;
+    }
+    li{
+        display: block;
+        margin-bottom: 8px;
+        letter-spacing: 0.02em;
+    }
+}
