@@ -42,8 +42,9 @@ const CREATE_EMAIL = gql`
 
 const UPDATE_EMAIL = gql`
   mutation onUpdateEmail($email: String!, $emailData: EmailUpdateInput!) {
-    updateEmail(email: $email, emailData: $emailData) {
-      ok
+    updateEmail08(email: $email, emailData: $emailData) {
+      email
+      description
     }
   }
 `;
