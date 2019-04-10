@@ -3,7 +3,6 @@ import PopupBase from "./universalPopups/popupBase";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
 import UniversalButton from "../components/universalButtons/universalButton";
 import { compose, graphql } from "react-apollo";
-import { CREATE_ADDRESS } from "../mutations/contact";
 import gql from "graphql-tag";
 import { FETCH_ADDRESSES } from "../queries/contact";
 import UniversalDropDownInput from "../components/universalForms/universalDropdownInput";
@@ -11,58 +10,75 @@ import { countries } from "../constants/countries";
 
 interface Props {
   close: Function;
-  createAddress: Function;
+  createPhone: Function;
   oldvalues?: {
-    country: string;
-    street: string;
-    zip: string;
-    city: string;
+    number: string;
     description: string;
     id: number;
   };
-  updateAddress: Function;
+  updatePhone: Function;
   delete?: Boolean;
-  deleteAddress: Function;
+  deletePhone: Function;
 }
 
 interface State {
-  country: string;
-  street: string;
-  zip: string;
-  city: string;
+  number: string;
   description: string;
   confirm: Boolean;
   networking: Boolean;
   networkerror: Boolean;
 }
 
-const UPDATE_ADDRESS = gql`
-  mutation onUpdateAddress($address: AddressInput!, $id: ID!) {
-    updateAddress(address: $address, id: $id) {
+const CREATE_PHONE = gql`
+  mutation onCreatePhone($phoneData: PhoneInput!, $department: Boolean) {
+    createPhone(phoneData: $phoneData, department: $department) {
       id
-      address
-      country
+      number
       description
       priority
+      verified
       tags
     }
   }
 `;
 
-const DELETE_ADDRESS = gql`
-  mutation onDeleteAddress($id: ID!, $department: Boolean) {
-    deleteAddress(id: $id, department: $department) {
+const UPDATE_PHONE = gql`
+  mutation onUpdatePhone($phone: PhoneInput!, $id: ID!) {
+    updatePhone(phone: $phone, id: $id) {
+      id
+      number
+      description
+      priority
+      verified
+      tags
+    }
+  }
+`;
+
+const DELETE_PHONE = gql`
+  mutation onDeletePhone($id: ID!, $department: Boolean) {
+    deletePhone(id: $id, department: $department) {
       ok
     }
   }
 `;
 
-class PopupAddress extends React.Component<Props, State> {
+const FETCH_PHONES = gql`
+  query onFetchPhones($company: Boolean) {
+    fetchPhones(forCompany: $company) {
+      id
+      number
+      description
+      priority
+      verified
+      tags
+    }
+  }
+`;
+
+class PopupPhone extends React.Component<Props, State> {
   state = {
-    country: this.props.oldvalues ? this.props.oldvalues.country : "",
-    street: this.props.oldvalues ? this.props.oldvalues.street : "",
-    zip: this.props.oldvalues ? this.props.oldvalues.zip : "",
-    city: this.props.oldvalues ? this.props.oldvalues.city : "",
+    number: this.props.oldvalues ? this.props.oldvalues.number : "",
     description: this.props.oldvalues ? this.props.oldvalues.description : "",
     confirm: false,
     networking: true,
@@ -72,22 +88,19 @@ class PopupAddress extends React.Component<Props, State> {
   delete = async () => {
     this.setState({ confirm: true, networking: true });
     try {
-      this.props.deleteAddress({
+      this.props.deletePhone({
         variables: { id: this.props.oldvalues!.id, department: true },
         update: proxy => {
           // Read the data from our cache for this query.
-          const cachedData = proxy.readQuery({
-            query: FETCH_ADDRESSES,
-            variables: { company: true }
-          });
-          const filteredAddresses = cachedData.fetchAddresses.filter(
-            address => address.id != this.props.oldvalues!.id
+          const cachedData = proxy.readQuery({ query: FETCH_PHONES, variables: { company: true } });
+          const filteredPhones = cachedData.fetchPhones.filter(
+            phone => phone.id != this.props.oldvalues!.id
           );
           // Write our data back to the cache.
           proxy.writeQuery({
-            query: FETCH_ADDRESSES,
+            query: FETCH_PHONES,
             variables: { company: true },
-            data: { fetchAddresses: filteredAddresses }
+            data: { fetchPhones: filteredPhones }
           });
         }
       });
@@ -102,23 +115,10 @@ class PopupAddress extends React.Component<Props, State> {
     this.setState({ confirm: true, networking: true });
     if (this.props.oldvalues) {
       try {
-        console.log("UPDATE", {
-          address: {
-            street: this.state.street,
-            zip: this.state.zip,
-            city: this.state.city,
-            country: this.state.country,
-            description: this.state.description
-          },
-          id: this.props.oldvalues.id
-        });
-        const res = await this.props.updateAddress({
+        const res = await this.props.updatePhone({
           variables: {
-            address: {
-              street: this.state.street,
-              zip: this.state.zip,
-              city: this.state.city,
-              country: this.state.country,
+            phone: {
+              number: this.state.number,
               description: this.state.description,
               department: true
             },
@@ -133,27 +133,21 @@ class PopupAddress extends React.Component<Props, State> {
       }
     } else {
       try {
-        await this.props.createAddress({
+        await this.props.createPhone({
           variables: {
-            addressData: {
-              street: this.state.street,
-              zip: this.state.zip,
-              city: this.state.city,
-              country: this.state.country,
-              description: this.state.description
-            },
+            phoneData: { number: this.state.number, description: this.state.description },
             department: true
           },
-          update: (proxy, { data: { createAddress } }) => {
+          update: (proxy, { data: { createPhone } }) => {
             // Read the data from our cache for this query.
             const cachedData = proxy.readQuery({
-              query: FETCH_ADDRESSES,
+              query: FETCH_PHONES,
               variables: { company: true }
             });
-            cachedData.fetchAddresses.push(createAddress);
+            cachedData.fetchPhones.push(createPhone);
             // Write our data back to the cache.
             proxy.writeQuery({
-              query: FETCH_ADDRESSES,
+              query: FETCH_PHONES,
               variables: { company: true },
               data: cachedData
             });
@@ -171,25 +165,11 @@ class PopupAddress extends React.Component<Props, State> {
     if (this.props.delete) {
       return (
         <PopupBase close={() => this.props.close()} small={true} closeable={false}>
-          <h2 className="lightHeading">Do you really want to delete this adress?</h2>
+          <h2 className="lightHeading">Do you really want to delete this phonenumber?</h2>
           <div>
             <p>
-              <span className="bold light">Country: </span>
-              <span className="light">
-                {countries.find(c => c.code == this.props.oldvalues!.country).name}
-              </span>
-            </p>
-            <p>
-              <span className="bold light">Street: </span>
-              <span className="light">{this.props.oldvalues!.street}</span>
-            </p>
-            <p>
-              <span className="bold light">Zip: </span>
-              <span className="light">{this.props.oldvalues!.zip}</span>
-            </p>
-            <p>
-              <span className="bold light">City: </span>
-              <span className="light">{this.props.oldvalues!.city}</span>
+              <span className="bold light">Number: </span>
+              <span className="light">{this.props.oldvalues!.number}</span>
             </p>
             <p>
               <span className="bold light">Description: </span>
@@ -217,7 +197,7 @@ class PopupAddress extends React.Component<Props, State> {
                   <div style={{ fontSize: "32px", textAlign: "center" }}>
                     <i className="fal fa-spinner fa-spin" />
                     <div style={{ marginTop: "32px", fontSize: "16px" }}>
-                      We currently deleting your adress in our system.
+                      We currently deleting your phonenumber in our system.
                     </div>
                   </div>
                 </div>
@@ -237,7 +217,7 @@ class PopupAddress extends React.Component<Props, State> {
                 </React.Fragment>
               ) : (
                 <React.Fragment>
-                  <div>Your Adress has been successfully deleted</div>
+                  <div>Your phonenumber has been successfully deleted</div>
                   <UniversalButton
                     type="high"
                     closingPopup={true}
@@ -256,51 +236,29 @@ class PopupAddress extends React.Component<Props, State> {
     return (
       <PopupBase close={() => this.props.close()}>
         <h2 className="lightHeading">
-          {this.props.oldvalues ? "Please change your address" : "Please insert your address"}
+          {this.props.oldvalues
+            ? "Please change your phonenumber"
+            : "Please insert your phonenumber"}
         </h2>
-        <div className="addressLayout">
-          <UniversalDropDownInput
-            id="country"
-            label="Country"
-            livecode={value => this.setState({ country: value })}
-            noresults="No matches"
-            width="200px"
-            startvalue={this.props.oldvalues ? this.props.oldvalues.country : ""}
-          />
-          <UniversalTextInput
-            id="street"
-            label="Street"
-            livevalue={value => this.setState({ street: value })}
-            width="200px"
-            startvalue={this.props.oldvalues ? this.props.oldvalues.street : ""}
-          />
-          <UniversalTextInput
-            id="zip"
-            label="Zip"
-            livevalue={value => this.setState({ zip: value })}
-            width="200px"
-            startvalue={this.props.oldvalues ? this.props.oldvalues.zip : ""}
-          />
-          <UniversalTextInput
-            id="city"
-            label="City"
-            livevalue={value => this.setState({ city: value })}
-            width="200px"
-            startvalue={this.props.oldvalues ? this.props.oldvalues.city : ""}
-          />
-          <UniversalTextInput
-            id="description"
-            label="Description"
-            livevalue={value => this.setState({ description: value })}
-            width="500px"
-            startvalue={this.props.oldvalues ? this.props.oldvalues.description : ""}
-          />
-        </div>
+        <UniversalTextInput
+          id="number"
+          label="Number"
+          livevalue={value => this.setState({ number: value })}
+          width="500px"
+          startvalue={this.props.oldvalues ? this.props.oldvalues.number : ""}
+        />
+        <UniversalTextInput
+          id="description"
+          label="Description"
+          livevalue={value => this.setState({ description: value })}
+          width="500px"
+          startvalue={this.props.oldvalues ? this.props.oldvalues.description : ""}
+        />
         <UniversalButton type="low" closingPopup={true} label="Cancel" />
         <UniversalButton
           type="high"
           label={this.props.oldvalues ? "Save" : "Confirm"}
-          disabeld={this.state.city == "" || this.state.country == "" || this.state.street == ""}
+          disabeld={this.state.number == ""}
           onClick={async () => {
             this.confirm();
           }}
@@ -319,8 +277,8 @@ class PopupAddress extends React.Component<Props, State> {
                   <i className="fal fa-spinner fa-spin" />
                   <div style={{ marginTop: "32px", fontSize: "16px" }}>
                     {this.props.oldvalues
-                      ? "We currently update your adress in our system."
-                      : "We currently create your adress in our system."}
+                      ? "We currently update your phonenumber in our system."
+                      : "We currently create your phonenumber in our system."}
                   </div>
                 </div>
               </div>
@@ -342,8 +300,8 @@ class PopupAddress extends React.Component<Props, State> {
               <React.Fragment>
                 <div>
                   {this.props.oldvalues
-                    ? "Your Adress has been successfully updated"
-                    : "Your Adress has been successfully created"}
+                    ? "Your phonenumber has been successfully updated"
+                    : "Your phonenumber has been successfully created"}
                 </div>
                 <UniversalButton
                   type="high"
@@ -362,7 +320,7 @@ class PopupAddress extends React.Component<Props, State> {
   }
 }
 export default compose(
-  graphql(CREATE_ADDRESS, { name: "createAddress" }),
-  graphql(UPDATE_ADDRESS, { name: "updateAddress" }),
-  graphql(DELETE_ADDRESS, { name: "deleteAddress" })
-)(PopupAddress);
+  graphql(CREATE_PHONE, { name: "createPhone" }),
+  graphql(UPDATE_PHONE, { name: "updatePhone" }),
+  graphql(DELETE_PHONE, { name: "deletePhone" })
+)(PopupPhone);

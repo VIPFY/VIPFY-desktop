@@ -8,6 +8,7 @@ import CoolCheckbox from "../CoolCheckbox";
 import LoadingDiv from "../LoadingDiv";
 import { filterError, ErrorComp } from "../../common/functions";
 import { filter } from "async";
+import PopupEmail from "../../popups/popupEmails";
 
 const CREATE_EMAIL = gql`
   mutation onCreateEmail($emailData: EmailInput!, $company: Boolean, $tags: [String]) {
@@ -63,6 +64,10 @@ interface State {
   edit: number;
   error: string;
   variables: { company: boolean };
+  createNew: Boolean;
+  update: Boolean;
+  delete: Boolean;
+  oldEmail: { email: string; description: string } | null;
 }
 
 class Emails extends React.Component<Props, State> {
@@ -72,7 +77,11 @@ class Emails extends React.Component<Props, State> {
     error: "",
     variables: {
       company: false
-    }
+    },
+    createNew: false,
+    update: false,
+    delete: false,
+    oldEmail: null
   };
 
   componentDidMount() {
@@ -343,13 +352,29 @@ class Emails extends React.Component<Props, State> {
                                 <React.Fragment>
                                   <td className="editButton">
                                     <i
-                                      onClick={() => this.showDeletion(emailData.email)}
+                                      onClick={() =>
+                                        /*this.showDeletion(emailData.email)*/ this.setState({
+                                          delete: true,
+                                          oldEmail: {
+                                            email: emailData.email,
+                                            description: emailData.description
+                                          }
+                                        })
+                                      }
                                       className="fal fa-trash-alt"
                                     />
                                   </td>
                                   <td className="editButton">
                                     <i
-                                      onClick={() => this.setState({ edit: key })}
+                                      onClick={() =>
+                                        /*this.setState({ edit: key })*/ this.setState({
+                                          update: true,
+                                          oldEmail: {
+                                            email: emailData.email,
+                                            description: emailData.description
+                                          }
+                                        })
+                                      }
                                       className="fal fa-edit"
                                     />
                                   </td>
@@ -369,10 +394,32 @@ class Emails extends React.Component<Props, State> {
             <button
               type="button"
               className="naked-button genericButton"
-              onClick={this.showCreation}>
+              onClick={/*this.showCreation*/ () => this.setState({ createNew: true })}>
               <span className="textButton">+</span>
               <span className="textButtonBeside">Add Email</span>
             </button>
+            {this.state.createNew ? (
+              <PopupEmail close={() => this.setState({ createNew: false })} />
+            ) : (
+              ""
+            )}
+            {this.state.update ? (
+              <PopupEmail
+                close={() => this.setState({ update: false })}
+                oldvalues={this.state.oldEmail}
+              />
+            ) : (
+              ""
+            )}
+            {this.state.delete ? (
+              <PopupEmail
+                close={() => this.setState({ delete: false })}
+                delete={true}
+                oldvalues={this.state.oldEmail}
+              />
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>

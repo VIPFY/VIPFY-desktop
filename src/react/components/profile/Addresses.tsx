@@ -60,7 +60,8 @@ interface State {
     city: string;
     description: string;
     id: number;
-  };
+  } | null;
+  delete: Boolean;
 }
 
 class Addresses extends React.Component<Props, State> {
@@ -73,7 +74,8 @@ class Addresses extends React.Component<Props, State> {
     },
     createNew: false,
     update: false,
-    oldAddress: {}
+    oldAddress: null,
+    delete: false
   };
 
   componentDidMount() {
@@ -344,7 +346,20 @@ class Addresses extends React.Component<Props, State> {
                                       <td className="editButton">
                                         <i
                                           title="Delete"
-                                          onClick={() => this.showDeletion(id, showPopup)}
+                                          onClick={() =>
+                                            /*this.showDeletion(id, showPopup)*/
+                                            this.setState({
+                                              delete: true,
+                                              oldAddress: {
+                                                country,
+                                                street,
+                                                zip,
+                                                city,
+                                                description,
+                                                id
+                                              }
+                                            })
+                                          }
                                           className="fal fa-trash-alt"
                                         />
                                       </td>
@@ -398,6 +413,15 @@ class Addresses extends React.Component<Props, State> {
                 {this.state.update ? (
                   <PopupAddress
                     close={() => this.setState({ update: false })}
+                    oldvalues={this.state.oldAddress}
+                  />
+                ) : (
+                  ""
+                )}
+                {this.state.delete ? (
+                  <PopupAddress
+                    close={() => this.setState({ delete: false })}
+                    delete={true}
                     oldvalues={this.state.oldAddress}
                   />
                 ) : (
