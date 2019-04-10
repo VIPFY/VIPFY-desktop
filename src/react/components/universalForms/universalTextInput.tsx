@@ -10,6 +10,7 @@ interface Props {
   errorhint?: string;
   startvalue?: string;
   width?: string;
+  disabled?: Boolean;
 }
 
 interface State {
@@ -73,6 +74,7 @@ class UniversalTextInput extends React.Component<Props, State> {
                 : "password"
               : this.props.type || ""
           }
+          disabled={this.props.disabled}
           onFocus={() => this.toggleInput(true)}
           onBlur={() => this.toggleInput(false)}
           className="cleanup universalTextInput"

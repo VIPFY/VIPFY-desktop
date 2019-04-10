@@ -6,6 +6,7 @@ import Confirmation from "../../popups/Confirmation";
 import GenericInputForm from "../GenericInputForm";
 import LoadingDiv from "../LoadingDiv";
 import { filterError, ErrorComp } from "../../common/functions";
+import PopupPhone from "../../popups/popupPhones";
 
 const CREATE_PHONE = gql`
   mutation onCreatePhone($phoneData: PhoneInput!, $department: Boolean) {
@@ -68,6 +69,10 @@ interface State {
   edit: number;
   error: string;
   variables: { company: boolean };
+  createNew: Boolean;
+  update: Boolean;
+  delete: Boolean;
+  oldPhone: { number: string; description: string; id: number } | null;
 }
 
 class Phones extends React.Component<Props, State> {
@@ -77,7 +82,11 @@ class Phones extends React.Component<Props, State> {
     error: "",
     variables: {
       company: false
-    }
+    },
+    createNew: false,
+    update: false,
+    delete: false,
+    oldPhone: null
   };
 
   componentDidMount() {
@@ -338,13 +347,31 @@ class Phones extends React.Component<Props, State> {
                               <React.Fragment>
                                 <td className="editButton">
                                   <i
-                                    onClick={() => this.showDeletion(id)}
+                                    onClick={() =>
+                                      /*this.showDeletion(id)*/ this.setState({
+                                        delete: true,
+                                        oldPhone: {
+                                          number: phoneData.number,
+                                          description: phoneData.description,
+                                          id: id
+                                        }
+                                      })
+                                    }
                                     className="fal fa-trash-alt"
                                   />
                                 </td>
                                 <td className="editButton">
                                   <i
-                                    onClick={() => this.setState({ edit: id })}
+                                    onClick={() =>
+                                      /*this.setState({ edit: id })*/ this.setState({
+                                        update: true,
+                                        oldPhone: {
+                                          number: phoneData.number,
+                                          description: phoneData.description,
+                                          id: id
+                                        }
+                                      })
+                                    }
                                     className="fal fa-edit"
                                   />
                                 </td>
@@ -361,10 +388,37 @@ class Phones extends React.Component<Props, State> {
               }}
             </Query>
 
-            <button className="naked-button genericButton" onClick={this.showCreation}>
+            <button
+              className="naked-button genericButton"
+              onClick={
+                /*this.showCreation*/
+                () => this.setState({ createNew: true })
+              }>
               <span className="textButton">+</span>
               <span className="textButtonBeside">Add Phone</span>
             </button>
+            {this.state.createNew ? (
+              <PopupPhone close={() => this.setState({ createNew: false })} />
+            ) : (
+              ""
+            )}
+            {this.state.update ? (
+              <PopupPhone
+                close={() => this.setState({ update: false })}
+                oldvalues={this.state.oldPhone}
+              />
+            ) : (
+              ""
+            )}
+            {this.state.delete ? (
+              <PopupPhone
+                close={() => this.setState({ delete: false })}
+                delete={true}
+                oldvalues={this.state.oldPhone}
+              />
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ interface Props {
   closeable?: Boolean;
   autoclosing?: number;
   autoclosingFunction?: Function;
-  notimer: Boolean;
+  notimer?: Boolean;
 }
 
 interface State {
