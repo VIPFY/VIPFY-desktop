@@ -8,6 +8,7 @@ interface Props {
   closeable?: Boolean;
   autoclosing?: number;
   autoclosingFunction?: Function;
+  notimer: Boolean;
 }
 
 interface State {
@@ -51,7 +52,7 @@ class PopupBase extends React.Component<Props, State> {
   }
 
   close(originalClose: Function | null = null, force = false) {
-    console.log("CLOSE");
+    //console.log("CLOSE");
     if (this.props.close && (!(this.props.closeable == false) || force)) {
       this.open(false);
       setTimeout(() => this.props.close(), 200);
@@ -63,10 +64,10 @@ class PopupBase extends React.Component<Props, State> {
   }
 
   closeall() {
-    console.log("CLOSEALL");
+    //console.log("CLOSEALL");
     this.close(null, true);
     if (this.props.closeall) {
-      console.log("CloseALL", this.props.closeall);
+      //console.log("CloseALL", this.props.closeall);
       this.props.closeall();
     }
   }
@@ -75,10 +76,10 @@ class PopupBase extends React.Component<Props, State> {
     let popupElementArray: JSX.Element[] = [];
     let popupButtonArray: JSX.Element[] = [];
     let popupFieldsArray: JSX.Element[] = [];
-    console.log("PopupBase Children", children);
+    //console.log("PopupBase Children", children);
 
     if (children && children.type && children.type.toString() === React.Fragment.toString()) {
-      console.log("FRAGMENT");
+      //console.log("FRAGMENT");
       children = children.props.children;
     }
 
@@ -91,7 +92,7 @@ class PopupBase extends React.Component<Props, State> {
           element.type.name == "UniversalButton"
         ) {
           if (popupButtonArray.length > 0) {
-            popupButtonArray.push(<div key={key} className="buttonSeperator" />);
+            popupButtonArray.push(<div key={`${key}-sep`} className="buttonSeperator" />);
           }
           if (element.props.closingAllPopups) {
             popupButtonArray.push(
@@ -114,7 +115,7 @@ class PopupBase extends React.Component<Props, State> {
           element.type.name == "UniversalTextInput"
         ) {
           if (popupFieldsArray.length > 0) {
-            popupFieldsArray.push(<div key={key} className="fieldsSeperator" />);
+            popupFieldsArray.push(<div key={`${key}-sep`} className="fieldsSeperator" />);
           }
           popupFieldsArray.push(element);
         } else if (
@@ -144,7 +145,7 @@ class PopupBase extends React.Component<Props, State> {
   }
 
   render() {
-    console.log(this.props.children, this.props);
+    //console.log(this.props.children, this.props);
     let autoclosing = {};
     if (this.props.autoclosing) {
       const closingtime = this.props.autoclosing * 1000;
@@ -185,7 +186,11 @@ class PopupBase extends React.Component<Props, State> {
                   ""
                 )}
                 <div className="contentPopup">{this.renderChildren(this.props.children)}</div>
-                {this.props.autoclosing ? <div className="autoclose" style={autoclosing} /> : ""}
+                {this.props.autoclosing && !this.props.notimer ? (
+                  <div className="autoclose" style={autoclosing} />
+                ) : (
+                  ""
+                )}
               </div>
             </div>
           </div>

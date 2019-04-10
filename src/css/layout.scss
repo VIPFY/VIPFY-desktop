@@ -5137,3 +5137,8 @@ flex-wrap: wrap;
         letter-spacing: 0.02em;
     }
 }
+.addressLayout{
+    display: grid;
+    grid-template-columns: 300px 300px;
+    grid-template-rows: 56px 56px 56px;
+}
