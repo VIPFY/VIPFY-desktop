@@ -5057,12 +5057,6 @@ flex-wrap: wrap;
     padding-right: 10px;
 }
 
-.cleanup{
-    color: $vipfy_mainColor;
-    font-family: 'Roboto', sans-serif;
-    all: unset;
-}
-
 .universalButton{
     line-height: 34px;
     min-width: 60px;
@@ -5143,4 +5137,9 @@ flex-wrap: wrap;
         margin-bottom: 8px;
         letter-spacing: 0.02em;
     }
+}
+.addressLayout{
+    display: grid;
+    grid-template-columns: 300px 300px;
+    grid-template-rows: 56px 56px 56px;
 }

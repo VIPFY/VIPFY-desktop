@@ -1,4 +1,6 @@
 import * as React from "react";
+import { countries } from "../../constants/countries";
+import { validateOperation } from "apollo-link/lib/linkUtils";
 
 interface Props {
   id: string;
@@ -10,6 +12,8 @@ interface Props {
   errorhint?: string;
   startvalue?: string;
   width?: string;
+  livecode?: Function;
+  noresults?: string;
 }
 
 interface State {
@@ -19,20 +23,21 @@ interface State {
   eyeopen: Boolean;
   notypeing: Boolean;
   errorfaded: Boolean;
+  code: string;
 }
 
-class UniversalTextInput extends React.Component<Props, State> {
+class UniversalDropDownInput extends React.Component<Props, State> {
   state = {
-    value: this.props.startvalue || "",
+    value: this.props.startvalue ? countries.find(c => c.code == this.props.startvalue).name : "",
     error: null,
     inputFocus: false,
     eyeopen: false,
     notypeing: true,
-    errorfaded: false
+    errorfaded: false,
+    code: this.props.startvalue || ""
   };
 
   componentWillReceiveProps = props => {
-    //console.log("Will Update", props);
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 
@@ -54,10 +59,65 @@ class UniversalTextInput extends React.Component<Props, State> {
     if (this.props.livevalue) {
       this.props.livevalue(e.target.value);
     }
+    if (this.props.livecode) {
+      this.props.livecode("");
+    }
 
-    this.setState({ value: e.target.value, notypeing: false });
+    this.setState({ value: e.target.value, notypeing: false, code: "" });
     this.timeout = setTimeout(() => this.setState({ notypeing: true }), 250);
   }
+
+  showResults = () => {
+    const possibleValues = countries;
+    let numresults = 0;
+    let results: JSX.Element[] = [];
+    if (this.state.value != "") {
+      for (let i = 0; i < possibleValues.length; i++) {
+        if (
+          numresults < 5 &&
+          //possibleValues[i].name.toLowerCase().includes(this.state.value.toLowerCase()) &&
+          possibleValues[i].name.toLowerCase().startsWith(this.state.value.toLowerCase())
+        ) {
+          //let index = possibleValues[i].name.toLowerCase().indexOf(this.state.value.toLowerCase());
+          let index = 0;
+          results.push(
+            <div
+              key={`searchResult-${i}`}
+              className="searchResult"
+              onClick={() => this.selectResult(possibleValues[i])}>
+              <span>{possibleValues[i].name.substring(0, index)}</span>
+              <span className="resultHighlight">
+                {possibleValues[i].name.substring(index, index + this.state.value.length)}
+              </span>
+              <span>{possibleValues[i].name.substring(index + this.state.value.length)}</span>
+            </div>
+          );
+          numresults++;
+        }
+      }
+      return (
+        <React.Fragment>
+          <div style={{ width: "355px", height: "10px", position: "relative" }} />
+          <div className="resultHolder">
+            {numresults == 0 ? (
+              <div className="searchResult">
+                <span>{this.props.noresults || "No results"}</span>
+              </div>
+            ) : (
+              results
+            )}
+          </div>
+        </React.Fragment>
+      );
+    }
+  };
+
+  selectResult = value => {
+    if (this.props.livecode) {
+      this.props.livecode(value.code);
+    }
+    this.setState({ value: value.name, code: value.code });
+  };
 
   render() {
     return (
@@ -102,6 +162,7 @@ class UniversalTextInput extends React.Component<Props, State> {
         ) : (
           ""
         )}
+        {this.state.code == "" ? this.showResults() : ""}
         {this.props.children ? (
           <button className="cleanup inputInsideButton" tabIndex={-1}>
             <i className="fal fa-info" />
@@ -135,4 +196,4 @@ class UniversalTextInput extends React.Component<Props, State> {
     );
   }
 }
-export default UniversalTextInput;
+export default UniversalDropDownInput;

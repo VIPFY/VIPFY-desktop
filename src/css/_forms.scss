@@ -615,3 +615,40 @@
     }
   }
 }
+.errorhint{
+  position: absolute;
+  top: 32px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #e32022;
+  font-weight: 300;
+  transition: opacity 250ms;
+}
+
+.resultHolder{
+  background-color: white;
+  position: relative;
+  z-index: 1000;
+  border: 1px solid $vipfy-grey;
+  line-height: 30px;
+  box-shadow: $vipfy-lightshadow;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+
+  .searchResult{
+      padding: 0px 10px;
+      font-family: "Roboto Light";
+      font-size: 13px;
+      color: $vipfy-lighttext;
+      cursor: pointer;
+
+      &:hover{
+          line-height: 28px;
+          border: 1px solid $vipfy-grey;
+          border-radius: 5px;
+      }
+      .resultHighlight{
+          font-family: "Roboto Medium"
+      }
+  }
+}
