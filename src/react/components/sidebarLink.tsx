@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
+import AcceptLicence from '../popups/acceptLicence';
 
 interface Props {
   licence: any;
@@ -88,18 +89,21 @@ class SidebarLink extends React.Component<Props, State> {
 
     return (
       <li
+      id={licence.id}
         className={`${cssClass} ${this.state.dragging ? "hold" : ""} ${
           this.state.entered ? "hovered" : ""
         }`}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        onDrop={() => {
+        onDrop={(event) => {
           this.setState({ entered: false });
-          this.props.handleDrop(licence.id);
+          /* this.props.handleDrop(licence.id); */
+          
         }}
         draggable={true}
-        onDragStart={() => {
-          this.props.handleDragStart(licence.id);
+        onDragStart={(event) => {
+          event.dataTransfer.setData('text', licence.id)
+          //this.props.handleDragStart(event);
           this.setState({ dragging: true });
         }}
         onDragOver={e => {

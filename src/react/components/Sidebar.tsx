@@ -60,14 +60,29 @@ class Sidebar extends React.Component<SidebarProps, State> {
   //references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
-  handleDrop = async id => {
-    const { dragItem } = this.state;
+  handleDrop = /* async id */ (tragetId, dragedId) => {
+    let targetLi = this.props.licences.find(tragetId);
+    let dragedLi = this.props.licences.find(dragedId);
+    let prevdragedLi = dragedLi.prevLicence;
+    let nextdragedLi = dragedLi.nextLicence;
+    let nexttargetLi = tragetLi.nextLicence;
+
+    prevdragedLi.nextLicence = nextdragedLi;
+    nextdragedLi.prevLicence = prevdragedLi;
+
+    targetLi.nextLicence = dragedLi;
+    dragedLi.prevLicence = targetLi;
+
+    dragedLi.nextLicence = nexttargetLi;
+    nexttargetLi.prevLicence = dragedLi;
+
+    /* const { dragItem } = this.state;
     const { licences } = this.props;
 
     const layouts = layoutChange(licences, dragItem, id, "layoutvertical");
 
     try {
-      /* await this.props.updateLayout({
+      await this.props.updateLayout({
         variables: { layouts },
         update: cache => {
           const newLicences = licences.map(licence => {
@@ -83,10 +98,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
           cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
         }
       });
-      this.setState({ dragItem: null }); */
+      this.setState({ dragItem: null });
     } catch (error) {
       console.log(error);
-    }
+    } */
   };
 
   addReferences = (key, element, addRenderElement) => {
@@ -561,7 +576,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                       setTeam={this.props.setApp}
                       setInstance={this.props.setInstance}
                       viewID={this.props.viewID}
-                      handleDragStart={dragItem => this.setState({ dragItem })}
+                      handleDragStart={/* dragItem => this.setState({ dragItem }) */}
                       handleDrop={this.handleDrop}
                     />
                   );
