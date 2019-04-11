@@ -405,7 +405,6 @@ class Area extends React.Component<AreaProps, AreaState> {
               }
             }}
           />
-
           <Route
             render={props => {
               if (!this.props.location.pathname.includes("advisor")) {
@@ -430,46 +429,6 @@ class Area extends React.Component<AreaProps, AreaState> {
               }
             }}
           />
-
-          <Route
-            exact
-            path="/area/support"
-            render={props => <SupportPage {...this.state} {...this.props} {...props} />}
-          />
-
-          {routes.map(({ path, component, admin }) => {
-            const RouteComponent = component;
-
-            if (admin && this.props.company.unit.id != 14) {
-              return;
-            } else {
-              return (
-                <Route
-                  key={path}
-                  exact
-                  path={`/area/${path}`}
-                  render={props => (
-                    <div
-                      className={`${
-                        !this.props.location.pathname.includes("advisor") ? "full-working" : ""
-                      } ${chatOpen ? "chat-open" : ""} ${
-                        sideBarOpen && !props.location.pathname.includes("advisor")
-                          ? "side-bar-open"
-                          : ""
-                      }`}>
-                      <RouteComponent
-                        setApp={this.setApp}
-                        {...this.props}
-                        {...props}
-                        moveTo={this.moveTo}
-                      />
-                    </div>
-                  )}
-                />
-              );
-            }
-          })}
-
           <Route
             exact
             path="/area/support"
@@ -536,7 +495,6 @@ class Area extends React.Component<AreaProps, AreaState> {
               </div>
             )}
           />
-
           <Route
             exact
             path="/area/domains/:domain"
@@ -549,6 +507,7 @@ class Area extends React.Component<AreaProps, AreaState> {
               </div>
             )}
           />
+
           <ViewHandler
             showView={this.state.viewID}
             views={this.state.webviews}
