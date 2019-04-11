@@ -11,7 +11,8 @@ interface Props {
   setInstance: Function;
   viewID: number;
   handleDrop: Function;
-  handleDragStart: Function;
+  handleDragStart: Function | null;
+  isSearching: boolean;
 }
 
 interface State {
@@ -86,7 +87,7 @@ class SidebarLink extends React.Component<Props, State> {
     if (active) {
       cssClass += " sidebar-active";
     }
-
+    //console.log(this.props.isSearching)
     return (
       <li
       id={licence.id}
@@ -97,10 +98,11 @@ class SidebarLink extends React.Component<Props, State> {
         onMouseLeave={() => this.setState({ hover: false })}
         onDrop={(event) => {
           this.setState({ entered: false });
-          /* this.props.handleDrop(licence.id); */
-          
+          this.props.handleDrop(licence.id, event.dataTransfer.getData('text'), (event.pageY - event.currentTarget.getBoundingClientRect().top <= event.currentTarget.getBoundingClientRect().height/2 ));
+          //console.log(event.pageX, event.pageY, event.currentTarget.getBoundingClientRect());
         }}
-        draggable={true}
+        
+        draggable={this.props.isSearching}
         onDragStart={(event) => {
           event.dataTransfer.setData('text', licence.id)
           //this.props.handleDragStart(event);

@@ -53,28 +53,59 @@ class Sidebar extends React.Component<SidebarProps, State> {
     dragItem: null,
     searchstring: "",
     sortorientation: true,
-    sortstring: "layoutvertical",
+    sortstring: "Custom",
     showNotification: false
   };
 
   //references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
-  handleDrop = /* async id */ (tragetId, dragedId) => {
-    let targetLi = this.props.licences.find(tragetId);
-    let dragedLi = this.props.licences.find(dragedId);
-    let prevdragedLi = dragedLi.prevLicence;
-    let nextdragedLi = dragedLi.nextLicence;
-    let nexttargetLi = tragetLi.nextLicence;
+  handleDrop = /* async id */ (tragetId, dragedId, top) => {
+    let targetLi = this.props.licences.find( a => a.id === tragetId);
+    let dragedLi = this.props.licences.find(a => a.id === dragedId);
+    if((targetLi!.nextLicence == dragedLi) && !top) {
+      return;
+    } else if((targetLi!.prevLicence == dragedLi)) {
+      return;
+    }
+    let prevdragedLi = dragedLi!.prevLicence;
+    let nextdragedLi = dragedLi!.nextLicence;
+    let reltargetLi;
+    if(!top == this.state.sortorientation) {
+      reltargetLi = targetLi!.nextLicence;
+    } else {
+      reltargetLi = targetLi!.prevLicence;
+    }
 
-    prevdragedLi.nextLicence = nextdragedLi;
-    nextdragedLi.prevLicence = prevdragedLi;
+    if(!nextdragedLi && !prevdragedLi) {
+      return;
+    }
 
-    targetLi.nextLicence = dragedLi;
-    dragedLi.prevLicence = targetLi;
+    if(prevdragedLi) {
+      prevdragedLi!.nextLicence = nextdragedLi;
+    }
+    if(nextdragedLi) {
+      nextdragedLi!.prevLicence = prevdragedLi;
+    }
+    if(!top == this.state.sortorientation) {
+      targetLi!.nextLicence = dragedLi!;
+      dragedLi!.prevLicence = targetLi!;
+      dragedLi!.nextLicence = reltargetLi!;
+    } else {
+      targetLi!.prevLicence = dragedLi!;
+      dragedLi!.nextLicence = targetLi!;
+      dragedLi!.prevLicence = reltargetLi!;
+    }
 
-    dragedLi.nextLicence = nexttargetLi;
-    nexttargetLi.prevLicence = dragedLi;
+    if(reltargetLi) {
+      if(!top == this.state.sortorientation) {
+        reltargetLi!.prevLicence = dragedLi!;
+      } else {
+        reltargetLi!.nextLicence = dragedLi!;
+      }
+    }
+
+    this.setState({ showNotification: false })
 
     /* const { dragItem } = this.state;
     const { licences } = this.props;
@@ -187,14 +218,40 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
   sortCustomlist( unsortedList ) {
     let a = unsortedList[0];
-    while(a.prevLicence) {
-      a = a.prevLicence;
-    }
-    for(let i = 0; a.nextLicence; i++) {
-      unsortedList[i] = a;
-      a = a.nextLicence;
-    }
-    return unsortedList;
+      while(a.prevLicence) {
+        a = a.prevLicence;
+      }
+      let i;
+      if(this.state.sortorientation) {
+        i = 0;
+      } else {
+        i = unsortedList.length - 1;
+      }
+      while(a.nextLicence) {
+        unsortedList[i] = a;
+        a = a.nextLicence;
+        i = (i => {if(this.state.sortorientation) {return ++i;} else {return --i;}})(i);
+      }
+      
+    return unsortedList.filter(licence => {
+      if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+      return false;
+      }
+      let one = false, two = false;
+      if(this.state.searchstring === "") {
+        return true;
+      }
+      if(licence.boughtplanid.alias !== null && 
+        !licence.boughtplanid.alias.toLowerCase().includes(this.state.searchstring.toLowerCase())) {
+          one = true;
+      }
+      if(licence.boughtplanid.planid.appid.name !== null && 
+        (!licence.boughtplanid.planid.appid.name.toLowerCase().includes(this.state.searchstring.toLowerCase()))) {
+          two = true;
+      }
+      if(one && two) { return false; } //include search if search
+      return true;
+    });
   }
 
   render() {
@@ -344,7 +401,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
       })
       let filteredLicences;
       if(this.state.sortstring == "Custom") { //Handle "Custom" seperatly
-        filteredLicences = this.sortCustomlist(filteredLicences0);
+        filteredLicences = this.sortCustomlist(licences);
       } else {
         filteredLicences = filteredLicences0
         .sort((a, b) => {
@@ -517,11 +574,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
                     (acc, cv) => Math.max(acc, cv.layoutvertical),
                     0
                   );
-
+                  //console.log((this.state.searchstring === "") && (this.state.sortstring === "Custom"));
                   // Make sure that every License has an index
                   if (licence.layoutvertical === null) {
                     licence.layoutvertical = maxValue + 1;
                   }
+                  
                   return (
                     <SidebarLink
                       key={`ServiceLogo-${licence.id}`}
@@ -536,9 +594,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
                       setTeam={this.props.setApp}
                       setInstance={this.props.setInstance}
                       viewID={this.props.viewID}
-                      handleDragStart={/* dragItem => this.setState({ dragItem }) */}
+                      handleDragStart={null}
                       handleDrop={this.handleDrop}
+                      isSearching = {(this.state.searchstring === "") && (this.state.sortstring === "Custom")}
+                      
                     />
+                    
                   );
                 })}
 
