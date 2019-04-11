@@ -254,6 +254,17 @@ class Navigation extends React.Component<Props, State> {
                 </button>
               )}
             </AppContext.Consumer>
+            <button
+              type="button"
+              className="naked-button genericButton"
+              onClick={() =>
+                history.back()
+              }>
+              <span className="textButton" style={{ width: "unset" }}>
+                <i className="fal fa-long-arrow-left" style={{ paddingRight: "0.2em" }} />
+                
+              </span>
+            </button>
           </span>
           {/*<span onClick={toggleSidebar} className="fas fa-bars barIcon" />*/}
           {/*<div
@@ -368,7 +379,7 @@ class Navigation extends React.Component<Props, State> {
             </span>
 
             {this.state.showNotification ? (
-              <Notification data={data} refetch={this.props.refetch} />
+              <Notification data={data} refetch={this.props.refetch}/>
             ) : (
               ""
             )}

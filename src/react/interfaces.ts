@@ -10,6 +10,8 @@ export interface Licence {
   unitid: User;
   layoutvertical: number;
   layouthorizontal: number;
+  prevLicence: Licence;
+  nextLicence: Licence;
 }
 
 export interface Unit {
