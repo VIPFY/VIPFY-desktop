@@ -322,7 +322,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
       }
     ];
 
-<<<<<<< HEAD
     const filteredLicences0 = licences
       .filter(licence => {
         if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
@@ -392,20 +391,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
               return -1;
             }
           }
-=======
-    const filteredLicences = licences.filter(licence => {
-      if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
-        return false;
-      }
-
-      return true;
-    });
-    filteredLicences
-      .sort((a, b) => {
-        if (a.layoutvertical === null) {
-          return 1;
-        }
->>>>>>> 3695bcd10d6c1c970c80444ca276af3a9d2d9662
 
           if (b0 === null) {
             if(this.state.sortorientation) {
@@ -431,31 +416,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
             }
           }
 
-<<<<<<< HEAD
           return 0;
         });
       }
-=======
-        return 0;
-      })
-      .sort(function(a, b) {
-        let nameA = a.boughtplanid.alias
-          ? a.boughtplanid.alias.toUpperCase()
-          : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.boughtplanid.alias
-          ? b.boughtplanid.alias.toUpperCase()
-          : b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-
-        // namen müssen gleich sein
-        return 0;
-      });
->>>>>>> 3695bcd10d6c1c970c80444ca276af3a9d2d9662
 
     return (
       <AppContext.Consumer>
@@ -470,7 +433,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
               />
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
               <li className="sidebarfree" />
-<<<<<<< HEAD
               <li className="sidebar-link" style = {sideBarOpen ? {backgroundColor: "transparent", height: "35px", paddingBottom : 0, 
               paddingTop: 0, transitionDuration: "0ms"} : {backgroundColor: "transparent", transitionDuration: "0ms"}}>
               {sideBarOpen ?
@@ -549,8 +511,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 </div> : ""}
               </li>
 
-=======
->>>>>>> 3695bcd10d6c1c970c80444ca276af3a9d2d9662
               {filteredLicences.length > 0 &&
                 filteredLicences.map((licence, key) => {
                   const maxValue = filteredLicences.reduce(
