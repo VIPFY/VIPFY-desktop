@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "*": ["types/*"] },
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,

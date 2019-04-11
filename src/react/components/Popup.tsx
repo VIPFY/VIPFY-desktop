@@ -27,7 +27,7 @@ class Popup extends React.Component<Props, State> {
     } else {
       return (
         <div id="overlay">
-          <div id="popup">
+          <div id="popup" style={bodyProps.popupStyle ? bodyProps.popupStyle : {}}>
             <div id="popup-header">
               <div id="popup-header-text">{popupHeader}</div>
               <div id="popup-close-button" onClick={onClose}>
@@ -35,7 +35,7 @@ class Popup extends React.Component<Props, State> {
               </div>
             </div>
 
-            <div className="popup-body-wrapper">
+            <div className="popup-body-wrapper" style={bodyProps.style ? bodyProps.style : {}}>
               {info && info !== "" ? <div id="popup-info">{info}</div> : ""}
               <PopupBody {...bodyProps} onClose={onClose} />
             </div>

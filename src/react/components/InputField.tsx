@@ -22,17 +22,19 @@ class InputField extends React.Component<InputProps, State> {
     if (this.props.defaultValue) {
       this.setState({ value: this.props.defaultValue });
     } else if (this.props.type == "checkbox") {
-      this.setState({ value: false });
+      this.setState({ value: this.props.defaultValue ? true : false });
     } else if (this.props.type == "picture") {
       this.setState({ value: null });
     }
   }
 
+  externalHandleChange = async value => this.setState({ value });
+
   handleChange = async e => {
     const { value } = e.target;
 
-    if (this.props.type == "checkbox") {
-      this.setState(prevState => ({ value: !prevState.value }));
+    if (this.props.type == "checkbox" || this.props.type == "agb") {
+      await this.setState(prevState => ({ value: !prevState.value }));
     } else {
       e.preventDefault();
       let error = "";
@@ -48,6 +50,10 @@ class InputField extends React.Component<InputProps, State> {
       }
       await this.setState({ value, error });
     }
+
+    if (this.props.handleChange) {
+      this.props.handleChange(this.state.value, this.state.error ? true : false);
+    }
   };
 
   handleDrop = files => this.setState({ value: files });
@@ -60,8 +66,8 @@ class InputField extends React.Component<InputProps, State> {
       case "checkbox": {
         return (
           <label className="vipfy-checkbox">
-            <i className={`fal fa-${icon}`} />
-            <span>{label}</span>
+            {icon && <i className={`fal fa-${icon}`} />}
+            {label && <span>{label}</span>}
 
             <input
               type="checkbox"
@@ -80,16 +86,20 @@ class InputField extends React.Component<InputProps, State> {
       }
 
       case "select": {
+        delete inputProps.defaultValue;
+        const { defaultValue } = this.props;
+
         return (
           <div className="vipfy-input-holder">
             <i className={`fal fa-${icon}`} />
-
             <select
               onChange={this.handleChange}
               value={value}
               {...inputProps}
               className="generic-dropdown">
-              <option value=""> </option>
+              <option value={defaultValue ? defaultValue : ""}>
+                {defaultValue ? defaultValue : " "}
+              </option>
               {options &&
                 options.map((option, key) => (
                   <option key={key} value={option}>
@@ -97,7 +107,6 @@ class InputField extends React.Component<InputProps, State> {
                   </option>
                 ))}
             </select>
-
             <label htmlFor={this.props.name} className="vipfy-label-active">
               {label}
             </label>
@@ -201,7 +210,7 @@ class InputField extends React.Component<InputProps, State> {
                 <span
                   className="lawlink"
                   onClick={() => {
-                    require("electron").shell.openExternal(this.props.privacyLink);
+                    require("electron").shell.openExternal(this.props.placeholderprivacyLink);
                   }}>
                   Privacy
                 </span>
@@ -289,6 +298,7 @@ class InputField extends React.Component<InputProps, State> {
 
             <input
               id={this.props.name}
+              ref={node => (this[this.props.name] = node)}
               disabled={submitting}
               type={type}
               onFocus={() => this.setState({ focus: true })}
@@ -300,10 +310,16 @@ class InputField extends React.Component<InputProps, State> {
               }
               value={value}
               onChange={this.handleChange}
+              onKeyPress={e => {
+                if (this.props.handleKeyPress) {
+                  this.props.handleKeyPress(e.key);
+                }
+              }}
               {...inputProps}
             />
             <label
               htmlFor={this.props.name}
+              onClick={() => this[this.props.name].focus()}
               className={`vipfy-label${this.state.focus || value ? "-active" : ""}`}>
               {label}
             </label>

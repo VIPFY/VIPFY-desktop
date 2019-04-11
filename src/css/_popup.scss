@@ -108,3 +108,72 @@ $modal-wh: 50%;
     max-height: 70vh;
     width: 100%;
 }
+
+
+.backgroundPopup{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000000;
+  background-color: rgba($vipfy_mainColor, 0.1);
+  display: flex;
+  opacity: 0;
+}
+.sideReplicaPopup{
+  height: 100%;
+}
+.holderPopup{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.universalPopup{
+  width: 100%;
+  max-width: 60rem;
+  background: white;
+  box-shadow: $vipfy-lightshadow;
+  border-radius: $vipfy_bigradius;
+  position: relative;
+  height: auto;
+  //transform: scale(0);
+  margin-bottom: 50px;
+  max-height: 80vh;
+  overflow: auto;
+}
+.closePopup{
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: $vipfy_smallradius;
+  transition: background-color 200ms ease-in-out;
+
+  &:hover{
+    background-color: rgba($vipfy_mainColor, 0.15);
+  }
+}
+.contentPopup{
+  margin: 40px;
+}
+.buttonsPopup{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 40px;
+}
+
+.autoclose{
+  height: 8px;
+  width: 100%;
+  position: absolute;
+  background-color: #20baa9;
+  bottom: 0;
+  left: 0;
+}

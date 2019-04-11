@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import WebView = require("react-electron-web-view");
 const { shell, remote } = require("electron");
 const { session } = remote;
-import { withApollo } from "react-apollo";
+import { withApollo, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 
 import LoadingDiv from "../components/LoadingDiv";
@@ -11,6 +11,12 @@ import { STATUS_CODES } from "http";
 import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
+
+const LOG_SSO_ERROR = gql`
+  mutation onLogSSOError($data: JSON!) {
+    logSSOError(eventdata: $data)
+  }
+`;
 
 export type WebViewState = {
   setUrl: string;
@@ -42,6 +48,7 @@ export type WebViewProps = {
   sidebBarOpen: boolean;
   setViewTitle: Function;
   viewID: number;
+  logError: Function;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -107,18 +114,22 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
     //console.log("DIDMOUNT");
     this.switchApp();
-    setTimeout(
-      () =>
-        this.state.loggedIn
-          ? true
-          : this.state.errorshowed
-          ? console.log("Timeout", this.state.errorshowed, this.state.loggedIn)
-          : this.setState({
-              error: "The Login takes too much time. Please check with our support.",
-              loggedIn: true
-            }),
-      30000
-    );
+    setTimeout(async () => {
+      if (this.state.loggedIn) {
+        return true;
+      } else {
+        if (this.state.errorshowed) {
+          return console.log("Timeout", this.state.errorshowed, this.state.loggedIn);
+        } else {
+          const eventdata = { state: this.state, props: this.props };
+          await this.props.logError({ variables: { eventdata } });
+          this.setState({
+            error: "The Login takes too much time. Please check with our support.",
+            loggedIn: true
+          });
+        }
+      }
+    }, 30000);
   }
 
   componentWillUnmount() {
@@ -349,7 +360,10 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     console.log("onNewWindow", e);
     const protocol = require("url").parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
-      shell.openExternal(e.url);
+      //  shell.openExternal(e.url);
+      if (e.url.indexOf("wchat") == -1) {
+        this.setState({ currentUrl: e.url });
+      }
     }
   }
 
@@ -424,6 +438,21 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       }
       case "errorDetected": {
         console.log("errorDetected");
+        const eventdata = { state: this.state, props: this.props };
+        await this.props.logError({ variables: { eventdata } });
+        this.setState({
+          error:
+            "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+          errorshowed: true,
+          loggedIn: true
+        });
+        this.hideLoadingScreen();
+        break;
+      }
+      case "falseLogin": {
+        console.log("falseLogin");
+        const eventdata = { state: this.state, props: this.props };
+        await this.props.logError({ variables: { eventdata } });
         this.setState({
           error:
             "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
@@ -490,6 +519,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             waituntil: this.state.options.waituntil,
             repeat: this.state.options.repeat,
             loggedIn: this.state.loggedIn,
+            loginiframe: this.state.options.loginiframe,
             key
           });
         } else {
@@ -609,4 +639,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 }
 
-export default withApollo(Webview);
+export default compose(
+  withApollo,
+  graphql(LOG_SSO_ERROR, { name: "logError" })
+)(Webview);

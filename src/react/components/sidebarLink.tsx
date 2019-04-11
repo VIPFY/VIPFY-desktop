@@ -122,9 +122,15 @@ class SidebarLink extends React.Component<Props, State> {
         <span
           className="service-logo-small"
           style={{
-            backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-              licence.boughtplanid.planid.appid.icon
-            })`
+            backgroundImage:
+              licence.boughtplanid.planid.appid.icon &&
+              licence.boughtplanid.planid.appid.icon.indexOf("/") != -1
+                ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                    licence.boughtplanid.planid.appid.icon
+                  )})`
+                : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                    licence.boughtplanid.planid.appid.icon
+                  )})`
           }}>
           {licence.boughtplanid.planid.options && licence.boughtplanid.planid.options.external ? (
             <div className="ribbon-small ribbon-small-top-right">
