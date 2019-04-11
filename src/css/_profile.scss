@@ -232,6 +232,7 @@ $shadow-color: #f0f3ff;
     display: grid;
     grid-template-rows: repeat(auto-fill, 8rem);
     grid-template-columns: repeat(auto-fill, 8rem);
+    justify-content: center;
     margin: 20px;
     margin-bottom: 40px;
     grid-gap: 1rem;

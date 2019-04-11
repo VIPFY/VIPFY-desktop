@@ -356,7 +356,10 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     console.log("onNewWindow", e);
     const protocol = require("url").parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
-      shell.openExternal(e.url);
+      //  shell.openExternal(e.url);
+      if (e.url.indexOf("wchat") == -1) {
+        this.setState({ currentUrl: e.url });
+      }
     }
   }
 
@@ -433,7 +436,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       case "errorDetected": {
         console.log("errorDetected");
         // Create the error object
-        const eventdata = { state: this.state, props: this.props };
+        const eventdata = { error: "errorDetected", state: this.state, props: this.props };
         await this.props.logError({ variables: { eventdata } });
         this.setState({
           error:
@@ -444,7 +447,19 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         this.hideLoadingScreen();
         break;
       }
-
+      case "falseLogin": {
+        console.log("falseLogin");
+        const eventdata = { error: "falseLogin", state: this.state, props: this.props };
+        await this.props.logError({ variables: { eventdata } });
+        this.setState({
+          error:
+            "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+          errorshowed: true,
+          loggedIn: true
+        });
+        this.hideLoadingScreen();
+        break;
+      }
       case "startLoginIn": {
         console.log("StartLoginIN");
         break;
@@ -502,6 +517,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             waituntil: this.state.options.waituntil,
             repeat: this.state.options.repeat,
             loggedIn: this.state.loggedIn,
+            loginiframe: this.state.options.loginiframe,
             key
           });
         } else {

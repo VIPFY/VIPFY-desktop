@@ -7,6 +7,9 @@ import LoadingDiv from "../components/LoadingDiv";
 import Popup from "../components/Popup";
 import addExternal from "../popups/addExternal";
 import { me, fetchLicences } from "../queries/auth";
+import UniversalSearchBox from "../components/universalSearchBox";
+import PopupBase from "../popups/universalPopups/popupBase";
+import AppCardIntegrations from "../components/services/appCardIntegrations";
 
 interface Props {
   history: any;
@@ -174,7 +177,7 @@ class Integrations extends React.Component<Props, AppPageState> {
 
   renderLoading(appsunfiltered) {
     if (appsunfiltered) {
-      console.log("UF", appsunfiltered);
+      //console.log("UF", appsunfiltered);
       const apps = appsunfiltered.filter(element =>
         element.name.toLowerCase().includes(this.state.searchstring.toLowerCase())
       );
@@ -194,33 +197,11 @@ class Integrations extends React.Component<Props, AppPageState> {
       });
       return (
         <div className="integrations">
-          <div className="externalSearch">
-            {this.state.searchopen ? (
-              <React.Fragment>
-                <button
-                  className="naked-button genericButton"
-                  onClick={() => this.setState({ searchopen: false })}>
-                  <span className="textButton">
-                    <i className="fal fa-search" />
-                  </span>
-                </button>
-                <input
-                  onChange={e => this.setState({ searchstring: e.target.value })}
-                  autoFocus={true}
-                  className="inputBoxField"
-                />
-              </React.Fragment>
-            ) : (
-              <button
-                className="naked-button genericButton"
-                onClick={() => this.setState({ searchopen: true, searchstring: "" })}>
-                <span className="textButton">
-                  <i className="fal fa-search" />
-                </span>
-                <span className="textButtonBeside">Start Search</span>
-              </button>
-            )}
-          </div>
+          <UniversalSearchBox
+            placeholder="Search for an service..."
+            getValue={value => this.setState({ searchstring: value })}
+          />
+          <div style={{ width: "10px", height: "50px" }} />
           {this.showapps(apps)}
         </div>
       );
@@ -230,7 +211,7 @@ class Integrations extends React.Component<Props, AppPageState> {
 
   showapps = apps => {
     if (apps.length > 0) {
-      console.log("APPS", apps);
+      //console.log("APPS", apps);
       return apps.map(appDetails => this.renderAppCard(appDetails));
     }
     if (this.state.searchstring === "") {
@@ -252,23 +233,37 @@ class Integrations extends React.Component<Props, AppPageState> {
     );
   };
 
-  renderAppCard = ({ id, logo, name, teaserdescription, needssubdomain, options }) => (
-    <div className="appIntegration" key={id}>
-      <div
-        className="appIntegrationLogo"
-        style={{
-          backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${logo})`
-        }}
-      />
-      <div className="captionIntegration">
-        <h3>{name}</h3>
-      </div>
-      <button
-        className="button-external"
-        onClick={() => this.registerExternal(name, needssubdomain, id, options)}>
-        <i className="fas fa-boxes" /> Add as External
-      </button>
+  /*<div className="appIntegration" key={id}>
+    <div
+      className="appIntegrationLogo"
+      style={{
+        backgroundImage:
+          logo.indexOf("/") != -1
+            ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                logo
+              )})`
+            : `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${encodeURI(logo)})`
+      }}
+    />
+    <div className="captionIntegration">
+      <h3>{name}</h3>
     </div>
+    <button
+      className="button-external"
+      onClick={() => this.registerExternal(name, needssubdomain, id, options)}>
+      <i className="fas fa-boxes" /> Add as External
+    </button>
+    </div>*/
+  renderAppCard = ({ id, logo, name, teaserdescription, needssubdomain, options }) => (
+    <AppCardIntegrations
+      key={id}
+      id={id}
+      logo={logo}
+      name={name}
+      teaserdescription={teaserdescription}
+      needssubdomain={needssubdomain}
+      options={options}
+    />
   );
 
   render() {

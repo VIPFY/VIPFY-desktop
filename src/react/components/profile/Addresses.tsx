@@ -11,6 +11,7 @@ import { filterError, ErrorComp } from "../../common/functions";
 import { addressFields } from "../../common/constants";
 import { CREATE_ADDRESS } from "../../mutations/contact";
 import { FETCH_ADDRESSES } from "../../queries/contact";
+import PopupAddress from "../../popups/popupAddress";
 
 const UPDATE_ADDRESS = gql`
   mutation onUpdateAddress($address: AddressInput!, $id: ID!) {
@@ -50,6 +51,17 @@ interface State {
   variables: {
     company: boolean;
   };
+  createNew: Boolean;
+  update: Boolean;
+  oldAddress: {
+    country: string;
+    street: string;
+    zip: string;
+    city: string;
+    description: string;
+    id: number;
+  } | null;
+  delete: Boolean;
 }
 
 class Addresses extends React.Component<Props, State> {
@@ -59,7 +71,11 @@ class Addresses extends React.Component<Props, State> {
     error: "",
     variables: {
       company: false
-    }
+    },
+    createNew: false,
+    update: false,
+    oldAddress: null,
+    delete: false
   };
 
   componentDidMount() {
@@ -330,14 +346,40 @@ class Addresses extends React.Component<Props, State> {
                                       <td className="editButton">
                                         <i
                                           title="Delete"
-                                          onClick={() => this.showDeletion(id, showPopup)}
+                                          onClick={() =>
+                                            /*this.showDeletion(id, showPopup)*/
+                                            this.setState({
+                                              delete: true,
+                                              oldAddress: {
+                                                country,
+                                                street,
+                                                zip,
+                                                city,
+                                                description,
+                                                id
+                                              }
+                                            })
+                                          }
                                           className="fal fa-trash-alt"
                                         />
                                       </td>
                                       <td className="editButton">
                                         <i
                                           title="Edit"
-                                          onClick={() => this.setState({ edit: id })}
+                                          onClick={() =>
+                                            /*this.setState({ edit: id })*/
+                                            this.setState({
+                                              update: true,
+                                              oldAddress: {
+                                                country,
+                                                street,
+                                                zip,
+                                                city,
+                                                description,
+                                                id
+                                              }
+                                            })
+                                          }
                                           className="fal fa-edit"
                                         />
                                       </td>
@@ -356,10 +398,35 @@ class Addresses extends React.Component<Props, State> {
                 </Query>
                 <button
                   className="naked-button genericButton"
-                  onClick={() => this.showCreation(showPopup)}>
+                  onClick={() => {
+                    console.log("STATE", this.state);
+                    /*this.showCreation(showPopup)*/ this.setState({ createNew: true });
+                  }}>
                   <span className="textButton">+</span>
                   <span className="textButtonBeside">Add Address</span>
                 </button>
+                {this.state.createNew ? (
+                  <PopupAddress close={() => this.setState({ createNew: false })} />
+                ) : (
+                  ""
+                )}
+                {this.state.update ? (
+                  <PopupAddress
+                    close={() => this.setState({ update: false })}
+                    oldvalues={this.state.oldAddress}
+                  />
+                ) : (
+                  ""
+                )}
+                {this.state.delete ? (
+                  <PopupAddress
+                    close={() => this.setState({ delete: false })}
+                    delete={true}
+                    oldvalues={this.state.oldAddress}
+                  />
+                ) : (
+                  ""
+                )}
               </div>
             </div>
           </div>

@@ -14,6 +14,9 @@ import { me } from "../../queries/auth";
 import { QUERY_USER } from "../../queries/user";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import UniversalTextInput from "../universalForms/universalTextInput";
+import UniversalButton from "../universalButtons/universalButton";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
@@ -31,10 +34,26 @@ interface Props {
 
 interface State {
   show: boolean;
+  pwchange: boolean;
+  oldpassword: string;
+  newpassword: string;
+  new2password: string;
+  pwconfirm: Boolean;
+  networking: Boolean;
+  errorupdate: Boolean;
 }
 
 class PersonalData extends React.Component<Props, State> {
-  state = { show: true };
+  state = {
+    show: true,
+    pwchange: false,
+    oldpassword: "",
+    newpassword: "",
+    new2password: "",
+    pwconfirm: false,
+    networking: true,
+    errorupdate: false
+  };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
@@ -54,12 +73,17 @@ class PersonalData extends React.Component<Props, State> {
   };
 
   uploadPassword = async values => {
+    this.setState({ pwconfirm: true, networking: true });
     try {
       const res = await this.props.changePassword({ variables: { ...values } });
-      await localStorage.setItem("token", res.data.changePassword.token);
 
+      console.log("RES", res);
+
+      await localStorage.setItem("token", res.data.changePassword.token);
+      this.setState({ networking: false, errorupdate: false });
       return true;
     } catch (err) {
+      this.setState({ networking: false, errorupdate: true });
       throw new Error(filterError(err));
     }
   };
@@ -246,12 +270,121 @@ class PersonalData extends React.Component<Props, State> {
                             <button
                               ref={el => addRenderElement({ key: "changePassword", element: el })}
                               className="naked-button genericButton topright"
-                              onClick={() => showPopup(passwordPopup)}>
+                              onClick={() =>
+                                /*showPopup(passwordPopup)*/ this.setState({ pwchange: true })
+                              }>
                               <i className="fal fa-key" />
                               <span className="textButtonInside">Change Password</span>
                             </button>
                           </li>
                         </ul>
+                        {this.state.pwchange ? (
+                          <PopupBase
+                            close={() =>
+                              this.setState({
+                                pwchange: false,
+                                oldpassword: "",
+                                newpassword: "",
+                                new2password: ""
+                              })
+                            }>
+                            <h2 className="lightHeading">Change your password</h2>
+                            <UniversalTextInput
+                              id={`${name}-oldpassword`}
+                              label="Current password"
+                              type="password"
+                              livevalue={value => this.setState({ oldpassword: value })}
+                            />
+                            <UniversalTextInput
+                              id={`${name}-newpassword`}
+                              label="New Password"
+                              type="password"
+                              livevalue={value => this.setState({ newpassword: value })}
+                              errorEvaluation={
+                                this.state.newpassword != "" &&
+                                this.state.oldpassword != "" &&
+                                this.state.oldpassword == this.state.newpassword
+                              }
+                              errorhint="The old and new password can not be the same"
+                            />
+                            <UniversalTextInput
+                              id={`${name}-new2password`}
+                              label="Repeat new password"
+                              type="password"
+                              livevalue={value => this.setState({ new2password: value })}
+                              errorEvaluation={
+                                this.state.newpassword != "" &&
+                                this.state.new2password != "" &&
+                                this.state.newpassword != this.state.new2password
+                              }
+                              errorhint="Passwords don't match"
+                            />
+                            <UniversalButton type="low" closingPopup={true} label="Cancel" />
+                            <UniversalButton
+                              type="high"
+                              disabeld={
+                                this.state.oldpassword == "" ||
+                                this.state.newpassword == "" ||
+                                this.state.new2password == "" ||
+                                this.state.newpassword != this.state.new2password ||
+                                this.state.oldpassword == this.state.newpassword
+                              }
+                              onClick={() =>
+                                this.uploadPassword({
+                                  pw: this.state.oldpassword,
+                                  newPw: this.state.newpassword,
+                                  confirmPw: this.state.new2password
+                                })
+                              }
+                              label="Change"
+                            />
+                            {this.state.pwconfirm ? (
+                              <PopupBase
+                                close={() => this.setState({ pwconfirm: false, networking: true })}
+                                small={true}
+                                closeable={false}>
+                                {this.state.networking ? (
+                                  <div>
+                                    <div style={{ fontSize: "32px", textAlign: "center" }}>
+                                      <i className="fal fa-spinner fa-spin" />
+                                      <div style={{ marginTop: "32px", fontSize: "16px" }}>
+                                        We currently update your password.
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : this.state.errorupdate ? (
+                                  <React.Fragment>
+                                    <div>
+                                      Something went wrong
+                                      <br />
+                                      Have you inserted the correct old password?
+                                    </div>
+                                    <UniversalButton
+                                      type="high"
+                                      closingPopup={true}
+                                      label="Ok"
+                                      closingAllPopups={true}
+                                    />
+                                  </React.Fragment>
+                                ) : (
+                                  <React.Fragment>
+                                    <div>Your password has been successfully updated</div>
+                                    <UniversalButton
+                                      type="high"
+                                      closingPopup={true}
+                                      label="Ok"
+                                      closingAllPopups={true}
+                                    />
+                                  </React.Fragment>
+                                )}
+                              </PopupBase>
+                            ) : (
+                              ""
+                            )}
+                          </PopupBase>
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
 

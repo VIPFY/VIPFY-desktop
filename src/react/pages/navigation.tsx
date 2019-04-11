@@ -6,7 +6,7 @@ import { withApollo, Query } from "react-apollo";
 import Notification from "../components/Notification";
 import { filterError, sleep, refetchQueries, AppContext } from "../common/functions";
 import { fetchLicences } from "../queries/auth";
-import { FETCH_DOMAINS } from "./domains";
+import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { fetchCards } from "../queries/billing";
 import UserPicture from "../components/UserPicture";
 import PlanHolder from "../components/PlanHolder";

@@ -1,10 +1,322 @@
+$domain-check-margin: 15px;
 
+@keyframes dropIn {
+  from {
+    transform: translateY(-27px);
+  } to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 
 #domains {
   display: flex;
   flex-direction: column;
-  padding: 1em;
-  width: 95%;
+  padding: 48px;
+
+  .genericHolder {
+    max-width: 86rem;
+  }
+}
+
+.domain-table,
+.domain-suggestions {
+  margin: 20px;
+}
+
+.domain-popup {
+  display: flex;
+  flex-flow: column;
+  align-items: start;
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    margin-top: 15px;
+  }
+
+  .generic-button-holder {
+    animation: fadeIn 1s ease-in-out forwards;
+  }
+
+  .transfer-check {
+    margin-top: 20px;
+    color: #bbb;
+    font-size: 80%;
+    cursor: pointer;
+    transition: all 300ms ease-in-out;
+
+    &:hover {
+      color: #000;
+    }
+  }
+
+  .domain-form {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+
+    .domain-search {
+      position: relative;
+
+      input {
+        width: 476px;
+        padding: 9px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        outline: none;
+        font-size: 1.2rem;
+        transition: all 300ms ease-in-out;
+
+        &:focus {
+          border-color: $vipfy-primary-color;
+        }
+      }
+
+      label {
+        position: absolute;
+        left: 7px;
+        top: 11px;
+        color: #ccc;
+        transition: all 300ms ease-in-out;
+      }
+
+      span {
+        position: absolute;
+        left: 7px;
+        bottom: -20px;
+        font-size: 12px;
+        width: 630px;
+        color: red;
+      }
+
+      .info {
+        color: #bbb;
+      }
+      
+      #domain-search-auth:focus + label,
+      #domain-search-auth[value]:not([value=""]) + label,
+      #domain-search-input:focus + label,
+      #domain-search-input[value]:not([value=""]) + label {
+        top: -7px;
+        z-index: 4;
+        background: #fff;
+        font-size: 12px;
+        color: $vipfy-primary-color;
+      }
+
+      .check-button {
+        position: absolute;
+        right: 8px;
+        top: 11px;
+
+        i {
+          color: #f1f1f1;
+          font-size: 21px;
+          transition: all 300ms ease-in-out;
+
+          &:hover  {
+            color: $vipfy-primary-color;
+            font-size: 25px;
+          }
+        }
+      }
+
+      .filled {
+        color: $vipfy-primary-color !important;
+        font-size: 25px !important;
+      }
+   
+      &:not(:first-child) {
+        margin-top: 25px;
+      }
+    }
+  }
+}
+
+.domain-check {
+  margin-top: 25px;
+
+  .unavailable {
+    color: #ccc;
+  }
+
+  .selected {
+    transition: all 300ms ease-in-out;
+    background-color: $vipfy-primary-color;
+  }
+
+  &-item {
+    cursor: pointer;
+    display: flex;
+    flex-flow: row;
+    background: #f5f5f5;
+    opacity: 0;
+    justify-content: space-between;
+    width: 484px;
+    padding: 5px;
+    border-bottom: 1px solid #fff;
+    transform: translateY(-27px);
+    transition: all 300ms ease-in-out;
+    animation: dropIn 300ms ease-in-out forwards;
+
+    @for $domain from 1 through 14 {
+      &:nth-child(#{$domain}) {
+        animation-delay: $domain * 50ms;
+      }
+    }
+
+    .description {
+      @include hide-overflowing-text;
+      margin-left: 5px;
+    }
+    
+    span {
+      &:first-child {
+        margin-right: $domain-check-margin;
+      }
+
+      &:nth-child(2) {
+        flex-grow: 1;
+      }
+    }
+
+    i {
+      margin-left: $domain-check-margin;
+    }
+
+    &:hover {
+      transform: translate(5px, 3px);
+    }
+  }
+}
+
+.domain-shopping-cart {
+  width: 400px;
+
+  h2 {
+    margin-bottom: 15px;
+  }
+
+  &-bulk {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+  }
+
+  .domain-cart {
+    overflow-y: scroll;
+    max-height: 594px;
+  }
+
+  &-item {
+    display: flex;
+    flex-flow: column;
+    background: #f5f5f5;
+    margin-bottom: 15px;
+
+    &-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+
+      &:first-child {
+        border-bottom: 1px solid #fff;
+        padding: 18px 10px;
+        font-weight: bold;
+      }
+
+      .vipfy-checkbox {
+        span {
+          margin-right: unset;
+        }
+      }
+
+      div {
+        display: flex;
+        flex-flow: column;
+        margin-left: 20px;
+        cursor: pointer;
+
+        .small-header {
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
+      }
+    }
+
+    .whois-option {
+      @extend .domain-shopping-cart-item-row;
+
+      transition: color 300ms ease-in-out;
+      font-size: 80%;
+      font-style: italic;
+      color: #ccc;
+    }
+  }
+
+  .total {
+    display: flex;
+    font-weight: bold;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+}
+
+.domain-configuration {
+  .domain-navigation {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    background-color: $vipfy-primary-color;
+    color: #fff;
+    
+    li {
+      padding: 10px 0 10px 5px;
+      cursor: pointer;
+      transition: all 300ms ease-in-out;
+      
+      &:hover {
+        background-color: darken($vipfy-primary-color, 10);
+      }
+      
+      &:not(:last-child) {
+        border-right: 1px solid #fff;
+      }
+    }
+  }
+
+  .ns-update {
+    margin: 2em;
+
+    .dns {
+      .ns {
+        position: relative;
+        display: flex;
+        flex-flow: row nowrap;
+        width: 280px;
+        margin-top: 20px;
+
+        button {
+          margin-right: 5px;
+        }
+
+        .error {
+          color: red;
+          font-size: 80%;
+          position: absolute;
+          bottom: -15px;
+          width: 400px;
+        }
+      }
+
+      & > .naked-button {
+        margin-top: 20px;
+      }
+    }
+  }
 }
 
 .register-domain {
@@ -14,37 +326,25 @@
   min-height: 26px;
 }
 
-.domain-table {
-  display: flex;
-  flex-direction: column;
-
-  &-body {
-    overflow-y: auto;
-  }
-}
-
 .domain-header {
-  // @include flex-system(center, space-between);
   display: grid;
-  grid-template-columns: 10rem repeat(8, 1fr);
+  grid-template-columns: 10rem 1fr 1fr 9rem 1fr 6rem repeat(4, 1fr);
   align-items: center;
-  background: $vipfy-primary-color;
-  color: #fff;
-  border-bottom: 2px solid $vipfy-secondary-color;
   font-weight: bold;
   position: relative;
 
   span {
     &:first-child {
       padding-left: 0;
-      
+
       &:hover {
         overflow: visible;
       }
     }
 
     &:nth-child(2),
-    &:nth-child(5)  {
+    &:nth-child(5),
+    &:last-child  {
       text-align: center;
     }
   }
@@ -55,7 +355,7 @@
     right: 8px;
 
     &:hover {
-      color: darken($vipfy-secondary-color, 10);
+      color: darken($vipfy-secondary-color, 14);
       transition: color 0.6s ease-in-out;
     }
   }
@@ -67,18 +367,12 @@
   color: #000;
   font-weight: normal;
   min-height: 3em;
-  transition: 0.3s;
-
-  &:hover {
-    background: lighten($vipfy-secondary-color, 10);
-    transition: all 0.5s ease-in-out;
-  }
 }
 
 .domain-item {
   overflow: hidden;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
   text-overflow: ellipsis;
 
   &-icon {
@@ -95,7 +389,7 @@
 
   .domain-header {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(9, 1fr);
+    grid-template-rows: repeat(10, 1fr);
   }
 
   .domain-row {
