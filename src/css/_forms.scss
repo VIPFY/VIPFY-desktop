@@ -540,10 +540,10 @@
 
 .universalLabelInput{
   position: relative;
-  width: 375px;
+  width: calc(30rem - 80px);
 }
 .universalTextInput{
-  width: 375px;
+  width: calc(30rem - 80px);
   font-size: 16px;
   font-weight: 300;
   border-bottom: 1px solid;
@@ -600,8 +600,8 @@
 
   .explainLayer{
     position: absolute;
-    top: -12px;
-    left: 24px;
+    top: 29px;
+    right: 0px;
     cursor: auto;
     display: none;
 

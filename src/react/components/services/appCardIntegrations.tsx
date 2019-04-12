@@ -143,22 +143,21 @@ class AppCardIntegrations extends React.Component<Props, State> {
         </button>
         {this.state.popup ? (
           <PopupBase
+            small={true}
             close={() => this.setState({ popup: false, email: "", password: "", subdomain: "" })}>
             <div>
               <h1 className="cleanup lightHeading">
-                Only two simple steps to integrate your existing <br /> account for {name} into
-                VIPFY
+                Only two simple steps to integrate your existing account for {name} into VIPFY
               </h1>
             </div>
             <div>
               <h2 className="cleanup boldHeading">1. Change your password</h2>
             </div>
             <p className="light">
-              Please log into your existing account and change <br /> the password into a
-              non-standard secure one.
+              Please log into your existing account and change the password into a secure one.
             </p>
             <p className="error small">
-              Do not use any password you use anywhere else or a weak one (e.g. 1234)
+              Do not use any password you use anywhere else nor a weak one (e.g. 1234)
             </p>
             <p className="bold small">Good examples are:</p>
             <ul>

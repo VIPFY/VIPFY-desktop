@@ -280,6 +280,7 @@ class PersonalData extends React.Component<Props, State> {
                         </ul>
                         {this.state.pwchange ? (
                           <PopupBase
+                            small={true}
                             close={() =>
                               this.setState({
                                 pwchange: false,
