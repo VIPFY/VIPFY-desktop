@@ -9,6 +9,7 @@ interface Props {
   autoclosing?: number;
   autoclosingFunction?: Function;
   notimer?: Boolean;
+  dialog?: Boolean;
 }
 
 interface State {
@@ -175,7 +176,8 @@ class PopupBase extends React.Component<Props, State> {
                 style={Object.assign(
                   {},
                   this.state.isopen ? showPopup : hidePopup,
-                  this.props.small ? { maxWidth: "30rem" } : ""
+                  this.props.small ? { maxWidth: "30rem" } : "",
+                  this.props.dialog ? { maxWidth: "25rem" } : ""
                 )}
                 onClick={e => e.stopPropagation()}>
                 {this.props.close && !(this.props.closeable == false) ? (

@@ -167,9 +167,12 @@ class AppTile extends React.Component<Props, State> {
               <Mutation mutation={UPDATE_CREDENTIALS}>
                 {updateCredentials => (
                   <PopupBase
+                    small={true}
                     close={() => this.setState({ newpopup: false, email: "", password: "" })}>
-                    <span className="lightHeading">Edit your licence</span>
-                    <span className="medHeading spaceHeading">></span>
+                    <span className="lightHeading" style={{ marginBottom: "0px" }}>
+                      Edit your licence
+                    </span>
+                    {/*<span className="medHeading spaceHeading">></span>*/}
                     <span className="medHeading">{name}</span>
                     <UniversalTextInput
                       id={`${name}-email`}
@@ -204,17 +207,17 @@ class AppTile extends React.Component<Props, State> {
                     />
                     {this.state.delete ? (
                       <PopupBase
-                        small={true}
+                        dialog={true}
                         close={() => this.setState({ delete: false })}
                         closeable={false}>
                         <p>
                           Do you really want to delete your licence for <b>{name}</b>
                         </p>
-                        <UniversalButton type="low" closingPopup={true} label="No" />
+                        <UniversalButton type="low" closingPopup={true} label="Cancel" />
                         <UniversalButton
                           type="low"
                           closingAllPopups={true}
-                          label="Yes"
+                          label="Delete"
                           onClick={async () =>
                             await deleteLicenceAt({
                               variables: { licenceid: this.props.licence.id, time: moment().utc() },

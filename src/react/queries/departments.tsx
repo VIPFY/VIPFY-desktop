@@ -116,6 +116,7 @@ export const fetchUsersOwnLicences = gql`
             logo
             name
             icon
+            disabled
           }
         }
       }

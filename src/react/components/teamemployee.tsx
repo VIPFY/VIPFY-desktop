@@ -54,12 +54,12 @@ class TeamEmployee extends React.Component<Props, State> {
           onTouchEnd={ev => this.props.onDrop(ev, person, departmentid, false)}
           ref={el => this.props.addRenderElement({ key: "employeeShowelement", element: el })}>
           <div className="inside-padding gridinner">
-            <UserPicture
-              size="picutre"
-              unitid={person.id}
-              onClick={this.props.onEmployeeClick}
-              departmentid={departmentid}
-            />
+            <div>
+              <UserPicture size="picutre" unitid={person.id} departmentid={departmentid} />
+              <button className="naked-button genericButton" onClick={this.props.onEmployeeClick}>
+                Remove this user
+              </button>
+            </div>
             <div className="team-app-holders">
               <Query
                 query={fetchUsersOwnLicences}
@@ -76,10 +76,28 @@ class TeamEmployee extends React.Component<Props, State> {
 
                   if (data.fetchUsersOwnLicences) {
                     if (data.fetchUsersOwnLicences[0]) {
+                      data.fetchUsersOwnLicences.sort(function(a, b) {
+                        let nameA = a.boughtplanid.alias
+                          ? a.boughtplanid.alias.toUpperCase()
+                          : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+                        let nameB = b.boughtplanid.alias
+                          ? b.boughtplanid.alias.toUpperCase()
+                          : b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+                        if (nameA < nameB) {
+                          return -1;
+                        }
+                        if (nameA > nameB) {
+                          return 1;
+                        }
+
+                        // namen müssen gleich sein
+                        return 0;
+                      });
                       data.fetchUsersOwnLicences.forEach((licence, key) => {
                         if (
+                          licence.boughtplanid.planid.appid.disabled ||
                           licence.disabled ||
-                          (licence.endtime ? moment().isBefore(licence.endtime) : false)
+                          (licence.endtime ? moment().isAfter(licence.endtime) : false)
                         ) {
                           return;
                         }
@@ -133,9 +151,19 @@ class TeamEmployee extends React.Component<Props, State> {
                                     style={{
                                       float: "left"
                                     }}
-                                    src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
-                                      .boughtplanid.planid.appid.icon ||
-                                      "21352134123123-vipfy-fdgd43asfa"}`}
+                                    //src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
+                                    //  .boughtplanid.planid.appid.icon ||
+                                    //  "21352134123123-vipfy-fdgd43asfa"}`}
+                                    src={
+                                      licence.boughtplanid.planid.appid.icon &&
+                                      licence.boughtplanid.planid.appid.icon.indexOf("/") != -1
+                                        ? `https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                                            licence.boughtplanid.planid.appid.icon
+                                          )}`
+                                        : `https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                            licence.boughtplanid.planid.appid.icon
+                                          )}`
+                                    }
                                   />
                                 ) : (
                                   <div
@@ -209,9 +237,19 @@ class TeamEmployee extends React.Component<Props, State> {
                                     style={{
                                       float: "left"
                                     }}
-                                    src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
-                                      .boughtplanid.planid.appid.icon ||
-                                      "21352134123123-vipfy-fdgd43asfa"}`}
+                                    //src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
+                                    //  .boughtplanid.planid.appid.icon ||
+                                    //  "21352134123123-vipfy-fdgd43asfa"}`}
+                                    src={
+                                      licence.boughtplanid.planid.appid.icon &&
+                                      licence.boughtplanid.planid.appid.icon.indexOf("/") != -1
+                                        ? `https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                                            licence.boughtplanid.planid.appid.icon
+                                          )}`
+                                        : `https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                            licence.boughtplanid.planid.appid.icon
+                                          )}`
+                                    }
                                   />
                                 ) : (
                                   <div
