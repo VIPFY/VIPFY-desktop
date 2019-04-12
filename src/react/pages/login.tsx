@@ -10,6 +10,8 @@ import { me } from "../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { CHANGE_PASSWORD } from "../mutations/auth";
+import DataNameForm from "../components/dataForms/NameForm";
+import DataNextForm from "../components/dataForms/NextForm";
 
 const SIGN_UP = gql`
   mutation onSignUp($email: String!, $name: NameInput!, $companyData: CompanyInput!) {
@@ -997,6 +999,18 @@ class Login extends React.Component<Props, State> {
   setField = e => this.setState({ [e.target.name]: e.target.value });
 
   render() {
+    return (
+      <div className="centralize backgroundLogo">
+        <DataNextForm username={"Lisa"} />
+      </div>
+    );
+    return (
+      <div className="centralize backgroundLogo">
+        <DataNameForm />
+      </div>
+    );
+
+    //Old version
     return (
       <div className="centralize backgroundLogo">
         <div className="presideHolder">

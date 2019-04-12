@@ -1,0 +1,116 @@
+.dataGeneralForm{
+    width: 904px;
+    height: 536px;
+    padding: 32px 32px 48px 32px;
+    background-color: white;
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0px 4px 5px rgba(#000000, 0.14);
+
+    .logo{
+        background-repeat: no-repeat;
+        background-position: center;
+        background-image: $logo_white;
+        width: 48px;
+        height: 40px;
+        background-size: cover;
+        position: absolute;
+        top: 32px;
+        left: 32px;
+    }
+
+    h1{
+        //color: $vipfy_mainColor;
+        //font-family: 'Roboto', sans-serif;
+        all: unset;
+        font-size: 24px;
+        line-height: 32px;
+        width: 100%;
+        text-align: center;
+        display: block;
+        margin-top: 8px;
+        font-weight: 700;
+    }
+
+    p{
+        all: unset;
+        line-height: 21px;
+        font-size: 16px;
+        width: 100%;
+        text-align: center;
+        display: inline-block;
+        margin-top: 32px;
+        height: 42px;
+    }
+
+    .inputHolder{
+        text-align: center;
+        margin-top: 46px;
+    }
+
+    input{
+        all: unset;
+        display: inline-block;
+        text-align: center;
+        border-bottom: 2px solid;
+        width: 312px;
+        line-height: 40px;
+        border-radius: 4px 4px 0px 0px;
+        font-size: 21px;
+    }
+
+    .oneIllustrationHolder{
+        width: 904px;
+        height: 224px;
+        background-color: #7c8690;
+        margin-top: 48px;
+    }
+
+    .buttonHolder{
+        text-align: center;
+        margin-top: 32px;
+    }
+
+    .threeIllustrationHolder{
+        width: 100%;
+        margin-top: 56px;
+        display: grid;
+        grid-template-columns: 264px 264px 264px;
+        grid-gap: 56px;
+
+        .thirdHolder{
+            padding: 48px 24px 48px 24px;
+            height: 272px;
+            border-radius: 8px;
+            cursor: pointer;
+
+            &:hover{
+                box-shadow: 0px 3px 4px rgba(#000000, 0.14)
+            }
+        }
+        .smallillu{
+            width: 216px;
+            height: 128px;
+            background-color: #7c8690;
+        }
+        h2{
+            all: unset;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 21px;
+            margin-top: 19px;
+            width: 100%;
+            text-align: center;
+            display: block;
+        }
+        p{
+            height: 32px;
+            font-size: 12px;
+            line-height: 16px;
+            margin-top: 16px;
+        }
+        .buttonHolder{
+            margin-top: 24px;
+        }
+    }
+}
