@@ -188,10 +188,17 @@
         .accountHolder{
             height: 55px;
             border-bottom: 1px solid;
+            cursor: pointer;
+            border-radius: 4px 4px 0px 0px;
+            position: relative;
+
+            &:hover{
+                background-color: #F5F5F5;
+            }
+
             .accountHolderBullet{
                 width: 20px;
                 height: 20px;
-                background-color: #5D76FF;
                 content: "";
                 display: block;
                 margin-left: 16px;
@@ -199,6 +206,12 @@
                 border-radius: 10px;
                 float: left;
                 margin-top: 21px;
+            }
+
+            .accountDelete{
+                position: absolute;
+                top: 24px;
+                right: 24px;
             }
         }
     }

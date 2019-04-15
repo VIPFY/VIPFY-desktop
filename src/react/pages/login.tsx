@@ -1003,7 +1003,7 @@ class Login extends React.Component<Props, State> {
   render() {
     return (
       <div className="centralize backgroundLogo">
-        <ChangeAccount />
+        <ChangeAccount delete={true} />
       </div>
     );
     return (

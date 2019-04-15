@@ -1,6 +1,9 @@
 import * as React from "react";
+import UniversalButton from "../universalButtons/universalButton";
 
-interface Props {}
+interface Props {
+  delete?: Boolean;
+}
 
 interface State {}
 
@@ -17,7 +20,7 @@ class ChangeAccount extends React.Component<Props, State> {
     return (
       <div className="dataGeneralForm">
         <div className="logo" />
-        <h1>Change Account</h1>
+        <h1>{this.props.delete ? "Delete Account from this machine" : "Change Account"}</h1>
         <div className="accountArrayHolder">
           {this.accounts.map(a => (
             <div className="accountHolder">
@@ -26,9 +29,45 @@ class ChangeAccount extends React.Component<Props, State> {
                 <div>{a.name}</div>
                 <div style={{ fontSize: "12px" }}>{a.email}</div>
               </div>
+              {this.props.delete ? <i className="fal fa-trash-alt accountDelete" /> : ""}
             </div>
           ))}
+          {this.props.delete ? (
+            ""
+          ) : (
+            <div className="accountHolder">
+              <div className="accountHolderBullet">
+                <i className="fal fa-user-plus" />
+              </div>
+              <div
+                className="accountHolderText"
+                style={{ lineHeight: "19px", paddingTop: "19px", fontSize: "14px" }}>
+                Add account
+              </div>
+            </div>
+          )}
+          {this.props.delete ? (
+            ""
+          ) : (
+            <div className="accountHolder">
+              <div className="accountHolderBullet">
+                <i className="fal fa-user-minus" />
+              </div>
+              <div
+                className="accountHolderText"
+                style={{ lineHeight: "19px", paddingTop: "19px", fontSize: "14px" }}>
+                Delete account
+              </div>
+            </div>
+          )}
         </div>
+        {this.props.delete ? (
+          <div className="buttonHolder" style={{ justifyContent: "flex-start" }}>
+            <UniversalButton label="Cancel" type="low" />
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     );
   }
