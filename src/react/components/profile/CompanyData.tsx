@@ -131,11 +131,18 @@ class CompanyData extends React.Component<Props, State> {
                         <div
                           className="imagehoverable pic"
                           style={{
-                            backgroundImage: `url(${unitPicFolder}${
+                            /*backgroundImage: `url(${unitPicFolder}${
                               fetchCompany.profilepicture
                                 ? fetchCompany.profilepicture
                                 : "default.png"
-                            })`,
+                            })`,*/
+                            backgroundImage: fetchCompany.profilepicture
+                              ? fetchCompany.profilepicture.indexOf("/") != -1
+                                ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                                    fetchCompany.profilepicture
+                                  )})`
+                                : `url(${encodeURI(unitPicFolder + fetchCompany.profilepicture)})`
+                              : `url(${unitPicFolder}default.png)`,
                             backgroundSize: "cover",
                             backgroundPosition: "center",
                             position: "relative"
