@@ -23,7 +23,7 @@ class ChangeAccount extends React.Component<Props, State> {
         <h1>{this.props.delete ? "Delete Account from this machine" : "Change Account"}</h1>
         <div className="accountArrayHolder">
           {this.accounts.map(a => (
-            <div className="accountHolder">
+            <div className="accountHolder" onClick={() => this.props.delete ? this.setState: }>
               <div className="accountHolderBullet" style={{ backgroundColor: a.color }} />
               <div className="accountHolderText" style={{ paddingTop: "11px" }}>
                 <div>{a.name}</div>
