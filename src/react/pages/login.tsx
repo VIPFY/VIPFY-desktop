@@ -12,6 +12,8 @@ import { ApolloClient } from "apollo-client";
 import { CHANGE_PASSWORD } from "../mutations/auth";
 import DataNameForm from "../components/dataForms/NameForm";
 import DataNextForm from "../components/dataForms/NextForm";
+import SignUpInGeneral from "../components/dataForms/SignUpInGeneralForm";
+import ChangeAccount from "../components/dataForms/ChangeAccount";
 
 const SIGN_UP = gql`
   mutation onSignUp($email: String!, $name: NameInput!, $companyData: CompanyInput!) {
@@ -1001,12 +1003,25 @@ class Login extends React.Component<Props, State> {
   render() {
     return (
       <div className="centralize backgroundLogo">
-        <DataNextForm username={"Lisa"} />
+        <ChangeAccount />
+      </div>
+    );
+    return (
+      <div className="centralize backgroundLogo">
+        <SignUpInGeneral
+          type="login"
+          preloggedin={{ email: "l.broedlin@gmail.com", name: "Lisa", fullname: "Lisa Brödlin" }}
+        />
       </div>
     );
     return (
       <div className="centralize backgroundLogo">
         <DataNameForm />
+      </div>
+    );
+    return (
+      <div className="centralize backgroundLogo">
+        <DataNextForm username={"Lisa"} />
       </div>
     );
 
