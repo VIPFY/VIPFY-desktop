@@ -43,10 +43,10 @@ export default function UserPicture(props: {
         let picture = "";
         picture = user.profilepicture
           ? user.profilepicture.indexOf("/") != -1
-            ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+            ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
                 user.profilepicture
-              )})`
-            : `url(${encodeURI(unitPicFolder + user.profilepicture)})`
+              )}`
+            : encodeURI(unitPicFolder + user.profilepicture)
           : defaultPic;
         //user.profilepicture ? unitPicFolder + user.profilepicture : defaultPic;
         const style = {
