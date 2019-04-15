@@ -40,7 +40,15 @@ export default function UserPicture(props: {
         }
 
         const user = data.fetchPublicUser;
-        const picture = user.profilepicture ? unitPicFolder + user.profilepicture : defaultPic;
+        let picture = "";
+        picture = user.profilepicture
+          ? user.profilepicture.indexOf("/") != -1
+            ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                user.profilepicture
+              )})`
+            : `url(${encodeURI(unitPicFolder + user.profilepicture)})`
+          : defaultPic;
+        //user.profilepicture ? unitPicFolder + user.profilepicture : defaultPic;
         const style = {
           cursor: props.onClick ? "pointer" : "",
           backgroundImage: `url(${picture})`,
