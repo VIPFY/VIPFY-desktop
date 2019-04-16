@@ -89,10 +89,16 @@ class AppCardIntegrations extends React.Component<Props, State> {
   addAccount = async () => {
     this.setState({ confirm: true, integrating: true, integrated: false });
     try {
+      console.log("ADD EXTERNAL", this.props, this.props.options.predomain);
       const newPlan = await this.props.addExternalPlan({
         variables: {
           alias: this.props.name,
-          loginurl: this.state.subdomain != "" ? this.state.subdomain : null,
+          loginurl:
+            this.state.subdomain != ""
+              ? `${this.props.options.predomain}${this.state.subdomain}${
+                  this.props.options.afterdomain
+                }`
+              : null,
           appid: this.props.id
         }
       });
@@ -103,7 +109,12 @@ class AppCardIntegrations extends React.Component<Props, State> {
         variables: {
           username: this.state.email,
           password: this.state.password,
-          loginurl: this.state.subdomain != "" ? this.state.subdomain : null,
+          loginurl:
+            this.state.subdomain != ""
+              ? `${this.props.options.predomain}${this.state.subdomain}${
+                  this.props.options.afterdomain
+                }`
+              : null,
           price: null,
           appid: this.props.id,
           boughtplanid: id,
