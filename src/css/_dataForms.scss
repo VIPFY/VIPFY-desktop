@@ -137,10 +137,10 @@
     .preloggedFullname{
         width: 208px;
         font-size: 14px;
-        line-height: 20px;
+        line-height: 22px;
         border-bottom: 1px solid;
 
-        &:before{
+        /*&:before{
             width: 20px;
             height: 20px;
             background-color: #5D76FF;
@@ -151,7 +151,7 @@
             border-radius: 10px;
             float: left;
             margin-bottom: 6px;
-        }
+        }*/
     }
     .notperson{
         all: unset;
@@ -164,6 +164,7 @@
         cursor: pointer;
         margin-bottom: 4px;
         position: relative;
+        margin-left: 6px;
 
         &:after {
             right: 100%;
@@ -185,6 +186,8 @@
         top: 104px;
         left: 328px;
         width: 312px;
+        max-height: 440px;
+        overflow-y: auto;
         .accountHolder{
             height: 55px;
             border-bottom: 1px solid;
@@ -206,6 +209,8 @@
                 border-radius: 10px;
                 float: left;
                 margin-top: 21px;
+                background-size: cover;
+                background-position: center;
             }
 
             .accountDelete{
@@ -214,5 +219,18 @@
                 right: 24px;
             }
         }
+    }
+    .accountBullet{
+        width: 20px;
+        height: 20px;
+        content: "";
+        display: block;
+        margin-left: 16px;
+        margin-right: 11px;
+        border-radius: 10px;
+        float: left;
+        margin-bottom: 5px;
+        background-size: cover;
+        background-position: center;
     }
 }

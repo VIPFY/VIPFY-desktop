@@ -16,6 +16,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
 import gql from "graphql-tag";
 import Tutorial from "./tutorials/basicTutorial";
+import SignIn from "./pages/signin";
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -84,6 +85,12 @@ const tutorial = gql`
     me {
       id
       tutorialprogress
+      emails {
+        email
+      }
+      firstname
+      lastname
+      profilepicture
     }
   }
 `;
@@ -139,6 +146,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   logMeIn = async (email: string, password: string) => {
+    console.log("LOGIN", email, password);
     try {
       const res = await this.props.signIn({ variables: { email, password } });
       const { ok, token } = res.data.signIn;
@@ -176,7 +184,20 @@ class App extends React.Component<AppProps, AppState> {
 
             if (error) {
               console.log("ERROR", error);
+              this.setState({ error: filterError(error) });
               this.props.client.cache.reset(); //clear graphql cache
+
+              return (
+                <div className="centralize backgroundLogo">
+                  <SignIn
+                    login={this.logMeIn}
+                    moveTo={this.moveTo}
+                    //register={this.registerMe}
+                    error={this.state.error}
+                    resetError={() => this.setState({ error: "" })}
+                  />
+                </div>
+              );
 
               return (
                 <Login
@@ -187,6 +208,32 @@ class App extends React.Component<AppProps, AppState> {
                 />
               );
             }
+
+            const store = new Store();
+            let machineuserarray: {
+              email: string;
+              name: string;
+              fullname: string;
+              profilepicture: string;
+            }[] = [];
+            if (store.has("accounts")) {
+              console.log("STORE BEFORE", store.get("accounts"));
+              machineuserarray = store.get("accounts");
+              const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
+              console.log("INDEX", i);
+              if (i != -1) {
+                machineuserarray.splice(i, 1);
+              }
+              console.log("MA", machineuserarray);
+            }
+            machineuserarray.push({
+              email: data.me.emails[0].email,
+              name: data.me.firstname,
+              fullname: `${data.me.firstname} ${data.me.lastname}`,
+              profilepicture: data.me.profilepicture
+            });
+            console.log("MA AFTER", machineuserarray);
+            store.set("accounts", machineuserarray);
 
             return (
               <PostLogin
@@ -204,6 +251,16 @@ class App extends React.Component<AppProps, AppState> {
         </Query>
       );
     } else {
+      return (
+        <div className="centralize backgroundLogo">
+          <SignIn
+            resetError={() => this.setState({ error: "" })}
+            login={this.logMeIn}
+            moveTo={this.moveTo}
+            error={this.state.error}
+          />
+        </div>
+      );
       return <Login login={this.logMeIn} moveTo={this.moveTo} error={this.state.error} />;
     }
   };

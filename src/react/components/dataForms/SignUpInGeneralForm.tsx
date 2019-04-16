@@ -5,6 +5,8 @@ import UniversalTextInput from "../universalForms/universalTextInput";
 interface Props {
   type: string;
   preloggedin?: { email: string; name: string; fullname: string };
+  continueFunction?: Function;
+  backFunction?: Function;
 }
 
 interface State {
@@ -17,16 +19,20 @@ class SignUpInGeneral extends React.Component<Props, State> {
     field1: "",
     field2: ""
   };
+  componentWillReceiveProps() {
+    this.setState({ field1: "", field2: "" });
+  }
 
   fields = {
     login: {
       title: `Welcome back, ${this.props.preloggedin!.name}`,
       prelogged: true,
       field2: "Password",
+      field2id: "pwa",
       continue: "Continue",
-      continueFunction: () => console.log("C"),
+      continueFunction: () => this.props.continueFunction!(this.state.field2),
       back: "Forgot Password",
-      backFunction: () => console.log("B")
+      backFunction: () => this.props.backFunction!()
     },
     create: {
       title: "Add VIPFY-user to this machine",
@@ -48,14 +54,16 @@ class SignUpInGeneral extends React.Component<Props, State> {
       title: "Password Reset",
       text1: "Enter your email and we’ll send you instructions on how to reset your password",
       field2: "Email",
+      field2id: "ema",
       continue: "Continue",
       continueFunction: () => console.log("C"),
       back: "Back",
-      backFunction: () => console.log("B")
+      backFunction: () => this.props.backFunction!()
     }
   };
 
   render() {
+    console.log(this.fields, this.props, this.state);
     return (
       <div className="dataGeneralForm">
         <div className="logo" />
@@ -70,7 +78,7 @@ class SignUpInGeneral extends React.Component<Props, State> {
         ) : this.fields[this.props.type].field1 ? (
           <div className="UniversalInputHolder">
             <UniversalTextInput
-              id="field1"
+              id={this.fields[this.props.type].field1id}
               width="312px"
               label={this.fields[this.props.type].field1}
               livevalue={v => this.setState({ field1: v })}
@@ -83,7 +91,7 @@ class SignUpInGeneral extends React.Component<Props, State> {
         )}
         <div className="UniversalInputHolder">
           <UniversalTextInput
-            id="field2"
+            id={this.fields[this.props.type].field2id}
             width="312px"
             type={this.fields[this.props.type].field2 == "Password" ? "password" : ""}
             label={this.fields[this.props.type].field2}

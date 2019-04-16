@@ -1,41 +1,107 @@
 import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import Store = require("electron-store");
 
 interface Props {
-  delete?: Boolean;
+  addMachineUser: Function;
+  backFunction: Function;
+  selectAccount: Function;
 }
 
-interface State {}
+interface State {
+  confirm: Boolean;
+  delete: Boolean;
+  deleteemail: string;
+}
 
 class ChangeAccount extends React.Component<Props, State> {
-  state: {};
+  state = {
+    confirm: false,
+    delete: false,
+    deleteemail: ""
+  };
 
-  accounts = [
-    { name: "Lisa Brödlin", email: "l.broedlin@gmail.com", color: "#5D76FF" },
-    { name: "Nils Vossebein", email: "nv@vipfy.store", color: "#9C13BC" },
-    { name: "Pascal Clanget", email: "pc@vipfy.store", color: "#FFC15D" },
-    { name: "Jannis Froese", email: "jf@vipfy.store", color: "#FD8B29" }
-  ];
+  accounts = [];
+
+  deleteAccount() {
+    let machineuserarray: {
+      email: string;
+      name: string;
+      fullname: string;
+    }[] = [];
+    const store = new Store();
+    if (store.has("accounts")) {
+      machineuserarray = store.get("accounts");
+      const i = machineuserarray.findIndex(u => u.email == this.state.deleteemail);
+      machineuserarray.splice(i, 1);
+    }
+    store.set("accounts", machineuserarray);
+    this.setState({ deleteemail: "" });
+  }
+
   render() {
+    const store = new Store();
+    if (store.has("accounts")) {
+      this.accounts = store.get("accounts");
+      this.accounts.sort(function(a, b) {
+        let nameA = a.fullname.toUpperCase();
+        let nameB = b.fullname.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        // namen müssen gleich sein
+        return 0;
+      });
+    }
+
     return (
       <div className="dataGeneralForm">
         <div className="logo" />
-        <h1>{this.props.delete ? "Delete Account from this machine" : "Change Account"}</h1>
+        <h1>{this.state.delete ? "Delete Account from this machine" : "Change Account"}</h1>
         <div className="accountArrayHolder">
-          {this.accounts.map(a => (
-            <div className="accountHolder" onClick={() => this.props.delete ? this.setState: }>
-              <div className="accountHolderBullet" style={{ backgroundColor: a.color }} />
-              <div className="accountHolderText" style={{ paddingTop: "11px" }}>
-                <div>{a.name}</div>
-                <div style={{ fontSize: "12px" }}>{a.email}</div>
+          {this.accounts.length > 0 &&
+            this.accounts.map(a => (
+              <div
+                className="accountHolder"
+                onClick={() =>
+                  this.state.delete
+                    ? this.setState({ confirm: true, deleteemail: a.email })
+                    : this.props.selectAccount(a.email)
+                }>
+                <div
+                  className="accountHolderBullet"
+                  style={
+                    a.profilepicture
+                      ? a.profilepicture.indexOf("/") != -1
+                        ? {
+                            backgroundImage: `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                              a.profilepicture
+                            )})`
+                          }
+                        : {
+                            backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${encodeURI(
+                              a.profilepicture
+                            )})`
+                          }
+                      : { backgroundColor: a.color }
+                  }
+                />
+                <div className="accountHolderText" style={{ paddingTop: "11px" }}>
+                  <div>{a.fullname}</div>
+                  <div style={{ fontSize: "12px" }}>{a.email}</div>
+                </div>
+                {this.state.delete ? <i className="fal fa-trash-alt accountDelete" /> : ""}
               </div>
-              {this.props.delete ? <i className="fal fa-trash-alt accountDelete" /> : ""}
-            </div>
-          ))}
-          {this.props.delete ? (
+            ))}
+          {this.state.delete ? (
             ""
           ) : (
-            <div className="accountHolder">
+            <div className="accountHolder" onClick={() => this.props.addMachineUser!()}>
               <div className="accountHolderBullet">
                 <i className="fal fa-user-plus" />
               </div>
@@ -46,10 +112,10 @@ class ChangeAccount extends React.Component<Props, State> {
               </div>
             </div>
           )}
-          {this.props.delete ? (
+          {this.state.delete ? (
             ""
           ) : (
-            <div className="accountHolder">
+            <div className="accountHolder" onClick={() => this.setState({ delete: true })}>
               <div className="accountHolderBullet">
                 <i className="fal fa-user-minus" />
               </div>
@@ -61,10 +127,30 @@ class ChangeAccount extends React.Component<Props, State> {
             </div>
           )}
         </div>
-        {this.props.delete ? (
-          <div className="buttonHolder" style={{ justifyContent: "flex-start" }}>
-            <UniversalButton label="Cancel" type="low" />
-          </div>
+        <div className="buttonHolder" style={{ justifyContent: "flex-start" }}>
+          <UniversalButton
+            label="Cancel"
+            type="low"
+            onClick={() =>
+              this.state.delete ? this.setState({ delete: false }) : this.props.backFunction()
+            }
+          />
+        </div>
+        {this.state.confirm ? (
+          <PopupBase
+            small={true}
+            close={() => this.setState({ confirm: false })}
+            nosidebar={true}
+            closeable={false}>
+            <p>Do you really want to delete this account from this machine?</p>
+            <UniversalButton type="low" closingPopup={true} label="Cancel" />
+            <UniversalButton
+              type="low"
+              closingAllPopups={true}
+              label="Delete"
+              onClick={async () => this.deleteAccount()}
+            />
+          </PopupBase>
         ) : (
           ""
         )}

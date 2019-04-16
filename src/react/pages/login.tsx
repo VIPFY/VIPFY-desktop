@@ -1000,7 +1000,28 @@ class Login extends React.Component<Props, State> {
 
   setField = e => this.setState({ [e.target.name]: e.target.value });
 
+  renderLogin() {
+    switch (this.state.loginprogress) {
+      case "login":
+        return (
+          <SignUpInGeneral
+            type="login"
+            preloggedin={{ email: "nv@vipfy.com", name: "Nils", fullname: "Nils Vossebein" }}
+          />
+        );
+      default:
+        return (
+          <SignUpInGeneral
+            type="login"
+            preloggedin={{ email: "nv@vipfy.com", name: "Nils", fullname: "Nils Vossebein" }}
+          />
+        );
+    }
+  }
+
   render() {
+    return <div className="centralize backgroundLogo">{this.renderLogin()}</div>;
+
     return (
       <div className="centralize backgroundLogo">
         <ChangeAccount delete={true} />
@@ -1010,7 +1031,7 @@ class Login extends React.Component<Props, State> {
       <div className="centralize backgroundLogo">
         <SignUpInGeneral
           type="login"
-          preloggedin={{ email: "l.broedlin@gmail.com", name: "Lisa", fullname: "Lisa Brödlin" }}
+          preloggedin={{ email: "nv@vipfy.com", name: "Nils", fullname: "Nils Vossebein" }}
         />
       </div>
     );
