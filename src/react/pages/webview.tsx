@@ -436,8 +436,17 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       case "errorDetected": {
         console.log("errorDetected");
         // Create the error object
-        const eventdata = { error: "errorDetected", state: this.state, props: this.props };
-        await this.props.logError({ variables: { eventdata } });
+        const { logError, client, ...saveprops } = this.props;
+        const data = {
+          error: "errorDetected",
+          state: JSON.stringify(this.state),
+          props: JSON.stringify(saveprops)
+        };
+        try {
+          await this.props.logError({ variables: { data } });
+        } catch (err) {
+          console.log(err);
+        }
         this.setState({
           error:
             "Please check your email address. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
@@ -449,8 +458,17 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       }
       case "falseLogin": {
         console.log("falseLogin");
-        const eventdata = { error: "falseLogin", state: this.state, props: this.props };
-        await this.props.logError({ variables: { eventdata } });
+        const { logError, client, ...saveprops } = this.props;
+        const data = {
+          error: "falseLogin",
+          state: JSON.stringify(this.state),
+          props: JSON.stringify(saveprops)
+        };
+        try {
+          await this.props.logError({ variables: { data } });
+        } catch (err) {
+          console.log(err);
+        }
         this.setState({
           error:
             "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
