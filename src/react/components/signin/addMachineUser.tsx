@@ -7,6 +7,7 @@ import Store = require("electron-store");
 interface Props {
   continueFunction: Function;
   backFunction: Function;
+  registerCompany: Function;
 }
 
 interface State {
@@ -35,17 +36,15 @@ class AddMachineUser extends React.Component<Props, State> {
           />
         </div>
         <div className="oneIllustrationHolder" />
-        <div
-          className="buttonHolder"
-          style={
-            store.has("accounts") && store.get("accounts").length > 0
-              ? {}
-              : { justifyContent: "flex-end" }
-          }>
+        <div className="buttonHolder">
           {store.has("accounts") && store.get("accounts").length > 0 ? (
             <UniversalButton label="Cancel" type="low" onClick={() => this.props.backFunction()} />
           ) : (
-            ""
+            <UniversalButton
+              label="Register Company"
+              type="low"
+              onClick={() => this.props.registerCompany()}
+            />
           )}
 
           <UniversalButton

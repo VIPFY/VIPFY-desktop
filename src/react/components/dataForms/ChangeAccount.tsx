@@ -7,6 +7,7 @@ interface Props {
   addMachineUser: Function;
   backFunction: Function;
   selectAccount: Function;
+  registerCompany: Function;
 }
 
 interface State {
@@ -127,7 +128,9 @@ class ChangeAccount extends React.Component<Props, State> {
             </div>
           )}
         </div>
-        <div className="buttonHolder" style={{ justifyContent: "flex-start" }}>
+        <div
+          className="buttonHolder"
+          style={this.state.delete ? { justifyContent: "flex-start" } : {}}>
           <UniversalButton
             label="Cancel"
             type="low"
@@ -135,6 +138,15 @@ class ChangeAccount extends React.Component<Props, State> {
               this.state.delete ? this.setState({ delete: false }) : this.props.backFunction()
             }
           />
+          {this.state.delete ? (
+            ""
+          ) : (
+            <UniversalButton
+              label="Register Company"
+              type="high"
+              onClick={() => this.props.registerCompany()}
+            />
+          )}
         </div>
         {this.state.confirm ? (
           <PopupBase

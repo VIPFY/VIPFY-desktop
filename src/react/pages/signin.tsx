@@ -5,6 +5,7 @@ import ChangeAccount from "../components/dataForms/ChangeAccount";
 import AddMachineUser from "../components/signin/addMachineUser";
 
 import Store = require("electron-store");
+import RegisterCompany from "../components/signin/companyRegister";
 
 interface Props {
   login: Function;
@@ -26,13 +27,17 @@ class SignIn extends React.Component<Props, State> {
 
   changeProgress(s) {
     this.props.resetError();
-    /*const store = new Store();
-    if (s != "pwreset" && (!store.has("accounts") || store.get("accounts").length == 0)) {
+    const store = new Store();
+    console.log("ChangeProgress", s, store.has("accounts"), store.get("accounts").length == 0);
+    if (
+      s != "pwreset" &&
+      s != "registercompany" &&
+      (!store.has("accounts") || store.get("accounts").length == 0)
+    ) {
       this.setState({ progress: "createuser" });
     } else {
       this.setState({ progress: s });
-    }*/
-    this.setState({ progress: s });
+    }
   }
 
   componentDidMount() {
@@ -75,6 +80,7 @@ class SignIn extends React.Component<Props, State> {
               this.setState({ email });
               this.changeProgress("login");
             }}
+            registerCompany={() => this.changeProgress("registercompany")}
           />
         );
       case "createuser":
@@ -82,6 +88,14 @@ class SignIn extends React.Component<Props, State> {
           <AddMachineUser
             continueFunction={(email: string) => this.setState({ email: email, progress: "login" })}
             backFunction={() => this.changeProgress("selectuser")}
+            registerCompany={() => this.changeProgress("registercompany")}
+          />
+        );
+      case "registercompany":
+        return (
+          <RegisterCompany
+            backFunction={() => this.changeProgress("login")}
+            continueFunction={() => this.props.moveTo("/area/dashboard")}
           />
         );
       default:

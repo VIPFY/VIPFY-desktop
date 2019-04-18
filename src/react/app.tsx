@@ -192,21 +192,20 @@ class App extends React.Component<AppProps, AppState> {
                   <SignIn
                     login={this.logMeIn}
                     moveTo={this.moveTo}
-                    //register={this.registerMe}
                     error={this.state.error}
                     resetError={() => this.setState({ error: "" })}
                   />
                 </div>
               );
 
-              return (
+              /*return (
                 <Login
                   login={this.logMeIn}
                   moveTo={this.moveTo}
                   register={this.registerMe}
                   error={filterError(error)}
                 />
-              );
+              );*/
             }
 
             const store = new Store();
@@ -261,7 +260,7 @@ class App extends React.Component<AppProps, AppState> {
           />
         </div>
       );
-      return <Login login={this.logMeIn} moveTo={this.moveTo} error={this.state.error} />;
+      //return <Login login={this.logMeIn} moveTo={this.moveTo} error={this.state.error} />;
     }
   };
 
@@ -299,6 +298,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
+    console.log("token there", localStorage.getItem("token"));
     const { placeid, popup, page, sidebarloaded } = this.state;
     return (
       <AppContext.Provider
