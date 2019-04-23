@@ -46,7 +46,7 @@ export type WebViewProps = {
 };
 
 const LOG_SSO_ERROR = gql`
-  mutation onLogSSOError($data: JSON!) {
+  mutation onLogSSOError($data: JSON) {
     logSSOError(eventdata: $data)
   }
 `;
@@ -439,16 +439,18 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         const { logError, client, ...saveprops } = this.props;
         const data = {
           error: "errorDetected",
-          state: JSON.stringify(this.state),
-          props: JSON.stringify(saveprops)
+          state: this.state,
+          props: saveprops
         };
+
         try {
-          await this.props.logError({ variables: { data } });
+          await logError({ variables: { data } });
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
         this.setState({
           error:
+            // tslint:disable-next-line:max-line-length
             "Please check your email address. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
           errorshowed: true,
           loggedIn: true
@@ -471,6 +473,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         }
         this.setState({
           error:
+            // tslint:disable-next-line:max-line-length
             "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
           errorshowed: true,
           loggedIn: true
