@@ -5,6 +5,7 @@ import EditFieldRDS from "../components/EditFieldRDS";
 import { Query } from "react-apollo";
 import { QUERY_SEMIPUBLICUSER } from "../queries/user";
 import moment = require("moment");
+import UniversalSearchBox from "../components/universalSearchBox";
 
 interface Props {
   showPopup: Function;
