@@ -9,6 +9,7 @@ interface Props {
   closingPopup?: Boolean;
   closingAllPopups?: Boolean;
   additionalClickFunction?: Function;
+  customStyles?: Object;
 }
 
 interface State {
@@ -74,14 +75,19 @@ class UniversalButton extends React.Component<Props, State> {
         <button
           className="cleanup universalCoverButton"
           onClick={e => this.click(e)}
-          style={{
-            width: this.props.label.length > 6 ? this.props.label.length * 10 + 30 : 90
-          }}>
+          style={
+            this.props.customStyles
+              ? {}
+              : {
+                  width: this.props.label.length > 6 ? this.props.label.length * 10 + 30 : 90
+                }
+          }>
           <div
             className={`cleanup universalButton ${this.props.type ? this.props.type : ""} ${
               this.props.disabeld ? "disabled" : "useable"
             }`}
-            tabIndex={-1}>
+            tabIndex={-1}
+            style={this.props.customStyles ? this.props.customStyles : {}}>
             {this.props.label}
           </div>
         </button>

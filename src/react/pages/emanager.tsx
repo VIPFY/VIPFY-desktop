@@ -3,6 +3,8 @@ import SelfSearchBox from "../components/SelfSearchBox";
 import EmployeeShower from "../components/EmployeeShower";
 import { fetchDepartmentsData } from "../queries/departments";
 import { Query } from "react-apollo";
+import EmployeeDetails from "./manager/employeeDetails";
+import EmployeeOverview from "./manager/employeeOverview";
 
 interface Props {
   showPopup: Function;
@@ -43,6 +45,7 @@ class EManager extends React.Component<Props, State> {
   };
 
   render() {
+    return <EmployeeDetails />;
     return (
       <div className="genericPage employeeManager">
         <Query query={fetchDepartmentsData} pollInterval={30000}>

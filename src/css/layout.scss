@@ -12,6 +12,7 @@
 @import './profile.scss';
 @import './editor.scss';
 @import './admin.scss';
+@import './manager.scss';
 @import './macosx';
 
 /*::-webkit-scrollbar {
@@ -5065,7 +5066,7 @@ flex-wrap: wrap;
     font-size: 16px;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 4px;
     letter-spacing: 0.02em;
     display: block;
     

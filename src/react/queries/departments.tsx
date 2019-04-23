@@ -136,10 +136,12 @@ export const fetchUserLicences = gql`
       boughtplanid {
         id
         alias
+        totalprice
         planid {
           id
           options
           appid {
+            disabled
             id
             logo
             name

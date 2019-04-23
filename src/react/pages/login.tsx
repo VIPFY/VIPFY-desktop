@@ -10,6 +10,9 @@ import { me } from "../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { CHANGE_PASSWORD } from "../mutations/auth";
+import EShower from "./eshower";
+import EmployeeOverview from "./manager/employeeOverview";
+import EmployeeDetails from "./manager/employeeDetails";
 
 const SIGN_UP = gql`
   mutation onSignUp($email: String!, $name: NameInput!, $companyData: CompanyInput!) {
