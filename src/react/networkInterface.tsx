@@ -58,6 +58,18 @@ const cache = new InMemoryCache({
         } else {
           return null;
         }
+      case "DepartmentData":
+        if (object.unitid !== undefined) {
+          return `${object.__typename}:${object.unitid}`;
+        } else {
+          return null;
+        }
+      case "DepartmentEmail":
+        if (object.email !== undefined) {
+          return `${object.__typename}:${object.email}`;
+        } else {
+          return null;
+        }
       case "PublicUser":
         if (object.id !== undefined) {
           return `User:${object.id}`;
