@@ -5,7 +5,7 @@ import { setContext } from "apollo-link-context";
 import { createUploadLink } from "apollo-upload-client";
 import { onError } from "apollo-link-error";
 import { getMainDefinition } from "apollo-utilities";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
 
 const SERVER_NAME = config.backendHost;
@@ -13,7 +13,74 @@ const SERVER_PORT = config.backendPort;
 // eslint-disable-next-line
 const secure = config.backendSSL ? "s" : "";
 
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  dataIdFromObject: object => {
+    switch (object.__typename) {
+      case "AppUsage":
+        if (object.app && object.app.id !== undefined) {
+          return `${object.__typename}:${object.app.id}`;
+        } else {
+          return null;
+        }
+      case "Newsletter":
+        if (object.email !== undefined) {
+          return `${object.__typename}:${object.email}`;
+        } else {
+          return null;
+        }
+      case "Email":
+        if (object.email !== undefined) {
+          return `${object.__typename}:${object.email}`;
+        } else {
+          return null;
+        }
+      case "Department":
+        if (object.unitid !== undefined) {
+          return `${object.__typename}:${object.unitid}`;
+        } else {
+          return null;
+        }
+      case "Team":
+        if (object.unitid !== undefined) {
+          return `${object.__typename}:${object.unitid}`;
+        } else {
+          return null;
+        }
+      case "emp":
+        if (object.employeeid !== undefined) {
+          return `${object.__typename}:${object.employeeid}`;
+        } else {
+          return null;
+        }
+      case "ReviewHelpful":
+        if (object.reviewid && object.reviewid.id !== undefined) {
+          return `${object.__typename}:${object.reviewid.id}`;
+        } else {
+          return null;
+        }
+      case "PublicUser":
+        if (object.id !== undefined) {
+          return `User:${object.id}`;
+        } else {
+          return null;
+        }
+      case "SemiPublicUser":
+        if (object.id !== undefined) {
+          return `User:${object.id}`;
+        } else {
+          return null;
+        }
+      default:
+        return defaultDataIdFromObject(object);
+    }
+  },
+  cacheRedirects: {
+    Query: {
+      fetchPublicUser: (_, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "User", id: args.userid })
+    }
+  }
+});
 const httpLink = createUploadLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
   //uri: `https://us-central1-vipfy-148316.cloudfunctions.net/backend/graphql`,
