@@ -147,6 +147,8 @@ export const fetchUserLicences = gql`
             logo
             name
             icon
+            needssubdomain
+            options
           }
         }
       }

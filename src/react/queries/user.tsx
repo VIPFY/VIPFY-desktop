@@ -24,11 +24,16 @@ export const QUERY_SEMIPUBLICUSER = gql`
       phones {
         id
         number
+        tags
       }
       addresses {
         id
+        country
         address
+        tags
       }
+      position
+      hiredate
       birthday
       isadmin
       isonline

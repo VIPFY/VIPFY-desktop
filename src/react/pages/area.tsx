@@ -48,6 +48,8 @@ import ServiceCreationExternal from "../components/admin/ServiceCreationExternal
 import { SideBarContext } from "../common/context";
 import EManagerAdmin from "./emanageradmin";
 import EShowerAdmin from "./eshoweradmin";
+import EmployeeOverview from "./manager/employeeOverview";
+import EmployeeDetails from "./manager/employeeDetails";
 
 interface AreaProps {
   history: any[];
@@ -366,10 +368,10 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "ssoconfig", component: SsoConfigurator },
       { path: "ssotest", component: SsoTester },
-      { path: "emanager", component: EManager, admincomponent: EManagerAdmin },
+      { path: "emanager", component: EmployeeOverview },
       { path: "lmanager", component: LManager },
       { path: "dmanager", component: DManager },
-      { path: "emanager/:userid", component: EShower, admincomponent: EShowerAdmin },
+      { path: "emanager/:userid", component: EmployeeDetails },
       { path: "lmanager/:boughtplanid", component: LShower },
       { path: "dmanager/:departmentid", component: DShower }
     ];
@@ -464,17 +466,6 @@ class Area extends React.Component<AreaProps, AreaState> {
                         {...props}
                         moveTo={this.moveTo}
                       />
-                      {admincomponent ? (
-                        <AdminComponent
-                          adminOpen={this.state.adminOpen}
-                          setApp={this.setApp}
-                          {...this.props}
-                          {...props}
-                          moveTo={this.moveTo}
-                        />
-                      ) : (
-                        ""
-                      )}
                     </div>
                   )}
                 />

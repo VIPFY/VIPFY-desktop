@@ -147,7 +147,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
       {
         label: "Profile",
         location: "profile",
-        icon: "alicorn",
+        icon: "id-badge",
         show: config.showProfile,
         highlight: "profileelement"
       },
@@ -217,9 +217,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "supportelement"
       },
       {
-        label: "Department Manager",
+        label: "Team Manager",
         location: "dmanager",
-        icon: "hexagon",
+        icon: "user-tag",
         show: true,
         important: false,
         highlight: "dmanager"
@@ -227,7 +227,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
       {
         label: "Employee Manager",
         location: "emanager",
-        icon: "circle",
+        icon: "users-cog",
         show: true,
         important: false,
         highlight: "emanager"
@@ -235,31 +235,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
       {
         label: "Licence Manager",
         location: "lmanager",
-        icon: "square",
-        show: true,
-        important: false,
-        highlight: "lmanager"
-      },
-      {
-        label: "Department Manager",
-        location: "dmanager",
-        icon: "hexagon",
-        show: true,
-        important: false,
-        highlight: "dmanager"
-      },
-      {
-        label: "Employee Manager",
-        location: "emanager",
-        icon: "circle",
-        show: true,
-        important: false,
-        highlight: "emanager"
-      },
-      {
-        label: "Licence Manager",
-        location: "lmanager",
-        icon: "square",
+        icon: "credit-card-blank",
         show: true,
         important: false,
         highlight: "lmanager"

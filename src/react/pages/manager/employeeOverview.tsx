@@ -1,67 +1,56 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
+import { Link } from "react-router-dom";
+import { Query } from "react-apollo";
+import { fetchDepartmentsData, fetchUsersOwnLicences } from "../../queries/departments";
+import { now } from "moment";
+import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
+import AddEmployeeTeams from "../../components/manager/addEmployeeTeams";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import AddEmployeeServices from "../../components/manager/addEmployeeServices";
 
-interface Props {}
+interface Props {
+  moveTo: Function;
+}
 
-interface State {}
+interface State {
+  search: string;
+  add: Boolean;
+  addStage: number;
+  addpersonal: Object;
+  apps: { id: number; name: number; icon: string; needssubdomain: Boolean; options: Object }[];
+}
 
 class EmployeeOverview extends React.Component<Props, State> {
-  state = {};
+  state = {
+    search: "",
+    add: false,
+    addpersonal: {},
+    addStage: 1,
+    apps: []
+  };
 
-  employees = [
-    {
-      name: "Lisa Brödlin",
-      online: false,
-      services: [
-        { name: "Survey Monkey", icon: "Survey Monkey/logo.png" },
-        { name: "Typeform", icon: "TypeForm/logo.png" },
-        { name: "Zoom", icon: "Zoom/logo.png" },
-        { name: "10to8", icon: "10to8/logo.png" },
-        { name: "Invision App", icon: "Invision App/logo.png" },
-        { name: "Asana", icon: "Asana/logo.png" }
-      ],
-      teams: [{ name: "Marketing", color: "#5D76FF" }, { name: "Design", color: "#FFC15D" }]
-    },
-    {
-      name: "Nils Vossebein",
-      online: true,
-      services: [
-        { name: "Survey Monkey", icon: "Survey Monkey/logo.png" },
-        { name: "Twitter", icon: "twitter/logo.png" },
-        { name: "Humanity", icon: "Humanity/logo.png" },
-        { name: "Evernote", icon: "Evernote/logo.png" },
-        { name: "Create Send", icon: "Create Send/logo.png" },
-        { name: "Asana", icon: "Asana/logo.png" },
-        { name: "Buffer", icon: "Buffer/logo.png" }
-      ],
-      teams: [
-        { name: "Marketing", color: "#5D76FF" },
-        { name: "Management", short: "MA", color: "#9C13BC" }
-      ]
-    },
-    {
-      name: "Markus Müller",
-      online: true,
-      services: [
-        { name: "Amazon", icon: "amazon/logo.png" },
-        { name: "Evernote", icon: "Evernote/logo.png" },
-        { name: "Create Send", icon: "Create Send/logo.png" },
-        { name: "Asana", icon: "Asana/logo.png" }
-      ],
-      teams: [
-        { name: "Management", short: "MA", color: "#9C13BC" },
-        { name: "Sales", short: "S", color: "#FD8B29" }
-      ]
-    }
-  ];
+  addUser(services) {
+    this.setState({ apps: services, add: false });
+  }
 
   renderSerives(services) {
+    let sortedservices: any[] = [];
+    services.forEach(element => {
+      if (
+        !element.disabled &&
+        !element.boughtplanid.planid.appid.disabled &&
+        (element.endtime > now() || element.endtime == null)
+      ) {
+        sortedservices.push(element);
+      }
+    });
     let serviceArray: JSX.Element[] = [];
     let counter = 0;
-    for (counter = 0; counter < services.length; counter++) {
-      const service = services[counter];
-      if (services.length > 6 && counter > 4) {
+    for (counter = 0; counter < sortedservices.length; counter++) {
+      const service = sortedservices[counter];
+      if (sortedservices.length > 6 && counter > 4) {
         serviceArray.push(
           <div
             className="managerSquare"
@@ -71,7 +60,7 @@ class EmployeeOverview extends React.Component<Props, State> {
               fontSize: "12px",
               fontWeight: 400
             }}>
-            +{services.length - 5}
+            +{sortedservices.length - 5}
           </div>
         );
         break;
@@ -80,16 +69,23 @@ class EmployeeOverview extends React.Component<Props, State> {
           <div
             className="managerSquare"
             style={
-              service.icon
+              service.boughtplanid.planid.appid.icon
                 ? {
-                    backgroundImage: `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                      service.icon
-                    )})`,
+                    backgroundImage:
+                      service.boughtplanid.planid.appid.icon.indexOf("/") != -1
+                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                            service.boughtplanid.planid.appid.icon
+                          )})`
+                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                            service.boughtplanid.planid.appid.icon
+                          )})`,
                     backgroundColor: "unset"
                   }
                 : {}
             }>
-            {service.icon ? "" : service.name.slice(0, 1)}
+            {service.boughtplanid.planid.appid.icon
+              ? ""
+              : service.boughtplanid.planid.appid.name.slice(0, 1)}
           </div>
         );
       }
@@ -126,72 +122,207 @@ class EmployeeOverview extends React.Component<Props, State> {
     }
     return teamArray;
   }
+
+  addProcess() {
+    switch (this.state.addStage) {
+      case 1:
+        return (
+          <AddEmployeePersonalData
+            continue={data => this.setState({ addpersonal: data, addStage: 2 })}
+            close={() => this.setState({ add: false })}
+            addpersonal={this.state.addpersonal}
+          />
+        );
+      case 2:
+        return (
+          <AddEmployeeTeams
+            continue={() => this.setState({ addStage: 3 })}
+            close={() => this.setState({ addStage: 1 })}
+          />
+        );
+      case 3:
+        return (
+          <AddEmployeeServices
+            continue={data => this.addUser(data)}
+            close={() => this.setState({ addStage: 2 })}
+            apps={this.state.apps}
+            addusername={this.state.addpersonal.name}
+          />
+        );
+    }
+  }
   render() {
     return (
       <div className="managerPage">
         <div className="heading">
           <h1>Employee Manager</h1>
-          <UniversalSearchBox />
+          <UniversalSearchBox
+            getValue={v => {
+              console.log("Search", v);
+              this.setState({ search: v });
+            }}
+          />
         </div>
         <div className="section">
           <div className="heading">
             <h1>Employees</h1>
           </div>
-          <div className="table">
-            <div className="tableHeading">
-              <div className="tableMain">
-                <div className="tableColumnBig">
-                  <h1>Name</h1>
-                </div>
-                <div className="tableColumnBig">
-                  <h1>Services</h1>
-                </div>
-                <div className="tableColumnBig">
-                  <h1>Teams</h1>
-                </div>
-              </div>
-              <div className="tableEnd">
-                <UniversalButton
-                  type="high"
-                  label="Add Employee"
-                  customStyles={{
-                    fontSize: "12px",
-                    lineHeight: "24px",
-                    fontWeight: "700",
-                    marginRight: "16px",
-                    width: "92px"
-                  }}
-                />
-              </div>
-            </div>
-            {this.employees.map(employee => (
-              <div className="tableRow">
-                <div className="tableMain">
-                  <div className="tableColumnBig">
-                    <div className="managerSquare">{employee.name.slice(0, 1)}</div>
-                    <span className="name">{employee.name}</span>
-                    <div
-                      className="employeeOnline"
-                      style={
-                        employee.online
-                          ? { backgroundColor: "#29CC94" }
-                          : { backgroundColor: "#DB4D3F" }
-                      }
-                    />
+          <Query query={fetchDepartmentsData}>
+            {({ loading, error, data }) => {
+              if (loading) {
+                return "Loading...";
+              }
+              if (error) {
+                return `Error! ${error.message}`;
+              }
+              console.log("fetchDepartmentData", data);
+
+              //Sort employees
+              let employees: any[] = [];
+              let interemployees: any[] = [];
+              if (data.fetchDepartmentsData && data.fetchDepartmentsData[0].children_data) {
+                interemployees = data.fetchDepartmentsData[0].children_data.filter(e => e && e.id);
+
+                interemployees.sort(function(a, b) {
+                  let nameA = `${a.firstname} ${a.lastname}`.toUpperCase();
+                  let nameB = `${b.firstname} ${b.lastname}`.toUpperCase();
+                  if (nameA < nameB) {
+                    return -1;
+                  }
+                  if (nameA > nameB) {
+                    return 1;
+                  }
+                  // namen müssen gleich sein
+                  return 0;
+                });
+                if (this.state.search != "") {
+                  employees = interemployees.filter(employee => {
+                    return `${employee.firstname} ${employee.lastname}`
+                      .toUpperCase()
+                      .includes(this.state.search.toUpperCase());
+                  });
+                } else {
+                  employees = interemployees;
+                }
+              }
+              return (
+                <div className="table">
+                  <div className="tableHeading">
+                    <div className="tableMain">
+                      <div className="tableColumnBig">
+                        <h1>Name</h1>
+                      </div>
+                      <div className="tableColumnBig">
+                        <h1>Teams</h1>
+                      </div>
+                      <div className="tableColumnBig">
+                        <h1>Services</h1>
+                      </div>
+                    </div>
+                    <div className="tableEnd">
+                      <UniversalButton
+                        type="high"
+                        label="Add Employee"
+                        customStyles={{
+                          fontSize: "12px",
+                          lineHeight: "24px",
+                          fontWeight: "700",
+                          marginRight: "16px",
+                          width: "92px"
+                        }}
+                        onClick={() =>
+                          this.setState({ add: true, addStage: 1, addpersonal: {}, apps: [] })
+                        }
+                      />
+                    </div>
                   </div>
-                  <div className="tableColumnBig">{this.renderSerives(employee.services)}</div>
-                  <div className="tableColumnBig">{this.renderTeams(employee.teams)}</div>
+                  {employees.length > 0 &&
+                    employees.map(employee => (
+                      <div
+                        className="tableRow"
+                        onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
+                        <div className="tableMain">
+                          <div className="tableColumnBig">
+                            <div
+                              className="managerSquare"
+                              style={
+                                employee.profilepicture
+                                  ? employee.profilepicture.indexOf("/") != -1
+                                    ? {
+                                        backgroundImage: encodeURI(
+                                          `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                                            employee.profilepicture
+                                          )})`
+                                        )
+                                      }
+                                    : {
+                                        backgroundImage: encodeURI(
+                                          `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                                            employee.profilepicture
+                                          })`
+                                        )
+                                      }
+                                  : {}
+                              }>
+                              {employee.profilepicture ? "" : employee.firstname.slice(0, 1)}
+                            </div>
+                            <span className="name">
+                              {employee.firstname} {employee.lastname}
+                            </span>
+                            <div
+                              className="employeeOnline"
+                              style={
+                                employee.isonline
+                                  ? { backgroundColor: "#29CC94" }
+                                  : { backgroundColor: "#DB4D3F" }
+                              }
+                            />
+                          </div>
+                          <div className="tableColumnBig">
+                            {/*this.renderTeams(employee.teams)*/}
+                          </div>
+                          <div className="tableColumnBig">
+                            <Query
+                              query={fetchUsersOwnLicences}
+                              variables={{ unitid: employee.id }}>
+                              {({ loading, error, data }) => {
+                                if (loading) {
+                                  return "Loading...";
+                                }
+                                if (error) {
+                                  return `Error! ${error.message}`;
+                                }
+                                console.log("Services", data);
+                                return data.fetchUsersOwnLicences
+                                  ? this.renderSerives(data.fetchUsersOwnLicences)
+                                  : "No services yet";
+                              }}
+                            </Query>
+                          </div>
+                        </div>
+                        <div className="tableEnd">
+                          <div className="editOptions">
+                            <i className="fal fa-external-link-alt" />
+                            <i className="fal fa-trash-alt" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                 </div>
-                <div className="tableEnd">
-                  <div className="editOptions">
-                    <i className="fal fa-edit" />
-                    <i className="fal fa-trash-alt" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              );
+            }}
+          </Query>
         </div>
+        {this.state.add ? (
+          <PopupBase
+            fullmiddle={true}
+            customStyles={{ maxWidth: "1152px" }}
+            close={() => this.setState({ add: false })}>
+            {this.addProcess()}
+          </PopupBase>
+        ) : (
+          ""
+        )}
       </div>
     );
   }

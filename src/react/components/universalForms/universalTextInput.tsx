@@ -11,6 +11,7 @@ interface Props {
   startvalue?: string;
   width?: string;
   disabled?: Boolean;
+  focus?: Boolean;
 }
 
 interface State {
@@ -63,9 +64,10 @@ class UniversalTextInput extends React.Component<Props, State> {
   render() {
     return (
       <div
-        className="universalLabelInput"
+        className={`universalLabelInput ${this.props.disabled ? "disabled" : ""}`}
         style={this.props.width ? { width: this.props.width } : {}}>
         <input
+          autoFocus={this.props.focus || false}
           id={this.props.id}
           type={
             this.props.type == "password"

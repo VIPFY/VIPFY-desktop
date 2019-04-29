@@ -1,398 +1,507 @@
 import * as React from "react";
-import { Query } from "react-apollo";
 import moment = require("moment");
-import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import UniversalTextInput from "../universalForms/universalTextInput";
+import UniversalButton from "../universalButtons/universalButton";
+import { Mutation } from "react-apollo";
+import gql from "graphql-tag";
+import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 
+const UPDATE_DATA = gql`
+  mutation updateEmployee($user: EmployeeInput!) {
+    updateEmployee(user: $user) {
+      id
+      firstname
+      lastname
+      birthday
+      hiredate
+      position
+      emails {
+        email
+      }
+      addresses {
+        id
+        country
+        address
+      }
+      phones {
+        id
+        number
+        tags
+      }
+    }
+  }
+`;
 interface Props {
-  e: any;
-  employeeid: number;
-  employeename: string;
+  querydata: any;
 }
 
-interface State {}
+interface State {
+  popupline1: Boolean;
+  popupline2: Boolean;
+  name: string;
+  birthday: number;
+  street: string;
+  zip: string;
+  city: string;
+  country: string;
+  phone1: string;
+  phone2: string;
+  updateing: Boolean;
+  hiredate: string;
+  position: string;
+  email: string;
+  email2: string;
+  workPhone: string;
+  workPhone2: string;
+  error: string | null;
+}
 
 class PersonalDetails extends React.Component<Props, State> {
-  state = {};
+  state = {
+    popupline1: false,
+    popupline2: false,
+    name: `${this.props.querydata.firstname || ""} ${this.props.querydata.lastname || ""}`,
+    birthday: this.props.querydata.birthday,
+    street:
+      this.props.querydata.addresses[0] &&
+      this.props.querydata.addresses[0].address &&
+      this.props.querydata.addresses[0].address.street,
+    zip:
+      this.props.querydata.addresses[0] &&
+      this.props.querydata.addresses[0].address &&
+      this.props.querydata.addresses[0].address.zip,
+    city:
+      this.props.querydata.addresses[0] &&
+      this.props.querydata.addresses[0].address &&
+      this.props.querydata.addresses[0].address.city,
+    country:
+      this.props.querydata.addresses[0] &&
+      this.props.querydata.addresses[0].address &&
+      this.props.querydata.addresses[0].country,
+    phone1:
+      this.props.querydata.privatePhones &&
+      this.props.querydata.privatePhones[0] &&
+      this.props.querydata.privatePhones[0].number,
+    phone2:
+      this.props.querydata.privatePhones &&
+      this.props.querydata.privatePhones[1] &&
+      this.props.querydata.privatePhones[1].number,
+    updateing: false,
+    hiredate: this.props.querydata.hiredate,
+    position: this.props.querydata.position,
+    email: this.props.querydata.email,
+    email2: this.props.querydata.email2,
+    workPhone: this.props.querydata.workPhone,
+    workPhone2: this.props.querydata.workPhone2,
+    error: null
+  };
 
   render() {
+    const querydata = this.props.querydata;
+    console.log("Querydata", querydata);
     return (
-      <Query query={QUERY_SEMIPUBLICUSER} variables={{ unitid: this.props.employeeid }}>
-        {({ loading, error, data }) => {
-          if (loading) {
-            return "Loading...";
-          }
-          if (error) {
-            return `Error! ${error.message}`;
-          }
-
-          console.log("SEMIPUBLIC", data);
-          const querydata = data.adminme;
-          const userdata = {
-            profilepicutre: querydata.profilepicture,
-            online: querydata.isonline,
-            admin: querydata.isadmin,
-            name: `${querydata.firstname} ${querydata.lastname}`,
-            //position: "CMO",
-            birthday: querydata.birthday,
-            hire: "01.05.18",
-            contract: "infinite",
-            boss: "Lisa Brödlin",
-            email1: querydata.emails[0] && querydata.emails[0].email,
-            email2: querydata.emails[1] && querydata.emails[1].email,
-            email3: querydata.emails[2] && querydata.emails[2].email,
-            phone1: querydata.phones[0] && querydata.phones[0].number,
-            phone2: querydata.phones[1] && querydata.phones[1].number,
-            phone3: querydata.phones[2] && querydata.phones[2].number,
-            address11:
-              querydata.addresses[0] &&
-              querydata.addresses[0].address &&
-              querydata.addresses[0].address.street,
-            zip1:
-              querydata.addresses[0] &&
-              querydata.addresses[0].address &&
-              querydata.addresses[0].address.zip,
-            city1:
-              querydata.addresses[0] &&
-              querydata.addresses[0].address &&
-              querydata.addresses[0].address.city,
-            address21:
-              querydata.addresses[1] &&
-              querydata.addresses[1].address &&
-              querydata.addresses[1].address.street,
-            zip2:
-              querydata.addresses[1] &&
-              querydata.addresses[1].address &&
-              querydata.addresses[1].address.zip,
-            city2:
-              querydata.addresses[1] &&
-              querydata.addresses[1].address &&
-              querydata.addresses[1].address.city
-          };
-
-          console.log("USERDATA", userdata, userdata.zip1 && userdata.city1);
-          return (
-
-                <div className="tableRow" style={{ height: "80px" }}>
-                  <div className="tableMain">
-                    <div className="tableColumnSmall">
-                      <h1>Name</h1>
-                    </div>
-                    <div className="tableColumnSmall">
-                      <h1>Birthday</h1>
-                    </div>
-                    <div className="tableColumnSmall">
-                      <h1>Address</h1>
-                    </div>
-                    <div className="tableColumnSmall">
-                      <h1>Phone Privat</h1>
-                    </div>
-                  </div>
-                  <div className="tableEnd">
-                    <div className="editOptions">
-                      <i className="fal fa-edit" />
-                      <i className="fal fa-trash-alt" />
-                    </div>
-                  </div>
-                </div>
-
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr 1fr",
-                gridColumnGap: "10px",
-                gridTemplateRows: "repeat(14, 20px)",
-                alignItems: "end"
-              }}>
-              <div
-                className="circle80"
-                style={{
-                  gridRow: "1/5",
-                  gridColumn: 1,
-                  backgroundImage: `url('https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                    userdata.profilepicutre
-                  }')`
-                }}>
-                {this.props.isadmin && (
-                  <div>
-                    <i className="fal fa-tools adminButton" />
-                  </div>
-                )}
-              </div>
-              {userdata.online ? (
-                <div className="roundedNotification online" style={{ gridRow: 6, gridColumn: 1 }}>
-                  Online
-                </div>
-              ) : (
-                <div className="roundedNotification offline" style={{ gridRow: 6, gridColumn: 1 }}>
-                  Offline
-                </div>
-              )}
-              {userdata.admin ? (
-                <div className="roundedNotification status" style={{ gridRow: 7, gridColumn: 1 }}>
-                  Admin
-                </div>
-              ) : (
-                ""
-              )}
-
-              <div className="roundedNotification button" style={{ gridRow: 9, gridColumn: 1 }}>
-                Chat
-              </div>
-
-              <div className="roundedNotification button" style={{ gridRow: 11, gridColumn: 1 }}>
-                Compliance
-              </div>
-
-              <div className="roundedNotification button" style={{ gridRow: 13, gridColumn: 1 }}>
-                Privacy
-              </div>
-
-              <div className="heading" style={{ gridRow: 1, gridColumn: 2 }}>
-                Name:
-              </div>
-              <div className="text" style={{ gridRow: 2, gridColumn: 2 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={1}
-                    original={userdata.name}
-                    default={userdata.name}
-                    onSave={v => this.saveField(1, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                    nodelete={true}
-                  />
-                ) : (
-                  <span>{userdata.name}</span>
-                )}
-              </div>
-
-              <div className="heading disabled" style={{ gridRow: 4, gridColumn: 2 }}>
-                Position:
-              </div>
-              <div className="text disabled" style={{ gridRow: 5, gridColumn: 2 }}>
-                {/*this.props.isadmin ? (
-                        <EditFieldRDS
-                          activeedit={this.state.editnumber}
-                          editid={2}
-                          default="No Position"
-                          original={userdata.position}
-                          onSave={v => this.saveField(2, v)}
-                          setEditState={v => this.setState({ editnumber: v })}
-                        />
-                      ) : (
-                        <span>{userdata.position}</span>
-                      )*/}
-                Not implemented yet
-              </div>
-
-              <div className="heading" style={{ gridRow: 7, gridColumn: 2 }}>
-                Birthday:
-              </div>
-              <div className="text" style={{ gridRow: 8, gridColumn: 2 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={3}
-                    original={userdata.birthday && moment(userdata.birthday).format("YYYY-MM-DD")}
-                    default=""
-                    onSave={v => this.saveField(3, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                    type="date"
-                  />
-                ) : (
-                  <span>{userdata.birthday}</span>
-                )}
-              </div>
-
-              <div className="heading disabled" style={{ gridRow: 10, gridColumn: 2 }}>
-                Hire Date:
-              </div>
-              <div className="text disabled" style={{ gridRow: 11, gridColumn: 2 }}>
-                Not implemented yet
-              </div>
-
-              <div className="heading" style={{ gridRow: 13, gridColumn: 2 }}>
-                Contract duration:
-              </div>
-              <div className="text" style={{ gridRow: 14, gridColumn: 2 }}>
-                unlimited
-              </div>
-
-              <div className="heading" style={{ gridRow: 1, gridColumn: 3 }}>
-                E-Mail:
-              </div>
-              <div className="text" style={{ gridColumn: 3, gridRow: 2 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={6}
-                    default=""
-                    original={userdata.email1}
-                    onSave={v => this.saveField(6, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                    type="email"
-                  />
-                ) : (
-                  <span>{userdata.email1}</span>
-                )}
-              </div>
-              <div className="text" style={{ gridColumn: 3, gridRow: 3 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={7}
-                    default=""
-                    original={userdata.email2}
-                    onSave={v => this.saveField(7, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                    type="email"
-                  />
-                ) : (
-                  <span>{userdata.email2}</span>
-                )}
-              </div>
-              <div className="text" style={{ gridColumn: 3, gridRow: 4 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={8}
-                    default=""
-                    original={userdata.email3}
-                    onSave={v => this.saveField(8, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                    type="email"
-                  />
-                ) : (
-                  <span>{userdata.email3}</span>
-                )}
-              </div>
-
-              <div className="heading" style={{ gridRow: 6, gridColumn: 3 }}>
-                Phone:
-              </div>
-              <div className="text" style={{ gridColumn: 3, gridRow: 7 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={9}
-                    default=""
-                    original={userdata.phone1}
-                    onSave={v => this.saveField(9, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                  />
-                ) : (
-                  <span>{userdata.phone1}</span>
-                )}
-              </div>
-              <div className="text" style={{ gridColumn: 3, gridRow: 8 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={10}
-                    default=""
-                    original={userdata.phone2}
-                    onSave={v => this.saveField(10, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                  />
-                ) : (
-                  <span>{userdata.phone2}</span>
-                )}
-              </div>
-              <div className="text" style={{ gridColumn: 3, gridRow: 9 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={11}
-                    default=""
-                    original={userdata.phone3}
-                    onSave={v => this.saveField(11, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                  />
-                ) : (
-                  <span>{userdata.phone3}</span>
-                )}
-              </div>
-
-              <div className="heading disabled" style={{ gridColumn: 3, gridRow: 11 }}>
-                Next Vacation
-              </div>
-              <div className="text disabled" style={{ gridColumn: 3, gridRow: 12 }}>
-                Not implemented yet
-              </div>
-              <div className="text disabled" style={{ gridColumn: 3, gridRow: 13 }}>
-                Not implemented yet
-              </div>
-
-              <div className="heading" style={{ gridRow: 1, gridColumn: 4 }}>
-                Address
-              </div>
-
-              <div className="text" style={{ gridColumn: 4, gridRow: 3 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={14}
-                    default=""
-                    original={userdata.address11}
-                    formtype="address"
-                    zip={userdata.zip1}
-                    city={userdata.city1}
-                    onSave={v => this.saveField(14, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                  />
-                ) : (
-                  <div>
-                    <div className="twoLineContent">{userdata.address11}</div>
-                    <div className="twoLineContent">
-                      {userdata.zip1 && userdata.city1 && `${userdata.zip1} ${userdata.city1}`}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="text" style={{ gridColumn: 4, gridRow: 6 }}>
-                {this.props.isadmin ? (
-                  <EditFieldRDS
-                    activeedit={this.state.editnumber}
-                    editid={15}
-                    default=""
-                    original={userdata.address21}
-                    formtype="address"
-                    zip={userdata.zip2}
-                    city={userdata.city2}
-                    onSave={v => this.saveField(15, v)}
-                    setEditState={v => this.setState({ editnumber: v })}
-                  />
-                ) : (
-                  <div>
-                    <div className="twoLineContent">{userdata.address21}</div>
-                    <div className="twoLineContent">
-                      {userdata.zip2 && userdata.city2 && `${userdata.zip2} ${userdata.city2}`}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="heading disabled" style={{ gridColumn: 4, gridRow: 9 }}>
-                Boss
-              </div>
-              <div className="text disabled" style={{ gridColumn: 4, gridRow: 10 }}>
-                Not implemented yet
-              </div>
-              <div className="heading disabled" style={{ gridColumn: 4, gridRow: 12 }}>
-                Directly reports to
-              </div>
-              <div className="text disabled" style={{ gridColumn: 4, gridRow: 13 }}>
-                Not implemented yet
-              </div>
-              <div className="text disabled" style={{ gridColumn: 4, gridRow: 14 }}>
-                Not implemented yet
-              </div>
+      <React.Fragment>
+        <div className="tableRow" style={{ height: "80px" }}>
+          <div className="tableMain">
+            <div className="tableColumnSmall">
+              <h1>Name</h1>
+              <h2>
+                {querydata.firstname} {querydata.lastname}
+              </h2>
             </div>
-          );
-        }}
-      </Query>
+            <div className="tableColumnSmall">
+              <h1>Birthday</h1>
+              <h2>
+                {querydata.birthday
+                  ? moment(querydata.birthday - 0).format("DD.MM.YYYY")
+                  : "Not set"}
+              </h2>
+            </div>
+            <div className="tableColumnSmall">
+              <h1>Address</h1>
+              <h2>
+                {querydata.addresses[0] &&
+                  querydata.addresses[0].address &&
+                  querydata.addresses[0].address.street}
+              </h2>
+              <h2 className="second">
+                {querydata.addresses[0] &&
+                  querydata.addresses[0].address &&
+                  querydata.addresses[0].address.zip}{" "}
+                {querydata.addresses[0] &&
+                  querydata.addresses[0].address &&
+                  querydata.addresses[0].address.city}
+              </h2>
+            </div>
+            <div className="tableColumnSmall">
+              <h1>Private Phone</h1>
+              <h2>
+                {querydata.privatePhones &&
+                  querydata.privatePhones[0] &&
+                  querydata.privatePhones[0].number}
+              </h2>
+              <h2 className="second">
+                {querydata.privatePhones &&
+                  querydata.privatePhones[1] &&
+                  querydata.privatePhones[1].number}
+              </h2>
+            </div>
+          </div>
+          <div className="tableEnd">
+            <div className="editOptions">
+              <i className="fal fa-edit" onClick={() => this.setState({ popupline1: true })} />
+            </div>
+          </div>
+        </div>
+        <div className="tableRow" style={{ height: "80px" }}>
+          <div className="tableMain">
+            <div className="tableColumnSmall">
+              <h1>Hiredate</h1>
+              <h2>
+                {querydata.hiredate
+                  ? moment(querydata.hiredate - 0).format("DD.MM.YYYY")
+                  : "Not set"}
+              </h2>
+            </div>
+            <div className="tableColumnSmall">
+              <h1>Position</h1>
+              <h2>{querydata.position}</h2>
+            </div>
+            <div className="tableColumnSmall">
+              <h1>Workmail</h1>
+              <h2>{querydata.emails && querydata.emails[0] && querydata.emails[0].email}</h2>
+              <h2 className="second">
+                {querydata.emails && querydata.emails[1] && querydata.emails[1].email}
+              </h2>
+            </div>
+            <div className="tableColumnSmall">
+              <h1>Work Phone</h1>
+              <h2>
+                {querydata.workPhones && querydata.workPhones[0] && querydata.workPhones[0].number}
+              </h2>
+              <h2 className="second">
+                {querydata.workPhones && querydata.workPhones[1] && querydata.workPhones[1].number}
+              </h2>
+            </div>
+          </div>
+          <div className="tableEnd">
+            <div className="editOptions">
+              <i className="fal fa-edit" onClick={() => this.setState({ popupline2: true })} />
+            </div>
+          </div>
+        </div>
+        {this.state.popupline1 ? (
+          <Mutation mutation={UPDATE_DATA}>
+            {updateEmployee => (
+              <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
+                <h2 className="boldHeading">
+                  Edit Personal Data of {querydata.firstname} {querydata.lastname}
+                </h2>
+                <div>
+                  <UniversalTextInput
+                    id="name"
+                    label="Name"
+                    livevalue={v => this.setState({ name: v })}
+                    startvalue={`${querydata.firstname || ""} ${querydata.lastname || ""}`}
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="birthday"
+                    label="Birthday"
+                    type="date"
+                    livevalue={v => this.setState({ birthday: v })}
+                    startvalue={
+                      querydata.birthday ? moment(querydata.birthday - 0).format("YYYY-MM-DD") : " "
+                    }
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="street"
+                    label="Street / Number"
+                    livevalue={v => this.setState({ street: v })}
+                    startvalue={
+                      querydata.addresses[0] &&
+                      querydata.addresses[0].address &&
+                      querydata.addresses[0].address.street
+                    }
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="zip"
+                    label="Zip"
+                    livevalue={v => this.setState({ zip: v })}
+                    startvalue={
+                      querydata.addresses[0] &&
+                      querydata.addresses[0].address &&
+                      querydata.addresses[0].address.zip
+                    }
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="city"
+                    label="City"
+                    livevalue={v => this.setState({ city: v })}
+                    startvalue={
+                      querydata.addresses[0] &&
+                      querydata.addresses[0].address &&
+                      querydata.addresses[0].address.city
+                    }
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalDropDownInput
+                    id="country"
+                    label="Country"
+                    livecode={v => this.setState({ country: v })}
+                    startvalue={
+                      querydata.addresses[0] &&
+                      querydata.addresses[0].address &&
+                      querydata.addresses[0].country
+                    }
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="phone"
+                    label="Private Phone"
+                    livevalue={v => this.setState({ phone1: v })}
+                    startvalue={
+                      querydata.privatePhones &&
+                      querydata.privatePhones[0] &&
+                      querydata.privatePhones[0].number
+                    }
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="phone2"
+                    label="Private Phone 2"
+                    disabled={this.state.phone1 == ""}
+                    livevalue={v => this.setState({ phone2: v })}
+                    startvalue={
+                      querydata.privatePhones &&
+                      querydata.privatePhones[1] &&
+                      querydata.privatePhones[1].number
+                    }
+                  />
+                </div>
+                <UniversalButton
+                  label="Cancel"
+                  type="low"
+                  onClick={() => this.setState({ popupline1: false })}
+                />
+                <UniversalButton
+                  label="Save"
+                  type="high"
+                  onClick={async () => {
+                    const nameparts = this.state.name.split(" ");
+                    const middlenameArray = nameparts.length > 1 ? nameparts.slice(1, -1) : null;
+                    console.log("SAVESTATE", this.state);
+                    try {
+                      this.setState({ updateing: true });
+                      await updateEmployee({
+                        variables: {
+                          user: {
+                            id: querydata.id,
+                            firstname: nameparts[0],
+                            lastname: nameparts[nameparts.length - 1],
+                            middlename: "",
+                            birthday: this.state.birthday ? this.state.birthday : null,
+                            address: Object.assign(
+                              {},
+                              querydata.addresses[0] && querydata.addresses[0].id
+                                ? { id: querydata.addresses[0].id }
+                                : {},
+                              { street: this.state.street },
+                              { zip: this.state.zip },
+                              { city: this.state.city },
+                              { country: this.state.country }
+                            ),
+                            phone: Object.assign(
+                              {},
+                              querydata.privatePhones &&
+                                querydata.privatePhones[0] &&
+                                querydata.privatePhones[0].id
+                                ? { id: querydata.privatePhones[0].id }
+                                : {},
+                              { number: this.state.phone1 || "" }
+                            ),
+                            phone2: Object.assign(
+                              {},
+                              querydata.privatePhones &&
+                                querydata.privatePhones[1] &&
+                                querydata.privatePhones[1].id
+                                ? { id: querydata.privatePhones[1].id }
+                                : {},
+                              { number: this.state.phone2 || "" }
+                            )
+                          }
+                        }
+                      });
+                      this.setState({ popupline1: false, updateing: false });
+                    } catch (err) {
+                      //this.setState({ popupline1: false, updateting: false });
+                      this.setState({ updateing: false, error: err });
+                      console.log("err", err);
+                    }
+                  }}
+                />
+                {this.state.updateing ? (
+                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
+                    <i className="fal fa-cog fa-spin" />
+                    <span>Saving</span>
+                  </PopupBase>
+                ) : (
+                  ""
+                )}
+                {this.state.error ? (
+                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
+                    <span>Something went wrong :( Please try again or contact support</span>
+                    <UniversalButton
+                      type="high"
+                      label="Ok"
+                      onClick={() => this.setState({ error: null })}
+                    />
+                  </PopupBase>
+                ) : (
+                  ""
+                )}
+              </PopupBase>
+            )}
+          </Mutation>
+        ) : (
+          ""
+        )}
+        {this.state.popupline2 ? (
+          <Mutation mutation={UPDATE_DATA}>
+            {updateEmployee => (
+              <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
+                <h2 className="boldHeading">
+                  Edit Personal Data of {querydata.firstname} {querydata.lastname}
+                </h2>
+                <div>
+                  <UniversalTextInput
+                    id="hiredate"
+                    label="Hiredate"
+                    type="date"
+                    livevalue={v => this.setState({ hiredate: v })}
+                    startvalue={
+                      querydata.hiredate ? moment(querydata.hiredate - 0).format("YYYY-MM-DD") : " "
+                    }
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="position"
+                    label="Position"
+                    livevalue={v => this.setState({ position: v })}
+                    startvalue={querydata.position}
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="email"
+                    label="Workmail"
+                    livevalue={v => this.setState({ email: v })}
+                    startvalue={
+                      querydata.emails && querydata.emails[0] && querydata.emails[0].email
+                    }
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="email"
+                    label="Workmail 2"
+                    livevalue={v => this.setState({ email2: v })}
+                    startvalue={
+                      querydata.emails && querydata.emails[1] && querydata.emails[1].email
+                    }
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="workPhone"
+                    label="Workphone"
+                    livevalue={v => this.setState({ workPhone: v })}
+                    startvalue={querydata.workPhones[0] && querydata.workPhones[0].number}
+                  />
+                  <div className="fieldsSeperator" />
+                  <UniversalTextInput
+                    id="workPhone2"
+                    label="Workphone 2"
+                    disabled={this.state.workPhone == ""}
+                    livevalue={v => this.setState({ workPhone2: v })}
+                    startvalue={querydata.workPhones[1] && querydata.workPhones[1].number}
+                  />
+                </div>
+                <UniversalButton
+                  label="Cancel"
+                  type="low"
+                  onClick={() => this.setState({ popupline2: false })}
+                />
+                <UniversalButton
+                  label="Save"
+                  type="high"
+                  onClick={async () => {
+                    try {
+                      this.setState({ updateing: true });
+                      await updateEmployee({
+                        variables: {
+                          user: {
+                            id: querydata.id,
+                            hiredate: this.state.hiredate ? this.state.hiredate : null,
+                            position: this.state.position,
+                            email: this.state.email,
+                            email2: this.state.email2,
+                            workPhone: Object.assign(
+                              {},
+                              querydata.workPhones &&
+                                querydata.workPhones[0] &&
+                                querydata.workPhones[0].id
+                                ? { id: querydata.workPhones[0].id }
+                                : {},
+                              { number: this.state.workPhone || "" }
+                            ),
+                            workPhone2: Object.assign(
+                              {},
+                              querydata.workPhones &&
+                                querydata.workPhones[1] &&
+                                querydata.workPhones[1].id
+                                ? { id: querydata.workPhones[1].id }
+                                : {},
+                              { number: this.state.workPhone2 || "" }
+                            )
+                          }
+                        }
+                      });
+                      this.setState({ popupline2: false, updateing: false });
+                    } catch (err) {
+                      this.setState({ updateing: false, error: err });
+                      console.log("err", err);
+                    }
+                  }}
+                />
+                {this.state.updateing ? (
+                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
+                    <i className="fal fa-cog fa-spin" />
+                    <span>Saving</span>
+                  </PopupBase>
+                ) : (
+                  ""
+                )}
+                {this.state.error ? (
+                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
+                    <span>Something went wrong :( Please try again or contact support</span>
+                    <UniversalButton
+                      type="high"
+                      label="Ok"
+                      onClick={() => this.setState({ error: null })}
+                    />
+                  </PopupBase>
+                ) : (
+                  ""
+                )}
+              </PopupBase>
+            )}
+          </Mutation>
+        ) : (
+          ""
+        )}
+      </React.Fragment>
     );
   }
 }

@@ -16,8 +16,18 @@ const REMOVE_EXTERNAL_ACCOUNT = gql`
 `;
 
 const UPDATE_CREDENTIALS = gql`
-  mutation onUpdateCredentials($licenceid: ID!, $username: String, $password: String) {
-    updateCredentials(licenceid: $licenceid, username: $username, password: $password)
+  mutation onUpdateCredentials(
+    $licenceid: ID!
+    $username: String
+    $password: String
+    $loginurl: String
+  ) {
+    updateCredentials(
+      licenceid: $licenceid
+      username: $username
+      password: $password
+      loginurl: $loginurl
+    )
   }
 `;
 
@@ -35,17 +45,25 @@ interface State {
   edit: Boolean;
   email: string;
   password: string;
+  subdomain: string;
+  confirmedit: boolean;
+  networkedit: boolean;
+  updated: boolean;
 }
 
 class ServiceDetails extends React.Component<Props, State> {
   state = {
     confirm: false,
     delete: false,
-    network: false,
+    network: true,
     deleted: false,
     edit: false,
     email: "",
-    password: ""
+    password: "",
+    subdomain: "",
+    confirmedit: false,
+    networkedit: true,
+    updated: false
   };
 
   render() {
@@ -88,7 +106,9 @@ class ServiceDetails extends React.Component<Props, State> {
                     {e.endtime ? moment(e.endtime - 0).format("DD.MM.YYYY") : "Recurring"}
                   </div>
                   <div className="tableColumnSmall content">
-                    {e.boughtplanid.totalprice > 0 ? `$${e.boughtplanid.totalprice}/month` : "Free"}
+                    {e.boughtplanid.totalprice > 0
+                      ? `$${e.boughtplanid.totalprice}/month`
+                      : "Integrated Account"}
                   </div>
                   <div className="tableColumnSmall content">
                     <Query
@@ -105,11 +125,6 @@ class ServiceDetails extends React.Component<Props, State> {
                           ) {
                             unit {
                               id
-                              firstname
-                              middlename
-                              lastname
-                              title
-                              profilepicture
                             }
                             totalminutes
                           }
@@ -118,8 +133,8 @@ class ServiceDetails extends React.Component<Props, State> {
                       variables={{
                         starttime: moment()
                           .subtract(4, "weeks")
-                          .format("LLL"),
-                        endtime: moment().format("LLL"),
+                          .format("LL"),
+                        endtime: moment().format("LL"),
                         boughtplanid: e.boughtplanid.id
                       }}>
                       {({ data, loading, error }) => {
@@ -160,7 +175,7 @@ class ServiceDetails extends React.Component<Props, State> {
                 </div>
                 <div className="tableEnd">
                   <div className="editOptions">
-                    <i className="fal fa-edit" />
+                    <i className="fal fa-edit" onClick={() => this.setState({ edit: true })} />
                     <i
                       className="fal fa-trash-alt"
                       onClick={() => this.setState({ delete: true })}
@@ -172,10 +187,24 @@ class ServiceDetails extends React.Component<Props, State> {
                     small={true}
                     close={() => this.setState({ edit: false, email: "", password: "" })}>
                     <span className="lightHeading">
-                      Edit licence of {e.boughtplanid.planid.appid.name}
+                      Edit licence from {this.props.employeename} of{" "}
+                      {e.boughtplanid.planid.appid.name}
                     </span>
-                    <span className="medHeading spaceHeading">for</span>
-                    <span className="medHeading">{this.props.employeename}</span>
+                    {e.boughtplanid.planid.appid.needssubdomain ? (
+                      <UniversalTextInput
+                        id={`${name}-subdomain`}
+                        label="Subdomain"
+                        livevalue={value => this.setState({ subdomain: value })}>
+                        <span className="small">
+                          Please insert your subdomain.
+                          <br />
+                          {e.boughtplanid.planid.appid.options.predomain}YOUR SUBDOMAIN
+                          {e.boughtplanid.planid.appid.options.afterdomain}
+                        </span>
+                      </UniversalTextInput>
+                    ) : (
+                      ""
+                    )}
                     <UniversalTextInput
                       id={`${name}-email`}
                       label={`Username for your ${name}-Account`}
@@ -189,19 +218,82 @@ class ServiceDetails extends React.Component<Props, State> {
                     />
                     <UniversalButton
                       type="high"
-                      disabeld={this.state.email == "" || this.state.password == ""}
-                      closingAllPopups={true}
+                      disabeld={
+                        (e.boughtplanid.planid.appid.needssubdomain &&
+                          this.state.subdomain == "") ||
+                        this.state.email == "" ||
+                        this.state.password == ""
+                      }
                       label="Confirm"
                       onClick={async () => {
-                        await updateCredentials({
-                          variables: {
-                            licenceid: e.id,
-                            username: this.state.email,
-                            password: this.state.password
-                          }
-                        });
+                        this.setState({ confirmedit: true, networkedit: true, updated: false });
+                        try {
+                          await updateCredentials({
+                            variables: {
+                              licenceid: e.id,
+                              username: this.state.email,
+                              password: this.state.password,
+                              loginurl:
+                                this.state.subdomain != ""
+                                  ? `${e.boughtplanid.planid.appid.options.predomain}${
+                                      this.state.subdomain
+                                    }${e.boughtplanid.planid.appid.options.afterdomain}`
+                                  : ""
+                            }
+                          });
+                          this.setState({ updated: true, networkedit: false });
+                        } catch (err) {
+                          //this.setState({ networkedit: false });
+                          console.log("err");
+                          throw err;
+                        }
                       }}
                     />
+
+                    {this.state.confirmedit ? (
+                      <PopupBase
+                        close={() => this.setState({ confirmedit: false, networkedit: true })}
+                        small={true}
+                        closeable={false}
+                        autoclosing={5}
+                        autoclosingFunction={() => this.setState({ networkedit: false })}>
+                        {this.state.networkedit ? (
+                          <div>
+                            <div style={{ fontSize: "32px", textAlign: "center" }}>
+                              <i className="fal fa-spinner fa-spin" />
+                              <div style={{ marginTop: "32px", fontSize: "16px" }}>
+                                The licence is currently being updated
+                              </div>
+                            </div>
+                          </div>
+                        ) : this.state.updated ? (
+                          <React.Fragment>
+                            <div>This licence has been updated sucessfully.</div>
+                            <UniversalButton
+                              type="high"
+                              closingPopup={true}
+                              label="Ok"
+                              closingAllPopups={true}
+                            />
+                          </React.Fragment>
+                        ) : (
+                          <React.Fragment>
+                            <div>
+                              It takes a little bit longer to update this licence. We will inform
+                              you when it is done.
+                            </div>
+                            <UniversalButton
+                              type="high"
+                              closingPopup={true}
+                              label="Ok"
+                              closingAllPopups={true}
+                            />
+                          </React.Fragment>
+                        )}
+                      </PopupBase>
+                    ) : (
+                      ""
+                    )}
                   </PopupBase>
                 )}
                 {this.state.delete ? (
@@ -210,12 +302,12 @@ class ServiceDetails extends React.Component<Props, State> {
                     close={() => this.setState({ delete: false })}
                     closeable={false}>
                     <p>
-                      Do you really want to delete your licence for <b>{name}</b>
+                      Do you really want to delete the licence for{" "}
+                      <b>{e.boughtplanid.planid.appid.name}</b>
                     </p>
                     <UniversalButton type="low" closingPopup={true} label="Cancel" />
                     <UniversalButton
                       type="low"
-                      closingAllPopups={true}
                       label="Delete"
                       onClick={async () => {
                         this.setState({ confirm: true, network: true, deleted: false });
@@ -237,6 +329,7 @@ class ServiceDetails extends React.Component<Props, State> {
                           this.setState({ network: false, deleted: true });
                         } catch (err) {
                           console.log("ERROR", err);
+                          throw err;
                         }
                       }}
                     />

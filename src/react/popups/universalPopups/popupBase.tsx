@@ -10,6 +10,9 @@ interface Props {
   autoclosingFunction?: Function;
   notimer?: Boolean;
   dialog?: Boolean;
+  fullmiddle?: Boolean;
+  customStyles?: Object;
+  buttonStyles?: Object;
 }
 
 interface State {
@@ -77,10 +80,10 @@ class PopupBase extends React.Component<Props, State> {
     let popupElementArray: JSX.Element[] = [];
     let popupButtonArray: JSX.Element[] = [];
     let popupFieldsArray: JSX.Element[] = [];
-    //console.log("PopupBase Children", children);
+    console.log("PopupBase Children", children);
 
     if (children && children.type && children.type.toString() === React.Fragment.toString()) {
-      //console.log("FRAGMENT");
+      console.log("FRAGMENT");
       children = children.props.children;
     }
 
@@ -130,13 +133,17 @@ class PopupBase extends React.Component<Props, State> {
           popupElementArray.push(element);
         }
       });
+      console.log("BUTTONSTyles", this.props.buttonStyles);
       popupElementArray.push(
         <div key="fields" className="fieldsPopup">
           {popupFieldsArray}
         </div>
       );
       popupElementArray.push(
-        <div key="buttons" className="buttonsPopup">
+        <div
+          key="buttons"
+          className="buttonsPopup"
+          style={this.props.buttonStyles ? this.props.buttonStyles : {}}>
           {popupButtonArray}
         </div>
       );
@@ -164,12 +171,20 @@ class PopupBase extends React.Component<Props, State> {
             className="backgroundPopup"
             style={this.state.isopen ? showBackground : hideBackground}
             onClick={() => this.close()}>
-            <div className="sideReplicaPopup" style={{ width: sideBarOpen ? "240px" : "48px" }} />
+            {this.props.fullmiddle ? (
+              ""
+            ) : (
+              <div className="sideReplicaPopup" style={{ width: sideBarOpen ? "240px" : "48px" }} />
+            )}
 
             <div
               className="holderPopup"
               style={{
-                width: sideBarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
+                width: this.props.fullmiddle
+                  ? "100%"
+                  : sideBarOpen
+                  ? "calc(100% - 240px + 18px)"
+                  : "calc(100% - 48px + 18px)"
               }}>
               <div
                 className="universalPopup"
@@ -177,7 +192,8 @@ class PopupBase extends React.Component<Props, State> {
                   {},
                   this.state.isopen ? showPopup : hidePopup,
                   this.props.small ? { maxWidth: "30rem" } : "",
-                  this.props.dialog ? { maxWidth: "25rem" } : ""
+                  this.props.dialog ? { maxWidth: "25rem" } : "",
+                  this.props.customStyles ? this.props.customStyles : ""
                 )}
                 onClick={e => e.stopPropagation()}>
                 {this.props.close && !(this.props.closeable == false) ? (
