@@ -22,11 +22,20 @@ interface State {
 
 const FETCH_APP_ICON = gql`
   query onFetchAppIcon($licenceid: ID!) {
-    fetchAppIcon(licenceid: $licenceid) {
-      licenceid
-      appname
-      icon
-      alias
+    fetchLicences(licenceid: $licenceid) {
+      id
+      boughtplanid {
+        id
+        alias
+        planid {
+          id
+          appid {
+            id
+            name
+            icon
+          }
+        }
+      }
     }
   }
 `;
@@ -101,7 +110,9 @@ class Tab extends React.Component<Props, State> {
           }
 
           // prettier-ignore
-          const { fetchAppIcon: { icon, alias, appname } } = data;
+          const alias = data.fetchLicences[0].boughtplanid.alias;
+          const icon = data.fetchLicences[0].boughtplanid.planid.appid.icon;
+          const appname = data.fetchLicences[0].boughtplanid.planid.appid.name;
 
           return (
             <li
