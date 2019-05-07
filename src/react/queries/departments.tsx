@@ -127,6 +127,137 @@ export const fetchUsersOwnLicences = gql`
   }
 `;
 
+export const fetchTeams = gql`
+  query fetchTeams($userid: ID!) {
+    fetchTeams(userid: $userid) {
+      name
+      legalinformation
+      unitid {
+        id
+      }
+      banned
+      deleted
+      suspended
+      profilepicture
+      employees {
+        id
+        firstname
+      }
+      employeenumber
+      managelicences
+      apps
+      licences {
+        id
+        boughtplanid {
+          id
+          alias
+          planid {
+            id
+            options
+            appid {
+              id
+              description
+              name
+              icon
+              hidden
+              disabled
+              needssubdomain
+              options
+            }
+          }
+        }
+      }
+      services {
+        id
+        alias
+        planid {
+          id
+          options
+          appid {
+            id
+            logo
+            name
+            icon
+            disabled
+          }
+        }
+      }
+      createdate
+      promocode
+      setupfinished
+      iscompany
+      internaldata
+    }
+  }
+`;
+
+export const fetchCompanyTeams = gql`
+  query fetchCompanyTeams {
+    fetchCompanyTeams {
+      name
+      legalinformation
+      unitid {
+        id
+      }
+      banned
+      deleted
+      suspended
+      profilepicture
+      employees {
+        id
+        firstname
+      }
+      employeenumber
+      managelicences
+      apps
+      licences {
+        id
+        boughtplanid {
+          id
+          alias
+          planid {
+            id
+            options
+            appid {
+              id
+              description
+              name
+              icon
+              hidden
+              disabled
+              needssubdomain
+              options
+            }
+          }
+        }
+      }
+      services {
+        id
+        alias
+        planid {
+          id
+          options
+          appid {
+            id
+            description
+            name
+            icon
+            hidden
+            disabled
+            needssubdomain
+            options
+          }
+        }
+      }
+      createdate
+      promocode
+      setupfinished
+      iscompany
+      internaldata
+    }
+  }
+`;
+
 export const fetchUserLicences = gql`
   query fetchUsersOwnLicences($unitid: ID!) {
     fetchUsersOwnLicences(unitid: $unitid) {

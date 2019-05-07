@@ -13,6 +13,7 @@ interface Props {
   cancel: Function;
   add: Function;
   employeename: string;
+  nooutsideclose?: Boolean;
 }
 
 interface State {
@@ -30,10 +31,22 @@ class PopupAddLicence extends React.Component<Props, State> {
     integrateApp: {}
   };
 
+  componentWillReceiveProps = async props => {
+    console.log("Will Receive");
+    await this.setState({
+      subdomain: "",
+      email: "",
+      password: "",
+      integrateApp: {}
+    });
+    console.log("Will", this.state);
+  };
+
   render() {
     const { name, needssubdomain, options, icon } = this.props.app;
     return (
       <PopupBase
+        nooutsideclose={this.props.nooutsideclose}
         buttonStyles={{ justifyContent: "space-between" }}
         fullmiddle={true}
         small={true}
@@ -73,6 +86,7 @@ class PopupAddLicence extends React.Component<Props, State> {
                   width="100%"
                   id="subdomain"
                   label="Subdomain"
+                  startvalue=""
                   livevalue={value => this.setState({ subdomain: value })}>
                   <span className="small">
                     Please insert your subdomain.
@@ -91,6 +105,7 @@ class PopupAddLicence extends React.Component<Props, State> {
               width="100%"
               id={`${name}-email`}
               label="Username/Email"
+              startvalue=""
               livevalue={value => this.setState({ email: value })}
             />
             <div style={{ width: "100%", height: "24px" }} />
@@ -99,6 +114,7 @@ class PopupAddLicence extends React.Component<Props, State> {
               id={`${name}-password`}
               label="Password"
               type="password"
+              startvalue=""
               livevalue={value => this.setState({ password: value })}
             />
           </div>

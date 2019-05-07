@@ -13,6 +13,7 @@ interface Props {
   fullmiddle?: Boolean;
   customStyles?: Object;
   buttonStyles?: Object;
+  nooutsideclose?: Boolean;
 }
 
 interface State {
@@ -80,10 +81,10 @@ class PopupBase extends React.Component<Props, State> {
     let popupElementArray: JSX.Element[] = [];
     let popupButtonArray: JSX.Element[] = [];
     let popupFieldsArray: JSX.Element[] = [];
-    console.log("PopupBase Children", children);
+    //console.log("PopupBase Children", children);
 
     if (children && children.type && children.type.toString() === React.Fragment.toString()) {
-      console.log("FRAGMENT");
+      //console.log("FRAGMENT");
       children = children.props.children;
     }
 
@@ -133,7 +134,7 @@ class PopupBase extends React.Component<Props, State> {
           popupElementArray.push(element);
         }
       });
-      console.log("BUTTONSTyles", this.props.buttonStyles);
+      //console.log("BUTTONSTyles", this.props.buttonStyles);
       popupElementArray.push(
         <div key="fields" className="fieldsPopup">
           {popupFieldsArray}
@@ -170,7 +171,7 @@ class PopupBase extends React.Component<Props, State> {
           <div
             className="backgroundPopup"
             style={this.state.isopen ? showBackground : hideBackground}
-            onClick={() => this.close()}>
+            onClick={() => !this.props.nooutsideclose && this.close()}>
             {this.props.fullmiddle ? (
               ""
             ) : (

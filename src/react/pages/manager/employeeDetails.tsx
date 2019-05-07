@@ -8,6 +8,7 @@ import { now } from "moment";
 import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
+import TeamsSection from "../../components/manager/teamsSection";
 
 interface Props {
   moveTo: Function;
@@ -129,69 +130,10 @@ class EmployeeDetails extends React.Component<Props, State> {
                   </div>
                 </div>
               </div>
-              <div className="section">
-                <div className="heading">
-                  <h1>Teams</h1>
-                </div>
-                <div className="table">
-                  <div className="tableHeading">
-                    <div className="tableMain">
-                      <div className="tableColumnSmall">
-                        <h1>Team</h1>
-                      </div>
-                      <div className="tableColumnSmall">
-                        <h1>Beginning</h1>
-                      </div>
-                      <div className="tableColumnSmall">
-                        <h1>Ending</h1>
-                      </div>
-                      <div className="tableColumnSmall">
-                        <h1>Price</h1>
-                      </div>
-                      <div className="tableColumnSmall">
-                        <h1>Usage</h1>
-                      </div>
-                    </div>
-                    <div className="tableEnd">
-                      <UniversalButton
-                        type="high"
-                        label="Add Team"
-                        customStyles={{
-                          fontSize: "12px",
-                          lineHeight: "24px",
-                          fontWeight: "700",
-                          marginRight: "16px",
-                          width: "92px"
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {this.employeeDetails.teams.map(team => (
-                    <div className="tableRow">
-                      <div className="tableMain">
-                        <div className="tableColumnSmall">
-                          <div
-                            className="managerSquare"
-                            style={team.color ? { backgroundColor: team.color } : {}}>
-                            {team.short || team.name.slice(0, 1)}
-                          </div>
-                          <span className="name">{team.name}</span>
-                        </div>
-                        <div className="tableColumnSmall content">{team.begin}</div>
-                        <div className="tableColumnSmall content">{team.ending}</div>
-                        <div className="tableColumnSmall content">{team.price}</div>
-                        <div className="tableColumnSmall content">{team.usage}</div>
-                      </div>
-                      <div className="tableEnd">
-                        <div className="editOptions">
-                          <i className="fal fa-edit" />
-                          <i className="fal fa-trash-alt" />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <TeamsSection
+                employeeid={employeeid}
+                employeename={`${querydata.firstname} ${querydata.lastname}`}
+              />
               <LicencesSection employeeid={employeeid} />
             </div>
           );

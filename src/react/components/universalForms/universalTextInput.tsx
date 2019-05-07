@@ -21,6 +21,7 @@ interface State {
   eyeopen: Boolean;
   notypeing: Boolean;
   errorfaded: Boolean;
+  currentid: string;
 }
 
 class UniversalTextInput extends React.Component<Props, State> {
@@ -30,11 +31,15 @@ class UniversalTextInput extends React.Component<Props, State> {
     inputFocus: false,
     eyeopen: false,
     notypeing: true,
-    errorfaded: false
+    errorfaded: false,
+    currentid: ""
   };
 
   componentWillReceiveProps = props => {
-    //console.log("Will Update", props);
+    console.log("Will Update", props);
+    if (this.state.currentid != props.id) {
+      this.setState({ value: "", currentid: props.id });
+    }
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 

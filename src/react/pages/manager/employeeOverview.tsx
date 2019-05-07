@@ -3,7 +3,12 @@ import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Link } from "react-router-dom";
 import { Query } from "react-apollo";
-import { fetchDepartmentsData, fetchUsersOwnLicences } from "../../queries/departments";
+import {
+  fetchDepartmentsData,
+  fetchUsersOwnLicences,
+  fetchTeams,
+  fetchCompanyTeams
+} from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import AddEmployeeTeams from "../../components/manager/addEmployeeTeams";
@@ -67,6 +72,7 @@ class EmployeeOverview extends React.Component<Props, State> {
       } else {
         serviceArray.push(
           <div
+            title={service.boughtplanid.planid.appid.name}
             className="managerSquare"
             style={
               service.boughtplanid.planid.appid.icon
@@ -94,12 +100,17 @@ class EmployeeOverview extends React.Component<Props, State> {
   }
 
   renderTeams(teams) {
-    let teamArray: JSX.Element[] = [];
+    //console.log("Inside", teams);
+    let teamsArray: JSX.Element[] = [];
     let counter = 0;
     for (counter = 0; counter < teams.length; counter++) {
-      const team = teams[counter];
+      const team: {
+        profilepicture: string;
+        internaldata: { letters: string; color: string };
+        name: string;
+      } = teams[counter];
       if (teams.length > 6 && counter > 4) {
-        teamArray.push(
+        teamsArray.push(
           <div
             className="managerSquare"
             style={{
@@ -113,14 +124,37 @@ class EmployeeOverview extends React.Component<Props, State> {
         );
         break;
       } else {
-        teamArray.push(
-          <div className="managerSquare" style={team.color ? { backgroundColor: team.color } : {}}>
-            {team.short || team.name.slice(0, 1)}
+        teamsArray.push(
+          <div
+            title={team.name}
+            className="managerSquare"
+            style={
+              team.profilepicture
+                ? {
+                    backgroundImage:
+                      team.profilepicture.indexOf("/") != -1
+                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                            team.profilepicture
+                          )})`
+                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                            team.profilepicture
+                          )})`,
+                    backgroundColor: "unset"
+                  }
+                : team.internaldata && team.internaldata.color
+                ? { backgroundColor: team.internaldata.color }
+                : {}
+            }>
+            {team.profilepicture
+              ? ""
+              : team.internaldata && team.internaldata.letters
+              ? team.internaldata.letters
+              : team.name.slice(0, 1)}
           </div>
         );
       }
     }
-    return teamArray;
+    return teamsArray;
   }
 
   addProcess() {
@@ -149,6 +183,8 @@ class EmployeeOverview extends React.Component<Props, State> {
             addusername={this.state.addpersonal.name}
           />
         );
+      default:
+        return <div />;
     }
   }
   render() {
@@ -158,7 +194,7 @@ class EmployeeOverview extends React.Component<Props, State> {
           <h1>Employee Manager</h1>
           <UniversalSearchBox
             getValue={v => {
-              console.log("Search", v);
+              //console.log("Search", v);
               this.setState({ search: v });
             }}
           />
@@ -175,7 +211,7 @@ class EmployeeOverview extends React.Component<Props, State> {
               if (error) {
                 return `Error! ${error.message}`;
               }
-              console.log("fetchDepartmentData", data);
+              //onsole.log("fetchDepartmentData", data);
 
               //Sort employees
               let employees: any[] = [];
@@ -279,7 +315,32 @@ class EmployeeOverview extends React.Component<Props, State> {
                             />
                           </div>
                           <div className="tableColumnBig">
-                            {/*this.renderTeams(employee.teams)*/}
+                            <Query query={fetchTeams} variables={{ userid: employee.id }}>
+                              {({ loading, error, data }) => {
+                                if (loading) {
+                                  return "Loading...";
+                                }
+                                if (error) {
+                                  return `Error! ${error.message}`;
+                                }
+                                //console.log("Teams", data);
+                                return data.fetchTeams
+                                  ? this.renderTeams(data.fetchTeams)
+                                  : "No teams yet";
+                              }}
+                            </Query>
+                            {/*<Query query={fetchCompanyTeams}>
+                              {({ loading, error, data }) => {
+                                if (loading) {
+                                  return "Loading...";
+                                }
+                                if (error) {
+                                  return `Error! ${error.message}`;
+                                }
+                                console.log("CompanyTeams", data);
+                                return <div>CompanyTeams</div>;
+                              }}
+                            </Query>*/}
                           </div>
                           <div className="tableColumnBig">
                             <Query
@@ -292,7 +353,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 if (error) {
                                   return `Error! ${error.message}`;
                                 }
-                                console.log("Services", data);
+                                //console.log("Services", data);
                                 return data.fetchUsersOwnLicences
                                   ? this.renderSerives(data.fetchUsersOwnLicences)
                                   : "No services yet";
