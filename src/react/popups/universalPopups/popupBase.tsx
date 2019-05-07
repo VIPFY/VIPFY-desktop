@@ -10,6 +10,7 @@ interface Props {
   autoclosingFunction?: Function;
   notimer?: Boolean;
   dialog?: Boolean;
+  nosidebar?: Boolean;
 }
 
 interface State {
@@ -146,7 +147,7 @@ class PopupBase extends React.Component<Props, State> {
   }
 
   render() {
-    //console.log(this.props.children, this.props);
+    console.log(this.props.children, this.props);
     let autoclosing = {};
     if (this.props.autoclosing) {
       const closingtime = this.props.autoclosing * 1000;
@@ -156,7 +157,6 @@ class PopupBase extends React.Component<Props, State> {
         ? { maxWidth: "30rem", transition: `max-width ${closingtime}ms linear` }
         : { maxWidth: "60rem", transition: `max-width ${closingtime}ms linear` };
     }
-
     return (
       <SideBarContext>
         {sideBarOpen => (
@@ -164,13 +164,20 @@ class PopupBase extends React.Component<Props, State> {
             className="backgroundPopup"
             style={this.state.isopen ? showBackground : hideBackground}
             onClick={() => this.close()}>
-            <div className="sideReplicaPopup" style={{ width: sideBarOpen ? "240px" : "48px" }} />
-
+            {this.props.nosidebar ? (
+              ""
+            ) : (
+              <div className="sideReplicaPopup" style={{ width: sideBarOpen ? "240px" : "48px" }} />
+            )}
             <div
               className="holderPopup"
-              style={{
-                width: sideBarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
-              }}>
+              style={
+                this.props.nosidebar
+                  ? { width: "100%" }
+                  : {
+                      width: sideBarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
+                    }
+              }>
               <div
                 className="universalPopup"
                 style={Object.assign(

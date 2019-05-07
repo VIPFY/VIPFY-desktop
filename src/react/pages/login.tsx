@@ -10,6 +10,10 @@ import { me } from "../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { CHANGE_PASSWORD } from "../mutations/auth";
+import DataNameForm from "../components/dataForms/NameForm";
+import DataNextForm from "../components/dataForms/NextForm";
+import SignUpInGeneral from "../components/dataForms/SignUpInGeneralForm";
+import ChangeAccount from "../components/dataForms/ChangeAccount";
 
 const SIGN_UP = gql`
   mutation onSignUp($email: String!, $name: NameInput!, $companyData: CompanyInput!) {
@@ -996,7 +1000,53 @@ class Login extends React.Component<Props, State> {
 
   setField = e => this.setState({ [e.target.name]: e.target.value });
 
+  renderLogin() {
+    switch (this.state.loginprogress) {
+      case "login":
+        return (
+          <SignUpInGeneral
+            type="login"
+            preloggedin={{ email: "nv@vipfy.com", name: "Nils", fullname: "Nils Vossebein" }}
+          />
+        );
+      default:
+        return (
+          <SignUpInGeneral
+            type="login"
+            preloggedin={{ email: "nv@vipfy.com", name: "Nils", fullname: "Nils Vossebein" }}
+          />
+        );
+    }
+  }
+
   render() {
+    return <div className="centralize backgroundLogo">{this.renderLogin()}</div>;
+
+    return (
+      <div className="centralize backgroundLogo">
+        <ChangeAccount delete={true} />
+      </div>
+    );
+    return (
+      <div className="centralize backgroundLogo">
+        <SignUpInGeneral
+          type="login"
+          preloggedin={{ email: "nv@vipfy.com", name: "Nils", fullname: "Nils Vossebein" }}
+        />
+      </div>
+    );
+    return (
+      <div className="centralize backgroundLogo">
+        <DataNameForm />
+      </div>
+    );
+    return (
+      <div className="centralize backgroundLogo">
+        <DataNextForm username={"Lisa"} />
+      </div>
+    );
+
+    //Old version
     return (
       <div className="centralize backgroundLogo">
         <div className="presideHolder">
