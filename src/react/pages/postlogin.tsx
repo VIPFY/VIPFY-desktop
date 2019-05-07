@@ -9,6 +9,7 @@ import { CHANGE_PASSWORD } from "../mutations/auth";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import Welcome from "../pages/welcome";
+import DataNameForm from "../components/dataForms/NameForm";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -35,7 +36,12 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
           }
 
           if (!data.me.company.setupfinished) {
-            return <Welcome {...this.props} />;
+            //return <Welcome {...this.props} />;
+            return (
+              <div className="centralize backgroundLogo">
+                <DataNameForm moveTo={() => this.props.moveTo()} />
+              </div>
+            );
           }
 
           if (data.me.firstlogin) {

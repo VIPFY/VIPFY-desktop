@@ -7,11 +7,12 @@ interface Props {
   label?: string;
   type?: string;
   errorEvaluation?: Boolean;
-  errorhint?: string;
+  errorhint?: string | JSX.Element | null;
   startvalue?: string;
   width?: string;
   disabled?: Boolean;
   focus?: Boolean;
+  onEnter?: Function;
 }
 
 interface State {
@@ -66,6 +67,12 @@ class UniversalTextInput extends React.Component<Props, State> {
     this.timeout = setTimeout(() => this.setState({ notypeing: true }), 250);
   }
 
+  handleKeyUp = e => {
+    if (e.key == "Enter" && this.props.onEnter) {
+      this.props.onEnter();
+    }
+  };
+
   render() {
     return (
       <div
@@ -84,10 +91,14 @@ class UniversalTextInput extends React.Component<Props, State> {
           disabled={this.props.disabled}
           onFocus={() => this.toggleInput(true)}
           onBlur={() => this.toggleInput(false)}
+          onKeyUp={e => this.handleKeyUp(e)}
           className="cleanup universalTextInput"
           style={
             this.props.errorEvaluation && this.state.notypeing
-              ? { ...(this.props.width ? { width: this.props.width } : {}), color: "#e32022" }
+              ? {
+                  ...(this.props.width ? { width: this.props.width } : {}),
+                  borderBottomColor: "#e32022"
+                }
               : this.props.width
               ? { width: this.props.width }
               : {}

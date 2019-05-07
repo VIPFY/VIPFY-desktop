@@ -154,7 +154,7 @@ class PopupBase extends React.Component<Props, State> {
   }
 
   render() {
-    //console.log(this.props.children, this.props);
+    console.log(this.props.children, this.props);
     let autoclosing = {};
     if (this.props.autoclosing) {
       const closingtime = this.props.autoclosing * 1000;
@@ -164,7 +164,6 @@ class PopupBase extends React.Component<Props, State> {
         ? { maxWidth: "30rem", transition: `max-width ${closingtime}ms linear` }
         : { maxWidth: "60rem", transition: `max-width ${closingtime}ms linear` };
     }
-
     return (
       <SideBarContext>
         {sideBarOpen => (
