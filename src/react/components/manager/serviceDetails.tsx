@@ -145,8 +145,6 @@ class ServiceDetails extends React.Component<Props, State> {
                           return <div>Error fetching data</div>;
                         }
                         if (data) {
-                          console.log(data);
-
                           const percent = data.fetchBoughtplanUsagePerUser.find(
                             e => e.unit.id == this.props.employeeid
                           )

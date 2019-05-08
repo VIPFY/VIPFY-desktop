@@ -1,7 +1,12 @@
 import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query, Mutation } from "react-apollo";
-import { fetchCompanyTeams, fetchTeams, fetchUsersOwnLicences } from "../../queries/departments";
+import {
+  fetchCompanyTeams,
+  fetchTeams,
+  fetchUsersOwnLicences,
+  fetchUserLicences
+} from "../../queries/departments";
 import moment = require("moment");
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -350,13 +355,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
           }
           const employeeTeams = data.fetchTeams;
           return (
-            <Mutation
-              mutation={ADD_TO_TEAM}
-              refetchQueries={[
-                { query: fetchUsersOwnLicences, variables: { unitid: this.props.employeeid } },
-                { query: fetchTeams, variables: { userid: this.props.employeeid } },
-                { query: fetchCompanyTeams }
-              ]}>
+            <Mutation mutation={ADD_TO_TEAM}>
               {addToTeam => (
                 <PopupBase
                   nooutsideclose={true}
@@ -535,7 +534,15 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                               userid: this.props.employeeid,
                               teamid: team.unitid.id,
                               services: servicesdata
-                            }
+                            },
+                            refetchQueries: [
+                              {
+                                query: fetchUserLicences,
+                                variables: { unitid: this.props.employeeid }
+                              },
+                              { query: fetchTeams, variables: { userid: this.props.employeeid } },
+                              { query: fetchCompanyTeams }
+                            ]
                           });
                         });
                         //this.setState({ updated: true, networkedit: false });

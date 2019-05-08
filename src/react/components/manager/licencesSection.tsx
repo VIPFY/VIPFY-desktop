@@ -177,6 +177,7 @@ class LicencesSection extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error.message}`;
           }
+          console.log("DATA", loading, error, data);
           let appArray: JSX.Element[] = [];
 
           if (data.fetchUsersOwnLicences) {
@@ -450,6 +451,7 @@ class LicencesSection extends React.Component<Props, State> {
               </div>
             );
           }
+          return null;
         }}
       </Query>
     );

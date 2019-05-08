@@ -7,6 +7,7 @@ import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import AddEmployeeToTeam from "./addEmployeeToTeam";
 import CoolCheckbox from "../CoolCheckbox";
+import UniversalCheckbox from "../universalForms/universalCheckbox";
 
 interface Props {
   employeeid: number;
@@ -19,12 +20,12 @@ interface State {
   network: Boolean;
   deleted: Boolean;
   add: Boolean;
-  removeLicences: { id: number; delete: Boolean }[];
+  keepLicences: number[];
 }
 
 const REMOVE_EMPLOYEE_FROM_TEAM = gql`
-  mutation removeFromTeam($teamid: ID!, $userid: ID!) {
-    removeFromTeam(teamid: $teamid, userid: $userid)
+  mutation removeFromTeam($teamid: ID!, $userid: ID!, $keepLicences: [ID!]) {
+    removeFromTeam(teamid: $teamid, userid: $userid, keepLicences: $keepLicences)
   }
 `;
 
@@ -35,24 +36,42 @@ class TeamsSection extends React.Component<Props, State> {
     network: false,
     deleted: false,
     add: false,
-    removeLicences: []
+    keepLicences: []
   };
 
   printRemoveLicences(team) {
     let RLicencesArray: JSX.Element = [];
 
-    team.services.forEach(service =>
+    team.services.forEach((service, int) => {
       RLicencesArray.push(
-        <li>
-          <CoolCheckbox
-            label={`Delete licence of ${service.planid.appid.name}`}
+        <li key={int}>
+          <UniversalCheckbox
             name={service.id}
-            value={true}
-            onChange={() => console.log("CHANGE")}
-          />
+            startingvalue={true}
+            liveValue={v =>
+              v
+                ? this.setState(prevState => {
+                    const keepLicencesNew = prevState.keepLicences.splice(
+                      prevState.keepLicences.findIndex(l => l == service.id),
+                      1
+                    );
+                    return {
+                      keepLicences: keepLicencesNew
+                    };
+                  })
+                : this.setState(prevState => {
+                    const keepLicencesNew = prevState.keepLicences;
+                    keepLicencesNew.push(service.id);
+                    return {
+                      keepLicences: keepLicencesNew
+                    };
+                  })
+            }>
+            <span>Delete licence of {service.planid.appid.name}</span>
+          </UniversalCheckbox>
         </li>
-      )
-    );
+      );
+    });
     return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
   }
 
@@ -69,7 +88,6 @@ class TeamsSection extends React.Component<Props, State> {
             return `Error! ${error.message}`;
           }
           let teamArray: JSX.Element[] = [];
-          console.log("MY TEAMS", data.fetchTeams);
           if (data.fetchTeams) {
             data.fetchTeams.sort(function(a, b) {
               let nameA = a.name.toUpperCase(); // ignore upper and lowercase
@@ -158,7 +176,8 @@ class TeamsSection extends React.Component<Props, State> {
                                 await removeFromTeam({
                                   variables: {
                                     teamid: team.unitid.id,
-                                    userid: this.props.employeeid
+                                    userid: this.props.employeeid,
+                                    keepLicences: this.state.keepLicences
                                   },
                                   refetchQueries: [
                                     {
@@ -168,14 +187,10 @@ class TeamsSection extends React.Component<Props, State> {
                                     {
                                       query: fetchUserLicences,
                                       variables: { unitid: this.props.employeeid }
-                                    },
-                                    {
-                                      query: fetchUsersOwnLicences,
-                                      variables: { unitid: this.props.employeeid }
                                     }
                                   ]
                                 });
-                                this.setState({ network: false, deleted: true });
+                                this.setState({ network: false, deleted: true, keepLicences: [] });
                               } catch (err) {
                                 console.log("ERROR", err);
                                 throw err;

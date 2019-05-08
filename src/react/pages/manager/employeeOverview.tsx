@@ -315,7 +315,10 @@ class EmployeeOverview extends React.Component<Props, State> {
                             />
                           </div>
                           <div className="tableColumnBig">
-                            <Query query={fetchTeams} variables={{ userid: employee.id }}>
+                            <Query
+                              query={fetchTeams}
+                              fetchPolicy="network-only" //TODO make better
+                              variables={{ userid: employee.id }}>
                               {({ loading, error, data }) => {
                                 if (loading) {
                                   return "Loading...";
@@ -345,7 +348,9 @@ class EmployeeOverview extends React.Component<Props, State> {
                           <div className="tableColumnBig">
                             <Query
                               query={fetchUsersOwnLicences}
-                              variables={{ unitid: employee.id }}>
+                              variables={{ unitid: employee.id }}
+                              fetchPolicy="network-only" //TODO make better
+                            >
                               {({ loading, error, data }) => {
                                 if (loading) {
                                   return "Loading...";
