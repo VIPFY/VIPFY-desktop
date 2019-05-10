@@ -22,11 +22,9 @@ class UniversalButton extends React.Component<Props, State> {
   };
 
   click(e) {
-    //console.log("Clicked", e.clientX, e.target);
     const child = this.props.children;
     if (!this.props.disabeld) {
       if (child && !Array.isArray(child) && child.type && child.type.name == "ConfirmationPopup") {
-        //console.log("FOUND");
         this.setState({ confirmpopup: true });
         return;
       }
@@ -36,7 +34,6 @@ class UniversalButton extends React.Component<Props, State> {
       if (this.props.additionalClickFunction) {
         this.props.additionalClickFunction();
       }
-      //console.log(this.props.children);
     }
   }
 

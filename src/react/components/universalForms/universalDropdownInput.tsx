@@ -1,6 +1,5 @@
 import * as React from "react";
 import { countries } from "../../constants/countries";
-import { validateOperation } from "apollo-link/lib/linkUtils";
 
 interface Props {
   id: string;

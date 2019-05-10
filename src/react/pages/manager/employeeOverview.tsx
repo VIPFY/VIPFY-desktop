@@ -1,19 +1,16 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { Link } from "react-router-dom";
-import { Query } from "react-apollo";
-import {
-  fetchDepartmentsData,
-  fetchUsersOwnLicences,
-  fetchTeams,
-  fetchCompanyTeams
-} from "../../queries/departments";
+import { Query, Mutation } from "react-apollo";
+import { fetchDepartmentsData, fetchUsersOwnLicences, fetchTeams } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import AddEmployeeTeams from "../../components/manager/addEmployeeTeams";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import AddEmployeeServices from "../../components/manager/addEmployeeServices";
+import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
+import gql from "graphql-tag";
+import { randomPassword } from "../../common/passwordgen";
 
 interface Props {
   moveTo: Function;
@@ -25,7 +22,23 @@ interface State {
   addStage: number;
   addpersonal: Object;
   apps: { id: number; name: number; icon: string; needssubdomain: Boolean; options: Object }[];
+  addteams: any[];
+  saving: Boolean;
+  deleting: number | null;
+  willdeleting: number | null;
 }
+
+const CREATE_EMPLOYEE = gql`
+  mutation createEmployee($addpersonal: JSON!, $addteams: [JSON]!, $apps: [JSON]!) {
+    createEmployee(addpersonal: $addpersonal, addteams: $addteams, apps: $apps)
+  }
+`;
+
+const DELETE_EMPLOYEE = gql`
+  mutation deleteEmployee($employeeid: ID!) {
+    deleteEmployee(employeeid: $employeeid)
+  }
+`;
 
 class EmployeeOverview extends React.Component<Props, State> {
   state = {
@@ -33,11 +46,15 @@ class EmployeeOverview extends React.Component<Props, State> {
     add: false,
     addpersonal: {},
     addStage: 1,
-    apps: []
+    apps: [],
+    addteams: [],
+    saving: false,
+    deleting: null,
+    willdeleting: null
   };
 
-  addUser(services) {
-    this.setState({ apps: services, add: false });
+  addUser(apps, addteams) {
+    this.setState({ apps, addteams, saving: true, add: false });
   }
 
   renderSerives(services) {
@@ -58,6 +75,7 @@ class EmployeeOverview extends React.Component<Props, State> {
       if (sortedservices.length > 6 && counter > 4) {
         serviceArray.push(
           <div
+            key="moreSerivces"
             className="managerSquare"
             style={{
               color: "#253647",
@@ -72,6 +90,7 @@ class EmployeeOverview extends React.Component<Props, State> {
       } else {
         serviceArray.push(
           <div
+            key={service.id}
             title={service.boughtplanid.planid.appid.name}
             className="managerSquare"
             style={
@@ -92,6 +111,11 @@ class EmployeeOverview extends React.Component<Props, State> {
             {service.boughtplanid.planid.appid.icon
               ? ""
               : service.boughtplanid.planid.appid.name.slice(0, 1)}
+            {service.options && service.options.nosetup && (
+              <div className="licenceError">
+                <i className="fal fa-exclamation-circle" />
+              </div>
+            )}
           </div>
         );
       }
@@ -100,7 +124,6 @@ class EmployeeOverview extends React.Component<Props, State> {
   }
 
   renderTeams(teams) {
-    //console.log("Inside", teams);
     let teamsArray: JSX.Element[] = [];
     let counter = 0;
     for (counter = 0; counter < teams.length; counter++) {
@@ -112,6 +135,7 @@ class EmployeeOverview extends React.Component<Props, State> {
       if (teams.length > 6 && counter > 4) {
         teamsArray.push(
           <div
+            key="moreTeams"
             className="managerSquare"
             style={{
               color: "#253647",
@@ -126,6 +150,7 @@ class EmployeeOverview extends React.Component<Props, State> {
       } else {
         teamsArray.push(
           <div
+            key={team.name}
             title={team.name}
             className="managerSquare"
             style={
@@ -170,17 +195,22 @@ class EmployeeOverview extends React.Component<Props, State> {
       case 2:
         return (
           <AddEmployeeTeams
-            continue={() => this.setState({ addStage: 3 })}
+            continue={data => {
+              this.setState({ addteams: data, addStage: 3 });
+            }}
             close={() => this.setState({ addStage: 1 })}
+            employeename={this.state.addpersonal.name}
+            teams={this.state.addteams}
           />
         );
       case 3:
         return (
           <AddEmployeeServices
-            continue={data => this.addUser(data)}
+            continue={(apps, teams) => this.addUser(apps, teams)}
             close={() => this.setState({ addStage: 2 })}
-            apps={this.state.apps}
+            teams={this.state.addteams}
             addusername={this.state.addpersonal.name}
+            apps={this.state.apps}
           />
         );
       default:
@@ -194,7 +224,6 @@ class EmployeeOverview extends React.Component<Props, State> {
           <h1>Employee Manager</h1>
           <UniversalSearchBox
             getValue={v => {
-              //console.log("Search", v);
               this.setState({ search: v });
             }}
           />
@@ -274,9 +303,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                   </div>
                   {employees.length > 0 &&
                     employees.map(employee => (
-                      <div
-                        className="tableRow"
-                        onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
+                      <div key={employee.id} className="tableRow">
                         <div className="tableMain">
                           <div className="tableColumnBig">
                             <div
@@ -326,24 +353,11 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 if (error) {
                                   return `Error! ${error.message}`;
                                 }
-                                //console.log("Teams", data);
                                 return data.fetchTeams
                                   ? this.renderTeams(data.fetchTeams)
                                   : "No teams yet";
                               }}
                             </Query>
-                            {/*<Query query={fetchCompanyTeams}>
-                              {({ loading, error, data }) => {
-                                if (loading) {
-                                  return "Loading...";
-                                }
-                                if (error) {
-                                  return `Error! ${error.message}`;
-                                }
-                                console.log("CompanyTeams", data);
-                                return <div>CompanyTeams</div>;
-                              }}
-                            </Query>*/}
                           </div>
                           <div className="tableColumnBig">
                             <Query
@@ -358,7 +372,6 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 if (error) {
                                   return `Error! ${error.message}`;
                                 }
-                                //console.log("Services", data);
                                 return data.fetchUsersOwnLicences
                                   ? this.renderSerives(data.fetchUsersOwnLicences)
                                   : "No services yet";
@@ -368,8 +381,14 @@ class EmployeeOverview extends React.Component<Props, State> {
                         </div>
                         <div className="tableEnd">
                           <div className="editOptions">
-                            <i className="fal fa-external-link-alt" />
-                            <i className="fal fa-trash-alt" />
+                            <i
+                              className="fal fa-external-link-alt"
+                              onClick={() => this.props.moveTo(`emanager/${employee.id}`)}
+                            />
+                            <i
+                              className="fal fa-trash-alt"
+                              onClick={() => this.setState({ willdeleting: employee.id })}
+                            />
                           </div>
                         </div>
                       </div>
@@ -379,15 +398,87 @@ class EmployeeOverview extends React.Component<Props, State> {
             }}
           </Query>
         </div>
-        {this.state.add ? (
+        {this.state.add && (
           <PopupBase
             fullmiddle={true}
             customStyles={{ maxWidth: "1152px" }}
             close={() => this.setState({ add: false })}>
             {this.addProcess()}
           </PopupBase>
-        ) : (
-          ""
+        )}
+        {this.state.saving && (
+          <Mutation mutation={CREATE_EMPLOYEE}>
+            {createEmployee => (
+              <PopupSelfSaving
+                savingmessage="Adding new employee"
+                savedmessage="New employee succesfully added"
+                saveFunction={async () =>
+                  await createEmployee({
+                    variables: {
+                      addpersonal: {
+                        password: await randomPassword(),
+                        ...this.state.addpersonal
+                      },
+                      addteams: this.state.addteams,
+                      apps: this.state.apps
+                    },
+                    refetchQueries: [{ query: fetchDepartmentsData }]
+                  })
+                }
+                closeFunction={() =>
+                  this.setState({
+                    saving: false,
+                    addteams: [],
+                    apps: [],
+                    addpersonal: {},
+                    addStage: 1
+                  })
+                }
+              />
+            )}
+          </Mutation>
+        )}
+        {this.state.willdeleting && (
+          <PopupBase
+            fullmiddle={true}
+            dialog={true}
+            close={() => this.setState({ willdeleting: null })}
+            closeable={false}>
+            <p>Do you really want to delete the employee?</p>
+            <UniversalButton type="low" closingPopup={true} label="Cancel" />
+            <UniversalButton
+              type="low"
+              label="Delete"
+              onClick={() =>
+                this.setState(prevState => {
+                  return { willdeleting: null, deleting: prevState.willdeleting };
+                })
+              }
+            />
+          </PopupBase>
+        )}
+        {this.state.deleting && (
+          <Mutation mutation={DELETE_EMPLOYEE}>
+            {deleteEmployee => (
+              <PopupSelfSaving
+                savingmessage="Deleting employee"
+                savedmessage="Employee succesfully deleted"
+                saveFunction={async () =>
+                  await deleteEmployee({
+                    variables: {
+                      employeeid: this.state.deleting
+                    },
+                    refetchQueries: [{ query: fetchDepartmentsData }]
+                  })
+                }
+                closeFunction={() =>
+                  this.setState({
+                    deleting: null
+                  })
+                }
+              />
+            )}
+          </Mutation>
         )}
       </div>
     );

@@ -42,7 +42,6 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("PROPS", this.state, this.props);
     return (
       <React.Fragment>
         <span>
@@ -52,12 +51,28 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           </span>
         </span>
         <div className="gridNewEmployeePersonal">
-          <div className="profilepicture big">
-            <div className="imagehover">
-              <i className="fal fa-camera" />
-              <span>Upload</span>
-            </div>
-          </div>
+          <form className="profilepicture">
+            <label>
+              <div className="profilepicture big">
+                <div className="imagehover">
+                  <i className="fal fa-camera" />
+                  <span>Upload</span>
+                </div>
+              </div>
+              <input
+                accept="image/*"
+                type="file"
+                style={{
+                  width: "0px",
+                  height: "0px",
+                  opacity: 0,
+                  overflow: "hidden",
+                  position: "absolute",
+                  zIndex: -1
+                }}
+              />
+            </label>
+          </form>
           <UniversalTextInput
             label="Name (Required)"
             id="name"

@@ -1,13 +1,14 @@
 import * as React from "react";
 import { Query, Mutation } from "react-apollo";
 import { fetchUserLicences } from "../../queries/departments";
-import { now } from "moment";
 import gql from "graphql-tag";
 import moment = require("moment");
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
 import { fetchLicences, me } from "../../queries/auth";
 import UniversalTextInput from "../universalForms/universalTextInput";
+import PopupSaving from "../../popups/universalPopups/saving";
+import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -49,6 +50,14 @@ interface State {
   confirmedit: boolean;
   networkedit: boolean;
   updated: boolean;
+  erroredit: String | null;
+  errordelete: String | null;
+  savingObject: {
+    savedmessage: string;
+    savingmessage: string;
+    closeFunction: Function;
+    saveFunction: Function;
+  } | null;
 }
 
 class ServiceDetails extends React.Component<Props, State> {
@@ -63,17 +72,20 @@ class ServiceDetails extends React.Component<Props, State> {
     subdomain: "",
     confirmedit: false,
     networkedit: true,
-    updated: false
+    updated: false,
+    erroredit: null,
+    errordelete: null,
+    savingObject: null
   };
 
   render() {
     const { e } = this.props;
     return (
-      <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
+      <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT} key={e.id}>
         {deleteLicenceAt => (
           <Mutation mutation={UPDATE_CREDENTIALS}>
             {updateCredentials => (
-              <div className="tableRow">
+              <div className="tableRow" key={`div-${e.id}`}>
                 <div className="tableMain">
                   <div className="tableColumnSmall">
                     <div
@@ -96,6 +108,11 @@ class ServiceDetails extends React.Component<Props, State> {
                       {e.boughtplanid.planid.appid.icon
                         ? ""
                         : e.boughtplanid.planid.appid.name.slice(0, 1)}
+                      {e.options && e.options.nosetup && (
+                        <div className="licenceError">
+                          <i className="fal fa-exclamation-circle" />
+                        </div>
+                      )}
                     </div>
                     <span className="name">{e.boughtplanid.planid.appid.name}</span>
                   </div>
@@ -237,10 +254,17 @@ class ServiceDetails extends React.Component<Props, State> {
                                       this.state.subdomain
                                     }${e.boughtplanid.planid.appid.options.afterdomain}`
                                   : ""
-                            }
+                            },
+                            refetchQueries: [
+                              {
+                                query: fetchUserLicences,
+                                variables: { unitid: this.props.employeeid }
+                              }
+                            ]
                           });
                           this.setState({ updated: true, networkedit: false });
                         } catch (err) {
+                          this.setState({ erroredit: err });
                           //this.setState({ networkedit: false });
                           console.log("err");
                           throw err;
@@ -249,52 +273,27 @@ class ServiceDetails extends React.Component<Props, State> {
                     />
 
                     {this.state.confirmedit ? (
-                      <PopupBase
-                        close={() => this.setState({ confirmedit: false, networkedit: true })}
-                        small={true}
-                        closeable={false}
-                        autoclosing={5}
-                        autoclosingFunction={() => this.setState({ networkedit: false })}>
-                        {this.state.networkedit ? (
-                          <div>
-                            <div style={{ fontSize: "32px", textAlign: "center" }}>
-                              <i className="fal fa-spinner fa-spin" />
-                              <div style={{ marginTop: "32px", fontSize: "16px" }}>
-                                The licence is currently being updated
-                              </div>
-                            </div>
-                          </div>
-                        ) : this.state.updated ? (
-                          <React.Fragment>
-                            <div>This licence has been updated sucessfully.</div>
-                            <UniversalButton
-                              type="high"
-                              closingPopup={true}
-                              label="Ok"
-                              closingAllPopups={true}
-                            />
-                          </React.Fragment>
-                        ) : (
-                          <React.Fragment>
-                            <div>
-                              It takes a little bit longer to update this licence. We will inform
-                              you when it is done.
-                            </div>
-                            <UniversalButton
-                              type="high"
-                              closingPopup={true}
-                              label="Ok"
-                              closingAllPopups={true}
-                            />
-                          </React.Fragment>
-                        )}
-                      </PopupBase>
+                      <PopupSaving
+                        finished={this.state.updated}
+                        savingmessage="The licence is currently being updated"
+                        savedmessage="The licence has been updated sucessfully."
+                        error={this.state.erroredit}
+                        maxtime={5000}
+                        closeFunction={() =>
+                          this.setState({
+                            edit: false,
+                            email: "",
+                            password: "",
+                            confirmedit: false
+                          })
+                        }
+                      />
                     ) : (
                       ""
                     )}
                   </PopupBase>
                 )}
-                {this.state.delete ? (
+                {this.state.delete && (
                   <PopupBase
                     small={true}
                     close={() => this.setState({ delete: false })}
@@ -307,77 +306,49 @@ class ServiceDetails extends React.Component<Props, State> {
                     <UniversalButton
                       type="low"
                       label="Delete"
-                      onClick={async () => {
-                        this.setState({ confirm: true, network: true, deleted: false });
-                        try {
-                          await deleteLicenceAt({
-                            variables: {
-                              licenceid: e.id,
-                              time: moment().utc()
-                            },
-                            refetchQueries: [
-                              { query: fetchLicences },
-                              { query: me },
-                              {
-                                query: fetchUserLicences,
-                                variables: { unitid: this.props.employeeid }
-                              }
-                            ]
-                          });
-                          this.setState({ network: false, deleted: true });
-                        } catch (err) {
-                          console.log("ERROR", err);
-                          throw err;
-                        }
+                      onClick={() => {
+                        this.setState({
+                          delete: false,
+                          savingObject: {
+                            savingmessage: "The licence is currently being deleted",
+                            savedmessage: "The licence has been deleted sucessfully.",
+                            maxtime: 5000,
+                            closeFunction: () =>
+                              this.setState({
+                                delete: false
+                              }),
+                            saveFunction: () =>
+                              deleteLicenceAt({
+                                variables: {
+                                  licenceid: e.id,
+                                  time: moment().utc()
+                                },
+                                refetchQueries: [
+                                  { query: fetchLicences },
+                                  { query: me },
+                                  {
+                                    query: fetchUserLicences,
+                                    variables: { unitid: this.props.employeeid }
+                                  }
+                                ]
+                              })
+                          }
+                        });
                       }}
                     />
-                    {this.state.confirm ? (
-                      <PopupBase
-                        close={() => this.setState({ confirm: false, network: true })}
-                        small={true}
-                        closeable={false}
-                        autoclosing={5}
-                        autoclosingFunction={() => this.setState({ network: false })}>
-                        {this.state.network ? (
-                          <div>
-                            <div style={{ fontSize: "32px", textAlign: "center" }}>
-                              <i className="fal fa-spinner fa-spin" />
-                              <div style={{ marginTop: "32px", fontSize: "16px" }}>
-                                The licence is currently being deleted
-                              </div>
-                            </div>
-                          </div>
-                        ) : this.state.deleted ? (
-                          <React.Fragment>
-                            <div>This licence has been deleted sucessfully.</div>
-                            <UniversalButton
-                              type="high"
-                              closingPopup={true}
-                              label="Ok"
-                              closingAllPopups={true}
-                            />
-                          </React.Fragment>
-                        ) : (
-                          <React.Fragment>
-                            <div>
-                              It takes a little bit longer to delte this licence. We will inform you
-                              when it is done.
-                            </div>
-                            <UniversalButton
-                              type="high"
-                              closingPopup={true}
-                              label="Ok"
-                              closingAllPopups={true}
-                            />
-                          </React.Fragment>
-                        )}
-                      </PopupBase>
-                    ) : (
-                      ""
-                    )}
                   </PopupBase>
-                ) : (
-                  ""
+                )}
+
+                {this.state.savingObject && (
+                  <PopupSelfSaving
+                    savedmessage={this.state.savingObject!.savedmessage}
+                    savingmessage={this.state.savingObject!.savingmessage}
+                    closeFunction={() => {
+                      this.setState({ savingObject: null });
+                    }}
+                    saveFunction={async () => await this.state.savingObject!.saveFunction()}
+                    maxtime={5000}
+                  />
                 )}
               </div>
             )}

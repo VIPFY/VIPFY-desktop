@@ -2,6 +2,7 @@ import * as React from "react";
 import PopupBase from "./popupBase";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalButton from "../../components/universalButtons/universalButton";
+import { randomPassword } from "../../common/passwordgen";
 
 interface Props {
   app: {
@@ -21,6 +22,7 @@ interface State {
   email: string;
   password: string;
   integrateApp: any;
+  randomkey: string;
 }
 
 class PopupAddLicence extends React.Component<Props, State> {
@@ -28,24 +30,25 @@ class PopupAddLicence extends React.Component<Props, State> {
     subdomain: "",
     email: "",
     password: "",
-    integrateApp: {}
+    integrateApp: {},
+    randomkey: ""
   };
 
   componentWillReceiveProps = async props => {
-    console.log("Will Receive");
     await this.setState({
       subdomain: "",
       email: "",
       password: "",
-      integrateApp: {}
+      integrateApp: {},
+      randomkey: await randomPassword()
     });
-    console.log("Will", this.state);
   };
 
   render() {
     const { name, needssubdomain, options, icon } = this.props.app;
     return (
       <PopupBase
+        key={this.state.randomkey}
         nooutsideclose={this.props.nooutsideclose}
         buttonStyles={{ justifyContent: "space-between" }}
         fullmiddle={true}
@@ -119,7 +122,7 @@ class PopupAddLicence extends React.Component<Props, State> {
             />
           </div>
         </div>
-        <UniversalButton type="low" closingPopup={true} label="Cancel" />
+        <UniversalButton type="low" onClick={() => this.props.cancel()} label="Cancel" />
         <UniversalButton
           type="high"
           label="Add"

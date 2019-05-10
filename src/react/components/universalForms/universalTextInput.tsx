@@ -37,8 +37,7 @@ class UniversalTextInput extends React.Component<Props, State> {
   };
 
   componentWillReceiveProps = props => {
-    console.log("Will Update", props);
-    if (this.state.currentid != props.id) {
+    if (this.props.id != "" && this.props.id != props.id) {
       this.setState({ value: "", currentid: props.id });
     }
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);

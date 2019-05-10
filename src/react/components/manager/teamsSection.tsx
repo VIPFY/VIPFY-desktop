@@ -8,6 +8,8 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import AddEmployeeToTeam from "./addEmployeeToTeam";
 import CoolCheckbox from "../CoolCheckbox";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
+import PopupSaving from "../../popups/universalPopups/saving";
+import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 
 interface Props {
   employeeid: number;
@@ -21,6 +23,13 @@ interface State {
   deleted: Boolean;
   add: Boolean;
   keepLicences: number[];
+  deleteerror: string | null;
+  savingObject: {
+    savedmessage: string;
+    savingmessage: string;
+    closeFunction: Function;
+    saveFunction: Function;
+  } | null;
 }
 
 const REMOVE_EMPLOYEE_FROM_TEAM = gql`
@@ -36,7 +45,9 @@ class TeamsSection extends React.Component<Props, State> {
     network: false,
     deleted: false,
     add: false,
-    keepLicences: []
+    keepLicences: [],
+    deleteerror: null,
+    savingObject: null
   };
 
   printRemoveLicences(team) {
@@ -78,6 +89,7 @@ class TeamsSection extends React.Component<Props, State> {
   render() {
     const employeeid = this.props.employeeid;
     const employeename = this.props.employeename;
+
     return (
       <Query query={fetchTeams} variables={{ userid: employeeid }}>
         {({ loading, error, data }) => {
@@ -104,7 +116,7 @@ class TeamsSection extends React.Component<Props, State> {
             });
             data.fetchTeams.forEach((team, k) => {
               teamArray.push(
-                <Mutation mutation={REMOVE_EMPLOYEE_FROM_TEAM}>
+                <Mutation mutation={REMOVE_EMPLOYEE_FROM_TEAM} key={team.name}>
                   {removeFromTeam => (
                     <div className="tableRow">
                       <div className="tableMain">
@@ -151,7 +163,7 @@ class TeamsSection extends React.Component<Props, State> {
                         <div className="editOptions">
                           <i
                             className="fal fa-trash-alt"
-                            onClick={() => this.setState({ delete: true })}
+                            onClick={() => this.setState({ test: 1, delete: true })}
                           />
                         </div>
                       </div>
@@ -161,83 +173,65 @@ class TeamsSection extends React.Component<Props, State> {
                           small={true}
                           close={() => this.setState({ delete: false })}
                           closeable={false}>
-                          <p>
+                          <div>
                             Do you really want to remove {this.props.employeename} from{" "}
                             <b>{team.name}</b>
                             {this.printRemoveLicences(team)}
-                          </p>
+                          </div>
                           <UniversalButton type="low" closingPopup={true} label="Cancel" />
                           <UniversalButton
                             type="low"
                             label="Delete"
-                            onClick={async () => {
-                              this.setState({ confirm: true, network: true, deleted: false });
-                              try {
-                                await removeFromTeam({
-                                  variables: {
-                                    teamid: team.unitid.id,
-                                    userid: this.props.employeeid,
-                                    keepLicences: this.state.keepLicences
-                                  },
-                                  refetchQueries: [
-                                    {
-                                      query: fetchTeams,
-                                      variables: { userid: this.props.employeeid }
-                                    },
-                                    {
-                                      query: fetchUserLicences,
-                                      variables: { unitid: this.props.employeeid }
-                                    }
-                                  ]
-                                });
-                                this.setState({ network: false, deleted: true, keepLicences: [] });
-                              } catch (err) {
-                                console.log("ERROR", err);
-                                throw err;
-                              }
+                            onClick={() => {
+                              this.setState({
+                                delete: false,
+                                savingObject: {
+                                  savingmessage:
+                                    "The user is currently being removed from the team",
+                                  savedmessage: "The user has been removed successfully.",
+                                  maxtime: 5000,
+                                  closeFunction: () =>
+                                    this.setState({
+                                      savingObject: null
+                                    }),
+                                  saveFunction: async () =>
+                                    await removeFromTeam({
+                                      variables: {
+                                        teamid: team.unitid.id,
+                                        userid: this.props.employeeid,
+                                        keepLicences: this.state.keepLicences
+                                      },
+                                      refetchQueries: [
+                                        {
+                                          query: fetchTeams,
+                                          variables: { userid: this.props.employeeid }
+                                        },
+                                        {
+                                          query: fetchUserLicences,
+                                          variables: { unitid: this.props.employeeid }
+                                        }
+                                      ]
+                                    })
+                                }
+                              });
                             }}
                           />
                           {this.state.confirm ? (
-                            <PopupBase
-                              close={() => this.setState({ confirm: false, network: true })}
-                              small={true}
-                              closeable={false}
-                              autoclosing={5}
-                              autoclosingFunction={() => this.setState({ network: false })}>
-                              {this.state.network ? (
-                                <div>
-                                  <div style={{ fontSize: "32px", textAlign: "center" }}>
-                                    <i className="fal fa-spinner fa-spin" />
-                                    <div style={{ marginTop: "32px", fontSize: "16px" }}>
-                                      The user is currently being removed from the team
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : this.state.deleted ? (
-                                <React.Fragment>
-                                  <div>The user has been removed sucessfully.</div>
-                                  <UniversalButton
-                                    type="high"
-                                    closingPopup={true}
-                                    label="Ok"
-                                    closingAllPopups={true}
-                                  />
-                                </React.Fragment>
-                              ) : (
-                                <React.Fragment>
-                                  <div>
-                                    It takes a little bit longer to remove the user from the team.
-                                    We will inform you when it is done.
-                                  </div>
-                                  <UniversalButton
-                                    type="high"
-                                    closingPopup={true}
-                                    label="Ok"
-                                    closingAllPopups={true}
-                                  />
-                                </React.Fragment>
-                              )}
-                            </PopupBase>
+                            <PopupSaving
+                              finished={this.state.deleted}
+                              savingmessage="The user is currently being removed from the team"
+                              savedmessage="The user has been removed successfully."
+                              maxtime={5000}
+                              error={this.state.deleteerror}
+                              closeFunction={() =>
+                                this.setState({
+                                  delete: false,
+                                  deleted: false,
+                                  deleteerror: null,
+                                  confirm: false
+                                })
+                              }
+                            />
                           ) : (
                             ""
                           )}
@@ -253,7 +247,7 @@ class TeamsSection extends React.Component<Props, State> {
             return (
               <div className="section">
                 <div className="heading">
-                  <h1>Licences</h1>
+                  <h1>Teams</h1>
                 </div>
                 <div className="table">
                   <div className="tableHeading">
@@ -286,7 +280,6 @@ class TeamsSection extends React.Component<Props, State> {
                           width: "92px"
                         }}
                         onClick={() => {
-                          console.log("Clicked add");
                           this.setState({ add: true });
                         }}
                       />
@@ -294,14 +287,25 @@ class TeamsSection extends React.Component<Props, State> {
                   </div>
                   {teamArray}
                 </div>
-                {this.state.add ? (
+                {this.state.add && (
                   <AddEmployeeToTeam
-                    close={() => this.setState({ add: false })}
+                    close={sO => {
+                      this.setState({ add: false, savingObject: sO });
+                    }}
                     employeeid={employeeid}
                     employeename={employeename}
                   />
-                ) : (
-                  ""
+                )}
+                {this.state.savingObject && (
+                  <PopupSelfSaving
+                    savedmessage={this.state.savingObject!.savedmessage}
+                    savingmessage={this.state.savingObject!.savingmessage}
+                    closeFunction={() => {
+                      this.setState({ savingObject: null });
+                    }}
+                    saveFunction={async () => await this.state.savingObject!.saveFunction()}
+                    maxtime={5000}
+                  />
                 )}
               </div>
             );

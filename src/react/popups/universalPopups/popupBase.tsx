@@ -44,20 +44,19 @@ class PopupBase extends React.Component<Props, State> {
     autoclosing: false
   };
 
-  open(isopen) {
+  open = isopen => {
     this.setState({ isopen });
     if (this.props.autoclosing) {
       this.setState({ autoclosing: true });
       setTimeout(() => this.props.autoclosingFunction() || null, this.props.autoclosing * 1000);
     }
-  }
+  };
 
   componentDidMount() {
     setTimeout(() => this.open(true), 1);
   }
 
   close(originalClose: Function | null = null, force = false) {
-    //console.log("CLOSE");
     if (this.props.close && (!(this.props.closeable == false) || force)) {
       this.open(false);
       setTimeout(() => this.props.close(), 200);
@@ -69,10 +68,8 @@ class PopupBase extends React.Component<Props, State> {
   }
 
   closeall() {
-    //console.log("CLOSEALL");
     this.close(null, true);
     if (this.props.closeall) {
-      //console.log("CloseALL", this.props.closeall);
       this.props.closeall();
     }
   }
@@ -81,10 +78,8 @@ class PopupBase extends React.Component<Props, State> {
     let popupElementArray: JSX.Element[] = [];
     let popupButtonArray: JSX.Element[] = [];
     let popupFieldsArray: JSX.Element[] = [];
-    //console.log("PopupBase Children", children);
 
     if (children && children.type && children.type.toString() === React.Fragment.toString()) {
-      //console.log("FRAGMENT");
       children = children.props.children;
     }
 
@@ -134,7 +129,6 @@ class PopupBase extends React.Component<Props, State> {
           popupElementArray.push(element);
         }
       });
-      //console.log("BUTTONSTyles", this.props.buttonStyles);
       popupElementArray.push(
         <div key="fields" className="fieldsPopup">
           {popupFieldsArray}

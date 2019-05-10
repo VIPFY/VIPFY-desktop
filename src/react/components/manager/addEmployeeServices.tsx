@@ -3,25 +3,13 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalSearchBox from "../universalSearchBox";
 import { Query } from "react-apollo";
 import { fetchApps } from "../../queries/products";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupAddLicence from "../../popups/universalPopups/addLicence";
 
 interface Props {
   close: Function;
   continue: Function;
-  apps: {
-    id: number;
-    name: number;
-    icon: string;
-    needssubdomain: Boolean;
-    options: Object;
-    integrating?: Boolean;
-    error?: Boolean;
-    email?: string;
-    password?: string;
-    subdomain?: string;
-  }[];
+  teams: any[];
+  apps: any[];
   addusername: string;
 }
 
@@ -82,6 +70,7 @@ interface State {
     password?: string;
     subdomain?: string;
   }[];
+  teams: any[];
 }
 
 class AddEmployeeServices extends React.Component<Props, State> {
@@ -89,7 +78,7 @@ class AddEmployeeServices extends React.Component<Props, State> {
     search: "",
     drag: null,
     dragremove: null,
-    integrateApp: {},
+    integrateApp: null,
     popup: false,
     email: "",
     password: "",
@@ -97,24 +86,50 @@ class AddEmployeeServices extends React.Component<Props, State> {
     confirm: false,
     integrating: true,
     integrated: false,
-    apps: this.props.apps || []
+    apps: this.props.apps || [],
+    teams: this.props.teams || []
   };
 
-  printApps() {
+  printApps(newapps) {
     let ownAppsArray: JSX.Element[] = [];
-    this.state.apps.forEach(app => {
+    let oldapps = [];
+    this.state.teams.forEach(
+      team =>
+        team.services &&
+        team.services.forEach(service =>
+          oldapps.push({
+            ...service.planid.appid,
+            setupfinished: service.setupfinished,
+            nosetup: !service.setupfinished,
+            teamid: team.unitid.id,
+            licenceid: service.id
+          })
+        )
+    );
+    const apps = oldapps.concat(newapps);
+    apps.forEach(app => {
       ownAppsArray.push(
         <div
+          key={app.name}
           draggable
           className="space"
-          onClick={() =>
-            this.setState(prevState => {
-              const remainingapps = prevState.apps.filter(
-                e => e.id != app.id || e.email != app.email || e.password != app.password
-              );
-              return { apps: remainingapps };
-            })
-          }
+          onClick={() => {
+            if (app.setupfinished) {
+              return;
+            } else if (app.nosetup) {
+              this.setState({
+                popup: true,
+                integrateApp: { updateting: true, ...app }
+              });
+            } else {
+              this.setState(prevState => {
+                const remainingapps = prevState.apps.filter(
+                  e => e.id != app.id || e.email != app.email || e.password != app.password
+                );
+                return { apps: remainingapps };
+              });
+            }
+          }}
           onDragStart={() => this.setState({ dragremove: app })}>
           <div
             className="image"
@@ -129,27 +144,35 @@ class AddEmployeeServices extends React.Component<Props, State> {
                     )})`
             }}
           />
-          {app.error ? (
-            <div className="imageError">
+          {app.nosetup && (
+            <div className="imageError" style={{ cursor: "pointer" }}>
               <i className="fal fa-exclamation-circle" />
               <span>Press to configure Licence</span>
             </div>
-          ) : (
-            ""
           )}
-          {app.integrating ? (
+          {app.setupfinished && (
+            <>
+              <div className="greyed" />
+              <div className="ribbon ribbon-top-right">
+                <span>Team Configurated</span>
+              </div>
+            </>
+          )}
+          {app.integrating && (
             <div className="imageCog">
               <i className="fal fa-cog fa-spin" />
               <span>Editing this licence</span>
             </div>
-          ) : (
-            ""
           )}
-          <div className="name">{app.name}</div>
-          <div className="imageHover">
-            <i className="fal fa-trash-alt" />
-            <span>Click to remove</span>
-          </div>
+          {!(app.setupfinished || app.nosetup) && (
+            <>
+              <div className="name">{app.name}</div>
+              <div className="imageHover">
+                <i className="fal fa-trash-alt" />
+                <span>Click to remove</span>
+              </div>
+            </>
+          )}
         </div>
       );
     });
@@ -167,7 +190,6 @@ class AddEmployeeServices extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("STATE", this.state);
     return (
       <React.Fragment>
         <span className="mutiplieHeading">
@@ -187,7 +209,6 @@ class AddEmployeeServices extends React.Component<Props, State> {
             onDrop={e => {
               e.preventDefault();
               if (this.state.drag && this.state.drag!.name) {
-                console.log("DROP", this.state.drag);
                 this.setState(prevState => {
                   const newapps = prevState.apps;
                   newapps.push({ integrating: true, ...prevState.drag });
@@ -203,7 +224,7 @@ class AddEmployeeServices extends React.Component<Props, State> {
             onDragOver={e => {
               e.preventDefault();
             }}>
-            <div className="addgrid">{this.printApps()}</div>
+            <div className="addgrid">{this.printApps(this.state.apps)}</div>
           </div>
           <Query query={fetchApps}>
             {({ loading, error, data }) => {
@@ -213,7 +234,6 @@ class AddEmployeeServices extends React.Component<Props, State> {
               if (error) {
                 return `Error! ${error.message}`;
               }
-              console.log("Apps", data.allApps);
               let appsArray: JSX.Element[] = [];
 
               let apps = data.allApps.filter(e =>
@@ -237,6 +257,7 @@ class AddEmployeeServices extends React.Component<Props, State> {
               apps.forEach(app => {
                 appsArray.push(
                   <div
+                    key={app.name}
                     className="space"
                     draggable
                     onClick={() =>
@@ -317,7 +338,7 @@ class AddEmployeeServices extends React.Component<Props, State> {
           <UniversalButton
             label="Continue"
             type="high"
-            onClick={() => this.props.continue(this.state.apps)}
+            onClick={() => this.props.continue(this.state.apps, this.state.teams)}
           />
         </div>
 
@@ -328,7 +349,9 @@ class AddEmployeeServices extends React.Component<Props, State> {
             cancel={() =>
               this.setState(prevState => {
                 const newapps = prevState.apps;
-                newapps.pop();
+                if (prevState.integrateApp && !prevState.integrateApp.updateting) {
+                  newapps.pop();
+                }
                 return {
                   drag: null,
                   integrateApp: null,
@@ -339,24 +362,49 @@ class AddEmployeeServices extends React.Component<Props, State> {
             }
             add={({ email, password, subdomain }) =>
               this.setState(prevState => {
-                const newapps = prevState.apps;
-                const { integrating } = prevState.integrateApp;
-                newapps.pop();
-                newapps.push({
-                  email,
-                  password,
-                  subdomain,
-                  ...prevState.integrateApp
-                });
-                return {
-                  drag: null,
-                  integrateApp: null,
-                  apps: newapps,
-                  popup: false,
-                  email: "",
-                  password: "",
-                  subdomain: ""
-                };
+                if (prevState.integrateApp && prevState.integrateApp.updateting) {
+                  let teamupdate = prevState.teams;
+                  const changeIndex = prevState.teams.findIndex(
+                    t => t.unitid.id == prevState.integrateApp.teamid
+                  );
+                  const serviceIndex = prevState.teams[changeIndex].services.findIndex(
+                    s => s.id == prevState.integrateApp.licenceid
+                  );
+                  teamupdate[changeIndex].services[serviceIndex].setup = {
+                    email,
+                    password,
+                    subdomain
+                  };
+                  teamupdate[changeIndex].services[serviceIndex].setupfinished = true;
+                  return {
+                    drag: null,
+                    integrateApp: null,
+                    popup: false,
+                    email: "",
+                    password: "",
+                    subdomain: "",
+                    teams: teamupdate
+                  };
+                } else {
+                  const newapps = prevState.apps;
+                  const { integrating } = prevState.integrateApp;
+                  newapps.pop();
+                  newapps.push({
+                    email,
+                    password,
+                    subdomain,
+                    ...prevState.integrateApp
+                  });
+                  return {
+                    drag: null,
+                    integrateApp: null,
+                    apps: newapps,
+                    popup: false,
+                    email: "",
+                    password: "",
+                    subdomain: ""
+                  };
+                }
               })
             }
           />

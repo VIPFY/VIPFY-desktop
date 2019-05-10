@@ -99,7 +99,6 @@ class PersonalDetails extends React.Component<Props, State> {
 
   render() {
     const querydata = this.props.querydata;
-    console.log("Querydata", querydata);
     return (
       <React.Fragment>
         <div className="tableRow" style={{ height: "80px" }}>
@@ -294,7 +293,6 @@ class PersonalDetails extends React.Component<Props, State> {
                   onClick={async () => {
                     const nameparts = this.state.name.split(" ");
                     const middlenameArray = nameparts.length > 1 ? nameparts.slice(1, -1) : null;
-                    console.log("SAVESTATE", this.state);
                     try {
                       this.setState({ updateing: true });
                       await updateEmployee({
