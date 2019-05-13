@@ -150,7 +150,9 @@ class UserSecurityTableInner extends React.Component<Props, State> {
       return (
         <tr key={`r${user.id}`}>
           <td>
-            <span>{`${user.unitid.firstname} ${user.unitid.lastname}`}</span>
+            <span data-recording-sensitive>{`${user.unitid.firstname} ${
+              user.unitid.lastname
+            }`}</span>
           </td>
           <td>
             <Duration timestamp={parseInt(user.lastactive)} postfix=" ago" />

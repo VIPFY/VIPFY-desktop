@@ -35,6 +35,13 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
             return <div>There was an error</div>;
           }
 
+          // TODO: consent is nessesary for EU citizens
+          //window.smartlook("consentAPI", "Test");
+          window.smartlook("identify", data.me.id, {
+            admin: data.me.isadmin,
+            language: data.me.language
+          });
+
           if (!data.me.company.setupfinished) {
             //return <Welcome {...this.props} />;
             return (

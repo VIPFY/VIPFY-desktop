@@ -349,8 +349,12 @@ class Navigation extends React.Component<Props, State> {
               <UserPicture size="right-profile-image" unitid={this.props.id} />
 
               <div className="name-holder">
-                <span className="right-profile-first-name">{this.props.firstname}</span>
-                <span className="right-profile-last-name">{this.props.lastname}</span>
+                <span className="right-profile-first-name" data-recording-sensitive>
+                  {this.props.firstname}
+                </span>
+                <span className="right-profile-last-name" data-recording-sensitive>
+                  {this.props.lastname}
+                </span>
               </div>
             </div>
 
