@@ -48,6 +48,8 @@ setTimeout(function() {
   doit(true);
 }, 15000);
 
+const queryStringBlacklist = ["_ngcontent", "_nghost"];
+
 function getQueryString(t) {
   console.log("I am starting");
   if (t === null || t === undefined) return null;
@@ -68,13 +70,19 @@ function getQueryString(t) {
       return s;
     }
     if (t.className) {
-      s += '[class="' + t.className + '"]';
+      s += Array.from(t.classList)
+        .map(v => (v.includesAny(queryStringBlacklist) ? null : "[class~=" + v + "]"))
+        .filter(v => v !== null)
+        .join("");
     }
     return s;
   } else if (t.attributes["role"]) {
     let s = `${t.tagName.toLowerCase()}[role="${t.attributes["role"].value}"]`;
     if (t.className) {
-      s += '[class="' + t.className + '"]';
+      s += Array.from(t.classList)
+        .map(v => (v.includesAny(queryStringBlacklist) ? null : "[class~=" + v + "]"))
+        .filter(v => v !== null)
+        .join("");
     }
     return s;
   }
