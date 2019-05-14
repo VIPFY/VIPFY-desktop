@@ -8,6 +8,8 @@ interface Props {
   usernameField: string;
   passwordField: string;
   button: string | null;
+  button1: string | null;
+  button2: string | null;
   setResult(errorField: string, hideField: string);
 }
 
@@ -93,6 +95,8 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
               usernameField: this.props.usernameField,
               passwordField: this.props.passwordField,
               button: this.props.button,
+              button1: this.props.button1,
+              button2: this.props.button2,
               tagBefore: "ignore",
               tagAfter: "success"
             });
@@ -132,6 +136,8 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
               usernameField: this.props.usernameField,
               passwordField: this.props.passwordField,
               button: this.props.button,
+              button1: this.props.button1,
+              button2: this.props.button2,
               tagBefore: "during",
               tagAfter: "error"
             }); //password is randomly chosen to get incorrect password

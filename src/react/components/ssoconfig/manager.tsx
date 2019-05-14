@@ -129,6 +129,8 @@ class Manager extends React.PureComponent<Props, State> {
             usernameField={this.app.emailobject!}
             passwordField={this.app.passwordobject!}
             button={this.app.buttonobject}
+            button1={this.app.button1object}
+            button2={this.app.button2object}
             setResult={(e, h) => this.finishErrorHide(e, h)}
           />
         )}

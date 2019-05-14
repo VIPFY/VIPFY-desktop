@@ -70,13 +70,20 @@ ipcRenderer.on("loginData", (e, key) => {
   console.log("login", key);
   fillFormField(document.querySelector(key.usernameField), key.username);
   sendDomMap(key.tagBefore);
-  fillFormField(document.querySelector(key.passwordField), key.password);
-  sendDomMap(key.tagBefore);
-  clickButton(document.querySelector(key.button));
+  if (key.button1) {
+    clickButton(document.querySelector(key.button1));
+    sendDomMap(key.tagBefore);
+  }
 
-  setTimeout(function() {
-    sendDomMap(key.tagAfter);
-  }, 8000);
+  setTimeout(() => {
+    fillFormField(document.querySelector(key.passwordField), key.password);
+    sendDomMap(key.tagBefore);
+    clickButton(document.querySelector(key.button || key.button2));
+
+    setTimeout(function() {
+      sendDomMap(key.tagAfter);
+    }, 8000);
+  }, 1564);
 });
 
 const skipArgs = ["placeholder", "alt", "title", "aria-label"]; // don't use attributes likely to get translated
