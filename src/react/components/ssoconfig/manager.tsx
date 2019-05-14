@@ -2,6 +2,7 @@ import * as React from "react";
 import LogoExtractor from "./LogoExtractor";
 import UsernameFieldExtractor from "./UsernameFieldExtractor";
 import ErrorFieldExtractor from "./ErrorFieldExtractor";
+import PassowrdFieldExtractor from "./PasswordFieldExtractor";
 const { remote } = require("electron");
 const { session } = remote;
 
@@ -111,6 +112,15 @@ class Manager extends React.PureComponent<Props, State> {
             setResult={(u, p, b) => this.finishStage1(u, p, b)}
           />
         )}
+        {this.state.stage == Stage.type34 && (
+          <PassowrdFieldExtractor
+            url={this.props.url}
+            setResult={(p, b) => this.finishStage3(p, b)}
+            username={this.props.username}
+            usernameField={this.app.emailobject}
+            button1={this.app.button1object}
+          />
+        )}
         {this.state.stage == Stage.findError && (
           <ErrorFieldExtractor
             url={this.props.url}
@@ -159,9 +169,30 @@ class Manager extends React.PureComponent<Props, State> {
         buttonobject: undefined,
         button1object: button1
       });
-      console.log("this app appears to be type 3/4 and is not supported yet");
+      console.log("assuming app is type 3");
       this.setState({ stage: Stage.type34 });
     }
+  }
+
+  finishStage3(passwordField, button2) {
+    console.log("finishStage3", passwordField, button2);
+    if (this.state.stage !== Stage.type34) {
+      throw new Error("unexpected stage");
+    }
+    // TODO: fallback to manual
+    if (passwordField === null) {
+      console.log("NO USERNAME FIELD FOUND");
+      return;
+    }
+    if (button2 === null) {
+      console.log("NO BUTTON FIELD FOUND");
+      return;
+    }
+    this.setAppElement({
+      passwordobject: passwordField,
+      button2object: button2
+    });
+    this.setState({ stage: Stage.findError });
   }
 
   finishErrorHide(errorObject: string, hideObject: string) {
