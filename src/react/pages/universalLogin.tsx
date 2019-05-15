@@ -1,7 +1,9 @@
 import * as React from "react";
 import { graphql, Query, withApollo } from "react-apollo";
 import WebView = require("react-electron-web-view");
-import Manager from "../components/ssoconfig/manager";
+import { sleep } from "../common/functions";
+
+const { session } = require("electron").remote;
 
 interface Props {
   company: any;
@@ -16,46 +18,6 @@ interface State {
   username: string;
   password: string;
   running: boolean;
-  result: SsoState | null;
-}
-
-interface SsoState {
-  logo: Image | null;
-  icon: Image | null;
-  color: string | null;
-  emailobject: Selector | null;
-  passwordobject: Selector | null;
-  button1object: Selector | null;
-  button2object: Selector | null;
-  buttonobject: Selector | null;
-  type: 1 | 3 | 4 | 5 | null;
-  errorobject: Selector | null;
-  hideobject: Selector | null;
-  waituntil: Selector | null;
-}
-
-type Selector = string;
-
-interface Image {
-  width: number | null;
-  height: number | null;
-  data: string;
-}
-
-function getSizeColor(image: Image | null, threshold1, threshold2) {
-  if (image === null) {
-    return "#000";
-  }
-  if (image.width === null || image.height === null) {
-    return "#000";
-  }
-  if (image.width < threshold1 || image.height < threshold1) {
-    return "crimson";
-  }
-  if (image.width < threshold2 || image.height < threshold2) {
-    return "gold";
-  }
-  return "green";
 }
 
 class UniversalLogin extends React.PureComponent<Props, State> {
@@ -70,6 +32,12 @@ class UniversalLogin extends React.PureComponent<Props, State> {
     result: null
   };
 
+  componentDidMount() {
+    session.fromPartition("ssoconfig").clearStorageData();
+  }
+  componentDidUpdate() {
+    session.fromPartition("ssoconfig").clearStorageData();
+  }
   toggleShowBoughtplans = (): void =>
     this.setState(prevState => ({ showBoughtplans: !prevState.showBoughtplans }));
 
@@ -97,7 +65,7 @@ class UniversalLogin extends React.PureComponent<Props, State> {
                 placeholder="The URL of the login form"
                 onChange={e => {
                   const loginUrl = e.target.value;
-                  this.setState({ loginUrl, running: false, result: null });
+                  this.setState({ loginUrl, running: false });
                 }}
                 autoFocus={true}
                 style={{ width: "500px" }}
@@ -110,7 +78,7 @@ class UniversalLogin extends React.PureComponent<Props, State> {
                 className="inputBoxField inputBoxUnderline"
                 onChange={e => {
                   const username = e.target.value;
-                  this.setState({ username, running: false, result: null });
+                  this.setState({ username, running: false });
                 }}
                 style={{ width: "500px" }}
               />
@@ -123,30 +91,32 @@ class UniversalLogin extends React.PureComponent<Props, State> {
                 type="password"
                 onChange={e => {
                   const password = e.target.value;
-                  this.setState({ password, running: false, result: null });
+                  this.setState({ password, running: false });
                 }}
                 style={{ width: "500px" }}
               />
             </div>
             <br />
             {!this.state.running && (
-              <button type="button" onClick={() => this.setState({ running: true, result: null })}>
+              <button type="button" onClick={() => this.setState({ running: true })}>
                 Start
               </button>
             )}
             <br />
             {this.state.running && (
               <div>
-                <Manager
-                  url={this.state.loginUrl}
-                  username={this.state.username}
-                  password={this.state.password}
-                  setResult={r => this.setState({ result: r, running: false })}
+                <WebView
+                  preload="./ssoConfigPreload/universalLogin.js"
+                  webpreferences="webSecurity=no"
+                  src={this.state.loginUrl}
+                  partition="ssoconfig"
+                  className=""
+                  style={{ height: "500px" }}
+                  onIpcMessage={e => this.onIpcMessage(e)}
                 />
                 <i className="fas fa-spinner fa-pulse fa-3x" />
               </div>
             )}
-            {this.state.result && this.renderResult()}
             <br />
           </div>
         </div>
@@ -154,45 +124,33 @@ class UniversalLogin extends React.PureComponent<Props, State> {
     );
   }
 
-  renderResult() {
-    let r = { ...this.state.result };
-    r.icon = undefined;
-    r.logo = undefined;
-    r.color = undefined;
-    return (
-      <div>
-        Icon:{" "}
-        <img
-          src={(this.state.result!.icon && this.state.result!.icon!.data) || undefined}
-          className="checkeredBackground"
-          style={{ maxHeight: "2em", maxWidth: "32em", objectFit: "contain" }}
-        />{" "}
-        <span
-          style={{
-            visibility: this.state.result!.icon !== null ? "visible" : "hidden",
-            color: getSizeColor(this.state.result!.icon, 64, 130)
-          }}>
-          ({this.state.result!.icon && this.state.result!.icon!.width}x
-          {this.state.result!.icon && this.state.result!.icon!.height})
-        </span>
-        <br />
-        Color:{" "}
-        <div
-          style={{
-            height: "1.2em",
-            width: "4em",
-            backgroundColor: this.state.result!.color || "#fff",
-            display: "inline-block"
-          }}>
-          &nbsp;
-        </div>
-        {this.state.result!.color}
-        <br />
-        Options:
-        <br />
-        <pre>{JSON.stringify(r, null, 2)}</pre>
-      </div>
-    );
+  async onIpcMessage(e) {
+    console.log("ipc", e);
+    switch (e.channel) {
+      case "fillFormField":
+        {
+          const w = e.target;
+          for await (const c of e.args[0]) {
+            const shift = c.toLowerCase() != c;
+            const modifiers = shift ? ["shift"] : [];
+            w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
+            w.sendInputEvent({ type: "char", modifiers, keyCode: c });
+            await sleep(70);
+            w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
+            await sleep(120);
+          }
+          w.send("formFieldFilled");
+        }
+        break;
+      case "getLoginData":
+        {
+          e.target.send("loginData", {
+            username: this.state.username,
+            password: this.state.password
+          });
+        }
+        break;
+    }
   }
 }
 
