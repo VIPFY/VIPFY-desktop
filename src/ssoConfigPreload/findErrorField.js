@@ -15,7 +15,16 @@ const sleep = async ms => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 async function fillFormField(target, content) {
-  target.dispatchEvent(new Event("focus", { bubbles: false, cancelable: false, composed: true }));
+  target.focus();
+  const p = new Promise(resolve =>
+    ipcRenderer.once("formFieldFilled", async (e, key) => {
+      resolve();
+    })
+  );
+  ipcRenderer.sendToHost("fillFormField", content);
+  return p;
+
+  /*target.dispatchEvent(new Event("focus", { bubbles: false, cancelable: false, composed: true }));
 
   await sleep(142);
   target.dispatchEvent(
@@ -98,7 +107,7 @@ async function fillFormField(target, content) {
   await sleep(487);
 
   target.dispatchEvent(new Event("change", { bubbles: true, cancelable: false }));
-  target.dispatchEvent(new Event("blur", { bubbles: false, composed: true, cancelable: false }));
+  target.dispatchEvent(new Event("blur", { bubbles: false, composed: true, cancelable: false }));*/
 }
 
 function clickButton(targetNode) {
@@ -113,6 +122,7 @@ function clickButton(targetNode) {
 }
 
 function triggerMouseEvent(node, eventType) {
+  node.focus();
   const clickEvent = document.createEvent("MouseEvents");
   clickEvent.initEvent(eventType, true, true);
   node.dispatchEvent(clickEvent);
@@ -165,7 +175,7 @@ ipcRenderer.on("loginData", async (e, key) => {
   clickButton(document.querySelector(key.button || key.button2));
 
   setTimeout(function() {
-    //sendDomMap(key.tagAfter);
+    sendDomMap(key.tagAfter);
   }, 8000);
 });
 

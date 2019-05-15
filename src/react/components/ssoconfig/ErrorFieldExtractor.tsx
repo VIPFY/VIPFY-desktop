@@ -26,6 +26,10 @@ enum Stage {
   afterSuccessLogin
 }
 
+const sleep = async ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 class ErrorFieldExtractor extends React.PureComponent<Props, State> {
   state = {
     errorField: undefined,
@@ -51,9 +55,24 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
   domSuccess: object[] = [];
   stage: Stage = Stage.beforeErrorLogin;
 
-  onIpcMessage(e) {
+  async onIpcMessage(e) {
     console.log("ipc", e);
     switch (e.channel) {
+      case "fillFormField":
+        {
+          const w = e.target;
+          for await (const c of e.args[0]) {
+            const shift = c.toLowerCase() != c;
+            const modifiers = shift ? ["shift"] : [];
+            w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
+            w.sendInputEvent({ type: "char", modifiers, keyCode: c });
+            await sleep(70);
+            w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
+            await sleep(120);
+          }
+          w.send("formFieldFilled");
+        }
+        break;
       case "domMap":
         {
           let tag = e.args[0];
