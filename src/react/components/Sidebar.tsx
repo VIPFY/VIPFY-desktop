@@ -383,6 +383,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "supportelement"
       },
       {
+        label: "Universal Login",
+        location: "universallogin",
+        icon: "pager",
+        show: true,
+        important: false
+      },
+      {
         label: "AppAdmin",
         location: "appadmin",
         icon: "screwdriver",

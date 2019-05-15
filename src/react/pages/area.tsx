@@ -40,6 +40,7 @@ import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
 import {SideBarContext} from "../common/context"
+import UniversalLogin from './universalLogin';
 
 interface AreaProps {
   history: any[];
@@ -350,7 +351,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "appadmin", component: AppAdmin },
       { path: "ssoconfig", component: SsoConfigurator },
-      { path: "ssotest", component: SsoTester }
+      { path: "ssotest", component: SsoTester },
+      { path: "universallogin", component: UniversalLogin }
     ];
 
     if (this.props.licences.loading) {
