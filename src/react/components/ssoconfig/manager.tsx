@@ -192,7 +192,9 @@ class Manager extends React.PureComponent<Props, State> {
     }
     this.setAppElement({
       passwordobject: passwordField,
-      button2object: button2
+      button2object: button2,
+      type: 3,
+      waituntil: `${this.app.emailobject}, ${passwordField}`
     });
     this.setState({ stage: Stage.findError });
   }

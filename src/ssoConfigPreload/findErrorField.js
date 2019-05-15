@@ -11,11 +11,94 @@ Object.defineProperty(String.prototype, "includesAny", {
   }
 });
 
-function fillFormField(target, content) {
-  target.dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
+const sleep = async ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+async function fillFormField(target, content) {
+  target.dispatchEvent(new Event("focus", { bubbles: false, cancelable: false, composed: true }));
+
+  await sleep(142);
+  target.dispatchEvent(
+    new KeyboardEvent("keyup", {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      code: "Tab",
+      key: "Tab",
+      keyCode: 9,
+      which: 9
+    })
+  );
+
+  await sleep(289);
+  target.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      code: "ControlLeft",
+      key: "Control",
+      keyCode: 17,
+      which: 17
+    })
+  );
+  target.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      code: "KeyV",
+      ctrlKey: true,
+      key: "v",
+      keyCode: 86,
+      which: 86
+    })
+  );
+  await sleep(5);
   target.value = content;
-  target.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
-  target.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+  target.dispatchEvent(
+    new Event("textInput", { bubbles: true, cancelable: true, composed: true, data: content })
+  );
+  await sleep(5);
+  target.dispatchEvent(
+    new Event("input", {
+      bubbles: true,
+      cancelable: true,
+      inputType: "insertFromPaste",
+      data: null,
+      composed: true
+    })
+  );
+  await sleep(256);
+  target.dispatchEvent(
+    new KeyboardEvent("keyup", {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      code: "KeyV",
+      ctrlKey: true,
+      key: "v",
+      keyCode: 86,
+      which: 86
+    })
+  );
+  await sleep(24);
+  target.dispatchEvent(
+    new KeyboardEvent("keyup", {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      code: "ControlLeft",
+      key: "Control",
+      keyCode: 17,
+      which: 17
+    })
+  );
+
+  await sleep(487);
+
+  target.dispatchEvent(new Event("change", { bubbles: true, cancelable: false }));
+  target.dispatchEvent(new Event("blur", { bubbles: false, composed: true, cancelable: false }));
 }
 
 function clickButton(targetNode) {
@@ -66,24 +149,24 @@ setTimeout(function() {
   ipcRenderer.sendToHost("ready");
 }, 5000);
 
-ipcRenderer.on("loginData", (e, key) => {
+ipcRenderer.on("loginData", async (e, key) => {
   console.log("login", key);
-  fillFormField(document.querySelector(key.usernameField), key.username);
+  await sleep(1000);
+  await fillFormField(document.querySelector(key.usernameField), key.username);
   sendDomMap(key.tagBefore);
   if (key.button1) {
     clickButton(document.querySelector(key.button1));
     sendDomMap(key.tagBefore);
   }
 
-  setTimeout(() => {
-    fillFormField(document.querySelector(key.passwordField), key.password);
-    sendDomMap(key.tagBefore);
-    clickButton(document.querySelector(key.button || key.button2));
+  await sleep(1564);
+  await fillFormField(document.querySelector(key.passwordField), key.password);
+  sendDomMap(key.tagBefore);
+  clickButton(document.querySelector(key.button || key.button2));
 
-    setTimeout(function() {
-      sendDomMap(key.tagAfter);
-    }, 8000);
-  }, 1564);
+  setTimeout(function() {
+    //sendDomMap(key.tagAfter);
+  }, 8000);
 });
 
 const skipArgs = ["placeholder", "alt", "title", "aria-label"]; // don't use attributes likely to get translated

@@ -15,10 +15,13 @@ console.log("starting find Password");
 ipcRenderer.sendToHost("loaded", null);
 
 let done = false;
-function doit(force) {
+function doit(force, button1) {
   if (done) return;
   const password = getQueryString(findPassField());
-  const button = getQueryString(findConfirmButton());
+  let button = getQueryString(findConfirmButton());
+  if (document.querySelector(button1)) {
+    button = button1;
+  }
   console.log("doit", password, button);
   if (force || (password !== null && button !== null)) {
     done = true;
@@ -40,22 +43,22 @@ ipcRenderer.on("loginData", (e, key) => {
 
     // try at various times in case the page takes a while to load
     setTimeout(function() {
-      doit(false);
+      doit(false, button1);
     }, 500);
     setTimeout(function() {
-      doit(false);
+      doit(false, button1);
     }, 1500);
     setTimeout(function() {
-      doit(false);
+      doit(false, button1);
     }, 3000);
     setTimeout(function() {
-      doit(false);
+      doit(false, button1);
     }, 5000);
     setTimeout(function() {
-      doit(false);
+      doit(false, button1);
     }, 10000);
     setTimeout(function() {
-      doit(true);
+      doit(true, button1);
     }, 15000);
   });
 });
