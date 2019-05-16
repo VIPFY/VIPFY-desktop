@@ -32,6 +32,8 @@ class UniversalLogin extends React.PureComponent<Props, State> {
     result: null
   };
 
+  tries = 0;
+
   componentDidMount() {
     session.fromPartition("ssoconfig").clearStorageData();
   }
@@ -110,8 +112,7 @@ class UniversalLogin extends React.PureComponent<Props, State> {
                   webpreferences="webSecurity=no"
                   src={this.state.loginUrl}
                   partition="ssoconfig"
-                  className=""
-                  style={{ height: "500px" }}
+                  className="universallogin"
                   onIpcMessage={e => this.onIpcMessage(e)}
                 />
                 <i className="fas fa-spinner fa-pulse fa-3x" />
@@ -126,6 +127,7 @@ class UniversalLogin extends React.PureComponent<Props, State> {
 
   async onIpcMessage(e) {
     console.log("ipc", e);
+    e.target.openDevTools();
     switch (e.channel) {
       case "fillFormField":
         {
@@ -135,16 +137,27 @@ class UniversalLogin extends React.PureComponent<Props, State> {
             const modifiers = shift ? ["shift"] : [];
             w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
             w.sendInputEvent({ type: "char", modifiers, keyCode: c });
-            await sleep(70);
+            await sleep(Math.random() * 20 + 10);
             w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
-            await sleep(120);
+            await sleep(Math.random() * 30 + 10);
           }
           w.send("formFieldFilled");
         }
         break;
       case "getLoginData":
         {
+          if (
+            !document.querySelector<HTMLIFrameElement>("webview")!.src.includes("login") &&
+            this.state.loginUrl.includes("login")
+          ) {
+            return; //we are done with login
+          }
+          await sleep(50);
           e.target.send("loginData", {
+            username: this.state.username,
+            password: this.state.password
+          });
+          console.log("sentLoginData", {
             username: this.state.username,
             password: this.state.password
           });

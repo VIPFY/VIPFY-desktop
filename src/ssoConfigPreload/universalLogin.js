@@ -20,25 +20,33 @@ let passwordEntered = false;
 
 ipcRenderer.once("loginData", async (e, key) => {
   console.log("gotLoginData", key);
-  await sleep(100);
-  let totaltime = 100;
-  let email = findEmailField();
-  let password = findPassField();
-  let button = findConfirmButton();
-  while (totaltime < 15000) {
-    if (email || emailEntered) break;
-    await sleep(300);
-    totaltime += 300;
-    email = findEmailField();
-  }
-  if (email) {
-    fillFormField(email, key.username);
-  }
-  if (password) {
-    fillFormField(password, key.password);
-  }
-  if (button) {
-    clickButton(button);
+  while (!emailEntered || !passwordEntered) {
+    await sleep(100);
+    let totaltime = 100;
+    let email = findEmailField();
+    let password = findPassField();
+    let button = findConfirmButton();
+    while (totaltime < 15000) {
+      if (email || emailEntered) break;
+      await sleep(300);
+      totaltime += 300;
+      email = findEmailField();
+    }
+    if (email) {
+      await fillFormField(email, key.username);
+      emailEntered = true;
+    }
+    await sleep(100);
+    password = findPassField();
+    if (password) {
+      await fillFormField(password, key.password);
+      passwordEntered = true;
+    }
+    button = findConfirmButton();
+    if (button) {
+      await clickButton(button);
+    }
+    await sleep(4000);
   }
 });
 
@@ -86,6 +94,13 @@ function clickButton(targetNode) {
   }, 146);
 }
 
+function triggerMouseEvent(node, eventType) {
+  node.focus();
+  const clickEvent = document.createEvent("MouseEvents");
+  clickEvent.initEvent(eventType, true, true);
+  node.dispatchEvent(clickEvent);
+}
+
 function findForm() {
   const forms = Array.from(document.querySelectorAll("form")).filter(
     filterDom(["signin", "sign-in", "log"], ["oauth", "facebook", "signup", "forgot", "google"])
@@ -99,6 +114,7 @@ function findPassField() {
   const t = Array.from(findForm().querySelectorAll("input")).filter(
     filterDom(["pass", "pw"], ["repeat", "confirm", "forgot"])
   );
+  console.log("pass", t);
   return t[0];
 }
 
@@ -135,7 +151,8 @@ const attributes = [
   "data-callback",
   "class",
   "value",
-  "alt"
+  "alt",
+  "data-testid"
 ];
 
 function filterDom(includesAny, excludesAll) {
