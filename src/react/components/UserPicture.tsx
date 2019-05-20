@@ -70,7 +70,8 @@ export default function UserPicture(props: {
               if (props.onClick) {
                 props.onClick(props.unitid, props.departmentid);
               }
-            }}>
+            }}
+            data-recording-disable>
             {props.updateable && (
               <div className="imagehover">
                 <i className="fal fa-camera" />
