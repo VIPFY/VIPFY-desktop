@@ -463,8 +463,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         const { logError, client, ...saveprops } = this.props;
         const data = {
           error: "falseLogin",
-          state: JSON.stringify(this.state),
-          props: JSON.stringify(saveprops)
+          state: this.state,
+          props: saveprops
         };
         try {
           await this.props.logError({ variables: { data } });
@@ -594,10 +594,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
     return (
       <div className={cssClass}>
-        {this.state.showLoadingScreen ? (
+        {this.state.showLoadingScreen && (
           <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} />
-        ) : (
-          ""
         )}
         <WebView
           id={`webview-${this.props.viewID}`}
