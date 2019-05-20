@@ -51,7 +51,7 @@ class TeamsSection extends React.Component<Props, State> {
   };
 
   printRemoveLicences(team) {
-    let RLicencesArray: JSX.Element = [];
+    let RLicencesArray: JSX.Element[] = [];
 
     team.services.forEach((service, int) => {
       RLicencesArray.push(
@@ -87,6 +87,7 @@ class TeamsSection extends React.Component<Props, State> {
   }
 
   render() {
+    console.log("RERENDER TEAM");
     const employeeid = this.props.employeeid;
     const employeename = this.props.employeename;
 

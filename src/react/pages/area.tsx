@@ -50,6 +50,8 @@ import EManagerAdmin from "./emanageradmin";
 import EShowerAdmin from "./eshoweradmin";
 import EmployeeOverview from "./manager/employeeOverview";
 import EmployeeDetails from "./manager/employeeDetails";
+import TeamOverview from "./manager/teamOverview";
+import TeamDetails from "./manager/teamDetails";
 
 interface AreaProps {
   history: any[];
@@ -370,10 +372,10 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "ssotest", component: SsoTester },
       { path: "emanager", component: EmployeeOverview },
       { path: "lmanager", component: LManager },
-      { path: "dmanager", component: DManager },
+      { path: "dmanager", component: TeamOverview },
       { path: "emanager/:userid", component: EmployeeDetails },
       { path: "lmanager/:boughtplanid", component: LShower },
-      { path: "dmanager/:departmentid", component: DShower }
+      { path: "dmanager/:teamid", component: TeamDetails }
     ];
 
     if (this.props.licences.loading) {

@@ -142,6 +142,15 @@
                 margin-top: 20px;
                 border-radius: 16px;
             }
+            .employeeOnlineBig{
+                width: 64px;
+                letter-spacing: 0.02em;
+                border-radius: 2px;
+                line-height: 16px;
+                text-align: center;
+                font-size: 10px;
+                color: white;
+            }
             .managerSquare {
                 width: 32px;
                 height: 32px;
@@ -476,6 +485,55 @@
             line-height: 32px;
             font-size: 20px;
             display: block;
+        }
+    }
+    .managerBigSquare {
+        width: 96px;
+        height: 96px;
+        border-radius: 4px;
+        float: left;
+        margin-left: 16px;
+        margin-top: 16px;
+        margin-bottom: 16px;
+        line-height: 96px;
+        text-align: center;
+        font-size: 46px;
+        color: white;
+        font-weight: 500;
+        background-color: #5D76FF;
+        background-position: center;
+        background-size: cover;
+        cursor: pointer;
+        position: relative;
+
+        &:not(:first-child){
+            margin-left: 8px
+        }
+
+        .imagehover {
+            opacity: 0;
+            line-height: 16px;
+            font-size: 16px;
+            transition: all 0.6s ease-in-out;
+            background-color: rgba(0, 0, 0, 0.5);
+            height: 45%;
+            bottom: 0;
+            position: absolute;
+            width: 100%;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-flow: column;
+
+            &>span{
+                font-size: 13px;
+            }
+        }
+
+        &:hover > .imagehover{
+            opacity: 1;
         }
     }
 }
