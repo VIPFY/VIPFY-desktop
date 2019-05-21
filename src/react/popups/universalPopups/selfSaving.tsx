@@ -9,6 +9,7 @@ interface Props {
   maxtime?: number;
   fullmiddle?: Boolean;
   saveFunction: Function;
+  errormessage?: String;
 }
 
 interface State {
@@ -31,7 +32,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
     } catch (err) {
       this.setState({ error: err });
       console.error("ERROR", err);
-      throw Error(err);
+      //throw Error(err);
     }
   };
 
@@ -65,7 +66,10 @@ class PopupSelfSaving extends React.Component<Props, State> {
           </>
         ) : this.state.error ? (
           <>
-            <div>{this.state.error}</div>
+            <div>
+              {this.props.errormessage ||
+                "There was an error. Please try again or contact support."}
+            </div>
             <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
           </>
         ) : this.state.saved ? (
