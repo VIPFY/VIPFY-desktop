@@ -15,6 +15,7 @@ const secure = config.backendSSL ? "s" : "";
 
 const cache = new InMemoryCache({
   dataIdFromObject: object => {
+    console.log("LOG: object", object);
     switch (object.__typename) {
       case "AppUsage":
         if (object.app && object.app.id !== undefined) {
@@ -42,7 +43,7 @@ const cache = new InMemoryCache({
         }
       case "Team":
         if (object.unitid !== undefined) {
-          return `${object.__typename}:${object.unitid}`;
+          return `${object.__typename}:${object.unitid.id}`;
         } else {
           return null;
         }
