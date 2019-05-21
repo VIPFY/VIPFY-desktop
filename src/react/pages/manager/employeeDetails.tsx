@@ -2,6 +2,7 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
 import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
+import * as Dropzone from "react-dropzone";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
 import TeamsSection from "../../components/manager/teamsSection";
@@ -14,8 +15,11 @@ import { me } from "../../queries/auth";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 
 const UPDATE_PIC = gql`
-  mutation UpdatePic($file: Upload!) {
-    updateProfilePic(file: $file)
+  mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
+    updateEmployeePic(file: $file, unitid: $unitid) {
+      id
+      profilepicture
+    }
   }
 `;
 
@@ -26,26 +30,25 @@ interface Props {
 }
 
 interface State {
-  changepicture: File | null;
+  loading: boolean;
 }
 
 class EmployeeDetails extends React.Component<Props, State> {
   state = {
-    changepicture: null
+    loading: false
   };
 
-  uploadPic = async ({ picture }) => {
+  uploadPic = async (picture: File) => {
+    const { userid } = this.props.match.params;
+    await this.setState({ loading: true });
+
     try {
-      await this.props.updatePic({ variables: { file: picture }, refetchQueries: ["me"] });
-      this.props.client.query({ query: me, fetchPolicy: "network-only" });
-      this.props.client.query({
-        query: QUERY_USER,
-        variables: { userid: this.props.match.params.userid },
-        fetchPolicy: "network-only"
-      });
-      return true;
+      await this.props.updatePic({ variables: { file: picture, unitid: userid } });
+
+      await this.setState({ loading: false });
     } catch (err) {
       console.log("err", err);
+      await this.setState({ loading: false });
     }
   };
 
@@ -121,9 +124,9 @@ class EmployeeDetails extends React.Component<Props, State> {
                             <span>Upload</span>
                           </div>
                         </div>
-                        <input
-                          accept="image/*"
-                          type="file"
+
+                        <Dropzone
+                          disabled={this.state.loading}
                           style={{
                             width: "0px",
                             height: "0px",
@@ -132,6 +135,10 @@ class EmployeeDetails extends React.Component<Props, State> {
                             position: "absolute",
                             zIndex: -1
                           }}
+                          accept="image/*"
+                          type="file"
+                          multiple={false}
+                          onDrop={([file]) => this.uploadPic(file)}
                         />
                       </label>
                     </form>
