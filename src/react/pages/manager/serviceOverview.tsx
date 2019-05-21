@@ -10,6 +10,7 @@ import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
 import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
 import AddTeamServices from "../../components/manager/addTeamServices";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
+import { fetchCompanyServices } from "../../queries/products";
 
 interface Props {
   moveTo: Function;
@@ -40,7 +41,7 @@ const DELETE_TEAM = gql`
   }
 `;
 
-class TeamOverview extends React.Component<Props, State> {
+class ServiceOverview extends React.Component<Props, State> {
   state = {
     search: "",
     add: false,
@@ -252,7 +253,7 @@ class TeamOverview extends React.Component<Props, State> {
     return (
       <div className="managerPage">
         <div className="heading">
-          <h1>Team Manager</h1>
+          <h1>Service Manager</h1>
           <UniversalSearchBox
             getValue={v => {
               this.setState({ search: v });
@@ -261,9 +262,9 @@ class TeamOverview extends React.Component<Props, State> {
         </div>
         <div className="section">
           <div className="heading">
-            <h1>Teams</h1>
+            <h1>Services</h1>
           </div>
-          <Query query={fetchCompanyTeams}>
+          <Query query={fetchCompanyServices}>
             {({ loading, error, data }) => {
               if (loading) {
                 return "Loading...";
@@ -273,12 +274,12 @@ class TeamOverview extends React.Component<Props, State> {
               }
 
               //Sort teams
-              let teams: any[] = [];
-              let interteams: any[] = [];
-              if (data.fetchCompanyTeams) {
-                interteams = data.fetchCompanyTeams;
-                console.log("Interteams", interteams, data);
-                interteams.sort(function(a, b) {
+              let services: any[] = [];
+              let interservices: any[] = [];
+              if (data.fetchCompanyServices) {
+                interservices = data.fetchCompanyServices;
+                console.log("Interteams", interservices, data);
+                interservices.sort(function(a, b) {
                   let nameA = a.name.toUpperCase();
                   let nameB = b.name.toUpperCase();
                   if (nameA < nameB) {
@@ -291,13 +292,13 @@ class TeamOverview extends React.Component<Props, State> {
                   return 0;
                 });
                 if (this.state.search != "") {
-                  teams = interteams.filter(team => {
-                    return team.name.toUpperCase().includes(this.state.search.toUpperCase());
+                  services = interservices.filter(service => {
+                    return service.name.toUpperCase().includes(this.state.search.toUpperCase());
                   });
                 } else {
-                  teams = interteams;
+                  services = interservices;
                 }
-                console.log("TEAMS", teams);
+                console.log("TEAMS", services);
               }
               return (
                 <div className="table">
@@ -489,4 +490,4 @@ class TeamOverview extends React.Component<Props, State> {
     );
   }
 }
-export default TeamOverview;
+export default ServiceOverview;
