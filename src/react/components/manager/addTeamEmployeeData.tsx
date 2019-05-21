@@ -73,6 +73,17 @@ const FETCH_EMPLOYEES = gql`
   }
 `;
 
+const UPDATE_PIC = gql`
+  mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
+    updateTeamPic(file: $file, teamid: $teamid) {
+      unitid {
+        id
+      }
+      profilepicture
+    }
+  }
+`;
+
 class AddTeamEmployeeData extends React.Component<Props, State> {
   state = {
     search: "",
