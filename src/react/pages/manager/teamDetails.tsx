@@ -74,7 +74,7 @@ class TeamDetails extends React.Component<Props, State> {
             <div className="managerPage">
               <div className="heading">
                 <h1>
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("emanager")}>
+                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("dmanager")}>
                     Team Manager
                   </span>
                   <h2>></h2>

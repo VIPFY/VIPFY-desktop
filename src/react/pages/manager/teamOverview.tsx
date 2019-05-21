@@ -15,6 +15,7 @@ import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
 import AddTeamEmployee from "../../components/manager/addTeamEmployee";
 import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
 import AddTeamServices from "../../components/manager/addTeamServices";
+import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 
 interface Props {
   moveTo: Function;
@@ -30,17 +31,18 @@ interface State {
   saving: Boolean;
   deleting: number | null;
   willdeleting: number | null;
+  keepLicences: { service: number; employee: number }[];
 }
 
-const CREATE_EMPLOYEE = gql`
-  mutation createEmployee($addpersonal: JSON!, $addteams: [JSON]!, $apps: [JSON]!) {
-    createEmployee(addpersonal: $addpersonal, addteams: $addteams, apps: $apps)
+const CREATE_TEAM = gql`
+  mutation createTeam($teamdata: JSON!, $addemployees: [JSON]!, $apps: [JSON]!) {
+    createTeam(teamdata: $teamdata, addemployees: $addemployees, apps: $apps)
   }
 `;
 
-const DELETE_EMPLOYEE = gql`
-  mutation deleteEmployee($employeeid: ID!) {
-    deleteEmployee(employeeid: $employeeid)
+const DELETE_TEAM = gql`
+  mutation deleteTeam($teamid: ID!, $keepLicences: [JSON!]) {
+    deleteTeam(teamid: $teamid, keepLicences: $keepLicences)
   }
 `;
 
@@ -54,12 +56,56 @@ class TeamOverview extends React.Component<Props, State> {
     addemployees: [],
     saving: false,
     deleting: null,
-    willdeleting: null
+    willdeleting: null,
+    keepLicences: []
   };
 
-  addUser(apps, employees) {
-    console.log(apps, employees);
-    //this.setState({ apps, employees, saving: true, add: false });
+  printRemoveLicences(team) {
+    let RLicencesArray: JSX.Element[] = [];
+
+    team.services.forEach((service, int) => {
+      team.employees.forEach((employee, int2) => {
+        RLicencesArray.push(
+          <li key={`${int}-${int2}`}>
+            <UniversalCheckbox
+              name={`${int}-${int2}`}
+              startingvalue={true}
+              liveValue={v =>
+                v
+                  ? this.setState(prevState => {
+                      const keepLicencesNew = prevState.keepLicences.splice(
+                        prevState.keepLicences.findIndex(
+                          l => l.service == service.id && l.employee == employee.id
+                        ),
+                        1
+                      );
+                      return {
+                        keepLicences: keepLicencesNew
+                      };
+                    })
+                  : this.setState(prevState => {
+                      const keepLicencesNew = prevState.keepLicences;
+                      keepLicencesNew.push({ service: service.id, employee: employee.id });
+                      return {
+                        keepLicences: keepLicencesNew
+                      };
+                    })
+              }>
+              <span>
+                Delete {service.planid.appid.name}-licence of {employee.firstname}{" "}
+                {employee.lastname}
+              </span>
+            </UniversalCheckbox>
+          </li>
+        );
+      });
+    });
+    return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
+  }
+
+  addService(apps) {
+    console.log(apps);
+    this.setState({ apps, saving: true, add: false });
   }
 
   renderSerives(services) {
@@ -197,7 +243,7 @@ class TeamOverview extends React.Component<Props, State> {
       case 3:
         return (
           <AddTeamServices
-            continue={(apps, employees) => this.addUser(apps, employees)}
+            continue={apps => this.addService(apps)}
             close={() => this.setState({ addStage: 2 })}
             employees={this.state.addemployees}
             apps={this.state.apps}
@@ -237,7 +283,7 @@ class TeamOverview extends React.Component<Props, State> {
               let interteams: any[] = [];
               if (data.fetchCompanyTeams) {
                 interteams = data.fetchCompanyTeams;
-
+                console.log("Interteams", interteams, data);
                 interteams.sort(function(a, b) {
                   let nameA = a.name.toUpperCase();
                   let nameB = b.name.toUpperCase();
@@ -257,6 +303,7 @@ class TeamOverview extends React.Component<Props, State> {
                 } else {
                   teams = interteams;
                 }
+                console.log("TEAMS", teams);
               }
               return (
                 <div className="table">
@@ -298,6 +345,7 @@ class TeamOverview extends React.Component<Props, State> {
                   {teams.length > 0 &&
                     teams.map(team => (
                       <div key={team.name} className="tableRow">
+                        {console.log("TEAM", team)}
                         <div className="tableMain">
                           <div className="tableColumnBig">
                             <div
@@ -345,7 +393,7 @@ class TeamOverview extends React.Component<Props, State> {
                             />
                             <i
                               className="fal fa-trash-alt"
-                              onClick={() => this.setState({ willdeleting: team.unitid.id })}
+                              onClick={() => this.setState({ willdeleting: team })}
                             />
                           </div>
                         </div>
@@ -366,29 +414,27 @@ class TeamOverview extends React.Component<Props, State> {
         )}
         {this.state.saving && (
           <Mutation mutation={CREATE_TEAM}>
-            {createEmployee => (
+            {createTeam => (
               <PopupSelfSaving
-                savingmessage="Adding new employee"
-                savedmessage="New employee succesfully added"
-                saveFunction={async () =>
-                  await createEmployee({
+                savingmessage="Adding new team"
+                savedmessage="New team succesfully added"
+                saveFunction={async () => {
+                  console.log("SAVING", this.state);
+                  await createTeam({
                     variables: {
-                      addpersonal: {
-                        password: await randomPassword(),
-                        ...this.state.addpersonal
-                      },
-                      addteams: this.state.addteams,
+                      teamdata: this.state.addteam,
+                      addemployees: this.state.addemployees,
                       apps: this.state.apps
                     },
                     refetchQueries: [{ query: fetchCompanyTeams }]
-                  })
-                }
+                  });
+                }}
                 closeFunction={() =>
                   this.setState({
                     saving: false,
-                    addteams: [],
+                    addemployees: [],
                     apps: [],
-                    addpersonal: {},
+                    addteam: {},
                     addStage: 1
                   })
                 }
@@ -403,35 +449,42 @@ class TeamOverview extends React.Component<Props, State> {
             close={() => this.setState({ willdeleting: null })}
             closeable={false}>
             <p>Do you really want to delete the team?</p>
+            {this.printRemoveLicences(this.state.willdeleting)}
             <UniversalButton type="low" closingPopup={true} label="Cancel" />
             <UniversalButton
               type="low"
               label="Delete"
-              /*onClick={() =>
+              onClick={() => {
+                console.log("THISSTATE", this.state);
                 this.setState(prevState => {
-                  return { willdeleting: null, deleting: prevState.willdeleting };
-                })
-              }*/
+                  return {
+                    willdeleting: null,
+                    deleting: prevState.willdeleting!.unitid.id
+                  };
+                });
+              }}
             />
           </PopupBase>
         )}
         {this.state.deleting && (
-          <Mutation mutation={DELETE_EMPLOYEE}>
-            {deleteEmployee => (
+          <Mutation mutation={DELETE_TEAM}>
+            {deleteTeam => (
               <PopupSelfSaving
-                savingmessage="Deleting employee"
-                savedmessage="Employee succesfully deleted"
+                savingmessage="Deleting team"
+                savedmessage="Team succesfully deleted"
                 saveFunction={async () =>
-                  await deleteEmployee({
+                  await deleteTeam({
                     variables: {
-                      employeeid: this.state.deleting
+                      teamid: this.state.deleting,
+                      keepLicences: this.state.keepLicences
                     },
                     refetchQueries: [{ query: fetchCompanyTeams }]
                   })
                 }
                 closeFunction={() =>
                   this.setState({
-                    deleting: null
+                    deleting: null,
+                    keepLicences: []
                   })
                 }
               />

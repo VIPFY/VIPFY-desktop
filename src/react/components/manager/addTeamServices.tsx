@@ -139,6 +139,7 @@ class AddTeamServices extends React.Component<Props, State> {
             type="high"
             onClick={() =>
               this.setState(prevState => {
+                console.log(prevState.integrateApp);
                 let oldapps = prevState.apps;
                 oldapps.push(prevState.integrateApp);
                 return {
@@ -158,23 +159,8 @@ class AddTeamServices extends React.Component<Props, State> {
     );
   }
 
-  printApps(newapps) {
+  printApps(apps) {
     let ownAppsArray: JSX.Element[] = [];
-    let oldapps = [];
-    this.state.employees.forEach(
-      employee =>
-        employee.services &&
-        employee.services.forEach(service =>
-          oldapps.push({
-            ...service.planid.appid,
-            setupfinished: service.setupfinished,
-            nosetup: !service.setupfinished,
-            employeeid: employee.unitid.id,
-            licenceid: service.id
-          })
-        )
-    );
-    const apps = oldapps.concat(newapps);
     apps.forEach(app => {
       ownAppsArray.push(
         <div
@@ -244,6 +230,51 @@ class AddTeamServices extends React.Component<Props, State> {
         </div>
       );
     });
+    if (this.state.integrateApp) {
+      const app = this.state.integrateApp;
+      ownAppsArray.push(
+        <div
+          key={app.name}
+          draggable
+          className="space"
+          onClick={() => {
+            if (app.setupfinished) {
+              return;
+            } else if (app.nosetup) {
+              this.setState({
+                popup: true,
+                integrateApp: { updateting: true, ...app }
+              });
+            } else {
+              this.setState(prevState => {
+                const remainingapps = prevState.apps.filter(
+                  e => e.id != app.id || e.email != app.email || e.password != app.password
+                );
+                return { apps: remainingapps };
+              });
+            }
+          }}
+          onDragStart={() => this.setState({ dragremove: app })}>
+          <div
+            className="image"
+            style={{
+              backgroundImage:
+                app.icon.indexOf("/") != -1
+                  ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                      app.icon
+                    )})`
+                  : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                      app.icon
+                    )})`
+            }}
+          />
+          <div className="imageCog">
+            <i className="fal fa-cog fa-spin" />
+            <span>Editing this licence</span>
+          </div>
+        </div>
+      );
+    }
     let i = 0;
     while ((this.state.apps.length + i) % 4 != 0 || this.state.apps.length + i < 12 || i == 0) {
       ownAppsArray.push(
@@ -280,7 +311,7 @@ class AddTeamServices extends React.Component<Props, State> {
               if (this.state.drag && this.state.drag!.name) {
                 this.setState(prevState => {
                   const newapps = prevState.apps;
-                  newapps.push({ integrating: true, ...prevState.drag });
+                  //newapps.push({ integrating: true, ...prevState.drag });
                   return {
                     popup: true,
                     drag: {},
@@ -332,7 +363,7 @@ class AddTeamServices extends React.Component<Props, State> {
                     onClick={() =>
                       this.setState(prevState => {
                         const newapps = prevState.apps;
-                        newapps.push({ integrating: true, ...app });
+                        //newapps.push({ integrating: true, ...app });
                         return {
                           popup: true,
                           apps: newapps,
@@ -407,7 +438,7 @@ class AddTeamServices extends React.Component<Props, State> {
           <UniversalButton
             label="Continue"
             type="high"
-            onClick={() => this.props.continue(this.state.apps, this.state.employees)}
+            onClick={() => this.props.continue(this.state.apps)}
           />
         </div>
 
@@ -453,7 +484,7 @@ class AddTeamServices extends React.Component<Props, State> {
                 let newintegrateApp2 = newintegrateApp;
                 newintegrateApp2.employees = prevState.integrateApp!.employees || [];
                 newintegrateApp2.employees.push(currentemployee);
-                if (newcounter < prevState.integrateApp!.employees.length) {
+                if (newcounter < this.props.employees.length) {
                   return {
                     ...prevState,
                     counter: newcounter,
