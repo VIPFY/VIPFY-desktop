@@ -10,7 +10,6 @@ import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
 import TeamsSection from "../../components/manager/teamsSection";
 
-import { QUERY_USER } from "../../queries/user";
 import { fetchTeam } from "../../queries/departments";
 import TeamGeneralData from "../../components/manager/teamGeneralData";
 import EmployeeSection from "../../components/manager/employeesSection";
@@ -45,7 +44,7 @@ class TeamDetails extends React.Component<Props, State> {
   };
 
   uploadPic = async (picture: File) => {
-    const { teamid, userid } = this.props.match.params;
+    const { teamid } = this.props.match.params;
     await this.setState({ loading: true });
 
     try {
