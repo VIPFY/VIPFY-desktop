@@ -103,21 +103,19 @@ class ServiceOverview extends React.Component<Props, State> {
     this.setState({ apps, saving: true, add: false });
   }
 
-  renderSerives(services) {
-    let sortedservices: any[] = [];
-    services.forEach(element => {
-      if (!element.disabled && !element.planid.appid.disabled) {
-        sortedservices.push(element);
-      }
-    });
-    let serviceArray: JSX.Element[] = [];
+  renderTeams(teams) {
+    let teamsArray: JSX.Element[] = [];
     let counter = 0;
-    for (counter = 0; counter < sortedservices.length; counter++) {
-      const service = sortedservices[counter];
-      if (sortedservices.length > 6 && counter > 4) {
-        serviceArray.push(
+    for (counter = 0; counter < teams.length; counter++) {
+      const team: {
+        profilepicture: string;
+        internaldata: { letters: string; color: string };
+        name: string;
+      } = teams[counter];
+      if (teams.length > 6 && counter > 4) {
+        teamsArray.push(
           <div
-            key="moreSerivces"
+            key="moreTeams"
             className="managerSquare"
             style={{
               color: "#253647",
@@ -125,40 +123,47 @@ class ServiceOverview extends React.Component<Props, State> {
               fontSize: "12px",
               fontWeight: 400
             }}>
-            +{sortedservices.length - 5}
+            +{teams.length - 5}
           </div>
         );
         break;
       } else {
-        serviceArray.push(
+        teamsArray.push(
           <div
-            key={service.id}
-            title={service.planid.appid.name}
+            key={team.name}
+            title={team.name}
             className="managerSquare"
             style={
-              service.planid.appid.icon
+              team.profilepicture
                 ? {
                     backgroundImage:
-                      service.planid.appid.icon.indexOf("/") != -1
-                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                            service.planid.appid.icon
+                      team.profilepicture.indexOf("/") != -1
+                        ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                            team.profilepicture
                           )})`
                         : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                            service.planid.appid.icon
+                            team.profilepicture
                           )})`,
                     backgroundColor: "unset"
                   }
+                : team.internaldata && team.internaldata.color
+                ? { backgroundColor: team.internaldata.color }
                 : {}
             }>
-            {service.planid.appid.icon ? "" : service.planid.appid.name.slice(0, 1)}
+            {team.profilepicture
+              ? ""
+              : team.internaldata && team.internaldata.letters
+              ? team.internaldata.letters
+              : team.name.slice(0, 1)}
           </div>
         );
       }
     }
-    return serviceArray;
+    return teamsArray;
   }
 
   renderEmployees(employees) {
+    console.log(employees);
     let employeesArray: JSX.Element[] = [];
     let counter = 0;
     for (counter = 0; counter < employees.length; counter++) {
@@ -361,12 +366,12 @@ class ServiceOverview extends React.Component<Props, State> {
                             <span className="name">{service.app.name}</span>
                           </div>
                           <div className="tableColumnBig">
-                            {/*team.employees
-                              ? this.renderEmployees(team.employees)
-                            : "No services yet"*/}
+                            {service.teams ? this.renderTeams(service.teams) : "No single User"}
                           </div>
                           <div className="tableColumnBig">
-                            {/*team.services ? this.renderSerives(team.services) : "No services yet"*/}
+                            {service.singles
+                              ? this.renderEmployees(service.singles)
+                              : "No single User"}
                           </div>
                         </div>
                         <div className="tableEnd">
