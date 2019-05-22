@@ -278,10 +278,10 @@ class ServiceOverview extends React.Component<Props, State> {
               let interservices: any[] = [];
               if (data.fetchCompanyServices) {
                 interservices = data.fetchCompanyServices;
-                console.log("Interteams", interservices, data);
+                console.log("Interservices", interservices, data);
                 interservices.sort(function(a, b) {
-                  let nameA = a.name.toUpperCase();
-                  let nameB = b.name.toUpperCase();
+                  let nameA = a.app.name.toUpperCase();
+                  let nameB = b.app.name.toUpperCase();
                   if (nameA < nameB) {
                     return -1;
                   }
@@ -293,12 +293,12 @@ class ServiceOverview extends React.Component<Props, State> {
                 });
                 if (this.state.search != "") {
                   services = interservices.filter(service => {
-                    return service.name.toUpperCase().includes(this.state.search.toUpperCase());
+                    return service.app.name.toUpperCase().includes(this.state.search.toUpperCase());
                   });
                 } else {
                   services = interservices;
                 }
-                console.log("TEAMS", services);
+                console.log("SERVICES", services);
               }
               return (
                 <div className="table">
@@ -308,16 +308,16 @@ class ServiceOverview extends React.Component<Props, State> {
                         <h1>Name</h1>
                       </div>
                       <div className="tableColumnBig">
-                        <h1>Employees</h1>
+                        <h1>Teams</h1>
                       </div>
                       <div className="tableColumnBig">
-                        <h1>Services</h1>
+                        <h1>Single Users</h1>
                       </div>
                     </div>
                     <div className="tableEnd">
                       <UniversalButton
                         type="high"
-                        label="Add Team"
+                        label="Add Service"
                         customStyles={{
                           fontSize: "12px",
                           lineHeight: "24px",
@@ -337,58 +337,47 @@ class ServiceOverview extends React.Component<Props, State> {
                       />
                     </div>
                   </div>
-                  {teams.length > 0 &&
-                    teams.map(team => (
-                      <div key={team.name} className="tableRow">
-                        {console.log("TEAM", team)}
+                  {services.length > 0 &&
+                    services.map(service => (
+                      <div key={service.name} className="tableRow">
+                        {console.log("Service", service)}
                         <div className="tableMain">
                           <div className="tableColumnBig">
                             <div
-                              title={team.name}
+                              title={service.app.name}
                               className="managerSquare"
-                              style={
-                                team.profilepicture
-                                  ? {
-                                      backgroundImage:
-                                        team.profilepicture.indexOf("/") != -1
-                                          ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                                              team.profilepicture
-                                            )})`
-                                          : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                              team.profilepicture
-                                            )})`,
-                                      backgroundColor: "unset"
-                                    }
-                                  : team.internaldata && team.internaldata.color
-                                  ? { backgroundColor: team.internaldata.color }
-                                  : {}
-                              }>
-                              {team.profilepicture
-                                ? ""
-                                : team.internaldata && team.internaldata.letters
-                                ? team.internaldata.letters
-                                : team.name.slice(0, 1)}
-                            </div>
-                            <span className="name">{team.name}</span>
+                              style={{
+                                backgroundImage:
+                                  service.app.icon.indexOf("/") != -1
+                                    ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                                        service.app.icon
+                                      )})`
+                                    : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                        service.app.icon
+                                      )})`,
+                                backgroundColor: "unset"
+                              }}
+                            />
+                            <span className="name">{service.app.name}</span>
                           </div>
                           <div className="tableColumnBig">
-                            {team.employees
+                            {/*team.employees
                               ? this.renderEmployees(team.employees)
-                              : "No services yet"}
+                            : "No services yet"*/}
                           </div>
                           <div className="tableColumnBig">
-                            {team.services ? this.renderSerives(team.services) : "No services yet"}
+                            {/*team.services ? this.renderSerives(team.services) : "No services yet"*/}
                           </div>
                         </div>
                         <div className="tableEnd">
                           <div className="editOptions">
                             <i
                               className="fal fa-external-link-alt"
-                              onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}
+                              onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}
                             />
                             <i
                               className="fal fa-trash-alt"
-                              onClick={() => this.setState({ willdeleting: team })}
+                              onClick={() => this.setState({ willdeleting: service })}
                             />
                           </div>
                         </div>

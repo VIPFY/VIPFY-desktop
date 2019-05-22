@@ -130,10 +130,26 @@ export const fetchCompanyServices = gql`
   query fetchCompanyServices {
     fetchCompanyServices {
       id
-      name
-      logo
-      description
-      icon
+      app {
+        id
+        name
+        logo
+        description
+        icon
+      }
+      singles {
+        id
+        firstname
+        lastname
+        profilepicture
+      }
+      teams {
+        unitid {
+          id
+        }
+        name
+        profilepicture
+      }
     }
   }
 `;
