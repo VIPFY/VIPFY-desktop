@@ -86,14 +86,20 @@ class AddTeamService extends React.Component<Props, State> {
     saving: false
   };
 
+  componentWillReceiveProps(props) {
+    if (this.props.team.services != props.team.services) {
+      this.setState({ apps: [] });
+    }
+  }
+
   printTeamServices(servicedata) {
     let serviceArray: JSX.Element[] = [];
     const services = servicedata.concat(this.state.apps);
     console.log("SERVICES", services);
     if (services.length > 0) {
       services.sort(function(a, b) {
-        let nameA = a.integrating ? a.name.toUpperCase() : a.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.integrating ? b.name.toUpperCase() : b.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+        let nameA = a.icon ? a.name.toUpperCase() : a.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.icon ? b.name.toUpperCase() : b.planid.appid.name.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
           return -1;
         }
@@ -167,6 +173,12 @@ class AddTeamService extends React.Component<Props, State> {
                 <span>Not all services configurated</span>
               </div>
             )*/}
+            {/*this.state.integrateApp && service.id == this.state.integrateApp.id && (
+              <div className="imageCog">
+                <i className="fal fa-cog fa-spin" />
+                <span>Editing this membership</span>
+              </div>
+            )*/}
           </div>
         );
       });
@@ -210,14 +222,11 @@ class AddTeamService extends React.Component<Props, State> {
             <i className="fal fa-trash-alt" />
             <span>Click or drag to remove</span>
           </div>
-          {service.integrating ? (
-            <div className="imageCog">
-              <i className="fal fa-cog fa-spin" />
-              <span>Editing this membership</span>
-            </div>
-          ) : (
-            ""
-          )}
+
+          <div className="imageCog">
+            <i className="fal fa-cog fa-spin" />
+            <span>Editing this membership</span>
+          </div>
         </div>
       );
       j = 1;
@@ -236,7 +245,7 @@ class AddTeamService extends React.Component<Props, State> {
   }
 
   printEmployeeAddSteps() {
-    if (this.props.team.services.length == 0) {
+    if (this.props.team.employees.length == 0) {
       return (
         <div className="buttonsPopup">
           <UniversalButton
@@ -245,7 +254,9 @@ class AddTeamService extends React.Component<Props, State> {
               this.setState({
                 drag: null,
                 integrateApp: null,
-                popup: false
+                popup: false,
+                counter: 0,
+                configureTeamLicences: true
               })
             }
             label="Cancel"
@@ -255,13 +266,15 @@ class AddTeamService extends React.Component<Props, State> {
             type="high"
             onClick={() =>
               this.setState(prevState => {
-                let oldservices = prevState.apps;
-                oldservices.push(prevState.integrateApp);
+                let oldapps = prevState.apps;
+                oldapps.push({ integrating: null, ...prevState.integrateApp });
                 return {
                   drag: null,
-                  apps: oldservices,
-                  integrateTeam: null,
-                  popup: false
+                  apps: oldapps,
+                  integrateApp: null,
+                  popup: false,
+                  counter: 0,
+                  configureTeamLicences: true
                 };
               })
             }
@@ -273,18 +286,19 @@ class AddTeamService extends React.Component<Props, State> {
       return (
         <React.Fragment>
           <ul className="checks">
-            {this.state.integrateApp!.employees.map(employee => {
-              return (
-                <li key={employee.id}>
-                  Individual Teamlicence for <b>{`${employee.firstname} ${employee.lastname}`}</b>
-                  {employee.setupfinished
-                    ? " successfully configurated"
-                    : employee.setupfinished == null
-                    ? "not started"
-                    : " not configured"}
-                </li>
-              );
-            })}
+            {this.state.integrateApp!.employees &&
+              this.state.integrateApp!.employees.map(employee => {
+                return (
+                  <li key={employee.id}>
+                    Individual Teamlicence for <b>{`${employee.firstname} ${employee.lastname}`}</b>
+                    {employee.setupfinished
+                      ? " successfully configurated"
+                      : employee.setupfinished == null
+                      ? "not started"
+                      : " not configured"}
+                  </li>
+                );
+              })}
             {/*this.props.team!.licences.map(licence => {
               return (
                 <li key={licence.boughtplanid.planid.appid.name}>
@@ -313,7 +327,7 @@ class AddTeamService extends React.Component<Props, State> {
               onClick={() =>
                 this.setState(prevState => {
                   let oldapps = prevState.apps;
-                  oldapps.push(prevState.integrateApp);
+                  oldapps.push({ integrating: null, ...prevState.integrateApp });
                   return {
                     drag: null,
                     apps: oldapps,
@@ -415,11 +429,11 @@ class AddTeamService extends React.Component<Props, State> {
                           draggable={!oldservice}
                           onClick={() =>
                             this.setState(prevState => {
-                              const newapps = prevState.apps;
-                              newapps.push({ integrating: true, ...app });
+                              //const newapps = prevState.apps;
+                              //newapps.push({ integrating: true, ...app });
                               return {
                                 popup: true,
-                                apps: newapps,
+                                //apps: newapps,
                                 integrateApp: app
                               };
                             })
@@ -565,79 +579,81 @@ class AddTeamService extends React.Component<Props, State> {
                 </PopupBase>
               )}
             </PopupBase>
-            {this.state.configureTeamLicences && this.state.integrateApp && (
-              <PopupAddLicence
-                nooutsideclose={true}
-                app={this.state.integrateApp!}
-                cancel={async () => {
-                  await this.setState(prevState => {
-                    let newcounter = prevState.counter + 1;
-                    let currentemployee = Object.assign(
-                      {},
-                      prevState.integrateApp!.employees[prevState.counter]
-                    );
-                    currentemployee.setupfinished = false;
-                    currentemployee.setup = {};
-                    currentemployee = {
-                      ...this.props.team.employees[prevState.counter],
-                      ...currentemployee
-                    };
-                    const newintegrateApp = Object.assign({}, prevState.integrateApp);
-                    let newintegrateApp2 = newintegrateApp;
-                    newintegrateApp2.employees = prevState.integrateApp!.employees;
-                    newintegrateApp2.employees.push(currentemployee);
-                    if (newcounter < prevState.integrateApp!.employees.length) {
-                      return {
-                        ...prevState,
-                        counter: newcounter,
-                        integrateApp: newintegrateApp2
+            {this.state.configureTeamLicences &&
+              this.props.team.employees.length > 0 &&
+              this.state.integrateApp && (
+                <PopupAddLicence
+                  nooutsideclose={true}
+                  app={this.state.integrateApp!}
+                  cancel={async () => {
+                    await this.setState(prevState => {
+                      let newcounter = prevState.counter + 1;
+                      let currentemployee = Object.assign(
+                        {},
+                        this.props.team.employees[prevState.counter]
+                      );
+                      currentemployee.setupfinished = false;
+                      currentemployee.setup = {};
+                      currentemployee = {
+                        ...this.props.team.employees[prevState.counter],
+                        ...currentemployee
                       };
-                    } else {
-                      return {
-                        ...prevState,
-                        configureTeamLicences: false,
-                        integrateApp: newintegrateApp2
+                      const newintegrateApp = Object.assign({}, prevState.integrateApp);
+                      let newintegrateApp2 = newintegrateApp;
+                      newintegrateApp2.employees = prevState.integrateApp!.employees || [];
+                      newintegrateApp2.employees.push(currentemployee);
+                      if (newcounter < prevState.integrateApp!.employees.length) {
+                        return {
+                          ...prevState,
+                          counter: newcounter,
+                          integrateApp: newintegrateApp2
+                        };
+                      } else {
+                        return {
+                          ...prevState,
+                          configureTeamLicences: false,
+                          integrateApp: newintegrateApp2
+                        };
+                      }
+                    });
+                  }}
+                  add={async setup => {
+                    await this.setState(prevState => {
+                      let newcounter = prevState.counter + 1;
+                      let currentemployee = Object.assign(
+                        {},
+                        this.props.team.employees[prevState.counter]
+                      );
+                      currentemployee.setupfinished = true;
+                      currentemployee.setup = setup;
+                      currentemployee = {
+                        ...this.props.team.employees[prevState.counter],
+                        ...currentemployee
                       };
-                    }
-                  });
-                }}
-                add={async setup => {
-                  await this.setState(prevState => {
-                    let newcounter = prevState.counter + 1;
-                    let currentemployee = Object.assign(
-                      {},
-                      prevState.integrateApp!.employees[prevState.counter]
-                    );
-                    currentemployee.setupfinished = true;
-                    currentemployee.setup = setup;
-                    currentemployee = {
-                      ...this.props.team.employees[prevState.counter],
-                      ...currentemployee
-                    };
-                    const newintegrateApp = Object.assign({}, prevState.integrateApp);
-                    let newintegrateApp2 = newintegrateApp;
-                    newintegrateApp2.employees = prevState.integrateApp!.employees;
-                    newintegrateApp2.employees.push(currentemployee);
-                    if (newcounter < this.props.team!.employees.length) {
-                      return {
-                        ...prevState,
-                        counter: newcounter,
-                        integrateApp: newintegrateApp2
-                      };
-                    } else {
-                      return {
-                        ...prevState,
-                        configureTeamLicences: false,
-                        integrateApp: newintegrateApp2
-                      };
-                    }
-                  });
-                }}
-                employeename={`${this.props.team.employees[this.state.counter].firstname} ${
-                  this.props.team.employees[this.state.counter].lastname
-                }`}
-              />
-            )}
+                      const newintegrateApp = Object.assign({}, prevState.integrateApp);
+                      let newintegrateApp2 = newintegrateApp;
+                      newintegrateApp2.employees = prevState.integrateApp!.employees || [];
+                      newintegrateApp2.employees.push(currentemployee);
+                      if (newcounter < this.props.team!.employees.length) {
+                        return {
+                          ...prevState,
+                          counter: newcounter,
+                          integrateApp: newintegrateApp2
+                        };
+                      } else {
+                        return {
+                          ...prevState,
+                          configureTeamLicences: false,
+                          integrateApp: newintegrateApp2
+                        };
+                      }
+                    });
+                  }}
+                  employeename={`${this.props.team.employees[this.state.counter].firstname} ${
+                    this.props.team.employees[this.state.counter].lastname
+                  }`}
+                />
+              )}
           </>
         )}
       </Mutation>

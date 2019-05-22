@@ -10,6 +10,7 @@ import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
 import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
 import AddTeamServices from "../../components/manager/addTeamServices";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
+import { fetchCompanyServices } from "../../queries/products";
 
 interface Props {
   moveTo: Function;
@@ -30,7 +31,7 @@ interface State {
 
 const CREATE_TEAM = gql`
   mutation createTeam($teamdata: JSON!, $addemployees: [JSON]!, $apps: [JSON]!) {
-    createTeam(team: $teamdata, addemployees: $addemployees, apps: $apps)
+    createTeam(teamdata: $teamdata, addemployees: $addemployees, apps: $apps)
   }
 `;
 
@@ -40,7 +41,7 @@ const DELETE_TEAM = gql`
   }
 `;
 
-class TeamOverview extends React.Component<Props, State> {
+class ServiceOverview extends React.Component<Props, State> {
   state = {
     search: "",
     add: false,
@@ -252,7 +253,7 @@ class TeamOverview extends React.Component<Props, State> {
     return (
       <div className="managerPage">
         <div className="heading">
-          <h1>Team Manager</h1>
+          <h1>Service Manager</h1>
           <UniversalSearchBox
             getValue={v => {
               this.setState({ search: v });
@@ -261,9 +262,9 @@ class TeamOverview extends React.Component<Props, State> {
         </div>
         <div className="section">
           <div className="heading">
-            <h1>Teams</h1>
+            <h1>Services</h1>
           </div>
-          <Query query={fetchCompanyTeams}>
+          <Query query={fetchCompanyServices}>
             {({ loading, error, data }) => {
               if (loading) {
                 return "Loading...";
@@ -273,14 +274,14 @@ class TeamOverview extends React.Component<Props, State> {
               }
 
               //Sort teams
-              let teams: any[] = [];
-              let interteams: any[] = [];
-              if (data.fetchCompanyTeams) {
-                interteams = data.fetchCompanyTeams;
-                console.log("Interteams", interteams, data);
-                interteams.sort(function(a, b) {
-                  let nameA = a.name.toUpperCase();
-                  let nameB = b.name.toUpperCase();
+              let services: any[] = [];
+              let interservices: any[] = [];
+              if (data.fetchCompanyServices) {
+                interservices = data.fetchCompanyServices;
+                console.log("Interservices", interservices, data);
+                interservices.sort(function(a, b) {
+                  let nameA = a.app.name.toUpperCase();
+                  let nameB = b.app.name.toUpperCase();
                   if (nameA < nameB) {
                     return -1;
                   }
@@ -291,13 +292,13 @@ class TeamOverview extends React.Component<Props, State> {
                   return 0;
                 });
                 if (this.state.search != "") {
-                  teams = interteams.filter(team => {
-                    return team.name.toUpperCase().includes(this.state.search.toUpperCase());
+                  services = interservices.filter(service => {
+                    return service.app.name.toUpperCase().includes(this.state.search.toUpperCase());
                   });
                 } else {
-                  teams = interteams;
+                  services = interservices;
                 }
-                console.log("TEAMS", teams);
+                console.log("SERVICES", services);
               }
               return (
                 <div className="table">
@@ -307,16 +308,16 @@ class TeamOverview extends React.Component<Props, State> {
                         <h1>Name</h1>
                       </div>
                       <div className="tableColumnBig">
-                        <h1>Employees</h1>
+                        <h1>Teams</h1>
                       </div>
                       <div className="tableColumnBig">
-                        <h1>Services</h1>
+                        <h1>Single Users</h1>
                       </div>
                     </div>
                     <div className="tableEnd">
                       <UniversalButton
                         type="high"
-                        label="Add Team"
+                        label="Add Service"
                         customStyles={{
                           fontSize: "12px",
                           lineHeight: "24px",
@@ -336,58 +337,47 @@ class TeamOverview extends React.Component<Props, State> {
                       />
                     </div>
                   </div>
-                  {teams.length > 0 &&
-                    teams.map(team => (
-                      <div key={team.name} className="tableRow">
-                        {console.log("TEAM", team)}
+                  {services.length > 0 &&
+                    services.map(service => (
+                      <div key={service.name} className="tableRow">
+                        {console.log("Service", service)}
                         <div className="tableMain">
                           <div className="tableColumnBig">
                             <div
-                              title={team.name}
+                              title={service.app.name}
                               className="managerSquare"
-                              style={
-                                team.profilepicture
-                                  ? {
-                                      backgroundImage:
-                                        team.profilepicture.indexOf("/") != -1
-                                          ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                              team.profilepicture
-                                            )})`
-                                          : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                              team.profilepicture
-                                            )})`,
-                                      backgroundColor: "unset"
-                                    }
-                                  : team.internaldata && team.internaldata.color
-                                  ? { backgroundColor: team.internaldata.color }
-                                  : {}
-                              }>
-                              {team.profilepicture
-                                ? ""
-                                : team.internaldata && team.internaldata.letters
-                                ? team.internaldata.letters
-                                : team.name.slice(0, 1)}
-                            </div>
-                            <span className="name">{team.name}</span>
+                              style={{
+                                backgroundImage:
+                                  service.app.icon.indexOf("/") != -1
+                                    ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                                        service.app.icon
+                                      )})`
+                                    : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                        service.app.icon
+                                      )})`,
+                                backgroundColor: "unset"
+                              }}
+                            />
+                            <span className="name">{service.app.name}</span>
                           </div>
                           <div className="tableColumnBig">
-                            {team.employees
+                            {/*team.employees
                               ? this.renderEmployees(team.employees)
-                              : "No services yet"}
+                            : "No services yet"*/}
                           </div>
                           <div className="tableColumnBig">
-                            {team.services ? this.renderSerives(team.services) : "No services yet"}
+                            {/*team.services ? this.renderSerives(team.services) : "No services yet"*/}
                           </div>
                         </div>
                         <div className="tableEnd">
                           <div className="editOptions">
                             <i
                               className="fal fa-external-link-alt"
-                              onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}
+                              onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}
                             />
                             <i
                               className="fal fa-trash-alt"
-                              onClick={() => this.setState({ willdeleting: team })}
+                              onClick={() => this.setState({ willdeleting: service })}
                             />
                           </div>
                         </div>
@@ -413,6 +403,7 @@ class TeamOverview extends React.Component<Props, State> {
                 savingmessage="Adding new team"
                 savedmessage="New team succesfully added"
                 saveFunction={async () => {
+                  console.log("SAVING", this.state);
                   await createTeam({
                     variables: {
                       teamdata: this.state.addteam,
@@ -488,4 +479,4 @@ class TeamOverview extends React.Component<Props, State> {
     );
   }
 }
-export default TeamOverview;
+export default ServiceOverview;

@@ -233,7 +233,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "emanager"
       },
       {
-        label: "Licence Manager",
+        label: "Service Manager",
         location: "lmanager",
         icon: "credit-card-blank",
         show: true,

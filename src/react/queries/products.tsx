@@ -125,3 +125,31 @@ export const fetchPlanInputs = gql`
     fetchPlanInputs(planid: $planid)
   }
 `;
+
+export const fetchCompanyServices = gql`
+  query fetchCompanyServices {
+    fetchCompanyServices {
+      id
+      app {
+        id
+        name
+        logo
+        description
+        icon
+      }
+      singles {
+        id
+        firstname
+        lastname
+        profilepicture
+      }
+      teams {
+        unitid {
+          id
+        }
+        name
+        profilepicture
+      }
+    }
+  }
+`;

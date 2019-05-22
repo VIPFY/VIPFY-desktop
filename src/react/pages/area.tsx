@@ -52,6 +52,7 @@ import EmployeeOverview from "./manager/employeeOverview";
 import EmployeeDetails from "./manager/employeeDetails";
 import TeamOverview from "./manager/teamOverview";
 import TeamDetails from "./manager/teamDetails";
+import ServiceOverview from "./manager/serviceOverview";
 
 interface AreaProps {
   history: any[];
@@ -371,7 +372,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "ssoconfig", component: SsoConfigurator },
       { path: "ssotest", component: SsoTester },
       { path: "emanager", component: EmployeeOverview },
-      { path: "lmanager", component: LManager },
+      { path: "lmanager", component: ServiceOverview },
       { path: "dmanager", component: TeamOverview },
       { path: "emanager/:userid", component: EmployeeDetails },
       { path: "lmanager/:boughtplanid", component: LShower },

@@ -86,11 +86,18 @@ class AddTeamEmployee extends React.Component<Props, State> {
     saving: false
   };
 
+  componentWillReceiveProps(props) {
+    if (this.props.team.employees != props.team.employees) {
+      this.setState({ addedEmployees: [] });
+    }
+  }
+
   printTeamEmployees(employeedata) {
     let employeesArray: JSX.Element[] = [];
-    const employees = employeedata.concat(this.state.addedEmployees);
-    if (employees.length > 0) {
-      employees.sort(function(a, b) {
+    const interemployees = employeedata.concat(this.state.addedEmployees);
+    let employees = [];
+    if (interemployees.length > 0) {
+      interemployees.sort(function(a, b) {
         let nameA = `${a.firstname} ${a.lastname}`.toUpperCase(); // ignore upper and lowercase
         let nameB = `${b.firstname} ${b.lastname}`.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
@@ -103,6 +110,10 @@ class AddTeamEmployee extends React.Component<Props, State> {
         // namen müssen gleich sein
         return 0;
       });
+
+      employees = interemployees.filter(e => e.id);
+
+      console.log("EMPs", employeedata, this.state.addedEmployees);
 
       employees.forEach(employee => {
         const oldemployee = false || employeedata.find(t => t.id == employee.id);
@@ -169,6 +180,7 @@ class AddTeamEmployee extends React.Component<Props, State> {
     }
     let j = 0;
     if (this.state.integrateEmployee) {
+      console.log("INTEGRATE EMP");
       const employee: {
         profilepicture: string;
         firstname: string;
@@ -257,7 +269,7 @@ class AddTeamEmployee extends React.Component<Props, State> {
                 return {
                   drag: null,
                   addedEmployees: oldemployees,
-                  integrateTeam: null,
+                  integrateEmployee: null,
                   popup: false
                 };
               })
@@ -555,7 +567,7 @@ class AddTeamEmployee extends React.Component<Props, State> {
                 />
               )}
 
-              {this.state.popup ? (
+              {this.state.popup && (
                 <PopupBase
                   buttonStyles={{ marginTop: "0px" }}
                   fullmiddle={true}
@@ -578,76 +590,76 @@ class AddTeamEmployee extends React.Component<Props, State> {
 
                   {this.printEmployeeAddSteps()}
                 </PopupBase>
-              ) : (
-                ""
               )}
             </PopupBase>
-            {this.state.configureTeamLicences && this.state.integrateEmployee && (
-              <PopupAddLicence
-                nooutsideclose={true}
-                app={this.props.team!.services[this.state.counter].planid.appid}
-                cancel={async () => {
-                  await this.setState(prevState => {
-                    let newcounter = prevState.counter + 1;
-                    let currentlicence = Object.assign(
-                      {},
-                      this.props.team!.services[prevState.counter]
-                    );
-                    currentlicence.setupfinished = false;
-                    currentlicence.setup = {};
-                    const newintegrateEmployee = Object.assign({}, prevState.integrateEmployee);
-                    let newintegrateEmployee2 = newintegrateEmployee;
-                    newintegrateEmployee2.services = prevState.integrateEmployee!.services;
-                    newintegrateEmployee2.services.push(currentlicence);
-                    if (newcounter < this.props.team.services.length) {
-                      return {
-                        ...prevState,
-                        counter: newcounter,
-                        integrateEmployee: newintegrateEmployee2
-                      };
-                    } else {
-                      return {
-                        ...prevState,
-                        configureTeamLicences: false,
-                        integrateEmployee: newintegrateEmployee2
-                      };
-                    }
-                  });
-                }}
-                add={async setup => {
-                  await this.setState(prevState => {
-                    let newcounter = prevState.counter + 1;
-                    let currentlicence = Object.assign(
-                      {},
-                      this.props.team!.services[prevState.counter]
-                    );
-                    currentlicence.setupfinished = true;
-                    currentlicence.setup = setup;
-                    console.log("Current Licence", currentlicence);
-                    const newintegrateEmployee = Object.assign({}, prevState.integrateEmployee);
-                    let newintegrateEmployee2 = newintegrateEmployee;
-                    newintegrateEmployee2.services = prevState.integrateEmployee!.services;
-                    newintegrateEmployee2.services.push(currentlicence);
-                    if (newcounter < this.props.team!.services.length) {
-                      return {
-                        ...prevState,
-                        counter: newcounter,
-                        integrateEmployee: newintegrateEmployee2
-                      };
-                    } else {
-                      return {
-                        ...prevState,
-                        configureTeamLicences: false,
-                        integrateEmployee: newintegrateEmployee2
-                      };
-                    }
-                  });
-                }}
-                employeename={`${this.state.integrateEmployee!.firstname} ${
-                  this.state.integrateEmployee!.lastname
-                }`}
-              />
-            )}
+            {this.state.configureTeamLicences &&
+              this.props.team!.services.length > 0 &&
+              this.state.integrateEmployee && (
+                <PopupAddLicence
+                  nooutsideclose={true}
+                  app={this.props.team!.services[this.state.counter].planid.appid}
+                  cancel={async () => {
+                    await this.setState(prevState => {
+                      let newcounter = prevState.counter + 1;
+                      let currentlicence = Object.assign(
+                        {},
+                        this.props.team!.services[prevState.counter]
+                      );
+                      currentlicence.setupfinished = false;
+                      currentlicence.setup = {};
+                      const newintegrateEmployee = Object.assign({}, prevState.integrateEmployee);
+                      let newintegrateEmployee2 = newintegrateEmployee;
+                      newintegrateEmployee2.services = prevState.integrateEmployee!.services;
+                      newintegrateEmployee2.services.push(currentlicence);
+                      if (newcounter < this.props.team.services.length) {
+                        return {
+                          ...prevState,
+                          counter: newcounter,
+                          integrateEmployee: newintegrateEmployee2
+                        };
+                      } else {
+                        return {
+                          ...prevState,
+                          configureTeamLicences: false,
+                          integrateEmployee: newintegrateEmployee2
+                        };
+                      }
+                    });
+                  }}
+                  add={async setup => {
+                    await this.setState(prevState => {
+                      let newcounter = prevState.counter + 1;
+                      let currentlicence = Object.assign(
+                        {},
+                        this.props.team!.services[prevState.counter]
+                      );
+                      currentlicence.setupfinished = true;
+                      currentlicence.setup = setup;
+                      console.log("Current Licence", currentlicence);
+                      const newintegrateEmployee = Object.assign({}, prevState.integrateEmployee);
+                      let newintegrateEmployee2 = newintegrateEmployee;
+                      newintegrateEmployee2.services = prevState.integrateEmployee!.services;
+                      newintegrateEmployee2.services.push(currentlicence);
+                      if (newcounter < this.props.team!.services.length) {
+                        return {
+                          ...prevState,
+                          counter: newcounter,
+                          integrateEmployee: newintegrateEmployee2
+                        };
+                      } else {
+                        return {
+                          ...prevState,
+                          configureTeamLicences: false,
+                          integrateEmployee: newintegrateEmployee2
+                        };
+                      }
+                    });
+                  }}
+                  employeename={`${this.state.integrateEmployee!.firstname} ${
+                    this.state.integrateEmployee!.lastname
+                  }`}
+                />
+              )}
           </>
         )}
       </Mutation>
