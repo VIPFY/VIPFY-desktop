@@ -51,12 +51,6 @@ export type WebViewProps = {
   logError: Function;
 };
 
-const LOG_SSO_ERROR = gql`
-  mutation onLogSSOError($data: JSON!) {
-    logSSOError(eventdata: $data)
-  }
-`;
-
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
 // TODO: move TODO page to web so webSecurity=no is no longer nessesary
 
