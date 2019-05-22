@@ -40,7 +40,15 @@ export default function UserPicture(props: {
         }
 
         const user = data.fetchPublicUser;
-        const picture = user.profilepicture ? unitPicFolder + user.profilepicture : defaultPic;
+        let picture = "";
+        picture = user.profilepicture
+          ? user.profilepicture.indexOf("/") != -1
+            ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                user.profilepicture
+              )}`
+            : encodeURI(unitPicFolder + user.profilepicture)
+          : defaultPic;
+        //user.profilepicture ? unitPicFolder + user.profilepicture : defaultPic;
         const style = {
           cursor: props.onClick ? "pointer" : "",
           backgroundImage: `url(${picture})`,
@@ -62,7 +70,8 @@ export default function UserPicture(props: {
               if (props.onClick) {
                 props.onClick(props.unitid, props.departmentid);
               }
-            }}>
+            }}
+            data-recording-disable>
             {props.updateable && (
               <div className="imagehover">
                 <i className="fal fa-camera" />

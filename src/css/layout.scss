@@ -1,4 +1,4 @@
-@import './fa_pro_all_5.6.3';
+@import './fa_pro_all_5.8.2';
 @import './constants.scss';
 @import './buttons.scss';
 @import './forms.scss';
@@ -12,6 +12,7 @@
 @import './profile.scss';
 @import './editor.scss';
 @import './admin.scss';
+@import './dataForms.scss';
 @import './macosx';
 
 /*::-webkit-scrollbar {
@@ -540,7 +541,8 @@ li {
 
 .backgroundLogo{
     /*background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%)*/
-    background-image: radial-gradient(farthest-corner at 0px 100%, #20BAA9 0%, #117f91 100%);
+    //background-image: radial-gradient(farthest-corner at 0px 100%, #20BAA9 0%, #117f91 100%);
+    background-color: #357aa5;
 }
 
 .editHolder{
@@ -5056,7 +5058,10 @@ flex-wrap: wrap;
     padding-left: 10px;
     padding-right: 10px;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
 .universalButton{
     line-height: 34px;
     min-width: 60px;
@@ -5065,7 +5070,11 @@ flex-wrap: wrap;
     font-size: 16px;
     text-transform: uppercase;
     cursor: pointer;
+<<<<<<< HEAD
     border-radius: 3px;
+=======
+    border-radius: 4px;
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
     letter-spacing: 0.02em;
     display: block;
     
@@ -5075,10 +5084,18 @@ flex-wrap: wrap;
             color: #fff;
             transition: background-color 200ms ease-in-out;
             &:hover{
+<<<<<<< HEAD
                 box-shadow: $vipfy-lightshadow;
             }
             .universalCoverButton:focus > &{
                 box-shadow: $vipfy-lightshadow;
+=======
+                background-color: #37C8BA;
+                box-shadow: 0px 2px 2px rgba(#000000,0.14);
+            }
+            .universalCoverButton:focus > &{
+                box-shadow: 0px 2px 2px rgba(#000000,0.14);
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
             }
         }
 
@@ -5133,7 +5150,11 @@ flex-wrap: wrap;
         font-weight: 500;
     }
     li{
+<<<<<<< HEAD
         display: block;
+=======
+        display: table;
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
         margin-bottom: 8px;
         letter-spacing: 0.02em;
     }

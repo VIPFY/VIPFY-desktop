@@ -13,7 +13,7 @@ import ShowEmployee from "../popups/showEmployee";
 import LoadingPopup from "../popups/loadingPopup";
 import BoughtplanView from "../popups/boughtplanView";
 
-import { fetchLicences, me, GET_USER_CONFIG } from "../queries/auth";
+import { fetchLicences, me } from "../queries/auth";
 
 import {
   fetchDepartments,
@@ -550,7 +550,7 @@ class Team extends React.Component<Props, State> {
       variables: { boughtplanid, unitid, departmentid },
       refetchQueries: [
         { query: fetchLicences },
-        { query: GET_USER_CONFIG },
+        //{ query: GET_USER_CONFIG },
         { query: fetchUsersOwnLicences, variables: { unitid } }
       ]
     });
@@ -567,7 +567,7 @@ class Team extends React.Component<Props, State> {
         variables: { licenceid },
         refetchQueries: [
           { query: fetchLicences },
-          { query: GET_USER_CONFIG },
+          //{ query: GET_USER_CONFIG },
           { query: fetchUsersOwnLicences, variables: { unitid } }
         ]
       });
@@ -585,7 +585,7 @@ class Team extends React.Component<Props, State> {
       refetchQueries: [
         { query: fetchDepartmentsData },
         { query: fetchLicences },
-        { query: GET_USER_CONFIG },
+        //{ query: GET_USER_CONFIG },
         { query: me }
       ]
     });
@@ -674,7 +674,7 @@ class Team extends React.Component<Props, State> {
         refetchQueries: [
           { query: fetchLicences },
           { query: me },
-          { query: GET_USER_CONFIG },
+          //{ query: GET_USER_CONFIG },
           { query: fetchUsersOwnLicences, variables: { unitid: fromuser } }
         ]
       });
@@ -695,7 +695,7 @@ class Team extends React.Component<Props, State> {
         variables: { licenceid, time: moment() },
         refetchQueries: [
           { query: fetchLicences },
-          { query: GET_USER_CONFIG },
+          //{ query: GET_USER_CONFIG },
           { query: fetchUsersOwnLicences, variables: { unitid: fromuser } }
         ]
       });
@@ -713,7 +713,7 @@ class Team extends React.Component<Props, State> {
         refetchQueries: [
           { query: me },
           { query: fetchLicences },
-          { query: GET_USER_CONFIG },
+          //{ query: GET_USER_CONFIG },
           { query: fetchUsersOwnLicences, variables: { unitid: userid } }
         ]
       });
@@ -721,8 +721,8 @@ class Team extends React.Component<Props, State> {
         variables: { licenceid, unitid: newuserid, departmentid },
         refetchQueries: [
           { query: fetchUsersOwnLicences, variables: { unitid: userid } },
-          { query: fetchUsersOwnLicences, variables: { unitid: newuserid } },
-          { query: GET_USER_CONFIG }
+          { query: fetchUsersOwnLicences, variables: { unitid: newuserid } }
+          //{ query: GET_USER_CONFIG }
         ]
       });
     } catch (err) {
@@ -948,9 +948,18 @@ class Team extends React.Component<Props, State> {
                                       style={{
                                         float: "left"
                                       }}
-                                      src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                                        app.icon
-                                      }`}
+                                      //src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
+                                      //  app.icon
+                                      //}`}
+                                      src={
+                                        app.icon && app.icon.indexOf("/") != -1
+                                          ? `https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                                              app.icon
+                                            )}`
+                                          : `https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                              app.icon
+                                            )}`
+                                      }
                                     />
                                   ) : (
                                     <div

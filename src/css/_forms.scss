@@ -540,10 +540,17 @@
 
 .universalLabelInput{
   position: relative;
+<<<<<<< HEAD
   width: 375px;
 }
 .universalTextInput{
   width: 375px;
+=======
+  width: calc(30rem - 80px);
+}
+.universalTextInput{
+  width: calc(30rem - 80px);
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
   font-size: 16px;
   font-weight: 300;
   border-bottom: 1px solid;
@@ -554,6 +561,12 @@
   &:hover{
     background-color: #f5f5f5;
   }
+<<<<<<< HEAD
+=======
+  &:focus{
+    border-bottom-color: $vipfy-primary-color;
+  }
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
   &:focus + .universalLabel{
     top: -24px;
     font-size: 12px;
@@ -600,8 +613,13 @@
 
   .explainLayer{
     position: absolute;
+<<<<<<< HEAD
     top: -12px;
     left: 24px;
+=======
+    top: 29px;
+    right: 0px;
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
     cursor: auto;
     display: none;
 
@@ -623,6 +641,14 @@
   color: #e32022;
   font-weight: 300;
   transition: opacity 250ms;
+<<<<<<< HEAD
+=======
+  margin-top: 2px;
+
+  & > span{
+    margin-left: 4px;
+  }
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
 }
 
 .resultHolder{
