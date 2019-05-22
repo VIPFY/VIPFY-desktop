@@ -8,7 +8,7 @@ import UserPicture from "../UserPicture";
 import Duration from "../../common/duration";
 
 import { CHANGE_PASSWORD } from "../../mutations/auth";
-import { AppContext, concatName, filterError, refetchQueries } from "../../common/functions";
+import { AppContext, concatName, filterError } from "../../common/functions";
 import { me } from "../../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";

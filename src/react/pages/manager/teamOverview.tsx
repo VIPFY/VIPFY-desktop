@@ -30,7 +30,7 @@ interface State {
 
 const CREATE_TEAM = gql`
   mutation createTeam($teamdata: JSON!, $addemployees: [JSON]!, $apps: [JSON]!) {
-    createTeam(teamdata: $teamdata, addemployees: $addemployees, apps: $apps)
+    createTeam(team: $teamdata, addemployees: $addemployees, apps: $apps)
   }
 `;
 
@@ -350,7 +350,7 @@ class TeamOverview extends React.Component<Props, State> {
                                   ? {
                                       backgroundImage:
                                         team.profilepicture.indexOf("/") != -1
-                                          ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                                          ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
                                               team.profilepicture
                                             )})`
                                           : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
@@ -413,7 +413,6 @@ class TeamOverview extends React.Component<Props, State> {
                 savingmessage="Adding new team"
                 savedmessage="New team succesfully added"
                 saveFunction={async () => {
-                  console.log("SAVING", this.state);
                   await createTeam({
                     variables: {
                       teamdata: this.state.addteam,

@@ -71,6 +71,7 @@ class TeamDetails extends React.Component<Props, State> {
           console.log("Team", data);
 
           const team = data.fetchTeam;
+          console.log("LOG: TeamDetails -> render -> team", team);
 
           return (
             <div className="managerPage">
@@ -105,7 +106,7 @@ class TeamDetails extends React.Component<Props, State> {
                               ? {
                                   backgroundImage:
                                     team.profilepicture.indexOf("/") != -1
-                                      ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                                      ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
                                           team.profilepicture
                                         )})`
                                       : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(

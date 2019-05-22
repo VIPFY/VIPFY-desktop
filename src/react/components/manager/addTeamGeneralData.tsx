@@ -1,6 +1,7 @@
 import * as React from "react";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
+import * as Dropzone from "react-dropzone";
 
 interface Props {
   close: Function;
@@ -11,15 +12,19 @@ interface Props {
 interface State {
   name: string;
   leader: string;
+  picture: Dropzone.DropzoneProps | null;
 }
 
 class AddTeamGeneralData extends React.Component<Props, State> {
   state = {
     name: this.props.addteam.name || "",
-    leader: this.props.addteam.leader || ""
+    leader: this.props.addteam.leader || "",
+    picture: this.props.addteam.picture || null
   };
 
   render() {
+    const { picture } = this.state;
+
     return (
       <React.Fragment>
         <span>
@@ -32,14 +37,21 @@ class AddTeamGeneralData extends React.Component<Props, State> {
           <form className="profilepicture">
             <label>
               <div className="profilepicture big">
+                {picture && picture.preview && (
+                  <img
+                    width={200}
+                    height={200}
+                    src={picture.preview}
+                    style={{ objectFit: "cover" }}
+                  />
+                )}
                 <div className="imagehover">
                   <i className="fal fa-camera" />
                   <span>Upload</span>
                 </div>
               </div>
-              <input
-                accept="image/*"
-                type="file"
+
+              <Dropzone
                 style={{
                   width: "0px",
                   height: "0px",
@@ -48,6 +60,10 @@ class AddTeamGeneralData extends React.Component<Props, State> {
                   position: "absolute",
                   zIndex: -1
                 }}
+                accept="image/*"
+                type="file"
+                multiple={false}
+                onDrop={([file]) => this.setState({ picture: file })}
               />
             </label>
           </form>
