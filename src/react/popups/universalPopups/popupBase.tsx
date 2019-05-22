@@ -147,7 +147,7 @@ class PopupBase extends React.Component<Props, State> {
   }
 
   render() {
-    console.log(this.props.children, this.props);
+    //console.log(this.props.children, this.props);
     let autoclosing = {};
     if (this.props.autoclosing) {
       const closingtime = this.props.autoclosing * 1000;

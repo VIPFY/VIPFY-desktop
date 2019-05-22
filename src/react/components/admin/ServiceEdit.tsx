@@ -22,21 +22,21 @@ interface App {
 
 interface State {
   apps: App[];
-  appName: string;
+  seachringFor: string;
   showApp: null | number;
 }
 
 class ServiceEdit extends React.Component<Props, State> {
   state = {
     apps: [],
-    appName: "",
+    seachringFor: "",
     showApp: null
   };
 
-  searchApp = (appName: string) => this.setState({ appName });
+  searchApp = (searchValue: string) => this.setState({ seachringFor: searchValue });
 
   render() {
-    const { showApp, appName } = this.state;
+    const { showApp, seachringFor } = this.state;
 
     return (
       <section className="admin">
@@ -48,7 +48,7 @@ class ServiceEdit extends React.Component<Props, State> {
             <SearchBox searchFunction={this.searchApp} />
             <div className="apps">
               {this.props.apps
-                .filter(({ name }) => name.toLowerCase().includes(appName.toLowerCase()))
+                .filter(({name}) => name.toLowerCase().includes(seachringFor.toLowerCase()))
                 .map(({ name, id, icon, disabled, hidden }) => (
                   <div
                     title={`${disabled ? "Disabled" : ""} ${hidden ? "Hidden" : ""}`}
@@ -68,7 +68,7 @@ class ServiceEdit extends React.Component<Props, State> {
           className="button-nav"
           onClick={() => {
             if (showApp) {
-              this.setState({ showApp: null, appName: "" });
+              this.setState({ showApp: null, seachringFor: "" });
             }
           }}>
           <i className="fal fa-arrow-alt-from-right" />

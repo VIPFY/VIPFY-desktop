@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
+import AcceptLicence from '../popups/acceptLicence';
 
 interface Props {
   licence: any;
@@ -10,7 +11,8 @@ interface Props {
   setInstance: Function;
   viewID: number;
   handleDrop: Function;
-  handleDragStart: Function;
+  handleDragStart: Function | null;
+  isSearching: boolean;
 }
 
 interface State {
@@ -85,21 +87,25 @@ class SidebarLink extends React.Component<Props, State> {
     if (active) {
       cssClass += " sidebar-active";
     }
-
+    //console.log(this.props.isSearching)
     return (
       <li
+      id={licence.id}
         className={`${cssClass} ${this.state.dragging ? "hold" : ""} ${
           this.state.entered ? "hovered" : ""
         }`}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        onDrop={() => {
+        onDrop={(event) => {
           this.setState({ entered: false });
-          this.props.handleDrop(licence.id);
+          this.props.handleDrop(licence.id, event.dataTransfer.getData('text'), (event.pageY - event.currentTarget.getBoundingClientRect().top <= event.currentTarget.getBoundingClientRect().height/2 ));
+          //console.log(event.pageX, event.pageY, event.currentTarget.getBoundingClientRect());
         }}
-        draggable={true}
-        onDragStart={() => {
-          this.props.handleDragStart(licence.id);
+        
+        draggable={this.props.isSearching}
+        onDragStart={(event) => {
+          event.dataTransfer.setData('text', licence.id)
+          //this.props.handleDragStart(event);
           this.setState({ dragging: true });
         }}
         onDragOver={e => {

@@ -12,6 +12,12 @@ import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
 
+const LOG_SSO_ERROR = gql`
+  mutation onLogSSOError($data: JSON!) {
+    logSSOError(eventdata: $data)
+  }
+`;
+
 export type WebViewState = {
   setUrl: string;
   currentUrl: string;
@@ -114,18 +120,22 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
     //console.log("DIDMOUNT");
     this.switchApp();
-    setTimeout(
-      () =>
-        this.state.loggedIn
-          ? true
-          : this.state.errorshowed
-          ? console.log("Timeout", this.state.errorshowed, this.state.loggedIn)
-          : this.setState({
-              error: "The Login takes too much time. Please check with our support.",
-              loggedIn: true
-            }),
-      30000
-    );
+    setTimeout(async () => {
+      if (this.state.loggedIn) {
+        return true;
+      } else {
+        if (this.state.errorshowed) {
+          return console.log("Timeout", this.state.errorshowed, this.state.loggedIn);
+        } else {
+          const eventdata = { state: this.state, props: this.props };
+          await this.props.logError({ variables: { eventdata } });
+          this.setState({
+            error: "The Login takes too much time. Please check with our support.",
+            loggedIn: true
+          });
+        }
+      }
+    }, 30000);
   }
 
   componentWillUnmount() {
@@ -435,21 +445,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
       case "errorDetected": {
         console.log("errorDetected");
-        // Create the error object
-        const { logError, client, ...saveprops } = this.props;
-        const data = {
-          error: "errorDetected",
-          state: JSON.stringify(this.state),
-          props: JSON.stringify(saveprops)
-        };
-        try {
-          await this.props.logError({ variables: { data } });
-        } catch (err) {
-          console.log(err);
-        }
+        const eventdata = { state: this.state, props: this.props };
+        await this.props.logError({ variables: { eventdata } });
         this.setState({
           error:
-            "Please check your email address. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+            "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
           errorshowed: true,
           loggedIn: true
         });
@@ -458,17 +458,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       }
       case "falseLogin": {
         console.log("falseLogin");
-        const { logError, client, ...saveprops } = this.props;
-        const data = {
-          error: "falseLogin",
-          state: JSON.stringify(this.state),
-          props: JSON.stringify(saveprops)
-        };
-        try {
-          await this.props.logError({ variables: { data } });
-        } catch (err) {
-          console.log(err);
-        }
+        const eventdata = { state: this.state, props: this.props };
+        await this.props.logError({ variables: { eventdata } });
         this.setState({
           error:
             "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",

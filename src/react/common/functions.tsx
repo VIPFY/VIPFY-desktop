@@ -138,6 +138,11 @@ export const layoutChange = (licences, dragItem, dropItem, direction) => {
   const dragged = licences.find(licence => licence.id == dragItem);
   const droppedOn = licences.find(licence => licence.id == dropItem);
 
+  dragged.prevLicence.nextLicence = dragged.nextLicence;
+  dragged.nextLicence.prevLicence = dragged.prevLicence;
+  dragged.prevLicence = droppedOn;
+  dragged.nextLicence = droppedOn.nextLicence;
+  droppedOn.nextLicence = dragged;
   return [
     { id: dragged!.id, [direction]: droppedOn![direction] },
     { id: droppedOn!.id, [direction]: dragged![direction] }

@@ -89,6 +89,12 @@ class AppCardIntegrations extends React.Component<Props, State> {
   addAccount = async () => {
     this.setState({ confirm: true, integrating: true, integrated: false });
     try {
+<<<<<<< HEAD
+      const newPlan = await this.props.addExternalPlan({
+        variables: {
+          alias: this.props.name,
+          loginurl: this.state.subdomain != "" ? this.state.subdomain : null,
+=======
       console.log("ADD EXTERNAL", this.props, this.props.options.predomain);
       const newPlan = await this.props.addExternalPlan({
         variables: {
@@ -99,6 +105,7 @@ class AppCardIntegrations extends React.Component<Props, State> {
                   this.props.options.afterdomain
                 }`
               : null,
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
           appid: this.props.id
         }
       });
@@ -109,12 +116,16 @@ class AppCardIntegrations extends React.Component<Props, State> {
         variables: {
           username: this.state.email,
           password: this.state.password,
+<<<<<<< HEAD
+          loginurl: this.state.subdomain != "" ? this.state.subdomain : null,
+=======
           loginurl:
             this.state.subdomain != ""
               ? `${this.props.options.predomain}${this.state.subdomain}${
                   this.props.options.afterdomain
                 }`
               : null,
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
           price: null,
           appid: this.props.id,
           boughtplanid: id,
@@ -154,21 +165,37 @@ class AppCardIntegrations extends React.Component<Props, State> {
         </button>
         {this.state.popup ? (
           <PopupBase
+<<<<<<< HEAD
+            close={() => this.setState({ popup: false, email: "", password: "", subdomain: "" })}>
+            <div>
+              <h1 className="cleanup lightHeading">
+                Only two simple steps to integrate your existing <br /> account for {name} into
+                VIPFY
+=======
             small={true}
             close={() => this.setState({ popup: false, email: "", password: "", subdomain: "" })}>
             <div>
               <h1 className="cleanup lightHeading">
                 Only two simple steps to integrate your existing account for {name} into VIPFY
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
               </h1>
             </div>
             <div>
               <h2 className="cleanup boldHeading">1. Change your password</h2>
             </div>
             <p className="light">
+<<<<<<< HEAD
+              Please log into your existing account and change <br /> the password into a
+              non-standard secure one.
+            </p>
+            <p className="error small">
+              Do not use any password you use anywhere else or a weak one (e.g. 1234)
+=======
               Please log into your existing account and change the password into a secure one.
             </p>
             <p className="error small">
               Do not use any password you use anywhere else nor a weak one (e.g. 1234)
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
             </p>
             <p className="bold small">Good examples are:</p>
             <ul>
