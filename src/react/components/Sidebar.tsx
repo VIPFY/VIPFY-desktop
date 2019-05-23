@@ -1,7 +1,5 @@
 import * as React from "react";
 import { graphql } from "react-apollo";
-import * as pjson from "pjson";
-import { fetchLicences } from "../queries/auth";
 import { UPDATE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
 import { AppContext, layoutChange } from "../common/functions";
@@ -9,16 +7,13 @@ import SidebarLink from "./sidebarLink";
 import config from "../../configurationManager";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
-import SearchBox from "./SearchBox";
-import { bool } from "prop-types";
-import { one } from "electron-is";
+import Tooltip from "./Tooltip";
 
 interface SidebarLinks {
   label: string;
   location: string;
   icon: string;
   show: boolean;
-  important: boolean;
   highlight: any;
 }
 
@@ -46,6 +41,9 @@ interface State {
   sortorientation: boolean;
   sortstring: string;
   showNotification: boolean;
+  showApps: boolean;
+  showMoreApps: boolean;
+  showSearch: boolean;
 }
 
 class Sidebar extends React.Component<SidebarProps, State> {
@@ -54,7 +52,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
     searchstring: "",
     sortorientation: true,
     sortstring: "Custom",
-    showNotification: false
+    showNotification: false,
+    showApps: true,
+    showMoreApps: false,
+    showSearch: false
   };
 
   //references: { key; element }[] = [];
@@ -180,13 +181,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
     this.setState(prevState => ({ showNotification: !prevState.showNotification }));
   };
 
-  renderLink = (
-    { label, location, icon, show, important, highlight }: SidebarLinks,
-    addRenderElement
-  ) => {
+  renderLink = ({ label, location, icon, show, highlight }: SidebarLinks, addRenderElement) => {
     let cssClass = "sidebar-link";
-    if (important) {
-      cssClass += " sidebar-link-important";
+
+    if (!this.props.sideBarOpen) {
+      cssClass += "-small";
     }
 
     if (
@@ -204,7 +203,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
             className={cssClass}
             onClick={() => this.goTo(location)}
             ref={el => this.maybeaddHighlightReference(location, highlight, el, addRenderElement)}>
-            <span className={`fal fa-${icon} sidebar-icons`} />
+            <i className={`fal fa-${icon} sidebar-icons`} />
             <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
               {label}
             </span>
@@ -271,6 +270,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
   render() {
     let { sideBarOpen, licences } = this.props;
+    const { showApps, showMoreApps } = this.state;
+
     if (licences && !(licences[0].nextLicence && licences[1].nextLicence)) {
       for (let i = 0; i < licences.length - 1; i++) {
         if (i != licences.length - 1) {
@@ -329,7 +330,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "marketplace",
         icon: "shopping-cart",
         show: config.showMarketplace,
-        important: false,
         highlight: "marketplaceelement"
       },
       {
@@ -337,29 +337,25 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "integrations",
         icon: "shapes",
         show: true,
-        important: false,
         highlight: "integrationselement"
       },
       {
         label: "Domains",
         location: "domains",
         icon: "atlas",
-        show: config.showDomains,
-        important: false
+        show: config.showDomains
       },
       {
         label: "Usage Statistics",
         location: "usage",
         icon: "chart-line",
-        show: this.props.isadmin,
-        important: false
+        show: this.props.isadmin
       },
       {
         label: "Support",
         location: "support",
         icon: "ambulance",
         show: true,
-        important: false,
         highlight: "supportelement"
       },
       {
@@ -367,7 +363,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "appadmin",
         icon: "screwdriver",
         show: config.showAppAdmin,
-        important: false,
         highlight: "appadminelement"
       },
       {
@@ -375,7 +370,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "admin",
         icon: "layer-plus",
         show: this.props.isadmin && config.showAdmin,
-        important: true,
         highlight: "adminelement"
       },
       {
@@ -508,13 +502,17 @@ class Sidebar extends React.Component<SidebarProps, State> {
           <div
             className={`sidebar${sideBarOpen ? "" : "-small"}`}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
-            <ul className="sidebar-link-holder" style={{ position: "relative" }}>
-              <span
+            <ul className="sidebar-link-holder">
+              <li
                 onClick={() => this.props.toggleSidebar()}
-                className={`fal fa-angle-left sidebar-nav-icon${sideBarOpen ? "" : "-turn"}`}
-              />
-              {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
-              <li className="sidebarfree" />
+                className={`sidebar-nav-icon${sideBarOpen ? "" : "-turn"}`}>
+                <i className="fal fa-angle-left" />
+              </li>
+
+              <li className={`sidebar-main ${sideBarOpen ? "" : "sidebar-nav-small"}`}>
+                <ul>{sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}</ul>
+
+                {/* 
               <li
                 className="sidebar-link"
                 style={
@@ -530,8 +528,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 }>
                 {sideBarOpen ? (
                   <React.Fragment>
-                    {/*style={{backgroundColor: "hotpink", height: "35px", paddingBottom : 0, paddingTop: 0}}>*/}
-                    {/*<SearchBox searchFunction={(a)=> console.log("Test", a)} />*/}
                     <button className="naked-button genericButton">
                       <span className="textButton">
                         <i className="fal fa-search" />
@@ -549,9 +545,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
                     <i className="fal fa-search" />
                   </span>
                 )}
-              </li>
+              </li> */}
 
-              <li className="sidebar-link">
+                {/* <li className="sidebar-link">
                 <span>
                   <div
                     style={{ display: "inline-block", width: "100px" }}
@@ -647,53 +643,112 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 ) : (
                   ""
                 )}
+              </li> */}
+
+                <ul>
+                  <li className={`sidebar-link-apps${sideBarOpen ? "" : "-small"}`}>
+                    <i className="fal fa-th-large sidebar-icons" />
+                    <span className={`${sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
+                      Apps
+                    </span>
+
+                    {sideBarOpen && (
+                      <React.Fragment>
+                        <Tooltip>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              this.setState(prevState => ({
+                                ...prevState,
+                                showApps: !prevState.showApps
+                              }))
+                            }
+                            className="naked-button">
+                            <i className={`fal fa-angle-right ${showApps ? "open" : "        "}`} />
+                          </button>
+                        </Tooltip>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            console.log("HI");
+                          }}
+                          className="naked-button">
+                          <i className="fal fa-ellipsis-v" />
+                        </button>
+                      </React.Fragment>
+                    )}
+                  </li>
+
+                  {showApps &&
+                    filteredLicences.length > 0 &&
+                    filteredLicences
+                      .filter((_, index) => (showMoreApps ? true : index < 5))
+                      .map((licence, key) => {
+                        const maxValue = filteredLicences.reduce(
+                          (acc, cv) => Math.max(acc, cv.layoutvertical),
+                          0
+                        );
+                        //console.log((this.state.searchstring === "") && (this.state.sortstring === "Custom"));
+                        // Make sure that every License has an index
+                        if (licence.layoutvertical === null) {
+                          licence.layoutvertical = maxValue + 1;
+                        }
+
+                        return (
+                          <SidebarLink
+                            key={`ServiceLogo-${licence.id}`}
+                            licence={licence}
+                            openInstances={this.props.openInstances}
+                            sideBarOpen={sideBarOpen}
+                            active={
+                              this.props.openInstances && this.props.openInstances[licence.id]
+                                ? this.props.openInstances[licence.id][this.props.viewID]
+                                : false
+                            }
+                            setTeam={this.props.setApp}
+                            setInstance={this.props.setInstance}
+                            viewID={this.props.viewID}
+                            handleDragStart={null}
+                            handleDrop={this.handleDrop}
+                            isSearching={
+                              this.state.searchstring === "" && this.state.sortstring === "Custom"
+                            }
+                          />
+                        );
+                      })}
+
+                  {showApps && (
+                    <li className={`show-more${sideBarOpen ? "" : "-small"}`}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          this.setState(prevState => ({
+                            ...prevState,
+                            showMoreApps: !prevState.showMoreApps
+                          }))
+                        }
+                        className="naked-button">
+                        <i className={`fal fa-angle-down ${showMoreApps ? "open" : ""}`} />
+
+                        <span className={`${sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
+                          {`Show ${showMoreApps ? "less" : "more"} Apps`}
+                        </span>
+                      </button>
+                    </li>
+                  )}
+                </ul>
               </li>
 
-              {filteredLicences.length > 0 &&
-                filteredLicences.map((licence, key) => {
-                  const maxValue = filteredLicences.reduce(
-                    (acc, cv) => Math.max(acc, cv.layoutvertical),
-                    0
-                  );
-                  //console.log((this.state.searchstring === "") && (this.state.sortstring === "Custom"));
-                  // Make sure that every License has an index
-                  if (licence.layoutvertical === null) {
-                    licence.layoutvertical = maxValue + 1;
-                  }
-
-                  return (
-                    <SidebarLink
-                      key={`ServiceLogo-${licence.id}`}
-                      licence={licence}
-                      openInstances={this.props.openInstances}
-                      sideBarOpen={this.props.sideBarOpen}
-                      active={
-                        this.props.openInstances && this.props.openInstances[licence.id]
-                          ? this.props.openInstances[licence.id][this.props.viewID]
-                          : false
-                      }
-                      setTeam={this.props.setApp}
-                      setInstance={this.props.setInstance}
-                      viewID={this.props.viewID}
-                      handleDragStart={null}
-                      handleDrop={this.handleDrop}
-                      isSearching={
-                        this.state.searchstring === "" && this.state.sortstring === "Custom"
-                      }
-                    />
-                  );
-                })}
-
               <li
-                className="sidebar-link sidebar-link-important"
+                className={`sidebar-link${sideBarOpen ? "" : "-small"}`}
                 onClick={() => this.props.logMeOut()}>
-                <span className="fal fa-sign-out-alt sidebar-icons" />
+                <i className="fal fa-sign-out-alt sidebar-icons" />
                 <span className={`${sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
                   Logout
                 </span>
               </li>
             </ul>
-            <div className="versionnumber">Version {pjson.version}</div>
           </div>
         )}
       </AppContext.Consumer>

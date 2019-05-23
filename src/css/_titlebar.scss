@@ -1,7 +1,7 @@
 #titlebar {
   position: fixed;
   display: grid;
-  grid-template-columns: 35px 1fr 46px 138px;
+  grid-template-columns: 188px 1fr 46px 138px;
   grid-template-rows: 32px;
   width: 100%;
   background: #1c2935;
@@ -10,15 +10,25 @@
   z-index: 1000;
   -webkit-app-region: drag;
 
-  &-logo {
-    background-image: $newlogo;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    height: 2rem;
-    width: 20px;
-    margin-left: 15px;
+  &-logo {    
+    padding-left: 15px;
     grid-column: 1 / 2;
+    display: flex;
+    align-items: center;
+    
+    &-img {
+      background-image: $newlogo;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      height: 2rem;
+      width: 20px;
+    }
+
+    #versionnumber {
+      padding: 0.5rem 0 0.5rem 40px;
+      width: 195px;
+    }
   }
 
   &-tabs {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
-import AcceptLicence from '../popups/acceptLicence';
+import AcceptLicence from "../popups/acceptLicence";
 
 interface Props {
   licence: any;
@@ -84,27 +84,35 @@ class SidebarLink extends React.Component<Props, State> {
     const { licence, openInstances, sideBarOpen, active, setTeam } = this.props;
 
     let cssClass = "sidebar-link";
+
+    if (!sideBarOpen) {
+      cssClass += "-small";
+    }
     if (active) {
       cssClass += " sidebar-active";
     }
-    //console.log(this.props.isSearching)
+
     return (
       <li
-      id={licence.id}
+        id={licence.id}
         className={`${cssClass} ${this.state.dragging ? "hold" : ""} ${
           this.state.entered ? "hovered" : ""
         }`}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        onDrop={(event) => {
+        onDrop={event => {
           this.setState({ entered: false });
-          this.props.handleDrop(licence.id, event.dataTransfer.getData('text'), (event.pageY - event.currentTarget.getBoundingClientRect().top <= event.currentTarget.getBoundingClientRect().height/2 ));
+          this.props.handleDrop(
+            licence.id,
+            event.dataTransfer.getData("text"),
+            event.pageY - event.currentTarget.getBoundingClientRect().top <=
+              event.currentTarget.getBoundingClientRect().height / 2
+          );
           //console.log(event.pageX, event.pageY, event.currentTarget.getBoundingClientRect());
         }}
-        
         draggable={this.props.isSearching}
-        onDragStart={(event) => {
-          event.dataTransfer.setData('text', licence.id)
+        onDragStart={event => {
+          event.dataTransfer.setData("text", licence.id);
           //this.props.handleDragStart(event);
           this.setState({ dragging: true });
         }}
@@ -138,12 +146,10 @@ class SidebarLink extends React.Component<Props, State> {
                     licence.boughtplanid.planid.appid.icon
                   )})`
           }}>
-          {licence.boughtplanid.planid.options && licence.boughtplanid.planid.options.external ? (
+          {licence.boughtplanid.planid.options && licence.boughtplanid.planid.options.external && (
             <div className="ribbon-small ribbon-small-top-right">
               <span>E</span>
             </div>
-          ) : (
-            ""
           )}
         </span>
 
