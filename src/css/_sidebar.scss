@@ -8,6 +8,7 @@
   overflow: hidden;
 
   &-main {
+    overflow-x: hidden;
     overflow-y: auto;
     
     &::-webkit-scrollbar-thumb {
@@ -156,6 +157,10 @@
             margin-left: 8px;
             margin-right: 8px;
           }
+
+          .open {
+            transform: rotate(180deg);
+           }
         }
       }
     }
@@ -218,10 +223,30 @@
     display: flex;
     align-items: center;
   }
+
+  &-search-tooltip {
+    display: flex;
+    flex-flow: column;
+    margin: 3px;
+
+    .wrapper {
+      padding: 5px 0 6px 0;
+      cursor: pointer;
+
+      &:first-child {
+        border-radius: 4px;
+        box-shadow: 0 0 2px #00000029;
+      }
+      
+      i {
+        margin-right: 5px;
+      }
+    }
+  }
 }
 
-.side-bar-open {
-  margin-left: $sidebar-width;
+.sidebar-open {
+  margin-left: $sidebar-width !important;
   transition: margin-left 0.6s ease-in-out;
 }
 
@@ -237,14 +262,23 @@
   padding: 0;
   transition: all 0.6s ease-in-out;
   height: 1em;
-  width: 0em;
+  width: 0;
   line-height: 1em;
+}
+
+.white-background {
+  background: #fff;
+  height: 24px;
+  width: 24px;
+  position: absolute;
+  border-radius: 4px;
 }
 
 .service-logo-small {
   height: 24px;
   width: 24px;
   padding: 0rem !important;
+  border-radius: 4px;
   background-size: contain;
   background-repeat: no-repeat;
   -webkit-font-smoothing: antialiased;
