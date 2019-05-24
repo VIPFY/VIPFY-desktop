@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: #253647;
+  background-color: #253647ff;
   transition: width 0.6s ease-in-out;
   width:  $sidebar-width;
   height: calc(100vh - 32px);
@@ -12,11 +12,11 @@
     overflow-y: auto;
     
     &::-webkit-scrollbar-thumb {
-      background: #20BAA9;
+      background: $vipfy-primary-color;
     }
 
     &::-webkit-scrollbar-track {
-      background: #117f91;
+      background: $vipfy-secondary-color;
     }
     &::-webkit-scrollbar {
       width: 5px;
@@ -42,12 +42,12 @@
     background-image: $newlogo-small;
   }
 
-  &-icons {
-    width: 32px;
-    height: 28px;
+  &-icon {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 13px;
+    width: 14px;
   }
 
   &-link {
@@ -55,17 +55,21 @@
     display: flex;
     align-items: center;
     list-style: none;
-    padding: 0.5rem;
-    transition: all 200ms ease-in-out;
+    padding: 0 0 0 11px;
+    margin: $sidebar-margin;
+    transition: all 300ms ease-in-out;
     position: relative;
-    margin: 0 $sidebar-margin;
-    width: $sidebar-width - $sidebar-margin * 2 - 24px;
+    height: 28px;
+
+    &:hover {
+      background-color: #293E52ff;
+      border-radius: 4px;
+    }
 
     &-small {
       @extend .sidebar-link;
-      margin: 0;
+      padding: 0;
       width: 32px;
-      height: 28px;
       display: flex;
       justify-content: center;
     }
@@ -81,13 +85,9 @@
         padding: 0.5rem 10px;
 
         &:hover {
-          background-color: #20BAA9;
+          background-color: $vipfy-primary-color;
         }
       }
-    }
-
-    &:hover {
-      background-color: #30475D;
     }
 
     @keyframes fadeInSidebar {
@@ -136,11 +136,19 @@
       }
 
       .show-more {
+        margin-left: 8px;
+
         button {
           @extend .sidebar-link;
-          padding-left: 23px;
-          opacity: 0.5;
-          background-color: $sidebar-background;
+          color: #ffffff80;
+
+          &:hover {
+            background-color: $sidebar-background;
+          }
+
+          .sidebar-link-caption {
+            padding-left: 24px;
+          }
 
           i {
             transition: all 300ms ease-in-out;
@@ -166,33 +174,29 @@
     }
 
     &-apps {
-      @extend .sidebar-link;
-      margin-top: 40px;
-      display: grid;
-      grid-template-columns: 10px 146px 10px 10px;
-      grid-column-gap: 10px;
+      display: flex;
       align-items: center;
-      background-color: $sidebar-background;
+      width: 200px;
 
       &-small {
-        @extend .sidebar-link;
-        background-color: $sidebar-background;
-        margin: 40px 0 0;
         width: 32px;
+
+        i {
+          margin: auto;
+        }
       }
 
       .sidebar-link-caption {
-        padding-left: 22px;
+        margin-right: 22px;
       }
 
-      button {
-        i {
-          transition: all 300ms ease-in-out;
-        }
-
-        .open {
-          transform: rotate(90deg);
-         }
+      .carret {
+        justify-self: flex-end;
+        transition: all 300ms ease-in-out;
+      }
+      
+      .open {
+        transform: rotate(90deg);
       }
     }
 
@@ -216,32 +220,51 @@
   }
 
   &-active {
-    background: #30475D;
+    background: #30475dff;
     transition: all 600ms ease-in-out;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 16%);
+    box-shadow: 0 2px 2px #00000029;
     border-radius: 4px;
-    display: flex;
-    align-items: center;
   }
 
   &-search-tooltip {
     display: flex;
-    flex-flow: column;
-    margin: 3px;
+    align-items: center;
+    padding-left: 0;
+    cursor: pointer;
 
-    .wrapper {
-      padding: 5px 0 6px 0;
-      cursor: pointer;
-
-      &:first-child {
-        border-radius: 4px;
-        box-shadow: 0 0 2px #00000029;
-      }
-      
-      i {
-        margin-right: 5px;
-      }
+    .open {
+      transform: rotate(90deg);
+      transition: all 300ms ease-in-out;
     }
+
+    i {
+      margin-right: 5px;
+      transition: all 300ms ease-in-out;
+    }
+  }
+
+  .fa-search {
+    color: #ffffff80;
+  }
+}
+
+.sidebar-search {
+  @extend .sidebar-link-caption;
+  margin-left: 4px;
+  color: #fff;
+  outline: none;
+  border: 0;
+  background-image: none;
+  background-color: transparent;
+  box-shadow: none;
+
+  &::placeholder {
+    color: #ffffff80;
+  }
+
+  &-tooltip {
+    @extend .sidebar-search;
+    color: $vipfy-secondary-color;
   }
 }
 
@@ -282,7 +305,7 @@
   background-size: contain;
   background-repeat: no-repeat;
   -webkit-font-smoothing: antialiased;
-  display: inline-block;
+  display: flex;
   font-style: normal;
   font-variant: normal;
   text-rendering: auto;

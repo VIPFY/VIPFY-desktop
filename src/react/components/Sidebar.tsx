@@ -204,14 +204,14 @@ class Sidebar extends React.Component<SidebarProps, State> {
           onClick={() => this.goTo(location)}
           ref={el => this.maybeaddHighlightReference(location, highlight, el, addRenderElement)}>
           <Tooltip
-            distance={1}
+            distance={12}
             arrowSize={5}
             useHover={!sidebarOpen}
             content={label}
             direction="right">
-            <i className={`fal fa-${icon} sidebar-icons`} />
+            <i className={`fal fa-${icon} sidebar-icon`} />
           </Tooltip>
-          <span className={`${sidebarOpen ? "sidebar-link-caption" : "show-not"}`}>{label}</span>
+          {sidebarOpen && <span className="sidebar-link-caption">{label}</span>}
         </li>
       );
     } else {
@@ -276,27 +276,24 @@ class Sidebar extends React.Component<SidebarProps, State> {
     let { sidebarOpen, licences } = this.props;
     const { showApps, showMoreApps } = this.state;
 
+    const input = (
+      <input
+        value={this.state.searchstring}
+        onChange={e => this.setState({ searchstring: e.target.value })}
+        placeholder="Search Apps"
+        className={`sidebar-search${sidebarOpen ? "" : "-tooltip"}`}
+      />
+    );
+
     const SortComponent = (
-      <div className="sidebar-search-tooltip">
-        <button
-          className="wrapper naked-button"
-          onClick={() => {
-            this.setState(prevState => ({ ...prevState, showApps: !prevState.showApps }));
-          }}>
-          <i className="fal fa-angle-right" />
-          <span style={{ fontSize: "10px" }}>{`${showApps ? "Hide" : "Show"} Apps`}</span>
-        </button>
-
-        <span className="wrapper">
-          <i className="fal fa-sort-alpha-up" />
-          <span style={{ fontSize: "10px" }}>Sort Up</span>
-        </span>
-
-        <span className="wrapper">
-          <i className="fal fa-sort-alpha-down" />
-          <span style={{ fontSize: "10px" }}>Sort Down</span>
-        </span>
-      </div>
+      <button
+        className="sidebar-search-tooltip naked-button"
+        onClick={() => {
+          this.setState(prevState => ({ ...prevState, showApps: !prevState.showApps }));
+        }}>
+        <i className={`fal fa-angle-right ${showApps ? "open" : ""}`} />
+        <span style={{ fontSize: "10px" }}>{`${showApps ? "Hide" : "Show"} Apps`}</span>
+      </button>
     );
 
     if (licences && !(licences[0].nextLicence && licences[1].nextLicence)) {
@@ -673,71 +670,66 @@ class Sidebar extends React.Component<SidebarProps, State> {
               </li> */}
 
                 <ul>
-                  <li className={`sidebar-link-apps${sidebarOpen ? "" : "-small"}`}>
-                    <Tooltip
-                      useHover={!sidebarOpen}
-                      padding="0px"
-                      distance={4}
-                      arrowSize={5}
-                      direction="right"
-                      content={SortComponent}>
-                      <i className="fal fa-th-large sidebar-icons" />
-                    </Tooltip>
-                    <span className={`${sidebarOpen ? "sidebar-link-caption" : "show-not"}`}>
-                      Apps
-                    </span>
+                  <li
+                    className={`sidebar-link${sidebarOpen ? "" : "-small"}`}
+                    style={{ marginTop: "40px" }}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        this.setState(prevState => ({
+                          ...prevState,
+                          showApps: !prevState.showApps
+                        }))
+                      }
+                      className={`naked-button sidebar-link-apps${sidebarOpen ? "" : "-small"}`}>
+                      <Tooltip
+                        useHover={!sidebarOpen}
+                        distance={4}
+                        arrowSize={5}
+                        direction="right"
+                        content={SortComponent}>
+                        <i className="fal fa-th-large sidebar-icon" />
+                      </Tooltip>
 
-                    {sidebarOpen && (
-                      <React.Fragment>
-                        <Tooltip
-                          arrowSize={5}
-                          content={`${showApps ? "Hide" : "Show"} Apps`}
-                          direction="right">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              this.setState(prevState => ({
-                                ...prevState,
-                                showApps: !prevState.showApps
-                              }))
-                            }
-                            className="naked-button">
-                            <i className={`fal fa-angle-right ${showApps ? "open" : "        "}`} />
-                          </button>
-                        </Tooltip>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            console.log("HI");
-                          }}
-                          className="naked-button">
-                          <i className="fal fa-ellipsis-v" />
-                        </button>
-                      </React.Fragment>
-                    )}
+                      {sidebarOpen && (
+                        <React.Fragment>
+                          <span
+                            style={{ marginLeft: "7px", marginRight: "100px" }}
+                            className="sidebar-link-caption">
+                            Apps
+                          </span>
+                          <Tooltip
+                            arrowSize={5}
+                            distance={12}
+                            useHover={sidebarOpen}
+                            content={`${showApps ? "Hide" : "Show"} Apps`}
+                            direction="right">
+                            <i className={`carret fal fa-angle-right ${showApps ? "open" : ""}`} />
+                          </Tooltip>
+                        </React.Fragment>
+                      )}
+                    </button>
                   </li>
 
-                  <li style={sidebarOpen ? { marginLeft: "6px" } : {}}>
+                  <li>
                     <ul>
-                      <li style={{ marginLeft: "11px" }} className="sidebar-link">
-                        <button
-                          type="button"
-                          onClick={() => console.log("I am the mighty searchbar")}
-                          className="naked-button">
-                          <i className="fal fa-search" />
+                      {showApps && sidebarOpen && (
+                        <li
+                          style={sidebarOpen ? { marginLeft: "11px" } : {}}
+                          className="sidebar-link">
+                          <Tooltip useHover={!sidebarOpen} direction="right" content={input}>
+                            <i className="fal fa-search" />
+                          </Tooltip>
 
-                          <span className={`${sidebarOpen ? "sidebar-link-caption" : "show-not"}`}>
-                            Search Apps
-                          </span>
-                        </button>
-                      </li>
+                          {input}
+                        </li>
+                      )}
 
                       {showApps &&
                         filteredLicences.length > 0 &&
                         filteredLicences
                           .filter((_, index) => (showMoreApps ? true : index < 5))
-                          .map((licence, key) => {
+                          .map(licence => {
                             const maxValue = filteredLicences.reduce(
                               (acc, cv) => Math.max(acc, cv.layoutvertical),
                               0
@@ -774,11 +766,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
                     </ul>
                   </li>
 
-                  {showApps && (
+                  {showApps && filteredLicences.length > 5 && (
                     <li className={`show-more${sidebarOpen ? "" : "-small"}`}>
                       <Tooltip
                         useHover={!sidebarOpen}
                         direction="right"
+                        distance={1}
                         content={`Show ${showMoreApps ? "less" : "more"} Apps`}>
                         <button
                           type="button"
@@ -788,6 +781,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                               showMoreApps: !prevState.showMoreApps
                             }))
                           }
+                          style={sidebarOpen ? { width: "92%" } : {}}
                           className="naked-button">
                           <i className={`fal fa-angle-down ${showMoreApps ? "open" : ""}`} />
 
@@ -805,7 +799,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 className={`sidebar-link${sidebarOpen ? "" : "-small"}`}
                 onClick={() => this.props.logMeOut()}>
                 <Tooltip arrowSize={5} content="Logout" direction="right" useHover={!sidebarOpen}>
-                  <i className="fal fa-sign-out-alt sidebar-icons" />
+                  <i className="fal fa-sign-out-alt sidebar-icon" />
                 </Tooltip>
                 <span className={`${sidebarOpen ? "sidebar-link-caption" : "show-not"}`}>
                   Logout
