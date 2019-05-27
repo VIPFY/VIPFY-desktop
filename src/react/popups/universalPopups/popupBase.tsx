@@ -159,7 +159,7 @@ class PopupBase extends React.Component<Props, State> {
     }
     return (
       <SideBarContext>
-        {sideBarOpen => (
+        {sidebarOpen => (
           <div
             className="backgroundPopup"
             style={this.state.isopen ? showBackground : hideBackground}
@@ -167,7 +167,7 @@ class PopupBase extends React.Component<Props, State> {
             {this.props.nosidebar ? (
               ""
             ) : (
-              <div className="sideReplicaPopup" style={{ width: sideBarOpen ? "240px" : "48px" }} />
+              <div className="sideReplicaPopup" style={{ width: sidebarOpen ? "240px" : "48px" }} />
             )}
             <div
               className="holderPopup"
@@ -175,7 +175,7 @@ class PopupBase extends React.Component<Props, State> {
                 this.props.nosidebar
                   ? { width: "100%" }
                   : {
-                      width: sideBarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
+                      width: sidebarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
                     }
               }>
               <div

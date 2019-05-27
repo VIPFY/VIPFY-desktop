@@ -544,15 +544,15 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.chatOpen) {
       cssClass += " chat-open";
     }
-    if (this.props.sideBarOpen) {
-      cssClass += " side-bar-open";
+    if (this.props.sidebarOpen) {
+      cssClass += " sidebar-open";
     }
     let cssClassWeb = "newMainPosition";
     if (this.props.chatOpen) {
       cssClass += " chat-open";
     }
-    if (this.props.sideBarOpen) {
-      cssClass += " side-bar-open";
+    if (this.props.sidebarOpen) {
+      cssClass += " sidebar-open";
     }
 
     // this is a workaround for a weebly bug. Remove when no longer nessesary

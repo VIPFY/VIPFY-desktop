@@ -20,15 +20,15 @@ class SupportPage extends React.Component<Props> {
     if (this.props.chatOpen) {
       cssClass += " chat-open";
     }
-    if (this.props.sideBarOpen) {
-      cssClass += " side-bar-open";
+    if (this.props.sidebarOpen) {
+      cssClass += " sidebar-open";
     }
     let cssClassWeb = "newMainPosition";
     if (this.props.chatOpen) {
       cssClass += " chat-open";
     }
-    if (this.props.sideBarOpen) {
-      cssClass += " side-bar-open";
+    if (this.props.sidebarOpen) {
+      cssClass += " sidebar-open";
     }
     return (
       <div className={cssClass}>

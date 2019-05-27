@@ -25,7 +25,10 @@
 <body style="overflow: hidden; background-color: rgba(0,0,0,0); margin: 0">
 
   <header id="titlebar">
-    <section id="titlebar-logo"></section>
+    <section id="titlebar-logo">
+      <div id="titlebar-logo-img" />
+      <div id="versionnumber">Version </div>
+    </section>
     <section id="header-react"></section>
     <section id="drag-zone"></section>
     <section id="window-controls">
@@ -47,6 +50,7 @@
   <div id="App"></div>
 
   <script type="text/tsx">
+    const pjson = require("pjson");
     const config = require("./configurationManager.ts");
     //install context menu
     window.addEventListener("DOMContentLoaded", () => {
@@ -61,6 +65,8 @@
       require("electron-context-menu")({
         showInspectElement: config.allowDevTools
       });
+
+     document.getElementById("versionnumber").innerHTML += pjson.version;
     });
 
     require('./windowcontrols.js')
