@@ -3,11 +3,12 @@ import { graphql } from "react-apollo";
 import Tooltip from "react-tooltip-lite";
 import { UPDATE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
-import { AppContext, layoutChange } from "../common/functions";
+import { AppContext, layoutUpdate } from "../common/functions";
 import SidebarLink from "./sidebarLink";
 import config from "../../configurationManager";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
+import { fetchLicences } from "../queries/auth";
 
 interface SidebarLinks {
   label: string;
@@ -36,7 +37,6 @@ export type SidebarProps = {
 };
 
 interface State {
-  dragItem: number | null;
   searchstring: string;
   sortorientation: boolean;
   sortstring: string;
@@ -48,7 +48,6 @@ interface State {
 
 class Sidebar extends React.Component<SidebarProps, State> {
   state = {
-    dragItem: null,
     searchstring: "",
     sortorientation: true,
     sortstring: "Custom",
@@ -61,79 +60,25 @@ class Sidebar extends React.Component<SidebarProps, State> {
   //references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
-  handleDrop = /* async id */ (tragetId, dragedId, top) => {
-    let targetLi = this.props.licences.find(a => a.id === tragetId);
-    let dragedLi = this.props.licences.find(a => a.id === dragedId);
-    if (targetLi!.nextLicence == dragedLi && !top) {
-      return;
-    } else if (targetLi!.prevLicence == dragedLi) {
-      return;
-    }
-    let prevdragedLi = dragedLi!.prevLicence;
-    let nextdragedLi = dragedLi!.nextLicence;
-    let reltargetLi;
-    if (!top == this.state.sortorientation) {
-      reltargetLi = targetLi!.nextLicence;
-    } else {
-      reltargetLi = targetLi!.prevLicence;
-    }
-
-    if (!nextdragedLi && !prevdragedLi) {
+  handleDrop = async (targetId, draggedId) => {
+    if (targetId == draggedId) {
       return;
     }
 
-    if (prevdragedLi) {
-      prevdragedLi!.nextLicence = nextdragedLi;
-    }
-    if (nextdragedLi) {
-      nextdragedLi!.prevLicence = prevdragedLi;
-    }
-    if (!top == this.state.sortorientation) {
-      targetLi!.nextLicence = dragedLi!;
-      dragedLi!.prevLicence = targetLi!;
-      dragedLi!.nextLicence = reltargetLi!;
-    } else {
-      targetLi!.prevLicence = dragedLi!;
-      dragedLi!.nextLicence = targetLi!;
-      dragedLi!.prevLicence = reltargetLi!;
-    }
-
-    if (reltargetLi) {
-      if (!top == this.state.sortorientation) {
-        reltargetLi!.prevLicence = dragedLi!;
-      } else {
-        reltargetLi!.nextLicence = dragedLi!;
-      }
-    }
-
-    this.setState({ showNotification: false });
-
-    /* const { dragItem } = this.state;
     const { licences } = this.props;
-
-    const layouts = layoutChange(licences, dragItem, id, "layoutvertical");
+    const newLicences = layoutUpdate(licences, draggedId, targetId);
+    const layouts = newLicences.map(({ id }, key) => ({ id, layoutvertical: key }));
 
     try {
       await this.props.updateLayout({
         variables: { layouts },
         update: cache => {
-          const newLicences = licences.map(licence => {
-            if (licence.id == layouts[0].id) {
-              return { ...licence, layoutvertical: layouts[0]!.layoutvertical };
-            } else if (licence.id == layouts[1].id) {
-              return { ...licence, layoutvertical: layouts[1]!.layoutvertical };
-            } else {
-              return licence;
-            }
-          });
-
           cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
         }
       });
-      this.setState({ dragItem: null });
     } catch (error) {
       console.log(error);
-    } */
+    }
   };
 
   addReferences = (key, element, addRenderElement) => {
@@ -296,17 +241,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
       </button>
     );
 
-    if (licences && !(licences[0].nextLicence && licences[1].nextLicence)) {
-      for (let i = 0; i < licences.length - 1; i++) {
-        if (i != licences.length - 1) {
-          licences[i].nextLicence = licences[i + 1];
-        }
-        if (i != 0) {
-          licences[i].prevLicence = licences[i - 1];
-        }
-      }
-    }
-
     const sidebarLinks = [
       {
         label: "Dashboard",
@@ -438,9 +372,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
       if (one && two) {
         return false;
       } //include search if search
+
       return true;
     });
     let filteredLicences;
+
     if (this.state.sortstring == "Custom") {
       //Handle "Custom" seperatly
       filteredLicences = this.sortCustomlist(licences);
@@ -734,7 +670,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                               (acc, cv) => Math.max(acc, cv.layoutvertical),
                               0
                             );
-                            //console.log((this.state.searchstring === "") && (this.state.sortstring === "Custom"));
+
                             // Make sure that every License has an index
                             if (licence.layoutvertical === null) {
                               licence.layoutvertical = maxValue + 1;

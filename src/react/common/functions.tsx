@@ -148,3 +148,16 @@ export const layoutChange = (licences, dragItem, dropItem, direction) => {
     { id: droppedOn!.id, [direction]: dragged![direction] }
   ];
 };
+
+export const layoutUpdate = (licences, dragItem, dropItem) => {
+  const dragged = licences.find(licence => licence.id == dragItem);
+
+  const filtered = licences.filter(licence => licence.id != dragItem);
+  const index = filtered.findIndex(licence => licence.id == dropItem);
+  const newLicences = [...filtered.slice(0, index + 1), dragged, ...filtered.slice(index + 1)];
+  newLicences.forEach((licence, key) => {
+    licence.layoutvertical = key;
+  });
+
+  return newLicences;
+};
