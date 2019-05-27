@@ -1,8 +1,8 @@
 import * as React from "react";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
-import { fetchTeam } from "../../queries/departments";
+import UniversalCheckbox from "../../universalForms/universalCheckbox";
+import PopupBase from "../../../popups/universalPopups/popupBase";
+import UniversalButton from "../../universalButtons/universalButton";
+import { fetchTeam } from "../../../queries/departments";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import moment = require("moment");
@@ -31,7 +31,7 @@ const REMOVE_SERVICE_FROM_TEAM = gql`
   }
 `;
 
-class TeamServiceDetails extends React.Component<Props, State> {
+class Team extends React.Component<Props, State> {
   state = {
     keepLicences: [],
     delete: false,
@@ -87,47 +87,46 @@ class TeamServiceDetails extends React.Component<Props, State> {
   render() {
     const { service, team } = this.props;
     return (
-      <Mutation mutation={REMOVE_SERVICE_FROM_TEAM} key={service.id}>
+      <Mutation mutation={REMOVE_SERVICE_FROM_TEAM} key={team.unitid.id}>
         {removeServiceFromTeam => (
-          <div
-            className="tableRow"
-            onClick={() => this.props.moveTo(`lmanager/${service.planid.appid.id}`)}>
+          <div className="tableRow" onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
             <div className="tableMain">
               <div className="tableColumnSmall">
                 <div
                   className="managerSquare"
                   style={
-                    service.planid.appid.icon
+                    team.profilepicture
                       ? {
                           backgroundImage:
-                            service.planid.appid.icon.indexOf("/") != -1
-                              ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                                  service.planid.appid.icon
+                            team.profilepicture.indexOf("/") != -1
+                              ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                                  team.profilepicture
                                 )})`
                               : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                  service.planid.appid.icon
+                                  team.profilepicture
                                 )})`,
                           backgroundColor: "unset"
                         }
+                      : team.internaldata && team.internaldata.color
+                      ? { backgroundColor: team.internaldata.color }
                       : {}
                   }>
-                  {service.planid.appid.icon ? "" : service.planid.appid.name.slice(0, 1)}
-                  {service.options && service.options.nosetup && (
-                    <div className="licenceError">
-                      <i className="fal fa-exclamation-circle" />
-                    </div>
-                  )}
+                  {team.profilepicture
+                    ? ""
+                    : team.internaldata && team.internaldata.letters
+                    ? team.internaldata.letters
+                    : team.name.slice(0, 1)}
                 </div>
-                <span className="name">{service.planid.appid.name}</span>
+                <span className="name">{team.name}</span>
               </div>
               <div className="tableColumnSmall content">
-                {moment(service.buytime - 0).format("DD.MM.YYYY")}
+                {team.internaldata ? team.internaldata.leader : ""}
               </div>
+              <div className="tableColumnSmall content">{team.employeenumber}</div>
+              <div className="tableColumnSmall content">Integrated Accounts</div>
               <div className="tableColumnSmall content">
-                {service.endtime ? moment(service.endtime - 0).format("DD.MM.YYYY") : "Recurring"}
+                {moment(team.createdate - 0).format("DD.MM.YYYY")}
               </div>
-              <div className="tableColumnSmall content">${service.totalprice.toFixed(2)}</div>
-              <div className="tableColumnSmall content">not implemented yet</div>
             </div>
             <div className="tableEnd">
               <div className="editOptions">
@@ -142,13 +141,13 @@ class TeamServiceDetails extends React.Component<Props, State> {
               </div>
             </div>
 
-            {this.state.delete ? (
+            {this.state.delete && (
               <PopupBase
                 small={true}
                 close={() => this.setState({ delete: false })}
                 closeable={false}>
                 <div>
-                  Do you really want to remove {service.name} from <b>{team.name}</b>
+                  Do you really want to remove {team.name} from <b>{service.name}</b>
                   {this.printRemoveService()}
                 </div>
                 <UniversalButton type="low" closingPopup={true} label="Cancel" />
@@ -159,8 +158,8 @@ class TeamServiceDetails extends React.Component<Props, State> {
                     console.log("TESTING", this.state.keepLicences);
                     this.setState({ delete: false });
                     this.props.deleteFunction({
-                      savingmessage: "The service is currently being removed from the team",
-                      savedmessage: "The service has been removed successfully.",
+                      savingmessage: "The team is currently being removed from the service",
+                      savedmessage: "The team has been removed successfully.",
                       maxtime: 5000,
                       closeFunction: () =>
                         this.setState({
@@ -184,8 +183,6 @@ class TeamServiceDetails extends React.Component<Props, State> {
                   }}
                 />
               </PopupBase>
-            ) : (
-              ""
             )}
           </div>
         )}
@@ -193,4 +190,4 @@ class TeamServiceDetails extends React.Component<Props, State> {
     );
   }
 }
-export default TeamServiceDetails;
+export default Team;

@@ -11,6 +11,7 @@ import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
 import AddTeamServices from "../../components/manager/addTeamServices";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { fetchCompanyServices } from "../../queries/products";
+import { now } from "moment";
 
 interface Props {
   moveTo: Function;
@@ -162,17 +163,25 @@ class ServiceOverview extends React.Component<Props, State> {
     return teamsArray;
   }
 
-  renderEmployees(employees) {
-    console.log(employees);
+  renderEmployees(licences) {
+    console.log(licences);
     let employeesArray: JSX.Element[] = [];
     let counter = 0;
-    for (counter = 0; counter < employees.length; counter++) {
+    const activelicences = licences.filter(
+      l =>
+        ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
+        (l.options == null || l.options.teamlicence == null)
+    );
+
+    console.log("ACTIVE", activelicences);
+    for (counter = 0; counter < activelicences.length; counter++) {
       const employee: {
         profilepicture: string;
         firstname: string;
         lastname: string;
-      } = employees[counter];
-      if (employees.length > 6 && counter > 4) {
+      } = activelicences[counter].unitid;
+      console.log("EMP", employee);
+      if (activelicences.length > 6 && counter > 4) {
         employeesArray.push(
           <div
             key="moreEmployees"
@@ -183,7 +192,7 @@ class ServiceOverview extends React.Component<Props, State> {
               fontSize: "12px",
               fontWeight: 400
             }}>
-            +{employees.length - 5}
+            +{activelicences.length - 5}
           </div>
         );
         break;
@@ -344,7 +353,10 @@ class ServiceOverview extends React.Component<Props, State> {
                   </div>
                   {services.length > 0 &&
                     services.map(service => (
-                      <div key={service.name} className="tableRow">
+                      <div
+                        key={service.name}
+                        className="tableRow"
+                        onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
                         {console.log("Service", service)}
                         <div className="tableMain">
                           <div className="tableColumnBig">
@@ -369,20 +381,20 @@ class ServiceOverview extends React.Component<Props, State> {
                             {service.teams ? this.renderTeams(service.teams) : "No single User"}
                           </div>
                           <div className="tableColumnBig">
-                            {service.singles
-                              ? this.renderEmployees(service.singles)
+                            {service.licences
+                              ? this.renderEmployees(service.licences)
                               : "No single User"}
                           </div>
                         </div>
                         <div className="tableEnd">
                           <div className="editOptions">
-                            <i
-                              className="fal fa-external-link-alt"
-                              onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}
-                            />
+                            <i className="fal fa-external-link-alt" />
                             <i
                               className="fal fa-trash-alt"
-                              onClick={() => this.setState({ willdeleting: service })}
+                              onClick={e => {
+                                e.stopPropagation();
+                                this.setState({ willdeleting: service });
+                              }}
                             />
                           </div>
                         </div>

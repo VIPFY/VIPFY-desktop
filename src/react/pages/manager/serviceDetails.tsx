@@ -1,23 +1,29 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
-import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
 import * as Dropzone from "react-dropzone";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { ApolloClient } from "apollo-client";
+import gql from "graphql-tag";
+import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
 import TeamsSection from "../../components/manager/teamsSection";
 
-import { QUERY_USER } from "../../queries/user";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
-import gql from "graphql-tag";
-import { me } from "../../queries/auth";
-import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
+import { fetchTeam } from "../../queries/departments";
+import TeamGeneralData from "../../components/manager/teamGeneralData";
+import EmployeeSection from "../../components/manager/serviceDetails/employeeSection";
+import ServiceSection from "../../components/manager/serviceSection";
+import { fetchCompanyService } from "../../queries/products";
+import ServiceGeneralData from "../../components/manager/serviceGeneralData";
+import ServiceTeamsSection from "../../components/manager/serviceTeamsSection";
 
 const UPDATE_PIC = gql`
-  mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
-    updateEmployeePic(file: $file, unitid: $unitid) {
-      id
+  mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
+    updateTeamPic(file: $file, teamid: $teamid) {
+      unitid {
+        id
+      }
       profilepicture
     }
   }
@@ -31,19 +37,21 @@ interface Props {
 
 interface State {
   loading: boolean;
+  search: string;
 }
 
-class EmployeeDetails extends React.Component<Props, State> {
+class ServiceDetails extends React.Component<Props, State> {
   state = {
-    loading: false
+    loading: false,
+    search: ""
   };
 
   uploadPic = async (picture: File) => {
-    const { userid } = this.props.match.params;
+    const { teamid } = this.props.match.params;
     await this.setState({ loading: true });
 
     try {
-      await this.props.updatePic({ variables: { file: picture, unitid: userid } });
+      await this.props.updatePic({ variables: { file: picture, teamid } });
 
       await this.setState({ loading: false });
     } catch (err) {
@@ -53,9 +61,9 @@ class EmployeeDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const employeeid = this.props.match.params.userid;
+    const serviceid = this.props.match.params.serviceid;
     return (
-      <Query query={QUERY_SEMIPUBLICUSER} variables={{ unitid: employeeid }}>
+      <Query query={fetchCompanyService} variables={{ serviceid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";
@@ -63,61 +71,53 @@ class EmployeeDetails extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error.message}`;
           }
-          const querydata = data.adminme;
+          console.log("Service", data);
 
-          const privatePhones = [];
-          const workPhones = [];
+          const service = data.fetchCompanyService && data.fetchCompanyService.app;
+          console.log("LOG: TeamDetails -> render -> service", data.fetchCompanyService);
 
-          querydata.phones.forEach(phone =>
-            phone && phone.tags && phone.tags[0] == ["private"]
-              ? privatePhones.push(phone)
-              : workPhones.push(phone)
-          );
-          querydata.workPhones = workPhones;
-          querydata.privatePhones = privatePhones;
           return (
             <div className="managerPage">
               <div className="heading">
                 <h1>
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("emanager")}>
-                    Employee Manager
+                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("lmanager")}>
+                    Service Manager
                   </span>
                   <h2>></h2>
-                  <h2>
-                    {querydata.firstname} {querydata.lastname}
-                  </h2>
+                  <h2>{service.name}</h2>
                 </h1>
 
-                <UniversalSearchBox />
+                <UniversalSearchBox
+                  getValue={v => {
+                    this.setState({ search: v });
+                  }}
+                />
               </div>
               <div className="section">
                 <div className="heading">
-                  <h1>Personal Data</h1>
+                  <h1>General Data</h1>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <div>
                     <form>
                       <label>
                         <div
-                          className="profilepicture"
+                          title={service.name}
+                          className="managerBigSquare"
                           style={
-                            querydata.profilepicture
-                              ? querydata.profilepicture.indexOf("/") != -1
-                                ? {
-                                    backgroundImage: encodeURI(
-                                      `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                        querydata.profilepicture
-                                      )})`
-                                    )
-                                  }
-                                : {
-                                    backgroundImage: encodeURI(
-                                      `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                        querydata.profilepicture
-                                      })`
-                                    )
-                                  }
-                              : {}
+                            service.icon
+                              ? {
+                                  backgroundImage:
+                                    service.icon.indexOf("/") != -1
+                                      ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                                          service.icon
+                                        )})`
+                                      : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                          service.icon
+                                        )})`,
+                                  backgroundColor: "unset"
+                                }
+                              : { backgroundColor: service.color }
                           }>
                           <div className="imagehover">
                             <i className="fal fa-camera" />
@@ -142,30 +142,34 @@ class EmployeeDetails extends React.Component<Props, State> {
                         />
                       </label>
                     </form>
-                    <div
-                      className="status"
-                      style={{
-                        backgroundColor: querydata.isonline ? "#29CC94" : "#DB4D3F"
-                      }}>
-                      {querydata.isonline ? "Online" : "Offline"}
-                    </div>
                   </div>
                   <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
-                    <div className="table">
-                      <PersonalDetails querydata={querydata} />
+                    <div className="table" style={{ marginTop: "24px" }}>
+                      <ServiceGeneralData servicedata={data.fetchCompanyService} />
                     </div>
                   </div>
                 </div>
               </div>
-              <TeamsSection
+              <ServiceTeamsSection
+                service={service}
+                teams={data.fetchCompanyService.teams}
+                moveTo={this.props.moveTo}
+                search={this.state.search}
+              />
+              <EmployeeSection
+                search={this.state.search}
+                service={service}
+                licences={data.fetchCompanyService.licences}
+                moveTo={this.props.moveTo}
+              />
+              {/*<ServiceSection team={team} search={this.state.search} />*/}
+              {/*<TeamsSection
                 employeeid={employeeid}
                 employeename={`${querydata.firstname} ${querydata.lastname}`}
-                moveTo={this.props.moveTo}
               />
               <LicencesSection
                 employeeid={employeeid}
                 employeename={`${querydata.firstname} ${querydata.lastname}`}
-                moveTo={this.props.moveTo}
               />
               {this.state.changepicture && (
                 <PopupSelfSaving
@@ -185,7 +189,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                   }}
                   closeFunction={() => this.setState({ changepicture: null })}
                 />
-              )}
+                )}*/}
             </div>
           );
         }}
@@ -193,4 +197,4 @@ class EmployeeDetails extends React.Component<Props, State> {
     );
   }
 }
-export default compose(graphql(UPDATE_PIC, { name: "updatePic" }))(withApollo(EmployeeDetails));
+export default compose(graphql(UPDATE_PIC, { name: "updatePic" }))(withApollo(ServiceDetails));

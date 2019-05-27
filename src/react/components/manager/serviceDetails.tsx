@@ -36,6 +36,7 @@ interface Props {
   e: any;
   employeeid: number;
   employeename: string;
+  moveTo: Function;
 }
 
 interface State {
@@ -85,7 +86,10 @@ class ServiceDetails extends React.Component<Props, State> {
         {deleteLicenceAt => (
           <Mutation mutation={UPDATE_CREDENTIALS}>
             {updateCredentials => (
-              <div className="tableRow" key={`div-${e.id}`}>
+              <div
+                className="tableRow"
+                key={`div-${e.id}`}
+                onClick={() => this.props.moveTo(`lmanager/${e.boughtplanid.planid.appid.id}`)}>
                 <div className="tableMain">
                   <div className="tableColumnSmall">
                     <div
@@ -190,10 +194,20 @@ class ServiceDetails extends React.Component<Props, State> {
                 </div>
                 <div className="tableEnd">
                   <div className="editOptions">
-                    <i className="fal fa-edit" onClick={() => this.setState({ edit: true })} />
+                    <i className="fal fa-external-link-alt" />
+                    <i
+                      className="fal fa-edit"
+                      onClick={e => {
+                        e.stopPropagation();
+                        this.setState({ edit: true });
+                      }}
+                    />
                     <i
                       className="fal fa-trash-alt"
-                      onClick={() => this.setState({ delete: true })}
+                      onClick={e => {
+                        e.stopPropagation();
+                        this.setState({ delete: true });
+                      }}
                     />
                   </div>
                 </div>

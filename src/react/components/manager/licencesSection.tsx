@@ -16,6 +16,7 @@ interface Props {
   employeename: string;
   addExternalBoughtPlan: Function;
   addExternalLicence: Function;
+  moveTo: Function;
 }
 
 interface State {
@@ -336,11 +337,13 @@ class LicencesSection extends React.Component<Props, State> {
                 !e.boughtplanid.planid.appid.disabled &&
                 (e.endtime > now() || e.endtime == null)
               ) {
+                console.log("LICENCE", e);
                 appArray.push(
                   <ServiceDetails
                     e={e}
                     employeeid={employeeid}
                     employeename={this.props.employeename}
+                    moveTo={this.props.moveTo}
                   />
                 );
               }

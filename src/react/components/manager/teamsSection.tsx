@@ -10,10 +10,12 @@ import CoolCheckbox from "../CoolCheckbox";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
 import PopupSaving from "../../popups/universalPopups/saving";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
+import Team from "./employeeDetails/team";
 
 interface Props {
   employeeid: number;
   employeename: string;
+  moveTo: Function;
 }
 
 interface State {
@@ -32,12 +34,6 @@ interface State {
   } | null;
 }
 
-const REMOVE_EMPLOYEE_FROM_TEAM = gql`
-  mutation removeFromTeam($teamid: ID!, $userid: ID!, $keepLicences: [ID!]) {
-    removeFromTeam(teamid: $teamid, userid: $userid, keepLicences: $keepLicences)
-  }
-`;
-
 class TeamsSection extends React.Component<Props, State> {
   state = {
     delete: false,
@@ -49,42 +45,6 @@ class TeamsSection extends React.Component<Props, State> {
     deleteerror: null,
     savingObject: null
   };
-
-  printRemoveLicences(team) {
-    let RLicencesArray: JSX.Element[] = [];
-
-    team.services.forEach((service, int) => {
-      RLicencesArray.push(
-        <li key={int}>
-          <UniversalCheckbox
-            name={service.id}
-            startingvalue={true}
-            liveValue={v =>
-              v
-                ? this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences.splice(
-                      prevState.keepLicences.findIndex(l => l == service.id),
-                      1
-                    );
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-                : this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences;
-                    keepLicencesNew.push(service.id);
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-            }>
-            <span>Delete licence of {service.planid.appid.name}</span>
-          </UniversalCheckbox>
-        </li>
-      );
-    });
-    return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
-  }
 
   render() {
     console.log("RERENDER TEAM");
@@ -117,132 +77,12 @@ class TeamsSection extends React.Component<Props, State> {
             });
             data.fetchTeams.forEach((team, k) => {
               teamArray.push(
-                <Mutation mutation={REMOVE_EMPLOYEE_FROM_TEAM} key={team.name}>
-                  {removeFromTeam => (
-                    <div className="tableRow">
-                      <div className="tableMain">
-                        <div className="tableColumnSmall">
-                          <div
-                            className="managerSquare"
-                            style={
-                              team.profilepicture
-                                ? {
-                                    backgroundImage:
-                                      team.profilepicture.indexOf("/") != -1
-                                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                                            team.profilepicture
-                                          )})`
-                                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                            team.profilepicture
-                                          )})`,
-                                    backgroundColor: "unset"
-                                  }
-                                : team.internaldata && team.internaldata.color
-                                ? { backgroundColor: team.internaldata.color }
-                                : {}
-                            }>
-                            {team.profilepicture
-                              ? ""
-                              : team.internaldata && team.internaldata.letters
-                              ? team.internaldata.letters
-                              : team.name.slice(0, 1)}
-                          </div>
-                          <span className="name">{team.name}</span>
-                        </div>
-                        <div className="tableColumnSmall content">
-                          {team.internaldata ? team.internaldata.leader : ""}
-                        </div>
-                        <div className="tableColumnSmall content">{team.employeenumber}</div>
-                        <div className="tableColumnSmall content">
-                          {team.licences ? team.licences.length : ""}
-                        </div>
-                        <div className="tableColumnSmall content">
-                          {moment(team.createdate - 0).format("DD.MM.YYYY")}
-                        </div>
-                      </div>
-                      <div className="tableEnd">
-                        <div className="editOptions">
-                          <i
-                            className="fal fa-trash-alt"
-                            onClick={() => this.setState({ test: 1, delete: true })}
-                          />
-                        </div>
-                      </div>
-
-                      {this.state.delete ? (
-                        <PopupBase
-                          small={true}
-                          close={() => this.setState({ delete: false })}
-                          closeable={false}>
-                          <div>
-                            Do you really want to remove {this.props.employeename} from{" "}
-                            <b>{team.name}</b>
-                            {this.printRemoveLicences(team)}
-                          </div>
-                          <UniversalButton type="low" closingPopup={true} label="Cancel" />
-                          <UniversalButton
-                            type="low"
-                            label="Delete"
-                            onClick={() => {
-                              this.setState({
-                                delete: false,
-                                savingObject: {
-                                  savingmessage:
-                                    "The user is currently being removed from the team",
-                                  savedmessage: "The user has been removed successfully.",
-                                  maxtime: 5000,
-                                  closeFunction: () =>
-                                    this.setState({
-                                      savingObject: null
-                                    }),
-                                  saveFunction: async () =>
-                                    await removeFromTeam({
-                                      variables: {
-                                        teamid: team.unitid.id,
-                                        userid: this.props.employeeid,
-                                        keepLicences: this.state.keepLicences
-                                      },
-                                      refetchQueries: [
-                                        {
-                                          query: fetchTeams,
-                                          variables: { userid: this.props.employeeid }
-                                        },
-                                        {
-                                          query: fetchUserLicences,
-                                          variables: { unitid: this.props.employeeid }
-                                        }
-                                      ]
-                                    })
-                                }
-                              });
-                            }}
-                          />
-                          {this.state.confirm ? (
-                            <PopupSaving
-                              finished={this.state.deleted}
-                              savingmessage="The user is currently being removed from the team"
-                              savedmessage="The user has been removed successfully."
-                              maxtime={5000}
-                              error={this.state.deleteerror}
-                              closeFunction={() =>
-                                this.setState({
-                                  delete: false,
-                                  deleted: false,
-                                  deleteerror: null,
-                                  confirm: false
-                                })
-                              }
-                            />
-                          ) : (
-                            ""
-                          )}
-                        </PopupBase>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  )}
-                </Mutation>
+                <Team
+                  employee={{ id: this.props.employeeid, name: this.props.employeename }}
+                  team={team}
+                  deleteFunction={sO => this.setState({ savingObject: sO })}
+                  moveTo={this.props.moveTo}
+                />
               );
             });
             return (

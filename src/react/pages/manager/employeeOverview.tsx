@@ -303,7 +303,10 @@ class EmployeeOverview extends React.Component<Props, State> {
                   </div>
                   {employees.length > 0 &&
                     employees.map(employee => (
-                      <div key={employee.id} className="tableRow">
+                      <div
+                        key={employee.id}
+                        className="tableRow"
+                        onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
                         <div className="tableMain">
                           <div className="tableColumnBig">
                             <div
@@ -381,13 +384,13 @@ class EmployeeOverview extends React.Component<Props, State> {
                         </div>
                         <div className="tableEnd">
                           <div className="editOptions">
-                            <i
-                              className="fal fa-external-link-alt"
-                              onClick={() => this.props.moveTo(`emanager/${employee.id}`)}
-                            />
+                            <i className="fal fa-external-link-alt" />
                             <i
                               className="fal fa-trash-alt"
-                              onClick={() => this.setState({ willdeleting: employee.id })}
+                              onClick={e => {
+                                e.stopPropagation();
+                                this.setState({ willdeleting: employee.id });
+                              }}
                             />
                           </div>
                         </div>

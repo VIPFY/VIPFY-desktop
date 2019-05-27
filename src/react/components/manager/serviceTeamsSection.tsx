@@ -10,13 +10,14 @@ import CoolCheckbox from "../CoolCheckbox";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
 import PopupSaving from "../../popups/universalPopups/saving";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import AddTeamService from "./addTeamService";
 import TeamServiceDetails from "./teamserviceDetails";
+import Team from "./serviceDetails/team";
 
 interface Props {
-  team: any;
-  search: string;
+  service: any;
+  teams: any[];
   moveTo: Function;
+  search: String;
 }
 
 interface State {
@@ -41,7 +42,7 @@ const REMOVE_EMPLOYEE_FROM_TEAM = gql`
   }
 `;
 
-class ServiceSection extends React.Component<Props, State> {
+class ServiceTeamsSection extends React.Component<Props, State> {
   state = {
     delete: false,
     confirm: false,
@@ -90,74 +91,71 @@ class ServiceSection extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("STATEMain", this.state.savingObject);
-    let services: any[] = [];
-    let interservices: any[] = [];
-    if (this.props.team.services) {
-      interservices = this.props.team.services;
-
-      interservices.sort(function(a, b) {
-        let nameA = a.planid.appid.name.toUpperCase();
-        let nameB = b.planid.appid.name.toUpperCase();
+    console.log("RERENDER TEAM");
+    let teamArray: JSX.Element[] = [];
+    const interteams = this.props.teams;
+    let teams = interteams;
+    if (interteams) {
+      interteams.sort(function(a, b) {
+        let nameA = a.name.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.name.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
           return -1;
         }
         if (nameA > nameB) {
           return 1;
         }
+
         // namen müssen gleich sein
         return 0;
       });
       if (this.props.search && this.props.search != "") {
-        services = interservices.filter(a => {
-          return a.planid.appid.name.toUpperCase().includes(this.props.search.toUpperCase());
+        teams = interteams.filter(a => {
+          return a.name.toUpperCase().includes(this.props.search.toUpperCase());
         });
       } else {
-        services = interservices;
+        teams = interteams;
       }
+
+      teams.forEach((team, k) => {
+        teamArray.push(
+          <Team
+            service={this.props.service}
+            team={team}
+            deleteFunction={sO => this.setState({ savingObject: sO })}
+            moveTo={this.props.moveTo}
+          />
+        );
+      });
     }
-
-    const serviceArray: JSX.Element[] = [];
-
-    services.forEach((service, k) => {
-      serviceArray.push(
-        <TeamServiceDetails
-          service={service}
-          team={this.props.team}
-          deleteFunction={sO => this.setState({ savingObject: sO })}
-          moveTo={this.props.moveTo}
-        />
-      );
-    });
-
     return (
       <div className="section">
         <div className="heading">
-          <h1>Teamservices</h1>
+          <h1>Teams</h1>
         </div>
         <div className="table">
           <div className="tableHeading">
             <div className="tableMain">
               <div className="tableColumnSmall">
-                <h1>Service</h1>
+                <h1>Team</h1>
               </div>
               <div className="tableColumnSmall">
-                <h1>Buytime</h1>
+                <h1>Leader</h1>
               </div>
               <div className="tableColumnSmall">
-                <h1>Endtime</h1>
+                <h1>#Licences</h1>
               </div>
               <div className="tableColumnSmall">
                 <h1>Price</h1>
               </div>
               <div className="tableColumnSmall">
-                <h1>Average Usage</h1>
+                <h1>Created at</h1>
               </div>
             </div>
             <div className="tableEnd">
               <UniversalButton
                 type="high"
-                label="Add Service"
+                label="Add Team"
                 customStyles={{
                   fontSize: "12px",
                   lineHeight: "24px",
@@ -171,14 +169,15 @@ class ServiceSection extends React.Component<Props, State> {
               />
             </div>
           </div>
-          {serviceArray}
+          {teamArray}
         </div>
         {this.state.add && (
-          <AddTeamService
+          <AddEmployeeToTeam
             close={sO => {
               this.setState({ add: false, savingObject: sO });
             }}
-            team={this.props.team}
+            employeeid={employeeid}
+            employeename={employeename}
           />
         )}
         {this.state.savingObject && (
@@ -196,4 +195,4 @@ class ServiceSection extends React.Component<Props, State> {
     );
   }
 }
-export default ServiceSection;
+export default ServiceTeamsSection;

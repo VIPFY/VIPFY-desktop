@@ -1,14 +1,20 @@
 import * as React from "react";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
-import { fetchTeam } from "../../queries/departments";
+import UniversalCheckbox from "../../universalForms/universalCheckbox";
+import PopupBase from "../../../popups/universalPopups/popupBase";
+import UniversalButton from "../../universalButtons/universalButton";
+import { fetchTeam } from "../../../queries/departments";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
+import moment = require("moment");
+import {
+  fetchCompanyServices,
+  fetchServiceLicences,
+  fetchCompanyService
+} from "../../../queries/products";
 
 interface Props {
-  employee: any;
-  team: any;
+  service: any;
+  licence: any;
   deleteFunction: Function;
   moveTo: Function;
 }
@@ -24,63 +30,17 @@ interface State {
   } | null;
 }
 
-const REMOVE_EMPLOYEE_FROM_TEAM = gql`
-  mutation removeFromTeam($teamid: ID!, $userid: ID!, $keepLicences: [ID!]) {
-    removeFromTeam(teamid: $teamid, userid: $userid, keepLicences: $keepLicences)
+const REMOVE_EXTERNAL_ACCOUNT = gql`
+  mutation deleteServiceLicenceAt($serviceid: ID!, $licenceid: ID!, $time: Date!) {
+    deleteServiceLicenceAt(serviceid: $serviceid, licenceid: $licenceid, time: $time)
   }
 `;
-
-class EmployeeDetails extends React.Component<Props, State> {
+class Employee extends React.Component<Props, State> {
   state = {
     keepLicences: [],
     delete: false,
     savingObject: null
   };
-
-  printRemoveLicences(employee) {
-    let RLicencesArray: JSX.Element[] = [];
-    console.log("PRL", employee);
-    this.props.team.services.forEach((service, int) => {
-      console.log("Service", service, int, this.state, this.props);
-      RLicencesArray.push(
-        <li key={int}>
-          <UniversalCheckbox
-            name={service.id}
-            startingvalue={true}
-            liveValue={v =>
-              v
-                ? this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences.splice(
-                      prevState.keepLicences.findIndex(l => l == service.id),
-                      1
-                    );
-                    console.log(
-                      "keepLicencesNewA",
-                      prevState.keepLicences,
-                      keepLicencesNew,
-                      v,
-                      service
-                    );
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-                : this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences;
-                    keepLicencesNew.push(service.id);
-                    console.log("keepLicencesNewB", keepLicencesNew, v);
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-            }>
-            <span>Delete licence of {service.planid.appid.name}</span>
-          </UniversalCheckbox>
-        </li>
-      );
-    });
-    return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
-  }
 
   printMails(emails) {
     if (emails.length == 1 && emails[0] != null) {
@@ -117,10 +77,12 @@ class EmployeeDetails extends React.Component<Props, State> {
   }
 
   render() {
-    const employee = this.props.employee;
+    const licence = this.props.licence;
+    console.log("emp", licence);
+    const employee = licence.unitid;
     return (
-      <Mutation mutation={REMOVE_EMPLOYEE_FROM_TEAM} key={employee.id}>
-        {removeFromTeam => (
+      <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT} key={licence.id}>
+        {deleteServiceLicenceAt => (
           <div className="tableRow" onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
             <div className="tableMain">
               <div className="tableColumnSmall">
@@ -168,9 +130,10 @@ class EmployeeDetails extends React.Component<Props, State> {
             </div>
             <div className="tableEnd">
               <div className="editOptions">
-                <i className="fal fa-external-link-alt" />
+                <i className="fal fa-external-link-alt" title="Open Service" />
                 <i
                   className="fal fa-trash-alt"
+                  title="Delete"
                   onClick={e => {
                     e.stopPropagation();
                     this.setState({ delete: true });
@@ -187,8 +150,9 @@ class EmployeeDetails extends React.Component<Props, State> {
                 <div>
                   Do you really want to remove{" "}
                   {/*`${this.state.delete!.firstname} ${this.state.delete!.lastname}`*/} from{" "}
-                  <b>{this.props.team.name}</b>
-                  {this.printRemoveLicences(employee)}
+                  <b>
+                    {employee.firstname} {employee.lastname}
+                  </b>
                 </div>
                 <UniversalButton type="low" closingPopup={true} label="Cancel" />
                 <UniversalButton
@@ -197,7 +161,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                   onClick={() => {
                     this.setState({ delete: false });
                     this.props.deleteFunction({
-                      savingmessage: "The user is currently being removed from the team",
+                      savingmessage: "The user is currently being removed from the service",
                       savedmessage: "The user has been removed successfully.",
                       maxtime: 5000,
                       closeFunction: () =>
@@ -205,16 +169,18 @@ class EmployeeDetails extends React.Component<Props, State> {
                           savingObject: null
                         }),
                       saveFunction: () =>
-                        removeFromTeam({
+                        deleteServiceLicenceAt({
                           variables: {
-                            teamid: this.props.team.unitid.id,
-                            userid: employee!.id,
-                            keepLicences: this.state.keepLicences
+                            serviceid: this.props.service.id,
+                            licenceid: licence.id,
+                            time: moment().utc()
                           },
                           refetchQueries: [
                             {
-                              query: fetchTeam,
-                              variables: { teamid: this.props.team.unitid.id }
+                              query: fetchCompanyService,
+                              variables: {
+                                serviceid: this.props.service.id
+                              }
                             }
                           ]
                         })
@@ -231,4 +197,4 @@ class EmployeeDetails extends React.Component<Props, State> {
     );
   }
 }
-export default EmployeeDetails;
+export default Employee;

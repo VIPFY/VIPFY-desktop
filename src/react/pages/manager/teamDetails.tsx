@@ -12,7 +12,7 @@ import TeamsSection from "../../components/manager/teamsSection";
 
 import { fetchTeam } from "../../queries/departments";
 import TeamGeneralData from "../../components/manager/teamGeneralData";
-import EmployeeSection from "../../components/manager/employeesSection";
+import EmployeeSection from "../../components/manager/teamDetails/employeeSection";
 import ServiceSection from "../../components/manager/serviceSection";
 
 const UPDATE_PIC = gql`
@@ -156,8 +156,13 @@ class TeamDetails extends React.Component<Props, State> {
                   </div>
                 </div>
               </div>
-              <EmployeeSection employees={team.employees} search={this.state.search} team={team} />
-              <ServiceSection team={team} search={this.state.search} />
+              <EmployeeSection
+                employees={team.employees}
+                search={this.state.search}
+                team={team}
+                moveTo={this.props.moveTo}
+              />
+              <ServiceSection team={team} search={this.state.search} moveTo={this.props.moveTo} />
               {/*<TeamsSection
                 employeeid={employeeid}
                 employeename={`${querydata.firstname} ${querydata.lastname}`}

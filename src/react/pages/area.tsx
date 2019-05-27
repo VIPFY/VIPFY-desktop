@@ -53,6 +53,7 @@ import EmployeeDetails from "./manager/employeeDetails";
 import TeamOverview from "./manager/teamOverview";
 import TeamDetails from "./manager/teamDetails";
 import ServiceOverview from "./manager/serviceOverview";
+import ServiceDetails from "./manager/serviceDetails";
 
 interface AreaProps {
   history: any[];
@@ -375,7 +376,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "lmanager", component: ServiceOverview },
       { path: "dmanager", component: TeamOverview },
       { path: "emanager/:userid", component: EmployeeDetails },
-      { path: "lmanager/:boughtplanid", component: LShower },
+      { path: "lmanager/:serviceid", component: ServiceDetails },
       { path: "dmanager/:teamid", component: TeamDetails }
     ];
 

@@ -338,7 +338,10 @@ class TeamOverview extends React.Component<Props, State> {
                   </div>
                   {teams.length > 0 &&
                     teams.map(team => (
-                      <div key={team.name} className="tableRow">
+                      <div
+                        key={team.name}
+                        className="tableRow"
+                        onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
                         {console.log("TEAM", team)}
                         <div className="tableMain">
                           <div className="tableColumnBig">
@@ -381,13 +384,13 @@ class TeamOverview extends React.Component<Props, State> {
                         </div>
                         <div className="tableEnd">
                           <div className="editOptions">
-                            <i
-                              className="fal fa-external-link-alt"
-                              onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}
-                            />
+                            <i className="fal fa-external-link-alt" />
                             <i
                               className="fal fa-trash-alt"
-                              onClick={() => this.setState({ willdeleting: team })}
+                              onClick={e => {
+                                e.stopPropagation();
+                                this.setState({ willdeleting: team });
+                              }}
                             />
                           </div>
                         </div>
