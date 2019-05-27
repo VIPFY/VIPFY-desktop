@@ -32,10 +32,25 @@ class UniversalLogin extends React.PureComponent<Props, State> {
     result: null
   };
 
-  tries = 0;
+  loginState = {
+    emailEntered: false,
+    passwordEntered: false,
+    unloaded: true,
+    tries: 0
+  };
+
+  reset() {
+    session.fromPartition("ssoconfig").clearStorageData();
+    this.loginState = {
+      emailEntered: false,
+      passwordEntered: false,
+      unloaded: true,
+      tries: 0
+    };
+  }
 
   componentDidMount() {
-    session.fromPartition("ssoconfig").clearStorageData();
+    this.reset();
   }
   componentDidUpdate() {
     session.fromPartition("ssoconfig").clearStorageData();
@@ -100,7 +115,12 @@ class UniversalLogin extends React.PureComponent<Props, State> {
             </div>
             <br />
             {!this.state.running && (
-              <button type="button" onClick={() => this.setState({ running: true })}>
+              <button
+                type="button"
+                onClick={() => {
+                  this.reset();
+                  this.setState({ running: true });
+                }}>
                 Start
               </button>
             )}
@@ -129,19 +149,62 @@ class UniversalLogin extends React.PureComponent<Props, State> {
     console.log("ipc", e);
     e.target.openDevTools();
     switch (e.channel) {
+      case "unload":
+        {
+          this.loginState.unloaded = true;
+        }
+        break;
+      case "loaded":
+        {
+          this.loginState.unloaded = false;
+        }
+        break;
       case "fillFormField":
         {
           const w = e.target;
-          for await (const c of e.args[0]) {
+          let text = "";
+          if (e.args[0] == "username") {
+            text = this.state.username;
+            this.loginState.emailEntered = true;
+          } else if (e.args[0] == "password") {
+            text = this.state.password;
+            this.loginState.passwordEntered = true;
+          } else {
+            throw new Error("unknown string");
+          }
+          console.log("filling in " + e.args[0]);
+          for await (const c of text) {
+            if (this.loginState.unloaded) {
+              return;
+            }
             const shift = c.toLowerCase() != c;
             const modifiers = shift ? ["shift"] : [];
             w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
             w.sendInputEvent({ type: "char", modifiers, keyCode: c });
-            await sleep(Math.random() * 20 + 10);
+            await sleep(Math.random() * 20 + 50);
+
+            if (this.loginState.unloaded) {
+              return;
+            }
             w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
-            await sleep(Math.random() * 30 + 10);
+            await sleep(Math.random() * 30 + 200);
           }
+          await sleep(700);
           w.send("formFieldFilled");
+
+          if (this.loginState.emailEntered && this.loginState.passwordEntered) {
+            setTimeout(
+              () =>
+                document
+                  .querySelector<HTMLWebViewElement>("webview")!
+                  .getWebContents()
+                  .capturePage(image => {
+                    console.log(image);
+                    console.log("image", image.toDataURL({ scaleFactor: 0.5 }));
+                  }),
+              10000
+            );
+          }
         }
         break;
       case "getLoginData":
@@ -153,10 +216,7 @@ class UniversalLogin extends React.PureComponent<Props, State> {
             return; //we are done with login
           }
           await sleep(50);
-          e.target.send("loginData", {
-            username: this.state.username,
-            password: this.state.password
-          });
+          e.target.send("loginData", this.loginState);
           console.log("sentLoginData", {
             username: this.state.username,
             password: this.state.password
