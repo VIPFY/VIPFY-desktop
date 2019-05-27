@@ -154,7 +154,7 @@ class PersonalData extends React.Component<Props, State> {
                           {information.map(({ label, data }) => (
                             <li key={label}>
                               <label>{label}:</label>
-                              <span>{data}</span>
+                              <span data-recording-sensitive>{data}</span>
                             </li>
                           ))}
                           <li>

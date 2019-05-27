@@ -271,7 +271,7 @@ class Integrations extends React.Component<Props, AppPageState> {
     return (
       <div>
         {this.renderLoading(this.props.products.allApps)}
-        {this.state.popup ? (
+        {this.state.popup && (
           <Popup
             popupHeader={this.state.popupHeading}
             popupBody={this.state.popupBody}
@@ -279,8 +279,6 @@ class Integrations extends React.Component<Props, AppPageState> {
             onClose={this.closePopup}
             info={this.state.popupInfo}
           />
-        ) : (
-          ""
         )}
       </div>
     );

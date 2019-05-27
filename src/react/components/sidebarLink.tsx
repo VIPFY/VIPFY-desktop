@@ -1,16 +1,19 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
+import AcceptLicence from "../popups/acceptLicence";
+import Tooltip from "react-tooltip-lite";
 
 interface Props {
   licence: any;
   openInstances: any;
-  sideBarOpen: boolean;
+  sidebarOpen: boolean;
   active: boolean;
   setTeam: Function;
   setInstance: Function;
   viewID: number;
   handleDrop: Function;
-  handleDragStart: Function;
+  handleDragStart: Function | null;
+  isSearching: boolean;
 }
 
 interface State {
@@ -79,27 +82,41 @@ class SidebarLink extends React.Component<Props, State> {
   };
 
   render() {
-    const { licence, openInstances, sideBarOpen, active, setTeam } = this.props;
-
+    const { licence, openInstances, sidebarOpen, active, setTeam } = this.props;
     let cssClass = "sidebar-link";
+    const label = licence.boughtplanid.alias
+      ? licence.boughtplanid.alias
+      : licence.boughtplanid.planid.appid.name;
+
+    if (!sidebarOpen) {
+      cssClass += "-small";
+    }
     if (active) {
       cssClass += " sidebar-active";
     }
 
     return (
       <li
+        id={licence.id}
         className={`${cssClass} ${this.state.dragging ? "hold" : ""} ${
           this.state.entered ? "hovered" : ""
         }`}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        onDrop={() => {
+        onDrop={event => {
           this.setState({ entered: false });
-          this.props.handleDrop(licence.id);
+          this.props.handleDrop(
+            licence.id,
+            event.dataTransfer.getData("text"),
+            event.pageY - event.currentTarget.getBoundingClientRect().top <=
+              event.currentTarget.getBoundingClientRect().height / 2
+          );
+          //console.log(event.pageX, event.pageY, event.currentTarget.getBoundingClientRect());
         }}
-        draggable={true}
-        onDragStart={() => {
-          this.props.handleDragStart(licence.id);
+        draggable={this.props.isSearching}
+        onDragStart={event => {
+          event.dataTransfer.setData("text", licence.id);
+          //this.props.handleDragStart(event);
           this.setState({ dragging: true });
         }}
         onDragOver={e => {
@@ -119,33 +136,28 @@ class SidebarLink extends React.Component<Props, State> {
               }
             : () => null
         }>
-        <span
-          className="service-logo-small"
-          style={{
-            backgroundImage:
-              licence.boughtplanid.planid.appid.icon &&
-              licence.boughtplanid.planid.appid.icon.indexOf("/") != -1
-                ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                    licence.boughtplanid.planid.appid.icon
-                  )})`
-                : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                    licence.boughtplanid.planid.appid.icon
-                  )})`
-          }}>
-          {licence.boughtplanid.planid.options && licence.boughtplanid.planid.options.external ? (
-            <div className="ribbon-small ribbon-small-top-right">
-              <span>E</span>
-            </div>
-          ) : (
-            ""
-          )}
-        </span>
+        <Tooltip direction="right" arrowSize={5} useHover={!sidebarOpen} content={label}>
+          <span className="white-background" />
+          <span
+            className="service-logo-small"
+            style={{
+              backgroundImage:
+                licence.boughtplanid.planid.appid.icon &&
+                licence.boughtplanid.planid.appid.icon.indexOf("/") != -1
+                  ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                      licence.boughtplanid.planid.appid.icon
+                    )})`
+                  : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                      licence.boughtplanid.planid.appid.icon
+                    )})`
+            }}>
+            {this.props.openInstances[this.props.licence.id] && (
+              <i className="fa fa-circle active-app" />
+            )}
+          </span>
+        </Tooltip>
 
-        <span className={sideBarOpen ? "sidebar-link-caption" : "show-not"}>
-          {licence.boughtplanid.alias
-            ? licence.boughtplanid.alias
-            : licence.boughtplanid.planid.appid.name}
-        </span>
+        <span className={sidebarOpen ? "sidebar-link-caption" : "show-not"}>{label}</span>
         {this.state.hover ? this.showInstances(licence) : ""}
       </li>
     );

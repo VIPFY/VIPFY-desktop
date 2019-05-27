@@ -37,6 +37,7 @@ export const fetchLicences = gql`
   query onFetchLicence {
     fetchLicences {
       id
+      starttime
       endtime
       disabled
       layoutvertical
@@ -45,6 +46,7 @@ export const fetchLicences = gql`
       boughtplanid {
         id
         alias
+        buytime
         planid {
           id
           options
