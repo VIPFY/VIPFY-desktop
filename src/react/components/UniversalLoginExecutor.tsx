@@ -14,16 +14,72 @@ interface Props {
     result: { loggedin: boolean; emailEntered: boolean; passwordEntered: boolean },
     image: string
   ) => void;
-  speed: number;
+  speed?: number;
 }
 
 interface State {
   running: boolean;
 }
 
+const cookiesLoggedIn: { name: string; url: string }[] = [];
+const cookiesLoggedOut: { name: string; url: string }[] = [];
+
+function minus(setA, setB) {
+  let _difference = new Set(setA);
+  for (let elem of setB) {
+    _difference.delete(elem);
+  }
+  return _difference;
+}
+
+// setInterval(() => {
+//   let diff = [
+//     ...minus([...cookiesLoggedIn].map(v => v.name), [...cookiesLoggedOut].map(v => v.name))
+//   ]
+//     .map(a => [a, [...cookiesLoggedIn].filter(v => v.name == a).length])
+//     .sort((a, b) => b[1] - a[1]);
+//   let diff2 = [
+//     ...minus(
+//       [...cookiesLoggedOut].map(v => v.name),
+//       minus([...cookiesLoggedIn].map(v => v.name), [...cookiesLoggedOut].map(v => v.name))
+//     )
+//   ]
+//     .map(a => [a, [...cookiesLoggedOut].filter(v => v.name == a).length])
+//     .sort((a, b) => b[1] - a[1]);
+//   console.log("cookiediff", diff.length, diff.slice(0, 100), diff2.length, diff2.slice(0, 100));
+// }, 60000);
+
+const ignoredCookies = [
+  "_ga",
+  "_gid",
+  "_fbp",
+  "fr",
+  "__cfduid",
+  "_gat",
+  "JSESSIONID",
+  "lidc",
+  "UserMatchHistory",
+  "lang",
+  "BizoID",
+  "bscookie",
+  "test_cookie",
+  "PHPSESSID",
+  "_gcl_au",
+  "__tld__",
+  "ajs_group_id",
+  "ajs_user_id",
+  "XSRF-token",
+  "ASP.NET_SessionId"
+];
+
 class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   state = {
     running: false
+  };
+
+  static defaultProps = {
+    speed: 1,
+    partition: "universalLogin"
   };
 
   loginState = {
@@ -62,6 +118,26 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     this.reset();
     this.mounted++;
     console.log("mounted", this.mounted);
+
+    // session
+    //   .fromPartition(this.props.partition)
+    //   .cookies.on("changed", (e, cookie, cause, removed) => {
+    //     if (cause != "explicit" || removed || ignoredCookies.some(a => a == cookie.name)) {
+    //       return;
+    //     }
+    //     //console.log("cookie", this.loginState.passwordEntered, cookie.name);
+    //     if (this.loginState.passwordEntered && this.loginState.emailEntered) {
+    //       if (!cookiesLoggedIn.some(v => v.name == cookie.name && v.url == this.props.loginUrl)) {
+    //         cookiesLoggedIn.push({ name: cookie.name, url: this.props.loginUrl });
+    //       }
+    //     } else {
+    //       if (!cookiesLoggedOut.some(v => v.name == cookie.name && v.url == this.props.loginUrl)) {
+    //         cookiesLoggedOut.push({ name: cookie.name, url: this.props.loginUrl });
+    //       }
+    //     }
+
+    //     //console.log("cookie", cookie, cause, removed);
+    //   });
   }
   componentDidUpdate(prevProps: Props) {
     if (prevProps.loginUrl != this.props.loginUrl || prevProps.speed != this.props.speed) {

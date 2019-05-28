@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Tooltip from "react-tooltip-lite";
 import * as fs from "fs";
 import UniversalLoginExecutorWrapper from "../UniversalLoginExecutorWrapper";
+import UniversalLoginExecutor from "../UniversalLoginExecutor";
 import * as Sites from "./sites";
 
 interface Props {}
@@ -198,7 +199,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
         )}
         <div>
           {this.state.backgroundRunners.map(r => (
-            <UniversalLoginExecutorWrapper
+            <UniversalLoginExecutor
               key={`bgrunner_${r}`}
               loginUrl={this.state.sites[r].url}
               username={this.state.sites[r].email}
