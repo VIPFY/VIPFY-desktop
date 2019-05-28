@@ -66,9 +66,15 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
 
     const { licences } = this.props;
-    const newLicences = layoutUpdate(licences, draggedId, targetId);
-    const layouts = newLicences.map(({ id, layoutvertical }) => ({ id, layoutvertical }));
-    //    .filter((licence, key) => licence.layoutvertical != licences[key].layoutvertical);
+    const newLicences = layoutUpdate(
+      // Make sure they have the same order as when rendered
+      licences.sort((a, b) => a.layoutvertical - b.layoutvertical),
+      draggedId,
+      targetId
+    );
+    const layouts = newLicences
+      .map(({ id, layoutvertical }) => ({ id, layoutvertical }))
+      .filter((licence, key) => licence.layoutvertical != licences[key].layoutvertical);
 
     try {
       await this.props.updateLayout({
