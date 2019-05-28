@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose } from "react-apollo";
+import { graphql, compose, Mutation } from "react-apollo";
 
 import { fetchApps } from "../queries/products";
 import LoadingDiv from "../components/LoadingDiv";
@@ -8,8 +8,10 @@ import Popup from "../components/Popup";
 import addExternal from "../popups/addExternal";
 import { me, fetchLicences } from "../queries/auth";
 import UniversalSearchBox from "../components/universalSearchBox";
-import PopupBase from "../popups/universalPopups/popupBase";
+import PopupSSO from "../popups/universalPopups/PopupSSO";
 import AppCardIntegrations from "../components/services/appCardIntegrations";
+import { CREATE_OWN_APP } from "../mutations/products";
+import SelfSaving from "../popups/universalPopups/SelfSavingIllustrated";
 
 interface Props {
   history: any;
@@ -19,6 +21,7 @@ interface Props {
 }
 
 export type AppPageState = {
+  popupSSO: boolean;
   popup: boolean;
   popupBody: any;
   popupHeading: string;
@@ -27,7 +30,7 @@ export type AppPageState = {
   popupInfo: string;
   searchopen: Boolean;
   searchstring: String;
-  showloading: boolean;
+  showLoading: boolean;
 };
 
 const ADD_EXTERNAL_ACCOUNT = gql`
@@ -64,7 +67,8 @@ const ADD_EXTERNAL_PLAN = gql`
 `;
 
 class Integrations extends React.Component<Props, AppPageState> {
-  state: AppPageState = {
+  state = {
+    popupSSO: true,
     popup: false,
     popupBody: null,
     popupHeading: "",
@@ -73,7 +77,7 @@ class Integrations extends React.Component<Props, AppPageState> {
     popupInfo: "",
     searchopen: false,
     searchstring: "",
-    showloading: false
+    showLoading: false
   };
 
   closePopup = () => this.setState({ popup: false });
@@ -150,7 +154,7 @@ class Integrations extends React.Component<Props, AppPageState> {
     try {
       const { subdomain: loginurl, alias, boughtplanid, ...data } = values;
       let id = boughtplanid;
-      this.setState({ showloading: true });
+      this.setState({ showLoading: true });
 
       if (boughtplanid == 0) {
         const newPlan = await this.props.addExternalPlan({
@@ -166,11 +170,11 @@ class Integrations extends React.Component<Props, AppPageState> {
       });
 
       setTimeout(() => this.closePopup(), 1000);
-      this.setState({ showloading: false });
+      this.setState({ showLoading: false });
 
       return true;
     } catch (error) {
-      this.setState({ showloading: false });
+      this.setState({ showLoading: false });
       throw error;
     }
   };
@@ -185,6 +189,7 @@ class Integrations extends React.Component<Props, AppPageState> {
       apps.sort(function(a, b) {
         let nameA = a.name.toUpperCase(); // ignore upper and lowercase
         let nameB = b.name.toUpperCase(); // ignore upper and lowercase
+
         if (nameA < nameB) {
           return -1;
         }
@@ -195,13 +200,23 @@ class Integrations extends React.Component<Props, AppPageState> {
         // namen müssen gleich sein
         return 0;
       });
+
       return (
         <div className="integrations">
-          <UniversalSearchBox
-            placeholder="Search for an service..."
-            getValue={value => this.setState({ searchstring: value })}
-          />
-          <div style={{ width: "10px", height: "50px" }} />
+          <div className="header">
+            <UniversalSearchBox
+              placeholder="Search for an service..."
+              getValue={value => this.setState({ searchstring: value })}
+            />
+
+            <button
+              type="button"
+              className="button-external"
+              onClick={() => this.setState({ popupSSO: true })}>
+              <i className="fal fa-universal-access" />
+              <span>Add your own Service</span>
+            </button>
+          </div>
           {this.showapps(apps)}
         </div>
       );
@@ -267,7 +282,7 @@ class Integrations extends React.Component<Props, AppPageState> {
   );
 
   render() {
-    const bodyprops = { ...this.state.popupProps, showloading: this.state.showloading };
+    const bodyprops = { ...this.state.popupProps, showLoading: this.state.showLoading };
     return (
       <div>
         {this.renderLoading(this.props.products.allApps)}
@@ -279,6 +294,38 @@ class Integrations extends React.Component<Props, AppPageState> {
             onClose={this.closePopup}
             info={this.state.popupInfo}
           />
+        )}
+
+        {!this.state.popup && this.state.popupSSO && (
+          <Mutation mutation={CREATE_OWN_APP}>
+            {(createOwnApp, { data, loading, error }) => (
+              <React.Fragment>
+                <PopupSSO
+                  cancel={() => {
+                    if (!loading) {
+                      this.setState({ popupSSO: false });
+                    }
+                  }}
+                  add={values => {
+                    if (values.logo) {
+                      values.icon = values.logo;
+                    }
+                    this.setState({ showLoading: true });
+
+                    createOwnApp({ variables: values });
+                  }}
+                />
+                {this.state.showLoading && (
+                  <SelfSaving
+                    savedmessage="Successfully saved"
+                    saveFunction={values => console.log(values)}
+                    savingmessage="Saving..."
+                    closeFunction={() => this.setState({ showLoading: false })}
+                  />
+                )}
+              </React.Fragment>
+            )}
+          </Mutation>
         )}
       </div>
     );

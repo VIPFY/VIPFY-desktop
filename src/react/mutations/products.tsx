@@ -37,3 +37,11 @@ export const CANCEL_PLAN = gql`
     }
   }
 `;
+
+export const CREATE_OWN_APP = gql`
+  mutation onCreateOwnApp($appData: AppInput!) {
+    createOwnApp(appData: $appData) {
+      id
+    }
+  }
+`;
