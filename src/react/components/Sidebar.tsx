@@ -67,7 +67,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     const { licences } = this.props;
     const newLicences = layoutUpdate(licences, draggedId, targetId);
-    const layouts = newLicences.map(({ id }, key) => ({ id, layoutvertical: key }));
+    const layouts = newLicences.map(({ id, layoutvertical }) => ({ id, layoutvertical }));
+    //    .filter((licence, key) => licence.layoutvertical != licences[key].layoutvertical);
 
     try {
       await this.props.updateLayout({
@@ -77,7 +78,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         }
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -164,58 +165,58 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
   };
 
-  sortCustomlist(unsortedList) {
-    let a = unsortedList[0];
-    while (a.prevLicence) {
-      a = a.prevLicence;
-    }
-    let i;
-    if (this.state.sortorientation) {
-      i = 0;
-    } else {
-      i = unsortedList.length - 1;
-    }
-    while (a.nextLicence) {
-      unsortedList[i] = a;
-      a = a.nextLicence;
-      i = (i => {
-        if (this.state.sortorientation) {
-          return ++i;
-        } else {
-          return --i;
-        }
-      })(i);
-    }
+  // sortCustomlist(unsortedList) {
+  //   let a = unsortedList[0];
+  //   while (a.prevLicence) {
+  //     a = a.prevLicence;
+  //   }
+  //   let i;
+  //   if (this.state.sortorientation) {
+  //     i = 0;
+  //   } else {
+  //     i = unsortedList.length - 1;
+  //   }
+  //   while (a.nextLicence) {
+  //     unsortedList[i] = a;
+  //     a = a.nextLicence;
+  //     i = (i => {
+  //       if (this.state.sortorientation) {
+  //         return ++i;
+  //       } else {
+  //         return --i;
+  //       }
+  //     })(i);
+  //   }
 
-    return unsortedList.filter(licence => {
-      if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
-        return false;
-      }
-      let one = false,
-        two = false;
-      if (this.state.searchstring === "") {
-        return true;
-      }
-      if (
-        licence.boughtplanid.alias !== null &&
-        !licence.boughtplanid.alias.toLowerCase().includes(this.state.searchstring.toLowerCase())
-      ) {
-        one = true;
-      }
-      if (
-        licence.boughtplanid.planid.appid.name !== null &&
-        !licence.boughtplanid.planid.appid.name
-          .toLowerCase()
-          .includes(this.state.searchstring.toLowerCase())
-      ) {
-        two = true;
-      }
-      if (one && two) {
-        return false;
-      } //include search if search
-      return true;
-    });
-  }
+  //   return unsortedList.filter(licence => {
+  //     if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+  //       return false;
+  //     }
+  //     let one = false,
+  //       two = false;
+  //     if (this.state.searchstring === "") {
+  //       return true;
+  //     }
+  //     if (
+  //       licence.boughtplanid.alias !== null &&
+  //       !licence.boughtplanid.alias.toLowerCase().includes(this.state.searchstring.toLowerCase())
+  //     ) {
+  //       one = true;
+  //     }
+  //     if (
+  //       licence.boughtplanid.planid.appid.name !== null &&
+  //       !licence.boughtplanid.planid.appid.name
+  //         .toLowerCase()
+  //         .includes(this.state.searchstring.toLowerCase())
+  //     ) {
+  //       two = true;
+  //     }
+  //     if (one && two) {
+  //       return false;
+  //     } //include search if search
+  //     return true;
+  //   });
+  // }
 
   render() {
     let { sidebarOpen, licences } = this.props;
@@ -375,11 +376,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
       return true;
     });
-    let filteredLicences;
+    let filteredLicences = filteredLicences0;
 
     if (this.state.sortstring == "Custom") {
-      //Handle "Custom" seperatly
-      filteredLicences = this.sortCustomlist(licences);
+      // Handle "Custom" seperatly
+      // filteredLicences = this.sortCustomlist(licences);
     } else {
       filteredLicences = filteredLicences0.sort((a, b) => {
         let a0; //Placeholder for a
@@ -664,6 +665,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                       {showApps &&
                         filteredLicences.length > 0 &&
                         filteredLicences
+                          .sort((a, b) => a.layoutvertical - b.layoutvertical)
                           .filter((_, index) => (showMoreApps ? true : index < 5))
                           .map(licence => {
                             const maxValue = filteredLicences.reduce(
