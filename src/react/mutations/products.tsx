@@ -39,8 +39,8 @@ export const CANCEL_PLAN = gql`
 `;
 
 export const CREATE_OWN_APP = gql`
-  mutation onCreateOwnApp($appData: AppInput!) {
-    createOwnApp(appData: $appData) {
+  mutation onCreateOwnApp($ssoData: SSOInput!) {
+    createOwnApp(ssoData: $ssoData) {
       id
     }
   }

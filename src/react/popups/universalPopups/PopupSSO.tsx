@@ -47,7 +47,7 @@ class PopupAddLicence extends React.Component<Props, State> {
         key={this.state.randomkey}
         nooutsideclose={this.props.nooutsideclose}
         buttonStyles={{ justifyContent: "space-between" }}
-        small={true}
+        dialog={true}
         close={() => this.props.cancel()}>
         <div>
           <h2

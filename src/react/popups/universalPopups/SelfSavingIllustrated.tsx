@@ -1,43 +1,25 @@
 import * as React from "react";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import success from "../../../images/sso_creation_success";
 
 interface Props {
-  savingmessage: String;
-  savedmessage: String;
   closeFunction: Function;
   maxtime?: number;
   fullmiddle?: Boolean;
-  saveFunction: Function;
-  errormessage?: String;
+  success: Boolean;
+  error?: Object;
 }
 
 interface State {
   tolong: Boolean;
   saved: Boolean;
-  error: string | null;
 }
 
 class SelfSaving extends React.Component<Props, State> {
   state = {
     tolong: false,
-    saved: false,
-    error: null
+    saved: false
   };
-
-  componentDidMount = async () => {
-    try {
-      await this.props.saveFunction();
-      this.setState({ saved: true });
-    } catch (err) {
-      this.setState({ error: err });
-      console.error("ERROR", err);
-      //throw Error(err);
-    }
-  };
-
-  componentWillReceiveProps = async props => {};
 
   close() {
     if (this.timeout) {
@@ -45,6 +27,8 @@ class SelfSaving extends React.Component<Props, State> {
     }
     this.props.closeFunction();
   }
+
+  fullPath = path => `${__dirname}/../../../images/sso_creation_${path}.png`;
 
   render() {
     console.log("PROPS", this.props);
@@ -55,8 +39,9 @@ class SelfSaving extends React.Component<Props, State> {
         }
       }, this.props.maxtime);
     }
+
     return (
-      <PopupBase nooutsideclose={true} fullmiddle={this.props.fullmiddle} dialog={true}>
+      <PopupBase dialog={true} nooutsideclose={true} fullmiddle={true}>
         {this.state.tolong ? (
           <>
             <div>
@@ -65,25 +50,31 @@ class SelfSaving extends React.Component<Props, State> {
             </div>
             <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
           </>
-        ) : this.state.error ? (
-          <>
-            <div>
-              {this.props.errormessage ||
-                "There was an error. Please try again or contact support."}
-            </div>
+        ) : this.props.error ? (
+          <div className="popup-sso">
+            <img className="status-pic" src={this.fullPath("fail")} />
+            <h3>
+              We are sorry! The implementation was not successful. Please contact our support.
+            </h3>
             <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
-          </>
-        ) : this.state.saved ? (
-          <>
-            <div>{this.props.savedmessage}</div>
+          </div>
+        ) : this.props.success ? (
+          <div className="popup-sso">
+            <img className="status-pic" src={this.fullPath("success")} />
+            <h3>
+              <span>Congratulations!</span>
+              <span>Your Implementation was successful.</span>
+            </h3>
             <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
-          </>
+          </div>
         ) : (
-          <div>
-            <div style={{ fontSize: "32px", textAlign: "center" }}>
-              <i className="fal fa-spinner fa-spin" />
-              <div style={{ marginTop: "32px", fontSize: "16px" }}>{this.props.savingmessage}</div>
-            </div>
+          <div className="popup-sso">
+            <img className="status-pic" src={this.fullPath("loading")} />
+            <i className="fal fa-spinner fa-spin" />
+            <h3>
+              <span>Just a moment.</span>
+              <span>We are verifying the Implementation.</span>
+            </h3>
           </div>
         )}
       </PopupBase>

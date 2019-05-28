@@ -297,7 +297,7 @@ class Integrations extends React.Component<Props, AppPageState> {
         )}
 
         {!this.state.popup && this.state.popupSSO && (
-          <Mutation mutation={CREATE_OWN_APP}>
+          <Mutation mutation={CREATE_OWN_APP} onError={() => this.setState({ showLoading: true })}>
             {(createOwnApp, { data, loading, error }) => (
               <React.Fragment>
                 <PopupSSO
@@ -308,18 +308,18 @@ class Integrations extends React.Component<Props, AppPageState> {
                   }}
                   add={values => {
                     if (values.logo) {
-                      values.icon = values.logo;
+                      console.log("LOG: Integrations -> render -> values", values);
+                      values.images = [values.logo, values.logo];
                     }
-                    this.setState({ showLoading: true });
+                    delete values.logo;
 
-                    createOwnApp({ variables: values });
+                    createOwnApp({ variables: { ssoData: values } });
                   }}
                 />
                 {this.state.showLoading && (
                   <SelfSaving
-                    savedmessage="Successfully saved"
-                    saveFunction={values => console.log(values)}
-                    savingmessage="Saving..."
+                    error={error}
+                    success={data}
                     closeFunction={() => this.setState({ showLoading: false })}
                   />
                 )}
