@@ -8,6 +8,7 @@ export const me = gql`
       }
       createdate
       id
+      consent
       title
       birthday
       language
