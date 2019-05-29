@@ -1,13 +1,26 @@
-.dataGeneralForm{
-    width: 904px;
+.dataGeneralForm {
+  width: 904px;
     height: 536px;
     padding: 32px 32px 48px 32px;
     background-color: white;
     position: relative;
     border-radius: 8px;
     box-shadow: 0px 4px 5px rgba(#000000, 0.14);
-
-    .logo{
+    
+    h1 {
+      //color: $vipfy_mainColor;
+      //font-family: 'Roboto', sans-serif;
+      all: unset;
+      font-size: 24px;
+      line-height: 32px;
+      width: 100%;
+      text-align: center;
+      display: block;
+      margin-top: 8px;
+      font-weight: 700;
+    }
+    
+    .logo {
         background-repeat: no-repeat;
         background-position: center;
         background-image: $logo_white;
@@ -18,21 +31,23 @@
         top: 32px;
         left: 32px;
     }
+    
+    .holder {
+      display: flex;
+      justify-content: space-around;
 
-    h1{
-        //color: $vipfy_mainColor;
-        //font-family: 'Roboto', sans-serif;
-        all: unset;
-        font-size: 24px;
-        line-height: 32px;
-        width: 100%;
-        text-align: center;
-        display: block;
-        margin-top: 8px;
-        font-weight: 700;
-    }
+      .illustration {
+        &-login {
+          width: 300px;
+          height: 500px;
+          object-fit: contain;
+        }
+      }
 
-    p{
+
+
+
+    p {
         all: unset;
         line-height: 21px;
         font-size: 16px;
@@ -44,27 +59,27 @@
     }
 
     .inputHolder{
+      text-align: center;
+      margin-top: 46px;
+      
+      input {
+        all: unset;
+        display: inline-block;
         text-align: center;
-        margin-top: 46px;
-        input{
-            all: unset;
-            display: inline-block;
-            text-align: center;
-            border-bottom: 2px solid;
-            width: 312px;
-            line-height: 40px;
-            border-radius: 4px 4px 0px 0px;
-            font-size: 21px;
-        }
+        border-bottom: 2px solid;
+        width: 312px;
+        line-height: 40px;
+        border-radius: 4px 4px 0px 0px;
+        font-size: 21px;
+      }
     }
 
-
     .oneIllustrationHolder{
-        width: 904px;
-        height: 224px;
-        background-color: #7c8690;
-        position: absolute;
-        top: 280px;
+      width: 904px;
+      height: 224px;
+      background-color: #7c8690;
+      position: absolute;
+      top: 280px;
     }
 
     .buttonHolder{
@@ -233,4 +248,5 @@
         background-size: cover;
         background-position: center;
     }
+  }
 }
