@@ -2,8 +2,7 @@ import * as React from "react";
 import UniversalButton from "../../../components/universalButtons/universalButton";
 import { Query, Mutation } from "react-apollo";
 import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
-import AddTeamEmployee from "./../addTeamEmployee";
-import { fetchServiceLicences } from "../../../queries/products";
+import AddEmployee from "./addEmployee";
 import Employee from "./employee";
 import { now } from "moment";
 
@@ -74,10 +73,12 @@ class EmployeeSection extends React.Component<Props, State> {
     }
 
     const employeeArray: JSX.Element[] = [];
+    let activelicences: any[] = [];
 
     licences.forEach((licence, k) => {
-      if ((licence.endtime == null || licence.endtime >= now()) && !licences.teamlicence) {
+      if ((licence.endtime == null || licence.endtime >= now()) && !licence.teamlicence) {
         console.log("PUSH");
+        activelicences.push(licence);
         employeeArray.push(
           <Employee
             licence={licence}
@@ -132,11 +133,12 @@ class EmployeeSection extends React.Component<Props, State> {
           {employeeArray}
         </div>
         {this.state.add && (
-          <AddTeamEmployee
+          <AddEmployee
             close={sO => {
               this.setState({ add: false, savingObject: sO });
             }}
-            team={this.props.team}
+            licences={activelicences}
+            service={this.props.service}
           />
         )}
         {this.state.savingObject && (

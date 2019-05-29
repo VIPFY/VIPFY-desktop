@@ -136,6 +136,9 @@ export const fetchCompanyServices = gql`
         logo
         description
         icon
+        owner {
+          id
+        }
       }
       licences {
         id
@@ -152,12 +155,17 @@ export const fetchCompanyServices = gql`
         }
       }
       teams {
-        id
-        unitid {
+        departmentid {
+          id
+          unitid {
+            id
+          }
+          name
+          profilepicture
+        }
+        boughtplanid {
           id
         }
-        name
-        profilepicture
       }
     }
   }
@@ -213,6 +221,9 @@ export const fetchCompanyService = gql`
         developerwebsite
         options
         features
+        owner {
+          id
+        }
       }
       licences {
         id
@@ -224,6 +235,13 @@ export const fetchCompanyService = gql`
           id
           profilepicture
           name
+          internaldata
+        }
+        teamaccount {
+          id
+          profilepicture
+          name
+          internaldata
         }
         unitid {
           id
@@ -260,19 +278,24 @@ export const fetchCompanyService = gql`
         }
       }
       teams {
-        id
-        unitid {
+        departmentid {
           id
-        }
-        name
-        profilepicture
-        employees {
-          id
-          firstname
-          lastname
+          unitid {
+            id
+          }
+          name
           profilepicture
+          employees {
+            id
+            firstname
+            lastname
+            profilepicture
+          }
+          employeenumber
         }
-        employeenumber
+        boughtplanid {
+          id
+        }
       }
     }
   }

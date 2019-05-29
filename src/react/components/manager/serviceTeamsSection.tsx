@@ -12,6 +12,7 @@ import PopupSaving from "../../popups/universalPopups/saving";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import TeamServiceDetails from "./teamserviceDetails";
 import Team from "./serviceDetails/team";
+import AddTeam from "./serviceDetails/addTeam";
 
 interface Props {
   service: any;
@@ -97,8 +98,8 @@ class ServiceTeamsSection extends React.Component<Props, State> {
     let teams = interteams;
     if (interteams) {
       interteams.sort(function(a, b) {
-        let nameA = a.name.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.name.toUpperCase(); // ignore upper and lowercase
+        let nameA = a.departmentid.name.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.departmentid.name.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
           return -1;
         }
@@ -111,7 +112,7 @@ class ServiceTeamsSection extends React.Component<Props, State> {
       });
       if (this.props.search && this.props.search != "") {
         teams = interteams.filter(a => {
-          return a.name.toUpperCase().includes(this.props.search.toUpperCase());
+          return a.departmentid.name.toUpperCase().includes(this.props.search.toUpperCase());
         });
       } else {
         teams = interteams;
@@ -172,12 +173,12 @@ class ServiceTeamsSection extends React.Component<Props, State> {
           {teamArray}
         </div>
         {this.state.add && (
-          <AddEmployeeToTeam
+          <AddTeam
             close={sO => {
               this.setState({ add: false, savingObject: sO });
             }}
-            employeeid={employeeid}
-            employeename={employeename}
+            service={this.props.service}
+            teams={this.props.teams}
           />
         )}
         {this.state.savingObject && (

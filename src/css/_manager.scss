@@ -381,6 +381,16 @@
                     left: 8px;
                     font-weight: 700;
                 }
+                .description{
+                    position: absolute;
+                    top: 150px;
+                    font-size: 10px;
+                    line-height: 13px;
+                    left: 8px;
+                    height: 44px;
+                    width: 120px;
+                    overflow: hidden;
+                }
                 .image{
                     position: absolute;
                     top: 8px;
@@ -534,6 +544,31 @@
 
         &:hover > .imagehover{
             opacity: 1;
+        }
+    }
+    .licenceInfoHolder {
+        margin-left: 8px;
+        margin-right: 8px;
+        float: left;
+        margin-top: 12px;
+        display: flex;
+        width: 16px;
+        height: 32px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .licenceInfoElement {
+            font-size: 10px;
+            height: 16px;
+            width: 16px;
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            text-align: center;
+            background-color: #F5F5F5;
+            border-radius: 2px;
+            line-height: 16px;
         }
     }
 }

@@ -367,6 +367,18 @@ export const fetchUserLicences = gql`
       endtime
       starttime
       options
+      teamlicence {
+        id
+        profilepicture
+        name
+        internaldata
+      }
+      teamaccount {
+        id
+        profilepicture
+        name
+        internaldata
+      }
       boughtplanid {
         id
         alias

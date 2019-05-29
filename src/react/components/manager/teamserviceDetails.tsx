@@ -26,8 +26,8 @@ interface State {
 }
 
 const REMOVE_SERVICE_FROM_TEAM = gql`
-  mutation removeServiceFromTeam($teamid: ID!, $serviceid: ID!, $keepLicences: [ID!]) {
-    removeServiceFromTeam(teamid: $teamid, serviceid: $serviceid, keepLicences: $keepLicences)
+  mutation removeServiceFromTeam($teamid: ID!, $boughtplanid: ID!, $keepLicences: [ID!]) {
+    removeServiceFromTeam(teamid: $teamid, boughtplanid: $boughtplanid, keepLicences: $keepLicences)
   }
 `;
 
@@ -62,7 +62,7 @@ class TeamServiceDetails extends React.Component<Props, State> {
                       employee
                     );
                     return {
-                      keepLicences: keepLicencesNew
+                      keepLicences: prevState.keepLicences
                     };
                   })
                 : this.setState(prevState => {
@@ -170,7 +170,7 @@ class TeamServiceDetails extends React.Component<Props, State> {
                         removeServiceFromTeam({
                           variables: {
                             teamid: team.unitid.id,
-                            serviceid: service.id,
+                            boughtplanid: service.id,
                             keepLicences: this.state.keepLicences
                           },
                           refetchQueries: [

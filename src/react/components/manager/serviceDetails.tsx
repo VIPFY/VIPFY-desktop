@@ -118,7 +118,74 @@ class ServiceDetails extends React.Component<Props, State> {
                         </div>
                       )}
                     </div>
-                    <span className="name">{e.boughtplanid.planid.appid.name}</span>
+                    <div className="licenceInfoHolder">
+                      <div className="licenceInfoElement">
+                        {e.teamaccount ? (
+                          <i className="fal fa-users" title="Shared Account" />
+                        ) : (
+                          <i className="fal fa-user" title="Single Account" />
+                        )}
+                      </div>
+                      <div>
+                        {e.teamaccount ||
+                          (e.teamlicence && (
+                            <div
+                              className="licenceInfoElement"
+                              title={
+                                (e.teamaccount && e.teamaccount.name) ||
+                                (e.teamlicence && e.teamlicence.name)
+                              }
+                              style={
+                                e.teamaccount
+                                  ? e.teamaccount.profilepicture
+                                    ? {
+                                        backgroundImage:
+                                          e.teamaccount.profilepicture.indexOf("/") != -1
+                                            ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                                                e.teamaccount.profilepicture
+                                              )})`
+                                            : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                                e.teamaccount.profilepicture
+                                              )})`,
+                                        backgroundColor: "unset"
+                                      }
+                                    : e.teamaccount.internaldata && e.teamaccount.internaldata.color
+                                    ? { backgroundColor: e.teamaccount.internaldata.color }
+                                    : {}
+                                  : e.teamlicence
+                                  ? e.teamlicence.profilepicture
+                                    ? {
+                                        backgroundImage:
+                                          e.teamlicence.profilepicture.indexOf("/") != -1
+                                            ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                                                e.teamlicence.profilepicture
+                                              )})`
+                                            : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                                e.teamlicence.profilepicture
+                                              )})`,
+                                        backgroundColor: "unset"
+                                      }
+                                    : e.teamlicence.internaldata && e.teamlicence.internaldata.color
+                                    ? { backgroundColor: e.teamlicence.internaldata.color }
+                                    : {}
+                                  : {}
+                              }>
+                              {e.teamaccount && !e.teamaccount.profilepicture
+                                ? e.teamaccount.internaldata && e.teamaccount.internaldata.letters
+                                  ? e.teamaccount.internaldata.letters
+                                  : e.teamaccount.name.slice(0, 1)
+                                : e.teamlicence && !e.teamlicence.profilepicture
+                                ? e.teamlicence.internaldata && e.teamlicence.internaldata.letters
+                                  ? e.teamlicence.internaldata.letters
+                                  : e.teamlicence.name.slice(0, 1)
+                                : ""}
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                    <span className="name" style={{ marginLeft: "0px" }}>
+                      {e.boughtplanid.planid.appid.name}
+                    </span>
                   </div>
                   <div className="tableColumnSmall content">
                     {moment(e.starttime - 0).format("DD.MM.YYYY")}

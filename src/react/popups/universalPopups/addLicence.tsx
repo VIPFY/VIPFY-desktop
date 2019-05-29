@@ -45,6 +45,7 @@ class PopupAddLicence extends React.Component<Props, State> {
   };
 
   render() {
+    console.log("ADD", this.props);
     const { name, needssubdomain, options, icon } = this.props.app;
     return (
       <PopupBase

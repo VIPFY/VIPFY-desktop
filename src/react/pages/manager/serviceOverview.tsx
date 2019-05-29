@@ -12,6 +12,9 @@ import AddTeamServices from "../../components/manager/addTeamServices";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { fetchCompanyServices } from "../../queries/products";
 import { now } from "moment";
+import AddServiceGeneralData from "../../components/manager/serviceDetails/addServiceGeneralData";
+import AddTeam from "../../components/manager/serviceDetails/addTeam";
+import AddEmployee from "../../components/manager/serviceDetails/addEmployee";
 
 interface Props {
   moveTo: Function;
@@ -21,8 +24,8 @@ interface State {
   search: string;
   add: Boolean;
   addStage: number;
-  addteam: Object;
-  apps: { id: number; name: number; icon: string; needssubdomain: Boolean; options: Object }[];
+  addservice: Object | null;
+  teams: { id: number; name: number; profilepicture: string }[];
   addemployees: any[];
   saving: Boolean;
   deleting: number | null;
@@ -30,15 +33,19 @@ interface State {
   keepLicences: { service: number; employee: number }[];
 }
 
-const CREATE_TEAM = gql`
-  mutation createTeam($teamdata: JSON!, $addemployees: [JSON]!, $apps: [JSON]!) {
-    createTeam(teamdata: $teamdata, addemployees: $addemployees, apps: $apps)
+const CREATE_SERVICE = gql`
+  mutation createService($serviceData: JSON!, $addedTeams: [JSON]!, $addedEmployees: [JSON]!) {
+    createService(
+      serviceData: $serviceData
+      addedTeams: $addedTeams
+      addedEmployees: $addedEmployees
+    )
   }
 `;
 
-const DELETE_TEAM = gql`
-  mutation deleteTeam($teamid: ID!, $keepLicences: [JSON!]) {
-    deleteTeam(teamid: $teamid, keepLicences: $keepLicences)
+const DELETE_SERVICE = gql`
+  mutation deleteService($serviceid: ID!) {
+    deleteService(serviceid: $serviceid)
   }
 `;
 
@@ -46,62 +53,19 @@ class ServiceOverview extends React.Component<Props, State> {
   state = {
     search: "",
     add: false,
-    addteam: {},
+    addservice: null,
     addStage: 1,
-    apps: [],
+    teams: [],
     addemployees: [],
     saving: false,
     deleting: null,
     willdeleting: null,
-    keepLicences: []
+    keepLicences: [],
+    currentServices: []
   };
 
-  printRemoveLicences(team) {
-    let RLicencesArray: JSX.Element[] = [];
-
-    team.services.forEach((service, int) => {
-      team.employees.forEach((employee, int2) => {
-        RLicencesArray.push(
-          <li key={`${int}-${int2}`}>
-            <UniversalCheckbox
-              name={`${int}-${int2}`}
-              startingvalue={true}
-              liveValue={v =>
-                v
-                  ? this.setState(prevState => {
-                      const keepLicencesNew = prevState.keepLicences.splice(
-                        prevState.keepLicences.findIndex(
-                          l => l.service == service.id && l.employee == employee.id
-                        ),
-                        1
-                      );
-                      return {
-                        keepLicences: keepLicencesNew
-                      };
-                    })
-                  : this.setState(prevState => {
-                      const keepLicencesNew = prevState.keepLicences;
-                      keepLicencesNew.push({ service: service.id, employee: employee.id });
-                      return {
-                        keepLicences: keepLicencesNew
-                      };
-                    })
-              }>
-              <span>
-                Delete {service.planid.appid.name}-licence of {employee.firstname}{" "}
-                {employee.lastname}
-              </span>
-            </UniversalCheckbox>
-          </li>
-        );
-      });
-    });
-    return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
-  }
-
-  addService(apps) {
-    console.log(apps);
-    this.setState({ apps, saving: true, add: false });
+  addService(singles) {
+    this.setState({ addemployees: singles, saving: true, add: false });
   }
 
   renderTeams(teams) {
@@ -112,7 +76,7 @@ class ServiceOverview extends React.Component<Props, State> {
         profilepicture: string;
         internaldata: { letters: string; color: string };
         name: string;
-      } = teams[counter];
+      } = teams[counter].departmentid;
       if (teams.length > 6 && counter > 4) {
         teamsArray.push(
           <div
@@ -154,7 +118,7 @@ class ServiceOverview extends React.Component<Props, State> {
             {team.profilepicture
               ? ""
               : team.internaldata && team.internaldata.letters
-              ? team.internaldata.letters
+              ? team.internaldata && team.internaldata.letters
               : team.name.slice(0, 1)}
           </div>
         );
@@ -164,7 +128,6 @@ class ServiceOverview extends React.Component<Props, State> {
   }
 
   renderEmployees(licences) {
-    console.log(licences);
     let employeesArray: JSX.Element[] = [];
     let counter = 0;
     const activelicences = licences.filter(
@@ -173,14 +136,12 @@ class ServiceOverview extends React.Component<Props, State> {
         (l.options == null || l.options.teamlicence == null)
     );
 
-    console.log("ACTIVE", activelicences);
     for (counter = 0; counter < activelicences.length; counter++) {
       const employee: {
         profilepicture: string;
         firstname: string;
         lastname: string;
       } = activelicences[counter].unitid;
-      console.log("EMP", employee);
       if (activelicences.length > 6 && counter > 4) {
         employeesArray.push(
           <div
@@ -232,36 +193,92 @@ class ServiceOverview extends React.Component<Props, State> {
     switch (this.state.addStage) {
       case 1:
         return (
-          <AddTeamGeneralData
-            continue={data => this.setState({ addteam: data, addStage: 2 })}
+          <AddServiceGeneralData
+            continue={data => this.setState({ addservice: data, addStage: 2 })}
             close={() => this.setState({ add: false })}
-            addteam={this.state.addteam}
+            addservice={this.state.addservice}
+            currentServices={this.state.currentServices}
           />
         );
       case 2:
         return (
-          <AddTeamEmployeeData
+          <AddTeam
             continue={data => {
-              this.setState({ addemployees: data, addStage: 3 });
+              this.setState({ teams: data, addStage: 3 });
             }}
             close={() => this.setState({ addStage: 1 })}
-            teamname={this.state.addteam.name}
-            employees={this.state.addemployees}
+            service={this.state.addservice}
+            addedTeams={this.state.teams}
+            teams={[]}
           />
         );
       case 3:
         return (
-          <AddTeamServices
-            continue={apps => this.addService(apps)}
+          <AddEmployee
+            continue={singles => this.addService(singles)}
             close={() => this.setState({ addStage: 2 })}
-            employees={this.state.addemployees}
-            apps={this.state.apps}
-            teamname={this.state.addteam.name}
+            addedLicences={this.state.addemployees}
+            licences={[]}
+            service={this.state.addservice}
           />
         );
       default:
         return <div />;
     }
+  }
+
+  printServices(services) {
+    const serviceArray: JSX.Element[] = [];
+    services.forEach(service => {
+      if (service.licences.find(l => l.endtime == null || l.endtime > now())) {
+        serviceArray.push(
+          <div
+            key={service.name}
+            className="tableRow"
+            onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
+            <div className="tableMain">
+              <div className="tableColumnBig">
+                <div
+                  title={service.app.name}
+                  className="managerSquare"
+                  style={{
+                    backgroundImage:
+                      service.app.icon.indexOf("/") != -1
+                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                            service.app.icon
+                          )})`
+                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                            service.app.icon
+                          )})`,
+                    backgroundColor: "unset"
+                  }}
+                />
+                <span className="name">{service.app.name}</span>
+              </div>
+              <div className="tableColumnBig">
+                {service.teams ? this.renderTeams(service.teams) : "No single User"}
+              </div>
+              <div className="tableColumnBig">
+                {service.licences ? this.renderEmployees(service.licences) : "No single User"}
+              </div>
+            </div>
+            <div className="tableEnd">
+              <div className="editOptions">
+                <i className="fal fa-external-link-alt" />
+                <i
+                  className="fal fa-trash-alt"
+                  onClick={e => {
+                    e.stopPropagation();
+                    this.setState({ willdeleting: service });
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        );
+      }
+    });
+    return serviceArray;
   }
   render() {
     return (
@@ -292,7 +309,6 @@ class ServiceOverview extends React.Component<Props, State> {
               let interservices: any[] = [];
               if (data.fetchCompanyServices) {
                 interservices = data.fetchCompanyServices;
-                console.log("Interservices", interservices, data);
                 interservices.sort(function(a, b) {
                   let nameA = a.app.name.toUpperCase();
                   let nameB = b.app.name.toUpperCase();
@@ -312,7 +328,6 @@ class ServiceOverview extends React.Component<Props, State> {
                 } else {
                   services = interservices;
                 }
-                console.log("SERVICES", services);
               }
               return (
                 <div className="table">
@@ -344,62 +359,15 @@ class ServiceOverview extends React.Component<Props, State> {
                             add: true,
                             addStage: 1,
                             addemployees: [],
-                            addteam: {},
-                            apps: []
+                            addservice: null,
+                            teams: [],
+                            currentServices: data.fetchCompanyServices
                           })
                         }
                       />
                     </div>
                   </div>
-                  {services.length > 0 &&
-                    services.map(service => (
-                      <div
-                        key={service.name}
-                        className="tableRow"
-                        onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
-                        {console.log("Service", service)}
-                        <div className="tableMain">
-                          <div className="tableColumnBig">
-                            <div
-                              title={service.app.name}
-                              className="managerSquare"
-                              style={{
-                                backgroundImage:
-                                  service.app.icon.indexOf("/") != -1
-                                    ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                                        service.app.icon
-                                      )})`
-                                    : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                        service.app.icon
-                                      )})`,
-                                backgroundColor: "unset"
-                              }}
-                            />
-                            <span className="name">{service.app.name}</span>
-                          </div>
-                          <div className="tableColumnBig">
-                            {service.teams ? this.renderTeams(service.teams) : "No single User"}
-                          </div>
-                          <div className="tableColumnBig">
-                            {service.licences
-                              ? this.renderEmployees(service.licences)
-                              : "No single User"}
-                          </div>
-                        </div>
-                        <div className="tableEnd">
-                          <div className="editOptions">
-                            <i className="fal fa-external-link-alt" />
-                            <i
-                              className="fal fa-trash-alt"
-                              onClick={e => {
-                                e.stopPropagation();
-                                this.setState({ willdeleting: service });
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                  {services.length > 0 && this.printServices(services)}
                 </div>
               );
             }}
@@ -414,28 +382,32 @@ class ServiceOverview extends React.Component<Props, State> {
           </PopupBase>
         )}
         {this.state.saving && (
-          <Mutation mutation={CREATE_TEAM}>
-            {createTeam => (
+          <Mutation mutation={CREATE_SERVICE}>
+            {createService => (
               <PopupSelfSaving
-                savingmessage="Adding new team"
-                savedmessage="New team succesfully added"
+                savingmessage="Adding new service"
+                savedmessage="New service succesfully added"
                 saveFunction={async () => {
-                  console.log("SAVING", this.state);
-                  await createTeam({
+                  console.log({
+                    serviceData: this.state.addservice,
+                    addedTeams: this.state.teams,
+                    addedEmployees: this.state.addemployees
+                  });
+                  await createService({
                     variables: {
-                      teamdata: this.state.addteam,
-                      addemployees: this.state.addemployees,
-                      apps: this.state.apps
+                      serviceData: this.state.addservice,
+                      addedTeams: this.state.teams,
+                      addedEmployees: this.state.addemployees
                     },
-                    refetchQueries: [{ query: fetchCompanyTeams }]
+                    refetchQueries: [{ query: fetchCompanyServices }]
                   });
                 }}
                 closeFunction={() =>
                   this.setState({
                     saving: false,
                     addemployees: [],
-                    apps: [],
-                    addteam: {},
+                    teams: [],
+                    addservice: null,
                     addStage: 1
                   })
                 }
@@ -449,18 +421,16 @@ class ServiceOverview extends React.Component<Props, State> {
             dialog={true}
             close={() => this.setState({ willdeleting: null })}
             closeable={false}>
-            <p>Do you really want to delete the team?</p>
-            {this.printRemoveLicences(this.state.willdeleting)}
+            <p>Do you really want to delete the service and all its licences?</p>
             <UniversalButton type="low" closingPopup={true} label="Cancel" />
             <UniversalButton
               type="low"
               label="Delete"
               onClick={() => {
-                console.log("THISSTATE", this.state);
                 this.setState(prevState => {
                   return {
                     willdeleting: null,
-                    deleting: prevState.willdeleting!.unitid.id
+                    deleting: prevState.willdeleting!.id
                   };
                 });
               }}
@@ -468,18 +438,17 @@ class ServiceOverview extends React.Component<Props, State> {
           </PopupBase>
         )}
         {this.state.deleting && (
-          <Mutation mutation={DELETE_TEAM}>
+          <Mutation mutation={DELETE_SERVICE}>
             {deleteTeam => (
               <PopupSelfSaving
-                savingmessage="Deleting team"
-                savedmessage="Team succesfully deleted"
+                savingmessage="Deleting service"
+                savedmessage="Service succesfully deleted"
                 saveFunction={async () =>
                   await deleteTeam({
                     variables: {
-                      teamid: this.state.deleting,
-                      keepLicences: this.state.keepLicences
+                      serviceid: this.state.deleting
                     },
-                    refetchQueries: [{ query: fetchCompanyTeams }]
+                    refetchQueries: [{ query: fetchCompanyServices }]
                   })
                 }
                 closeFunction={() =>

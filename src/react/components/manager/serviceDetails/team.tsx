@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalCheckbox from "../../universalForms/universalCheckbox";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import UniversalButton from "../../universalButtons/universalButton";
-import { fetchTeam } from "../../../queries/departments";
+import { fetchCompanyService } from "../../../queries/products";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import moment = require("moment");
@@ -26,8 +26,8 @@ interface State {
 }
 
 const REMOVE_SERVICE_FROM_TEAM = gql`
-  mutation removeServiceFromTeam($teamid: ID!, $serviceid: ID!, $keepLicences: [ID!]) {
-    removeServiceFromTeam(teamid: $teamid, serviceid: $serviceid, keepLicences: $keepLicences)
+  mutation removeServiceFromTeam($teamid: ID!, $boughtplanid: ID!, $keepLicences: [ID!]) {
+    removeServiceFromTeam(teamid: $teamid, boughtplanid: $boughtplanid, keepLicences: $keepLicences)
   }
 `;
 
@@ -40,7 +40,7 @@ class Team extends React.Component<Props, State> {
 
   printRemoveService() {
     let RLicencesArray: JSX.Element[] = [];
-    this.props.team.employees.forEach((employee, int) => {
+    this.props.team.departmentid.employees.forEach((employee, int) => {
       console.log("Employee", employee, int, this.state, this.props);
       RLicencesArray.push(
         <li key={int}>
@@ -50,19 +50,20 @@ class Team extends React.Component<Props, State> {
             liveValue={v =>
               v
                 ? this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences.splice(
+                    const keepLicencesNew2 = prevState.keepLicences.splice(
                       prevState.keepLicences.findIndex(l => l == employee.id),
                       1
                     );
                     console.log(
                       "keepLicencesNewA",
+                      prevState.keepLicences.findIndex(l => l == employee.id),
                       prevState.keepLicences,
-                      keepLicencesNew,
+                      keepLicencesNew2,
                       v,
                       employee
                     );
                     return {
-                      keepLicences: keepLicencesNew
+                      keepLicences: prevState.keepLicences
                     };
                   })
                 : this.setState(prevState => {
@@ -85,7 +86,8 @@ class Team extends React.Component<Props, State> {
   }
 
   render() {
-    const { service, team } = this.props;
+    const service = this.props.service;
+    const team = this.props.team.departmentid;
     return (
       <Mutation mutation={REMOVE_SERVICE_FROM_TEAM} key={team.unitid.id}>
         {removeServiceFromTeam => (
@@ -169,13 +171,13 @@ class Team extends React.Component<Props, State> {
                         removeServiceFromTeam({
                           variables: {
                             teamid: team.unitid.id,
-                            serviceid: service.id,
+                            boughtplanid: this.props.team.boughtplanid.id,
                             keepLicences: this.state.keepLicences
                           },
                           refetchQueries: [
                             {
-                              query: fetchTeam,
-                              variables: { teamid: team.unitid.id }
+                              query: fetchCompanyService,
+                              variables: { serviceid: service.id }
                             }
                           ]
                         })
