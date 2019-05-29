@@ -4,7 +4,7 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 
 interface Props {
   closeFunction: Function;
-  maxtime?: number;
+  maxTime?: number;
   fullmiddle?: Boolean;
   success: Boolean;
   error?: Object;
@@ -13,12 +13,14 @@ interface Props {
 interface State {
   tolong: Boolean;
   saved: Boolean;
+  progress: number;
 }
 
 class SelfSaving extends React.Component<Props, State> {
   state = {
     tolong: false,
-    saved: false
+    saved: false,
+    progress: 0
   };
 
   close() {
@@ -31,17 +33,16 @@ class SelfSaving extends React.Component<Props, State> {
   fullPath = path => `${__dirname}/../../../images/sso_creation_${path}.png`;
 
   render() {
-    console.log("PROPS", this.props);
-    if (this.props.maxtime) {
+    if (this.props.maxTime) {
       this.timeout = setTimeout(() => {
         if (!this.state.saved) {
           this.setState({ tolong: true });
         }
-      }, this.props.maxtime);
+      }, this.props.maxTime);
     }
 
     return (
-      <PopupBase dialog={true} nooutsideclose={true} fullmiddle={true}>
+      <PopupBase styles={{ maxWidth: "432px" }} nooutsideclose={true} fullmiddle={true}>
         {this.state.tolong ? (
           <>
             <div>
@@ -70,7 +71,8 @@ class SelfSaving extends React.Component<Props, State> {
         ) : (
           <div className="popup-sso">
             <img className="status-pic" src={this.fullPath("loading")} />
-            <i className="fal fa-spinner fa-spin" />
+            <progress max="100" value={this.state.progress} />
+
             <h3>
               <span>Just a moment.</span>
               <span>We are verifying the Implementation.</span>

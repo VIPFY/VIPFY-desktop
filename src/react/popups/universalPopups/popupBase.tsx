@@ -14,6 +14,7 @@ interface Props {
   nooutsideclose?: Boolean;
   buttonStyles?: Object;
   fullmiddle?: Boolean;
+  styles?: Object;
 }
 
 interface State {
@@ -187,7 +188,8 @@ class PopupBase extends React.Component<Props, State> {
                   {},
                   this.state.isopen ? showPopup : hidePopup,
                   this.props.small ? { maxWidth: "30rem" } : "",
-                  this.props.dialog ? { maxWidth: "25rem" } : ""
+                  this.props.dialog ? { maxWidth: "25rem" } : "",
+                  this.props.styles ? this.props.styles : ""
                 )}
                 onClick={e => e.stopPropagation()}>
                 {this.props.close && !(this.props.closeable == false) && (

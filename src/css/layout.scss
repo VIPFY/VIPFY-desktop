@@ -3893,7 +3893,7 @@ flex-wrap: wrap;
 .service-grid {
   display: grid;
   grid-template-columns: 1fr 3fr;
-  grid-template-rows: 56px repeat(auto-fill, 32px);
+  grid-template-rows: repeat(auto-fill, 56px);
   grid-gap: 24px;
 
   .universalLabelInput {
@@ -3912,6 +3912,7 @@ flex-wrap: wrap;
 }
 
 .service-logo {
+  cursor: pointer;
   grid-column: 1;
   grid-row: 1 / auto;
   height: 88px;
@@ -3930,6 +3931,25 @@ flex-wrap: wrap;
       font-size: 42px;
       opacity: 0.5;
     }
+  }
+}
+
+progress[value] {
+  -webkit-appearance: none;
+  height: 8px;
+  width: 206px;
+
+  &::-webkit-progress-bar {
+    background: rgba($vipfy-primary-color, 0.4);
+    border-radius: 2px;
+    box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3);
+  }
+
+  &::-webkit-progress-value {
+    background-color: $vipfy-primary-color;
+    border-radius: 2px; 
+    background-size: 35px 20px, 100% 100%, 100% 100%;
+    transition: all 100ms ease-in-out;
   }
 }
 

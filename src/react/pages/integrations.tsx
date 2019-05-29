@@ -68,7 +68,7 @@ const ADD_EXTERNAL_PLAN = gql`
 
 class Integrations extends React.Component<Props, AppPageState> {
   state = {
-    popupSSO: true,
+    popupSSO: false,
     popup: false,
     popupBody: null,
     popupHeading: "",
@@ -283,6 +283,7 @@ class Integrations extends React.Component<Props, AppPageState> {
 
   render() {
     const bodyprops = { ...this.state.popupProps, showLoading: this.state.showLoading };
+
     return (
       <div>
         {this.renderLoading(this.props.products.allApps)}
@@ -297,7 +298,9 @@ class Integrations extends React.Component<Props, AppPageState> {
         )}
 
         {!this.state.popup && this.state.popupSSO && (
-          <Mutation mutation={CREATE_OWN_APP} onError={() => this.setState({ showLoading: true })}>
+          <Mutation
+            mutation={CREATE_OWN_APP}
+            onCompleted={() => this.setState({ showLoading: false })}>
             {(createOwnApp, { data, loading, error }) => (
               <React.Fragment>
                 <PopupSSO
@@ -308,11 +311,11 @@ class Integrations extends React.Component<Props, AppPageState> {
                   }}
                   add={values => {
                     if (values.logo) {
-                      console.log("LOG: Integrations -> render -> values", values);
                       values.images = [values.logo, values.logo];
                     }
                     delete values.logo;
 
+                    this.setState({ showLoading: true });
                     createOwnApp({ variables: { ssoData: values } });
                   }}
                 />
@@ -320,6 +323,7 @@ class Integrations extends React.Component<Props, AppPageState> {
                   <SelfSaving
                     error={error}
                     success={data}
+                    maxTime={7000}
                     closeFunction={() => this.setState({ showLoading: false })}
                   />
                 )}

@@ -1,8 +1,19 @@
 import * as React from "react";
+import gql from "graphql-tag";
 import PopupBase from "./popupBase";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { randomPassword } from "../../common/passwordgen";
+import * as Dropzone from "react-dropzone";
+
+const UPDATE_PIC = gql`
+  mutation UpdatePic($file: Upload!) {
+    updateProfilePic(file: $file) {
+      id
+      profilepicture
+    }
+  }
+`;
 
 interface Props {
   cancel: Function;
@@ -16,27 +27,17 @@ interface State {
   email: string;
   password: string;
   randomkey: string;
-  logo: string;
+  logo: File | null;
 }
 
-class PopupAddLicence extends React.Component<Props, State> {
+class PopupSSO extends React.Component<Props, State> {
   state = {
     name: "",
     loginurl: "",
     email: "",
     password: "",
     randomkey: "",
-    logo: ""
-  };
-
-  componentWillReceiveProps = async () => {
-    await this.setState({
-      name: "",
-      loginurl: "",
-      email: "",
-      password: "",
-      randomkey: await randomPassword()
-    });
+    logo: null
   };
 
   render() {
@@ -47,7 +48,7 @@ class PopupAddLicence extends React.Component<Props, State> {
         key={this.state.randomkey}
         nooutsideclose={this.props.nooutsideclose}
         buttonStyles={{ justifyContent: "space-between" }}
-        dialog={true}
+        styles={{ maxWidth: "432px" }}
         close={() => this.props.cancel()}>
         <div>
           <h2
@@ -63,13 +64,24 @@ class PopupAddLicence extends React.Component<Props, State> {
           </h2>
         </div>
         <div className="service-grid">
-          {logo ? (
-            <img className="service-logo" src={logo} />
-          ) : (
-            <div className="service-logo-placeholder">
-              <i className="fal fa-pen" />
-            </div>
-          )}
+          <div className="service-logo-placeholder">
+            <Dropzone
+              style={{
+                width: "unset",
+                height: "unset",
+                border: "none"
+              }}
+              accept="image/*"
+              type="file"
+              multiple={false}
+              onDrop={([file]) => this.setState({ logo: file })}>
+              {logo ? (
+                <img className="service-logo" src={logo.preview} />
+              ) : (
+                <i className="fal fa-pen" />
+              )}
+            </Dropzone>
+          </div>
 
           {/* <React.Fragment>
                 <UniversalTextInput
@@ -132,4 +144,4 @@ class PopupAddLicence extends React.Component<Props, State> {
     );
   }
 }
-export default PopupAddLicence;
+export default PopupSSO;
