@@ -3,7 +3,6 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 
 import Store = require("electron-store");
-import { string } from "prop-types";
 
 interface Props {
   type: string;
@@ -28,7 +27,6 @@ class Login extends React.Component<Props, State> {
   };
 
   render() {
-    console.log(this.props, this.state);
     const store = new Store();
     let user: {
       email: string;
@@ -36,6 +34,7 @@ class Login extends React.Component<Props, State> {
       fullname: string;
       profilepicture: string;
     } | null = null;
+
     if (store.has("accounts")) {
       const machineuserarray = store.get("accounts");
       console.log("Users", machineuserarray);
@@ -46,7 +45,7 @@ class Login extends React.Component<Props, State> {
     return (
       <div className="dataGeneralForm">
         <div className="logo" />
-        <h1>{user ? `Welcome back, ${user.name}` : "Welcome"}</h1>
+        <h1>{`Welcome ${user ? `back, ${user.name}` : ""}`}</h1>
 
         <div className="UniversalInputHolder">
           <div className="preloggedFullname">
@@ -83,9 +82,9 @@ class Login extends React.Component<Props, State> {
             type="password"
             label="Password"
             livevalue={v => this.setState({ field2: v, changed: true })}
-            errorEvaluation={this.props.error && !this.state.changed}
+            errorEvaluation={this.props.error && this.state.changed}
             errorhint={
-              this.props.error && !this.state.changed ? (
+              this.props.error && this.state.changed ? (
                 <React.Fragment>
                   <i className="fal fa-exclamation-circle" />
                   <span>Password incorrect</span>
