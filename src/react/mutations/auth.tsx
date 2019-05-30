@@ -155,7 +155,7 @@ export const agreeTos = gql`
 `;
 
 export const forgotPassword = gql`
-  mutation ForgotPassword($email: String!) {
+  mutation onForgotPassword($email: String!) {
     forgotPassword(email: $email) {
       ok
       email

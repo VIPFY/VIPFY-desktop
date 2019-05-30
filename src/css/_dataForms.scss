@@ -1,61 +1,75 @@
+$fullWidth: 904px;
+
 .dataGeneralForm {
-  width: 904px;
-    height: 536px;
-    padding: 32px 32px 48px 32px;
-    background-color: white;
-    position: relative;
-    border-radius: 8px;
-    box-shadow: 0px 4px 5px rgba(#000000, 0.14);
+  width: $fullWidth;
+  height: 536px;
+  padding: 32px 32px 48px 32px;
+  background-color: white;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0px 4px 5px rgba(#000000, 0.14);
     
-    h1 {
-      //color: $vipfy_mainColor;
-      //font-family: 'Roboto', sans-serif;
-      all: unset;
-      font-size: 24px;
-      line-height: 32px;
-      width: 100%;
-      text-align: center;
-      display: block;
-      margin-top: 8px;
-      font-weight: 700;
+  h1 {
+    //color: $vipfy_mainColor;
+    //font-family: 'Roboto', sans-serif;
+    all: unset;
+    font-size: 24px;
+    line-height: 32px;
+    width: 100%;
+    text-align: center;
+    display: block;
+    margin-top: 8px;
+    font-weight: 700;
+  }
+    
+  .logo {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: $logo_white;
+    width: 48px;
+    height: 40px;
+    background-size: cover;
+    position: absolute;
+    top: 32px;
+    left: 32px;
+  }
+
+  .holder {
+    display: flex;
+    justify-content: space-around;
+
+    &-right {
+      width: $fullWidth / 2;
+      display: flex;
+      flex-flow: column;
+      justify-content: space-around;
+      height: 441px;
     }
-    
-    .logo {
-        background-repeat: no-repeat;
-        background-position: center;
-        background-image: $logo_white;
-        width: 48px;
-        height: 40px;
-        background-size: cover;
-        position: absolute;
-        top: 32px;
-        left: 32px;
+
+    .illustration {
+      &-login {
+        width: $fullWidth / 2;
+        height: 500px;
+        object-fit: contain;
+      }
     }
-    
-    .holder {
+
+    .login-buttons {
+      flex: 1;
       display: flex;
       justify-content: space-around;
-
-      .illustration {
-        &-login {
-          width: 300px;
-          height: 500px;
-          object-fit: contain;
-        }
-      }
-
-
-
+      align-items: flex-end;
+    }
 
     p {
-        all: unset;
-        line-height: 21px;
-        font-size: 16px;
-        width: 100%;
-        text-align: center;
-        display: inline-block;
-        margin-top: 32px;
-        height: 42px;
+      all: unset;
+      line-height: 21px;
+      font-size: 16px;
+      width: 100%;
+      text-align: center;
+      display: inline-block;
+      margin-top: 32px;
+      height: 42px;
     }
 
     .inputHolder{
@@ -83,12 +97,12 @@
     }
 
     .buttonHolder{
-        display: flex;
-        justify-content: space-between;
-        position: absolute;
-        top: 536px;
-        width: 440px;
-        left: 264px;
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      top: 536px;
+      width: 440px;
+      left: 264px;
     }
 
     .threeIllustrationHolder{
