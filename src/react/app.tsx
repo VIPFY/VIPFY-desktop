@@ -117,7 +117,7 @@ class App extends React.Component<AppProps, AppState> {
         mutation: REDEEM_SETUPTOKEN,
         variables: { setuptoken }
       });
-      const { ok, token } = res.data.redeemSetupToken;
+      const { token } = res.data.redeemSetupToken;
       localStorage.setItem("token", token);
       this.forceUpdate();
       store.delete("setuptoken");
@@ -146,7 +146,6 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   logMeIn = async (email: string, password: string) => {
-    console.log("LOGIN", email, password);
     try {
       const res = await this.props.signIn({ variables: { email, password } });
       const { ok, token } = res.data.signIn;

@@ -143,10 +143,12 @@ $fullWidth: 904px;
             line-height: 16px;
             margin-top: 16px;
         }
-        .buttonHolder{
-            margin-top: 24px;
-        }
+
+      .buttonHolder{
+        margin-top: 24px;
+      }
     }
+    
     .UniversalInputHolder{
         display: flex;
         justify-content: center;
@@ -163,7 +165,7 @@ $fullWidth: 904px;
             width: 342px;
         }
     }
-    .preloggedFullname{
+    .preloggedFullname {
         width: 208px;
         font-size: 14px;
         line-height: 22px;
@@ -182,7 +184,7 @@ $fullWidth: 904px;
             margin-bottom: 6px;
         }*/
     }
-    .notperson{
+    .notperson {
         all: unset;
         font-size: 10px;
         line-height: 13px;
@@ -210,46 +212,42 @@ $fullWidth: 904px;
             margin-top: -7px;
         }
     }
-    .accountArrayHolder{
-        position: absolute;
-        top: 104px;
-        left: 328px;
-        width: 312px;
-        max-height: 440px;
-        overflow-y: auto;
-        .accountHolder{
-            height: 55px;
-            border-bottom: 1px solid;
-            cursor: pointer;
-            border-radius: 4px 4px 0px 0px;
-            position: relative;
 
-            &:hover{
-                background-color: #F5F5F5;
-            }
-
-            .accountHolderBullet{
-                width: 20px;
-                height: 20px;
-                content: "";
-                display: block;
-                margin-left: 16px;
-                margin-right: 11px;
-                border-radius: 10px;
-                float: left;
-                margin-top: 21px;
-                background-size: cover;
-                background-position: center;
-            }
-
-            .accountDelete{
-                position: absolute;
-                top: 24px;
-                right: 24px;
-            }
-        }
+    .accountBullet {
+      width: 20px;
+      height: 20px;
+      content: "";
+      display: block;
+      margin-left: 16px;
+      margin-right: 11px;
+      border-radius: 10px;
+      float: left;
+      margin-bottom: 5px;
+      background-size: cover;
+      background-position: center;
     }
-    .accountBullet{
+  }
+
+  .accountArrayHolder {
+    position: absolute;
+    top: 104px;
+    left: 328px;
+    width: 312px;
+    max-height: 440px;
+    overflow-y: auto;
+
+    .accountHolder {
+      height: 55px;
+      border-bottom: 1px solid;
+      cursor: pointer;
+      border-radius: 4px 4px 0px 0px;
+      position: relative;
+
+      &:hover {
+        background-color: #F5F5F5;
+    }
+
+    .accountHolderBullet {
         width: 20px;
         height: 20px;
         content: "";
@@ -258,9 +256,16 @@ $fullWidth: 904px;
         margin-right: 11px;
         border-radius: 10px;
         float: left;
-        margin-bottom: 5px;
+        margin-top: 21px;
         background-size: cover;
         background-position: center;
+      }
+
+      .accountDelete {
+          position: absolute;
+          top: 24px;
+          right: 24px;
+      }
     }
   }
 }

@@ -1,11 +1,8 @@
 import * as React from "react";
+import { graphql } from "react-apollo";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupBase from "../../popups/universalPopups/popupBase";
-
-import { withApollo, graphql } from "react-apollo";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import { forgotPassword } from "../../mutations/auth";
 
 interface Props {
