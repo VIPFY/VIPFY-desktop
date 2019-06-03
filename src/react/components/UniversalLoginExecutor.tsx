@@ -154,6 +154,16 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     //     //console.log("cookie", cookie, cause, removed);
     //   });
   }
+  componentWillUnmount() {
+    if (this.timeoutHandle) {
+      clearTimeout(this.timeoutHandle);
+      this.timeoutHandle = undefined;
+    }
+    if (this.progressHanlde) {
+      clearInterval(this.progressHanlde);
+      this.progressHanlde = undefined;
+    }
+  }
   componentDidUpdate(prevProps: Props) {
     if (prevProps.loginUrl != this.props.loginUrl || prevProps.speed != this.props.speed) {
       this.reset();
@@ -194,7 +204,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   sendResult(w, delay) {
-    this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
+    if (delay != 0) {
+      this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
+    }
     if (!w) {
       w = this.webview;
     }
