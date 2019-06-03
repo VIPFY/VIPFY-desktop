@@ -105,6 +105,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   progress = 0;
 
   progressInterval = 100;
+  progressStep = 0;
 
   reset() {
     session.fromPartition(this.props.partition).clearStorageData();
@@ -124,6 +125,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     }
     this.progress = 0;
     this.props.progress!(0);
+    this.progressStep = ((1 - 2 * 0.2) * this.progressInterval) / this.props.timeout!;
   }
 
   componentDidMount() {
@@ -192,28 +194,29 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   sendResult(w, delay) {
+    this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
     }
-    if (w && this.props.takeScreenshot) {
+    if (w) {
       setTimeout(
         () =>
           w.getWebContents().capturePage(image => {
             this.props.setResult(
               { loggedin: this.isLoggedIn(w), ...this.loginState },
-              image.toDataURL({ scaleFactor: 0.5 })
+              this.props.takeScreenshot ? image.toDataURL({ scaleFactor: 0.5 }) : ""
             );
           }),
         delay
       );
     } else {
-      this.props.setResult({ loggedin: false, ...this.loginState }, "");
+      setTimeout(() => this.props.setResult({ loggedin: false, ...this.loginState }, ""), delay);
     }
   }
 
   progressCallback() {
-    this.progress += ((1 - 2 * 0.2) * this.progressInterval) / this.props.timeout!;
+    this.progress += this.progressStep;
     this.progress = Math.min(1, this.progress);
     this.props.progress!(this.progress);
   }
