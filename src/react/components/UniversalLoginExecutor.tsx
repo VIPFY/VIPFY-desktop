@@ -9,11 +9,13 @@ interface Props {
   username: string;
   password: string;
   timeout: number | null;
-  partition: string;
+  partition?: string;
+  takeScreenshot?: boolean;
   setResult: (
     result: { loggedin: boolean; emailEntered: boolean; passwordEntered: boolean },
     image: string
   ) => void;
+  progress?: (progress: number) => void;
   speed?: number;
 }
 
@@ -79,7 +81,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
   static defaultProps = {
     speed: 1,
-    partition: "universalLogin"
+    partition: "universalLogin",
+    progress: () => null,
+    takeScreenshot: true
   };
 
   loginState = {
