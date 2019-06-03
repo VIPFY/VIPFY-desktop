@@ -104,7 +104,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
   progress = 0;
 
-  progressInterval = 100;
+  progressInterval = 200;
   progressStep = 0;
 
   reset() {
@@ -195,6 +195,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
   sendResult(w, delay) {
     this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
+    if (!w) {
+      w = this.webview;
+    }
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
@@ -218,7 +221,17 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   progressCallback() {
     this.progress += this.progressStep;
     this.progress = Math.min(1, this.progress);
+    console.log(this.progress);
     this.props.progress!(this.progress);
+    if (
+      this.loginState.emailEntered &&
+      this.loginState.passwordEntered &&
+      this.webview &&
+      this.isLoggedIn(this.webview)
+    ) {
+      this.progress = 1;
+      this.sendResult(this.webview, 0);
+    }
   }
 
   async modifiedSleep(ms: number) {
@@ -278,7 +291,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           w.send("formFieldFilled");
 
           if (this.loginState.emailEntered && this.loginState.passwordEntered) {
-            this.sendResult(w, 20000);
+            this.sendResult(w, 30000);
           }
         }
         break;
