@@ -214,6 +214,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
   progressCallback() {
     this.progress += ((1 - 2 * 0.2) * this.progressInterval) / this.props.timeout!;
+    this.progress = Math.min(1, this.progress);
     this.props.progress!(this.progress);
   }
 
