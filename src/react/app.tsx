@@ -215,14 +215,11 @@ class App extends React.Component<AppProps, AppState> {
               profilepicture: string;
             }[] = [];
             if (store.has("accounts")) {
-              console.log("STORE BEFORE", store.get("accounts"));
               machineuserarray = store.get("accounts");
               const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
-              console.log("INDEX", i);
               if (i != -1) {
                 machineuserarray.splice(i, 1);
               }
-              console.log("MA", machineuserarray);
             }
             machineuserarray.push({
               email: data.me.emails[0].email,
@@ -230,7 +227,7 @@ class App extends React.Component<AppProps, AppState> {
               fullname: `${data.me.firstname} ${data.me.lastname}`,
               profilepicture: data.me.profilepicture
             });
-            console.log("MA AFTER", machineuserarray);
+
             store.set("accounts", machineuserarray);
 
             return (
