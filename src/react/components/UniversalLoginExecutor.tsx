@@ -98,7 +98,13 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
   timeoutHandle: NodeJS.Timer | undefined = undefined;
 
+  progressHanlde: NodeJS.Timer | undefined = undefined;
+
   webview: any = undefined;
+
+  progress = 0;
+
+  progressInterval = 100;
 
   reset() {
     session.fromPartition(this.props.partition).clearStorageData();
@@ -116,12 +122,15 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => this.sendResult(this.webview, 0), this.props.timeout);
     }
+    this.progress = 0;
+    this.props.progress!(0);
   }
 
   componentDidMount() {
     this.reset();
     this.mounted++;
     console.log("mounted", this.mounted);
+    this.progressHanlde = setInterval(this.progressCallback.bind(this), this.progressInterval);
 
     // session
     //   .fromPartition(this.props.partition)
@@ -187,7 +196,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
     }
-    if (w) {
+    if (w && this.props.takeScreenshot) {
       setTimeout(
         () =>
           w.getWebContents().capturePage(image => {
@@ -203,8 +212,13 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     }
   }
 
+  progressCallback() {
+    this.progress += ((1 - 2 * 0.2) * this.progressInterval) / this.props.timeout!;
+    this.props.progress!(this.progress);
+  }
+
   async modifiedSleep(ms: number) {
-    return await sleep(ms / this.props.speed);
+    return await sleep(ms / this.props.speed!);
   }
 
   async onIpcMessage(e) {
@@ -253,13 +267,14 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               return;
             }
             w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
+            this.progress += 0.2 / text.length;
             await this.modifiedSleep(Math.random() * 30 + 200);
           }
           await this.modifiedSleep(500);
           w.send("formFieldFilled");
 
           if (this.loginState.emailEntered && this.loginState.passwordEntered) {
-            this.sendResult(w, 10000);
+            this.sendResult(w, 20000);
           }
         }
         break;
