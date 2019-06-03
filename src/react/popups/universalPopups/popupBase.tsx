@@ -63,6 +63,7 @@ class PopupBase extends React.Component<Props, State> {
       this.open(false);
       setTimeout(() => originalClose(), 200);
     }
+    return true;
   }
 
   closeall() {

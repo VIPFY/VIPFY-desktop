@@ -65,10 +65,10 @@ class AppTile extends React.Component<Props, State> {
       <React.Fragment>
         <AppContext>
           {({ showPopup }) => (
-            <div
+            <button
               draggable={true}
               onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
-              className={`profile-app ${dragItem == id ? "hold" : ""} ${
+              className={`naked-button profile-app ${dragItem == id ? "hold" : ""} ${
                 this.state.entered ? "hovered" : ""
               }`}
               onDrag={() => this.props.dragStartFunction(id)}
@@ -126,39 +126,41 @@ class AppTile extends React.Component<Props, State> {
                     {deleteLicenceAt => (
                       <Mutation mutation={UPDATE_CREDENTIALS}>
                         {updateCredentials => (
-                          <i
-                            className="fal fa-edit"
+                          <button
+                            className="naked-button"
+                            title="Edit Licence"
                             onClick={e => {
                               this.setState({ newpopup: true });
                               e.stopPropagation();
                               /*showPopup({
-                              header: `Edit licence of Team: ${name}`,
-                              body: EditLicence,
-                              props: {
-                                closeFunction: () => showPopup(null),
-                                teamname: name,
-                                appname: planid.appid.name,
-                                deleteFunction: async licenceid => {
-                                  await deleteLicenceAt({
-                                    variables: { licenceid, time: moment().utc() },
-                                    refetchQueries: [{ query: fetchLicences }, { query: me }]
-                                  });
-                                },
-                                submitFunction: async variables => {
-                                  await updateCredentials({ variables });
-                                },
-                                id
-                              }
-                            });*/
-                            }}
-                          />
+                            header: `Edit licence of Team: ${name}`,
+                            body: EditLicence,
+                            props: {
+                              closeFunction: () => showPopup(null),
+                              teamname: name,
+                              appname: planid.appid.name,
+                              deleteFunction: async licenceid => {
+                                await deleteLicenceAt({
+                                  variables: { licenceid, time: moment().utc() },
+                                  refetchQueries: [{ query: fetchLicences }, { query: me }]
+                                });
+                              },
+                              submitFunction: async variables => {
+                                await updateCredentials({ variables });
+                              },
+                              id
+                            }
+                          });*/
+                            }}>
+                            <i className="fal fa-edit" />
+                          </button>
                         )}
                       </Mutation>
                     )}
                   </Mutation>
                 )}
               </div>
-            </div>
+            </button>
           )}
         </AppContext>
         {this.state.newpopup ? (

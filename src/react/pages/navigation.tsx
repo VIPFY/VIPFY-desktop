@@ -353,7 +353,7 @@ class Navigation extends React.Component<Props, State> {
           <div className="credits">Free in Beta</div>
 
           <div className="right-profile-holder">
-            <div className="pic-and-name" onClick={() => this.goTo("profile")}>
+            <button className="naked-button pic-and-name" onClick={() => this.goTo("profile")}>
               <UserPicture size="right-profile-image" unitid={this.props.id} />
 
               <div className="name-holder">
@@ -364,7 +364,7 @@ class Navigation extends React.Component<Props, State> {
                   {this.props.lastname}
                 </span>
               </div>
-            </div>
+            </button>
 
             <span onClick={this.toggleNotificationPopup} className="right-profile-holder">
               <span

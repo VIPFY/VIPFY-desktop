@@ -40,6 +40,7 @@ import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
 import {SideBarContext} from "../common/context"
+import ClickTracker from '../components/ClickTracker';
 
 interface AreaProps {
   history: any[];
@@ -359,6 +360,7 @@ class Area extends React.Component<AreaProps, AreaState> {
 
     return (
       <div className="area">
+        <ClickTracker />
         <SideBarContext.Provider value={this.state.sidebarOpen }>
           <Route
             render={props => {
