@@ -12,6 +12,7 @@ import PopupSSO from "../popups/universalPopups/PopupSSO";
 import AppCardIntegrations from "../components/services/appCardIntegrations";
 import { CREATE_OWN_APP } from "../mutations/products";
 import SelfSaving from "../popups/universalPopups/SelfSavingIllustrated";
+import { SSO } from "../interfaces";
 
 interface Props {
   history: any;
@@ -31,6 +32,7 @@ export type AppPageState = {
   searchopen: Boolean;
   searchstring: String;
   showLoading: boolean;
+  ownSSO: SSO;
 };
 
 const ADD_EXTERNAL_ACCOUNT = gql`
@@ -77,7 +79,8 @@ class Integrations extends React.Component<Props, AppPageState> {
     popupInfo: "",
     searchopen: false,
     searchstring: "",
-    showLoading: false
+    showLoading: false,
+    ownSSO: {}
   };
 
   closePopup = () => this.setState({ popup: false });
@@ -315,15 +318,16 @@ class Integrations extends React.Component<Props, AppPageState> {
                     }
                     delete values.logo;
 
-                    this.setState({ showLoading: true });
-                    createOwnApp({ variables: { ssoData: values } });
+                    this.setState({ ownSSO: { ...values }, showLoading: true });
+                    // createOwnApp({ variables: { ssoData: values } });
                   }}
                 />
                 {this.state.showLoading && (
                   <SelfSaving
                     error={error}
                     success={data}
-                    maxTime={7000}
+                    sso={this.state.ownSSO}
+                    //  maxTime={7000}
                     closeFunction={() => this.setState({ showLoading: false })}
                   />
                 )}

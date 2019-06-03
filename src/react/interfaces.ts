@@ -207,3 +207,10 @@ export interface Domain {
   availability: string;
   description: string;
 }
+
+export interface SSO {
+  name?: string;
+  loginurl?: string;
+  email?: string;
+  password?: string;
+}

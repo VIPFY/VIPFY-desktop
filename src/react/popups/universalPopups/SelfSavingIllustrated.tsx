@@ -1,10 +1,13 @@
 import * as React from "react";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
+import UniversalLoginExecutor from "../../components/UniversalLoginExecutor";
+import { SSO } from "../../interfaces";
 
 interface Props {
   closeFunction: Function;
   maxTime?: number;
+  sso: SSO;
   fullmiddle?: Boolean;
   success: Boolean;
   error?: Object;
@@ -72,6 +75,23 @@ class SelfSaving extends React.Component<Props, State> {
           <div className="popup-sso">
             <img className="status-pic" src={this.fullPath("loading")} />
             <progress max="100" value={this.state.progress} />
+
+            <div className="hide-sso-webview">
+              <UniversalLoginExecutor
+                loginUrl={this.props.sso.loginurl!}
+                username={this.props.sso!.email!}
+                password={this.props.sso.password!}
+                partition={`self-sso-${this.props.sso.name}`}
+                timeout={60000}
+                takeScreenshot={false}
+                setResult={result => {
+                  console.log("Result: ", result);
+                }}
+                progress={progress => {
+                  this.setState({ progress: progress * 100 });
+                }}
+              />
+            </div>
 
             <h3>
               <span>Just a moment.</span>
