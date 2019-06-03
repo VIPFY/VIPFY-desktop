@@ -330,7 +330,7 @@ class ServiceOverview extends React.Component<Props, State> {
                 }
               }
               return (
-                <div className="table">
+                <div className="table" key="table">
                   <div className="tableHeading">
                     <div className="tableMain">
                       <div className="tableColumnBig">
@@ -388,11 +388,6 @@ class ServiceOverview extends React.Component<Props, State> {
                 savingmessage="Adding new service"
                 savedmessage="New service succesfully added"
                 saveFunction={async () => {
-                  console.log({
-                    serviceData: this.state.addservice,
-                    addedTeams: this.state.teams,
-                    addedEmployees: this.state.addemployees
-                  });
                   await createService({
                     variables: {
                       serviceData: this.state.addservice,

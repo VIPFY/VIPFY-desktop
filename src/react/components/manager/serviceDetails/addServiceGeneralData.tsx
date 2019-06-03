@@ -4,6 +4,7 @@ import * as Dropzone from "react-dropzone";
 import UniversalSearchBox from "../../universalSearchBox";
 import { Query } from "react-apollo";
 import { fetchApps } from "../../../queries/products";
+import { now } from "moment";
 
 interface Props {
   close: Function;
@@ -36,7 +37,6 @@ class AddServiceGeneralData extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("RENDER", this.props, this.state);
     return (
       <React.Fragment>
         <span>
@@ -131,7 +131,6 @@ class AddServiceGeneralData extends React.Component<Props, State> {
               }
 
               let appsArray: JSX.Element[] = [];
-              console.log("allApps", data.allApps);
               let apps = data.allApps.filter(e =>
                 e.name.toUpperCase().includes(this.state.search.toUpperCase())
               );
@@ -151,9 +150,11 @@ class AddServiceGeneralData extends React.Component<Props, State> {
               });
 
               apps.forEach(app => {
-                const oldservice =
-                  this.props.currentServices.find(s => s.id == app.id) ||
-                  (this.state.integrateService && this.state.integrateService!.id == app.id);
+                const oldservice = this.props.currentServices.find(
+                  s =>
+                    (s.id == app.id && (s.endtime == null || s.endtime > now())) ||
+                    (this.state.integrateService && this.state.integrateService!.id == app.id)
+                );
 
                 appsArray.push(
                   <div
@@ -161,7 +162,9 @@ class AddServiceGeneralData extends React.Component<Props, State> {
                     className="space"
                     style={{ width: "136px", height: "200px" }}
                     draggable={!oldservice}
-                    onClick={() => this.setState({ popup: true, integrateService: app })}
+                    onClick={() =>
+                      !oldservice && this.setState({ popup: true, integrateService: app })
+                    }
                     onDragStart={() => this.setState({ drag: app })}>
                     <div
                       className="image"
@@ -236,7 +239,7 @@ class AddServiceGeneralData extends React.Component<Props, State> {
                         <i className="fal fa-plus" />
                       </div>
                       <div className="name" style={{ top: "136px" }}>
-                        Add our own
+                        Add your own
                       </div>
                     </div>
                     {appsArray}
@@ -252,6 +255,7 @@ class AddServiceGeneralData extends React.Component<Props, State> {
           <UniversalButton
             label="Continue"
             type="high"
+            disabeld={!this.state.integrateService}
             onClick={() => this.props.continue(this.state.integrateService)}
           />
         </div>

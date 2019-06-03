@@ -92,7 +92,6 @@ class ServiceTeamsSection extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("RERENDER TEAM");
     let teamArray: JSX.Element[] = [];
     const interteams = this.props.teams;
     let teams = interteams;

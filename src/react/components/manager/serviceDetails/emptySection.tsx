@@ -1,10 +1,13 @@
 import * as React from "react";
 import UniversalButton from "../../../components/universalButtons/universalButton";
-import { Query, Mutation } from "react-apollo";
+import { graphql, compose } from "react-apollo";
+import gql from "graphql-tag";
 import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
 import AddEmployee from "./addEmployee";
 import Employee from "./employee";
 import { now } from "moment";
+import Empty from "./empty";
+import AddEmpty from "./addEmpty";
 
 interface Props {
   licences: any[];
@@ -29,7 +32,7 @@ interface State {
   } | null;
 }
 
-class EmployeeSection extends React.Component<Props, State> {
+class EmptySection extends React.Component<Props, State> {
   state = {
     delete: false,
     confirm: false,
@@ -47,8 +50,8 @@ class EmployeeSection extends React.Component<Props, State> {
     let licences: any[] = [];
     let interlicences: any[] = [];
     if (this.props.licences) {
-      interlicences = this.props.licences.filter(l => l.unitid);
-      interlicences.sort(function(a, b) {
+      interlicences = this.props.licences.filter(l => l.unitid == null);
+      /*interlicences.sort(function(a, b) {
         let nameA = `${a.unitid.firstname} ${a.unitid.lastname}`.toUpperCase();
         let nameB = `${b.unitid.firstname} ${b.unitid.lastname}`.toUpperCase();
         if (nameA < nameB) {
@@ -68,17 +71,19 @@ class EmployeeSection extends React.Component<Props, State> {
         });
       } else {
         licences = interlicences;
-      }
+      }*/
+
+      licences = interlicences;
     }
 
     const employeeArray: JSX.Element[] = [];
     let activelicences: any[] = [];
 
     licences.forEach((licence, k) => {
-      if ((licence.endtime == null || licence.endtime >= now()) && !licence.teamlicence) {
+      if (licence.endtime == null || licence.endtime >= now()) {
         activelicences.push(licence);
         employeeArray.push(
-          <Employee
+          <Empty
             key={licence.id}
             licence={licence}
             service={this.props.service}
@@ -91,31 +96,25 @@ class EmployeeSection extends React.Component<Props, State> {
     return (
       <div className="section">
         <div className="heading">
-          <h1>Employees</h1>
+          <h1>Empty Licences</h1>
         </div>
         <div className="table">
           <div className="tableHeading">
             <div className="tableMain">
               <div className="tableColumnSmall">
-                <h1>User</h1>
+                <h1>Identifier</h1>
               </div>
               <div className="tableColumnSmall">
-                <h1>Online</h1>
+                <h1>Created</h1>
               </div>
               <div className="tableColumnSmall">
-                <h1>Workmail</h1>
-              </div>
-              <div className="tableColumnSmall">
-                <h1>Workphone</h1>
-              </div>
-              <div className="tableColumnSmall">
-                <h1>Position</h1>
+                <h1>Ending</h1>
               </div>
             </div>
             <div className="tableEnd">
               <UniversalButton
                 type="high"
-                label="Add Employee"
+                label="Add Empty"
                 customStyles={{
                   fontSize: "12px",
                   lineHeight: "24px",
@@ -132,7 +131,7 @@ class EmployeeSection extends React.Component<Props, State> {
           {employeeArray}
         </div>
         {this.state.add && (
-          <AddEmployee
+          <AddEmpty
             close={sO => {
               this.setState({ add: false, savingObject: sO });
             }}
@@ -155,4 +154,4 @@ class EmployeeSection extends React.Component<Props, State> {
     );
   }
 }
-export default EmployeeSection;
+export default EmptySection;

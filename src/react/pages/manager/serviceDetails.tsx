@@ -17,6 +17,7 @@ import ServiceSection from "../../components/manager/serviceSection";
 import { fetchCompanyService } from "../../queries/products";
 import ServiceGeneralData from "../../components/manager/serviceGeneralData";
 import ServiceTeamsSection from "../../components/manager/serviceTeamsSection";
+import EmptySection from "../../components/manager/serviceDetails/emptySection";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -55,7 +56,6 @@ class ServiceDetails extends React.Component<Props, State> {
 
       await this.setState({ loading: false });
     } catch (err) {
-      console.log("err", err);
       await this.setState({ loading: false });
     }
   };
@@ -71,10 +71,8 @@ class ServiceDetails extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error.message}`;
           }
-          console.log("Service", data);
 
           const service = data.fetchCompanyService && data.fetchCompanyService.app;
-          console.log("LOG: TeamDetails -> render -> service", data.fetchCompanyService);
 
           return (
             <div className="managerPage">
@@ -119,12 +117,12 @@ class ServiceDetails extends React.Component<Props, State> {
                                 }
                               : { backgroundColor: service.color }
                           }>
-                          <div className="imagehover">
+                          {/*<div className="imagehover">
                             <i className="fal fa-camera" />
                             <span>Upload</span>
-                          </div>
+                        </div>*/}
                         </div>
-
+                        {/*
                         <Dropzone
                           disabled={this.state.loading}
                           style={{
@@ -139,7 +137,7 @@ class ServiceDetails extends React.Component<Props, State> {
                           type="file"
                           multiple={false}
                           onDrop={([file]) => this.uploadPic(file)}
-                        />
+                        />*/}
                       </label>
                     </form>
                   </div>
@@ -162,34 +160,12 @@ class ServiceDetails extends React.Component<Props, State> {
                 licences={data.fetchCompanyService.licences}
                 moveTo={this.props.moveTo}
               />
-              {/*<ServiceSection team={team} search={this.state.search} />*/}
-              {/*<TeamsSection
-                employeeid={employeeid}
-                employeename={`${querydata.firstname} ${querydata.lastname}`}
+              <EmptySection
+                search={this.state.search}
+                service={service}
+                licences={data.fetchCompanyService.licences}
+                moveTo={this.props.moveTo}
               />
-              <LicencesSection
-                employeeid={employeeid}
-                employeename={`${querydata.firstname} ${querydata.lastname}`}
-              />
-              {this.state.changepicture && (
-                <PopupSelfSaving
-                  savingmessage="Saving Profileimage"
-                  savedmessage="Profileimage successfully saved"
-                  saveFunction={async () => {
-                    await this.props.updatePic({
-                      variables: { file: this.state.changepicture },
-                      refetchQueries: ["me"]
-                    });
-                    this.props.client.query({ query: me, fetchPolicy: "network-only" });
-                    this.props.client.query({
-                      query: QUERY_USER,
-                      variables: { userid: this.props.match.params.userid },
-                      fetchPolicy: "network-only"
-                    });
-                  }}
-                  closeFunction={() => this.setState({ changepicture: null })}
-                />
-                )}*/}
             </div>
           );
         }}

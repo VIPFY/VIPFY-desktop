@@ -125,7 +125,6 @@ class AddEmployee extends React.Component<Props, State> {
     this.props.licences.forEach(l =>
       allelements.push({ ...l.unitid, dragable: false, id: l.id, licence: l })
     );
-    console.log("aL", addedLicences);
     addedLicences.forEach(l => allelements.push({ ...l, dragable: true, id: `new-${l.id}` }));
     return (
       <PrintCurrent
@@ -143,7 +142,6 @@ class AddEmployee extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("ADDEMP", this.props, this.state);
     return (
       <>
         <PopupBase
@@ -222,7 +220,6 @@ class AddEmployee extends React.Component<Props, State> {
                       onClick={() =>
                         available &&
                         this.setState(() => {
-                          console.log("employee", employee);
                           return {
                             popup: true,
                             integrateEmployee: Object.assign({}, { integrating: true, ...employee })
@@ -306,7 +303,11 @@ class AddEmployee extends React.Component<Props, State> {
               }}
             </Query>
           </div>
-          <UniversalButton label="Cancel" type="low" closingPopup={true} />
+          <UniversalButton
+            label={this.props.continue ? "Back" : "Cancel"}
+            type="low"
+            closingPopup={true}
+          />
 
           <UniversalButton
             label={this.props.continue ? "Continue" : "Save"}
@@ -322,14 +323,13 @@ class AddEmployee extends React.Component<Props, State> {
 
           {this.state.saving && (
             <PopupSelfSaving
-              savedmessage="The Team has been successfully added"
-              savingmessage="The Team is currently added"
+              savedmessage="The employees have been successfully added"
+              savingmessage="The employees are currently added"
               closeFunction={() => {
                 this.setState({ saving: false, addedLicences: [], integrateEmployee: null });
                 this.props.close();
               }}
               saveFunction={() => {
-                console.log(this.state.addedLicences);
                 this.state.addedLicences.forEach(async licence => {
                   let res = await this.props.addExternalBoughtPlan({
                     variables: {

@@ -49,7 +49,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
     console.log("PROPS", this.props);
     if (this.props.maxtime) {
       this.timeout = setTimeout(() => {
-        if (!this.state.saved) {
+        if (!this.state.saved && !this.state.error) {
           this.setState({ tolong: true });
         }
       }, this.props.maxtime);

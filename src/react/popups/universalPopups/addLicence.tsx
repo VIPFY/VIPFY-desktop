@@ -13,8 +13,9 @@ interface Props {
   };
   cancel: Function;
   add: Function;
-  employeename: string;
+  employeename?: string;
   nooutsideclose?: Boolean;
+  empty?: Boolean;
 }
 
 interface State {
@@ -23,6 +24,7 @@ interface State {
   password: string;
   integrateApp: any;
   randomkey: string;
+  empty: string;
 }
 
 class PopupAddLicence extends React.Component<Props, State> {
@@ -31,7 +33,8 @@ class PopupAddLicence extends React.Component<Props, State> {
     email: "",
     password: "",
     integrateApp: {},
-    randomkey: ""
+    randomkey: "",
+    empty: ""
   };
 
   componentWillReceiveProps = async props => {
@@ -65,7 +68,9 @@ class PopupAddLicence extends React.Component<Props, State> {
               marginBottom: "24px",
               display: "block"
             }}>
-            Add an account of "{name}" to {this.props.employeename}
+            {this.props.empty
+              ? `Add empty licence of service ${name}`
+              : `Add an account of "${name}" to ${this.props.employeename}`}
           </h2>
         </div>
         <div className="addLicenceGrid">
@@ -84,6 +89,19 @@ class PopupAddLicence extends React.Component<Props, State> {
           />
           <div>
             <div style={{ width: "100%", height: "16px" }} />
+            {this.props.empty && (
+              <>
+                <UniversalTextInput
+                  width="100%"
+                  id="emptyid"
+                  label="Identifier"
+                  startvalue=""
+                  livevalue={value => this.setState({ empty: value })}>
+                  <span className="small">Please give an identifier for the empty licence.</span>
+                </UniversalTextInput>
+                <div style={{ width: "100%", height: "24px" }} />
+              </>
+            )}
             {needssubdomain ? (
               <React.Fragment>
                 <UniversalTextInput
@@ -136,7 +154,8 @@ class PopupAddLicence extends React.Component<Props, State> {
             this.props.add({
               email: this.state.email,
               password: this.state.password,
-              subdomain: this.state.subdomain
+              subdomain: this.state.subdomain,
+              empty: this.state.empty
             })
           }
         />

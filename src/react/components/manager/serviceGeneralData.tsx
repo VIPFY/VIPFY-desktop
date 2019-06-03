@@ -64,11 +64,10 @@ class ServiceGeneralData extends React.Component<Props, State> {
   }
 
   render() {
-    console.log(this.props.servicedata);
     const service = this.props.servicedata;
     return (
       <>
-        <div className="tableRow" style={{ height: "80px" }}>
+        <div className="tableRow" style={{ height: "80px", boxShadow: "none" }}>
           <div className="tableMain">
             <div className="tableColumnSmall">
               <h1>Name</h1>

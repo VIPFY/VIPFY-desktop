@@ -103,9 +103,7 @@ class AddTeam extends React.Component<Props, State> {
         oldTeams.push({ ...t.departmentid, oldteam: true });
       });
     }
-    console.log("OLDTEAMS", oldTeams);
     const teams = oldTeams.concat(addedTeams);
-    console.log("TEAMS", teams);
     if (teams.length > 0) {
       teams.sort(function(a, b) {
         let nameA = a.name.toUpperCase(); // ignore upper and lowercase
@@ -347,7 +345,6 @@ class AddTeam extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("ADDTEAM", this.props, this.state);
     return (
       <Mutation mutation={ADD_TO_TEAM}>
         {addAppToTeam => (
@@ -500,7 +497,11 @@ class AddTeam extends React.Component<Props, State> {
                   }}
                 </Query>
               </div>
-              <UniversalButton label="Cancel" type="low" closingPopup={true} />
+              <UniversalButton
+                label={this.props.continue ? "Back" : "Cancel"}
+                type="low"
+                closingPopup={true}
+              />
 
               <UniversalButton
                 label={this.props.continue ? "Continue" : "Save"}
