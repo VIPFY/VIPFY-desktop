@@ -102,7 +102,18 @@ class AddTeamServices extends React.Component<Props, State> {
           {this.state.integrateApp!.employees &&
             this.state.integrateApp!.employees.map(employee => {
               return (
-                <li key={employee.id}>
+                <li key={employee.id} style={{ fontSize: "12px" }}>
+                  {employee.setupfinished ? (
+                    <i
+                      className="fal fa-check-circle"
+                      style={{ color: "#20BAA9", marginRight: "4px" }}
+                    />
+                  ) : (
+                    <i
+                      className="fal fa-times-circle"
+                      style={{ color: "#FF2700", marginRight: "4px" }}
+                    />
+                  )}
                   Individual Teamlicence for <b>{`${employee.firstname} ${employee.lastname}`}</b>
                   {employee.setupfinished
                     ? " successfully configurated"
@@ -531,6 +542,9 @@ class AddTeamServices extends React.Component<Props, State> {
             employeename={`${this.props.employees[this.state.counter].firstname} ${
               this.props.employees[this.state.counter].lastname
             }`}
+            employee={this.props.employees[this.state.counter]}
+            maxstep={this.props.employees.length}
+            currentstep={this.state.counter}
           />
         )}
       </React.Fragment>

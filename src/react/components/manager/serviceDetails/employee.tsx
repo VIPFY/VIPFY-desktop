@@ -149,7 +149,7 @@ class Employee extends React.Component<Props, State> {
                       title="Delete"
                       onClick={e => {
                         e.stopPropagation();
-                        this.setState({ delete: true, keepAccount: false });
+                        this.setState({ delete: true, keepAccount: true });
                       }}
                     />
                   </div>

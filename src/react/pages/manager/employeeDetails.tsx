@@ -166,6 +166,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                 employeeid={employeeid}
                 employeename={`${querydata.firstname} ${querydata.lastname}`}
                 moveTo={this.props.moveTo}
+                employee={querydata}
               />
               {this.state.changepicture && (
                 <PopupSelfSaving

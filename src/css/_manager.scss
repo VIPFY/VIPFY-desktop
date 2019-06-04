@@ -571,4 +571,20 @@
             line-height: 16px;
         }
     }
+    .steps{
+        display: flex;
+        height: 6px;
+        justify-content: space-between;
+
+        .step{
+            width: 6px;
+            height: 6px;
+            background-color: #A5E3DC;
+            border-radius: 6px;
+
+        }
+        .current{
+            background-color: #20BAA9;
+        }
+    }
 }

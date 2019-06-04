@@ -284,7 +284,18 @@ class AddTeamEmployee extends React.Component<Props, State> {
           <ul className="checks">
             {this.state.integrateEmployee!.services.map(service => {
               return (
-                <li key={service.planid.appid.name}>
+                <li key={service.planid.appid.name} style={{ fontSize: "12px" }}>
+                  {service.setupfinished ? (
+                    <i
+                      className="fal fa-check-circle"
+                      style={{ color: "#20BAA9", marginRight: "4px" }}
+                    />
+                  ) : (
+                    <i
+                      className="fal fa-times-circle"
+                      style={{ color: "#FF2700", marginRight: "4px" }}
+                    />
+                  )}
                   Individual Teamlicence for <b>{service.planid.appid.name}</b>
                   {service.setupfinished
                     ? " successfully configurated"
@@ -529,8 +540,8 @@ class AddTeamEmployee extends React.Component<Props, State> {
 
               {this.state.saving && (
                 <PopupSelfSaving
-                  savedmessage="The Team has been successfully added"
-                  savingmessage="The Team is currently added"
+                  savedmessage="The employee has been successfully added"
+                  savingmessage="The employee is currently added"
                   closeFunction={() => {
                     this.setState({ saving: false });
                     this.props.close();
@@ -658,6 +669,7 @@ class AddTeamEmployee extends React.Component<Props, State> {
                   employeename={`${this.state.integrateEmployee!.firstname} ${
                     this.state.integrateEmployee!.lastname
                   }`}
+                  employee={this.state.integrateEmployee!}
                 />
               )}
           </>

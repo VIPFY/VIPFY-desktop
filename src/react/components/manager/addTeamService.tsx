@@ -289,12 +289,23 @@ class AddTeamService extends React.Component<Props, State> {
             {this.state.integrateApp!.employees &&
               this.state.integrateApp!.employees.map(employee => {
                 return (
-                  <li key={employee.id}>
+                  <li key={employee.id} style={{ fontSize: "12px" }}>
+                    {employee.setupfinished ? (
+                      <i
+                        className="fal fa-check-circle"
+                        style={{ color: "#20BAA9", marginRight: "4px" }}
+                      />
+                    ) : (
+                      <i
+                        className="fal fa-times-circle"
+                        style={{ color: "#FF2700", marginRight: "4px" }}
+                      />
+                    )}
                     Individual Teamlicence for <b>{`${employee.firstname} ${employee.lastname}`}</b>
                     {employee.setupfinished
                       ? " successfully configurated"
                       : employee.setupfinished == null
-                      ? "not started"
+                      ? " not started"
                       : " not configured"}
                   </li>
                 );
@@ -602,7 +613,7 @@ class AddTeamService extends React.Component<Props, State> {
                       let newintegrateApp2 = newintegrateApp;
                       newintegrateApp2.employees = prevState.integrateApp!.employees || [];
                       newintegrateApp2.employees.push(currentemployee);
-                      if (newcounter < prevState.integrateApp!.employees.length) {
+                      if (newcounter < this.props.team!.employees.length) {
                         return {
                           ...prevState,
                           counter: newcounter,
@@ -652,6 +663,9 @@ class AddTeamService extends React.Component<Props, State> {
                   employeename={`${this.props.team.employees[this.state.counter].firstname} ${
                     this.props.team.employees[this.state.counter].lastname
                   }`}
+                  employee={this.props.team.employees[this.state.counter]}
+                  maxstep={this.props.team.employees.length}
+                  currentstep={this.state.counter}
                 />
               )}
           </>

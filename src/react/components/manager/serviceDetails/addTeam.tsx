@@ -128,10 +128,8 @@ class AddTeam extends React.Component<Props, State> {
             onDragStart={() => this.setState({ dragdelete: team })}
             onClick={() =>
               this.setState(prevState => {
-                const remainingteams = prevState.addedTeams.filter(
-                  e => e.unitid.id != team.unitid.id
-                );
-                return { addedTeams: remainingteams };
+                const remainingteams = prevState.teams.filter(e => e.unitid.id != team.unitid.id);
+                return { teams: remainingteams };
               })
             }>
             <div
@@ -243,6 +241,7 @@ class AddTeam extends React.Component<Props, State> {
   }
 
   printEmployeeAddSteps() {
+    console.log("integrateTeam", this.state);
     if (this.state.integrateTeam.employees.length == 0) {
       return (
         <div className="buttonsPopup">
@@ -287,12 +286,23 @@ class AddTeam extends React.Component<Props, State> {
             {this.state.integrateTeam!.employees &&
               this.state.integrateTeam!.employees.map(employee => {
                 return (
-                  <li key={employee.id}>
+                  <li key={employee.id} style={{ fontSize: "12px" }}>
+                    {employee.setupfinished ? (
+                      <i
+                        className="fal fa-check-circle"
+                        style={{ color: "#20BAA9", marginRight: "4px" }}
+                      />
+                    ) : (
+                      <i
+                        className="fal fa-times-circle"
+                        style={{ color: "#FF2700", marginRight: "4px" }}
+                      />
+                    )}
                     Individual Teamlicence for <b>{`${employee.firstname} ${employee.lastname}`}</b>
                     {employee.setupfinished
                       ? " successfully configurated"
                       : employee.setupfinished == null
-                      ? "not started"
+                      ? " not started"
                       : " not configured"}
                   </li>
                 );
@@ -345,6 +355,7 @@ class AddTeam extends React.Component<Props, State> {
   }
 
   render() {
+    console.log("STATE", this.state);
     return (
       <Mutation mutation={ADD_TO_TEAM}>
         {addAppToTeam => (
@@ -413,7 +424,9 @@ class AddTeam extends React.Component<Props, State> {
                       return 0;
                     });
                     //ausgrauen von Teams, in denen er schon drin ist  employeeTeams
-                    teams.forEach(team => {
+                    console.log("TEAMS", teams);
+                    teams.forEach(teama => {
+                      const team = Object.assign({}, teama);
                       const available = !(
                         this.props.teams.find(a => a.departmentid.unitid.id == team.unitid.id) ||
                         this.state.teams.find(a => a.unitid.id == team.unitid.id)
@@ -621,6 +634,9 @@ class AddTeam extends React.Component<Props, State> {
                     await this.setState(prevState => {
                       let newcounter = prevState.counter + 1;
                       let integrateTeam = Object.assign({}, prevState.integrateTeam);
+                      integrateTeam.employees[prevState.counter] = {
+                        ...integrateTeam.employees[prevState.counter]
+                      };
                       integrateTeam.employees[prevState.counter].setupfinished = true;
                       integrateTeam.employees[prevState.counter].setup = setup;
                       if (newcounter < integrateTeam.employees.length) {
@@ -641,6 +657,9 @@ class AddTeam extends React.Component<Props, State> {
                   employeename={`${
                     this.state.integrateTeam.employees[this.state.counter].firstname
                   } ${this.state.integrateTeam.employees[this.state.counter].lastname}`}
+                  employee={this.state.integrateTeam.employees[this.state.counter]}
+                  maxstep={this.state.integrateTeam.employees.length}
+                  currentstep={this.state.counter}
                 />
               )}
           </>

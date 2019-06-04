@@ -7,28 +7,12 @@ import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 
+import { fetchTeam } from "../../queries/departments";
+
 const UPDATE_DATA = gql`
-  mutation updateEmployee($user: EmployeeInput!) {
-    updateEmployee(user: $user) {
-      id
-      firstname
-      lastname
-      birthday
-      hiredate
-      position
-      emails {
-        email
-      }
-      addresses {
-        id
-        country
-        address
-      }
-      phones {
-        id
-        number
-        tags
-      }
+  mutation editDepartmentName($departmentid: ID!, $name: String!) {
+    editDepartmentName(departmentid: $departmentid, name: $name) {
+      ok
     }
   }
 `;
@@ -62,11 +46,11 @@ class TeamGeneralData extends React.Component<Props, State> {
               <h2>{team.name}</h2>
             </div>
             <div className="tableColumnSmall">
-              <h1>Team Leader</h1>
+              <h1>{/*Team Leader*/}</h1>
               <h2>
-                {team.internaldata && team.internaldata.leader
+                {/*team.internaldata && team.internaldata.leader
                   ? team.internaldata.leader
-                  : "Not set"}
+                : "Not set"*/}
               </h2>
             </div>
             <div className="tableColumnSmall">
@@ -84,151 +68,43 @@ class TeamGeneralData extends React.Component<Props, State> {
             </div>
           </div>
         </div>
-        {this.state.popupline1 ? (
+        {this.state.editpopup ? (
           <Mutation mutation={UPDATE_DATA}>
-            {updateEmployee => (
+            {editDepartmentName => (
               <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
-                <h2 className="boldHeading">
-                  Edit Personal Data of {querydata.firstname} {querydata.lastname}
-                </h2>
+                <h2 className="boldHeading">Edit General Data of {team.name}</h2>
                 <div>
                   <UniversalTextInput
                     id="name"
                     label="Name"
                     livevalue={v => this.setState({ name: v })}
-                    startvalue={`${querydata.firstname || ""} ${querydata.lastname || ""}`}
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="birthday"
-                    label="Birthday"
-                    type="date"
-                    livevalue={v => this.setState({ birthday: v })}
-                    startvalue={
-                      querydata.birthday ? moment(querydata.birthday - 0).format("YYYY-MM-DD") : " "
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="street"
-                    label="Street / Number"
-                    livevalue={v => this.setState({ street: v })}
-                    startvalue={
-                      querydata.addresses[0] &&
-                      querydata.addresses[0].address &&
-                      querydata.addresses[0].address.street
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="zip"
-                    label="Zip"
-                    livevalue={v => this.setState({ zip: v })}
-                    startvalue={
-                      querydata.addresses[0] &&
-                      querydata.addresses[0].address &&
-                      querydata.addresses[0].address.zip
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="city"
-                    label="City"
-                    livevalue={v => this.setState({ city: v })}
-                    startvalue={
-                      querydata.addresses[0] &&
-                      querydata.addresses[0].address &&
-                      querydata.addresses[0].address.city
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalDropDownInput
-                    id="country"
-                    label="Country"
-                    livecode={v => this.setState({ country: v })}
-                    startvalue={
-                      querydata.addresses[0] &&
-                      querydata.addresses[0].address &&
-                      querydata.addresses[0].country
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="phone"
-                    label="Private Phone"
-                    livevalue={v => this.setState({ phone1: v })}
-                    startvalue={
-                      querydata.privatePhones &&
-                      querydata.privatePhones[0] &&
-                      querydata.privatePhones[0].number
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="phone2"
-                    label="Private Phone 2"
-                    disabled={this.state.phone1 == ""}
-                    livevalue={v => this.setState({ phone2: v })}
-                    startvalue={
-                      querydata.privatePhones &&
-                      querydata.privatePhones[1] &&
-                      querydata.privatePhones[1].number
-                    }
+                    startvalue={team.name}
                   />
                 </div>
                 <UniversalButton
                   label="Cancel"
                   type="low"
-                  onClick={() => this.setState({ popupline1: false })}
+                  onClick={() => this.setState({ editpopup: false })}
                 />
                 <UniversalButton
                   label="Save"
                   type="high"
                   onClick={async () => {
-                    const nameparts = this.state.name.split(" ");
-                    const middlenameArray = nameparts.length > 1 ? nameparts.slice(1, -1) : null;
                     try {
                       this.setState({ updateing: true });
-                      await updateEmployee({
+                      await editDepartmentName({
                         variables: {
-                          user: {
-                            id: querydata.id,
-                            firstname: nameparts[0],
-                            lastname: nameparts[nameparts.length - 1],
-                            middlename: "",
-                            birthday: this.state.birthday ? this.state.birthday : null,
-                            address: Object.assign(
-                              {},
-                              querydata.addresses[0] && querydata.addresses[0].id
-                                ? { id: querydata.addresses[0].id }
-                                : {},
-                              { street: this.state.street },
-                              { zip: this.state.zip },
-                              { city: this.state.city },
-                              { country: this.state.country }
-                            ),
-                            phone: Object.assign(
-                              {},
-                              querydata.privatePhones &&
-                                querydata.privatePhones[0] &&
-                                querydata.privatePhones[0].id
-                                ? { id: querydata.privatePhones[0].id }
-                                : {},
-                              { number: this.state.phone1 || "" }
-                            ),
-                            phone2: Object.assign(
-                              {},
-                              querydata.privatePhones &&
-                                querydata.privatePhones[1] &&
-                                querydata.privatePhones[1].id
-                                ? { id: querydata.privatePhones[1].id }
-                                : {},
-                              { number: this.state.phone2 || "" }
-                            )
+                          departmentid: team.unitid.id,
+                          name: this.state.name
+                        },
+                        refetchQueries: [
+                          {
+                            query: fetchTeam,
+                            variables: { teamid: team.unitid.id }
                           }
-                        }
+                        ]
                       });
-                      this.setState({ popupline1: false, updateing: false });
+                      this.setState({ editpopup: false, updateing: false });
                     } catch (err) {
                       //this.setState({ popupline1: false, updateting: false });
                       this.setState({ updateing: false, error: err });

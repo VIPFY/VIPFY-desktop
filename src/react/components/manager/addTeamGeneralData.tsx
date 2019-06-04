@@ -74,12 +74,12 @@ class AddTeamGeneralData extends React.Component<Props, State> {
             focus={true}
             startvalue={this.state.name}
           />
-          <UniversalTextInput
+          {/*<UniversalTextInput
             label="Leader"
             id="leader"
             livevalue={v => this.setState({ leader: v })}
             startvalue={this.state.leader}
-          />
+          />*/}
         </div>
         <div className="buttonsPopup">
           <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />

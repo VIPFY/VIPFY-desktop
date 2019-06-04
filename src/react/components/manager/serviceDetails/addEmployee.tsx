@@ -377,6 +377,7 @@ class AddEmployee extends React.Component<Props, State> {
             employeename={`${this.state.integrateEmployee!.firstname} ${
               this.state.integrateEmployee!.lastname
             }`}
+            employee={this.state.integrateEmployee!}
           />
         )}
       </>

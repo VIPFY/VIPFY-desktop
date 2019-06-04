@@ -17,6 +17,7 @@ interface Props {
   addExternalBoughtPlan: Function;
   addExternalLicence: Function;
   moveTo: Function;
+  employee: any;
 }
 
 interface State {
@@ -344,6 +345,8 @@ class LicencesSection extends React.Component<Props, State> {
                     employeeid={employeeid}
                     employeename={this.props.employeename}
                     moveTo={this.props.moveTo}
+                    employee={this.props.employee}
+                    deleteFunction={sO => this.setState({ savingObject: sO })}
                   />
                 );
               }
@@ -650,6 +653,7 @@ class LicencesSection extends React.Component<Props, State> {
                     savingmessage={this.state.savingObject!.savingmessage}
                     closeFunction={() => {
                       this.state.savingObject!.closeFunction();
+                      this.setState({ savingObject: null });
                     }}
                     saveFunction={async () => await this.state.savingObject!.saveFunction()}
                     maxtime={5000}

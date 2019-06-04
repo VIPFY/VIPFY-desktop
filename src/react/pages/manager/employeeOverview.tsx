@@ -336,13 +336,26 @@ class EmployeeOverview extends React.Component<Props, State> {
                               {employee.firstname} {employee.lastname}
                             </span>
                             <div
-                              className="employeeOnline"
+                              className="status"
                               style={
                                 employee.isonline
-                                  ? { backgroundColor: "#29CC94" }
-                                  : { backgroundColor: "#DB4D3F" }
-                              }
-                            />
+                                  ? {
+                                      backgroundColor: "#29CC94",
+                                      float: "right",
+                                      marginTop: "18px",
+                                      marginLeft: "0px",
+                                      width: "56px"
+                                    }
+                                  : {
+                                      backgroundColor: "#DB4D3F",
+                                      float: "right",
+                                      marginTop: "18px",
+                                      marginLeft: "0px",
+                                      width: "56px"
+                                    }
+                              }>
+                              {employee.isonline ? "Online" : "Offline"}
+                            </div>
                           </div>
                           <div className="tableColumnBig">
                             <Query

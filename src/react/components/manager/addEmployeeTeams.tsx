@@ -97,10 +97,10 @@ class AddEmployeeTeams extends React.Component<Props, State> {
                   ? {
                       backgroundImage:
                         team.profilepicture.indexOf("/") != -1
-                          ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                          ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
                               team.profilepicture
                             )})`
-                          : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                          : `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_pictures/${encodeURI(
                               team.profilepicture
                             )})`,
                       backgroundColor: "unset"
@@ -142,10 +142,10 @@ class AddEmployeeTeams extends React.Component<Props, State> {
                 ? {
                     backgroundImage:
                       team.profilepicture.indexOf("/") != -1
-                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                        ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
                             team.profilepicture
                           )})`
-                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_pictures/${encodeURI(
                             team.profilepicture
                           )})`,
                     backgroundColor: "unset"
@@ -230,7 +230,18 @@ class AddEmployeeTeams extends React.Component<Props, State> {
           <ul className="checks">
             {this.state.integrateTeam!.services.map(service => {
               return (
-                <li key={service.planid.appid.name}>
+                <li key={service.planid.appid.name} style={{ fontSize: "12px" }}>
+                  {service.setupfinished ? (
+                    <i
+                      className="fal fa-check-circle"
+                      style={{ color: "#20BAA9", marginRight: "4px" }}
+                    />
+                  ) : (
+                    <i
+                      className="fal fa-times-circle"
+                      style={{ color: "#FF2700", marginRight: "4px" }}
+                    />
+                  )}
                   Individual Teamlicence for <b>{service.planid.appid.name}</b>
                   {service.setupfinished
                     ? " successfully configurated"
@@ -372,10 +383,10 @@ class AddEmployeeTeams extends React.Component<Props, State> {
                           ? {
                               backgroundImage:
                                 team.profilepicture.indexOf("/") != -1
-                                  ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                                  ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
                                       team.profilepicture
                                     )})`
-                                  : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                  : `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_pictures/${encodeURI(
                                       team.profilepicture
                                     )})`,
                               backgroundColor: "unset"
