@@ -1,20 +1,20 @@
 import * as React from "react";
 import { graphql } from "react-apollo";
-import * as pjson from "pjson";
-import { fetchLicences } from "../queries/auth";
+import Tooltip from "react-tooltip-lite";
 import { UPDATE_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
-import { AppContext, layoutChange } from "../common/functions";
+import { AppContext, layoutUpdate } from "../common/functions";
 import SidebarLink from "./sidebarLink";
 import config from "../../configurationManager";
 import * as moment from "moment";
+import * as ReactDOM from "react-dom";
+import { fetchLicences } from "../queries/auth";
 
 interface SidebarLinks {
   label: string;
   location: string;
   icon: string;
-  show: boolean;
-  important: boolean;
+  show: any;
   highlight: any;
 }
 
@@ -23,7 +23,7 @@ export type SidebarProps = {
   setApp: (licence: number) => void;
   licences: Licence[];
   location: object;
-  sideBarOpen: boolean;
+  sidebarOpen: boolean;
   logMeOut: () => void;
   isadmin: boolean;
   toggleSidebar: Function;
@@ -37,47 +37,54 @@ export type SidebarProps = {
 };
 
 interface State {
-  dragItem: number | null;
+  searchstring: string;
+  sortorientation: boolean;
+  sortstring: string;
+  showNotification: boolean;
+  showApps: boolean;
+  showMoreApps: boolean;
+  showSearch: boolean;
 }
 
 class Sidebar extends React.Component<SidebarProps, State> {
   state = {
-    dragItem: null
+    searchstring: "",
+    sortorientation: true,
+    sortstring: "Custom",
+    showNotification: false,
+    showApps: true,
+    showMoreApps: false,
+    showSearch: false
   };
 
   //references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
-  componentDidMount() {
-    this.props.sidebarloaded();
-  }
+  handleDrop = async (targetId, draggedId) => {
+    if (targetId == draggedId) {
+      return;
+    }
 
-  handleDrop = async id => {
-    const { dragItem } = this.state;
     const { licences } = this.props;
-
-    const layouts = layoutChange(licences, dragItem, id, "layoutvertical");
+    const newLicences = layoutUpdate(
+      // Make sure they have the same order as when rendered
+      licences.sort((a, b) => a.layoutvertical - b.layoutvertical),
+      draggedId,
+      targetId
+    );
+    const layouts = newLicences
+      .map(({ id, layoutvertical }) => ({ id, layoutvertical }))
+      .filter((licence, key) => licence.layoutvertical != licences[key].layoutvertical);
 
     try {
       await this.props.updateLayout({
         variables: { layouts },
         update: cache => {
-          const newLicences = licences.map(licence => {
-            if (licence.id == layouts[0].id) {
-              return { ...licence, layoutvertical: layouts[0]!.layoutvertical };
-            } else if (licence.id == layouts[1].id) {
-              return { ...licence, layoutvertical: layouts[1]!.layoutvertical };
-            } else {
-              return licence;
-            }
-          });
-
           cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
         }
       });
-      this.setState({ dragItem: null });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -97,13 +104,41 @@ class Sidebar extends React.Component<SidebarProps, State> {
     this.addReferences(highlight, el, addRenderElement);
   };
 
-  renderLink = (
-    { label, location, icon, show, important, highlight }: SidebarLinks,
-    addRenderElement
-  ) => {
+  listenKeyboard = e => {
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.setState({ showNotification: false });
+    }
+  };
+
+  componentDidMount() {
+    this.props.sidebarloaded();
+    window.addEventListener("keydown", this.listenKeyboard, true);
+    document.addEventListener("click", this.handleClickOutside, true);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+    document.removeEventListener("click", this.handleClickOutside, true);
+  }
+
+  handleClickOutside = e => {
+    const domNode = ReactDOM.findDOMNode(this);
+
+    if (!domNode || !domNode.contains(e.target)) {
+      this.setState({ showNotification: false });
+    }
+  };
+
+  toggleNotificationPopup = () => {
+    this.setState(prevState => ({ showNotification: !prevState.showNotification }));
+  };
+
+  renderLink = ({ label, location, icon, show, highlight }: SidebarLinks, addRenderElement) => {
     let cssClass = "sidebar-link";
-    if (important) {
-      cssClass += " sidebar-link-important";
+    const { sidebarOpen } = this.props;
+
+    if (!sidebarOpen) {
+      cssClass += "-small";
     }
 
     if (
@@ -115,26 +150,103 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     if (show) {
       return (
-        <React.Fragment key={location}>
-          <li
-            key={location}
-            className={cssClass}
-            onClick={() => this.goTo(location)}
-            ref={el => this.maybeaddHighlightReference(location, highlight, el, addRenderElement)}>
-            <span className={`fal fa-${icon} sidebar-icons`} />
-            <span className={`${this.props.sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
-              {label}
-            </span>
-          </li>
-        </React.Fragment>
+        <li
+          key={location}
+          className={cssClass}
+          onClick={() => this.goTo(location)}
+          ref={el => this.maybeaddHighlightReference(location, highlight, el, addRenderElement)}>
+          <Tooltip
+            distance={12}
+            arrowSize={5}
+            useHover={!sidebarOpen}
+            content={label}
+            direction="right">
+            <i className={`fal fa-${icon} sidebar-icon`} />
+          </Tooltip>
+          {sidebarOpen && <span className="sidebar-link-caption">{label}</span>}
+        </li>
       );
     } else {
       return;
     }
   };
 
+  // sortCustomlist(unsortedList) {
+  //   let a = unsortedList[0];
+  //   while (a.prevLicence) {
+  //     a = a.prevLicence;
+  //   }
+  //   let i;
+  //   if (this.state.sortorientation) {
+  //     i = 0;
+  //   } else {
+  //     i = unsortedList.length - 1;
+  //   }
+  //   while (a.nextLicence) {
+  //     unsortedList[i] = a;
+  //     a = a.nextLicence;
+  //     i = (i => {
+  //       if (this.state.sortorientation) {
+  //         return ++i;
+  //       } else {
+  //         return --i;
+  //       }
+  //     })(i);
+  //   }
+
+  //   return unsortedList.filter(licence => {
+  //     if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+  //       return false;
+  //     }
+  //     let one = false,
+  //       two = false;
+  //     if (this.state.searchstring === "") {
+  //       return true;
+  //     }
+  //     if (
+  //       licence.boughtplanid.alias !== null &&
+  //       !licence.boughtplanid.alias.toLowerCase().includes(this.state.searchstring.toLowerCase())
+  //     ) {
+  //       one = true;
+  //     }
+  //     if (
+  //       licence.boughtplanid.planid.appid.name !== null &&
+  //       !licence.boughtplanid.planid.appid.name
+  //         .toLowerCase()
+  //         .includes(this.state.searchstring.toLowerCase())
+  //     ) {
+  //       two = true;
+  //     }
+  //     if (one && two) {
+  //       return false;
+  //     } //include search if search
+  //     return true;
+  //   });
+  // }
+
   render() {
-    const { sideBarOpen, licences } = this.props;
+    let { sidebarOpen, licences } = this.props;
+    const { showApps, showMoreApps } = this.state;
+
+    const input = (
+      <input
+        value={this.state.searchstring}
+        onChange={e => this.setState({ searchstring: e.target.value })}
+        placeholder="Search Apps"
+        className={`sidebar-search${sidebarOpen ? "" : "-tooltip"}`}
+      />
+    );
+
+    const SortComponent = (
+      <button
+        className="sidebar-search-tooltip naked-button"
+        onClick={() => {
+          this.setState(prevState => ({ ...prevState, showApps: !prevState.showApps }));
+        }}>
+        <i className={`fal fa-angle-right ${showApps ? "open" : ""}`} />
+        <span style={{ fontSize: "10px" }}>{`${showApps ? "Hide" : "Show"} Apps`}</span>
+      </button>
+    );
 
     const sidebarLinks = [
       {
@@ -183,7 +295,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "marketplace",
         icon: "shopping-cart",
         show: config.showMarketplace,
-        important: false,
         highlight: "marketplaceelement"
       },
       {
@@ -191,37 +302,39 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "integrations",
         icon: "shapes",
         show: true,
-        important: false,
         highlight: "integrationselement"
       },
       {
         label: "Domains",
         location: "domains",
         icon: "atlas",
-        show: config.showDomains,
-        important: false
+        show: config.showDomains
       },
       {
         label: "Usage Statistics",
         location: "usage",
         icon: "chart-line",
-        show: this.props.isadmin,
-        important: false
+        show: this.props.isadmin
       },
       {
         label: "Support",
         location: "support",
         icon: "ambulance",
         show: true,
-        important: false,
         highlight: "supportelement"
+      },
+      {
+        label: "Universal Login",
+        location: "universallogin",
+        icon: "pager",
+        show: this.props.isadmin && config.showUniversalLoginDebug,
+        important: false
       },
       {
         label: "AppAdmin",
         location: "appadmin",
         icon: "screwdriver",
         show: config.showAppAdmin,
-        important: false,
         highlight: "appadminelement"
       },
       {
@@ -229,7 +342,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "admin",
         icon: "layer-plus",
         show: this.props.isadmin && config.showAdmin,
-        important: true,
         highlight: "adminelement"
       },
       {
@@ -248,105 +360,403 @@ class Sidebar extends React.Component<SidebarProps, State> {
       }
     ];
 
-    const filteredLicences = licences.filter(licence => {
+    const filteredLicences0 = licences.filter(licence => {
       if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
         return false;
       }
+      let one = false,
+        two = false;
+      if (this.state.searchstring === "") {
+        return true;
+      }
+      if (
+        licence.boughtplanid.alias !== null &&
+        !licence.boughtplanid.alias.toLowerCase().includes(this.state.searchstring.toLowerCase())
+      ) {
+        one = true;
+      }
+      if (
+        licence.boughtplanid.planid.appid.name !== null &&
+        !licence.boughtplanid.planid.appid.name
+          .toLowerCase()
+          .includes(this.state.searchstring.toLowerCase())
+      ) {
+        two = true;
+      }
+      if (one && two) {
+        return false;
+      } //include search if search
 
       return true;
     });
-    filteredLicences
-      .sort((a, b) => {
-        if (a.layoutvertical === null) {
-          return 1;
+    let filteredLicences = filteredLicences0;
+
+    if (this.state.sortstring == "Custom") {
+      // Handle "Custom" seperatly
+      // filteredLicences = this.sortCustomlist(licences);
+    } else {
+      filteredLicences = filteredLicences0.sort((a, b) => {
+        let a0; //Placeholder for a
+        let b0; //Placeholder for b
+        switch (
+          this.state.sortstring //look what to search for an assin the fitting values
+        ) {
+          case "Name":
+            if (a.boughtplanid.alias !== null && a.boughtplanid.alias != "") {
+              a0 = a.boughtplanid.alias.toLowerCase();
+            } else {
+              a0 = a.boughtplanid.planid.appid.name.toLowerCase();
+            }
+            if (b.boughtplanid.alias !== null && b.boughtplanid.alias != "") {
+              b0 = b.boughtplanid.alias.toLowerCase();
+            } else {
+              b0 = b.boughtplanid.planid.appid.name.toLowerCase();
+            }
+            break;
+          case "Boughtplanid":
+            a0 = a.boughtplanid.id;
+            b0 = b.boughtplanid.id;
+            break;
+          case "???":
+            break;
+          case "Last_used":
+            break;
+          case "Endtime":
+            a0 = a.endtime;
+            b0 = b.endtime;
+            break;
+          case "Buytime":
+            a0 = a.boughtplanid.buytime.toLowerCase();
+            b0 = b.boughtplanid.buytime.toLowerCase();
+            break;
+          case "Total_price":
+            a0 = a.boughtplanid.totalprice;
+            b0 = b.boughtplanid.totalprice;
+            break;
+        }
+        if (a0 === null) {
+          if (this.state.sortorientation) {
+            return 1;
+          } else {
+            return -1;
+          }
         }
 
-        if (b.layoutvertical === null) {
-          return -1;
+        if (b0 === null) {
+          if (this.state.sortorientation) {
+            return -1;
+          } else {
+            return 1;
+          }
         }
 
-        if (a.layoutvertical < b.layoutvertical) {
-          return -1;
+        if (a0 < b0) {
+          if (this.state.sortorientation) {
+            return -1;
+          } else {
+            return 1;
+          }
         }
 
-        if (a.layoutvertical > b.layoutvertical) {
-          return 1;
+        if (a0 > b0) {
+          if (this.state.sortorientation) {
+            return 1;
+          } else {
+            return -1;
+          }
         }
 
-        return 0;
-      })
-      .sort(function(a, b) {
-        let nameA = a.boughtplanid.alias
-          ? a.boughtplanid.alias.toUpperCase()
-          : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.boughtplanid.alias
-          ? b.boughtplanid.alias.toUpperCase()
-          : b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-
-        // namen müssen gleich sein
         return 0;
       });
+    }
 
     return (
       <AppContext.Consumer>
         {context => (
           <div
-            className={`sidebar${sideBarOpen ? "" : "-small"}`}
+            className={`sidebar${sidebarOpen ? "" : "-small"}`}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
             <ul className="sidebar-link-holder">
-              <span
+              <li
                 onClick={() => this.props.toggleSidebar()}
-                className={`fal fa-angle-left sidebar-nav-icon${sideBarOpen ? "" : "-turn"}`}
-              />
-              {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}
-              <li className="sidebarfree" />
-              {filteredLicences.length > 0 &&
-                filteredLicences.map((licence, key) => {
-                  const maxValue = filteredLicences.reduce(
-                    (acc, cv) => Math.max(acc, cv.layoutvertical),
-                    0
-                  );
+                className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
+                <i className="fal fa-angle-left" />
+              </li>
 
-                  // Make sure that every License has an index
-                  if (licence.layoutvertical === null) {
-                    licence.layoutvertical = maxValue + 1;
-                  }
-                  return (
-                    <SidebarLink
-                      key={`ServiceLogo-${licence.id}`}
-                      licence={licence}
-                      openInstances={this.props.openInstances}
-                      sideBarOpen={this.props.sideBarOpen}
-                      active={
-                        this.props.openInstances && this.props.openInstances[licence.id]
-                          ? this.props.openInstances[licence.id][this.props.viewID]
-                          : false
+              <li className={`sidebar-main ${sidebarOpen ? "" : "sidebar-nav-small"}`}>
+                <ul>{sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}</ul>
+
+                {/* 
+              <li
+                className="sidebar-link"
+                style={
+                  sidebarOpen
+                    ? {
+                        backgroundColor: "transparent",
+                        height: "35px",
+                        paddingBottom: 0,
+                        paddingTop: 0,
+                        transitionDuration: "0ms"
                       }
-                      setTeam={this.props.setApp}
-                      setInstance={this.props.setInstance}
-                      viewID={this.props.viewID}
-                      handleDragStart={dragItem => this.setState({ dragItem })}
-                      handleDrop={this.handleDrop}
+                    : { backgroundColor: "transparent", transitionDuration: "0ms" }
+                }>
+                {sidebarOpen ? (
+                  <React.Fragment>
+                    <button className="naked-button genericButton">
+                      <span className="textButton">
+                        <i className="fal fa-search" />
+                      </span>
+                    </button>
+                    <input
+                      onChange={e => this.setState({ searchstring: e.target.value })}
+                      value={this.state.searchstring}
+                      style={{ width: "160px" }}
+                      className="inputBoxField"
                     />
-                  );
-                })}
+                  </React.Fragment>
+                ) : (
+                  <span className="textButton">
+                    <i className="fal fa-search" />
+                  </span>
+                )}
+              </li> */}
+
+                {/* <li className="sidebar-link">
+                <span>
+                  <div
+                    style={{ display: "inline-block", width: "100px" }}
+                    onClick={() => {
+                      if (this.state.sortorientation) {
+                        this.setState({ sortorientation: false });
+                      } else {
+                        this.setState({ sortorientation: true });
+                      }
+                    }}
+                    className="sidebar-link">
+                    {this.state.sortstring}
+                  </div>
+                  <button
+                    onClick={this.toggleNotificationPopup}
+                    style={{ display: "inline" }}
+                    className="naked-button genericButton">
+                    <span className="textButton">
+                      <i className="fal fa-search" />
+                    </span>
+                  </button>
+                </span>
+                {this.state.showNotification ? (
+                  <div
+                    className="notificationPopup"
+                    onClick={this.toggleNotificationPopup}
+                    style={{ width: "159px", minWidth: "0px", left: "21%", top: "72%" }}>
+                    <li
+                      className="sidebar-link"
+                      style={{ color: "black" }}
+                      onClick={() => {
+                        this.setState({ sortstring: "Custom" });
+                      }}>
+                      Custom
+                    </li>
+                    <li
+                      className="sidebar-link"
+                      style={{ color: "black" }}
+                      onClick={() => {
+                        this.setState({ sortstring: "Name" });
+                      }}>
+                      Name
+                    </li>
+                    <li
+                      className="sidebar-link"
+                      style={{ color: "black" }}
+                      onClick={() => {
+                        this.setState({ sortstring: "Boughtplanid" });
+                      }}>
+                      Boughtplanid
+                    </li>
+                    <li
+                      className="sidebar-link"
+                      style={{ color: "black" }}
+                      onClick={() => {
+                        this.setState({ sortstring: "???" });
+                      }}>
+                      ?bought Date?
+                    </li>
+                    <li
+                      className="sidebar-link"
+                      style={{ color: "black" }}
+                      onClick={() => {
+                        this.setState({ sortstring: "Last_used" });
+                      }}>
+                      Last used
+                    </li>
+                    <li
+                      className="sidebar-link"
+                      style={{ color: "black" }}
+                      onClick={() => {
+                        this.setState({ sortstring: "Endtime" });
+                      }}>
+                      Endtime
+                    </li>
+                    <li
+                      className="sidebar-link"
+                      style={{ color: "black" }}
+                      onClick={() => {
+                        this.setState({ sortstring: "Buytime" });
+                      }}>
+                      Buytime
+                    </li>
+                    <li
+                      className="sidebar-link"
+                      style={{ color: "black" }}
+                      onClick={() => {
+                        this.setState({ sortstring: "Total_price" });
+                      }}>
+                      Total price
+                    </li>
+                  </div>
+                ) : (
+                  ""
+                )}
+              </li> */}
+
+                <ul>
+                  <li
+                    className={`sidebar-link${sidebarOpen ? "" : "-small"}`}
+                    style={{ marginTop: "40px" }}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        this.setState(prevState => ({
+                          ...prevState,
+                          showApps: !prevState.showApps
+                        }))
+                      }
+                      className={`naked-button sidebar-link-apps${sidebarOpen ? "" : "-small"}`}>
+                      <Tooltip
+                        useHover={!sidebarOpen}
+                        distance={4}
+                        arrowSize={5}
+                        direction="right"
+                        content={SortComponent}>
+                        <i className="fal fa-th-large sidebar-icon" />
+                      </Tooltip>
+
+                      {sidebarOpen && (
+                        <React.Fragment>
+                          <span
+                            style={{ marginLeft: "7px", marginRight: "100px" }}
+                            className="sidebar-link-caption">
+                            Apps
+                          </span>
+                          <Tooltip
+                            arrowSize={5}
+                            distance={12}
+                            useHover={sidebarOpen}
+                            content={`${showApps ? "Hide" : "Show"} Apps`}
+                            direction="right">
+                            <i className={`carret fal fa-angle-right ${showApps ? "open" : ""}`} />
+                          </Tooltip>
+                        </React.Fragment>
+                      )}
+                    </button>
+                  </li>
+
+                  <li>
+                    <ul>
+                      {showApps && sidebarOpen && (
+                        <li
+                          style={sidebarOpen ? { marginLeft: "11px" } : {}}
+                          className="sidebar-link">
+                          <Tooltip useHover={!sidebarOpen} direction="right" content={input}>
+                            <i className="fal fa-search" />
+                          </Tooltip>
+
+                          {input}
+                        </li>
+                      )}
+
+                      {showApps &&
+                        filteredLicences.length > 0 &&
+                        filteredLicences
+                          .sort((a, b) => a.layoutvertical - b.layoutvertical)
+                          .filter((_, index) => (showMoreApps ? true : index < 5))
+                          .map(licence => {
+                            const maxValue = filteredLicences.reduce(
+                              (acc, cv) => Math.max(acc, cv.layoutvertical),
+                              0
+                            );
+
+                            // Make sure that every License has an index
+                            if (licence.layoutvertical === null) {
+                              licence.layoutvertical = maxValue + 1;
+                            }
+
+                            return (
+                              <SidebarLink
+                                key={`ServiceLogo-${licence.id}`}
+                                licence={licence}
+                                openInstances={this.props.openInstances}
+                                sidebarOpen={sidebarOpen}
+                                active={
+                                  this.props.openInstances && this.props.openInstances[licence.id]
+                                    ? this.props.openInstances[licence.id][this.props.viewID]
+                                    : false
+                                }
+                                setTeam={this.props.setApp}
+                                setInstance={this.props.setInstance}
+                                viewID={this.props.viewID}
+                                handleDragStart={null}
+                                handleDrop={this.handleDrop}
+                                isSearching={
+                                  this.state.searchstring === "" &&
+                                  this.state.sortstring === "Custom"
+                                }
+                              />
+                            );
+                          })}
+                    </ul>
+                  </li>
+
+                  {showApps && filteredLicences.length > 5 && (
+                    <li className={`show-more${sidebarOpen ? "" : "-small"}`}>
+                      <Tooltip
+                        useHover={!sidebarOpen}
+                        direction="right"
+                        distance={1}
+                        content={`Show ${showMoreApps ? "less" : "more"} Apps`}>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            this.setState(prevState => ({
+                              ...prevState,
+                              showMoreApps: !prevState.showMoreApps
+                            }))
+                          }
+                          style={sidebarOpen ? { width: "92%" } : {}}
+                          className="naked-button">
+                          <i className={`fal fa-angle-down ${showMoreApps ? "open" : ""}`} />
+
+                          <span className={`${sidebarOpen ? "sidebar-link-caption" : "show-not"}`}>
+                            {`Show ${showMoreApps ? "less" : "more"} Apps`}
+                          </span>
+                        </button>
+                      </Tooltip>
+                    </li>
+                  )}
+                </ul>
+              </li>
 
               <li
-                className="sidebar-link sidebar-link-important"
+                className={`sidebar-link${sidebarOpen ? "" : "-small"}`}
                 onClick={() => this.props.logMeOut()}>
-                <span className="fal fa-sign-out-alt sidebar-icons" />
-                <span className={`${sideBarOpen ? "sidebar-link-caption" : "show-not"}`}>
+                <Tooltip arrowSize={5} content="Logout" direction="right" useHover={!sidebarOpen}>
+                  <i className="fal fa-sign-out-alt sidebar-icon" />
+                </Tooltip>
+                <span className={`${sidebarOpen ? "sidebar-link-caption" : "show-not"}`}>
                   Logout
                 </span>
               </li>
             </ul>
-            <div className="versionnumber">Version {pjson.version}</div>
           </div>
         )}
       </AppContext.Consumer>

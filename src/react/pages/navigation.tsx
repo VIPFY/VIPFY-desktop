@@ -94,7 +94,7 @@ interface Props {
   profilepicture: string;
   refetch: Function;
   setApp: Function;
-  sideBarOpen: boolean;
+  sidebarOpen: boolean;
   subscribeToMore: Function;
   toggleSidebar: Function;
   toggleChat: Function;
@@ -219,7 +219,7 @@ class Navigation extends React.Component<Props, State> {
   toggleSearch = searchFocus => this.setState({ searchFocus });
 
   render() {
-    const { chatOpen, sideBarOpen, data } = this.props;
+    const { chatOpen, sidebarOpen, data } = this.props;
 
     if (this.props.loading) {
       return "Initialising Navigation...";
@@ -232,7 +232,7 @@ class Navigation extends React.Component<Props, State> {
     return (
       <div
         className={`navigation ${chatOpen ? "chat-open" : ""}
-        ${sideBarOpen ? "side-bar-open" : ""}`}>
+        ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="leftNavigation">
           <span>
             <AppContext.Consumer>
@@ -254,6 +254,14 @@ class Navigation extends React.Component<Props, State> {
                 </button>
               )}
             </AppContext.Consumer>
+            <button
+              type="button"
+              className="naked-button genericButton"
+              onClick={() => history.back()}>
+              <span className="textButton" style={{ width: "unset" }}>
+                <i className="fal fa-long-arrow-left" style={{ paddingRight: "0.2em" }} />
+              </span>
+            </button>
           </span>
           {/*<span onClick={toggleSidebar} className="fas fa-bars barIcon" />*/}
           {/*<div
@@ -349,8 +357,12 @@ class Navigation extends React.Component<Props, State> {
               <UserPicture size="right-profile-image" unitid={this.props.id} />
 
               <div className="name-holder">
-                <span className="right-profile-first-name">{this.props.firstname}</span>
-                <span className="right-profile-last-name">{this.props.lastname}</span>
+                <span className="right-profile-first-name" data-recording-sensitive>
+                  {this.props.firstname}
+                </span>
+                <span className="right-profile-last-name" data-recording-sensitive>
+                  {this.props.lastname}
+                </span>
               </div>
             </div>
 

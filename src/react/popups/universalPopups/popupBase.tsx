@@ -10,6 +10,11 @@ interface Props {
   autoclosingFunction?: Function;
   notimer?: Boolean;
   dialog?: Boolean;
+  nosidebar?: Boolean;
+  nooutsideclose?: Boolean;
+  buttonStyles?: Object;
+  fullmiddle?: Boolean;
+  styles?: Object;
 }
 
 interface State {
@@ -156,36 +161,41 @@ class PopupBase extends React.Component<Props, State> {
         ? { maxWidth: "30rem", transition: `max-width ${closingtime}ms linear` }
         : { maxWidth: "60rem", transition: `max-width ${closingtime}ms linear` };
     }
-
     return (
       <SideBarContext>
-        {sideBarOpen => (
+        {sidebarOpen => (
           <div
             className="backgroundPopup"
             style={this.state.isopen ? showBackground : hideBackground}
             onClick={() => this.close()}>
-            <div className="sideReplicaPopup" style={{ width: sideBarOpen ? "240px" : "48px" }} />
-
+            {this.props.nosidebar ? (
+              ""
+            ) : (
+              <div className="sideReplicaPopup" style={{ width: sidebarOpen ? "240px" : "48px" }} />
+            )}
             <div
               className="holderPopup"
-              style={{
-                width: sideBarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
-              }}>
+              style={
+                this.props.nosidebar
+                  ? { width: "100%" }
+                  : {
+                      width: sidebarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
+                    }
+              }>
               <div
                 className="universalPopup"
                 style={Object.assign(
                   {},
                   this.state.isopen ? showPopup : hidePopup,
                   this.props.small ? { maxWidth: "30rem" } : "",
-                  this.props.dialog ? { maxWidth: "25rem" } : ""
+                  this.props.dialog ? { maxWidth: "25rem" } : "",
+                  this.props.styles ? this.props.styles : ""
                 )}
                 onClick={e => e.stopPropagation()}>
-                {this.props.close && !(this.props.closeable == false) ? (
+                {this.props.close && !(this.props.closeable == false) && (
                   <div className="closePopup" onClick={() => this.close()}>
                     <i className="fal fa-times" />
                   </div>
-                ) : (
-                  ""
                 )}
                 <div className="contentPopup">{this.renderChildren(this.props.children)}</div>
                 {this.props.autoclosing && !this.props.notimer ? (

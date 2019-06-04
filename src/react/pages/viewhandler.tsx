@@ -3,7 +3,7 @@ import * as React from "react";
 interface Props {
   showView: number;
   views: { key: number; view: any }[];
-  sideBarOpen: Boolean;
+  sidebarOpen: Boolean;
 }
 
 interface State {
@@ -34,8 +34,8 @@ class ViewHandler extends React.Component<Props, State> {
 
   render() {
     let cssClass = "marginLeft";
-    if (this.props.sideBarOpen) {
-      cssClass += " side-bar-open";
+    if (this.props.sidebarOpen) {
+      cssClass += " sidebar-open";
     }
     return (
       <div

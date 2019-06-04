@@ -40,6 +40,8 @@ import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
 import {SideBarContext} from "../common/context"
+import UniversalLogin from './universalLogin';
+import UniversalLoginTest from '../components/admin/UniversalLoginTest';
 
 interface AreaProps {
   history: any[];
@@ -59,7 +61,7 @@ interface AreaState {
   licenceID: number;
   viewID: number;
   chatOpen: boolean;
-  sideBarOpen: boolean;
+  sidebarOpen: boolean;
   domain: string;
   script: Element | null;
   script3: Element | null;
@@ -75,7 +77,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     licenceID: -1, //Old style - should be removed sometime
     viewID: -1,
     chatOpen: false,
-    sideBarOpen: true,
+    sidebarOpen: true,
     domain: "",
     script: null,
     script3: null,
@@ -169,7 +171,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   }
 
   setSidebar = value => {
-    this.setState({ sideBarOpen: value });
+    this.setState({ sidebarOpen: value });
   };
 
   toggleChat = () => {
@@ -177,7 +179,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   toggleSidebar = () => {
-    this.setState(prevState => ({ sideBarOpen: !prevState.sideBarOpen }));
+    this.setState(prevState => ({ sidebarOpen: !prevState.sidebarOpen }));
   };
 
   addWebview = (licenceID, opendirect = false) => {
@@ -322,7 +324,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   render() {
-    const { sideBarOpen, chatOpen } = this.state;
+    const { sidebarOpen, chatOpen } = this.state;
     const routes = [
       { path: "", component: Dashboard },
       { path: "dashboard", component: Dashboard },
@@ -348,9 +350,11 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
+      { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
       { path: "appadmin", component: AppAdmin },
       { path: "ssoconfig", component: SsoConfigurator },
-      { path: "ssotest", component: SsoTester }
+      { path: "ssotest", component: SsoTester },
+      { path: "universallogin", component: UniversalLogin },
     ];
 
     if (this.props.licences.loading) {
@@ -359,13 +363,13 @@ class Area extends React.Component<AreaProps, AreaState> {
 
     return (
       <div className="area">
-        <SideBarContext.Provider value={this.state.sideBarOpen }>
+        <SideBarContext.Provider value={this.state.sidebarOpen }>
           <Route
             render={props => {
               if (!this.props.location.pathname.includes("advisor")) {
                 return (
                   <Sidebar
-                    sideBarOpen={sideBarOpen}
+                    sidebarOpen={sidebarOpen}
                     setApp={this.setApp}
                     viewID={this.state.viewID}
                     views={this.state.webviews}
@@ -392,7 +396,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                     {res => (
                       <Navigation
                         chatOpen={chatOpen}
-                        sideBarOpen={sideBarOpen}
+                        sidebarOpen={sidebarOpen}
                         setApp={this.setApp}
                         toggleChat={this.toggleChat}
                         toggleSidebar={this.toggleSidebar}
@@ -431,8 +435,8 @@ class Area extends React.Component<AreaProps, AreaState> {
                       className={`${
                         !this.props.location.pathname.includes("advisor") ? "full-working" : ""
                       } ${chatOpen ? "chat-open" : ""} ${
-                        sideBarOpen && !props.location.pathname.includes("advisor")
-                          ? "side-bar-open"
+                        sidebarOpen && !props.location.pathname.includes("advisor")
+                          ? "sidebar-open"
                           : ""
                       }`}>
                       <RouteComponent
@@ -454,7 +458,7 @@ class Area extends React.Component<AreaProps, AreaState> {
             render={props => (
               <div
                 className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                  sideBarOpen ? "side-bar-open" : ""
+                  sidebarOpen ? "sidebar-open" : ""
                 }`}>
                 <Domains setDomain={this.setDomain} {...this.props} {...props} />
               </div>
@@ -467,7 +471,7 @@ class Area extends React.Component<AreaProps, AreaState> {
             render={props => (
               <div
                 className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                  sideBarOpen ? "side-bar-open" : ""
+                  sidebarOpen ? "sidebar-open" : ""
                 }`}>
                 <Domains setDomain={this.setDomain} {...this.props} {...props} />
               </div>
@@ -476,7 +480,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           <ViewHandler
             showView={this.state.viewID}
             views={this.state.webviews}
-            sideBarOpen={sideBarOpen}
+            sidebarOpen={sidebarOpen}
           />
           <Tabs
             tabs={this.state.webviews}

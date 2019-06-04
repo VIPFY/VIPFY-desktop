@@ -11,12 +11,24 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i&amp;subset=latin-ext"
     rel="stylesheet">
   <script id="stripe-js" src="https://js.stripe.com/v3/" async></script>
+
+  <script type="text/javascript">
+    window.smartlook||(function(d) {
+    var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
+    var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
+    c.charset='utf-8';c.src='https://rec.smartlook.com/recorder.js';h.appendChild(c);
+    })(document);
+    smartlook('init', '85b64c6b1c67cabc2fbed64b22d3087fc99e0566');
+  </script>
 </head>
 
 <body style="overflow: hidden; background-color: rgba(0,0,0,0); margin: 0">
 
   <header id="titlebar">
-    <section id="titlebar-logo"></section>
+    <section id="titlebar-logo">
+      <div id="titlebar-logo-img" />
+      <div id="versionnumber">Version </div>
+    </section>
     <section id="header-react"></section>
     <section id="drag-zone"></section>
     <section id="window-controls">
@@ -38,6 +50,7 @@
   <div id="App"></div>
 
   <script type="text/tsx">
+    const pjson = require("pjson");
     const config = require("./configurationManager.ts");
     //install context menu
     window.addEventListener("DOMContentLoaded", () => {
@@ -52,6 +65,8 @@
       require("electron-context-menu")({
         showInspectElement: config.allowDevTools
       });
+
+     document.getElementById("versionnumber").innerHTML += pjson.version;
     });
 
     require('./windowcontrols.js')

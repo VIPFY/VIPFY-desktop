@@ -1,10 +1,9 @@
 import * as React from "react";
-import PopupBase from "../../popups/universalPopups/popupBase";
 
 interface Props {
   label: string;
   type?: string; //high | low
-  disabeld?: Boolean;
+  disabled?: Boolean;
   onClick?: Function;
   closingPopup?: Boolean;
   closingAllPopups?: Boolean;
@@ -79,7 +78,7 @@ class UniversalButton extends React.Component<Props, State> {
           }}>
           <div
             className={`cleanup universalButton ${this.props.type ? this.props.type : ""} ${
-              this.props.disabeld ? "disabled" : "useable"
+              this.props.disabled ? "disabled" : "useable"
             }`}
             tabIndex={-1}>
             {this.props.label}

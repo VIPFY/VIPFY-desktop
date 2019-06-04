@@ -10,6 +10,8 @@ export interface Licence {
   unitid: User;
   layoutvertical: number;
   layouthorizontal: number;
+  prevLicence: Licence | undefined;
+  nextLicence: Licence | undefined;
 }
 
 export interface Unit {
@@ -204,4 +206,11 @@ export interface Domain {
   currency: string;
   availability: string;
   description: string;
+}
+
+export interface SSO {
+  name?: string;
+  loginurl?: string;
+  email?: string;
+  password?: string;
 }

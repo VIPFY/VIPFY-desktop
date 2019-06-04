@@ -415,7 +415,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
       cssClass += " chat-open";
     }
     if (this.props.sidebaropen) {
-      cssClass += " side-bar-open";
+      cssClass += " sidebar-open";
     }
 
     if (this.props.product.fetchAppById && !this.props.productPlans.loading) {

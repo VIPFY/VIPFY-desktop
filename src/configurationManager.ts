@@ -13,11 +13,12 @@ let config = {
   showProfile: true,
   showMessageCenter: false,
   showBilling: true,
-  showDomain: false,
+  showDomains: false,
   showMarketplace: true,
   showAppAdmin: false,
   showAdmin: true,
   showSsoConfig: false,
+  showUniversalLoginDebug: false,
 
   allowDevTools: true
 };

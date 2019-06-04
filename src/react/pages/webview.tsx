@@ -12,6 +12,12 @@ import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
 
+const LOG_SSO_ERROR = gql`
+  mutation onLogSSOError($data: JSON!) {
+    logSSOError(eventdata: $data)
+  }
+`;
+
 export type WebViewState = {
   setUrl: string;
   currentUrl: string;
@@ -114,18 +120,22 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
     //console.log("DIDMOUNT");
     this.switchApp();
-    setTimeout(
-      () =>
-        this.state.loggedIn
-          ? true
-          : this.state.errorshowed
-          ? console.log("Timeout", this.state.errorshowed, this.state.loggedIn)
-          : this.setState({
-              error: "The Login takes too much time. Please check with our support.",
-              loggedIn: true
-            }),
-      30000
-    );
+    setTimeout(async () => {
+      if (this.state.loggedIn) {
+        return true;
+      } else {
+        if (this.state.errorshowed) {
+          return console.log("Timeout", this.state.errorshowed, this.state.loggedIn);
+        } else {
+          const eventdata = { state: this.state, props: this.props };
+          await this.props.logError({ variables: { eventdata } });
+          this.setState({
+            error: "The Login takes too much time. Please check with our support.",
+            loggedIn: true
+          });
+        }
+      }
+    }, 30000);
   }
 
   componentWillUnmount() {
@@ -562,15 +572,15 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.chatOpen) {
       cssClass += " chat-open";
     }
-    if (this.props.sideBarOpen) {
-      cssClass += " side-bar-open";
+    if (this.props.sidebarOpen) {
+      cssClass += " sidebar-open";
     }
     let cssClassWeb = "newMainPosition";
     if (this.props.chatOpen) {
       cssClass += " chat-open";
     }
-    if (this.props.sideBarOpen) {
-      cssClass += " side-bar-open";
+    if (this.props.sidebarOpen) {
+      cssClass += " sidebar-open";
     }
 
     // this is a workaround for a weebly bug. Remove when no longer nessesary
@@ -641,15 +651,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         ) : (
           ""
         )}
-        {this.state.popup ? (
+        {this.state.popup && (
           <Popup
             popupHeader={this.state.popup.type}
             popupBody={AcceptLicence}
             bodyProps={this.state.popup}
             onClose={this.closePopup}
           />
-        ) : (
-          ""
         )}
       </div>
     );

@@ -43,7 +43,7 @@ export default function UserName(props: {
 
         const userData = data.fetchPublicUser;
         return (
-          <span className={props.className}>
+          <span className={props.className} data-recording-sensitive>
             {short ? userData.firstname : `${userData.firstname} ${userData.lastname}`}
           </span>
         );

@@ -7,10 +7,18 @@ interface Props {
   label?: string;
   type?: string;
   errorEvaluation?: Boolean;
+<<<<<<< HEAD
   errorhint?: string;
   startvalue?: string;
   width?: string;
   disabled?: Boolean;
+=======
+  errorhint?: string | JSX.Element | null;
+  startvalue?: string;
+  width?: string;
+  disabled?: Boolean;
+  onEnter?: Function;
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
 }
 
 interface State {
@@ -60,6 +68,15 @@ class UniversalTextInput extends React.Component<Props, State> {
     this.timeout = setTimeout(() => this.setState({ notypeing: true }), 250);
   }
 
+<<<<<<< HEAD
+=======
+  handleKeyUp = e => {
+    if (e.key == "Enter" && this.props.onEnter) {
+      this.props.onEnter();
+    }
+  };
+
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
   render() {
     return (
       <div
@@ -77,10 +94,21 @@ class UniversalTextInput extends React.Component<Props, State> {
           disabled={this.props.disabled}
           onFocus={() => this.toggleInput(true)}
           onBlur={() => this.toggleInput(false)}
+<<<<<<< HEAD
           className="cleanup universalTextInput"
           style={
             this.props.errorEvaluation && this.state.notypeing
               ? { ...(this.props.width ? { width: this.props.width } : {}), color: "#e32022" }
+=======
+          onKeyUp={e => this.handleKeyUp(e)}
+          className="cleanup universalTextInput"
+          style={
+            this.props.errorEvaluation && this.state.notypeing
+              ? {
+                  ...(this.props.width ? { width: this.props.width } : {}),
+                  borderBottomColor: "#e32022"
+                }
+>>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
               : this.props.width
               ? { width: this.props.width }
               : {}
