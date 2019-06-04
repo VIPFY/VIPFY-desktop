@@ -143,8 +143,8 @@ function AppUsageCompanywideChart(props) {
   return (
     <Query
       query={gql`
-        query fetchTotalAppUsage {
-          fetchTotalAppUsage {
+        query onFetchMonthlyAppUsage {
+          fetchMonthlyAppUsage {
             app {
               name
               icon
@@ -158,9 +158,11 @@ function AppUsageCompanywideChart(props) {
         if (loading) {
           return <div>Loading</div>;
         }
+
         if (error) {
           return <div>Error fetching data</div>;
         }
+
         return (
           <ResizeAware style={{ width: "100%" }}>
             <AppUsageCompanywideChartInner {...props} data={data} />

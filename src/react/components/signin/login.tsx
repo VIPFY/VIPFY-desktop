@@ -28,7 +28,6 @@ class Login extends React.Component<Props, State> {
   };
 
   render() {
-    console.log(this.props, this.state);
     const store = new Store();
     let user: {
       email: string;
@@ -88,7 +87,11 @@ class Login extends React.Component<Props, State> {
               this.props.error && !this.state.changed ? (
                 <React.Fragment>
                   <i className="fal fa-exclamation-circle" />
-                  <span>Password incorrect</span>
+                  <span>
+                    {this.props.error == "network"
+                      ? "Can't reach Server. Please check your internet connection."
+                      : "Password incorrect"}
+                  </span>
                 </React.Fragment>
               ) : null
             }
