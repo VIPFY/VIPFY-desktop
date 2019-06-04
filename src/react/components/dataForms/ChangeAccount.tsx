@@ -98,16 +98,16 @@ class ChangeAccount extends React.Component<Props, State> {
                   <div style={{ fontSize: "12px" }}>{a.email}</div>
                 </div>
 
-                {this.state.hover == a.email && (
-                  <button
-                    onClick={e => {
-                      e.stopPropagation();
-                      this.setState({ confirm: true, deleteEmail: a.email });
-                    }}
-                    className="naked-button">
-                    <i className="fal fa-trash-alt accountDelete" />
-                  </button>
-                )}
+                {/* {this.state.hover == a.email && ( */}
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    this.setState({ confirm: true, deleteEmail: a.email });
+                  }}
+                  className="naked-button">
+                  <i className="fal fa-trash-alt accountDelete" />
+                </button>
+                {/* )} */}
               </div>
             ))}
 
