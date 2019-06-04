@@ -118,7 +118,7 @@ class PopupSSO extends React.Component<Props, State> {
           <UniversalTextInput
             width="100%"
             id="email"
-            label="Email"
+            label="Email / Username"
             type="email"
             startvalue=""
             livevalue={value => this.setState({ email: value })}

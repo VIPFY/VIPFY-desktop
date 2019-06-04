@@ -10,7 +10,6 @@ import { me, fetchLicences } from "../queries/auth";
 import UniversalSearchBox from "../components/universalSearchBox";
 import PopupSSO from "../popups/universalPopups/PopupSSO";
 import AppCardIntegrations from "../components/services/appCardIntegrations";
-import { CREATE_OWN_APP } from "../mutations/products";
 import SelfSaving from "../popups/universalPopups/SelfSavingIllustrated";
 import { SSO } from "../interfaces";
 
@@ -301,39 +300,27 @@ class Integrations extends React.Component<Props, AppPageState> {
         )}
 
         {!this.state.popup && this.state.popupSSO && (
-          <Mutation
-            mutation={CREATE_OWN_APP}
-            onCompleted={() => this.setState({ showLoading: false })}>
-            {(createOwnApp, { data, loading, error }) => (
-              <React.Fragment>
-                <PopupSSO
-                  cancel={() => {
-                    if (!loading) {
-                      this.setState({ popupSSO: false });
-                    }
-                  }}
-                  add={values => {
-                    if (values.logo) {
-                      values.images = [values.logo, values.logo];
-                    }
-                    delete values.logo;
+          <React.Fragment>
+            <PopupSSO
+              cancel={() => this.setState({ popupSSO: false })}
+              add={values => {
+                if (values.logo) {
+                  values.images = [values.logo, values.logo];
+                }
+                delete values.logo;
 
-                    this.setState({ ownSSO: { ...values }, showLoading: true });
-                    // createOwnApp({ variables: { ssoData: values } });
-                  }}
-                />
-                {this.state.showLoading && (
-                  <SelfSaving
-                    error={error}
-                    success={data}
-                    sso={this.state.ownSSO}
-                    //  maxTime={7000}
-                    closeFunction={() => this.setState({ showLoading: false })}
-                  />
-                )}
-              </React.Fragment>
+                this.setState({ ownSSO: { ...values }, showLoading: true });
+              }}
+            />
+
+            {this.state.showLoading && (
+              <SelfSaving
+                sso={this.state.ownSSO}
+                //  maxTime={7000}
+                closeFunction={() => this.setState({ showLoading: false, popupSSO: false })}
+              />
             )}
-          </Mutation>
+          </React.Fragment>
         )}
       </div>
     );
