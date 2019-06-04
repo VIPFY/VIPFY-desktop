@@ -17,6 +17,7 @@ interface Props {
   ) => void;
   progress?: (progress: number) => void;
   speed?: number;
+  className?: string;
 }
 
 interface State {
@@ -83,7 +84,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     speed: 1,
     partition: "universalLogin",
     progress: () => null,
-    takeScreenshot: true
+    takeScreenshot: true,
+    className: "universalLoginExecutor"
   };
 
   loginState = {
@@ -98,7 +100,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
   timeoutHandle: NodeJS.Timer | undefined = undefined;
 
-  progressHanlde: NodeJS.Timer | undefined = undefined;
+  progressHandle: NodeJS.Timer | undefined = undefined;
 
   webview: any = undefined;
 
@@ -106,6 +108,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
   progressInterval = 200;
   progressStep = 0;
+  sentResult = false;
 
   reset() {
     session.fromPartition(this.props.partition).clearStorageData();
@@ -126,13 +129,14 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     this.progress = 0;
     this.props.progress!(0);
     this.progressStep = ((1 - 2 * 0.2) * this.progressInterval) / this.props.timeout!;
+    this.sentResult = false;
   }
 
   componentDidMount() {
     this.reset();
     this.mounted++;
     console.log("mounted", this.mounted);
-    this.progressHanlde = setInterval(this.progressCallback.bind(this), this.progressInterval);
+    this.progressHandle = setInterval(this.progressCallback.bind(this), this.progressInterval);
 
     // session
     //   .fromPartition(this.props.partition)
@@ -159,13 +163,18 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
     }
-    if (this.progressHanlde) {
-      clearInterval(this.progressHanlde);
-      this.progressHanlde = undefined;
+    if (this.progressHandle) {
+      clearInterval(this.progressHandle);
+      this.progressHandle = undefined;
     }
   }
   componentDidUpdate(prevProps: Props) {
-    if (prevProps.loginUrl != this.props.loginUrl || prevProps.speed != this.props.speed) {
+    if (
+      prevProps.loginUrl != this.props.loginUrl ||
+      prevProps.speed != this.props.speed ||
+      prevProps.username != this.props.username ||
+      prevProps.password != this.props.password
+    ) {
       this.reset();
     }
   }
@@ -177,7 +186,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         webpreferences="webSecurity=no"
         src={this.props.loginUrl}
         partition={this.props.partition}
-        className="universalloginExecutor"
+        className={this.props.className}
         useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
         onIpcMessage={e => this.onIpcMessage(e)}
       />
@@ -214,6 +223,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
     }
+    this.sentResult = true;
     if (w) {
       setTimeout(
         () =>
@@ -243,6 +253,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     ) {
       this.progress = 1;
       this.sendResult(this.webview, 0);
+    }
+    if (this.progress == 1) {
+      if (this.progressHandle) {
+        clearInterval(this.progressHandle);
+        this.progressHandle = undefined;
+      }
     }
   }
 

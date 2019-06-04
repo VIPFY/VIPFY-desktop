@@ -11,6 +11,7 @@ import { STATUS_CODES } from "http";
 import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
+import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -69,7 +70,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   state = {
     setUrl: "",
-    currentUrl: null,
+    currentUrl: "",
     inspirationalText: "Loading...",
     legalText: "Legal Text",
     showLoadingScreen: true,
@@ -285,7 +286,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       setUrl: loginurl,
       unitId: licence.unit.id,
       options: licence.boughtPlan.plan.app.options,
-      appid: licence.boughtPlan.plan.app.id
+      appid: licence.boughtPlan.plan.app.id,
+      key: licence.key
     });
   }
 
@@ -499,28 +501,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         if (this.state.options) {
           e.target.send("loginDetails", {
             appid: this.state.appid,
-            type: this.state.options.type,
-            emailobject: this.state.options.emailobject,
-            passwordobject: this.state.options.passwordobject,
-            buttonobject: this.state.options.buttonobject,
-            emailtype: this.state.options.emailtype,
-            passwordtype: this.state.options.passwordtype,
-            buttontype: this.state.options.buttontype,
-            emailpassobject: this.state.options.emailpassobject,
-            button1type: this.state.options.button1type,
-            button2type: this.state.options.button2type,
-            button1object: this.state.options.button1object,
-            button2object: this.state.options.button2object,
-            hideobject: this.state.options.hideobject,
-            hidetype: this.state.options.hidetype,
-            nopassobject: this.state.options.nopassobject,
-            errorobject: this.state.options.errorobject,
-            rememberobject: this.state.options.rememberobject,
-            emptyerrortype: this.state.options.emptyerrortype,
-            waituntil: this.state.options.waituntil,
-            repeat: this.state.options.repeat,
+            ...this.state.options,
             loggedIn: this.state.loggedIn,
-            loginiframe: this.state.options.loginiframe,
             key
           });
         } else {
@@ -581,40 +563,53 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         ) : (
           ""
         )}
-        <WebView
-          id={`webview-${this.props.viewID}`}
-          preload="./preload-launcher.js"
-          webpreferences="webSecurity=no"
-          className={cssClassWeb}
-          src={this.state.currentUrl || this.state.setUrl}
-          partition="services"
-          onDidNavigate={e => this.onDidNavigate(e.target.src)}
-          //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
-          onDidFailLoad={(code, desc, url, isMain) => {
-            if (isMain) {
-              //this.hideLoadingScreen();
-            }
-            console.log(`failed loading ${url}: ${code} ${desc}`);
-          }}
-          onLoadCommit={e => this.onLoadCommit(e)}
-          onNewWindow={e => this.onNewWindow(e)}
-          //onWillNavigate={e => console.log("WillNavigate", e.target.src)}
-          //onDidStartLoading={e => console.log("DidStartLoading", e.target.src)}
-          onDidStartNavigation={e => console.log("DidStartNavigation", e.target.src)}
-          //onDidFinishLoad={e => console.log("DidFinishLoad", e.target.src)}
-          //onDidStopLoading={e => console.log("DidStopLoading", e.target.src)}
-          onDomReady={e => {
-            //console.log("DomReady", e);
-            //this.maybeHideLoadingScreen();
-            if (!e.target.isDevToolsOpened()) {
-              //e.target.openDevTools();
-            }
-          }}
-          //onDialog={e => console.log("Dialog", e)}
-          onIpcMessage={e => this.onIpcMessage(e)}
-          //onConsoleMessage={e => console.log("LOGCONSOLE", e.message)}
-          onDidNavigateInPage={e => this.onDidNavigateInPage(e.target.src)}
-        />
+        {this.state.options.universallogin ? (
+          <UniversalLoginExecutor
+            loginUrl={this.state.setUrl}
+            username={this.state.key.email}
+            password={this.state.key.password}
+            timeout={60000}
+            takeScreenshot={false}
+            partition="services"
+            className={cssClassWeb}
+            setResult={({ loggedin, emailEntered, passwordEntered }) => {
+              if (loggedin && emailEntered && passwordEntered) {
+                this.hideLoadingScreen();
+              }
+            }}
+            speed={10}
+          />
+        ) : (
+          <WebView
+            id={`webview-${this.props.viewID}`}
+            preload="./preload-launcher.js"
+            webpreferences="webSecurity=no"
+            className={cssClassWeb}
+            src={this.state.currentUrl || this.state.setUrl}
+            partition="services"
+            onDidNavigate={e => this.onDidNavigate(e.target.src)}
+            //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
+            onDidFailLoad={(code, desc, url, isMain) => {
+              if (isMain) {
+                //this.hideLoadingScreen();
+              }
+              console.log(`failed loading ${url}: ${code} ${desc}`);
+            }}
+            onLoadCommit={e => this.onLoadCommit(e)}
+            onNewWindow={e => this.onNewWindow(e)}
+            onDidStartNavigation={e => console.log("DidStartNavigation", e.target.src)}
+            onDomReady={e => {
+              if (!e.target.isDevToolsOpened()) {
+                //e.target.openDevTools();
+              }
+            }}
+            //onDialog={e => console.log("Dialog", e)}
+            onIpcMessage={e => this.onIpcMessage(e)}
+            //onConsoleMessage={e => console.log("LOGCONSOLE", e.message)}
+            onDidNavigateInPage={e => this.onDidNavigateInPage(e.target.src)}
+            useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
+          />
+        )}
         {this.state.error ? (
           <Popup
             popupHeader={"Uupps, sorry it seems that we can't look you in"}
