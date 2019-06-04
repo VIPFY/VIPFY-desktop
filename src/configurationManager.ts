@@ -18,6 +18,7 @@ let config = {
   showAppAdmin: false,
   showAdmin: true,
   showSsoConfig: false,
+  showUniversalLoginDebug: false,
 
   allowDevTools: true
 };

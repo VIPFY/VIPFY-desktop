@@ -37,7 +37,6 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
             return <div>There was an error</div>;
           }
 
-          // TODO: [VIP-255] consent is nessesary for EU citizens
           if (data.me && data.me.consent) {
             window.smartlook("consentAPI", consentText);
             window.smartlook("identify", data.me.id, {
@@ -47,14 +46,13 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
           }
 
           if (!data.me.company.setupfinished) {
-            //return <Welcome {...this.props} />;
             return (
               <div className="centralize backgroundLogo">
                 <DataNameForm moveTo={() => this.props.moveTo()} />
               </div>
             );
           }
-          console.log(this.props);
+
           if (data.me.firstlogin) {
             return <FirstLogin {...this.props} />;
           }

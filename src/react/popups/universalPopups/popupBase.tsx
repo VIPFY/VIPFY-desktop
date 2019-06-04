@@ -11,6 +11,10 @@ interface Props {
   notimer?: Boolean;
   dialog?: Boolean;
   nosidebar?: Boolean;
+  nooutsideclose?: Boolean;
+  buttonStyles?: Object;
+  fullmiddle?: Boolean;
+  styles?: Object;
 }
 
 interface State {
@@ -184,15 +188,14 @@ class PopupBase extends React.Component<Props, State> {
                   {},
                   this.state.isopen ? showPopup : hidePopup,
                   this.props.small ? { maxWidth: "30rem" } : "",
-                  this.props.dialog ? { maxWidth: "25rem" } : ""
+                  this.props.dialog ? { maxWidth: "25rem" } : "",
+                  this.props.styles ? this.props.styles : ""
                 )}
                 onClick={e => e.stopPropagation()}>
-                {this.props.close && !(this.props.closeable == false) ? (
+                {this.props.close && !(this.props.closeable == false) && (
                   <div className="closePopup" onClick={() => this.close()}>
                     <i className="fal fa-times" />
                   </div>
-                ) : (
-                  ""
                 )}
                 <div className="contentPopup">{this.renderChildren(this.props.children)}</div>
                 {this.props.autoclosing && !this.props.notimer ? (
