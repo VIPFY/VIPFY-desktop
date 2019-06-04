@@ -11,46 +11,71 @@ Object.defineProperty(String.prototype, "includesAny", {
   }
 });
 
-console.log("starting find Username");
+console.log("starting find Password");
 ipcRenderer.sendToHost("loaded", null);
 
 let done = false;
-function doit(force) {
+function doit(force, button1) {
   if (done) return;
-  const email = getQueryString(findEmailField());
   const password = getQueryString(findPassField());
-  const button = createQueryString(
-    findConfirmButton(),
-    ["sign", "log", "submit"],
-    ["oauth", "google", "facebook", "forgot"]
-  );
-  if (force || (email !== null && password !== null && button !== null)) {
+  let button = getQueryString(findConfirmButton());
+  if (document.querySelector(button1)) {
+    button = button1;
+  }
+  console.log("doit", password, button);
+  if (force || (password !== null && button !== null)) {
     done = true;
-    ipcRenderer.sendToHost("emailobject", email);
+    console.log("sending data");
     ipcRenderer.sendToHost("passwordobject", password);
     ipcRenderer.sendToHost("confirmbutton", button);
   }
 }
 
-// try at various times in case the page takes a while to load
-setTimeout(function() {
-  doit(false);
-}, 500);
-setTimeout(function() {
-  doit(false);
-}, 1500);
-setTimeout(function() {
-  doit(false);
-}, 3000);
-setTimeout(function() {
-  doit(false);
-}, 5000);
-setTimeout(function() {
-  doit(false);
-}, 10000);
-setTimeout(function() {
-  doit(true);
-}, 15000);
+ipcRenderer.on("loginData", (e, key) => {
+  console.log("login", key);
+
+  const { username, usernameField, button1 } = key;
+
+  waitForObject(usernameField, 10000, () => {
+    console.log("filling form", usernameField, username, button1);
+    fillFormField(document.querySelector(usernameField), username);
+    clickButton(document.querySelector(button1));
+
+    // try at various times in case the page takes a while to load
+    setTimeout(function() {
+      doit(false, button1);
+    }, 500);
+    setTimeout(function() {
+      doit(false, button1);
+    }, 1500);
+    setTimeout(function() {
+      doit(false, button1);
+    }, 3000);
+    setTimeout(function() {
+      doit(false, button1);
+    }, 5000);
+    setTimeout(function() {
+      doit(false, button1);
+    }, 10000);
+    setTimeout(function() {
+      doit(true, button1);
+    }, 15000);
+  });
+});
+ipcRenderer.sendToHost("getLoginDetails", null);
+
+function waitForObject(s, timeout, callback) {
+  console.log("waitForObject", s, document.querySelector(s), timeout);
+  if (document.querySelector(s) !== null) {
+    return callback();
+  }
+
+  if (timeout < 0) {
+    return callback();
+  }
+
+  setTimeout(() => waitForObject(s, timeout - 500, callback), 500);
+}
 
 const queryStringBlacklist = ["_ngcontent", "_nghost"];
 
@@ -146,65 +171,6 @@ const attributes = [
   "alt"
 ];
 
-const literalAttributes = ["role", "type", "ng-model", "data-ng-model"];
-
-function createQueryString(t, pro, contra) {
-  if (t === null || t === undefined) return null;
-  s = t.tagName;
-  if (document.querySelectorAll(s).length == 1) return s;
-  for (a of literalAttributes) {
-    if (t.attributes[a]) {
-      const s_old = s;
-      s += `[${a}='${t.attributes[a].value}']`;
-      const l = document.querySelectorAll(s).length;
-      if (l == 1) return s;
-      if (l == 0) s = s_old;
-    }
-  }
-  for (a of attributes) {
-    for (p of pro) {
-      const l_old = document.querySelectorAll(s).length;
-      const s_old = s;
-      s += `[${a}*='${p}']`;
-      const q = document.querySelectorAll(s);
-      if (q.length == 0 || !Array.from(q).includes(t)) {
-        console.log("reverting", s);
-        s = s_old;
-        continue;
-      }
-      if (q.length == 1) return s;
-      if (q.length == l_old) {
-        console.log("useless", s);
-        //s = s_old;
-        //continue;
-      }
-      console.log("adding", s);
-    }
-  }
-  for (a of attributes) {
-    for (p of contra) {
-      const l_old = document.querySelectorAll(s).length;
-      const s_old = s;
-      s += `:not([${a}*='${p}'])`;
-      const q = document.querySelectorAll(s);
-      if (q.length == 0 || !Array.from(q).includes(t)) {
-        console.log("reverting", s);
-        s = s_old;
-        continue;
-      }
-      if (q.length == 1) return s;
-      if (q.length == l_old) {
-        console.log("useless", s);
-        //s = s_old;
-        //continue;
-      }
-      console.log("adding", s);
-    }
-  }
-  console.log("unsuccessful", s, document.querySelectorAll(s).length);
-  throw new Error("no query selector found");
-}
-
 function filterDom(includesAny, excludesAll) {
   return function(element) {
     if (!element.hasAttributes()) {
@@ -232,4 +198,28 @@ function filterDom(includesAny, excludesAll) {
     }
     return false;
   };
+}
+
+function fillFormField(target, content) {
+  target.dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
+  target.value = content;
+  target.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+  target.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+}
+
+function clickButton(targetNode) {
+  triggerMouseEvent(targetNode, "mouseover");
+  setTimeout(() => {
+    triggerMouseEvent(targetNode, "mousedown");
+    setTimeout(() => {
+      triggerMouseEvent(targetNode, "mouseup");
+      triggerMouseEvent(targetNode, "click");
+    }, 77);
+  }, 146);
+}
+
+function triggerMouseEvent(node, eventType) {
+  const clickEvent = document.createEvent("MouseEvents");
+  clickEvent.initEvent(eventType, true, true);
+  node.dispatchEvent(clickEvent);
 }

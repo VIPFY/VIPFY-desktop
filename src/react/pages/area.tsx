@@ -54,6 +54,9 @@ import TeamOverview from "./manager/teamOverview";
 import TeamDetails from "./manager/teamDetails";
 import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
+import Consent from "../popups/universalPopups/Consent";
+import UniversalLogin from "./universalLogin";
+import UniversalLoginTest from "../components/admin/UniversalLoginTest";
 
 interface AreaProps {
   history: any[];
@@ -66,6 +69,7 @@ interface AreaProps {
   client: ApolloClient<InMemoryCache>;
   moveTo: Function;
   sidebarloaded: Function;
+  consent?: boolean;
 }
 
 interface AreaState {
@@ -82,6 +86,7 @@ interface AreaState {
   openInstances: any;
   activeTab: null | object;
   adminOpen: boolean;
+  consentPopup: boolean;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -98,7 +103,8 @@ class Area extends React.Component<AreaProps, AreaState> {
     oldWebViews: [],
     openInstances: {},
     activeTab: null,
-    adminOpen: false
+    adminOpen: false,
+    consentPopup: false
   };
 
   componentDidMount = async () => {
@@ -133,10 +139,9 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.setState({ script });
     document.head.appendChild(script);
 
-    //this.addWebview(1171);
-    //this.addWebview(1001);
-    //this.addWebview(1001);
-    //this.addWebview(1001);
+    if (this.props.consent == null) {
+      this.setState({ consentPopup: true });
+    }
   };
 
   componentWillUnmount() {
@@ -377,7 +382,11 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "dmanager", component: TeamOverview },
       { path: "emanager/:userid", component: EmployeeDetails },
       { path: "lmanager/:serviceid", component: ServiceDetails },
-      { path: "dmanager/:teamid", component: TeamDetails }
+      { path: "dmanager/:teamid", component: TeamDetails },
+      { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
+      { path: "ssoconfig", component: SsoConfigurator },
+      { path: "ssotest", component: SsoTester },
+      { path: "universallogin", component: UniversalLogin }
     ];
 
     if (this.props.licences.loading) {
@@ -517,6 +526,10 @@ class Area extends React.Component<AreaProps, AreaState> {
             handleDragLeave={this.handleDragLeave}
             handleClose={this.handleClose}
           />
+
+          {this.state.consentPopup && (
+            <Consent close={() => this.setState({ consentPopup: false })} />
+          )}
         </SideBarContext.Provider>
       </div>
     );

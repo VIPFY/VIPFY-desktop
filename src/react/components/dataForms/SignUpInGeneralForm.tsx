@@ -89,6 +89,7 @@ class SignUpInGeneral extends React.Component<Props, State> {
             <div>{this.fields[this.props.type].text1}</div>
           </div>
         )}
+
         <div className="UniversalInputHolder">
           <UniversalTextInput
             id={this.fields[this.props.type].field2id}

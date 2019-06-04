@@ -1,144 +1,166 @@
-.dataGeneralForm{
-    width: 904px;
-    height: 536px;
-    padding: 32px 32px 48px 32px;
-    background-color: white;
-    position: relative;
-    border-radius: 8px;
-    box-shadow: 0px 4px 5px rgba(#000000, 0.14);
+$fullWidth: 904px;
 
-    .logo{
-        background-repeat: no-repeat;
-        background-position: center;
-        background-image: $logo_white;
-        width: 48px;
-        height: 40px;
-        background-size: cover;
-        position: absolute;
-        top: 32px;
-        left: 32px;
-    }
+.dataGeneralForm {
+  width: $fullWidth;
+  height: 536px;
+  padding: 32px 32px 48px 32px;
+  background-color: white;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 4px 5px rgba(#000000, 0.14);
+    
+  .logo {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: $logo_white;
+    width: 48px;
+    height: 40px;
+    background-size: cover;
+    position: absolute;
+    top: 32px;
+    left: 32px;
+  }
 
-    h1{
-        //color: $vipfy_mainColor;
-        //font-family: 'Roboto', sans-serif;
-        all: unset;
+  .holder {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 21px;
+
+    &-right {
+      width: $fullWidth / 2;
+      margin-left: 33px;
+      display: flex;
+      flex-flow: column;
+      justify-content: space-around;
+      height: 441px;
+
+      h1 {
         font-size: 24px;
         line-height: 32px;
-        width: 100%;
-        text-align: center;
         display: block;
         margin-top: 8px;
         font-weight: 700;
+        align-items: start;
+      }
     }
 
-    p{
+    .illustration {
+      &-login {
+        width: $fullWidth / 2;
+        height: 500px;
+        object-fit: contain;
+      }
+    }
+
+    .login-buttons {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 313px;
+
+      button:first-child {
+        margin-left: -13px;
+      }
+    }
+
+    p {
+      all: unset;
+      line-height: 21px;
+      font-size: 16px;
+      width: 100%;
+      text-align: center;
+      display: inline-block;
+      margin-top: 32px;
+      height: 42px;
+    }
+
+    .inputHolder {
+      text-align: center;
+      margin-top: 46px;
+      
+      input {
         all: unset;
-        line-height: 21px;
-        font-size: 16px;
-        width: 100%;
-        text-align: center;
         display: inline-block;
-        margin-top: 32px;
-        height: 42px;
-    }
-
-    .inputHolder{
         text-align: center;
-        margin-top: 46px;
-        input{
-            all: unset;
-            display: inline-block;
-            text-align: center;
-            border-bottom: 2px solid;
-            width: 312px;
-            line-height: 40px;
-            border-radius: 4px 4px 0px 0px;
-            font-size: 21px;
-        }
+        border-bottom: 2px solid;
+        width: 312px;
+        line-height: 40px;
+        border-radius: 4px 4px 0px 0px;
+        font-size: 21px;
+      }
     }
-
 
     .oneIllustrationHolder{
-        width: 904px;
-        height: 224px;
+      width: 904px;
+      height: 224px;
+      background-color: #7c8690;
+      position: absolute;
+      top: 280px;
+    }
+
+    .threeIllustrationHolder {
+      width: 100%;
+      margin-top: 56px;
+      display: grid;
+      grid-template-columns: 264px 264px 264px;
+      grid-gap: 56px;
+
+      .thirdHolder{
+        padding: 48px 24px 48px 24px;
+        height: 272px;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover{
+            box-shadow: 0px 3px 4px rgba(#000000, 0.14)
+        }
+      }
+
+      .smallillu {
+        width: 216px;
+        height: 128px;
         background-color: #7c8690;
-        position: absolute;
-        top: 280px;
-    }
+      }
 
-    .buttonHolder{
-        display: flex;
-        justify-content: space-between;
-        position: absolute;
-        top: 536px;
-        width: 440px;
-        left: 264px;
-    }
-
-    .threeIllustrationHolder{
-        width: 100%;
-        margin-top: 56px;
-        display: grid;
-        grid-template-columns: 264px 264px 264px;
-        grid-gap: 56px;
-
-        .thirdHolder{
-            padding: 48px 24px 48px 24px;
-            height: 272px;
-            border-radius: 8px;
-            cursor: pointer;
-
-            &:hover{
-                box-shadow: 0px 3px 4px rgba(#000000, 0.14)
-            }
-        }
-        .smallillu{
-            width: 216px;
-            height: 128px;
-            background-color: #7c8690;
-        }
-        h2{
-            all: unset;
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 21px;
-            margin-top: 19px;
-            width: 100%;
-            text-align: center;
-            display: block;
-        }
-        p{
-            height: 32px;
-            font-size: 12px;
-            line-height: 16px;
-            margin-top: 16px;
-        }
-        .buttonHolder{
-            margin-top: 24px;
-        }
-    }
-    .UniversalInputHolder{
-        display: flex;
-        justify-content: center;
-        align-items: flex-end;
-        height: 56px;
-        margin-top: 32px;
-    }
-    .textHolder{
+      h2 {
+        all: unset;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 21px;
+        margin-top: 19px;
         width: 100%;
         text-align: center;
-        margin-top: 32px;
-        &>div{
-            display: inline-block;
-            width: 342px;
-        }
+        display: block;
+      }
+
+      p {
+        height: 32px;
+        font-size: 12px;
+        line-height: 16px;
+        margin-top: 16px;
+      }
+
+      .buttonHolder{
+        margin-top: 24px;
+      }
     }
-    .preloggedFullname{
-        width: 208px;
-        font-size: 14px;
-        line-height: 22px;
-        border-bottom: 1px solid;
+
+    .textHolder{
+      width: 100%;
+      margin-top: 32px;
+
+      &>div{
+        display: inline-block;
+        width: 342px;
+      }
+    }
+
+    .preloggedFullname {
+      width: 232px;
+      font-size: 14px;
+      line-height: 22px;
+      border-bottom: 1px solid;
 
         /*&:before{
             width: 20px;
@@ -153,7 +175,7 @@
             margin-bottom: 6px;
         }*/
     }
-    .notperson{
+    .notperson {
         all: unset;
         font-size: 10px;
         line-height: 13px;
@@ -181,46 +203,42 @@
             margin-top: -7px;
         }
     }
-    .accountArrayHolder{
-        position: absolute;
-        top: 104px;
-        left: 328px;
-        width: 312px;
-        max-height: 440px;
-        overflow-y: auto;
-        .accountHolder{
-            height: 55px;
-            border-bottom: 1px solid;
-            cursor: pointer;
-            border-radius: 4px 4px 0px 0px;
-            position: relative;
 
-            &:hover{
-                background-color: #F5F5F5;
-            }
-
-            .accountHolderBullet{
-                width: 20px;
-                height: 20px;
-                content: "";
-                display: block;
-                margin-left: 16px;
-                margin-right: 11px;
-                border-radius: 10px;
-                float: left;
-                margin-top: 21px;
-                background-size: cover;
-                background-position: center;
-            }
-
-            .accountDelete{
-                position: absolute;
-                top: 24px;
-                right: 24px;
-            }
-        }
+    .accountBullet {
+      width: 20px;
+      height: 20px;
+      content: "";
+      display: block;
+      margin-left: 16px;
+      margin-right: 11px;
+      border-radius: 10px;
+      float: left;
+      margin-bottom: 5px;
+      background-size: cover;
+      background-position: center;
     }
-    .accountBullet{
+  }
+
+  .accountArrayHolder {
+    position: absolute;
+    top: 104px;
+    left: 328px;
+    width: 312px;
+    max-height: 440px;
+    overflow-y: auto;
+
+    .accountHolder {
+      height: 55px;
+      border-bottom: 1px solid;
+      cursor: pointer;
+      border-radius: 4px 4px 0px 0px;
+      position: relative;
+
+      &:hover {
+        background-color: #F5F5F5;
+    }
+
+    .accountHolderBullet {
         width: 20px;
         height: 20px;
         content: "";
@@ -229,8 +247,34 @@
         margin-right: 11px;
         border-radius: 10px;
         float: left;
-        margin-bottom: 5px;
+        margin-top: 21px;
         background-size: cover;
         background-position: center;
+      }
+
+      .accountDelete {
+        position: absolute;
+        top: 20px;
+        right: 24px;
+      }
     }
+  }
+
+  .buttonHolder {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 536px;
+    width: 440px;
+    left: 264px;
+  }
+
+  .UniversalInputHolder {
+    display: flex;
+    align-self: start;
+    justify-content: center;
+    align-items: flex-end;
+    height: 56px;
+    margin-top: 32px;
+  }
 }

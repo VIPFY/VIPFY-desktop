@@ -15,6 +15,7 @@ import { ApolloClient } from "apollo-client";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
+import Consent from "../../popups/universalPopups/Consent";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
@@ -42,6 +43,7 @@ interface State {
   pwconfirm: boolean;
   networking: boolean;
   errorupdate: boolean;
+  consentPopup: boolean;
   loading: boolean;
 }
 
@@ -55,7 +57,8 @@ class PersonalData extends React.Component<Props, State> {
     pwconfirm: false,
     networking: true,
     errorupdate: false,
-    loading: false
+    loading: false,
+    consentPopup: false
   };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
@@ -100,6 +103,16 @@ class PersonalData extends React.Component<Props, State> {
             return <div>Error loading data</div>;
           }
           const { firstname, middlename, lastname, title, createdate } = data.me;
+
+          // Just to be on the safe side
+          let consent = "not given";
+
+          if (data.me.consent && data.me.consent === true) {
+            consent = "given";
+          } else if (data.me.consent && data.me.consent === false) {
+            consent = "denied";
+          }
+
           return (
             <AppContext.Consumer>
               {({ addRenderElement, setreshowTutorial }) => {
@@ -108,7 +121,6 @@ class PersonalData extends React.Component<Props, State> {
                     label: "Name",
                     data: `${title ? title : ""} ${concatName(firstname, middlename, lastname)}`
                   },
-                  //{ label: "Birthday", data: birthday },
                   //{ label: "Language", data: language },
                   { label: "User for", data: <Duration timestamp={parseInt(createdate)} /> }
                 ];
@@ -219,6 +231,16 @@ class PersonalData extends React.Component<Props, State> {
                               <i className="fal fa-key" />
                               <span className="textButtonInside">Change Password</span>
                             </button>
+
+                            <button
+                              className="naked-button"
+                              onClick={() => this.setState({ consentPopup: true })}>
+                              <span className="consent">{`Consent ${consent} for sending Usagedata`}</span>
+                            </button>
+
+                            {this.state.consentPopup && (
+                              <Consent close={() => this.setState({ consentPopup: false })} />
+                            )}
                           </li>
                         </ul>
                         {this.state.pwchange ? (

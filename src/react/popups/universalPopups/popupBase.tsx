@@ -3,22 +3,24 @@ import { SideBarContext } from "../../common/context";
 
 interface Props {
   close?: Function; //Close function (on background and x), if there is no, there is no x and the popup can't be close via the background
-  small?: Boolean; //if true max-width = 30rem else max-width = 60rem
+  small?: boolean; //if true max-width = 30rem else max-width = 60rem
   closeall?: Function;
-  closeable?: Boolean;
+  closeable?: boolean;
   autoclosing?: number;
   autoclosingFunction?: Function;
-  notimer?: Boolean;
-  dialog?: Boolean;
-  fullmiddle?: Boolean;
+  notimer?: boolean;
+  dialog?: boolean;
+  fullmiddle?: boolean;
   customStyles?: Object;
   buttonStyles?: Object;
-  nooutsideclose?: Boolean;
+  nooutsideclose?: boolean;
+  nosidebar?: boolean;
+  styles?: Object;
 }
 
 interface State {
-  isopen: Boolean;
-  autoclosing: Boolean;
+  isopen: boolean;
+  autoclosing: boolean;
 }
 
 const hidePopup = {
@@ -191,15 +193,13 @@ class PopupBase extends React.Component<Props, State> {
                   this.state.isopen ? showPopup : hidePopup,
                   this.props.small ? { maxWidth: "30rem" } : "",
                   this.props.dialog ? { maxWidth: "25rem" } : "",
-                  this.props.customStyles ? this.props.customStyles : ""
+                  this.props.styles ? this.props.styles : ""
                 )}
                 onClick={e => e.stopPropagation()}>
-                {this.props.close && !(this.props.closeable == false) ? (
+                {this.props.close && !(this.props.closeable == false) && (
                   <div className="closePopup" onClick={() => this.close()}>
                     <i className="fal fa-times" />
                   </div>
-                ) : (
-                  ""
                 )}
                 <div className="contentPopup">{this.renderChildren(this.props.children)}</div>
                 {this.props.autoclosing && !this.props.notimer ? (

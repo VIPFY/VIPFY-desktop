@@ -10,7 +10,6 @@ import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
 import LoadingDiv from "./components/LoadingDiv";
-import Login from "./pages/login";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
@@ -117,7 +116,7 @@ class App extends React.Component<AppProps, AppState> {
         mutation: REDEEM_SETUPTOKEN,
         variables: { setuptoken }
       });
-      const { ok, token } = res.data.redeemSetupToken;
+      const { token } = res.data.redeemSetupToken;
       localStorage.setItem("token", token);
       this.forceUpdate();
       store.delete("setuptoken");
@@ -182,16 +181,14 @@ class App extends React.Component<AppProps, AppState> {
             }
 
             if (error) {
-              console.log("ERROR", error);
-              this.setState({ error: filterError(error) });
-              this.props.client.cache.reset(); //clear graphql cache
+              this.props.client.cache.reset(); // clear graphql cache
 
               return (
                 <div className="centralize backgroundLogo">
                   <SignIn
                     login={this.logMeIn}
                     moveTo={this.moveTo}
-                    error={this.state.error}
+                    error={error.networkError ? "network" : filterError(error)}
                     resetError={() => this.setState({ error: "" })}
                   />
                 </div>

@@ -107,11 +107,10 @@ class SidebarLink extends React.Component<Props, State> {
           this.setState({ entered: false });
           this.props.handleDrop(
             licence.id,
-            event.dataTransfer.getData("text"),
-            event.pageY - event.currentTarget.getBoundingClientRect().top <=
-              event.currentTarget.getBoundingClientRect().height / 2
+            event.dataTransfer.getData("text")
+            // event.pageY - event.currentTarget.getBoundingClientRect().top <=
+            //   event.currentTarget.getBoundingClientRect().height / 2
           );
-          //console.log(event.pageX, event.pageY, event.currentTarget.getBoundingClientRect());
         }}
         draggable={this.props.isSearching}
         onDragStart={event => {

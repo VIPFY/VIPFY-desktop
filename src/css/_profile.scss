@@ -105,6 +105,20 @@ $shadow-color: #f0f3ff;
 
         &:last-child {
           justify-content: start;
+
+          .consent {
+            cursor: pointer;
+            position: absolute;
+            right: 22px;
+            top: 54px;
+            color: #aaa;
+            font-size: 10px;
+            transition: color 300ms ease-in-out;
+
+            &:hover {
+              color: #000;
+            }
+          }
         }
       }
     }
