@@ -9,16 +9,6 @@ $fullWidth: 904px;
   border-radius: 8px;
   box-shadow: 0 4px 5px rgba(#000000, 0.14);
     
-  h1 {
-    margin-left: 378px;
-    font-size: 24px;
-    line-height: 32px;
-    text-align: center;
-    display: block;
-    margin-top: 8px;
-    font-weight: 700;
-  }
-    
   .logo {
     background-repeat: no-repeat;
     background-position: center;
@@ -34,13 +24,24 @@ $fullWidth: 904px;
   .holder {
     display: flex;
     justify-content: space-around;
+    margin-top: 21px;
 
     &-right {
       width: $fullWidth / 2;
+      margin-left: 33px;
       display: flex;
       flex-flow: column;
       justify-content: space-around;
       height: 441px;
+
+      h1 {
+        font-size: 24px;
+        line-height: 32px;
+        display: block;
+        margin-top: 8px;
+        font-weight: 700;
+        align-items: start;
+      }
     }
 
     .illustration {
@@ -54,8 +55,13 @@ $fullWidth: 904px;
     .login-buttons {
       flex: 1;
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: flex-end;
+      width: 313px;
+
+      button:first-child {
+        margin-left: -13px;
+      }
     }
 
     p {
@@ -141,19 +147,20 @@ $fullWidth: 904px;
     }
 
     .textHolder{
-        width: 100%;
-        text-align: center;
-        margin-top: 32px;
-        &>div{
-            display: inline-block;
-            width: 342px;
-        }
+      width: 100%;
+      margin-top: 32px;
+
+      &>div{
+        display: inline-block;
+        width: 342px;
+      }
     }
+
     .preloggedFullname {
-        width: 208px;
-        font-size: 14px;
-        line-height: 22px;
-        border-bottom: 1px solid;
+      width: 232px;
+      font-size: 14px;
+      line-height: 22px;
+      border-bottom: 1px solid;
 
         /*&:before{
             width: 20px;
@@ -264,6 +271,7 @@ $fullWidth: 904px;
 
   .UniversalInputHolder {
     display: flex;
+    align-self: start;
     justify-content: center;
     align-items: flex-end;
     height: 56px;

@@ -43,15 +43,15 @@ class Login extends React.Component<Props, State> {
 
     return (
       <div className="dataGeneralForm">
-        <div className="logo" />
-        <h1>{`Welcome ${user ? `back, ${user.name}` : ""}`}</h1>
         <div className="holder">
+          <div className="logo" />
           <img
             src={`${__dirname}/../../../images/welcome_back.png`}
             className="illustration-login"
           />
 
           <div className="holder-right">
+            <h1>{`Welcome ${user ? `back, ${user.name}` : ""}`}</h1>
             <div className="UniversalInputHolder">
               <div className="preloggedFullname">
                 <div

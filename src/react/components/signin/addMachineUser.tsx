@@ -15,16 +15,14 @@ interface State {
 }
 
 class AddMachineUser extends React.Component<Props, State> {
-  state = {
-    email: ""
-  };
+  state = { email: "" };
 
   render() {
     const store = new Store();
     return (
       <div className="dataGeneralForm">
         <div className="logo" />
-        <h1>Add VIPFY-user to this machine</h1>
+        <h1 style={{ textAlign: "center" }}>Add VIPFY-user to this machine</h1>
 
         <div className="UniversalInputHolder">
           <UniversalTextInput

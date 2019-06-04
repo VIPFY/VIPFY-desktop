@@ -12,15 +12,15 @@ interface Props {
 
 interface State {
   confirm: Boolean;
-  delete: Boolean;
-  deleteemail: string;
+  deleteEmail: string;
+  hover: string;
 }
 
 class ChangeAccount extends React.Component<Props, State> {
   state = {
     confirm: false,
-    delete: false,
-    deleteemail: ""
+    deleteEmail: "",
+    hover: ""
   };
 
   accounts = [];
@@ -32,13 +32,14 @@ class ChangeAccount extends React.Component<Props, State> {
       fullname: string;
     }[] = [];
     const store = new Store();
+
     if (store.has("accounts")) {
       machineuserarray = store.get("accounts");
-      const i = machineuserarray.findIndex(u => u.email == this.state.deleteemail);
+      const i = machineuserarray.findIndex(u => u.email == this.state.deleteEmail);
       machineuserarray.splice(i, 1);
     }
     store.set("accounts", machineuserarray);
-    this.setState({ deleteemail: "" });
+    this.setState({ deleteEmail: "" });
   }
 
   render() {
@@ -63,17 +64,17 @@ class ChangeAccount extends React.Component<Props, State> {
     return (
       <div className="dataGeneralForm">
         <div className="logo" />
-        <h1>{this.state.delete ? "Delete Account from this machine" : "Change Account"}</h1>
+        <h1 style={{ textAlign: "center" }}>Change Account</h1>
+
         <div className="accountArrayHolder">
           {this.accounts.length > 0 &&
             this.accounts.map(a => (
               <div
+                key={a.email}
                 className="accountHolder"
-                onClick={() =>
-                  this.state.delete
-                    ? this.setState({ confirm: true, deleteemail: a.email })
-                    : this.props.selectAccount(a.email)
-                }>
+                onMouseEnter={() => this.setState({ hover: a.email })}
+                onMouseLeave={() => this.setState({ hover: "" })}
+                onClick={() => this.props.selectAccount(a.email)}>
                 <div
                   className="accountHolderBullet"
                   style={
@@ -96,59 +97,41 @@ class ChangeAccount extends React.Component<Props, State> {
                   <div>{a.fullname}</div>
                   <div style={{ fontSize: "12px" }}>{a.email}</div>
                 </div>
-                {this.state.delete ? <i className="fal fa-trash-alt accountDelete" /> : ""}
+
+                {this.state.hover == a.email && (
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      this.setState({ confirm: true, deleteEmail: a.email });
+                    }}
+                    className="naked-button">
+                    <i className="fal fa-trash-alt accountDelete" />
+                  </button>
+                )}
               </div>
             ))}
-          {this.state.delete ? (
-            ""
-          ) : (
-            <div className="accountHolder" onClick={() => this.props.addMachineUser!()}>
-              <div className="accountHolderBullet">
-                <i className="fal fa-user-plus" />
-              </div>
-              <div
-                className="accountHolderText"
-                style={{ lineHeight: "19px", paddingTop: "19px", fontSize: "14px" }}>
-                Add account
-              </div>
+
+          <div className="accountHolder" onClick={() => this.props.addMachineUser!()}>
+            <div className="accountHolderBullet">
+              <i className="fal fa-user-plus" />
             </div>
-          )}
-          {this.state.delete ? (
-            ""
-          ) : (
-            <div className="accountHolder" onClick={() => this.setState({ delete: true })}>
-              <div className="accountHolderBullet">
-                <i className="fal fa-user-minus" />
-              </div>
-              <div
-                className="accountHolderText"
-                style={{ lineHeight: "19px", paddingTop: "19px", fontSize: "14px" }}>
-                Delete account
-              </div>
+            <div
+              className="accountHolderText"
+              style={{ lineHeight: "19px", paddingTop: "19px", fontSize: "14px" }}>
+              Add account
             </div>
-          )}
+          </div>
         </div>
-        <div
-          className="buttonHolder"
-          style={this.state.delete ? { justifyContent: "flex-start" } : {}}>
+        <div className="buttonHolder">
+          <UniversalButton label="Cancel" type="low" onClick={() => this.props.backFunction()} />
+
           <UniversalButton
-            label="Cancel"
-            type="low"
-            onClick={() =>
-              this.state.delete ? this.setState({ delete: false }) : this.props.backFunction()
-            }
+            label="Register Company"
+            type="high"
+            onClick={() => this.props.registerCompany()}
           />
-          {this.state.delete ? (
-            ""
-          ) : (
-            <UniversalButton
-              label="Register Company"
-              type="high"
-              onClick={() => this.props.registerCompany()}
-            />
-          )}
         </div>
-        {this.state.confirm ? (
+        {this.state.confirm && (
           <PopupBase
             small={true}
             close={() => this.setState({ confirm: false })}
@@ -163,8 +146,6 @@ class ChangeAccount extends React.Component<Props, State> {
               onClick={async () => this.deleteAccount()}
             />
           </PopupBase>
-        ) : (
-          ""
         )}
       </div>
     );

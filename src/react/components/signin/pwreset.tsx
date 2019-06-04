@@ -43,19 +43,17 @@ class PWReset extends React.Component<Props, State> {
   render() {
     return (
       <div className="dataGeneralForm">
-        <div className="logo" />
-        <h1>Password Reset</h1>
         <div className="holder">
+          <div className="logo" />
           <img
             src={`${__dirname}/../../../images/forgot_password.png`}
             className="illustration-login"
           />
 
           <div className="holder-right">
+            <h1>Password Reset</h1>
             <div className="textHolder">
-              <div>
-                Enter your email and we’ll send you instructions on how to reset your password
-              </div>
+              Enter your email and we’ll send you instructions on how to reset your password
             </div>
             <div className="UniversalInputHolder">
               <UniversalTextInput
