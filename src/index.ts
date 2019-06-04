@@ -6,6 +6,7 @@ import installExtension, {
 import { enableLiveReload } from "electron-compile";
 import path = require("path");
 import Store = require("electron-store");
+import * as is from "electron-is";
 
 const store = new Store();
 const key = getSetupKey();
@@ -13,39 +14,42 @@ if (key !== false) {
   store.set("setupkey", key);
 }
 
-if (require("electron-squirrel-startup")) {
+if (!is.all(is.dev, is.osx) && require("electron-squirrel-startup")) {
   app.quit();
 }
 
-let disableUpdater = false;
+let disableUpdater = is.all(is.dev, is.osx); // autoupdater on dev mode on mac fails with certificate error and crashes app
 
 const DOMAIN = "https://storage.googleapis.com/releases.vipfy.store";
 const suffix =
   process.platform === "darwin" ? `/RELEASES.json?method=JSON&version=${app.getVersion()}` : "";
-autoUpdater.setFeedURL({
-  url: `${DOMAIN}/VIPFY/98c61756053f11b6429ce49805bd7553/${process.platform}/${
-    process.arch
-  }${suffix}`,
-  serverType: "json"
-});
 
-autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
-  const dialogOpts = {
-    type: "info",
-    buttons: ["Restart", "Later"],
-    title: "Application Update",
-    message: process.platform === "win32" ? releaseNotes : releaseName,
-    detail: "A new version has been downloaded. Restart the application to apply the updates."
-  };
-
-  dialog.showMessageBox(dialogOpts, response => {
-    if (response === 0) {
-      autoUpdater.quitAndInstall();
-    } else {
-      disableUpdater = true;
-    }
+if (!disableUpdater) {
+  autoUpdater.setFeedURL({
+    url: `${DOMAIN}/VIPFY/98c61756053f11b6429ce49805bd7553/${process.platform}/${
+      process.arch
+    }${suffix}`,
+    serverType: "json"
   });
-});
+
+  autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+      type: "info",
+      buttons: ["Restart", "Later"],
+      title: "Application Update",
+      message: process.platform === "win32" ? releaseNotes : releaseName,
+      detail: "A new version has been downloaded. Restart the application to apply the updates."
+    };
+
+    dialog.showMessageBox(dialogOpts, response => {
+      if (response === 0) {
+        autoUpdater.quitAndInstall();
+      } else {
+        disableUpdater = true;
+      }
+    });
+  });
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
