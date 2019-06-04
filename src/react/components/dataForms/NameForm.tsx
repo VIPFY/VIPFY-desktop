@@ -6,6 +6,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { me } from "../../queries/auth";
 import PopupBase from "../../popups/universalPopups/popupBase";
+import UniversalTextInput from "../universalForms/universalTextInput";
 
 interface Props {
   setupFinished: Function;
@@ -72,57 +73,69 @@ class DataNameForm extends React.Component<Props, State> {
   render() {
     return (
       <div className="dataGeneralForm">
-        <div className="logo" />
-        <h1>Welcome to VIPFY</h1>
-        <p>
-          Now that you signed up, let's personalize your experience.
-          <br />
-          First of all, what's your Name?
-        </p>
-        <div className="inputHolder">
-          <input
-            value={this.state.name}
-            placeholder="My name is"
-            onChange={e => this.setState({ name: e.target.value })}
+        <div className="holder">
+          <div className="logo" />
+          <img
+            src={`${__dirname}/../../../images/welcome_back.png`}
+            className="illustration-login"
           />
-        </div>
-        <div className="oneIllustrationHolder" />
-        <div className="buttonHolder" style={{ justifyContent: "flex-end" }}>
-          <UniversalButton
-            label="Continue"
-            type="high"
-            disabeld={this.state.name == ""}
-            onClick={() => this.continue()}
-          />
-        </div>
-        {this.state.register ? (
-          <PopupBase
-            close={() => this.setState({ register: false, error: "" })}
-            small={true}
-            closeable={false}
-            nosidebar={true}>
-            {this.state.error != "" ? (
-              <React.Fragment>
-                <div>{this.state.error}</div>
-                <UniversalButton
-                  type="high"
-                  closingPopup={true}
-                  label="Ok"
-                  closingAllPopups={true}
-                />
-              </React.Fragment>
-            ) : (
-              <div>
-                <div style={{ fontSize: "32px", textAlign: "center" }}>
-                  <i className="fal fa-spinner fa-spin" />
-                  <div style={{ marginTop: "32px", fontSize: "16px" }}>Setting up your company</div>
-                </div>
-              </div>
+
+          <div className="holder-right">
+            <h1>Welcome to VIPFY</h1>
+            <p style={{ display: "flex", flexFlow: "column", alignItems: "start" }}>
+              <span>Now that you signed up, let's personalize your experience.</span> <br />
+              <span>First of all, what's your Name?</span>
+            </p>
+
+            <div className="UniversalInputHolder">
+              <UniversalTextInput
+                id="AddUser"
+                width="312px"
+                label="My name is"
+                livevalue={v => this.setState({ name: v })}
+                onEnter={() => this.continue()}
+              />
+            </div>
+
+            <div className="login-buttons">
+              <UniversalButton
+                label="Continue"
+                type="high"
+                disabeld={this.state.name == ""}
+                onClick={() => this.continue()}
+              />
+            </div>
+
+            {this.state.register && (
+              <PopupBase
+                close={() => this.setState({ register: false, error: "" })}
+                small={true}
+                closeable={false}
+                nosidebar={true}>
+                {this.state.error != "" ? (
+                  <React.Fragment>
+                    <div>{this.state.error}</div>
+                    <UniversalButton
+                      type="high"
+                      closingPopup={true}
+                      label="Ok"
+                      closingAllPopups={true}
+                    />
+                  </React.Fragment>
+                ) : (
+                  <div>
+                    <div style={{ fontSize: "32px", textAlign: "center" }}>
+                      <i className="fal fa-spinner fa-spin" />
+                      <div style={{ marginTop: "32px", fontSize: "16px" }}>
+                        Setting up your company
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </PopupBase>
             )}
-          </PopupBase>
-        ) : (
-          ""
-        )}
+          </div>
+        </div>
       </div>
     );
   }

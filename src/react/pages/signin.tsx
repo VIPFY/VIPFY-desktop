@@ -50,7 +50,6 @@ class SignIn extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("SIGNIN");
     switch (this.state.progress) {
       case "login":
         return (
