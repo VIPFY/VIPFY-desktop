@@ -75,7 +75,7 @@ class UniversalButton extends React.Component<Props, State> {
           className="cleanup universalCoverButton"
           onClick={e => this.click(e)}
           style={{
-            width: this.props.label.length > 6 ? this.props.label.length * 10 + 30 : 90
+            width: this.props.label.length > 6 ? undefined : 90
           }}>
           <div
             className={`cleanup universalButton ${this.props.type ? this.props.type : ""} ${
