@@ -52,6 +52,12 @@ export type WebViewProps = {
   logError: Function;
 };
 
+const LOG_SSO_ERROR = gql`
+  mutation onLogSSOError($data: JSON) {
+    logSSOError(eventdata: $data)
+  }
+`;
+
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
 // TODO: move TODO page to web so webSecurity=no is no longer nessesary
 
@@ -441,11 +447,23 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
       case "errorDetected": {
         console.log("errorDetected");
-        const eventdata = { state: this.state, props: this.props };
-        await this.props.logError({ variables: { eventdata } });
+        // Create the error object
+        const { logError, client, ...saveprops } = this.props;
+        const data = {
+          error: "errorDetected",
+          state: this.state,
+          props: saveprops
+        };
+
+        try {
+          await logError({ variables: { data } });
+        } catch (err) {
+          console.error(err);
+        }
         this.setState({
           error:
-            "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+            // tslint:disable-next-line:max-line-length
+            "Please check your email address. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
           errorshowed: true,
           loggedIn: true
         });
@@ -454,10 +472,20 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       }
       case "falseLogin": {
         console.log("falseLogin");
-        const eventdata = { state: this.state, props: this.props };
-        await this.props.logError({ variables: { eventdata } });
+        const { logError, client, ...saveprops } = this.props;
+        const data = {
+          error: "falseLogin",
+          state: this.state,
+          props: saveprops
+        };
+        try {
+          await this.props.logError({ variables: { data } });
+        } catch (err) {
+          console.log(err);
+        }
         this.setState({
           error:
+            // tslint:disable-next-line:max-line-length
             "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
           errorshowed: true,
           loggedIn: true
@@ -558,10 +586,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
     return (
       <div className={cssClass}>
-        {this.state.showLoadingScreen ? (
+        {this.state.showLoadingScreen && (
           <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} />
-        ) : (
-          ""
         )}
         {this.state.options.universallogin ? (
           <UniversalLoginExecutor
@@ -620,15 +646,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         ) : (
           ""
         )}
-        {this.state.popup ? (
+        {this.state.popup && (
           <Popup
             popupHeader={this.state.popup.type}
             popupBody={AcceptLicence}
             bodyProps={this.state.popup}
             onClose={this.closePopup}
           />
-        ) : (
-          ""
         )}
       </div>
     );
