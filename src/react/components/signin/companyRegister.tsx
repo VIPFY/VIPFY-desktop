@@ -57,98 +57,115 @@ class RegisterCompany extends React.Component<Props, State> {
     } catch (err) {
       console.log("err", err);
       this.setState({
-        error: "Registration unsuccesful. Maybe this email already has an VIPFY account?"
+        error:
+          "Registration unsuccessful. Maybe this email is already connected to an VIPFY account?"
       });
     }
   };
 
   render() {
-    console.log("STATE ERROR", this.state.error);
     return (
       <div className="dataGeneralForm">
-        <div className="logo" />
-        <h1>Register a Company</h1>
+        <div className="holder">
+          <div className="logo" />
+          <img
+            src={`${__dirname}/../../../images/welcome_back.png`}
+            className="illustration-login"
+          />
 
-        <div className="UniversalInputHolder">
-          <UniversalTextInput
-            id="emailreg"
-            width="312px"
-            label="Email"
-            livevalue={v => this.setState({ email: v })}
-          />
-        </div>
+          <div className="holder-right">
+            <h1>Register a Company</h1>
 
-        <div className="UniversalInputHolder">
-          <UniversalTextInput
-            id="companyreg"
-            width="312px"
-            label="Companyname"
-            livevalue={v => this.setState({ company: v })}
-          />
-        </div>
-        <div className="agreementBox" style={{ justifyContent: "center", marginTop: "16px" }}>
-          <UniversalCheckbox
-            liveValue={v => this.setState({ privacy: v })}
-            style={{ width: "312px" }}>
-            <span
-              style={{ marginLeft: "8px", fontSize: "12px", position: "relative", top: "-5px" }}>
-              By registering I agree to the
-              <span
-                style={{ marginLeft: "4px", marginRight: "4px", color: "#357aa5" }}
-                onClick={() => shell.openExternal("https://vipfy.store/terms-of-service")}>
-                Terms of Service
-              </span>
-              and
-              <span
-                style={{ marginLeft: "4px", marginRight: "4px", color: "#357aa5" }}
-                onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
-                Privacy Agreement
-              </span>
-              of VIPFY.
-            </span>
-          </UniversalCheckbox>
-        </div>
-        {/*<div className="oneIllustrationHolder" />*/}
-        <div className="buttonHolder">
-          <UniversalButton label="Cancel" type="low" onClick={() => this.props.backFunction()} />
-          <UniversalButton
-            label="Continue"
-            type="high"
-            disabeld={this.state.email == "" || this.state.company == "" || !this.state.privacy}
-            onClick={
-              () =>
-                this.continue() /*this.props.continueFunction(this.state.email, this.state.company)*/
-            }
-          />
-        </div>
-        {this.state.register ? (
-          <PopupBase
-            close={() => this.setState({ register: false, error: "" })}
-            small={true}
-            closeable={false}
-            nosidebar={true}>
-            {this.state.error != "" ? (
-              <React.Fragment>
-                <div>{this.state.error}</div>
-                <UniversalButton
-                  type="high"
-                  closingPopup={true}
-                  label="Ok"
-                  closingAllPopups={true}
-                />
-              </React.Fragment>
-            ) : (
-              <div>
-                <div style={{ fontSize: "32px", textAlign: "center" }}>
-                  <i className="fal fa-spinner fa-spin" />
-                  <div style={{ marginTop: "32px", fontSize: "16px" }}>Setting up your company</div>
-                </div>
-              </div>
+            <div className="UniversalInputHolder">
+              <UniversalTextInput
+                id="emailreg"
+                width="312px"
+                label="Email"
+                livevalue={v => this.setState({ email: v })}
+              />
+            </div>
+
+            <div className="UniversalInputHolder">
+              <UniversalTextInput
+                id="companyreg"
+                width="312px"
+                label="Companyname"
+                livevalue={v => this.setState({ company: v })}
+              />
+            </div>
+            <div className="agreementBox" style={{ marginTop: "16px" }}>
+              <UniversalCheckbox
+                liveValue={v => this.setState({ privacy: v })}
+                style={{ width: "312px" }}>
+                <span
+                  style={{
+                    marginLeft: "8px",
+                    fontSize: "12px",
+                    position: "relative",
+                    top: "-5px"
+                  }}>
+                  By registering I agree to the
+                  <span
+                    style={{ marginLeft: "4px", marginRight: "4px", color: "#357aa5" }}
+                    onClick={() => shell.openExternal("https://vipfy.store/terms-of-service")}>
+                    Terms of Service
+                  </span>
+                  and
+                  <span
+                    style={{ marginLeft: "4px", marginRight: "4px", color: "#357aa5" }}
+                    onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
+                    Privacy Agreement
+                  </span>
+                  of VIPFY.
+                </span>
+              </UniversalCheckbox>
+            </div>
+            <div className="login-buttons">
+              <UniversalButton
+                label="Cancel"
+                type="low"
+                onClick={() => this.props.backFunction()}
+              />
+              <UniversalButton
+                label="Continue"
+                type="high"
+                disabeld={this.state.email == "" || this.state.company == "" || !this.state.privacy}
+                onClick={
+                  () =>
+                    this.continue() /*this.props.continueFunction(this.state.email, this.state.company)*/
+                }
+              />
+            </div>
+            {this.state.register && (
+              <PopupBase
+                close={() => this.setState({ register: false, error: "" })}
+                small={true}
+                closeable={false}
+                nosidebar={true}>
+                {this.state.error != "" ? (
+                  <React.Fragment>
+                    <div>{this.state.error}</div>
+                    <UniversalButton
+                      type="high"
+                      closingPopup={true}
+                      label="Ok"
+                      closingAllPopups={true}
+                    />
+                  </React.Fragment>
+                ) : (
+                  <div>
+                    <div style={{ fontSize: "32px", textAlign: "center" }}>
+                      <i className="fal fa-spinner fa-spin" />
+                      <div style={{ marginTop: "32px", fontSize: "16px" }}>
+                        Setting up your company
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </PopupBase>
             )}
-          </PopupBase>
-        ) : (
-          ""
-        )}
+          </div>
+        </div>
       </div>
     );
   }

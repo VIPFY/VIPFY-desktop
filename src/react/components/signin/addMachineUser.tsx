@@ -19,38 +19,52 @@ class AddMachineUser extends React.Component<Props, State> {
 
   render() {
     const store = new Store();
+
     return (
       <div className="dataGeneralForm">
-        <div className="logo" />
-        <h1 style={{ textAlign: "center" }}>Add VIPFY-user to this machine</h1>
-
-        <div className="UniversalInputHolder">
-          <UniversalTextInput
-            id="AddEmail"
-            width="312px"
-            label="Email"
-            livevalue={v => this.setState({ email: v })}
-            onEnter={() => this.props.continueFunction(this.state.email)}
+        <div className="holder">
+          <div className="logo" />
+          <img
+            src={`${__dirname}/../../../images/welcome_back.png`}
+            className="illustration-login"
           />
-        </div>
-        <div className="oneIllustrationHolder" />
-        <div className="buttonHolder">
-          {store.has("accounts") && store.get("accounts").length > 0 ? (
-            <UniversalButton label="Cancel" type="low" onClick={() => this.props.backFunction()} />
-          ) : (
-            <UniversalButton
-              label="Register Company"
-              type="low"
-              onClick={() => this.props.registerCompany()}
-            />
-          )}
 
-          <UniversalButton
-            label="Continue"
-            type="high"
-            disabeld={this.state.email == ""}
-            onClick={() => this.props.continueFunction(this.state.email)}
-          />
+          <div className="holder-right">
+            <h1>Login to VIPFY</h1>
+
+            <div className="UniversalInputHolder">
+              <UniversalTextInput
+                id="AddEmail"
+                width="312px"
+                label="Email"
+                livevalue={v => this.setState({ email: v })}
+                onEnter={() => this.props.continueFunction(this.state.email)}
+              />
+            </div>
+
+            <div className="login-buttons">
+              {store.has("accounts") && store.get("accounts").length > 0 ? (
+                <UniversalButton
+                  label="Cancel"
+                  type="low"
+                  onClick={() => this.props.backFunction()}
+                />
+              ) : (
+                <UniversalButton
+                  label="Register Company"
+                  type="low"
+                  onClick={() => this.props.registerCompany()}
+                />
+              )}
+
+              <UniversalButton
+                label="Add Email"
+                type="high"
+                disabeld={this.state.email == ""}
+                onClick={() => this.props.continueFunction(this.state.email)}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );
