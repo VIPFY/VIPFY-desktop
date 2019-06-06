@@ -228,6 +228,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
     let { sidebarOpen, licences } = this.props;
     const { showApps, showMoreApps } = this.state;
 
+    const maxValue = licences.reduce((acc, cv) => Math.max(acc, cv.layoutvertical), 0);
+
     const input = (
       <input
         value={this.state.searchstring}
@@ -361,14 +363,20 @@ class Sidebar extends React.Component<SidebarProps, State> {
     ];
 
     const filteredLicences0 = licences.filter(licence => {
+      // Make sure that every License has an index
+      if (licence.layoutvertical === null) {
+        licence.layoutvertical = maxValue + 1;
+      }
       if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
         return false;
       }
+
       let one = false,
         two = false;
       if (this.state.searchstring === "") {
         return true;
       }
+
       if (
         licence.boughtplanid.alias !== null &&
         !licence.boughtplanid.alias.toLowerCase().includes(this.state.searchstring.toLowerCase())
@@ -680,40 +688,27 @@ class Sidebar extends React.Component<SidebarProps, State> {
                         filteredLicences
                           .sort((a, b) => a.layoutvertical - b.layoutvertical)
                           .filter((_, index) => (showMoreApps ? true : index < 5))
-                          .map(licence => {
-                            const maxValue = filteredLicences.reduce(
-                              (acc, cv) => Math.max(acc, cv.layoutvertical),
-                              0
-                            );
-
-                            // Make sure that every License has an index
-                            if (licence.layoutvertical === null) {
-                              licence.layoutvertical = maxValue + 1;
-                            }
-
-                            return (
-                              <SidebarLink
-                                key={`ServiceLogo-${licence.id}`}
-                                licence={licence}
-                                openInstances={this.props.openInstances}
-                                sidebarOpen={sidebarOpen}
-                                active={
-                                  this.props.openInstances && this.props.openInstances[licence.id]
-                                    ? this.props.openInstances[licence.id][this.props.viewID]
-                                    : false
-                                }
-                                setTeam={this.props.setApp}
-                                setInstance={this.props.setInstance}
-                                viewID={this.props.viewID}
-                                handleDragStart={null}
-                                handleDrop={this.handleDrop}
-                                isSearching={
-                                  this.state.searchstring === "" &&
-                                  this.state.sortstring === "Custom"
-                                }
-                              />
-                            );
-                          })}
+                          .map(licence => (
+                            <SidebarLink
+                              key={`ServiceLogo-${licence.id}`}
+                              licence={licence}
+                              openInstances={this.props.openInstances}
+                              sidebarOpen={sidebarOpen}
+                              active={
+                                this.props.openInstances && this.props.openInstances[licence.id]
+                                  ? this.props.openInstances[licence.id][this.props.viewID]
+                                  : false
+                              }
+                              setTeam={this.props.setApp}
+                              setInstance={this.props.setInstance}
+                              viewID={this.props.viewID}
+                              handleDragStart={null}
+                              handleDrop={this.handleDrop}
+                              isSearching={
+                                this.state.searchstring === "" && this.state.sortstring === "Custom"
+                              }
+                            />
+                          ))}
                     </ul>
                   </li>
 

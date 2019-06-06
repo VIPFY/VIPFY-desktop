@@ -28,7 +28,6 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
     return (
       <Query query={me}>
         {({ data, loading, error }) => {
-          console.log("LOG: PostLogin -> render -> data", data);
           if (loading) {
             return <LoadingDiv text="Preparing Vipfy for you" />;
           }

@@ -292,7 +292,6 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    console.log("token there", localStorage.getItem("token"));
     const { placeid, popup, page, sidebarloaded } = this.state;
     return (
       <AppContext.Provider
