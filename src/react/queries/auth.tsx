@@ -41,8 +41,8 @@ export const fetchLicences = gql`
       starttime
       endtime
       disabled
-      layoutvertical
-      layouthorizontal
+      sidebar
+      dashboard
       boughtplanid {
         id
         alias

@@ -45,8 +45,8 @@ export const CREATE_OWN_APP = gql`
       starttime
       endtime
       disabled
-      layoutvertical
-      layouthorizontal
+      sidebar
+      dashboard
       boughtplanid {
         id
         alias

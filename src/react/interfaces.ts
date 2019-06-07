@@ -8,8 +8,8 @@ export interface Licence {
   key: JSON;
   boughtplanid: BoughtPlan;
   unitid: User;
-  layoutvertical: number;
-  layouthorizontal: number;
+  sidebar: number;
+  dashboard: number;
   prevLicence: Licence | undefined;
   nextLicence: Licence | undefined;
 }

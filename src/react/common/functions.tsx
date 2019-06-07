@@ -156,7 +156,7 @@ export const layoutUpdate = (licences, dragItem, dropItem) => {
   const index = filtered.findIndex(licence => licence.id == dropItem);
   const newLicences = [...filtered.slice(0, index + 1), dragged, ...filtered.slice(index + 1)];
   newLicences.forEach((licence, key) => {
-    licence.layoutvertical = key;
+    licence.sidebar = key;
   });
 
   return newLicences;

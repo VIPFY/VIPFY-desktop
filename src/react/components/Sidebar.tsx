@@ -68,21 +68,30 @@ class Sidebar extends React.Component<SidebarProps, State> {
     const { licences } = this.props;
     const newLicences = layoutUpdate(
       // Make sure they have the same order as when rendered
-      licences.sort((a, b) => a.layoutvertical - b.layoutvertical),
+      licences.sort((a, b) => a.sidebar - b.sidebar),
       draggedId,
       targetId
     );
     const layouts = newLicences
-      .map(({ id, layoutvertical }) => ({ id, layoutvertical }))
-      .filter((licence, key) => licence.layoutvertical != licences[key].layoutvertical);
+      .map(({ id, sidebar }) => ({ id, sidebar }))
+      .filter((licence, key) => licence.sidebar != licences[key].sidebar);
 
     try {
-      await this.props.updateLayout({
-        variables: { layouts },
-        update: cache => {
-          cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
-        }
+      const update = cache => {
+        cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
+      };
+
+      const p1 = this.props.updateLayout({
+        variables: { layout: layouts[0] },
+        update
       });
+
+      const p2 = this.props.updateLayout({
+        variables: { layout: layouts[1] },
+        update
+      });
+
+      await Promise.all([p1, p2]);
     } catch (error) {
       console.error(error);
     }
@@ -678,17 +687,17 @@ class Sidebar extends React.Component<SidebarProps, State> {
                       {showApps &&
                         filteredLicences.length > 0 &&
                         filteredLicences
-                          .sort((a, b) => a.layoutvertical - b.layoutvertical)
+                          .sort((a, b) => a.sidebar - b.sidebar)
                           .filter((_, index) => (showMoreApps ? true : index < 5))
                           .map(licence => {
                             const maxValue = filteredLicences.reduce(
-                              (acc, cv) => Math.max(acc, cv.layoutvertical),
+                              (acc, cv) => Math.max(acc, cv.sidebar),
                               0
                             );
 
                             // Make sure that every License has an index
-                            if (licence.layoutvertical === null) {
-                              licence.layoutvertical = maxValue + 1;
+                            if (licence.sidebar === null) {
+                              licence.sidebar = maxValue + 1;
                             }
 
                             return (
