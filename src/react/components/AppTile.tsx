@@ -57,9 +57,10 @@ class AppTile extends React.Component<Props, State> {
 
   render() {
     // prettier-ignore
-    const { dragItem, licence: { id, boughtplanid: { planid, alias } } } = this.props;
+    const { dragItem, licence: { tags, id, boughtplanid: { planid, alias } } } = this.props;
     const name = alias ? alias : planid.appid.name;
     const clearPreview = { name: "", pic: "" };
+    const vacation = tags.find(el => el == "vacation");
 
     return (
       <React.Fragment>
@@ -68,9 +69,9 @@ class AppTile extends React.Component<Props, State> {
             <div
               draggable={true}
               onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
-              className={`profile-app ${dragItem == id ? "hold" : ""} ${
-                this.state.entered ? "hovered" : ""
-              }`}
+              className={`profile-app ${vacation ? "vacation" : ""} ${
+                dragItem == id ? "hold" : ""
+              } ${this.state.entered ? "hovered" : ""}`}
               onDrag={() => this.props.dragStartFunction(id)}
               onDragOver={e => {
                 e.preventDefault();

@@ -59,6 +59,13 @@ export const fetchLicences = gql`
           }
         }
       }
+      view
+      edit
+      delete
+      use
+      vacationstart
+      vacationend
+      tags
     }
   }
 `;

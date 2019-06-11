@@ -313,3 +313,20 @@
   background-position: center;
   position: relative;
 }
+
+.vacation {
+  position: relative;
+
+  &::after {
+    content: "vacation";
+    position: absolute;
+    width: 100%;
+    top: 27px;
+    right: -26px;
+    height: 16px;
+    background: $vipfy-vacation-blue;
+    transform: rotate(44deg);
+    z-index: 1;
+    color: #fff;
+  }
+}

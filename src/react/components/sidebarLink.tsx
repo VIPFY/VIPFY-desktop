@@ -83,6 +83,9 @@ class SidebarLink extends React.Component<Props, State> {
 
   render() {
     const { licence, openInstances, sidebarOpen, active, setTeam } = this.props;
+    const vacation = licence.tags.find(el => el == "vacation");
+    console.log("LOG: SidebarLink -> render -> vacation", vacation);
+
     let cssClass = "sidebar-link";
     const label = licence.boughtplanid.alias
       ? licence.boughtplanid.alias
