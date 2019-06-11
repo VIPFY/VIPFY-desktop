@@ -21,7 +21,6 @@ interface Props {
 
 class AppUsageCompanywideChartInner extends React.Component<Props, State> {
   render() {
-    //console.log("CHARTPROPS", this.props);
     if (!this.props.data.fetchMonthlyAppUsage) {
       return <div>Error fetching data</div>;
     }
