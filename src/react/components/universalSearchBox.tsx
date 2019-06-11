@@ -2,20 +2,26 @@ import * as React from "react";
 
 interface Props {
   placeholder?: string;
-  selfitems?: {searchstring: string, id?: number}[]; // TODO
+  selfitems?: { searchstring: string; id?: number }[]; // TODO
   getValue?: Function;
   automaticclosing?: Boolean;
+  noautomaticclosing?: Boolean;
+  boxStyles?: Object;
+  resultStyles?: Object;
+  startedsearch?: Boolean;
 }
 
 interface State {
   value: string;
-  searching: boolean;
+  searching: Boolean;
+  endsearch: Boolean;
 }
 
 class UniversalSearchBox extends React.Component<Props, State> {
   state = {
     value: "",
-    searching: false
+    searching: this.props.startedsearch || false,
+    endsearch: false
   };
 
   componentWillUnmount = () => {
@@ -27,9 +33,13 @@ class UniversalSearchBox extends React.Component<Props, State> {
   handleChange = async e => {
     e.preventDefault();
     const value = e.target.value;
-    this.setState({ value });
+    this.setState({ value, endsearch: false });
     if (this.props.getValue) {
-      this.props.getValue(value)
+      if (this.props.selfitems && !this.state.endsearch) {
+        this.props.getValue(null);
+      } else {
+        this.props.getValue(value);
+      }
     }
 
     //await this.props.searchFunction(value);
@@ -47,14 +57,20 @@ class UniversalSearchBox extends React.Component<Props, State> {
         e!.preventDefault();
       }
     } else {
-      if (this.props.automaticclosing || this.state.value == ""){
-      this.timeout = setTimeout(() => this.closeSearch(), 300)};
+      if (
+        !this.props.noautomaticclosing &&
+        (this.props.automaticclosing || this.state.value == "")
+      ) {
+        this.timeout = setTimeout(() => this.closeSearch(), 300);
+      }
     }
   };
 
   closeSearch = () => {
+    if (this.props.getValue) {
+      this.props.getValue(this.state.value);
+    }
     this.setState({ searching: false, value: "" });
-    if (this.props.getValue) {this.props.getValue(this.state.value)}
     this.timeout = null;
   };
 
@@ -65,47 +81,58 @@ class UniversalSearchBox extends React.Component<Props, State> {
 
   printResults = () => {
     if (this.props.selfitems) {
-    const possibleValues = [
-      "Jannis Froese",
-      "Pascal Clanget",
-      "Markus Müller",
-      "Nils Vossebein",
-      "Lisa Brödlin",
-      "Anna Reindl",
-      "Jesko Dujmovic",
-      "Osama Haroon"
-    ];
+      const possibleValues = this.props.selfitems!;
 
-    let numresults = 0;
-    let results: JSX.Element[] = [];
-    if (this.state.value != "") {
-      for (let i = 0; i < possibleValues.length; i++) {
-        if (
-          numresults < 5 &&
-          possibleValues[i].toLowerCase().includes(this.state.value.toLowerCase())
-        ) {
-          let index = possibleValues[i].toLowerCase().indexOf(this.state.value.toLowerCase());
-          results.push(
-            <div key={`searchResult-${i}`} className="searchResult">
-              <span>{possibleValues[i].substring(0, index)}</span>
-              <span className="resultHighlight">
-                {possibleValues[i].substring(index, index  this.state.value.length)}
-              </span>
-              <span>{possibleValues[i].substring(index  this.state.value.length)}</span>
-            </div>
-          );
-          numresults++;
+      let numresults = 0;
+      let results: JSX.Element[] = [];
+      if (!this.state.endsearch) {
+        for (let i = 0; i < possibleValues.length; i++) {
+          if (
+            numresults < 5 &&
+            possibleValues[i].searchstring.toLowerCase().includes(this.state.value.toLowerCase())
+          ) {
+            let index = possibleValues[i].searchstring
+              .toLowerCase()
+              .indexOf(this.state.value.toLowerCase());
+            results.push(
+              <div
+                key={`searchResult-${i}`}
+                className="searchResult"
+                onClick={() => {
+                  if (this.props.getValue) {
+                    this.props.getValue(possibleValues[i].id);
+                  }
+                  this.setState({ value: possibleValues[i].searchstring, endsearch: true });
+                }}>
+                <span>{possibleValues[i].searchstring.substring(0, index)}</span>
+                <span className="resultHighlight">
+                  {possibleValues[i].searchstring.substring(index, index + this.state.value.length)}
+                </span>
+                <span>
+                  {possibleValues[i].searchstring.substring(index + this.state.value.length)}
+                </span>
+              </div>
+            );
+            numresults++;
+          }
         }
+        return (
+          <React.Fragment>
+            <div
+              style={
+                this.props.resultStyles
+                  ? {}
+                  : { width: "355px", height: "10px", position: "relative" }
+              }
+            />
+            <div className="resultHolder" style={this.props.resultStyles}>
+              {results}
+            </div>
+          </React.Fragment>
+        );
       }
-      return (
-        <React.Fragment>
-          <div style={{ width: "355px", height: "10px", position: "relative" }} />
-          <div className="resultHolder">{results}</div>
-        </React.Fragment>
-      );
     }
-  }
-};
+  };
 
   render() {
     const { value } = this.state;
@@ -113,6 +140,7 @@ class UniversalSearchBox extends React.Component<Props, State> {
     return (
       <div
         className="genericSearchHolder"
+        style={this.props.boxStyles}
         onMouseLeave={() => this.toggleSearch(false)}
         onMouseEnter={() => (this.timeout ? this.cTimeout() : "")}>
         <div className="genericSearchBox">
@@ -142,7 +170,7 @@ class UniversalSearchBox extends React.Component<Props, State> {
             </div>
           </div>
         </div>
-        {this.state.value != "" ? this.printResults() : ""}
+        {this.printResults()}
       </div>
     );
   }

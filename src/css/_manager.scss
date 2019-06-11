@@ -1,0 +1,590 @@
+.managerPage{
+    position: relative;
+    padding: 32px;
+
+    //overflow-y: scroll;
+    //height: calc(100vh - 95px);
+
+    & >.heading{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 40px;
+        margin-bottom: 32px;
+
+        & > h1{
+            all: unset;
+            font-size: 20px;
+            font-weight: 700;
+            & > h2{
+                all: unset;
+                font-size: 20px;
+                font-weight: 400;
+                margin-left: 8px;
+            }
+        }
+    }
+    .section{
+        border-radius: 4px;
+        box-shadow: 0px 0px 3px rgba(0,0,0,0.14);
+        &:not(:first-child){
+            margin-top: 32px;
+        }
+
+        & > .heading{
+            background-color: #F2F2F2;
+            border-radius: 0px 0px 4px 4px;
+            width: 100%;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            & > h1 {
+                all: unset;
+                margin-left: 16px;
+                font-size: 16px;
+                font-weight: 700;
+            }
+        }
+
+         .table{
+
+            .tableHeading{
+                border-radius: 4px; 
+                height: 40px ;
+                display: flex;
+            }
+            .tableRow{
+                border-radius: 4px; 
+                height: 56px ;
+                display: flex;
+                cursor: pointer;
+                transition: box-shadow 150ms ease-in-out;
+
+                &:hover{
+                    box-shadow: 0px 0px 4px rgba(0,0,0,0.14);
+
+                    .editOptions{
+                        opacity: 1;
+                    }
+                }
+            }
+
+            .tableEnd{
+                width: 128px;
+                height: 100%;
+                margin-left: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+            .tableMain{
+                width: calc(100% - 160px);
+                height: 100%;
+                display: flex;
+                justify-content: space-between;
+
+            }
+            .tableColumnBig{
+                width: 248px;
+                height: 100%;
+                padding-left: 16px;
+                & > h1 {
+                    all: unset;
+                    margin-left: 16px;
+                    font-size: 13px;
+                    font-weight: 700;
+                    line-height: 40px;
+                }
+            }
+            .tableColumnSmall{
+                width: 160px;
+                height: 100%;
+                padding-left: 16px;
+                position: relative;
+                h1 {
+                    all: unset;
+                    font-size: 13px;
+                    font-weight: 700;
+                    line-height: 40px;
+                    position: absolute;
+                }
+                h2 {
+                    all: unset;
+                    display: block;
+                    font-size: 13px;
+                    line-height: 80px;
+                    position: absolute;
+
+                    &.second{
+                        line-height: 40px;
+                        top: 40px;
+                    }
+                }
+            }
+            .name{
+                font-size: 13px;
+                line-height: 56px;
+                margin-left: 16px;
+            }
+            .content{
+                font-size: 13px;
+                line-height: 56px;
+                display: flex;
+                align-items: center;
+            }
+            .employeeOnline{
+                float: right;
+                height: 16px;
+                width: 16px;
+                margin-top: 20px;
+                border-radius: 16px;
+            }
+            .employeeOnlineBig{
+                width: 64px;
+                letter-spacing: 0.02em;
+                border-radius: 2px;
+                line-height: 16px;
+                text-align: center;
+                font-size: 10px;
+                color: white;
+            }
+            .managerSquare {
+                width: 32px;
+                height: 32px;
+                border-radius: 4px;
+                float: left;
+                margin-top: 12px;
+                line-height: 32px;
+                text-align: center;
+                font-size: 16px;
+                color: white;
+                font-weight: 500;
+                background-color: #5D76FF;
+                background-position: center;
+                background-size: cover;
+
+                &:not(:first-child){
+                    margin-left: 8px
+                }
+            }
+            .editOptions{
+                opacity: 0;
+                transition: opacity 150ms ease-in-out;
+                display: flex;
+                flex-direction: row-reverse;
+                margin-right: 16px;
+                & > i:not(:first-child){
+                    margin-right: 16px;
+                }
+            }
+        }
+    }
+    .profilepicture{
+        border-radius: 4px;
+        background-color: #F5F5F5;
+        background-position: center;
+        background-size: cover;
+        margin-left: 16px;
+        margin-top: 16px;
+        width: 96px;
+        height: 96px;
+        position: relative;
+        cursor: pointer;
+
+        &.big{
+            width: 200px;
+            height: 200px;
+            margin-left: 0px;
+            margin-top: 0px;
+        }
+
+        .imagehover {
+            opacity: 0;
+            transition: all 0.6s ease-in-out;
+            background-color: rgba(0, 0, 0, 0.5);
+            height: 45%;
+            bottom: 0;
+            position: absolute;
+            width: 100%;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-flow: column;
+
+            &>span{
+                font-size: 13px;
+            }
+        }
+
+        &:hover > .imagehover{
+            opacity: 1;
+        }
+    }
+    .status{
+        border-radius: 2px;
+        width: 96px;
+        line-height: 16px;
+        text-align: center;
+        font-size: 10px;
+        margin-left: 16px;
+        margin-top: 8px;
+        color: white;
+    }
+    .percentage{
+        width: 24px;
+        font-size: 13px;
+        letter-spacing: -0.5px;
+        text-align: center;
+        float: left;
+    }
+    .percantageBar{
+        width: 80px;
+        height: 8px;
+        margin-left: 8px;
+        border-radius: 2px;
+        background-color: rgba(32, 186, 169, 0.4);
+        float: left;
+        position: relative;
+    }
+    .percantageInline{
+        height: 8px;
+        background-color: rgb(32, 186, 169);
+    }
+    .mutiplieHeading{
+        display: block;
+        height: 40px;
+        position: relative;
+        top: -10px;
+        line-height: 40px;
+    }
+    .secondHolder{
+        position: relative;
+        //top: -50px;
+        line-height: 40px;
+        display: block;
+        width: 200px;
+        left: calc(50% + 16px);
+    }
+    .bHeading{
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .mHeading{
+        font-size: 20px;
+        .active{
+            color: #20baa9;
+        }
+        .inactive{
+            color: #f5f5f5;
+        }
+    }
+    .gridNewEmployeePersonal{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-gap: 32px;
+        margin-top: 32px;
+
+        .universalLabelInput{
+            width: 100%;
+            .universalTextInput{
+                width: 100%;
+            }
+        }
+        .profilepicture{
+            grid-row-start: 1;
+            grid-row-end: 6;
+
+            .imagehover{
+                font-size: 20px;
+                & > span{
+                    font-size: 18px;
+                }
+            }
+        }
+    }
+    .contentPopup{
+        .genericSearchHolder{
+            position: absolute;
+            right: 40px;
+            top: 30px;
+        }
+
+        .addLicenceGrid{
+            display: grid;
+            grid-template-columns: 88px 1fr;
+            grid-column-gap: 32px;
+
+            .image{
+                width: 88px;
+                height: 88px;
+                background-position: center;
+                background-size: cover;
+            }
+        }
+    }
+    .maingridAddEmployeeTeams{
+        height: 422px;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-column-gap: 32px;
+    }
+    .addgrid-holder{
+        border-radius: 4px;
+        background-color: #F5F5F5;
+        box-shadow: 0px 2px 2px rgba(0,0,0,0.14);
+        overflow-y: scroll;
+   
+        .addgrid{
+            display: grid;
+            grid-template-columns: 104px 104px 104px 104px;
+            //justify-content: space-between;
+            grid-gap: 16px;
+            margin: 24px;
+            .space{
+                background-color: white;
+                box-shadow: 0px 0px 2px rgba(0,0,0,0.14);
+                width: 104px;
+                height: 120px;
+                position: relative;
+                border-radius: 4px;
+                
+                .fakeimage{
+                    position: absolute;
+                    top: 8px;
+                    left: 8px;
+                    border-radius: 4px;
+                    background-color: #F5F5F5;
+                    border: 1px dashed #BCBCBC;
+                    width: 88px;
+                    height: 88px;
+                }
+                .fakename{
+                    position: absolute;
+                    top: 104px;
+                    left: 8px;
+                    width: 88px;
+                    height: 8px;
+                    border-radius: 4px;
+                    background-color: #F5F5F5;
+                }
+                .name{
+                    position: absolute;
+                    top: 101px;
+                    font-size: 10px;
+                    line-height: 13px;
+                    left: 8px;
+                    font-weight: 700;
+                }
+                .description{
+                    position: absolute;
+                    top: 150px;
+                    font-size: 10px;
+                    line-height: 13px;
+                    left: 8px;
+                    height: 44px;
+                    width: 120px;
+                    overflow: hidden;
+                }
+                .image{
+                    position: absolute;
+                    top: 8px;
+                    left: 8px;
+                    border-radius: 4px;
+                    width: 88px;
+                    height: 88px;
+                    cursor: pointer;
+
+                    font-size: 43px;
+                    font-weight: 700;
+                    line-height: 88px;
+                    color: white;
+                    text-align: center;
+
+                    background-position: center;
+                    background-size: cover;
+
+                    &>i{
+                        font-size: 40px;
+                        line-height: 88px;
+                    }
+                }
+                .imageCog{
+                    position: absolute;
+                    top: 8px;
+                    left: 8px;
+                    border-radius: 4px;
+                    width: 88px;
+                    height: 88px;
+                    text-align: center;
+                    background-color: rgba(255,255,255,0.9);
+                    &>i{
+                        line-height: 40px;
+                        font-size: 35px;
+                        display: block;
+                    }
+                    &>span{
+                        font-size: 12px;
+                        font-weight: 700;
+                    }
+                }
+                .imageHover{
+                    position: absolute;
+                    top: 8px;
+                    left: 8px;
+                    border-radius: 4px;
+                    width: 88px;
+                    height: 88px;
+                    text-align: center;
+                    background-color: rgba(255,255,255,0.9);
+                    opacity: 0;
+                    transition: opacity 150ms ease-in-out; 
+                    cursor: pointer;
+                    &>i{
+                        line-height: 40px;
+                        font-size: 35px;
+                        display: block;
+                    }
+                    &>span{
+                        font-size: 12px;
+                        font-weight: 700;
+                    }
+                }
+                .imageError{
+                    position: absolute;
+                    top: 8px;
+                    left: 8px;
+                    border-radius: 4px;
+                    width: 88px;
+                    height: 88px;
+                    color: #DB4D3F;
+                    text-align: center;
+                    background-color: rgba(255,255,255,0.9);
+                    &>i{
+                        line-height: 40px;
+                        font-size: 35px;
+                        display: block;
+                    }
+                    &>span{
+                        font-size: 12px;
+                        font-weight: 700;
+                    }
+                }
+                &:hover > .imageHover{
+                    opacity: 1;
+                }
+            }
+        }
+        .greyed{
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.7);
+            position: absolute;
+        }
+    }
+    .licenceError{
+        background-color: rgba(255,255,255,0.9);
+        border-radius: 4px;
+        color: #DB4D3F;
+        &>i{
+            line-height: 32px;
+            font-size: 20px;
+            display: block;
+        }
+    }
+    .managerBigSquare {
+        width: 96px;
+        height: 96px;
+        border-radius: 4px;
+        float: left;
+        margin-left: 16px;
+        margin-top: 16px;
+        margin-bottom: 16px;
+        line-height: 96px;
+        text-align: center;
+        font-size: 46px;
+        color: white;
+        font-weight: 500;
+        background-color: #5D76FF;
+        background-position: center;
+        background-size: cover;
+        cursor: pointer;
+        position: relative;
+
+        &:not(:first-child){
+            margin-left: 8px
+        }
+
+        .imagehover {
+            opacity: 0;
+            line-height: 16px;
+            font-size: 16px;
+            transition: all 0.6s ease-in-out;
+            background-color: rgba(0, 0, 0, 0.5);
+            height: 45%;
+            bottom: 0;
+            position: absolute;
+            width: 100%;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-flow: column;
+
+            &>span{
+                font-size: 13px;
+            }
+        }
+
+        &:hover > .imagehover{
+            opacity: 1;
+        }
+    }
+    .licenceInfoHolder {
+        margin-left: 8px;
+        margin-right: 8px;
+        float: left;
+        margin-top: 12px;
+        display: flex;
+        width: 16px;
+        height: 32px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .licenceInfoElement {
+            font-size: 10px;
+            height: 16px;
+            width: 16px;
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            text-align: center;
+            background-color: #F5F5F5;
+            border-radius: 2px;
+            line-height: 16px;
+        }
+    }
+    .steps{
+        display: flex;
+        height: 6px;
+        justify-content: space-between;
+
+        .step{
+            width: 6px;
+            height: 6px;
+            background-color: #A5E3DC;
+            border-radius: 6px;
+
+        }
+        .current{
+            background-color: #20BAA9;
+        }
+    }
+}

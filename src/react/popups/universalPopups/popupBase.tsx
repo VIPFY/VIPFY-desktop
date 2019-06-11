@@ -3,23 +3,24 @@ import { SideBarContext } from "../../common/context";
 
 interface Props {
   close?: Function; //Close function (on background and x), if there is no, there is no x and the popup can't be close via the background
-  small?: Boolean; //if true max-width = 30rem else max-width = 60rem
+  small?: boolean; //if true max-width = 30rem else max-width = 60rem
   closeall?: Function;
-  closeable?: Boolean;
+  closeable?: boolean;
   autoclosing?: number;
   autoclosingFunction?: Function;
-  notimer?: Boolean;
-  dialog?: Boolean;
-  nosidebar?: Boolean;
-  nooutsideclose?: Boolean;
+  notimer?: boolean;
+  dialog?: boolean;
+  fullmiddle?: boolean;
+  customStyles?: Object;
   buttonStyles?: Object;
-  fullmiddle?: Boolean;
+  nooutsideclose?: boolean;
+  nosidebar?: boolean;
   styles?: Object;
 }
 
 interface State {
-  isopen: Boolean;
-  autoclosing: Boolean;
+  isopen: boolean;
+  autoclosing: boolean;
 }
 
 const hidePopup = {
@@ -45,20 +46,19 @@ class PopupBase extends React.Component<Props, State> {
     autoclosing: false
   };
 
-  open(isopen) {
+  open = isopen => {
     this.setState({ isopen });
     if (this.props.autoclosing) {
       this.setState({ autoclosing: true });
       setTimeout(() => this.props.autoclosingFunction() || null, this.props.autoclosing * 1000);
     }
-  }
+  };
 
   componentDidMount() {
     setTimeout(() => this.open(true), 1);
   }
 
   close(originalClose: Function | null = null, force = false) {
-    //console.log("CLOSE");
     if (this.props.close && (!(this.props.closeable == false) || force)) {
       this.open(false);
       setTimeout(() => this.props.close(), 200);
@@ -70,10 +70,8 @@ class PopupBase extends React.Component<Props, State> {
   }
 
   closeall() {
-    //console.log("CLOSEALL");
     this.close(null, true);
     if (this.props.closeall) {
-      //console.log("CloseALL", this.props.closeall);
       this.props.closeall();
     }
   }
@@ -82,10 +80,8 @@ class PopupBase extends React.Component<Props, State> {
     let popupElementArray: JSX.Element[] = [];
     let popupButtonArray: JSX.Element[] = [];
     let popupFieldsArray: JSX.Element[] = [];
-    //console.log("PopupBase Children", children);
 
     if (children && children.type && children.type.toString() === React.Fragment.toString()) {
-      //console.log("FRAGMENT");
       children = children.props.children;
     }
 
@@ -141,7 +137,10 @@ class PopupBase extends React.Component<Props, State> {
         </div>
       );
       popupElementArray.push(
-        <div key="buttons" className="buttonsPopup">
+        <div
+          key="buttons"
+          className="buttonsPopup"
+          style={this.props.buttonStyles ? this.props.buttonStyles : {}}>
           {popupButtonArray}
         </div>
       );
@@ -151,7 +150,6 @@ class PopupBase extends React.Component<Props, State> {
   }
 
   render() {
-    //console.log(this.props.children, this.props);
     let autoclosing = {};
     if (this.props.autoclosing) {
       const closingtime = this.props.autoclosing * 1000;
@@ -167,21 +165,27 @@ class PopupBase extends React.Component<Props, State> {
           <div
             className="backgroundPopup"
             style={this.state.isopen ? showBackground : hideBackground}
-            onClick={() => this.close()}>
-            {this.props.nosidebar ? (
+            onClick={e => {
+              e.stopPropagation();
+              if (this.props.nooutsideclose) {
+                this.close();
+              }
+            }}>
+            {this.props.fullmiddle ? (
               ""
             ) : (
               <div className="sideReplicaPopup" style={{ width: sidebarOpen ? "240px" : "48px" }} />
             )}
+
             <div
               className="holderPopup"
-              style={
-                this.props.nosidebar
-                  ? { width: "100%" }
-                  : {
-                      width: sidebarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
-                    }
-              }>
+              style={{
+                width: this.props.fullmiddle
+                  ? "100%"
+                  : sidebarOpen
+                  ? "calc(100% - 240px + 18px)"
+                  : "calc(100% - 48px + 18px)"
+              }}>
               <div
                 className="universalPopup"
                 style={Object.assign(

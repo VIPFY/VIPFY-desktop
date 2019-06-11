@@ -8,6 +8,7 @@ interface Props {
   closingPopup?: Boolean;
   closingAllPopups?: Boolean;
   additionalClickFunction?: Function;
+  customStyles?: Object;
 }
 
 interface State {
@@ -20,11 +21,9 @@ class UniversalButton extends React.Component<Props, State> {
   };
 
   click(e) {
-    console.log("Clicked", e.clientX, e.target);
     const child = this.props.children;
     if (!this.props.disabeld) {
       if (child && !Array.isArray(child) && child.type && child.type.name == "ConfirmationPopup") {
-        console.log("FOUND");
         this.setState({ confirmpopup: true });
         return;
       }
@@ -34,7 +33,6 @@ class UniversalButton extends React.Component<Props, State> {
       if (this.props.additionalClickFunction) {
         this.props.additionalClickFunction();
       }
-      console.log(this.props.children);
     }
   }
 
@@ -73,14 +71,19 @@ class UniversalButton extends React.Component<Props, State> {
         <button
           className="cleanup universalCoverButton"
           onClick={e => this.click(e)}
-          style={{
-            width: this.props.label.length > 6 ? this.props.label.length * 10 + 30 : 90
-          }}>
+          style={
+            this.props.customStyles
+              ? {}
+              : {
+                  width: this.props.label.length > 6 ? this.props.label.length * 10 + 30 : 90
+                }
+          }>
           <div
             className={`cleanup universalButton ${this.props.type ? this.props.type : ""} ${
               this.props.disabled ? "disabled" : "useable"
             }`}
-            tabIndex={-1}>
+            tabIndex={-1}
+            style={this.props.customStyles ? this.props.customStyles : {}}>
             {this.props.label}
           </div>
         </button>

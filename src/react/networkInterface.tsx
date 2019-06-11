@@ -42,7 +42,7 @@ const cache = new InMemoryCache({
         }
       case "Team":
         if (object.unitid !== undefined) {
-          return `${object.__typename}:${object.unitid}`;
+          return `${object.__typename}:${object.unitid.id}`;
         } else {
           return null;
         }

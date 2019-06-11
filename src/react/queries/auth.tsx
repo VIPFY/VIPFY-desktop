@@ -43,6 +43,7 @@ export const fetchLicences = gql`
       disabled
       sidebar
       dashboard
+      options
       boughtplanid {
         id
         alias
