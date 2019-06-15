@@ -112,7 +112,7 @@ class Login extends React.Component<Props, State> {
               <UniversalButton
                 label="Login"
                 type="high"
-                disabeld={this.state.field2 == ""}
+                disabled={this.state.field2 == ""}
                 onClick={() => this.props.continueFunction(this.state.field2)}
               />
             </div>

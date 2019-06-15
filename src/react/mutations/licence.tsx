@@ -1,8 +1,11 @@
 import gql from "graphql-tag";
 
 export const GIVE_TEMPORARY_ACCESS = gql`
-  mutation onGiveTemporaryAccess($licence: LicenceRightInput!, $impersonator: ID!) {
-    giveTemporaryAccess(licence: $licence, impersonator: $impersonator)
+  mutation onGiveTemporaryAccess($licences: [LicenceRightInput!]!) {
+    giveTemporaryAccess(licences: $licences) {
+      ok
+      errors
+    }
   }
 `;
 

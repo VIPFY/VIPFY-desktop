@@ -165,8 +165,8 @@ export interface App {
   hasboughtplan: boolean;
 }
 
-interface Option {
-  name: string;
+export interface Option {
+  label: any;
   value: any;
 }
 export interface InputProps {

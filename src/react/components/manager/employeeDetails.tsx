@@ -39,9 +39,7 @@ class EmployeeDetails extends React.Component<Props, State> {
 
   printRemoveLicences(employee) {
     let RLicencesArray: JSX.Element[] = [];
-    console.log("PRL", employee);
     this.props.team.services.forEach((service, int) => {
-      console.log("Service", service, int, this.state, this.props);
       RLicencesArray.push(
         <li key={int}>
           <UniversalCheckbox
@@ -54,13 +52,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                       prevState.keepLicences.findIndex(l => l == service.id),
                       1
                     );
-                    console.log(
-                      "keepLicencesNewA",
-                      prevState.keepLicences,
-                      keepLicencesNew,
-                      v,
-                      service
-                    );
+
                     return {
                       keepLicences: keepLicencesNew
                     };
@@ -68,7 +60,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                 : this.setState(prevState => {
                     const keepLicencesNew = prevState.keepLicences;
                     keepLicencesNew.push(service.id);
-                    console.log("keepLicencesNewB", keepLicencesNew, v);
+
                     return {
                       keepLicences: keepLicencesNew
                     };
@@ -152,15 +144,11 @@ class EmployeeDetails extends React.Component<Props, State> {
                 </span>
               </div>
               <div className="tableColumnSmall content">
-                {employee.isonline ? (
-                  <div className="employeeOnlineBig" style={{ backgroundColor: "#29CC94" }}>
-                    Online
-                  </div>
-                ) : (
-                  <div className="employeeOnlineBig" style={{ backgroundColor: "#DB4D3F" }}>
-                    Offline
-                  </div>
-                )}
+                <div
+                  className="employeeOnlineBig"
+                  style={{ backgroundColor: employee.isonline ? "#29CC94" : "#DB4D3F" }}>
+                  {`O${employee.isonline ? "n" : "ff"}line`}
+                </div>
               </div>
               <div className="tableColumnSmall content">{this.printMails(employee.emails)}</div>
               <div className="tableColumnSmall content">{this.printPhones(employee.phones)}</div>

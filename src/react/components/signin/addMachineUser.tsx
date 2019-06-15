@@ -60,7 +60,7 @@ class AddMachineUser extends React.Component<Props, State> {
               <UniversalButton
                 label="Add Email"
                 type="high"
-                disabeld={this.state.email == ""}
+                disabled={this.state.email == ""}
                 onClick={() => this.props.continueFunction(this.state.email)}
               />
             </div>

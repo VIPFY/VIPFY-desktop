@@ -326,7 +326,7 @@ class ServiceDetails extends React.Component<Props, State> {
                     />
                     <UniversalButton
                       type="high"
-                      disabeld={
+                      disabled={
                         (e.boughtplanid.planid.appid.needssubdomain &&
                           this.state.subdomain == "") ||
                         this.state.email == "" ||

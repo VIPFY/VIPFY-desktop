@@ -193,7 +193,7 @@ class AppTile extends React.Component<Props, State> {
                     />
                     <UniversalButton
                       type="high"
-                      disabeld={this.state.email == "" || this.state.password == ""}
+                      disabled={this.state.email == "" || this.state.password == ""}
                       closingAllPopups={true}
                       label="Confirm"
                       onClick={async () => {

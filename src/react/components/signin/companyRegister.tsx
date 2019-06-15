@@ -129,7 +129,7 @@ class RegisterCompany extends React.Component<Props, State> {
               <UniversalButton
                 label="Continue"
                 type="high"
-                disabeld={this.state.email == "" || this.state.company == "" || !this.state.privacy}
+                disabled={this.state.email == "" || this.state.company == "" || !this.state.privacy}
                 onClick={
                   () =>
                     this.continue() /*this.props.continueFunction(this.state.email, this.state.company)*/
