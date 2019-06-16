@@ -124,7 +124,7 @@ class LicenceRow extends React.Component<Props, State> {
                 }
 
                 if (error || !data) {
-                  return <ErrorComp error={filterError(error)} />;
+                  return <ErrorComp error={error} />;
                 }
 
                 const options = data.fetchEmployees.map(({ employee }) => ({

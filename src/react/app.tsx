@@ -199,7 +199,7 @@ class App extends React.Component<AppProps, AppState> {
                   login={this.logMeIn}
                   moveTo={this.moveTo}
                   register={this.registerMe}
-                  error={filterError(error)}
+                  error={error}
                 />
               );*/
             }

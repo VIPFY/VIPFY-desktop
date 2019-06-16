@@ -110,7 +110,7 @@ const Service = (props: Props) => {
         }
 
         if (error || !data) {
-          return <ErrorComp error={filterError(error)} />;
+          return <ErrorComp error={error} />;
         }
 
         const { id, __typename, options, ...appData } = data.adminFetchAppById;

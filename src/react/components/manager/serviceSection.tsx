@@ -1,14 +1,7 @@
 import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { Query, Mutation } from "react-apollo";
-import { fetchTeams, fetchUserLicences, fetchUsersOwnLicences } from "../../queries/departments";
-import moment = require("moment");
 import gql from "graphql-tag";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import AddEmployeeToTeam from "./addEmployeeToTeam";
-import CoolCheckbox from "../CoolCheckbox";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupSaving from "../../popups/universalPopups/saving";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import AddTeamService from "./addTeamService";
 import TeamServiceDetails from "./teamserviceDetails";

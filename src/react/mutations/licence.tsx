@@ -4,6 +4,28 @@ export const GIVE_TEMPORARY_ACCESS = gql`
   mutation onGiveTemporaryAccess($licences: [LicenceRightInput!]!) {
     giveTemporaryAccess(licences: $licences) {
       ok
+      licences {
+        id
+        licenceid {
+          id
+          boughtplanid {
+            alias
+            planid {
+              appid {
+                name
+                icon
+              }
+            }
+          }
+        }
+        starttime
+        endtime
+        unitid {
+          firstname
+          middlename
+          lastname
+        }
+      }
       errors
     }
   }

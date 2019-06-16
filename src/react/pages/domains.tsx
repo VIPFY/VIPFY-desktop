@@ -599,7 +599,7 @@ class Domains extends React.Component<Props, State> {
               }
 
               if (error || !data) {
-                return <ErrorComp error={filterError(error)} />;
+                return <ErrorComp error={error} />;
               }
 
               return (

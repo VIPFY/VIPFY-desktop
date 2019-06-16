@@ -10,8 +10,10 @@ export interface Licence {
   unitid: User;
   sidebar: number;
   dashboard: number;
-  prevLicence: Licence | undefined;
-  nextLicence: Licence | undefined;
+  tags: string[];
+  edit: boolean;
+  view: boolean;
+  delete: boolean;
 }
 
 export interface Unit {
