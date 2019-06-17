@@ -21,6 +21,7 @@ export const GIVE_TEMPORARY_ACCESS = gql`
         starttime
         endtime
         unitid {
+          id
           firstname
           middlename
           lastname
@@ -32,8 +33,18 @@ export const GIVE_TEMPORARY_ACCESS = gql`
 `;
 
 export const UPDATE_TEMPORARY_ACCESS = gql`
-  mutation onUpdateTemporaryAccess($licence: LicenceRightInput!, $rightid: ID!) {
-    updateTemporaryAccess(licence: $licence, rightid: $rightid)
+  mutation onUpdateTemporaryAccess($licence: LicenceRightUpdateInput!, $rightid: ID!) {
+    updateTemporaryAccess(licence: $licence, rightid: $rightid) {
+      id
+      unitid {
+        id
+        firstname
+        middlename
+        lastname
+      }
+      starttime
+      endtime
+    }
   }
 `;
 

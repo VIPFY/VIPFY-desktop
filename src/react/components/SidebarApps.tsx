@@ -77,6 +77,10 @@ class SidebarApps extends React.Component<Props, State> {
     const { sidebarOpen, licences, openInstances, icon } = this.props;
     const { showApps, showMoreApps } = this.state;
 
+    if (licences.length < 1) {
+      return null;
+    }
+
     const input = (
       <input
         value={this.state.searchString}

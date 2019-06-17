@@ -4,7 +4,7 @@ import moment = require("moment");
 import DropDown from "../../../common/DropDown";
 import { Licence, Option } from "../../../interfaces";
 import DatePicker from "../../../common/DatePicker";
-import { ErrorComp, filterError, concatName } from "../../../common/functions";
+import { ErrorComp, concatName } from "../../../common/functions";
 import LoadingDiv from "../../LoadingDiv";
 import { FETCH_EMPLOYEES } from "../../../queries/departments";
 
@@ -13,19 +13,27 @@ interface Props {
   addLicence: Function;
   objectId: number;
   error?: null | any;
+  defaultValues?: State;
+  hideCancel?: boolean;
 }
 
 interface State {
   starttime: string;
   endtime: string;
   user: null | Option;
-  sanityCheck: boolean;
+  sanityCheck?: boolean;
 }
 
 const INITIAL_STATE = { starttime: "", endtime: "", user: null, sanityCheck: true };
 
 class LicenceRow extends React.Component<Props, State> {
   state = { ...INITIAL_STATE };
+
+  componentDidMount() {
+    if (this.props.defaultValues) {
+      this.setState(prevState => ({ ...prevState, ...this.props.defaultValues }));
+    }
+  }
 
   handleChange = async (name, value) => {
     await this.setState({ [name]: value });
@@ -54,13 +62,17 @@ class LicenceRow extends React.Component<Props, State> {
   };
 
   render() {
-    const { licence } = this.props;
+    const { licence, defaultValues } = this.props;
 
     return (
       <div className="tableRow">
-        <button className="naked-button table-cancel" onClick={() => this.setState(INITIAL_STATE)}>
-          <i className="fal fa-times-circle" />
-        </button>
+        {this.props.hideCancel ? null : (
+          <button
+            className="naked-button table-cancel"
+            onClick={() => this.setState(INITIAL_STATE)}>
+            <i className="fal fa-times-circle" />
+          </button>
+        )}
 
         <div className="tableMain popup-lic">
           <div className="tableColumnSmall">
@@ -100,15 +112,21 @@ class LicenceRow extends React.Component<Props, State> {
             className="tableColumnSmall"
             style={{ display: "flex", alignItems: "center", cursor: "auto" }}>
             <DatePicker
+              key={this.state.starttime}
               value={this.state.starttime}
               handleChange={value => this.handleChange("starttime", value)}
-              minDate={moment().format("YYYY-MM-DD")}
+              minDate={
+                defaultValues && defaultValues.starttime
+                  ? moment(defaultValues.starttime).format("YYYY-MM-DD")
+                  : moment().format("YYYY-MM-DD")
+              }
               error={this.state.sanityCheck ? "" : "Beginning must be before Ending!"}
             />
           </div>
 
           <div className="tableColumnSmall" style={{ display: "flex", alignItems: "center" }}>
             <DatePicker
+              key={this.state.starttime}
               value={this.state.endtime}
               handleChange={value => this.handleChange("endtime", value)}
               minDate={moment().format("YYYY-MM-DD")}
@@ -164,6 +182,7 @@ class LicenceRow extends React.Component<Props, State> {
 
                 return (
                   <DropDown
+                    touched={defaultValues && defaultValues.user ? true : false}
                     option={this.state.user}
                     handleChange={value => this.handleChange("user", value)}
                     defaultValue={defaultValue}

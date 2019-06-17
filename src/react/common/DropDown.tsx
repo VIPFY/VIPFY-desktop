@@ -6,6 +6,7 @@ interface Props {
   options: any[];
   handleChange: Function;
   option: Option | null;
+  touched?: boolean;
 }
 
 interface State {
@@ -16,9 +17,14 @@ interface State {
 class DropDown extends React.PureComponent<Props, State> {
   state = { show: false, touched: false };
 
+  componentDidMount() {
+    if (this.props.touched) {
+      this.setState({ touched: true });
+    }
+  }
+
   render() {
     const { show, touched } = this.state;
-
     let bodyClass = "body";
 
     // if (touched) {

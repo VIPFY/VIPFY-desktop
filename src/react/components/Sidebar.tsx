@@ -203,7 +203,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
       {
         label: "Profile",
         location: "profile",
-        icon: "id-badge",
+        icon: "alicorn",
         show: config.showProfile,
         highlight: "profileelement"
       },

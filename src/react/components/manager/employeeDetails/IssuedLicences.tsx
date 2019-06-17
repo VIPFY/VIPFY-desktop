@@ -5,7 +5,11 @@ import { Mutation, Query } from "react-apollo";
 import UniversalButton from "../../universalButtons/universalButton";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import LicenceRow from "./LicenceRow";
-import { GIVE_TEMPORARY_ACCESS, REMOVE_TEMPORARY_ACCESS } from "../../../mutations/licence";
+import {
+  GIVE_TEMPORARY_ACCESS,
+  REMOVE_TEMPORARY_ACCESS,
+  UPDATE_TEMPORARY_ACCESS
+} from "../../../mutations/licence";
 import { FETCH_USER_LICENCES } from "../../../queries/licence";
 import { filterError, ErrorComp, concatName } from "../../../common/functions";
 import LoadingDiv from "../../LoadingDiv";
@@ -31,9 +35,11 @@ const FETCH_ISSUED_LICENCES = gql`
       starttime
       endtime
       unitid {
+        id
         firstname
         middlename
         lastname
+        profilepicture
       }
     }
   }
@@ -53,12 +59,20 @@ interface TempLicence {
 
 interface State {
   showCreation: boolean;
+  showEdit: null | number;
   showDeletion: boolean;
   tempLicences: { [key: string]: TempLicence };
+  editLicenceData: TempLicence | {};
 }
 
 class IssuedLicences extends React.Component<Props, State> {
-  state = { showCreation: false, showDeletion: false, tempLicences: {} };
+  state = {
+    showCreation: false,
+    showEdit: null,
+    showDeletion: false,
+    tempLicences: {},
+    editLicenceData: {}
+  };
 
   addLicence = (licence, key) => {
     this.setState(prevState => {
@@ -115,7 +129,7 @@ class IssuedLicences extends React.Component<Props, State> {
                 return <ErrorComp error={error} />;
               }
 
-              if (data.fetchIssuedLicences.length < 1) {
+              if (!data.fetchIssuedLicences || data.fetchIssuedLicences.length < 1) {
                 return (
                   <span className="no-element">
                     {`No one has access to ${this.props.firstName}'s Licences yet.`}{" "}
@@ -123,12 +137,14 @@ class IssuedLicences extends React.Component<Props, State> {
                 );
               }
 
-              return data.fetchIssuedLicences.map(licence => {
+              return data.fetchIssuedLicences.map((licence, key) => {
                 const { firstname, middlename, lastname } = licence.unitid;
                 // prettier-ignore
                 const { alias, planid: { appid } } = licence.licenceid.boughtplanid;
                 const serviceName = alias ? alias : appid.name;
                 const userName = concatName(firstname, middlename, lastname);
+                const starttime = moment(licence.starttime).format("LLL");
+                const endtime = moment(licence.endtime).format("LLL");
 
                 return (
                   <div className="tableRow" key={licence.id}>
@@ -165,19 +181,15 @@ class IssuedLicences extends React.Component<Props, State> {
 
                       <div className="tableColumnSmall content">{userName}</div>
 
-                      <div className="tableColumnSmall content">
-                        {moment(licence.starttime).format("LLL")}
-                      </div>
+                      <div className="tableColumnSmall content">{starttime}</div>
 
-                      <div className="tableColumnSmall content">
-                        {moment(licence.endtime).format("LLL")}
-                      </div>
+                      <div className="tableColumnSmall content">{endtime}</div>
                     </div>
 
                     <div className="tableEnd">
                       <div className="editOptions">
                         <IconButton
-                          onClick={() => this.setState({ showDeletion: true })}
+                          onClick={() => this.setState({ showEdit: licence.id })}
                           icon="edit"
                         />
 
@@ -187,6 +199,92 @@ class IssuedLicences extends React.Component<Props, State> {
                         />
                       </div>
                     </div>
+
+                    {this.state.showEdit && (
+                      <Mutation
+                        mutation={UPDATE_TEMPORARY_ACCESS}
+                        onCompleted={() => this.setState({ showEdit: null })}>
+                        {(mutate, { error }) => {
+                          const editLicence = data.fetchIssuedLicences.find(
+                            lic => lic.id == this.state.showEdit
+                          );
+
+                          const {
+                            profilepicture,
+                            id,
+                            firstname: fi,
+                            middlename: mi,
+                            lastname: la
+                          } = editLicence.unitid;
+
+                          const selectedUser = {
+                            label: (
+                              <span key={id} className="employee-option">
+                                {profilepicture ? (
+                                  <img
+                                    className="options-pic"
+                                    src={
+                                      profilepicture.indexOf("/") != -1
+                                        ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                                            profilepicture
+                                          )}`
+                                        : `https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${encodeURI(
+                                            profilepicture
+                                          )}`
+                                    }
+                                  />
+                                ) : (
+                                  <i className="fal fa-user" title="Single Account" />
+                                )}
+                                {concatName(fi, mi, la)}
+                              </span>
+                            ),
+                            value: id
+                          };
+
+                          const defaultValues = {
+                            starttime: editLicence.starttime,
+                            endtime: editLicence.endtime,
+                            user: selectedUser
+                          };
+
+                          return (
+                            <PopupBase
+                              close={() => this.setState({ showEdit: null })}
+                              closeable={true}>
+                              <LicenceRow
+                                objectId={key}
+                                hideCancel={true}
+                                addLicence={editLicenceData => this.setState({ editLicenceData })}
+                                licence={editLicence.licenceid}
+                                defaultValues={defaultValues}
+                              />
+
+                              {error && <ErrorComp error={error} />}
+
+                              <UniversalButton
+                                type="low"
+                                onClick={() => this.setState({ showEdit: null })}
+                                label="Cancel"
+                              />
+
+                              <UniversalButton
+                                type="low"
+                                label="Confirm"
+                                onClick={() => {
+                                  mutate({
+                                    variables: {
+                                      licence: this.state.editLicenceData,
+                                      rightid: licence.id
+                                    }
+                                  });
+                                }}
+                              />
+                            </PopupBase>
+                          );
+                        }}
+                      </Mutation>
+                    )}
 
                     {this.state.showDeletion && (
                       <Mutation
@@ -220,7 +318,11 @@ class IssuedLicences extends React.Component<Props, State> {
 
                             {error && <ErrorComp error={error} />}
 
-                            <UniversalButton type="low" closingPopup={true} label="Cancel" />
+                            <UniversalButton
+                              type="low"
+                              onClick={() => this.setState({ showDeletion: false })}
+                              label="Cancel"
+                            />
                             <UniversalButton
                               type="low"
                               label="Delete"
