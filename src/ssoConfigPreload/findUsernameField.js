@@ -19,7 +19,11 @@ function doit(force) {
   if (done) return;
   const email = getQueryString(findEmailField());
   const password = getQueryString(findPassField());
-  const button = getQueryString(findConfirmButton());
+  const button = createQueryString(
+    findConfirmButton(),
+    ["sign", "log", "submit"],
+    ["oauth", "google", "facebook", "forgot"]
+  );
   if (force || (email !== null && password !== null && button !== null)) {
     done = true;
     ipcRenderer.sendToHost("emailobject", email);
@@ -48,6 +52,8 @@ setTimeout(function() {
   doit(true);
 }, 15000);
 
+const queryStringBlacklist = ["_ngcontent", "_nghost"];
+
 function getQueryString(t) {
   console.log("I am starting");
   if (t === null || t === undefined) return null;
@@ -68,13 +74,19 @@ function getQueryString(t) {
       return s;
     }
     if (t.className) {
-      s += '[class="' + t.className + '"]';
+      s += Array.from(t.classList)
+        .map(v => (v.includesAny(queryStringBlacklist) ? null : "[class~=" + v + "]"))
+        .filter(v => v !== null)
+        .join("");
     }
     return s;
   } else if (t.attributes["role"]) {
     let s = `${t.tagName.toLowerCase()}[role="${t.attributes["role"].value}"]`;
     if (t.className) {
-      s += '[class="' + t.className + '"]';
+      s += Array.from(t.classList)
+        .map(v => (v.includesAny(queryStringBlacklist) ? null : "[class~=" + v + "]"))
+        .filter(v => v !== null)
+        .join("");
     }
     return s;
   }
@@ -133,6 +145,65 @@ const attributes = [
   "value",
   "alt"
 ];
+
+const literalAttributes = ["role", "type", "ng-model", "data-ng-model"];
+
+function createQueryString(t, pro, contra) {
+  if (t === null || t === undefined) return null;
+  s = t.tagName;
+  if (document.querySelectorAll(s).length == 1) return s;
+  for (a of literalAttributes) {
+    if (t.attributes[a]) {
+      const s_old = s;
+      s += `[${a}='${t.attributes[a].value}']`;
+      const l = document.querySelectorAll(s).length;
+      if (l == 1) return s;
+      if (l == 0) s = s_old;
+    }
+  }
+  for (a of attributes) {
+    for (p of pro) {
+      const l_old = document.querySelectorAll(s).length;
+      const s_old = s;
+      s += `[${a}*='${p}']`;
+      const q = document.querySelectorAll(s);
+      if (q.length == 0 || !Array.from(q).includes(t)) {
+        console.log("reverting", s);
+        s = s_old;
+        continue;
+      }
+      if (q.length == 1) return s;
+      if (q.length == l_old) {
+        console.log("useless", s);
+        //s = s_old;
+        //continue;
+      }
+      console.log("adding", s);
+    }
+  }
+  for (a of attributes) {
+    for (p of contra) {
+      const l_old = document.querySelectorAll(s).length;
+      const s_old = s;
+      s += `:not([${a}*='${p}'])`;
+      const q = document.querySelectorAll(s);
+      if (q.length == 0 || !Array.from(q).includes(t)) {
+        console.log("reverting", s);
+        s = s_old;
+        continue;
+      }
+      if (q.length == 1) return s;
+      if (q.length == l_old) {
+        console.log("useless", s);
+        //s = s_old;
+        //continue;
+      }
+      console.log("adding", s);
+    }
+  }
+  console.log("unsuccessful", s, document.querySelectorAll(s).length);
+  throw new Error("no query selector found");
+}
 
 function filterDom(includesAny, excludesAll) {
   return function(element) {

@@ -12,6 +12,11 @@ interface Props {
 class Marketplace extends React.Component<Props> {
   renderLoading(apps) {
     if (apps) {
+      apps.sort((a, b) => {
+        const textA = a.name.toUpperCase();
+        const textB = b.name.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
       return (
         <div className="marketplace">
           {apps.length > 0 ? (
@@ -39,8 +44,9 @@ class Marketplace extends React.Component<Props> {
         className="app-thumbnail-logo"
         style={{
           backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${logo})`
-        }}
-      />
+        }}>
+        {!logo && <i className="fal fa-rocket" />}
+      </div>
       <div className="caption">
         <h3>{name}</h3>
         <div className="appdiscripton">

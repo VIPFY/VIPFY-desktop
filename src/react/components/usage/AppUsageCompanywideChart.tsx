@@ -10,7 +10,7 @@ interface State {}
 
 interface Props {
   data: {
-    fetchTotalAppUsage: {
+    fetchMonthlyAppUsage: {
       app: { name: string; icon: string; color: string };
       totalminutes: number;
     }[];
@@ -21,17 +21,17 @@ interface Props {
 
 class AppUsageCompanywideChartInner extends React.Component<Props, State> {
   render() {
-    //console.log("CHARTPROPS", this.props);
-    if (!this.props.data.fetchTotalAppUsage) {
+    console.log("LOG: AppUsageCompanywideChartInner -> render -> this.props.data", this.props.data);
+    if (!this.props.data.fetchMonthlyAppUsage) {
       return <div>Error fetching data</div>;
     }
-    if (this.props.data.fetchTotalAppUsage.length == 0) {
+    if (this.props.data.fetchMonthlyAppUsage.length == 0) {
       return <div>Use any app to see statistics about app usage here</div>;
     }
 
-    console.log("DATA", this.props.data.fetchTotalAppUsage);
+    console.log("DATA", this.props.data.fetchMonthlyAppUsage);
 
-    const d = this.props.data.fetchTotalAppUsage;
+    const d = this.props.data.fetchMonthlyAppUsage;
 
     const labels = d.map(u => u.app.name);
     const total = d.reduce((sum, cur) => sum + cur.totalminutes, 0);
@@ -143,8 +143,8 @@ function AppUsageCompanywideChart(props) {
   return (
     <Query
       query={gql`
-        query fetchTotalAppUsage {
-          fetchTotalAppUsage {
+        query onFetchMonthlyAppUsage {
+          fetchMonthlyAppUsage {
             app {
               name
               icon
@@ -158,9 +158,11 @@ function AppUsageCompanywideChart(props) {
         if (loading) {
           return <div>Loading</div>;
         }
+
         if (error) {
           return <div>Error fetching data</div>;
         }
+
         return (
           <ResizeAware style={{ width: "100%" }}>
             <AppUsageCompanywideChartInner {...props} data={data} />

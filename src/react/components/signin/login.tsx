@@ -1,6 +1,8 @@
 import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
+import UserPicture from "../UserPicture";
+import { defaultPic } from "../../common/constants";
 import Store = require("electron-store");
 
 interface Props {
@@ -70,7 +72,7 @@ class Login extends React.Component<Props, State> {
                                 user!.profilepicture
                               )})`
                             }
-                        : {}
+                        : { backgroundImage: `url(${defaultPic})` }
                       : {}
                   }
                 />

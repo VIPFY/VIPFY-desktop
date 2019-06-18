@@ -8,6 +8,7 @@ export const me = gql`
       }
       createdate
       id
+      consent
       title
       birthday
       language
@@ -42,6 +43,7 @@ export const fetchLicences = gql`
       disabled
       layoutvertical
       layouthorizontal
+      options
       boughtplanid {
         id
         alias

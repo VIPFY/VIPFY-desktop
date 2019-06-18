@@ -1,6 +1,5 @@
 import * as React from "react";
 import { countries } from "../../constants/countries";
-import { validateOperation } from "apollo-link/lib/linkUtils";
 
 interface Props {
   id: string;
@@ -28,7 +27,10 @@ interface State {
 
 class UniversalDropDownInput extends React.Component<Props, State> {
   state = {
-    value: this.props.startvalue ? countries.find(c => c.code == this.props.startvalue).name : "",
+    value:
+      this.props.startvalue && countries.find(c => c.code == this.props.startvalue)
+        ? countries.find(c => c.code == this.props.startvalue).name
+        : "",
     error: null,
     inputFocus: false,
     eyeopen: false,
