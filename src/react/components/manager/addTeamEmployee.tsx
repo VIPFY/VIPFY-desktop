@@ -1,12 +1,7 @@
 import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query, Mutation } from "react-apollo";
-import {
-  fetchCompanyTeams,
-  fetchTeams,
-  fetchUserLicences,
-  fetchTeam
-} from "../../queries/departments";
+import { FETCH_EMPLOYEES, fetchTeam } from "../../queries/departments";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalSearchBox from "../universalSearchBox";
@@ -54,20 +49,6 @@ interface State {
 const ADD_TO_TEAM = gql`
   mutation addToTeam($userid: ID!, $teamid: ID!, $services: [SetupService]!) {
     addToTeam(userid: $userid, teamid: $teamid, services: $services)
-  }
-`;
-
-const FETCH_EMPLOYEES = gql`
-  {
-    fetchEmployees {
-      employee {
-        id
-        firstname
-        lastname
-        middlename
-        profilepicture
-      }
-    }
   }
 `;
 

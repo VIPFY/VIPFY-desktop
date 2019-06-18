@@ -258,7 +258,7 @@ class PopupPhone extends React.Component<Props, State> {
         <UniversalButton
           type="high"
           label={this.props.oldvalues ? "Save" : "Confirm"}
-          disabeld={this.state.number == ""}
+          disabled={this.state.number == ""}
           onClick={async () => {
             this.confirm();
           }}

@@ -2,7 +2,6 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import * as moment from "moment";
 
 export function showStars(stars) {
   const starsArray: JSX.Element[] = [];
@@ -80,6 +79,10 @@ export function calculatepartsum(plan, useralready, usercount): number {
 }
 
 export const filterError = error => {
+  if (typeof error == "string") {
+    return error;
+  }
+
   if (error.networkError) {
     return "Sorry, something went wrong.";
   } else if (error.graphQLErrors) {
@@ -91,7 +94,7 @@ export const filterError = error => {
 
 export const AppContext = React.createContext();
 
-export const ErrorComp = ({ error }) => <div className="error-field">{error}</div>;
+export const ErrorComp = ({ error }) => <div className="error-field">{filterError(error)}</div>;
 
 export const concatName = (first, middle, last) => `${first} ${middle ? middle : ""} ${last}`;
 
@@ -156,7 +159,7 @@ export const layoutUpdate = (licences, dragItem, dropItem) => {
   const index = filtered.findIndex(licence => licence.id == dropItem);
   const newLicences = [...filtered.slice(0, index + 1), dragged, ...filtered.slice(index + 1)];
   newLicences.forEach((licence, key) => {
-    licence.layoutvertical = key;
+    licence.sidebar = key;
   });
 
   return newLicences;

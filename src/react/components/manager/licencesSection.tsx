@@ -338,7 +338,6 @@ class LicencesSection extends React.Component<Props, State> {
                 !e.boughtplanid.planid.appid.disabled &&
                 (e.endtime > now() || e.endtime == null)
               ) {
-                console.log("LICENCE", e);
                 appArray.push(
                   <ServiceDetails
                     e={e}
@@ -612,7 +611,7 @@ class LicencesSection extends React.Component<Props, State> {
                         <UniversalButton
                           type="high"
                           label="Confirm"
-                          disabeld={
+                          disabled={
                             this.state.email == "" ||
                             this.state.password == "" ||
                             (this.state.integrateApp.needssubdomain && this.state.subdomain == "")

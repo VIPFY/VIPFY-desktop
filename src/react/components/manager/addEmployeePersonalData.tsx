@@ -165,7 +165,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           <UniversalButton
             label="Continue"
             type="high"
-            disabeld={
+            disabled={
               this.state.name == "" || this.state.wmail1 == "" || !this.state.wmail1.includes("@")
             }
             onClick={() => this.props.continue(this.state)}

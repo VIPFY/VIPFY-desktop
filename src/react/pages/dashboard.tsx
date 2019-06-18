@@ -38,6 +38,7 @@ export default (props: Props) => {
       <div className="dashboardHeading">
         <div>My Apps</div>
       </div>
+
       <AppList licences={props.licences.fetchLicences} setApp={setApp} />
     </div>
   );

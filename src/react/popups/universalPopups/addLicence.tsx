@@ -245,7 +245,7 @@ class PopupAddLicence extends React.Component<Props, State> {
           <UniversalButton
             type="high"
             label="Add"
-            disabeld={
+            disabled={
               this.state.email == "" ||
               this.state.password == "" ||
               (needssubdomain && this.state.subdomain == "")

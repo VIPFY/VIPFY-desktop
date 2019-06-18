@@ -76,7 +76,7 @@ class PWReset extends React.Component<Props, State> {
               <UniversalButton
                 label="Send"
                 type="high"
-                disabeld={this.state.email == ""}
+                disabled={this.state.email == ""}
                 onClick={() => this.sendMail()}
               />
             </div>
@@ -92,7 +92,7 @@ class PWReset extends React.Component<Props, State> {
                   type="low"
                   closingAllPopups={true}
                   label="Ok"
-                  disabeld={this.state.finished}
+                  disabled={this.state.finished}
                   onClick={() => this.props.continueFunction!(this.state.email)}
                 />
               </PopupBase>

@@ -49,13 +49,13 @@
             }
         }
 
-         .table{
-
-            .tableHeading{
-                border-radius: 4px; 
-                height: 40px ;
-                display: flex;
+         .table { 
+            .tableHeading {
+              border-radius: 4px; 
+              height: 40px ;
+              display: flex;
             }
+
             .editbuttons{
                 padding: 5px;
                 border-radius: 4px;
@@ -66,6 +66,7 @@
                     }
                 }
             }
+
             .tableRow{
                 border-radius: 4px; 
                 height: 56px ;
@@ -73,8 +74,8 @@
                 cursor: pointer;
                 transition: box-shadow 150ms ease-in-out;
 
-                &:hover{
-                    box-shadow: 0px 0px 4px rgba(0,0,0,0.14);
+              &:hover {
+                box-shadow: 0px 0px 4px rgba(0,0,0,0.14);
 
                     .editOptions{
                         opacity: 1;
@@ -88,7 +89,7 @@
                         }
                     }
                 }
-            }
+              }
 
             .tableEnd{
                 width: 128px;
@@ -194,7 +195,8 @@
                 display: flex;
                 flex-direction: row-reverse;
                 margin-right: 16px;
-                & > i:not(:first-child){
+                
+                & > i:not(:first-child), & > button:not(:first-child) {
                     margin-right: 4px;
                 }
             }

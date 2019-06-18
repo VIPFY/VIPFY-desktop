@@ -255,7 +255,7 @@ class AddServiceGeneralData extends React.Component<Props, State> {
           <UniversalButton
             label="Continue"
             type="high"
-            disabeld={!this.state.integrateService}
+            disabled={!this.state.integrateService}
             onClick={() => this.props.continue(this.state.integrateService)}
           />
         </div>

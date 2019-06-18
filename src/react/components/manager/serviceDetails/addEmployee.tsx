@@ -8,6 +8,7 @@ import PopupAddLicence from "../../../popups/universalPopups/addLicence";
 import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
 import PrintCurrent from "../universal/printCurrent";
 import { fetchCompanyService } from "../../../queries/products";
+import { FETCH_EMPLOYEES } from "../../../queries/departments";
 
 interface Props {
   service: any;
@@ -81,20 +82,6 @@ const ADD_EXTERNAL_PLAN = gql`
     addExternalBoughtPlan(appid: $appid, alias: $alias, price: $price, loginurl: $loginurl) {
       id
       alias
-    }
-  }
-`;
-
-const FETCH_EMPLOYEES = gql`
-  {
-    fetchEmployees {
-      employee {
-        id
-        firstname
-        lastname
-        middlename
-        profilepicture
-      }
     }
   }
 `;

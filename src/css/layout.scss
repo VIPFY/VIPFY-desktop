@@ -1,7 +1,9 @@
 @import './fa_pro_all_5.8.2';
 @import './constants.scss';
 @import './buttons.scss';
+@import './date-picker.scss';
 @import './forms.scss';
+@import './dropdown.scss';
 @import './tooltip.scss';
 @import './popup.scss';
 @import './sidebar.scss';
@@ -5021,6 +5023,14 @@ progress[value] {
     grid-template-columns: 300px 300px;
     grid-template-rows: 56px 56px 56px;
 }
+
+.no-element {
+  font-size: 13px;
+  color: #1C2935FF;
+  padding: 11px 16px;
+  font-weight: bold;
+}
+
 .genericPage{
     display: flex;
     flex-flow: column;
@@ -5421,7 +5431,7 @@ progress[value] {
         align-items: flex-end;
 
         &.disabled{
-            color: $vipfy-disabeldtext;
+            color: $vipfy-disabledtext;
         }
     }
     .text{
@@ -5434,7 +5444,7 @@ progress[value] {
         }
 
         &.disabled{
-            color: $vipfy-disabeldtext;
+            color: $vipfy-disabledtext;
         }
     }
 }
@@ -5507,7 +5517,7 @@ progress[value] {
 
     &.disabled{
         cursor: inherit;
-        color: $vipfy-disabeldtext;
+        color: $vipfy-disabledtext;
     }
 }
 .revertInlineButton{
@@ -5585,7 +5595,7 @@ progress[value] {
 
     &.disabled{
         cursor: inherit;
-        color: $vipfy-disabeldtext;
+        color: $vipfy-disabledtext;
     }
 }
 .revertInlineButton{
@@ -5618,4 +5628,62 @@ progress[value] {
     height: 20px;
     display: flex;
     align-items: flex-end;
+}
+
+.employee-option {
+  display: flex;
+
+  i {
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    display: grid;
+    font-size: 10px;
+    background: #fff;
+    place-content: center;
+  }
+
+  .options-pic {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+    object-fit: cover;
+  }
+}
+
+.popup-lic {
+  width: calc(100% - 14px) !important;
+
+  .tableColumnSmall {
+    flex: 2;
+    
+    &:nth-child(2) {
+      flex: 1;
+    }
+  }
+}
+
+.table-licences {
+  height: 448px;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  .tableRow {
+    position: relative;
+
+    &:hover .table-cancel {
+      display: inherit;
+      position: absolute;
+      color: red;
+      top: 20px;
+      left: 260px;
+      z-index: 10;
+    }
+
+    .table-cancel {
+      display: none;
+    }
+  }
 }

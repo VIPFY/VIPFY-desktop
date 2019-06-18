@@ -2,15 +2,11 @@ import * as React from "react";
 import UniversalCheckbox from "../../universalForms/universalCheckbox";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import UniversalButton from "../../universalButtons/universalButton";
-import { fetchTeam } from "../../../queries/departments";
+import { FETCH_EMPLOYEES } from "../../../queries/departments";
 import { Mutation, Query, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import moment = require("moment");
-import {
-  fetchCompanyServices,
-  fetchServiceLicences,
-  fetchCompanyService
-} from "../../../queries/products";
+import { fetchCompanyService } from "../../../queries/products";
 import UniversalSearchBox from "../../universalSearchBox";
 
 interface Props {
@@ -37,20 +33,6 @@ interface State {
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation deleteServiceLicenceAt($serviceid: ID!, $licenceid: ID!, $time: Date!) {
     deleteServiceLicenceAt(serviceid: $serviceid, licenceid: $licenceid, time: $time)
-  }
-`;
-
-const FETCH_EMPLOYEES = gql`
-  {
-    fetchEmployees {
-      employee {
-        id
-        firstname
-        lastname
-        middlename
-        profilepicture
-      }
-    }
   }
 `;
 
@@ -137,7 +119,7 @@ class Empty extends React.Component<Props, State> {
                 <UniversalButton
                   type="low"
                   label="Give Access"
-                  disabeld={!this.state.employeeid}
+                  disabled={!this.state.employeeid}
                   onClick={() => {
                     this.setState({ distribute: false });
 

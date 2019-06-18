@@ -21,15 +21,12 @@ interface Props {
 
 class AppUsageCompanywideChartInner extends React.Component<Props, State> {
   render() {
-    console.log("LOG: AppUsageCompanywideChartInner -> render -> this.props.data", this.props.data);
     if (!this.props.data.fetchMonthlyAppUsage) {
       return <div>Error fetching data</div>;
     }
     if (this.props.data.fetchMonthlyAppUsage.length == 0) {
       return <div>Use any app to see statistics about app usage here</div>;
     }
-
-    console.log("DATA", this.props.data.fetchMonthlyAppUsage);
 
     const d = this.props.data.fetchMonthlyAppUsage;
 
@@ -43,8 +40,6 @@ class AppUsageCompanywideChartInner extends React.Component<Props, State> {
 
     const series = [{ data }];
     const height = d.length * 25 + 100;
-
-    console.log("DATA RESULT", series, height, numTicks);
 
     return (
       <Chart

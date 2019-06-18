@@ -22,7 +22,7 @@ class UniversalButton extends React.Component<Props, State> {
 
   click(e) {
     const child = this.props.children;
-    if (!this.props.disabeld) {
+    if (!this.props.disabled) {
       if (child && !Array.isArray(child) && child.type && child.type.name == "ConfirmationPopup") {
         this.setState({ confirmpopup: true });
         return;

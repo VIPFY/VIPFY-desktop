@@ -43,7 +43,7 @@ class AppList extends React.Component<Props, State> {
     const { dragItem } = this.state;
     const { licences } = this.props;
 
-    const layouts = layoutChange(licences, dragItem, id, "layouthorizontal");
+    const layouts = layoutChange(licences, dragItem, id, "dashboard");
 
     try {
       await this.props.updateLayout({
@@ -51,9 +51,9 @@ class AppList extends React.Component<Props, State> {
         update: cache => {
           const newLicences = licences.map(licence => {
             if (licence.id == layouts[0].id) {
-              return { ...licence, layouthorizontal: layouts[0]!.layouthorizontal };
+              return { ...licence, dashboard: layouts[0]!.dashboard };
             } else if (licence.id == layouts[1].id) {
-              return { ...licence, layouthorizontal: layouts[1]!.layouthorizontal };
+              return { ...licence, dashboard: layouts[1]!.dashboard };
             } else {
               return licence;
             }
@@ -85,19 +85,19 @@ class AppList extends React.Component<Props, State> {
         return true;
       })
       .sort((a, b) => {
-        if (a.layouthorizontal === null) {
+        if (a.dashboard === null) {
           return 1;
         }
 
-        if (b.layouthorizontal === null) {
+        if (b.dashboard === null) {
           return -1;
         }
 
-        if (a.layouthorizontal < b.layouthorizontal) {
+        if (a.dashboard < b.dashboard) {
           return -1;
         }
 
-        if (a.layouthorizontal > b.layouthorizontal) {
+        if (a.dashboard > b.dashboard) {
           return 1;
         }
 
@@ -113,16 +113,13 @@ class AppList extends React.Component<Props, State> {
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
             {filteredLicences.map((licence, key) => {
-              const maxValue = filteredLicences.reduce(
-                (acc, cv) => Math.max(acc, cv.layouthorizontal),
-                0
-              );
+              const maxValue = filteredLicences.reduce((acc, cv) => Math.max(acc, cv.dashboard), 0);
 
               // Make sure that every License has an index
-              if (licence.layouthorizontal || licence.layouthorizontal === 0) {
+              if (licence.dashboard || licence.dashboard === 0) {
               } else {
                 subPosition = maxValue + 1;
-                licence.layouthorizontal = subPosition;
+                licence.dashboard = subPosition;
               }
 
               return (

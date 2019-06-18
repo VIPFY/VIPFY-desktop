@@ -276,7 +276,7 @@ class PopupEmail extends React.Component<Props, State> {
         <UniversalButton
           type="high"
           label={this.props.oldvalues ? "Save" : "Confirm"}
-          disabeld={this.state.email == ""}
+          disabled={this.state.email == ""}
           onClick={async () => {
             this.confirm();
           }}

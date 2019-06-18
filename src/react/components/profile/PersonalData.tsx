@@ -288,7 +288,7 @@ class PersonalData extends React.Component<Props, State> {
                             <UniversalButton type="low" closingPopup={true} label="Cancel" />
                             <UniversalButton
                               type="high"
-                              disabeld={
+                              disabled={
                                 this.state.oldpassword == "" ||
                                 this.state.newpassword == "" ||
                                 this.state.new2password == "" ||

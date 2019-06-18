@@ -13,6 +13,8 @@ import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import { me } from "../../queries/auth";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
+import TemporaryLicences from "../../components/manager/employeeDetails/TemporaryLicences";
+import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicences";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -54,6 +56,7 @@ class EmployeeDetails extends React.Component<Props, State> {
 
   render() {
     const employeeid = this.props.match.params.userid;
+
     return (
       <Query query={QUERY_SEMIPUBLICUSER} variables={{ unitid: employeeid }}>
         {({ loading, error, data }) => {
@@ -75,6 +78,7 @@ class EmployeeDetails extends React.Component<Props, State> {
           );
           querydata.workPhones = workPhones;
           querydata.privatePhones = privatePhones;
+
           return (
             <div className="managerPage">
               <div className="heading">
@@ -168,6 +172,9 @@ class EmployeeDetails extends React.Component<Props, State> {
                 moveTo={this.props.moveTo}
                 employee={querydata}
               />
+
+              <IssuedLicences unitid={employeeid} firstName={querydata.firstname} />
+              <TemporaryLicences firstName={querydata.firstname} unitid={employeeid} />
               {this.state.changepicture && (
                 <PopupSelfSaving
                   savingmessage="Saving Profileimage"

@@ -146,7 +146,7 @@ class ShowEmployee extends React.Component<Props, State> {
                 return <LoadingDiv text="Fetching Plans..." />;
               }
               if (error || !data) {
-                return <ErrorComp error={filterError(error)} />;
+                return <ErrorComp error={error} />;
               }
 
               return (

@@ -122,7 +122,7 @@ class EmailList extends React.Component<Props, State> {
           }
 
           if (error || !data) {
-            return <ErrorComp error={filterError(error)} />;
+            return <ErrorComp error={error} />;
           }
 
           const fetchEmailList = data.fetchEmails.filter(({ tags }) =>

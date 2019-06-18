@@ -8,10 +8,12 @@ export interface Licence {
   key: JSON;
   boughtplanid: BoughtPlan;
   unitid: User;
-  layoutvertical: number;
-  layouthorizontal: number;
-  prevLicence: Licence | undefined;
-  nextLicence: Licence | undefined;
+  sidebar: number;
+  dashboard: number;
+  tags: string[];
+  edit: boolean;
+  view: boolean;
+  delete: boolean;
 }
 
 export interface Unit {
@@ -165,8 +167,8 @@ export interface App {
   hasboughtplan: boolean;
 }
 
-interface Option {
-  name: string;
+export interface Option {
+  label: any;
   value: any;
 }
 export interface InputProps {

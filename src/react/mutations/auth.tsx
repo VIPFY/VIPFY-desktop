@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const UPDATE_LAYOUT = gql`
-  mutation onUpdateLayout($layouts: [LayoutInput]!) {
-    updateLayout(layouts: $layouts)
+  mutation onUpdateLayout($layout: LayoutInput!) {
+    updateLayout(layout: $layout)
   }
 `;
 

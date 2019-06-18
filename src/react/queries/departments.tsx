@@ -15,6 +15,20 @@ export const FETCH_COMPANY = gql`
   }
 `;
 
+export const FETCH_EMPLOYEES = gql`
+  {
+    fetchEmployees {
+      employee {
+        id
+        firstname
+        lastname
+        middlename
+        profilepicture
+      }
+    }
+  }
+`;
+
 export const fetchDepartments = gql`
   query fetchDepartments {
     fetchDepartments {
