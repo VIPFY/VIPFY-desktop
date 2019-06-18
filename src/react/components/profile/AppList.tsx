@@ -3,9 +3,7 @@ import { graphql } from "react-apollo";
 import AppTile from "../../components/AppTile";
 import { fetchLicences } from "../../queries/auth";
 import { UPDATE_LAYOUT } from "../../mutations/auth";
-import moment = require("moment");
 import { Licence } from "../../interfaces";
-import { layoutChange } from "../../common/functions";
 
 export interface Preview {
   name: string;
@@ -39,29 +37,42 @@ class AppList extends React.Component<Props, State> {
   dragStartFunction = (item: number): void => this.setState({ dragItem: item });
   dragEndFunction = (): void => this.setState({ dragItem: null });
 
-  handleDrop = async (id: number) => {
+  handleDrop = async (dropItem: number) => {
     const { dragItem } = this.state;
-    const { licences } = this.props;
 
-    const layouts = layoutChange(licences, dragItem, id, "dashboard");
+    const dragged = this.props.licences.find(licence => licence.id == dragItem);
+    const dropped = this.props.licences.find(licence => licence.id == dropItem);
+
+    const newLicences = this.props.licences.map(licence => {
+      if (licence.id == dragged!.id) {
+        return { ...licence, dashboard: dropped!.dashboard };
+      } else if (licence.id == dropped!.id) {
+        return { ...licence, dashboard: dragged!.dashboard };
+      } else {
+        return licence;
+      }
+    });
 
     try {
-      await this.props.updateLayout({
-        variables: { layouts },
-        update: cache => {
-          const newLicences = licences.map(licence => {
-            if (licence.id == layouts[0].id) {
-              return { ...licence, dashboard: layouts[0]!.dashboard };
-            } else if (licence.id == layouts[1].id) {
-              return { ...licence, dashboard: layouts[1]!.dashboard };
-            } else {
-              return licence;
-            }
-          });
+      const update = cache => {
+        cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
+      };
 
-          cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
-        }
+      const p1 = this.props.updateLayout({
+        variables: {
+          layout: { id: dragged!.id.toString(), dashboard: parseInt(dropped!.dashboard) }
+        },
+        update
       });
+
+      const p2 = this.props.updateLayout({
+        variables: {
+          layout: { id: dropped!.id.toString(), dashboard: parseInt(dragged!.dashboard) }
+        },
+        update
+      });
+
+      await Promise.all([p1, p2]);
     } catch (error) {
       console.log(error);
     }
@@ -70,39 +81,10 @@ class AppList extends React.Component<Props, State> {
   render() {
     const { show, dragItem, preview } = this.state;
     const { licences } = this.props;
-    let subPosition = 0;
 
     if (licences.length == 0) {
       return <div>No Apps for you yet</div>;
     }
-
-    const filteredLicences = licences
-      .filter(licence => {
-        if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
-          return false;
-        }
-
-        return true;
-      })
-      .sort((a, b) => {
-        if (a.dashboard === null) {
-          return 1;
-        }
-
-        if (b.dashboard === null) {
-          return -1;
-        }
-
-        if (a.dashboard < b.dashboard) {
-          return -1;
-        }
-
-        if (a.dashboard > b.dashboard) {
-          return 1;
-        }
-
-        return 0;
-      });
 
     return (
       <div className="genericHolder">
@@ -112,19 +94,11 @@ class AppList extends React.Component<Props, State> {
         </div>
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
-            {filteredLicences.map((licence, key) => {
-              const maxValue = filteredLicences.reduce((acc, cv) => Math.max(acc, cv.dashboard), 0);
-
-              // Make sure that every License has an index
-              if (licence.dashboard || licence.dashboard === 0) {
-              } else {
-                subPosition = maxValue + 1;
-                licence.dashboard = subPosition;
-              }
-
+            {licences.map((licence, key) => {
               return (
                 <AppTile
                   key={key}
+                  position={key}
                   preview={preview}
                   setPreview={this.setPreview}
                   dragItem={dragItem}

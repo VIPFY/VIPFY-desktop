@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
-import AcceptLicence from "../popups/acceptLicence";
 import Tooltip from "react-tooltip-lite";
 
 interface Props {
@@ -83,7 +82,6 @@ class SidebarLink extends React.Component<Props, State> {
 
   render() {
     const { licence, openInstances, sidebarOpen, active, setTeam } = this.props;
-    const vacation = licence.tags.find(el => el == "vacation");
 
     let cssClass = "sidebar-link";
     const label = licence.boughtplanid.alias

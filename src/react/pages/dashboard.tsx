@@ -1,7 +1,7 @@
 import * as React from "react";
 import AppList from "../components/profile/AppList";
 import LoadingDiv from "../components/LoadingDiv";
-import { ErrorComp, filterError } from "../common/functions";
+import { ErrorComp, filterError, filterAndSort } from "../common/functions";
 
 interface Props {
   firstname: string;
@@ -33,13 +33,15 @@ export default (props: Props) => {
     return <div className="noApp">No Apps for you at the moment :(</div>;
   }
 
+  const filteredLicences = filterAndSort(props.licences.fetchLicences, "dashboard");
+
   return (
     <div className="dashboard-working">
       <div className="dashboardHeading">
         <div>My Apps</div>
       </div>
 
-      <AppList licences={props.licences.fetchLicences} setApp={setApp} />
+      <AppList licences={filteredLicences} setApp={setApp} />
     </div>
   );
 };
