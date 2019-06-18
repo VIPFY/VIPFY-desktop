@@ -122,9 +122,9 @@ class Team extends React.Component<Props, State> {
             </div>
             <div className="tableEnd">
               <div className="editOptions">
-                <i className="fal fa-external-link-alt" />
+                <i className="fal fa-external-link-alt editbuttons" />
                 <i
-                  className="fal fa-trash-alt"
+                  className="fal fa-trash-alt editbuttons"
                   onClick={e => {
                     e.stopPropagation();
                     this.setState({ delete: true });
@@ -199,15 +199,15 @@ class Team extends React.Component<Props, State> {
                               )
                           : ""
                       }}>
-                      {employee.profilepicture ? "" : employee.firstname.slice(0, 1)}
+                      {employee.profilepicture || !(employee && employee.name)
+                        ? ""
+                        : employee.name.slice(0, 1)}
                     </div>
                   </div>
                   <div style={{ width: "284px" }}>
                     <div style={{ marginBottom: "16px" }}>
                       Do you really want to remove access to <b>{team.name}</b> for{" "}
-                      <b>
-                        {employee.firstname} {employee.lastname}
-                      </b>
+                      <b>{employee.name}</b>
                     </div>
                     {this.printRemoveLicences(team)}
                   </div>

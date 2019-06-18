@@ -101,7 +101,10 @@ class PersonalDetails extends React.Component<Props, State> {
     const querydata = this.props.querydata;
     return (
       <React.Fragment>
-        <div className="tableRow" style={{ height: "80px" }}>
+        <div
+          className="tableRow"
+          style={{ height: "80px" }}
+          onClick={() => this.setState({ popupline1: true })}>
           <div className="tableMain">
             <div className="tableColumnSmall">
               <h1>Name</h1>
@@ -149,11 +152,14 @@ class PersonalDetails extends React.Component<Props, State> {
           </div>
           <div className="tableEnd">
             <div className="editOptions">
-              <i className="fal fa-edit" onClick={() => this.setState({ popupline1: true })} />
+              <i className="fal fa-pencil editbuttons" />
             </div>
           </div>
         </div>
-        <div className="tableRow" style={{ height: "80px" }}>
+        <div
+          className="tableRow"
+          style={{ height: "80px" }}
+          onClick={() => this.setState({ popupline2: true })}>
           <div className="tableMain">
             <div className="tableColumnSmall">
               <h1>Hiredate</h1>
@@ -186,7 +192,7 @@ class PersonalDetails extends React.Component<Props, State> {
           </div>
           <div className="tableEnd">
             <div className="editOptions">
-              <i className="fal fa-edit" onClick={() => this.setState({ popupline2: true })} />
+              <i className="fal fa-pencil editbuttons" />
             </div>
           </div>
         </div>

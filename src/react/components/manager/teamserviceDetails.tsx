@@ -127,13 +127,13 @@ class TeamServiceDetails extends React.Component<Props, State> {
                 {service.endtime ? moment(service.endtime - 0).format("DD.MM.YYYY") : "Recurring"}
               </div>
               <div className="tableColumnSmall content">${service.totalprice.toFixed(2)}</div>
-              <div className="tableColumnSmall content">not implemented yet</div>
+              <div className="tableColumnSmall content">{/*not implemented yet*/}</div>
             </div>
             <div className="tableEnd">
               <div className="editOptions">
-                <i className="fal fa-external-link-alt" />
+                <i className="fal fa-external-link-alt editbuttons" />
                 <i
-                  className="fal fa-trash-alt"
+                  className="fal fa-trash-alt editbuttons"
                   onClick={e => {
                     e.stopPropagation();
                     this.setState({ delete: true });

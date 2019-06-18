@@ -235,7 +235,7 @@ class Navigation extends React.Component<Props, State> {
         ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="leftNavigation">
           <span>
-            <AppContext.Consumer>
+            {/*<AppContext.Consumer>
               {({ showPopup }) => (
                 <button
                   type="button"
@@ -253,7 +253,7 @@ class Navigation extends React.Component<Props, State> {
                   </span>
                 </button>
               )}
-            </AppContext.Consumer>
+                </AppContext.Consumer>*/}
             <button
               type="button"
               className="naked-button genericButton"

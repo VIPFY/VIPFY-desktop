@@ -39,7 +39,10 @@ class TeamGeneralData extends React.Component<Props, State> {
     const team = this.props.teamdata;
     return (
       <React.Fragment>
-        <div className="tableRow" style={{ height: "80px" }}>
+        <div
+          className="tableRow"
+          style={{ height: "80px" }}
+          onClick={() => this.setState({ editpopup: true })}>
           <div className="tableMain">
             <div className="tableColumnSmall">
               <h1>Name</h1>
@@ -64,7 +67,7 @@ class TeamGeneralData extends React.Component<Props, State> {
           </div>
           <div className="tableEnd">
             <div className="editOptions">
-              <i className="fal fa-edit" onClick={() => this.setState({ editpopup: true })} />
+              <i className="fal fa-edit editbuttons" />
             </div>
           </div>
         </div>

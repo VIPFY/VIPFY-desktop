@@ -56,6 +56,16 @@
                 height: 40px ;
                 display: flex;
             }
+            .editbuttons{
+                padding: 5px;
+                border-radius: 4px;
+                &:hover{
+                    background-color: #f5f5f5;
+                    &.editbuttons2:not(:hover){
+                        background-color: red;
+                    }
+                }
+            }
             .tableRow{
                 border-radius: 4px; 
                 height: 56px ;
@@ -68,6 +78,14 @@
 
                     .editOptions{
                         opacity: 1;
+
+                        &:hover .editbuttons:not(:hover){
+                            background-color: transparent;
+                        }
+
+                        .editbuttons:first-child{
+                            background-color: #f5f5f5;
+                        }
                     }
                 }
             }
@@ -177,7 +195,7 @@
                 flex-direction: row-reverse;
                 margin-right: 16px;
                 & > i:not(:first-child){
-                    margin-right: 16px;
+                    margin-right: 4px;
                 }
             }
         }

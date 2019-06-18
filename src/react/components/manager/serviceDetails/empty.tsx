@@ -92,9 +92,9 @@ class Empty extends React.Component<Props, State> {
             </div>
             <div className="tableEnd">
               <div className="editOptions">
-                <i className="fal fa-chart-network" title="Distribute" />
+                <i className="fal fa-chart-network editbuttons" title="Distribute" />
                 <i
-                  className="fal fa-trash-alt"
+                  className="fal fa-trash-alt editbuttons"
                   title="Delete"
                   onClick={e => {
                     e.stopPropagation();
@@ -174,7 +174,8 @@ class Empty extends React.Component<Props, State> {
               <PopupBase
                 small={true}
                 close={() => this.setState({ delete: false })}
-                closeable={false}buttonStyles={{ marginTop: "0px" }}>
+                closeable={false}
+                buttonStyles={{ marginTop: "0px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <div style={{ position: "relative", width: "88px", height: "112px" }}>
                     <div
@@ -241,8 +242,7 @@ class Empty extends React.Component<Props, State> {
                   </div>
                   <div style={{ width: "284px" }}>
                     <div style={{ marginBottom: "16px" }}>
-                      Do you really want to remove access to <b>{this.props.service.name}</b>{" "}
-                      for{" "}
+                      Do you really want to remove access to <b>{this.props.service.name}</b> for{" "}
                       <b>
                         {employee.firstname} {employee.lastname}
                       </b>
