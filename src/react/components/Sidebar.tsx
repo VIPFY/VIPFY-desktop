@@ -227,6 +227,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
   render() {
     let { sidebarOpen, licences } = this.props;
     const { showApps, showMoreApps } = this.state;
+    const maxValue = licences.reduce((acc, cv) => Math.max(acc, cv.layoutvertical), 0);
 
     const input = (
       <input
@@ -259,7 +260,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
       {
         label: "Profile",
         location: "profile",
-        icon: "alicorn",
+        icon: "id-badge",
         show: config.showProfile,
         highlight: "profileelement"
       },
@@ -324,18 +325,35 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "supportelement"
       },
       {
+        label: "Team Manager",
+        location: "dmanager",
+        icon: "user-tag",
+        show: true,
+        important: false,
+        highlight: "dmanager"
+      },
+      {
+        label: "Employee Manager",
+        location: "emanager",
+        icon: "users-cog",
+        show: true,
+        important: false,
+        highlight: "emanager"
+      },
+      {
+        label: "Service Manager",
+        location: "lmanager",
+        icon: "credit-card-blank",
+        show: true,
+        important: false,
+        highlight: "lmanager"
+      },
+      {
         label: "Universal Login",
         location: "universallogin",
         icon: "pager",
         show: this.props.isadmin && config.showUniversalLoginDebug,
         important: false
-      },
-      {
-        label: "AppAdmin",
-        location: "appadmin",
-        icon: "screwdriver",
-        show: config.showAppAdmin,
-        highlight: "appadminelement"
       },
       {
         label: "Admin",
@@ -361,6 +379,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
     ];
 
     const filteredLicences0 = licences.filter(licence => {
+      // Make sure that every License has an index
+      if (licence.layoutvertical === null) {
+        licence.layoutvertical = maxValue + 1;
+      }
+
       if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
         return false;
       }
@@ -486,7 +509,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
               <li className={`sidebar-main ${sidebarOpen ? "" : "sidebar-nav-small"}`}>
                 <ul>{sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}</ul>
 
-                {/* 
+                {/*
               <li
                 className="sidebar-link"
                 style={
@@ -681,16 +704,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
                           .sort((a, b) => a.layoutvertical - b.layoutvertical)
                           .filter((_, index) => (showMoreApps ? true : index < 5))
                           .map(licence => {
-                            const maxValue = filteredLicences.reduce(
-                              (acc, cv) => Math.max(acc, cv.layoutvertical),
-                              0
-                            );
-
-                            // Make sure that every License has an index
-                            if (licence.layoutvertical === null) {
-                              licence.layoutvertical = maxValue + 1;
-                            }
-
                             return (
                               <SidebarLink
                                 key={`ServiceLogo-${licence.id}`}

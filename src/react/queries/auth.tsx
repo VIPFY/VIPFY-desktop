@@ -43,6 +43,7 @@ export const fetchLicences = gql`
       disabled
       layoutvertical
       layouthorizontal
+      options
       boughtplanid {
         id
         alias
