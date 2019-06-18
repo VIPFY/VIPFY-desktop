@@ -1,16 +1,15 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { graphql, compose, Query, withApollo } from "react-apollo";
+import * as Dropzone from "react-dropzone";
 
 import LoadingDiv from "../../components/LoadingDiv";
-import GenericInputForm from "../../components/GenericInputForm";
 import UserPicture from "../UserPicture";
 import Duration from "../../common/duration";
 
 import { CHANGE_PASSWORD } from "../../mutations/auth";
 import { AppContext, concatName, filterError } from "../../common/functions";
 import { me } from "../../queries/auth";
-import { QUERY_USER } from "../../queries/user";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -20,7 +19,10 @@ import Consent from "../../popups/universalPopups/Consent";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
-    updateProfilePic(file: $file)
+    updateProfilePic(file: $file) {
+      id
+      profilepicture
+    }
   }
 `;
 
@@ -38,10 +40,11 @@ interface State {
   oldpassword: string;
   newpassword: string;
   new2password: string;
-  pwconfirm: Boolean;
-  networking: Boolean;
-  errorupdate: Boolean;
+  pwconfirm: boolean;
+  networking: boolean;
+  errorupdate: boolean;
   consentPopup: boolean;
+  loading: boolean;
 }
 
 class PersonalData extends React.Component<Props, State> {
@@ -54,22 +57,21 @@ class PersonalData extends React.Component<Props, State> {
     pwconfirm: false,
     networking: true,
     errorupdate: false,
+    loading: false,
     consentPopup: false
   };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
-  uploadPic = async ({ picture }) => {
+  uploadPic = async (picture: File) => {
     try {
-      await this.props.updatePic({ variables: { file: picture }, refetchQueries: ["me"] });
-      this.props.client.query({ query: me, fetchPolicy: "network-only" });
-      this.props.client.query({
-        query: QUERY_USER,
-        variables: { userid: this.props.id },
-        fetchPolicy: "network-only"
-      });
-      return true;
+      await this.setState({ loading: true });
+      await this.props.updatePic({ variables: { file: picture } });
+
+      await this.setState({ loading: false });
     } catch (err) {
+      await this.setState({ loading: false });
+
       throw new Error(filterError(err));
     }
   };
@@ -100,16 +102,7 @@ class PersonalData extends React.Component<Props, State> {
           if (error) {
             return <div>Error loading data</div>;
           }
-          const {
-            firstname,
-            middlename,
-            lastname,
-            title,
-            birthday,
-            language,
-            createdate,
-            tutorialprogress
-          } = data.me;
+          const { firstname, middlename, lastname, title, createdate } = data.me;
 
           // Just to be on the safe side
           let consent = "not given";
@@ -122,7 +115,7 @@ class PersonalData extends React.Component<Props, State> {
 
           return (
             <AppContext.Consumer>
-              {({ showPopup, addRenderElement, setreshowTutorial }) => {
+              {({ addRenderElement, setreshowTutorial }) => {
                 const information = [
                   {
                     label: "Name",
@@ -131,65 +124,6 @@ class PersonalData extends React.Component<Props, State> {
                   //{ label: "Language", data: language },
                   { label: "User for", data: <Duration timestamp={parseInt(createdate)} /> }
                 ];
-
-                const picProps: {
-                  fields: object[];
-                  handleSubmit: Function;
-                  submittingMessage: string;
-                } = {
-                  fields: [
-                    {
-                      name: "picture",
-                      type: "picture",
-                      required: true
-                    }
-                  ],
-                  handleSubmit: this.uploadPic,
-                  submittingMessage: "Uploading Picture... "
-                };
-
-                const passwordProps = {
-                  fields: [
-                    {
-                      type: "password",
-                      name: "pw",
-                      icon: "key",
-                      label: "Current Password",
-                      placeholder: "Your current Password",
-                      required: true
-                    },
-                    {
-                      type: "password",
-                      name: "newPw",
-                      icon: "key",
-                      label: "New Password",
-                      placeholder: "Your new Password",
-                      required: true
-                    },
-                    {
-                      type: "password",
-                      name: "confirmPw",
-                      icon: "key",
-                      label: "Confirm Password",
-                      placeholder: "Enter new Password again",
-                      required: true
-                    }
-                  ],
-                  submittingMessage: "Updating Password... ",
-                  handleSubmit: this.uploadPassword
-                };
-
-                const picPopup: { header: string; body: Function; props: object } = {
-                  header: "Upload a Profile Picture",
-                  body: GenericInputForm,
-                  props: picProps
-                };
-
-                const passwordPopup = {
-                  header: "Change Password",
-                  body: GenericInputForm,
-                  props: passwordProps
-                };
 
                 return (
                   <div
@@ -205,16 +139,26 @@ class PersonalData extends React.Component<Props, State> {
                       <span>Personal Data</span>
                     </div>
                     <div className={`inside-profile ${this.state.show ? "in" : "out"}`}>
-                      <div
-                        className="pic-holder" //{`pic-holder ${this.state.show ? "in" : "out"}`}
-                        onClick={() => showPopup(picPopup)}>
-                        <UserPicture
-                          size="pic"
-                          unitid={this.props.id}
-                          updateable={true}
-                          addRenderElement={addRenderElement}
-                          elementName="profilePicture"
-                        />
+                      <div className="pic-holder">
+                        <Dropzone
+                          disabled={this.state.loading}
+                          style={{
+                            width: "unset",
+                            height: "unset",
+                            border: "none"
+                          }}
+                          accept="image/*"
+                          type="file"
+                          multiple={false}
+                          onDrop={([file]) => this.uploadPic(file)}>
+                          <UserPicture
+                            size="pic"
+                            unitid={this.props.id}
+                            updateable={true}
+                            addRenderElement={addRenderElement}
+                            elementName="profilePicture"
+                          />
+                        </Dropzone>
                       </div>
 
                       <div className="information">

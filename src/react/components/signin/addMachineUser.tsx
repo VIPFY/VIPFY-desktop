@@ -25,7 +25,7 @@ class AddMachineUser extends React.Component<Props, State> {
         <div className="holder">
           <div className="logo" />
           <img
-            src={`${__dirname}/../../../images/welcome_back.png`}
+            src={`${__dirname}/../../../images/login_new_user.png`}
             className="illustration-login"
           />
 

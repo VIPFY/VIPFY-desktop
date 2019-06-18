@@ -10,7 +10,6 @@ import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
 import LoadingDiv from "./components/LoadingDiv";
-import Login from "./pages/login";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
@@ -225,7 +224,6 @@ class App extends React.Component<AppProps, AppState> {
               fullname: `${data.me.firstname} ${data.me.lastname}`,
               profilepicture: data.me.profilepicture
             });
-
             store.set("accounts", machineuserarray);
 
             return (

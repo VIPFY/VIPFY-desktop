@@ -11,6 +11,7 @@ interface Props {
   startvalue?: string;
   width?: string;
   disabled?: Boolean;
+  focus?: Boolean;
   onEnter?: Function;
 }
 
@@ -21,6 +22,7 @@ interface State {
   eyeopen: Boolean;
   notypeing: Boolean;
   errorfaded: Boolean;
+  currentid: string;
 }
 
 class UniversalTextInput extends React.Component<Props, State> {
@@ -30,11 +32,14 @@ class UniversalTextInput extends React.Component<Props, State> {
     inputFocus: false,
     eyeopen: false,
     notypeing: true,
-    errorfaded: false
+    errorfaded: false,
+    currentid: ""
   };
 
   componentWillReceiveProps = props => {
-    //console.log("Will Update", props);
+    if (this.props.id != "" && this.props.id != props.id) {
+      this.setState({ value: "", currentid: props.id });
+    }
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 
@@ -70,9 +75,10 @@ class UniversalTextInput extends React.Component<Props, State> {
   render() {
     return (
       <div
-        className="universalLabelInput"
+        className={`universalLabelInput ${this.props.disabled ? "disabled" : ""}`}
         style={this.props.width ? { width: this.props.width } : {}}>
         <input
+          autoFocus={this.props.focus || false}
           id={this.props.id}
           type={
             this.props.type == "password"
