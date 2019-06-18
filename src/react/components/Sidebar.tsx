@@ -34,7 +34,6 @@ export type SidebarProps = {
 };
 
 interface State {
-  searchstring: string;
   sortorientation: boolean;
   sortstring: string;
   showNotification: boolean;
