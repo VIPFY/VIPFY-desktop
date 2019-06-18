@@ -384,8 +384,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "lmanager/:serviceid", component: ServiceDetails },
       { path: "dmanager/:teamid", component: TeamDetails },
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
-      { path: "ssoconfig", component: SsoConfigurator },
-      { path: "ssotest", component: SsoTester },
       { path: "universallogin", component: UniversalLogin }
     ];
 

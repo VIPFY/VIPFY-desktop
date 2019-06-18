@@ -326,15 +326,16 @@ class Sidebar extends React.Component<SidebarProps, State> {
       if (licence.layoutvertical === null) {
         licence.layoutvertical = maxValue + 1;
       }
-
       if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
         return false;
       }
+
       let one = false,
         two = false;
       if (this.state.searchstring === "") {
         return true;
       }
+
       if (
         licence.boughtplanid.alias !== null &&
         !licence.boughtplanid.alias.toLowerCase().includes(this.state.searchstring.toLowerCase())

@@ -183,7 +183,7 @@ class AddTeam extends React.Component<Props, State> {
                   }
                 : team.internaldata && team.internaldata.color
                 ? { backgroundColor: team.internaldata.color }
-                : {}
+                : { backgroundColor: "#5D76FF" }
             }>
             {team.profilepicture
               ? ""
@@ -444,7 +444,7 @@ class AddTeam extends React.Component<Props, State> {
                                   }
                                 : team.internaldata && team.internaldata.color
                                 ? { backgroundColor: team.internaldata.color }
-                                : {}
+                                : { backgroundColor: "#5D76FF" }
                             }>
                             {team.profilepicture
                               ? ""

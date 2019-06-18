@@ -28,8 +28,6 @@ class AppUsageCompanywideChartInner extends React.Component<Props, State> {
       return <div>Use any app to see statistics about app usage here</div>;
     }
 
-    console.log("DATA", this.props.data.fetchMonthlyAppUsage);
-
     const d = this.props.data.fetchMonthlyAppUsage;
 
     const labels = d.map(u => u.app.name);
@@ -42,8 +40,6 @@ class AppUsageCompanywideChartInner extends React.Component<Props, State> {
 
     const series = [{ data }];
     const height = d.length * 25 + 100;
-
-    console.log("DATA RESULT", series, height, numTicks);
 
     return (
       <Chart

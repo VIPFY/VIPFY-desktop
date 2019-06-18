@@ -156,9 +156,9 @@ class EmployeeDetails extends React.Component<Props, State> {
             </div>
             <div className="tableEnd">
               <div className="editOptions">
-                <i className="fal fa-external-link-alt" />
+                <i className="fal fa-external-link-alt editbuttons" />
                 <i
-                  className="fal fa-trash-alt"
+                  className="fal fa-trash-alt editbuttons"
                   onClick={e => {
                     e.stopPropagation();
                     this.setState({ delete: true });

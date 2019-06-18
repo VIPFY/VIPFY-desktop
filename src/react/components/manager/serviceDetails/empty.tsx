@@ -74,9 +74,9 @@ class Empty extends React.Component<Props, State> {
             </div>
             <div className="tableEnd">
               <div className="editOptions">
-                <i className="fal fa-chart-network" title="Distribute" />
+                <i className="fal fa-chart-network editbuttons" title="Distribute" />
                 <i
-                  className="fal fa-trash-alt"
+                  className="fal fa-trash-alt editbuttons"
                   title="Delete"
                   onClick={e => {
                     e.stopPropagation();

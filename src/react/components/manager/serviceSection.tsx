@@ -143,9 +143,7 @@ class ServiceSection extends React.Component<Props, State> {
               <div className="tableColumnSmall">
                 <h1>Price</h1>
               </div>
-              <div className="tableColumnSmall">
-                <h1>Average Usage</h1>
-              </div>
+              <div className="tableColumnSmall">{/*<h1>Average Usage</h1>*/}</div>
             </div>
             <div className="tableEnd">
               <UniversalButton
