@@ -240,7 +240,11 @@ class PopupAddLicence extends React.Component<Props, State> {
             justifyContent: "space-between",
             alignItems: "center"
           }}>
-          <UniversalButton type="low" onClick={() => this.props.cancel()} label="Cancel" />
+          <UniversalButton
+            type="low"
+            onClick={() => this.props.cancel()}
+            label={this.props.maxstep && this.props.maxstep > 1 ? "Skip" : "Cancel"}
+          />
           {this.props.maxstep && this.props.maxstep > 1 && this.printSteps()}
           <UniversalButton
             type="high"
