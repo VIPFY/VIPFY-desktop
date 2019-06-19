@@ -34,7 +34,6 @@ export type SidebarProps = {
 };
 
 interface State {
-  searchstring: string;
   sortorientation: boolean;
   sortstring: string;
   showNotification: boolean;
@@ -323,8 +322,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     const filteredLicences0 = licences.filter(licence => {
       // Make sure that every License has an index
-      if (licence.layoutvertical === null) {
-        licence.layoutvertical = maxValue + 1;
+      if (licence.sidebar === null) {
+        licence.sidebar = maxValue + 1;
       }
       if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
         return false;

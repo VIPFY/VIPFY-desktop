@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import EditLicence from "../popups/EditLicence";
 import { iconPicFolder } from "../common/constants";
@@ -12,6 +12,7 @@ import PopupBase from "../popups/universalPopups/popupBase";
 import GenericInputField from "./GenericInputField";
 import UniversalButton from "./universalButtons/universalButton";
 import UniversalTextInput from "./universalForms/universalTextInput";
+import { UPDATE_LAYOUT } from "../mutations/auth";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -34,6 +35,8 @@ interface Props {
   setPreview: (preview: Preview) => void;
   preview: Preview;
   setTeam?: Function;
+  position: number;
+  updateLayout: Function;
 }
 
 interface State {
@@ -54,6 +57,34 @@ class AppTile extends React.Component<Props, State> {
     email: "",
     password: ""
   };
+
+  async componentDidMount() {
+    // Make sure that every License has an index
+    if (this.props.licence.dashboard === null) {
+      try {
+        await this.props.updateLayout({
+          variables: { layout: { id: this.props.licence.id, dashboard: this.props.position } },
+          optimisticResponse: {
+            __typename: "Mutation",
+            updateLayout: true
+          },
+          update: proxy => {
+            const data = proxy.readQuery({ query: fetchLicences });
+
+            data.fetchLicences.forEach(licence => {
+              if (licence.id == this.props.licence.id) {
+                licence.dashboard = this.props.position;
+              }
+
+              proxy.writeQuery({ query: fetchLicences, data });
+            });
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
 
   render() {
     // prettier-ignore
@@ -243,4 +274,4 @@ class AppTile extends React.Component<Props, State> {
   }
 }
 
-export default AppTile;
+export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppTile);

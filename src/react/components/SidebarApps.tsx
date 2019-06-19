@@ -147,6 +147,13 @@ class SidebarApps extends React.Component<Props, State> {
             {showApps &&
               licences.length > 0 &&
               licences
+                .filter(licence => {
+                  if (licence.boughtplanid.alias) {
+                    return licence.boughtplanid.alias.includes(this.state.searchString);
+                  } else {
+                    return licence.boughtplanid.planid.appid.name.includes(this.state.searchString);
+                  }
+                })
                 .sort((a, b) => a.sidebar - b.sidebar)
                 .filter((_, index) => (showMoreApps ? true : index < 5))
                 .map(licence => {

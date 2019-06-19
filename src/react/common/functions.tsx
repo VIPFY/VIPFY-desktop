@@ -2,6 +2,7 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import moment = require("moment");
 
 export function showStars(stars) {
   const starsArray: JSX.Element[] = [];
@@ -137,21 +138,6 @@ export const refetchQueries = async (client: ApolloClient<InMemoryCache>, querie
   });
 };
 
-export const layoutChange = (licences, dragItem, dropItem, direction) => {
-  const dragged = licences.find(licence => licence.id == dragItem);
-  const droppedOn = licences.find(licence => licence.id == dropItem);
-
-  dragged.prevLicence.nextLicence = dragged.nextLicence;
-  dragged.nextLicence.prevLicence = dragged.prevLicence;
-  dragged.prevLicence = droppedOn;
-  dragged.nextLicence = droppedOn.nextLicence;
-  droppedOn.nextLicence = dragged;
-  return [
-    { id: dragged!.id, [direction]: droppedOn![direction] },
-    { id: droppedOn!.id, [direction]: dragged![direction] }
-  ];
-};
-
 export const layoutUpdate = (licences, dragItem, dropItem) => {
   const dragged = licences.find(licence => licence.id == dragItem);
 
@@ -164,3 +150,39 @@ export const layoutUpdate = (licences, dragItem, dropItem) => {
 
   return newLicences;
 };
+
+/**
+ * Filters and sorts licences
+ * @param licences {Licence[]} An array of the users licences
+ * @param property {string} The component for which it should be sorted. Like sidebar or dashboard
+ *
+ * @returns The sorted Licence Array
+ */
+export const filterAndSort = (licences, property) =>
+  licences
+    .filter(licence => {
+      if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+        return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      if (a[property] === null) {
+        return 1;
+      }
+
+      if (b[property] === null) {
+        return -1;
+      }
+
+      if (a[property] < b[property]) {
+        return -1;
+      }
+
+      if (a[property] > b[property]) {
+        return 1;
+      }
+
+      return 0;
+    });
