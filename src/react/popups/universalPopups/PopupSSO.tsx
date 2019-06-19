@@ -159,7 +159,13 @@ class PopupSSO extends React.Component<Props, State> {
               id="url"
               label="Url"
               type="text"
-              modifyValue={url}
+              modifyValue={value => {
+                if (value.startsWith("https://") || value.startsWith("http://")) {
+                  return value.substring(value.search(/:\/\/{1}/) + 3);
+                } else {
+                  return value;
+                }
+              }}
               startvalue={url}
               errorhint={this.state.error}
               errorEvaluation={!!this.state.error}
