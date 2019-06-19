@@ -99,6 +99,9 @@ interface Props {
   toggleSidebar: Function;
   toggleChat: Function;
   id: number;
+  viewID: number;
+  views: Object;
+  openInstances: Object;
 }
 
 interface State {
@@ -219,6 +222,7 @@ class Navigation extends React.Component<Props, State> {
   toggleSearch = searchFocus => this.setState({ searchFocus });
 
   render() {
+    console.log("NAVProps", this.state, this.props);
     const { chatOpen, sidebarOpen, data } = this.props;
 
     if (this.props.loading) {
