@@ -13,6 +13,7 @@ interface Props {
   disabled?: Boolean;
   focus?: Boolean;
   onEnter?: Function;
+  modifyValue?: Function;
 }
 
 interface State {
@@ -40,6 +41,7 @@ class UniversalTextInput extends React.Component<Props, State> {
     if (this.props.id != "" && this.props.id != props.id) {
       this.setState({ value: "", currentid: props.id });
     }
+
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 
@@ -58,11 +60,17 @@ class UniversalTextInput extends React.Component<Props, State> {
   changeValue(e) {
     e.preventDefault();
     clearTimeout(this.timeout);
+    let value = e.target.value;
+
     if (this.props.livevalue) {
-      this.props.livevalue(e.target.value);
+      this.props.livevalue(value);
     }
 
-    this.setState({ value: e.target.value, notypeing: false });
+    if (this.props.modifyValue) {
+      value = this.props.modifyValue(value);
+    }
+
+    this.setState({ value, notypeing: false });
     this.timeout = setTimeout(() => this.setState({ notypeing: true }), 250);
   }
 
