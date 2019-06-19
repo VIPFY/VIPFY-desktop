@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import moment = require("moment");
 import UniversalButton from "../components/universalButtons/universalButton";
 
@@ -31,6 +32,9 @@ class DatePicker extends React.PureComponent<Props, State> {
   };
 
   componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
+    document.addEventListener("click", this.handleClickOutside, true);
+
     if (this.props.value) {
       this.setState({
         touched: true,
@@ -40,6 +44,25 @@ class DatePicker extends React.PureComponent<Props, State> {
       });
     }
   }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+    document.removeEventListener("click", this.handleClickOutside, true);
+  }
+
+  handleClickOutside = e => {
+    const domNode = ReactDOM.findDOMNode(this);
+
+    if (!domNode || !domNode.contains(e.target)) {
+      this.setState({ show: false });
+    }
+  };
+
+  listenKeyboard = e => {
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.setState({ show: false });
+    }
+  };
 
   setDate = ({ day, month, year }) => {
     const value = `${year}-${month < 10 ? "0" : ""}${month}-${day < 10 ? "0" : ""}${day}`;
@@ -208,7 +231,10 @@ class DatePicker extends React.PureComponent<Props, State> {
               ))}
 
               {prevDays.map((time, key) => (
-                <span onClick={async () => this.setDate(time)} className="gray-day" key={key}>
+                <span
+                  onClick={async () => this.setDate(time)}
+                  className={`gray-day ${this.props.minDate ? "disabled" : ""}`}
+                  key={key}>
                   {time.day}
                 </span>
               ))}
@@ -216,7 +242,12 @@ class DatePicker extends React.PureComponent<Props, State> {
               {days.map((time, key) => (
                 <span
                   onClick={() => this.setDate(time)}
-                  className={`day ${this.state.day === time.day ? "active" : ""}`}
+                  className={`day ${this.state.day === time.day ? "active" : ""} ${
+                    this.props.minDate &&
+                    moment(`${time.year}-${time.month}-${time.day}`).isBefore(this.props.minDate)
+                      ? "disabled"
+                      : ""
+                  }`}
                   key={key}>
                   {time.day}
                 </span>

@@ -24,9 +24,8 @@ $date-padding-sides: 16px;
 
   &-popup {
     cursor: auto;
-    position: absolute;
-    top: 46px;
-    left: -50px;
+    position: fixed;
+    margin: 13px 0 0 -74px;
     width: calc(312px - $date-padding-sides * 2);
     height: calc(368px - 32px - $date-padding-top - $date-padding-bottom);
     box-shadow: 0 0 10px rgba(#000000, 0.08);
@@ -95,6 +94,20 @@ $date-padding-sides: 16px;
       .gray-day {
         @extend .day;
         color: #A7AEB5ff;
+      }
+
+      .disabled {
+        cursor: not-allowed;
+        color: #A7AEB5ff;
+
+        &:hover::after {
+          height: 0;
+          width: 0;
+          background: #A7AEB5ff;
+          box-shadow: none;
+          border-radius: 0;
+          z-index: 0;
+        }
       }
 
       .universalButton {
