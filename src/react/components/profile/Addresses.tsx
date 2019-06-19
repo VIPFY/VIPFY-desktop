@@ -243,11 +243,11 @@ class Addresses extends React.Component<Props, State> {
                                 <tr className="addresses-list" key={id}>
                                   {this.state.edit != id ? (
                                     <React.Fragment>
-                                      <td>{street}</td>
+                                      <td>{street ? street : "not set"}</td>
                                       <td>{zip ? zip : "not set"}</td>
-                                      <td>{city}</td>
+                                      <td>{city ? city : "not set"}</td>
                                       <td>{country}</td>
-                                      <td>{description}</td>
+                                      <td>{description ? description : "not set"}</td>
                                       {/*<td>{priority}</td>*/}
                                       {/* <span className="tags">{normalizedTags}</span> */}
                                     </React.Fragment>
