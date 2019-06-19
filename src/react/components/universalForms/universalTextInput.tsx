@@ -13,6 +13,7 @@ interface Props {
   disabled?: Boolean;
   focus?: Boolean;
   onEnter?: Function;
+  modifyValue?: Function;
 }
 
 interface State {
@@ -40,6 +41,11 @@ class UniversalTextInput extends React.Component<Props, State> {
     if (this.props.id != "" && this.props.id != props.id) {
       this.setState({ value: "", currentid: props.id });
     }
+
+    if (this.props.forceValue != null && this.props.forceValue != props.forceValue) {
+      this.setState({ value: this.props.forceValue });
+    }
+
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 

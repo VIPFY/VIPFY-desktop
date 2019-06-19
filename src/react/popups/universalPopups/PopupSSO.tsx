@@ -81,7 +81,6 @@ class PopupSSO extends React.Component<Props, State> {
     const { email, password, url, name, logo, protocol } = this.state;
 
     const check = url.split(".");
-    console.log("LOG: PopupSSO -> handleSubmit -> check", check);
 
     if (check.length < 2) {
       this.setState({ error: "This is not a valid url" });
@@ -160,15 +159,18 @@ class PopupSSO extends React.Component<Props, State> {
               id="url"
               label="Url"
               type="text"
-              startvalue=""
+              modifyValue={url}
+              startvalue={url}
               errorhint={this.state.error}
               errorEvaluation={!!this.state.error}
               livevalue={value => {
-                if (value.startsWith("https:") || value.startsWith("http:")) {
-                  this.setState({ error: "Url can't start with http:// or https://" });
-                } else {
-                  this.setState({ url: value, error: "" });
+                const updates = { url: value };
+
+                if (value.startsWith("https://") || value.startsWith("http://")) {
+                  updates.protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
+                  updates.url = value.substring(value.search(/:\/\/{1}/) + 3);
                 }
+                this.setState(updates);
               }}
             />
           </div>
