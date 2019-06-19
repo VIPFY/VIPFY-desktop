@@ -3,7 +3,6 @@ import gql from "graphql-tag";
 import PopupBase from "./popupBase";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { randomPassword } from "../../common/passwordgen";
 import * as Dropzone from "react-dropzone";
 
 const UPDATE_PIC = gql`
@@ -23,25 +22,77 @@ interface Props {
 
 interface State {
   name: string;
-  loginurl: string;
+  url: string;
   email: string;
   password: string;
   randomkey: string;
   logo: File | null;
+  protocol: string;
+  error: string;
 }
 
 class PopupSSO extends React.Component<Props, State> {
   state = {
     name: "",
-    loginurl: "",
+    url: "",
     email: "",
     password: "",
     randomkey: "",
-    logo: null
+    logo: null,
+    error: "",
+    protocol: "https://"
+  };
+
+  listenKeyboard = e => {
+    const { email, password, url, name, error } = this.state;
+
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.props.cancel();
+    } else if (
+      (e.key === "Enter" || e.keyCode === 13) &&
+      email &&
+      password &&
+      url &&
+      name &&
+      !error &&
+      e.srcElement.textContent != "Cancel"
+    ) {
+      this.handleSubmit();
+    }
+  };
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+  }
+
+  toggleProtocol = e => {
+    this.setState({ protocol: e.target.value });
+  };
+
+  handleSubmit = () => {
+    if (this.state.error) {
+      return;
+    }
+
+    const { email, password, url, name, logo, protocol } = this.state;
+
+    const check = url.split(".");
+    console.log("LOG: PopupSSO -> handleSubmit -> check", check);
+
+    if (check.length < 2) {
+      this.setState({ error: "This is not a valid url" });
+    } else {
+      this.props.add({ email, password, loginurl: protocol + url, name, logo });
+    }
   };
 
   render() {
-    const { email, password, loginurl, name, logo } = this.state;
+    const { email, password, url, name, logo, protocol } = this.state;
+    const protocols = ["http://", "https://"];
 
     return (
       <PopupBase
@@ -83,23 +134,6 @@ class PopupSSO extends React.Component<Props, State> {
             </Dropzone>
           </div>
 
-          {/* <React.Fragment>
-                <UniversalTextInput
-                  width="100%"
-                  id="subdomain"
-                  label="Subdomain"
-                  startvalue=""
-                  livevalue={value => this.setState({ subdomain: value })}>
-                  <span className="small">
-                    Please insert your subdomain.
-                    <br />
-                    {options.predomain}YOUR SUBDOMAIN
-                    {options.afterdomain}
-                  </span>
-                </UniversalTextInput>
-                <div style={{ width: "100%", height: "24px" }} />
-              </React.Fragment> */}
-
           <UniversalTextInput
             width="100%"
             id="name"
@@ -107,14 +141,38 @@ class PopupSSO extends React.Component<Props, State> {
             startvalue=""
             livevalue={value => this.setState({ name: value })}
           />
-          <UniversalTextInput
-            width="100%"
-            id="url"
-            label="URL"
-            type="text"
-            startvalue=""
-            livevalue={value => this.setState({ loginurl: value })}
-          />
+
+          <div style={{ gridColumn: "2 / -1", display: "flex" }}>
+            <select
+              className="universalTextInput"
+              style={{ width: "75px" }}
+              value={protocol}
+              onChange={this.toggleProtocol}>
+              {protocols.map(prot => (
+                <option value={prot} key={prot}>
+                  {prot}
+                </option>
+              ))}
+            </select>
+
+            <UniversalTextInput
+              width="166px"
+              id="url"
+              label="Url"
+              type="text"
+              startvalue=""
+              errorhint={this.state.error}
+              errorEvaluation={!!this.state.error}
+              livevalue={value => {
+                if (value.startsWith("https:") || value.startsWith("http:")) {
+                  this.setState({ error: "Url can't start with http:// or https://" });
+                } else {
+                  this.setState({ url: value, error: "" });
+                }
+              }}
+            />
+          </div>
+
           <UniversalTextInput
             width="100%"
             id="email"
@@ -137,8 +195,8 @@ class PopupSSO extends React.Component<Props, State> {
         <UniversalButton
           type="high"
           label="Add"
-          disabled={!email || !password || !loginurl || !name}
-          onClick={() => this.props.add({ email, password, loginurl, name, logo })}
+          disabled={!email || !password || !url || !name || !!this.state.error}
+          onClick={this.handleSubmit}
         />
       </PopupBase>
     );
