@@ -15,6 +15,7 @@ import { APPLY_PROMOCODE } from "../../mutations/auth";
 import { FETCH_COMPANY } from "../../queries/departments";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import Tooltip from "react-tooltip-lite";
 
 const UPDATE_PIC = gql`
   mutation onUpdatePic($file: Upload!) {
@@ -91,7 +92,7 @@ class CompanyData extends React.Component<Props, State> {
       body: GenericInputForm,
       props: picProps
     };
-    console.log(this.state);
+
     return (
       <AppContext.Consumer>
         {({ showPopup }) => (
@@ -112,30 +113,15 @@ class CompanyData extends React.Component<Props, State> {
                       className={`button-hide fas ${
                         this.state.show ? "fa-angle-left" : "fa-angle-down"
                       }`}
-                      //onClick={this.toggle}
                     />
                     <span>Company Data</span>
                   </div>
                   <div className={`inside ${this.state.show ? "in" : "out"}`}>
                     <div className="company-overview">
                       <div className="pic-holder" onClick={() => showPopup(picPopup)}>
-                        {/*<img
-                        style={{ position: "relative" }}
-                        src={`${unitPicFolder}${
-                          fetchCompany.profilepicture ? fetchCompany.profilepicture : "default.png"
-                        } `}
-                        onClick={() => showPopup(picPopup)}
-                        className="pic"
-                        alt="Picture of your Company"
-                      />*/}
                         <div
                           className="imagehoverable pic"
                           style={{
-                            /*backgroundImage: `url(${unitPicFolder}${
-                              fetchCompany.profilepicture
-                                ? fetchCompany.profilepicture
-                                : "default.png"
-                            })`,*/
                             backgroundImage: fetchCompany.profilepicture
                               ? fetchCompany.profilepicture.indexOf("/") != -1
                                 ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
@@ -149,83 +135,90 @@ class CompanyData extends React.Component<Props, State> {
                           }}>
                           <div className="imagehover">
                             <i className="fal fa-camera" />
-                            <span>Updaten</span>
+                            <span>Update</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="information">
-                        <ul>
-                          {Object.keys(fetchCompany).map((info, key) => {
-                            if (info.match(/(unit)|(__typename)|(profilepicture)/gi)) {
-                              return;
-                            } else if (info == "legalinformation") {
-                              if (fetchCompany[info] && fetchCompany[info].vatId) {
-                                return (
-                                  <li key={key}>
-                                    <label>Vatnumber:</label>
-                                    <span>{fetchCompany[info].vatId}</span>
-                                  </li>
-                                );
-                              } else {
-                                return;
-                              }
-                              // Function to map through legalinformation
-                              // return;
-                              // Object.keys(fetchCompany[info]).map(item => (
-                              //   <li key={item}>
-                              //     <label>
-                              //       {`${item.substr(0, 1).toLocaleUpperCase()}${item.substr(1)}`}:
-                              //     </label>
-                              //     <span>{fetchCompany[info][item]}</span>
-                              //   </li>
-                              // ));
-                            } else if (info == "promocode") {
+                      <ul className="information">
+                        {Object.keys(fetchCompany).map((info, key) => {
+                          const name = `${info.substr(0, 1).toLocaleUpperCase()}${info.substr(1)}`;
+
+                          if (info.match(/(unit)|(__typename)|(profilepicture)/gi)) {
+                            return;
+                          } else if (info == "legalinformation") {
+                            if (fetchCompany[info] && fetchCompany[info].vatId) {
                               return (
                                 <li key={key}>
-                                  <label>Promocode:</label>
-                                  {fetchCompany[info] ? (
-                                    <span>{fetchCompany[info]}</span>
-                                  ) : (
-                                    <span>
-                                      <form onSubmit={this.handleSubmit} className="inline-form">
-                                        <input
-                                          type="text"
-                                          disabled={this.state.submitting}
-                                          style={{ fontSize: "12px", color: "#000" }}
-                                          className="inline-searchbar"
-                                          value={this.state.promocode}
-                                          placeholder="Please enter a promocode"
-                                          onChange={e =>
-                                            this.setState({ promocode: e.target.value })
-                                          }
-                                        />
-                                        <button
-                                          disabled={this.state.submitting}
-                                          title="submit"
-                                          className="naked-button"
-                                          type="submit">
-                                          <i className="fal fa-barcode-alt" />
-                                        </button>
-                                      </form>
-                                      <span className="inline-error">{this.state.error}</span>
-                                    </span>
-                                  )}
+                                  <label>Vatnumber:</label>
+                                  <span>
+                                    {fetchCompany[info].vatId}
+                                    <Tooltip content="Please contact Support if you want to update your companies Vatnumber">
+                                      <i className="fal fa-question-circle" />
+                                    </Tooltip>
+                                  </span>
                                 </li>
                               );
                             } else {
-                              return (
-                                <li key={key}>
-                                  <label>
-                                    {`${info.substr(0, 1).toLocaleUpperCase()}${info.substr(1)}`}:
-                                  </label>
-                                  <span>{fetchCompany[info]}</span>
-                                </li>
-                              );
+                              return;
                             }
-                          })}
-                        </ul>
-                      </div>
+                            // Function to map through legalinformation
+                            // return;
+                            // Object.keys(fetchCompany[info]).map(item => (
+                            //   <li key={item}>
+                            //     <label>
+                            //       {`${item.substr(0, 1).toLocaleUpperCase()}${item.substr(1)}`}:
+                            //     </label>
+                            //     <span>{fetchCompany[info][item]}</span>
+                            //   </li>
+                            // ));
+                          } else if (info == "promocode" || info == "name") {
+                            return (
+                              <li key={key}>
+                                <label>{name}:</label>
+                                {fetchCompany[info] ? (
+                                  <span>
+                                    {fetchCompany[info]}
+                                    <Tooltip
+                                      content={`Please contact Support if you want to update this ${info}.`}>
+                                      <i className="fal fa-question-circle" />
+                                    </Tooltip>
+                                  </span>
+                                ) : (
+                                  <span>
+                                    <form onSubmit={this.handleSubmit} className="inline-form">
+                                      <input
+                                        type="text"
+                                        disabled={this.state.submitting}
+                                        style={{ fontSize: "12px", color: "#000" }}
+                                        className="inline-searchbar"
+                                        value={this.state.promocode}
+                                        placeholder="Please enter a promocode"
+                                        onChange={e => this.setState({ promocode: e.target.value })}
+                                      />
+                                      <button
+                                        disabled={this.state.submitting}
+                                        title="submit"
+                                        className="naked-button"
+                                        type="submit">
+                                        <i className="fal fa-barcode-alt" />
+                                      </button>
+                                    </form>
+                                    <span className="inline-error">{this.state.error}</span>
+                                  </span>
+                                )}
+                              </li>
+                            );
+                          } else {
+                            return (
+                              <li key={key}>
+                                <label>{name}:</label>
+                                <span> {fetchCompany[info]}</span>
+                              </li>
+                            );
+                          }
+                        })}
+                      </ul>
                     </div>
 
                     <Addresses showPopup={showPopup} company={fetchCompany.unit.id} inner={true} />
