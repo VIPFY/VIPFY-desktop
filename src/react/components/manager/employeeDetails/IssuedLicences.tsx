@@ -435,6 +435,7 @@ class IssuedLicences extends React.Component<Props, State> {
                         starttime: licence.starttime,
                         endtime: licence.endtime,
                         use: true,
+                        view: true,
                         tags: ["vacation"]
                       })
                     );

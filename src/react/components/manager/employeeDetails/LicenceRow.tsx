@@ -66,14 +66,6 @@ class LicenceRow extends React.Component<Props, State> {
 
     return (
       <div className="tableRow">
-        {this.props.hideCancel ? null : (
-          <button
-            className="naked-button table-cancel"
-            onClick={() => this.setState(INITIAL_STATE)}>
-            <i className="fal fa-times-circle" />
-          </button>
-        )}
-
         <div className="tableMain popup-lic">
           <div className="tableColumnSmall">
             <div
@@ -105,6 +97,13 @@ class LicenceRow extends React.Component<Props, State> {
               <div className="licenceInfoElement">
                 <i className="fal fa-user" title="Single Account" />
               </div>
+              {this.props.hideCancel ? null : (
+                <button
+                  className="naked-button table-cancel"
+                  onClick={() => this.setState(INITIAL_STATE)}>
+                  <i className="fal fa-times-circle" />
+                </button>
+              )}
             </div>
           </div>
 
