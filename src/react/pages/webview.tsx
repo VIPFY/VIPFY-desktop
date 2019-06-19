@@ -454,13 +454,57 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           error: "errorDetected",
           state: this.state,
           props: saveprops
+        }; */
+
+        const {
+          id,
+          isadmin,
+          licences
+          sidebBarOpen,
+          tutorialprogess,
+          viewID
+        } = this.props;
+        const {
+          appid,
+          currentUrl,
+          intervalId,
+          intervalId2,
+          key,
+          licenceId,
+          loggedIn,
+          options,
+          previousLicenceId,
+          showLoadingScreen,
+          t
+        } = this.state;
+        const licence = licences.fetchLicences.find(l => l.id == licenceId);
+
+        const data = {
+          id,
+          isadmin,
+          sidebBarOpen,
+          tutorialprogess,
+          viewID,
+          appid,
+          currentUrl,
+          intervalId,
+          intervalId2,
+          key,
+          licenceId,
+          loggedIn,
+          options,
+          previousLicenceId,
+          showLoadingScreen,
+          t,
+          licence,
+          message: "errorDetected"
         };
 
         try {
-          await logError({ variables: { data } });
+          await this.props.logError({ variables: { data } });
         } catch (err) {
           console.error(err);
-        }*/
+        }
         this.setState({
           error:
             // tslint:disable-next-line:max-line-length
@@ -501,8 +545,60 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       case "getLoginDetails": {
         console.log("GETDETAILS");
         let round = e.args[0];
-        /*if (round > 10) {
+        if (round > 10) {
           console.log("STOP RETRY Webview");
+
+          const {
+            id,
+            isadmin,
+            licences
+            sidebBarOpen,
+            tutorialprogess,
+            viewID
+          } = this.props;
+          const {
+            appid,
+            currentUrl,
+            intervalId,
+            intervalId2,
+            key,
+            licenceId,
+            loggedIn,
+            options,
+            previousLicenceId,
+            showLoadingScreen,
+            t
+          } = this.state;
+          const licence = licences.fetchLicences.find(l => l.id == licenceId);
+  
+          const data = {
+            id,
+            isadmin,
+            sidebBarOpen,
+            tutorialprogess,
+            viewID,
+            appid,
+            currentUrl,
+            intervalId,
+            intervalId2,
+            key,
+            licenceId,
+            loggedIn,
+            options,
+            previousLicenceId,
+            showLoadingScreen,
+            t,
+            licence,
+            message: "STOP RETRY"
+          };
+  
+          try {
+            await this.props.logError({ variables: { data } });
+          } catch (err) {
+            console.error(err);
+          }
+
+
           this.setState({
             error:
               "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
@@ -510,7 +606,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             loggedIn: true
           });
           this.hideLoadingScreen();
-        }*/
+        }
         console.log(round);
         let result = await this.props.client.query({
           query: gql`
