@@ -111,6 +111,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   sentResult = false;
 
   reset() {
+    console.log("RESET");
     session.fromPartition(this.props.partition).clearStorageData();
     this.loginState = {
       emailEntered: false,
@@ -169,6 +170,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     }
   }
   componentDidUpdate(prevProps: Props) {
+    console.log("DIDUPDATE");
     if (
       prevProps.loginUrl != this.props.loginUrl ||
       prevProps.speed != this.props.speed ||
@@ -213,6 +215,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   sendResult(w, delay) {
+    console.log("Send RESTULT");
     if (delay != 0) {
       this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
     }
@@ -243,7 +246,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   progressCallback() {
     this.progress += this.progressStep;
     this.progress = Math.min(1, this.progress);
-    console.log(this.progress);
+    console.log("PROCESS CALLBACK", this.progress);
     this.props.progress!(this.progress);
     if (
       this.loginState.emailEntered &&
@@ -267,7 +270,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   async onIpcMessage(e) {
-    //console.log("ipc", e);
+    console.log("ipc", e);
     //e.target.openDevTools();
     this.webview = e.target;
     switch (e.channel) {

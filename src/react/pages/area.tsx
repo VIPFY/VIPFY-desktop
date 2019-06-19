@@ -269,6 +269,11 @@ class Area extends React.Component<AreaProps, AreaState> {
     }));
   };
 
+  /*  setInstanceUrl = (viewID: number, url: string) => {
+    const view = this.state.webviews.find(view => view.key == viewID);
+    view.view.props.forceUrl = url;
+  }; */
+
   closeInstance = (viewID: number, licenceID: number) => {
     const position = this.state.webviews.findIndex(view => view.key == viewID);
 
@@ -391,6 +396,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       return <LoadingDiv text="Preparing Vipfy..." />;
     }
 
+    console.log("STATE", this.state, this.props);
+
     return (
       <div className="area">
         <SideBarContext.Provider value={this.state.sidebarOpen}>
@@ -429,6 +436,9 @@ class Area extends React.Component<AreaProps, AreaState> {
                         setApp={this.setApp}
                         toggleChat={this.toggleChat}
                         toggleSidebar={this.toggleSidebar}
+                        viewID={this.state.viewID}
+                        views={this.state.webviews}
+                        openInstances={this.state.openInstances}
                         {...this.props}
                         {...props}
                         {...res}
@@ -508,6 +518,33 @@ class Area extends React.Component<AreaProps, AreaState> {
               </div>
             )}
           />
+
+          <Route
+            exact
+            path="/area/app/:licenceid"
+            render={props => {
+              console.log("PROPS", props);
+              if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
+                this.setApp(props.match.params.licenceid);
+              }
+              return "";
+            }}
+          />
+          {/*<Route
+            exact
+            path="/area/app/:licenceid/:url"
+            render={props => {
+              console.log("PROPSURL", props);
+              if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
+                this.setApp(props.match.params.licenceid);
+              }
+              this.setInstanceUrl(
+                parseInt(Object.keys(this.state.openInstances[props.match.params.licenceid])[0]),
+                props.match.params.url
+              );
+              return "";
+            }}
+          />*/}
 
           <ViewHandler
             showView={this.state.viewID}

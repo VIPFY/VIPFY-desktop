@@ -123,11 +123,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           return console.log("Timeout", this.state.errorshowed, this.state.loggedIn);
         } else {
           const eventdata = { state: this.state, props: this.props };
-          await this.props.logError({ variables: { eventdata } });
-          this.setState({
+          //await this.props.logError({ variables: { eventdata } });
+          /*this.setState({
             error: "The Login takes too much time. Please check with our support.",
             loggedIn: true
-          });
+          });*/
         }
       }
     }, 30000);
@@ -219,7 +219,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   };
 
   private async switchApp(): Promise<void> {
-    //console.log(`SWITCH APP webview-${this.props.viewID}`, this.state);
+    console.log(`SWITCH APP webview-${this.props.viewID}`, this.state);
     const timeSpent: number[] = [];
     timeSpent[this.state.licenceId] = 0;
     this.sendTimeSpent(timeSpent);
@@ -293,12 +293,14 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   onDidNavigate(url: string): void {
     console.log("DidNavigate", url);
+    //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(url)}`);
     //this.setState(prevState => (prevState.currentUrl != url ? { currentUrl: url } : null));
     //this.showLoadingScreen();
   }
 
   onDidNavigateInPage(url: string): void {
     console.log("DidNavigateInPage", url);
+    //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(url)}`);
     //this.setState(prevState => (prevState.currentUrl != url ? { currentUrl: url } : null));
     //this.showLoadingScreen();
   }
@@ -363,6 +365,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     const protocol = require("url").parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
       //  shell.openExternal(e.url);
+
+      //TODO HISTORY
+      console.log("PUSH HISTORY");
+      //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
+
       if (e.url.indexOf("wchat") == -1) {
         this.setState({ currentUrl: e.url });
       }
@@ -418,9 +425,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
       case "interactionHappened":
         {
-          let interactions = this.state.interactions;
+          /*let interactions = this.state.interactions;
           interactions[this.state.planId] = new Date();
-          await this.setState({ interactions });
+          await this.setState({ interactions });*/
         }
         break;
       case "showLoading": {
@@ -442,7 +449,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       case "errorDetected": {
         console.log("errorDetected");
         // Create the error object
-        const { logError, client, ...saveprops } = this.props;
+        /*const { logError, client, ...saveprops } = this.props;
         const data = {
           error: "errorDetected",
           state: this.state,
@@ -453,7 +460,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           await logError({ variables: { data } });
         } catch (err) {
           console.error(err);
-        }
+        }*/
         this.setState({
           error:
             // tslint:disable-next-line:max-line-length
@@ -542,7 +549,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   render() {
-    //console.log(`RENDER webview-${this.props.viewID}`, this.state);
+    console.log(`RENDER webview-${this.props.viewID}`, this.state, this.props);
 
     let cssClass = "marginLeft";
     if (this.props.chatOpen) {
