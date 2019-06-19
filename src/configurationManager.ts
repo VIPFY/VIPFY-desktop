@@ -14,7 +14,7 @@ let config = {
   showMessageCenter: false,
   showBilling: true,
   showDomains: false,
-  showMarketplace: true,
+  showMarketplace: false,
   showAppAdmin: false,
   showAdmin: true,
   showSsoConfig: false,

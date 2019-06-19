@@ -271,7 +271,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Team Manager",
         location: "dmanager",
         icon: "user-tag",
-        show: true,
+        show: this.props.isadmin,
         important: false,
         highlight: "dmanager"
       },
@@ -279,7 +279,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Employee Manager",
         location: "emanager",
         icon: "users-cog",
-        show: true,
+        show: this.props.isadmin,
         important: false,
         highlight: "emanager"
       },
@@ -287,7 +287,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Service Manager",
         location: "lmanager",
         icon: "credit-card-blank",
-        show: true,
+        show: this.props.isadmin,
         important: false,
         highlight: "lmanager"
       },
