@@ -100,8 +100,8 @@ interface Props {
   toggleChat: Function;
   id: number;
   viewID: number;
-  views: Object;
-  openInstances: Object;
+  views: any[];
+  openInstances: any[];
 }
 
 interface State {
@@ -221,6 +221,34 @@ class Navigation extends React.Component<Props, State> {
 
   toggleSearch = searchFocus => this.setState({ searchFocus });
 
+  backFunction() {
+    if (
+      this.props.viewID != -1 &&
+      document.querySelector(`#webview-${this.props.viewID} webview`) &&
+      document.querySelector(`#webview-${this.props.viewID} webview`)!.canGoBack()
+    ) {
+      console.log("GO BACK IN SERIVCE");
+      document.querySelector(`#webview-${this.props.viewID} webview`)!.goBack();
+    } else {
+      console.log("GO BACK IN APP");
+      history.back();
+    }
+  }
+
+  forwardFunction() {
+    if (
+      this.props.viewID != -1 &&
+      document.querySelector(`#webview-${this.props.viewID} webview`) &&
+      document.querySelector(`#webview-${this.props.viewID} webview`)!.canGoForward()
+    ) {
+      console.log("GO FORWARD IN SERIVCE");
+      document.querySelector(`#webview-${this.props.viewID} webview`)!.goForward();
+    } else {
+      console.log("GO FORWARD IN APP");
+      history.forward();
+    }
+  }
+
   render() {
     console.log("NAVProps", this.state, this.props);
     const { chatOpen, sidebarOpen, data } = this.props;
@@ -261,9 +289,18 @@ class Navigation extends React.Component<Props, State> {
             <button
               type="button"
               className="naked-button genericButton"
-              onClick={() => history.back()}>
+              onClick={() => this.backFunction()}
+              style={{ float: "left", marginRight: "8px" }}>
               <span className="textButton" style={{ width: "unset" }}>
                 <i className="fal fa-long-arrow-left" style={{ paddingRight: "0.2em" }} />
+              </span>
+            </button>
+            <button
+              type="button"
+              className="naked-button genericButton"
+              onClick={() => this.forwardFunction()}>
+              <span className="textButton" style={{ width: "unset" }}>
+                <i className="fal fa-long-arrow-right" style={{ paddingRight: "0.2em" }} />
               </span>
             </button>
           </span>

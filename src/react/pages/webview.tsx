@@ -586,7 +586,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
 
     return (
-      <div className={cssClass}>
+      <div className={cssClass} id={`webview-${this.props.viewID}`}>
         {this.state.showLoadingScreen && (
           <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} />
         )}
