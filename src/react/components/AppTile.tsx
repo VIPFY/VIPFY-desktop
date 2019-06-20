@@ -95,7 +95,7 @@ class AppTile extends React.Component<Props, State> {
 
     return (
       <React.Fragment>
-        <AppContext>
+        <AppContext.Consumer>
           {({ showPopup }) => (
             <div
               draggable={true}
@@ -192,7 +192,7 @@ class AppTile extends React.Component<Props, State> {
               </div>
             </div>
           )}
-        </AppContext>
+        </AppContext.Consumer>
         {this.state.newpopup ? (
           <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
             {deleteLicenceAt => (
