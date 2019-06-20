@@ -91,7 +91,7 @@ class CompanyData extends React.Component<Props, State> {
       body: GenericInputForm,
       props: picProps
     };
-    console.log(this.state);
+
     return (
       <AppContext.Consumer>
         {({ showPopup }) => (
