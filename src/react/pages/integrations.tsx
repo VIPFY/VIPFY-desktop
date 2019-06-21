@@ -183,11 +183,9 @@ class Integrations extends React.Component<Props, AppPageState> {
 
   renderLoading(appsunfiltered) {
     if (appsunfiltered) {
-      //console.log("UF", appsunfiltered);
       const apps = appsunfiltered.filter(element =>
         element.name.toLowerCase().includes(this.state.searchstring.toLowerCase())
       );
-      //console.log("A", apps);
       apps.sort(function(a, b) {
         let nameA = a.name.toUpperCase(); // ignore upper and lowercase
         let nameB = b.name.toUpperCase(); // ignore upper and lowercase
