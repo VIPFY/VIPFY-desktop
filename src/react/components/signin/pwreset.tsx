@@ -4,6 +4,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import { forgotPassword } from "../../mutations/auth";
+import { emailRegex } from "../../common/constants";
 
 interface Props {
   type: string;
@@ -61,9 +62,9 @@ class PWReset extends React.Component<Props, State> {
                 width="312px"
                 label="Email"
                 livevalue={v => this.setState({ email: v })}
-                errorEvaluation={this.state.error != ""}
-                errorhint={this.state.error}
-                onEnter={() => this.sendMail()}
+                errorEvaluation={this.state.error != "" || !this.state.email.match(emailRegex)}
+                errorhint={this.state.error || "A valid Email looks like this john@vipfy.com"}
+                onEnter={this.sendMail}
               />
             </div>
 
@@ -76,8 +77,8 @@ class PWReset extends React.Component<Props, State> {
               <UniversalButton
                 label="Send"
                 type="high"
-                disabled={this.state.email == ""}
-                onClick={() => this.sendMail()}
+                disabled={this.state.email == "" || !this.state.email.match(emailRegex)}
+                onClick={this.sendMail}
               />
             </div>
 
