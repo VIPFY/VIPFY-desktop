@@ -123,15 +123,7 @@ class SelfSaving extends React.Component<Props, State> {
             <Mutation
               mutation={CREATE_OWN_APP}
               onCompleted={() => this.setState({ success: true })}
-              update={(cache, { data }) => {
-                const queryData = cache.readQuery({ query: fetchLicences });
-                queryData!.fetchLicences.push(data.createOwnApp);
-
-                cache.writeQuery({
-                  query: fetchLicences,
-                  data: { fetchLicences: queryData.fetchLicences }
-                });
-              }}
+              refetchQueries={[{ query: fetchLicences }]}
               onError={() => this.setState({ error: errorMessage })}>
               {(createOwnApp, { loading, data }) => (
                 <div className="hide-sso-webview">

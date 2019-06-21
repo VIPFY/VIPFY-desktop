@@ -189,6 +189,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
   render() {
     let { sidebarOpen, licences } = this.props;
 
+    if (!licences) {
+      licences = [];
+    }
+
     const maxValue = licences.reduce((acc, cv) => Math.max(acc, cv.sidebar), 0);
 
     const sidebarLinks = [
