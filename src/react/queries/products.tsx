@@ -388,3 +388,16 @@ export const fetchServiceLicences = gql`
     }
   }
 `;
+
+export const FETCH_MONTHLY_USAGE = gql`
+  query onFetchMonthlyAppUsage {
+    fetchMonthlyAppUsage {
+      app {
+        name
+        icon
+        color
+      }
+      totalminutes
+    }
+  }
+`;

@@ -1,6 +1,7 @@
 import * as React from "react";
-import { graphql, compose, Query } from "react-apollo";
-import gql from "graphql-tag";
+import { Query } from "react-apollo";
+import { FETCH_MONTHLY_USAGE } from "../../queries/products";
+
 import Chart from "react-apexcharts";
 import ResizeAware from "react-resize-aware";
 
@@ -136,19 +137,7 @@ class AppUsageCompanywideChartInner extends React.Component<Props, State> {
 function AppUsageCompanywideChart(props) {
   //console.log("PROPS", props);
   return (
-    <Query
-      query={gql`
-        query onFetchMonthlyAppUsage {
-          fetchMonthlyAppUsage {
-            app {
-              name
-              icon
-              color
-            }
-            totalminutes
-          }
-        }
-      `}>
+    <Query query={FETCH_MONTHLY_USAGE}>
       {({ data, loading, error }) => {
         if (loading) {
           return <div>Loading</div>;
