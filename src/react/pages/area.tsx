@@ -396,8 +396,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       return <LoadingDiv text="Preparing Vipfy..." />;
     }
 
-    console.log("STATE", this.state, this.props);
-
     return (
       <div className="area">
         <SideBarContext.Provider value={this.state.sidebarOpen}>
