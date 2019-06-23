@@ -272,7 +272,7 @@ class TeamOverview extends React.Component<Props, State> {
                 return `Error! ${error.message}`;
               }
 
-              //Sort teams
+              // Sort teams
               let teams: any[] = [];
               let interteams: any[] = [];
               if (data.fetchCompanyTeams) {
@@ -297,7 +297,6 @@ class TeamOverview extends React.Component<Props, State> {
                 } else {
                   teams = interteams;
                 }
-                console.log("TEAMS", teams);
               }
               return (
                 <div className="table">
@@ -342,7 +341,6 @@ class TeamOverview extends React.Component<Props, State> {
                         key={team.name}
                         className="tableRow"
                         onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
-                        {console.log("TEAM", team)}
                         <div className="tableMain">
                           <div className="tableColumnBig">
                             <div

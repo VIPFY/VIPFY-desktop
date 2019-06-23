@@ -1,6 +1,7 @@
 import * as React from "react";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
+import * as Dropzone from "react-dropzone";
 
 interface Props {
   close: Function;
@@ -22,6 +23,7 @@ interface State {
   wmail2: string;
   wphone1: string;
   wphone2: string;
+  picture: Dropzone.DropzoneProps | null;
 }
 
 class AddEmployeePersonalData extends React.Component<Props, State> {
@@ -38,7 +40,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     wmail1: this.props.addpersonal.wmail1 || "",
     wmail2: this.props.addpersonal.wmail2 || "",
     wphone1: this.props.addpersonal.wphone1 || "",
-    wphone2: this.props.addpersonal.wphone2 || ""
+    wphone2: this.props.addpersonal.wphone2 || "",
+    picture: null
   };
 
   render() {
@@ -54,12 +57,35 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           <form className="profilepicture">
             <label>
               <div className="profilepicture big">
+                {this.state.picture && this.state.picture!.preview && (
+                  <img
+                    width={200}
+                    height={200}
+                    src={this.state.picture!.preview}
+                    style={{ objectFit: "cover" }}
+                  />
+                )}
                 <div className="imagehover">
                   <i className="fal fa-camera" />
                   <span>Upload</span>
                 </div>
               </div>
-              <input
+
+              <Dropzone
+                style={{
+                  width: "0px",
+                  height: "0px",
+                  opacity: 0,
+                  overflow: "hidden",
+                  position: "absolute",
+                  zIndex: -1
+                }}
+                accept="image/*"
+                type="file"
+                multiple={false}
+                onDrop={([file]) => this.setState({ picture: file })}
+              />
+              {/* <input
                 accept="image/*"
                 type="file"
                 style={{
@@ -70,9 +96,22 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                   position: "absolute",
                   zIndex: -1
                 }}
-              />
+              /> */}
             </label>
           </form>
+          {/* <form className="profilepicture">
+            <label>
+              <div className="profilepicture big">
+               
+                <div className="imagehover">
+                  <i className="fal fa-camera" />
+                  <span>Upload</span>
+                </div>
+              </div>
+
+             
+            </label>
+          </form> */}
           <UniversalTextInput
             label="Name (Required)"
             id="name"
