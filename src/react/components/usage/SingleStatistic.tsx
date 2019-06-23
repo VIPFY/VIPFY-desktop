@@ -1,5 +1,6 @@
 import * as React from "react";
 import Chart from "react-apexcharts";
+import { AppIcon } from "../../common/functions";
 
 interface Props {
   header: string;
@@ -8,6 +9,7 @@ interface Props {
     icon: string;
     color: string;
   };
+  options: { teamlicence: string };
   totalminutes: number;
   percentage: number;
 }
@@ -58,8 +60,19 @@ class SingleStatistic extends React.Component<Props, State> {
             type="radialBar"
             className="circle"
           />
-          <div className="info">{this.props.app.name}</div>
-          <div className="info">Single Licence</div>
+          <div className="info">
+            <AppIcon app={this.props.app} />
+          </div>
+          <div className="info-user">
+            {this.props.options && this.props.options.teamlicence ? (
+              <i className="fal fa-users" title="Shared Account" />
+            ) : (
+              <i className="fal fa-user" title="Single Account" />
+            )}
+            <span>{`${
+              this.props.options && this.props.options.teamlicence ? "Team" : "Single"
+            } Licence`}</span>
+          </div>
         </div>
       </div>
     );

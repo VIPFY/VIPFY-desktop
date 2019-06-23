@@ -389,14 +389,15 @@ export const fetchServiceLicences = gql`
   }
 `;
 
-export const FETCH_MONTHLY_USAGE = gql`
-  query onFetchMonthlyAppUsage {
-    fetchMonthlyAppUsage {
+export const FETCH_TOTAL_APP_USAGE = gql`
+  query onFetchTotalAppUsage($starttime: Date, $endtime: Date) {
+    fetchTotalAppUsage(starttime: $starttime, endtime: $endtime) {
       app {
         name
         icon
         color
       }
+      options
       totalminutes
     }
   }

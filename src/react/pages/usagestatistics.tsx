@@ -4,7 +4,7 @@ import AppUsageComanywideChart from "../components/usage/AppUsageCompanywideChar
 import UniversalSearchBox from "../components/universalSearchBox";
 import SingleStatistic from "../components/usage/SingleStatistic";
 import { Query } from "react-apollo";
-import { FETCH_MONTHLY_USAGE } from "../queries/products";
+import { FETCH_TOTAL_APP_USAGE } from "../queries/products";
 
 interface Props {
   company: any;
@@ -45,7 +45,7 @@ class UsageStatistics extends React.Component<Props, State> {
           />
         </div>
 
-        <Query query={FETCH_MONTHLY_USAGE}>
+        <Query query={FETCH_TOTAL_APP_USAGE}>
           {({ data, loading, error }) => {
             if (loading) {
               return <div>Loading</div>;
@@ -56,7 +56,7 @@ class UsageStatistics extends React.Component<Props, State> {
             }
 
             // Sort would mutate the array
-            const usage = data.fetchMonthlyAppUsage;
+            const usage = data.fetchTotalAppUsage;
 
             const mostUsed = usage.sort((a, b) => b.totalminutes - a.totalminutes).slice(0, 3);
 
@@ -93,19 +93,17 @@ class UsageStatistics extends React.Component<Props, State> {
             />
             <span>Overview</span>
           </div>
-          <div
-            className={`inside ${this.state.showEyecatcher ? "in" : "out"}`}
-            style={{ backgroundColor: "#e4e6e8" }}>
+          <div className={`inside ${this.state.showEyecatcher ? "in" : "out"}`}>
             <AppUsageComanywideChart {...this.props} />
           </div>
         </div>
+
         <div className="genericHolder">
           <div className="header" onClick={() => this.toogleShowBoughtplan()}>
             <i
               className={`button-hide fas ${
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
               }`}
-              //onClick={this.toggle}
             />
             <span>Teams</span>
           </div>

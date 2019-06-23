@@ -250,7 +250,6 @@ class Navigation extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("NAVProps", this.state, this.props);
     const { chatOpen, sidebarOpen, data } = this.props;
 
     if (this.props.loading) {
