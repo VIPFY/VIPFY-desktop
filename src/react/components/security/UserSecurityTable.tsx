@@ -1,29 +1,30 @@
 import * as React from "react";
 import gql from "graphql-tag";
+import * as moment from "moment";
 import UserName from "../UserName";
-import Duration from "../../common/duration";
-import { Query, compose, graphql } from "react-apollo";
+import { Query, Mutation, graphql } from "react-apollo";
+import UserPicture from "../UserPicture";
+import { showStars, filterError } from "../../common/functions";
 
 interface State {
-  changeAdminStatus: number;
   changeForce: number;
 }
 
 interface Props {
   data: { fetchUserSecurityOverview: any };
-  changeAdminStatus: Function;
   forcePasswordChange: Function;
 }
 
-const CHANGEADMINSTATUS = gql`
-  mutation changeAdminStatus($id: ID!, $bool: Boolean!) {
+const CHANGE_ADMIN_STATUS = gql`
+  mutation onChangeAdminStatus($id: ID!, $bool: Boolean!) {
     changeAdminStatus(unitid: $id, admin: $bool) {
-      ok
+      id
+      status
     }
   }
 `;
 
-const FORCERESET = gql`
+const FORCE_RESET = gql`
   mutation forcePasswordChange($userids: [ID]!) {
     forcePasswordChange(userids: $userids) {
       ok
@@ -31,7 +32,7 @@ const FORCERESET = gql`
   }
 `;
 
-const FETCHUSERSECURITYOVERVIEW = gql`
+const FETCH_USER_SECURITY_OVERVIEW = gql`
   query userSecurityOverview {
     fetchUserSecurityOverview {
       id
@@ -53,22 +54,21 @@ const FETCHUSERSECURITYOVERVIEW = gql`
 
 class UserSecurityTableInner extends React.Component<Props, State> {
   state = {
-    changeAdminStatus: 0,
     changeForce: 0
   };
 
-  changeAdminStatus = async (id, bool) => {
-    this.setState({ changeAdminStatus: id });
-    try {
-      await this.props.changeAdminStatus({
-        variables: { id, bool },
-        refetchQueries: [{ query: FETCHUSERSECURITYOVERVIEW }]
-      });
-      this.setState({ changeAdminStatus: 0 });
-    } catch (err) {
-      console.log("Change Admin Status not possible");
-    }
-  };
+  // changeAdminStatus = async (id, bool) => {
+  //   this.setState({ changeAdminStatus: id });
+  //   try {
+  //     await this.props.changeAdminStatus({
+  //       variables: { id, bool }
+  //       // refetchQueries: [{ query: FETCHUSERSECURITYOVERVIEW }]
+  //     });
+  //     this.setState({ changeAdminStatus: 0 });
+  //   } catch (err) {
+  //     console.log("Change Admin Status not possible");
+  //   }
+  // };
 
   forceReset = async userids => {
     console.log(userids);
@@ -80,7 +80,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
     try {
       await this.props.forcePasswordChange({
         variables: { userids },
-        refetchQueries: [{ query: FETCHUSERSECURITYOVERVIEW }]
+        refetchQueries: [{ query: FETCH_USER_SECURITY_OVERVIEW }]
       });
       this.setState({ changeForce: 0 });
     } catch (err) {
@@ -89,35 +89,24 @@ class UserSecurityTableInner extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("props", this.props.data);
-
-    const rows = this.tableRows();
     return (
-      <table>
+      <table className="security-table">
         <thead>
           <tr>
-            <th />
-            <th />
-            <th />
-            <th colSpan={3}>Password</th>
-            <th />
-            <th />
-          </tr>
-          <tr>
-            <th>Name</th>
-            <th>Last Active</th>
+            <th className="pad-left">Name</th>
             <th>Created</th>
-            <th>Length</th>
-            <th>Strength</th>
+            <th>Last Active</th>
+            <th>PW Length</th>
+            <th>Reset PW</th>
+            <th>PW Strength</th>
             {/*<th>Change on next login</th>
             <th>Banned</th>
             <th>Suspended</th>*/}
-            <th>Reset</th>
-            <th>Make Admin</th>
+            <th>Admin</th>
           </tr>
         </thead>
         <tbody>
-          {rows}
+          {this.tableRows()}
           <tr>
             <td />
             <td />
@@ -145,59 +134,86 @@ class UserSecurityTableInner extends React.Component<Props, State> {
   }
 
   tableRows() {
-    return this.props.data.fetchUserSecurityOverview.map(user => {
-      //console.log("user", user);
-      return (
-        <tr key={`r${user.id}`}>
-          <td>
-            <span data-recording-sensitive>{`${user.unitid.firstname} ${
-              user.unitid.lastname
-            }`}</span>
-          </td>
-          <td>
-            <Duration timestamp={parseInt(user.lastactive)} postfix=" ago" />
-          </td>
-          <td>
-            <Duration timestamp={parseInt(user.createdate)} postfix=" ago" />
-          </td>
-          <td>{user.passwordlength === null ? "unknown" : user.passwordlength}</td>
-          <td>{user.passwordstrength === null ? "unknown" : user.passwordstrength + "/4"}</td>
-          {/*<td align="right">{user.needspasswordchange ? "yes" : "no"}</td>
-          <td align="right">{user.banned ? "yes" : "no"}</td>
-      <td align="right">{user.suspended ? "yes" : "no"}</td>*/}
-          <td>
-            {user.needspasswordchange ? (
-              "yes"
-            ) : (
-              <button onClick={() => this.forceReset([user.id])} className="naked-button button">
-                force
-              </button>
+    return this.props.data.fetchUserSecurityOverview.map(user => (
+      <tr key={`r${user.id}`}>
+        <td className="pad-left">
+          <span className="overview-user" data-recording-sensitive>
+            <UserPicture unitid={user.id} size="twolines" />
+            <UserName unitid={user.id} />
+          </span>
+        </td>
+        <td>{moment(parseInt(user.createdate)).format("DD.MM.YYYY")}</td>
+        <td>
+          {user.lastactive ? (
+            moment(parseInt(user.lastactive)).format("DD.MM.YYYY")
+          ) : (
+            <i className="fal fa-minus" />
+          )}
+        </td>
+        <td>{user.passwordlength === null ? "unknown" : user.passwordlength}</td>
+        <td>
+          {user.needspasswordchange ? (
+            <i className="fal fa-minus" />
+          ) : (
+            <button onClick={() => this.forceReset([user.id])} className="naked-button button">
+              Force
+            </button>
+          )}
+        </td>
+        <td>{user.passwordstrength === null ? "unknown" : showStars(user.passwordstrength, 4)}</td>
+        <td>
+          <Mutation
+            mutation={CHANGE_ADMIN_STATUS}
+            optimisticResponse={{
+              __typename: "Mutation",
+              changeAdminStatus: {
+                __typename: "StatusResponse",
+                id: user.id,
+                status: !user.unitid.isadmin
+              }
+            }}
+            update={(proxy, { data: { changeAdminStatus } }) => {
+              const data = proxy.readQuery({ query: FETCH_USER_SECURITY_OVERVIEW });
+              const fetchUserSecurityOverview = data.fetchUserSecurityOverview.map(u => {
+                if (u.id == user.id) {
+                  return { ...u, unitid: { ...u.unitid, isadmin: changeAdminStatus.status } };
+                } else {
+                  return u;
+                }
+              });
+
+              proxy.writeQuery({
+                query: FETCH_USER_SECURITY_OVERVIEW,
+                data: { fetchUserSecurityOverview }
+              });
+            }}>
+            {(mutate, { data, loading, error }) => (
+              <React.Fragment>
+                <label className="switch">
+                  <input
+                    disabled={loading}
+                    onChange={() =>
+                      mutate({ variables: { id: user.id, bool: !user.unitid.isadmin } })
+                    }
+                    checked={data ? data.changeAdminStatus.status : user.unitid.isadmin}
+                    type="checkbox"
+                  />
+                  <span className="slider" />
+                </label>
+
+                {error && <span className="error">{filterError(error)}</span>}
+              </React.Fragment>
             )}
-          </td>
-          <td>
-            {user.unitid.isadmin ? (
-              <button
-                onClick={() => this.changeAdminStatus(user.id, false)}
-                className="naked-button button">
-                revoke admin
-              </button>
-            ) : (
-              <button
-                onClick={() => this.changeAdminStatus(user.id, true)}
-                className="naked-button button">
-                make admin
-              </button>
-            )}
-          </td>
-        </tr>
-      );
-    });
+          </Mutation>
+        </td>
+      </tr>
+    ));
   }
 }
 
 function UserSecurityTable(props) {
   return (
-    <Query query={FETCHUSERSECURITYOVERVIEW} pollInterval={1000 * 60 * 10}>
+    <Query query={FETCH_USER_SECURITY_OVERVIEW} pollInterval={1000 * 60 * 10}>
       {({ data, loading, error }) => {
         if (loading) {
           return <div>Loading</div>;
@@ -211,7 +227,4 @@ function UserSecurityTable(props) {
   );
 }
 
-export default compose(
-  graphql(FORCERESET, { name: "forcePasswordChange" }),
-  graphql(CHANGEADMINSTATUS, { name: "changeAdminStatus" })
-)(UserSecurityTable);
+export default graphql(FORCE_RESET, { name: "forcePasswordChange" })(UserSecurityTable);

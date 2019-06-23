@@ -4,10 +4,10 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import moment = require("moment");
 
-export function showStars(stars) {
+export function showStars(stars, maxStars = 5) {
   const starsArray: JSX.Element[] = [];
   if (stars) {
-    for (let n = 0; n < 5; n++) {
+    for (let n = 0; n < maxStars; n++) {
       if (n < stars - 0.5) {
         starsArray.push(<i key={`star${n}`} className="fas fa-star" />);
       } else if (n < stars) {
@@ -18,7 +18,7 @@ export function showStars(stars) {
           </span>
         );
       } else {
-        starsArray.push(<i key={`star${n}`} className="far fa-star" />);
+        starsArray.push(<i key={`star${n}`} className="fas fa-star star-empty" />);
       }
     }
   } else {

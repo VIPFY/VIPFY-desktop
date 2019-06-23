@@ -1,36 +1,41 @@
 import * as React from "react";
 import UserSecurityTable from "../components/security/UserSecurityTable";
+import UniversalSearchBox from "../components/universalSearchBox";
 
 interface Props {
   showPopup: Function;
 }
 
 interface State {
-  show: Boolean;
+  show: boolean;
+  search: string;
 }
 
 class Security extends React.Component<Props, State> {
   state = {
-    show: true
+    show: true,
+    search: ""
   };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
   render() {
     return (
-      <div id="billing-page">
+      <div className="managerPage">
+        <div className="heading">
+          <h1>Security</h1>
+          <UniversalSearchBox getValue={v => this.setState({ search: v })} />
+        </div>
+
         <div className="genericHolder">
           <div className="header" onClick={() => this.toggle()}>
             <i
               className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
-              //onClick={this.toggle}
             />
-            <span>Security</span>
+            <span>Overview</span>
           </div>
           <div className={`inside ${this.state.show ? "in" : "out"}`}>
-            <div className="inside-padding">
-              <UserSecurityTable />
-            </div>
+            <UserSecurityTable />
           </div>
         </div>
       </div>
