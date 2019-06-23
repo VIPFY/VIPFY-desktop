@@ -7,6 +7,7 @@ import SidebarLink from "./sidebarLink";
 import { Licence } from "../interfaces";
 import { layoutUpdate } from "../common/functions";
 import { fetchLicences } from "../queries/auth";
+import IconButton from "../common/IconButton";
 
 interface Props {
   sidebarOpen: boolean;
@@ -83,6 +84,9 @@ class SidebarApps extends React.Component<Props, State> {
 
     const input = (
       <input
+        ref={node => {
+          this.searchInput = node;
+        }}
         value={this.state.searchString}
         onChange={e => this.setState({ searchString: e.target.value })}
         placeholder="Search Apps"
@@ -138,7 +142,7 @@ class SidebarApps extends React.Component<Props, State> {
             {showApps && sidebarOpen && (
               <li style={sidebarOpen ? { marginLeft: "11px" } : {}} className="sidebar-link">
                 <Tooltip useHover={!sidebarOpen} direction="right" content={input}>
-                  <i className="fal fa-search" />
+                  <IconButton icon="search" onClick={() => this.searchInput.focus()} />
                 </Tooltip>
                 {input}
               </li>
@@ -149,9 +153,13 @@ class SidebarApps extends React.Component<Props, State> {
               licences
                 .filter(licence => {
                   if (licence.boughtplanid.alias) {
-                    return licence.boughtplanid.alias.includes(this.state.searchString);
+                    return licence.boughtplanid.alias
+                      .toUpperCase()
+                      .includes(this.state.searchString.toUpperCase());
                   } else {
-                    return licence.boughtplanid.planid.appid.name.includes(this.state.searchString);
+                    return licence.boughtplanid.planid.appid.name
+                      .toUpperCase()
+                      .includes(this.state.searchString.toUpperCase());
                   }
                 })
                 .sort((a, b) => a.sidebar - b.sidebar)

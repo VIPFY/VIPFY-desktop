@@ -6,7 +6,6 @@ import config from "../../configurationManager";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
 import SidebarApps from "./SidebarApps";
-import IconButton from "../common/IconButton";
 
 interface SidebarLinks {
   label: string;
