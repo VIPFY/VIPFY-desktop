@@ -5,6 +5,7 @@ import UniversalSearchBox from "../components/universalSearchBox";
 import SingleStatistic from "../components/usage/SingleStatistic";
 import { Query } from "react-apollo";
 import { FETCH_TOTAL_APP_USAGE } from "../queries/products";
+import IconButton from "../common/IconButton";
 
 interface Props {
   company: any;
@@ -24,7 +25,7 @@ class UsageStatistics extends React.Component<Props, State> {
     bills: [],
     error: "",
     showBoughtplans: true,
-    showEyecatcher: true,
+    showEyecatcher: false,
     searchString: ""
   };
 
@@ -89,7 +90,6 @@ class UsageStatistics extends React.Component<Props, State> {
               className={`button-hide fas ${
                 this.state.showEyecatcher ? "fa-angle-left" : "fa-angle-down"
               }`}
-              //onClick={this.toggle}
             />
             <span>Overview</span>
           </div>

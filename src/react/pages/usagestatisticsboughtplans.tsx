@@ -35,10 +35,12 @@ class UsageStatistics extends React.Component<Props, State> {
         }
       `
     });
+    console.log("LOG: UsageStatistics -> render -> boughtplan", boughtplan);
     let teamname = null;
     if (boughtplan && boughtplan.alias) {
       teamname = boughtplan.alias;
     }
+
     console.log(this.props.match.params.boughtplanid, teamname);
     return (
       <div>

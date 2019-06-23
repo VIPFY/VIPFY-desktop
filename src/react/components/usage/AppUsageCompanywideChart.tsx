@@ -16,9 +16,6 @@ interface State {
 }
 
 interface Props {
-  error: any;
-  loading: boolean;
-  data: Query;
   client: { query: Function };
 }
 
