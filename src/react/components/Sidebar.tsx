@@ -6,6 +6,7 @@ import config from "../../configurationManager";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
 import SidebarApps from "./SidebarApps";
+import IconButton from "../common/IconButton";
 
 interface SidebarLinks {
   label: string;
@@ -450,7 +451,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
               <li
                 onClick={() => this.props.toggleSidebar()}
                 className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
-                <i className="fal fa-angle-left" />
+                <Tooltip
+                  distance={18}
+                  arrowSize={5}
+                  content={`${sidebarOpen ? "Hide" : "Open"} Sidebar`}
+                  direction="right">
+                  <i className="fal fa-angle-left" />
+                </Tooltip>
               </li>
 
               <li className={`sidebar-main ${sidebarOpen ? "" : "sidebar-nav-small"}`}>
