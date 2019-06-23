@@ -42,8 +42,6 @@ class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
       return <div>Error fetching data</div>;
     }
 
-    console.log("DATA", this.props.data.fetchBoughtplanUsagePerUser);
-
     const d = this.props.data.fetchBoughtplanUsagePerUser;
 
     const labels = d.map(u => `${u.unit.firstname} ${u.unit.lastname}`);
@@ -61,8 +59,6 @@ class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
 
     const series = [{ data }];
     const height = d.length * 25 + 100;
-
-    console.log("DATA RESULT", series, height, numTicks, absoluteValues);
 
     return (
       <Chart
@@ -174,7 +170,7 @@ export default props => (
     `}
     variables={{
       starttime: "2018-01-01",
-      endtime: "2019-02-01",
+      endtime: moment().toISOString(),
       boughtplanid: props.boughtplanid
     }}>
     {({ data, loading, error }) => {

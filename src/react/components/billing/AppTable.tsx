@@ -169,7 +169,12 @@ class AppListInner extends React.Component<Props, State> {
               <IconButton
                 icon="tachometer-alt-slow"
                 title="show details"
-                onClick={() => this.props.history.push(`/area/usage/boughtplan/${boughtplan.id}`)}
+                onClick={() =>
+                  this.props.history.push({
+                    pathname: `/area/usage/boughtplan/${boughtplan.id}`,
+                    state: { name: alias || appName }
+                  })
+                }
               />
               {/* Not needed till the Launch of the Marketplace */}
               {/* <button
