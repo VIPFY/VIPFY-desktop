@@ -5,7 +5,6 @@ import UniversalSearchBox from "../components/universalSearchBox";
 import SingleStatistic from "../components/usage/SingleStatistic";
 import { Query } from "react-apollo";
 import { FETCH_TOTAL_APP_USAGE } from "../queries/products";
-import IconButton from "../common/IconButton";
 
 interface Props {
   company: any;
@@ -25,7 +24,7 @@ class UsageStatistics extends React.Component<Props, State> {
     bills: [],
     error: "",
     showBoughtplans: true,
-    showEyecatcher: false,
+    showEyecatcher: true,
     searchString: ""
   };
 
