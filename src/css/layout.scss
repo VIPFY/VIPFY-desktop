@@ -3036,6 +3036,7 @@ option{
                 box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
                 cursor: pointer;
             }
+
             &_ChangePassword{
                 width: 10rem;
                 height: 1.19rem;
@@ -3045,7 +3046,7 @@ option{
                 right: 0;
                 padding: 0.5rem;
                 border-radius: 3px;
-                background-color: #20BAA9;
+                background-color: $vipfy-primary-color;
                 color: white;
                 box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
                 cursor: pointer;
@@ -3054,6 +3055,10 @@ option{
                 justify-content: center;
                 transition: background-color ease-in-out 100ms;
             }
+        }
+
+        .pw-change {
+          margin-top: 11px;
         }
 
         .buttonDisabled {
