@@ -160,10 +160,7 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
                 ) : (
                   <div className="partButton_ChangePassword buttonDisabled">Change Password</div>
                 )}
-                <div
-                  className="partButton"
-                  onClick={() => this.abort()}
-                  style={{ marginTop: "2em" }}>
+                <div className="partButton pw-change" onClick={() => this.abort()}>
                   Logout
                 </div>
               </div>
