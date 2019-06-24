@@ -28,7 +28,6 @@ class SignIn extends React.Component<Props, State> {
   changeProgress(s) {
     this.props.resetError();
     const store = new Store();
-    console.log("ChangeProgress", s, store.has("accounts"), store.get("accounts").length == 0);
     if (
       s != "pwreset" &&
       s != "registercompany" &&
@@ -56,7 +55,7 @@ class SignIn extends React.Component<Props, State> {
           <Login
             type="login"
             backFunction={() => this.changeProgress("pwreset")}
-            continueFunction={v => this.props.login(this.state.email, v)}
+            continueFunction={(pw, email) => this.props.login(email, pw)}
             email={this.state.email}
             changeUser={() => this.changeProgress("selectuser")}
             error={this.props.error}

@@ -28,38 +28,15 @@ class Login extends React.Component<Props, State> {
     field2: "",
     changed: false,
     email: "",
-    changeEmail: false
+    changeEmail: false,
+    prevEmail: ""
   };
 
-  componentDidMount() {
-    window.addEventListener("keydown", this.cancel, true);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("keydown", this.cancel, true);
-  }
-
-  cancel = e => {
-    if ((e.keyCode == 27 || e.key == "Escape") && this.state.changeEmail) {
-      this.setState({ changeEmail: false });
+  static getDerivedStateFromProps(props, state) {
+    if (props.email != state.prevEmail) {
+      return { ...state, email: props.email, prevEmail: props.email };
     }
-  };
-
-  updateEmail = store => {
-    if (store.has("accounts")) {
-      const users = store.get("accounts");
-      const emailIndex = users.findIndex(u => u.email == this.props.email);
-
-      if (emailIndex != -1) {
-        const [oldUser] = users.splice(emailIndex, 1);
-
-        users.push({ ...oldUser, email: this.state.email });
-        store.set("accounts", users);
-      }
-    }
-
-    this.setState({ changeEmail: false });
-  };
+  }
 
   render() {
     const store = new Store();
@@ -92,7 +69,7 @@ class Login extends React.Component<Props, State> {
                   id="email"
                   type="email"
                   width="312px"
-                  onEnter={() => this.updateEmail(store)}
+                  onEnter={() => this.props.continueFunction(this.state.field2, this.state.email)}
                   startvalue={this.props.email}
                   label="Email"
                   livevalue={email => this.setState({ email })}
@@ -147,7 +124,7 @@ class Login extends React.Component<Props, State> {
                     </React.Fragment>
                   ) : null
                 }
-                onEnter={() => this.props.continueFunction(this.state.field2)}
+                onEnter={() => this.props.continueFunction(this.state.field2, this.state.email)}
               />
             </div>
 
@@ -162,7 +139,7 @@ class Login extends React.Component<Props, State> {
                 label="Login"
                 type="high"
                 disabled={this.state.field2 == ""}
-                onClick={() => this.props.continueFunction(this.state.field2)}
+                onClick={() => this.props.continueFunction(this.state.field2, this.state.email)}
               />
             </div>
           </div>
@@ -171,4 +148,5 @@ class Login extends React.Component<Props, State> {
     );
   }
 }
+
 export default Login;
