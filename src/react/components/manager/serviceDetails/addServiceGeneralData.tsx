@@ -50,9 +50,9 @@ class AddServiceGeneralData extends React.Component<Props, State> {
       <React.Fragment>
         <span>
           <span className="bHeading">Add Service </span>
-          <span className="mHeading">
+          {/*<span className="mHeading">
             > <span className="active">General Data</span> > Teams > Services
-          </span>
+    </span>*/}
         </span>
         <span className="secondHolder" style={{ left: "32px", top: "40px" }}>
           Add Services

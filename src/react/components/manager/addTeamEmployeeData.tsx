@@ -133,9 +133,9 @@ class AddTeamEmployeeData extends React.Component<Props, State> {
           close={() => this.props.close(null)}>
           <span className="mutiplieHeading">
             <span className="bHeading">Add Team </span>
-            <span className="mHeading">
+            {/*<span className="mHeading">
               > General Data > <span className="active">Employees</span> > Services
-            </span>
+    </span>*/}
           </span>
           <span className="secondHolder">Available Employees</span>
           <UniversalSearchBox

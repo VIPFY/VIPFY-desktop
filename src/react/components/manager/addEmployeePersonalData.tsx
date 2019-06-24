@@ -47,9 +47,9 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
       <React.Fragment>
         <span>
           <span className="bHeading">Add Employee </span>
-          <span className="mHeading">
+          {/*<span className="mHeading">
             > <span className="active">Personal Data</span> > Teams > Services
-          </span>
+    </span>*/}
         </span>
         <EmployeeGerneralDataAdd
           addpersonal={this.props.addpersonal}

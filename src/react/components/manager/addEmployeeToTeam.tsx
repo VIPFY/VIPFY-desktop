@@ -7,6 +7,8 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalSearchBox from "../universalSearchBox";
 import PopupAddLicence from "../../popups/universalPopups/addLicence";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
+import TeamAdd from "./universal/adding/TeamAdd";
+import TeamGerneralDataAdd from "./universal/adding/teamGeneralDataAdd";
 
 interface Props {
   employeeid: number;
@@ -41,6 +43,8 @@ interface State {
   saved: Boolean;
   error: string | null;
   saving: Boolean;
+  newTeamPopup: Boolean;
+  newTeam: any;
 }
 
 const ADD_TO_TEAM = gql`
@@ -61,7 +65,9 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
     configureTeamLicences: true,
     saved: false,
     error: null,
-    saving: false
+    saving: false,
+    newTeamPopup: false,
+    newTeam: null
   };
 
   printMyTeams(teamsdata) {
@@ -316,6 +322,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
 
   render() {
     const employeeid = this.props.employeeid;
+    console.log("TEAMS", this.state, this.props);
     return (
       <Query query={fetchTeams} variables={{ userid: employeeid }}>
         {({ loading, error, data }) => {
@@ -342,6 +349,14 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                     <UniversalSearchBox
                       placeholder="Search available services"
                       getValue={v => this.setState({ search: v })}
+                    />
+
+                    <TeamAdd
+                      teams={data.fetchTeams}
+                      search={this.state.search}
+                      setOuterState={s => this.setState(s)}
+                      addedTeams={this.state.addedTeams}
+                      integrateTeam={this.state.integrateTeam}
                     />
                     {/* <div className="maingridAddEmployeeTeams">
                       <div
@@ -512,7 +527,8 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                                 variables: {
                                   userid: this.props.employeeid,
                                   teamid: team.unitid.id,
-                                  services: servicesdata
+                                  services: servicesdata,
+                                  newteam: { name: team.name, profilepicture: team.profilepicture }
                                 },
                                 refetchQueries: [
                                   {
@@ -558,7 +574,8 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                               variables: {
                                 userid: this.props.employeeid,
                                 teamid: team.unitid.id,
-                                services: servicesdata
+                                services: servicesdata,
+                                newteam: { name: team.name, profilepicture: team.profilepicture }
                               },
                               refetchQueries: [
                                 {
@@ -600,70 +617,140 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                       ""
                     )}
                   </PopupBase>
-                  {this.state.configureTeamLicences && this.state.integrateTeam && (
-                    <PopupAddLicence
-                      nooutsideclose={true}
-                      app={this.state.integrateTeam!.services[this.state.counter].planid.appid}
-                      cancel={async () => {
-                        await this.setState(prevState => {
-                          let newcounter = prevState.counter + 1;
-                          let currentlicence = Object.assign(
-                            {},
-                            prevState.integrateTeam!.services[prevState.counter]
-                          );
-                          currentlicence.setupfinished = false;
-                          currentlicence.setup = {};
-                          const newintegrateTeam = Object.assign({}, prevState.integrateTeam);
-                          let newintegrateTeam2 = newintegrateTeam;
-                          newintegrateTeam2.services = newintegrateTeam2.services.map(a =>
-                            a.id == currentlicence.id ? currentlicence : a
-                          );
-                          if (newcounter < prevState.integrateTeam.services.length) {
-                            return {
-                              ...prevState,
-                              counter: newcounter,
-                              integrateTeam: newintegrateTeam2
-                            };
-                          } else {
-                            return {
-                              ...prevState,
-                              configureTeamLicences: false,
-                              integrateTeam: newintegrateTeam2
-                            };
-                          }
+                  {this.state.configureTeamLicences &&
+                    this.state.integrateTeam &&
+                    this.state.integrateTeam!.services.length > 0 && (
+                      <PopupAddLicence
+                        nooutsideclose={true}
+                        app={this.state.integrateTeam!.services[this.state.counter].planid.appid}
+                        cancel={async () => {
+                          await this.setState(prevState => {
+                            let newcounter = prevState.counter + 1;
+                            let currentlicence = Object.assign(
+                              {},
+                              prevState.integrateTeam!.services[prevState.counter]
+                            );
+                            currentlicence.setupfinished = false;
+                            currentlicence.setup = {};
+                            const newintegrateTeam = Object.assign({}, prevState.integrateTeam);
+                            let newintegrateTeam2 = newintegrateTeam;
+                            newintegrateTeam2.services = newintegrateTeam2.services.map(a =>
+                              a.id == currentlicence.id ? currentlicence : a
+                            );
+                            if (newcounter < prevState.integrateTeam.services.length) {
+                              return {
+                                ...prevState,
+                                counter: newcounter,
+                                integrateTeam: newintegrateTeam2
+                              };
+                            } else {
+                              return {
+                                ...prevState,
+                                configureTeamLicences: false,
+                                integrateTeam: newintegrateTeam2
+                              };
+                            }
+                          });
+                        }}
+                        add={async setup => {
+                          await this.setState(prevState => {
+                            let newcounter = prevState.counter + 1;
+                            let currentlicence = Object.assign(
+                              {},
+                              prevState.integrateTeam!.services[prevState.counter]
+                            );
+                            currentlicence.setupfinished = true;
+                            currentlicence.setup = setup;
+                            const newintegrateTeam = Object.assign({}, prevState.integrateTeam);
+                            let newintegrateTeam2 = newintegrateTeam;
+                            newintegrateTeam2.services = newintegrateTeam2.services.map(a =>
+                              a.id == currentlicence.id ? currentlicence : a
+                            );
+                            if (newcounter < prevState.integrateTeam.services.length) {
+                              return {
+                                ...prevState,
+                                counter: newcounter,
+                                integrateTeam: newintegrateTeam2
+                              };
+                            } else {
+                              return {
+                                ...prevState,
+                                configureTeamLicences: false,
+                                integrateTeam: newintegrateTeam2
+                              };
+                            }
+                          });
+                        }}
+                        employeename={this.props.employeename}
+                        maxstep={this.state.integrateTeam!.services.length}
+                        currentstep={this.state.counter}
+                      />
+                    )}
+
+                  {this.state.newTeamPopup && (
+                    <PopupBase
+                      buttonStyles={{ marginTop: "0px" }}
+                      fullmiddle={true}
+                      close={() => {
+                        this.setState({
+                          drag: null,
+                          newTeamPopup: false,
+                          integrateEmployee: null,
+                          configureTeamLicences: true,
+                          newEmployee: null
                         });
-                      }}
-                      add={async setup => {
-                        await this.setState(prevState => {
-                          let newcounter = prevState.counter + 1;
-                          let currentlicence = Object.assign(
-                            {},
-                            prevState.integrateTeam!.services[prevState.counter]
-                          );
-                          currentlicence.setupfinished = true;
-                          currentlicence.setup = setup;
-                          const newintegrateTeam = Object.assign({}, prevState.integrateTeam);
-                          let newintegrateTeam2 = newintegrateTeam;
-                          newintegrateTeam2.services = newintegrateTeam2.services.map(a =>
-                            a.id == currentlicence.id ? currentlicence : a
-                          );
-                          if (newcounter < prevState.integrateTeam.services.length) {
-                            return {
-                              ...prevState,
-                              counter: newcounter,
-                              integrateTeam: newintegrateTeam2
-                            };
-                          } else {
-                            return {
-                              ...prevState,
-                              configureTeamLicences: false,
-                              integrateTeam: newintegrateTeam2
-                            };
+                      }}>
+                      <span>
+                        <span className="bHeading">Add Team </span>
+                      </span>
+                      <TeamGerneralDataAdd
+                        name=""
+                        picture={null}
+                        setOuterState={s =>
+                          this.setState(prevState => {
+                            console.log("STATE UPDATE", this.state, prevState);
+                            return { newTeam: { ...prevState.newTeam, ...s } };
+                          })
+                        }
+                      />
+                      <div className="buttonsPopup">
+                        <UniversalButton
+                          label="Cancel"
+                          type="low"
+                          onClick={() => this.props.close()}
+                        />
+                        <div className="buttonSeperator" />
+                        <UniversalButton
+                          label="Confirm"
+                          type="high"
+                          disabled={
+                            !this.state.newTeam ||
+                            this.state.newTeam!.name == "" ||
+                            this.state.newTeam!.name == null
                           }
-                        });
-                      }}
-                      employeename={this.props.employeename}
-                    />
+                          onClick={async () => {
+                            this.setState(prevState => {
+                              return {
+                                drag: null,
+                                popup: true,
+                                newTeamPopup: false,
+                                integrateTeam: Object.assign({
+                                  new: true,
+                                  integrating: true,
+                                  employees: [],
+                                  services: [],
+                                  profilepicture: null,
+                                  ...prevState.newTeam,
+                                  unitid: { id: "new" }
+                                }),
+                                configureTeamLicences: true,
+                                newTeam: null
+                              };
+                            });
+                          }}
+                        />
+                      </div>
+                    </PopupBase>
                   )}
                 </>
               )}

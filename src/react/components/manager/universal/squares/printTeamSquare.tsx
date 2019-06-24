@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface Props {
   team: any;
+  className: string | null;
 }
 
 interface State {}
@@ -13,7 +14,7 @@ class PrintTeamSquare extends React.Component<Props, State> {
       <div
         key={team.name}
         title={team.name}
-        className="managerSquare"
+        className={this.props.className || "managerSquare"}
         style={
           team.profilepicture
             ? {

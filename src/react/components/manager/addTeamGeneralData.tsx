@@ -30,9 +30,9 @@ class AddTeamGeneralData extends React.Component<Props, State> {
       <React.Fragment>
         <span>
           <span className="bHeading">Add Team </span>
-          <span className="mHeading">
+          {/*<span className="mHeading">
             > <span className="active">General Data</span> > Employees > Services
-          </span>
+    </span>*/}
         </span>
         <TeamGerneralDataAdd setOuterState={s => this.setState(s)} picture={picture} name={name} />
         <div className="buttonsPopup">
