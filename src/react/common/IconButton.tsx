@@ -4,6 +4,8 @@ interface Props {
   onClick: Function;
   className?: string;
   icon: string;
+  title?: string;
+  disabled?: boolean;
 }
 
 export default (props: Props) => {

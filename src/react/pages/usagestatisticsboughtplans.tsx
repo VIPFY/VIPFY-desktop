@@ -1,12 +1,13 @@
 import * as React from "react";
-import { graphql, Query, withApollo } from "react-apollo";
-import gql from "graphql-tag";
+import { withApollo } from "react-apollo";
 
 import BoughtplanUsagePerUser from "../components/usage/BoughtplanUsagePerUser";
+import UniversalButton from "../components/universalButtons/universalButton";
 
 interface Props {
   company: any;
   showPopup: Function;
+  history: History;
 }
 
 interface State {
@@ -26,22 +27,14 @@ class UsageStatistics extends React.Component<Props, State> {
     this.setState(prevState => ({ showBoughtplans: !prevState.showBoughtplans }));
 
   render() {
-    const boughtplan = this.props.client.readFragment({
-      id: `BoughtPlan:${this.props.match.params.boughtplanid}`,
-      fragment: gql`
-        fragment myTodo on BoughtPlan {
-          id
-          alias
-        }
-      `
-    });
-    let teamname = null;
-    if (boughtplan && boughtplan.alias) {
-      teamname = boughtplan.alias;
+    let teamname = "[failed to fetch name]";
+
+    if (this.props.history.location.state && this.props.history.location.state.name) {
+      teamname = this.props.history.location.state.name;
     }
-    console.log(this.props.match.params.boughtplanid, teamname);
+
     return (
-      <div>
+      <div style={{ marginTop: "50px" }}>
         <div className="genericHolder">
           <div
             className="header"
@@ -51,9 +44,8 @@ class UsageStatistics extends React.Component<Props, State> {
               className={`button-hide fas ${
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
               }`}
-              //onClick={this.toggle}
             />
-            <span>Time spent in {teamname ? teamname : "[failed to fetch name]"} this month</span>
+            <span>Time spent in {teamname} this month</span>
           </div>
           <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
             <BoughtplanUsagePerUser
@@ -61,11 +53,7 @@ class UsageStatistics extends React.Component<Props, State> {
               boughtplanid={this.props.match.params.boughtplanid}
             />
           </div>
-          <button
-            className="naked-button generic-button back-button"
-            onClick={() => history.back()}>
-            Back
-          </button>
+          <UniversalButton type="high" label="Back" onClick={() => history.back()} />
         </div>
       </div>
     );

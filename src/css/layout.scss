@@ -12,6 +12,7 @@
 @import './titlebar.scss';
 @import './billing.scss';
 @import './domains.scss';
+@import './statistics.scss';
 @import './messages.scss';
 @import './profile.scss';
 @import './editor.scss';
@@ -5671,15 +5672,16 @@ progress[value] {
   overflow-y: auto;
 
   .tableRow {
-    position: relative;
-
     &:hover .table-cancel {
       display: inherit;
       position: absolute;
       color: red;
-      top: -20px;
-      left: 260px;
+      left: 50px;
       z-index: 10;
+    }
+
+    .table-column-small {
+      position: relative;
     }
 
     .table-cancel {

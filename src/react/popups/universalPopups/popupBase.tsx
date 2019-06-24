@@ -160,7 +160,7 @@ class PopupBase extends React.Component<Props, State> {
         : { maxWidth: "60rem", transition: `max-width ${closingtime}ms linear` };
     }
     return (
-      <SideBarContext>
+      <SideBarContext.Consumer>
         {sidebarOpen => (
           <div
             className="backgroundPopup"
@@ -202,16 +202,14 @@ class PopupBase extends React.Component<Props, State> {
                   </div>
                 )}
                 <div className="contentPopup">{this.renderChildren(this.props.children)}</div>
-                {this.props.autoclosing && !this.props.notimer ? (
+                {this.props.autoclosing && !this.props.notimer && (
                   <div className="autoclose" style={autoclosing} />
-                ) : (
-                  ""
                 )}
               </div>
             </div>
           </div>
         )}
-      </SideBarContext>
+      </SideBarContext.Consumer>
     );
   }
 }

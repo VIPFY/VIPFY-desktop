@@ -3,10 +3,12 @@ import { Mutation, Query } from "react-apollo";
 import gql from "graphql-tag";
 import humanizeDuration = require("humanize-duration");
 import moment = require("moment");
-import Confirmation from "../../popups/Confirmation";
-import ChangePlan from "../../popups/ChangePlan";
-import { AppContext } from "../../common/functions";
-import { CANCEL_PLAN } from "../../mutations/products";
+import { ErrorComp } from "../../common/functions";
+import { REMOVE_EXTERNAL_ACCOUNT } from "../../mutations/products";
+import IconButton from "../../common/IconButton";
+import LoadingDiv from "../LoadingDiv";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import UniversalButton from "../universalButtons/universalButton";
 
 const REACTIVATE_PLAN = gql`
   mutation onReactivatePlan($planid: ID!) {
@@ -70,7 +72,9 @@ const FETCH_UNIT_APPS = gql`
   }
 `;
 
-interface State {}
+interface State {
+  showDeletion: null | number;
+}
 
 interface Props {
   data: { fetchUnitApps: any; fetchUnitAppsSimpleStats: any };
@@ -94,12 +98,13 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 });
 
 class AppListInner extends React.Component<Props, State> {
+  state = { showDeletion: null };
+
   render() {
     if (!this.props.data.fetchUnitApps || !this.props.data.fetchUnitAppsSimpleStats) {
       return <div>Error fetching data</div>;
     }
 
-    const rows = this.tableRows();
     return (
       <table style={{ width: "100%", textAlign: "left" }}>
         <thead>
@@ -118,58 +123,61 @@ class AppListInner extends React.Component<Props, State> {
             <th />
           </tr>
         </thead>
-        <tbody>{rows}</tbody>
+        <tbody>{this.tableRows()}</tbody>
       </table>
     );
   }
 
   tableRows() {
-    return this.props.data.fetchUnitApps.map(({ boughtplan, id, licencesused, licencestotal }) => {
-      const stats = this.props.data.fetchUnitAppsSimpleStats.filter(d => d.id == id)[0];
-      const {
-        endtime,
-        planid: {
-          name: planName,
-          options,
-          appid: { name: appName, id: appId }
+    return this.props.data.fetchUnitApps.map(
+      ({ boughtplan, id, licencesused, licencestotal }, key) => {
+        const stats = this.props.data.fetchUnitAppsSimpleStats.filter(d => d.id == id)[0];
+        const {
+          endtime,
+          alias,
+          planid: {
+            name: planName,
+            options,
+            appid: { name: appName, id: appId }
+          }
+        } = boughtplan;
+
+        const totalDur =
+          stats.minutestotal == 0
+            ? "0"
+            : shortEnglishHumanizer(stats.minutestotal * 60 * 1000, {
+                largest: 2
+              });
+        let endSat = "forever";
+
+        if (endtime) {
+          endSat = `ends at ${moment(endtime - 0).format("LLL")}`;
         }
-      } = boughtplan;
 
-      const totalDur =
-        stats.minutestotal == 0
-          ? "0"
-          : shortEnglishHumanizer(stats.minutestotal * 60 * 1000, {
-              largest: 2
-            });
-      let endSat = "forever";
-
-      if (endtime) {
-        endSat = `ends at ${moment(endtime - 0).format("LLL")}`;
-      }
-
-      return (
-        <AppContext.Consumer key={`r${id}`}>
-          {({ showPopup }) => (
-            <tr>
-              <td>{appName}</td>
-              {/*<td>{planName}</td>*/}
-              <td>{boughtplan.alias}</td>
-              <td>
-                <sup>{licencesused}</sup>/<sub>{licencestotal}</sub>
-              </td>
-              <td>{totalDur}</td>
-              {/*<td>${boughtplan.totalprice}</td>
+        return (
+          <tr key={key}>
+            <td>{appName}</td>
+            {/*<td>{planName}</td>*/}
+            <td>{boughtplan.alias}</td>
+            <td>
+              <sup>{licencesused}</sup>/<sub>{licencestotal}</sub>
+            </td>
+            <td>{totalDur}</td>
+            {/*<td>${boughtplan.totalprice}</td>
               <td>{endSat}</td>*/}
-              <td className="naked-button-holder">
-                <button
-                  title="show details"
-                  className="naked-button"
-                  onClick={() =>
-                    this.props.history.push(`/area/usage/boughtplan/${boughtplan.id}`)
-                  }>
-                  <i className="fal fa-tachometer-alt-slow" />
-                </button>
-                <button
+            <td className="naked-button-holder">
+              <IconButton
+                icon="tachometer-alt-slow"
+                title="show details"
+                onClick={() =>
+                  this.props.history.push({
+                    pathname: `/area/usage/boughtplan/${boughtplan.id}`,
+                    state: { name: alias || appName }
+                  })
+                }
+              />
+              {/* Not needed till the Launch of the Marketplace */}
+              {/* <button
                   disabled={options && options.external}
                   onClick={() =>
                     showPopup({
@@ -190,12 +198,12 @@ class AppListInner extends React.Component<Props, State> {
                   }
                   className="naked-button">
                   <i className="fas fa-sort-amount-up" />
-                </button>
-                <Mutation mutation={!endtime ? CANCEL_PLAN : REACTIVATE_PLAN}>
+                </button> */}
+              {/* <Mutation mutation={!endtime ? CANCEL_PLAN : REACTIVATE_PLAN}>
                   {mutation => (
                     <i
                       title={!endtime ? "Cancel" : "Reactivate"}
-                      className={`fas fa-${!endtime ? "trash-alt" : "redo"}`}
+                      className={`fal fa-${!endtime ? "trash-alt" : "redo"}`}
                       onClick={() =>
                         showPopup({
                           header: `${!endtime ? "Cancel" : "Reactivate"} ${appName} ${planName}`,
@@ -211,37 +219,74 @@ class AppListInner extends React.Component<Props, State> {
                       }
                     />
                   )}
+                </Mutation> */}
+              <IconButton
+                title="Delete"
+                onClick={() => this.setState({ showDeletion: key })}
+                icon="trash-alt"
+              />
+
+              {this.state.showDeletion == key && (
+                <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
+                  {(removeAccount, { loading, error }) => (
+                    <PopupBase
+                      small={true}
+                      close={() => this.setState({ showDeletion: null })}
+                      closeable={false}>
+                      <div>{`Please confirm that you want to delete ${
+                        alias ? alias : appName
+                      }`}</div>
+
+                      {error && <ErrorComp error={error} />}
+
+                      <UniversalButton
+                        type="low"
+                        disabled={loading}
+                        onClick={() => this.setState({ showDeletion: null })}
+                        label="Cancel"
+                      />
+
+                      <UniversalButton
+                        type="low"
+                        label="Delete"
+                        disabled={loading}
+                        onClick={() =>
+                          removeAccount({
+                            variables: { licenceid: id, time: moment().toISOString() }
+                          })
+                        }
+                      />
+                    </PopupBase>
+                  )}
                 </Mutation>
-              </td>
-            </tr>
-          )}
-        </AppContext.Consumer>
-      );
-    });
+              )}
+            </td>
+          </tr>
+        );
+      }
+    );
   }
 }
 
-function AppTable(props) {
-  return (
-    <Query
-      query={FETCH_UNIT_APPS}
-      variables={{ departmentid: props.company.unit.id }}
-      pollInterval={1000 * 60 * 10}>
-      {({ data, loading, error }) => {
-        if (loading) {
-          return <div>Loading</div>;
-        }
-        if (error) {
-          return <div>Error fetching data</div>;
-        }
-        return (
-          <div style={{ padding: "20px" }}>
-            <AppListInner {...props} data={data} />
-          </div>
-        );
-      }}
-    </Query>
-  );
-}
+export default props => (
+  <Query
+    query={FETCH_UNIT_APPS}
+    variables={{ departmentid: props.company.unit.id }}
+    pollInterval={1000 * 60 * 10}>
+    {({ data, loading, error }) => {
+      if (loading) {
+        return <LoadingDiv text="Fetching data..." />;
+      }
 
-export default AppTable;
+      if (error) {
+        return <div>Error fetching data</div>;
+      }
+
+      return (
+        <div style={{ padding: "20px" }}>
+          <AppListInner {...props} data={data} />
+        </div>
+      );
+    }}
+  </Query>
+);
