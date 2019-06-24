@@ -1309,22 +1309,21 @@ li {
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
+  padding: 0 48px;
 
   .genericHolder {
     box-shadow: unset;
 
-    .header {
-      display: none;
-    }
-
     .inside {
       .profile-app-holder {
+        max-height: 600px;
         grid-template-rows: repeat(auto-fill, 10rem);
         grid-template-columns: repeat(auto-fill, 10rem);
 
         .profile-app {
           width: 10em;
           height: 10em;
+          overflow: unset;
         }
       }
     }
