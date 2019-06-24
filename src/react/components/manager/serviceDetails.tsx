@@ -143,10 +143,9 @@ class ServiceDetails extends React.Component<Props, State> {
                           (e.teamlicence && (
                             <div
                               className="licenceInfoElement"
-                              title={
-                                (e.teamaccount && e.teamaccount.name) ||
-                                (e.teamlicence && e.teamlicence.name)
-                              }
+                              title={`Assigned via team 
+                                ${(e.teamaccount && e.teamaccount.name) ||
+                                  (e.teamlicence && e.teamlicence.name)}`}
                               style={
                                 e.teamaccount
                                   ? e.teamaccount.profilepicture
@@ -205,7 +204,9 @@ class ServiceDetails extends React.Component<Props, State> {
                   <div className="tableColumnSmall content">
                     {e.endtime ? moment(e.endtime - 0).format("DD.MM.YYYY") : "Recurring"}
                   </div>
-                  <div className="tableColumnSmall content">
+                  <div
+                    className="tableColumnSmall content"
+                    title="Please check in external account">
                     {e.boughtplanid.totalprice > 0
                       ? `$${e.boughtplanid.totalprice}/month`
                       : "Integrated Account"}
@@ -252,7 +253,7 @@ class ServiceDetails extends React.Component<Props, State> {
                                 data.fetchBoughtplanUsagePerUser.find(
                                   e => e.unit.id == this.props.employeeid
                                 ).totalminutes /
-                                  28 /
+                                  20 /
                                   8 /
                                   60
                               )
@@ -260,7 +261,17 @@ class ServiceDetails extends React.Component<Props, State> {
 
                           return (
                             <React.Fragment>
-                              <div className="percentage">{percent}%</div>
+                              <div className="percentage">
+                                {data &&
+                                data.fetchBoughtplanUsagePerUser &&
+                                data.fetchBoughtplanUsagePerUser.find(
+                                  e => e.unit.id == this.props.employeeid
+                                )
+                                  ? data.fetchBoughtplanUsagePerUser.find(
+                                      e => e.unit.id == this.props.employeeid
+                                    ).totalminutes
+                                  : 0}
+                              </div>
                               <div className="percantageBar">
                                 <div className="percantageInline" style={{ width: percent }} />
                               </div>

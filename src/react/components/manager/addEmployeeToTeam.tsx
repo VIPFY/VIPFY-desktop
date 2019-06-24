@@ -343,7 +343,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                       placeholder="Search available services"
                       getValue={v => this.setState({ search: v })}
                     />
-                    <div className="maingridAddEmployeeTeams">
+                    {/* <div className="maingridAddEmployeeTeams">
                       <div
                         className="addgrid-holder"
                         onDrop={e => {
@@ -473,14 +473,14 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                                     <i className="fal fa-plus" />
                                   </div>
                                   <div className="name">Add Teams</div>
-                                </div>*/}
+                                </div>*&/}
                                 {teamsArray}
                               </div>
                             </div>
                           );
                         }}
                       </Query>
-                    </div>
+                      </div> */}
                     <UniversalButton label="Cancel" type="low" closingPopup={true} />
 
                     <UniversalButton

@@ -58,7 +58,7 @@ class AppTile extends React.Component<Props, State> {
     password: ""
   };
 
-  async componentDidMount() {
+  /*async componentDidMount() {
     // Make sure that every License has an index
     if (this.props.licence.dashboard === null) {
       try {
@@ -84,7 +84,7 @@ class AppTile extends React.Component<Props, State> {
         console.log(error);
       }
     }
-  }
+  }*/
 
   render() {
     // prettier-ignore
