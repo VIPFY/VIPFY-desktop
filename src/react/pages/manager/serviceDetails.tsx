@@ -113,9 +113,15 @@ class ServiceDetails extends React.Component<Props, State> {
                                       : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
                                           service.icon
                                         )})`,
-                                  backgroundColor: "unset"
+                                  backgroundColor: "unset",
+                                  marginLeft: "16px",
+                                  marginTop: "16px"
                                 }
-                              : { backgroundColor: service.color }
+                              : {
+                                  backgroundColor: service.color,
+                                  marginLeft: "16px",
+                                  marginTop: "16px"
+                                }
                           }>
                           {/*<div className="imagehover">
                             <i className="fal fa-camera" />

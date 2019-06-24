@@ -90,7 +90,7 @@ class IssuedLicences extends React.Component<Props, State> {
     return (
       <div className="section">
         <div className="heading">
-          <h1>Issued Licences</h1>
+          <h1>Rent Out Licences</h1>
         </div>
 
         <div className="table">

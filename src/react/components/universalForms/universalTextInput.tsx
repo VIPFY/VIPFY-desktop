@@ -15,6 +15,7 @@ interface Props {
   focus?: Boolean;
   onEnter?: Function;
   modifyValue?: Function;
+  required?: Boolean;
 }
 
 interface State {
@@ -126,7 +127,13 @@ class UniversalTextInput extends React.Component<Props, State> {
         <label
           htmlFor={this.props.id}
           className="universalLabel"
-          style={this.props.errorEvaluation && this.state.notypeing ? { color: "#e32022" } : {}}>
+          style={
+            (this.props.errorEvaluation ||
+              (this.props.required && this.state.value == "" && !this.state.inputFocus)) &&
+            this.state.notypeing
+              ? { color: "#e32022" }
+              : {}
+          }>
           {this.props.label}
         </label>
         {this.props.errorEvaluation && this.state.notypeing ? (

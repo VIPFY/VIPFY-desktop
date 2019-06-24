@@ -2,6 +2,7 @@ import * as React from "react";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
 import * as Dropzone from "react-dropzone";
+import TeamGerneralDataAdd from "./universal/adding/teamGeneralDataAdd";
 
 interface Props {
   close: Function;
@@ -23,64 +24,17 @@ class AddTeamGeneralData extends React.Component<Props, State> {
   };
 
   render() {
-    const { picture } = this.state;
+    const { picture, name } = this.state;
 
     return (
       <React.Fragment>
         <span>
           <span className="bHeading">Add Team </span>
-          <span className="mHeading">
+          {/*<span className="mHeading">
             > <span className="active">General Data</span> > Employees > Services
-          </span>
+    </span>*/}
         </span>
-        <div className="gridNewEmployeePersonal">
-          <form className="profilepicture">
-            <label>
-              <div className="profilepicture big">
-                {picture && picture.preview && (
-                  <img
-                    width={200}
-                    height={200}
-                    src={picture.preview}
-                    style={{ objectFit: "cover" }}
-                  />
-                )}
-                <div className="imagehover">
-                  <i className="fal fa-camera" />
-                  <span>Upload</span>
-                </div>
-              </div>
-
-              <Dropzone
-                style={{
-                  width: "0px",
-                  height: "0px",
-                  opacity: 0,
-                  overflow: "hidden",
-                  position: "absolute",
-                  zIndex: -1
-                }}
-                accept="image/*"
-                type="file"
-                multiple={false}
-                onDrop={([file]) => this.setState({ picture: file })}
-              />
-            </label>
-          </form>
-          <UniversalTextInput
-            label="Name (Required)"
-            id="name"
-            livevalue={v => this.setState({ name: v })}
-            focus={true}
-            startvalue={this.state.name}
-          />
-          {/*<UniversalTextInput
-            label="Leader"
-            id="leader"
-            livevalue={v => this.setState({ leader: v })}
-            startvalue={this.state.leader}
-          />*/}
-        </div>
+        <TeamGerneralDataAdd setOuterState={s => this.setState(s)} picture={picture} name={name} />
         <div className="buttonsPopup">
           <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />
           <div className="buttonSeperator" />

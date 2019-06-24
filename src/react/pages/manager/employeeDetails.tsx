@@ -15,6 +15,7 @@ import { me } from "../../queries/auth";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import TemporaryLicences from "../../components/manager/employeeDetails/TemporaryLicences";
 import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicences";
+import UploadImage from "../../components/manager/universal/uploadImage";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -100,52 +101,23 @@ class EmployeeDetails extends React.Component<Props, State> {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <div>
-                    <form>
-                      <label>
-                        <div
-                          className="profilepicture"
-                          style={
-                            querydata.profilepicture
-                              ? querydata.profilepicture.indexOf("/") != -1
-                                ? {
-                                    backgroundImage: encodeURI(
-                                      `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                        querydata.profilepicture
-                                      )})`
-                                    )
-                                  }
-                                : {
-                                    backgroundImage: encodeURI(
-                                      `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                        querydata.profilepicture
-                                      })`
-                                    )
-                                  }
-                              : {}
-                          }>
-                          <div className="imagehover">
-                            <i className="fal fa-camera" />
-                            <span>Upload</span>
-                          </div>
-                        </div>
-
-                        <Dropzone
-                          disabled={this.state.loading}
-                          style={{
-                            width: "0px",
-                            height: "0px",
-                            opacity: 0,
-                            overflow: "hidden",
-                            position: "absolute",
-                            zIndex: -1
-                          }}
-                          accept="image/*"
-                          type="file"
-                          multiple={false}
-                          onDrop={([file]) => this.uploadPic(file)}
-                        />
-                      </label>
-                    </form>
+                    <UploadImage
+                      picture={
+                        querydata.profilepicture && {
+                          preview:
+                            querydata.profilepicture && querydata.profilepicture.indexOf("/") != -1
+                              ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${
+                                  querydata.profilepicture
+                                }`
+                              : `https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
+                                  querydata.profilepicture
+                                }`
+                        }
+                      }
+                      name={`${querydata.firstname} ${querydata.lastname}`}
+                      onDrop={file => this.uploadPic(file)}
+                      className="managerBigSquare noBottomMargin"
+                    />
                     <div
                       className="status"
                       style={{
@@ -173,8 +145,8 @@ class EmployeeDetails extends React.Component<Props, State> {
                 employee={querydata}
               />
 
-              <IssuedLicences unitid={employeeid} firstName={querydata.firstname} />
               <TemporaryLicences firstName={querydata.firstname} unitid={employeeid} />
+              <IssuedLicences unitid={employeeid} firstName={querydata.firstname} />
               {this.state.changepicture && (
                 <PopupSelfSaving
                   savingmessage="Saving Profileimage"
