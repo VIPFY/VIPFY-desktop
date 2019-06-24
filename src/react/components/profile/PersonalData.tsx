@@ -169,7 +169,7 @@ class PersonalData extends React.Component<Props, State> {
                               <span data-recording-sensitive>{data}</span>
                             </li>
                           ))}
-                          <li>
+                          {/* <li>
                             <label>Tutorials</label>
                             <span>
                               <button
@@ -217,9 +217,9 @@ class PersonalData extends React.Component<Props, State> {
                                 className="naked-button reshow-button"
                                 onClick={() => setreshowTutorial(1)}>
                                 Support
-                              </button>*/}
+                              </button>*&/}
                             </span>
-                          </li>
+                              </li> */}
 
                           <li>
                             <button
