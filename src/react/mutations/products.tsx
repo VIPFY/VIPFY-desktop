@@ -45,3 +45,9 @@ export const CREATE_OWN_APP = gql`
     }
   }
 `;
+
+export const REMOVE_EXTERNAL_ACCOUNT = gql`
+  mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
+    deleteLicenceAt(licenceid: $licenceid, time: $time)
+  }
+`;

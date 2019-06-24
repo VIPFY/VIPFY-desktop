@@ -186,3 +186,28 @@ export const filterAndSort = (licences, property) =>
 
       return 0;
     });
+
+export const AppIcon = ({ app }) => (
+  <div className="app-icon-wrapper">
+    <div
+      className="app-icon"
+      style={
+        app.icon
+          ? {
+              backgroundImage:
+                app.icon.indexOf("/") != -1
+                  ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
+                      app.icon
+                    )})`
+                  : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                      app.icon
+                    )})`,
+              backgroundColor: "unset"
+            }
+          : {}
+      }>
+      {app.icon ? "" : app.name.slice(0, 1)}
+    </div>
+    <span className="app-name">{app.name}</span>
+  </div>
+);

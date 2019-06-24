@@ -372,3 +372,33 @@ $rccs-valid-font-size: 0.4rem;
     }  
   } 
 }
+.app-icon-wrapper {
+  display: flex;
+
+  .app-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    float: left;
+    margin-top: 12px;
+    line-height: 32px;
+    text-align: center;
+    font-size: 16px;
+    color: white;
+    font-weight: 500;
+    background-color: #5D76FF;
+    background-position: center;
+    background-size: cover;
+
+    &:not(:first-child) {
+      margin-left: 8px;
+    }
+  }
+  
+  span {
+    @include hide-overflowing-text;
+    font-size: 13px;
+    line-height: 56px;
+    margin-left: 8px;
+  }
+}

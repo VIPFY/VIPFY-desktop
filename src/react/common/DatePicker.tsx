@@ -4,10 +4,12 @@ import moment = require("moment");
 import UniversalButton from "../components/universalButtons/universalButton";
 
 interface Props {
-  minDate?: string;
+  minDate?: string | moment.Moment;
+  maxDate?: string | moment.Moment;
   handleChange: Function;
-  error: string;
-  value: string;
+  error?: string;
+  value: string | moment.Moment;
+  customFormat?: string;
 }
 
 interface State {
@@ -67,7 +69,10 @@ class DatePicker extends React.PureComponent<Props, State> {
   setDate = ({ day, month, year }) => {
     const value = `${year}-${month < 10 ? "0" : ""}${month}-${day < 10 ? "0" : ""}${day}`;
 
-    if (this.props.minDate && moment(value).isBefore(moment(this.props.minDate))) {
+    if (
+      (this.props.minDate && moment(value).isBefore(moment(this.props.minDate))) ||
+      (this.props.maxDate && moment(value).isAfter(moment(this.props.maxDate)))
+    ) {
       return;
     } else {
       this.setState({ show: false, day, year, month, touched: true });
@@ -118,21 +123,22 @@ class DatePicker extends React.PureComponent<Props, State> {
 
   render() {
     const { touched, month, year } = this.state;
+    const { minDate, maxDate } = this.props;
 
     const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const dates = [];
 
     let startYear = firstYear;
 
-    if (this.props.minDate) {
-      startYear = moment(this.props.minDate).year();
+    if (minDate) {
+      startYear = moment(minDate).year();
     }
 
     if (this.state.show) {
       // prettier-ignore
       for (let i = startYear; i < moment().add(30, "y").year(); i++) {
       for (let j = 1; j <= 12; j++) {
-        if(j < moment(this.props.minDate).month() + 1) {
+        if(j < moment(minDate).month() + 1) {
           continue;
         }
 
@@ -181,24 +187,26 @@ class DatePicker extends React.PureComponent<Props, State> {
       comingDays.push({ day: i, month: comingMonth.month() + 1, year: comingMonth.year() });
     }
 
+    const format = this.props.customFormat || "DD MMM YYYY";
+
     return (
-      <div>
+      <div className="date-picker-wrapper">
         <div className="date-picker" onClick={() => this.setState({ show: true })}>
           <i className="fal fa-calendar" />
           <span className="date-picker-text">
-            {touched && this.props.value ? moment(this.props.value).format("DD MMM YYYY") : "Date"}
+            {touched && this.props.value ? moment(this.props.value).format(format) : "Date"}
             {this.props.error && (
               <i title={this.props.error} className="error fal fa-exclamation-circle" />
             )}
           </span>
-          <i className="fal fa-angle-down" />
+          <i className="fal fa-angle-down big-angle" />
         </div>
 
         {this.state.show && (
           <div className="date-picker-popup">
             <div className="arrow-up" />
 
-            <div className="header">
+            <div className="date-picker-popup-header">
               <button onClick={() => this.changeDate("subtract")} className="naked-button">
                 <i className="fal fa-angle-left" />
               </button>
@@ -233,18 +241,18 @@ class DatePicker extends React.PureComponent<Props, State> {
               {prevDays.map((time, key) => (
                 <span
                   onClick={async () => this.setDate(time)}
-                  className={`gray-day ${this.props.minDate ? "disabled" : ""}`}
+                  className={`gray-day ${minDate ? "disabled" : ""}`}
                   key={key}>
                   {time.day}
                 </span>
               ))}
-
               {days.map((time, key) => (
                 <span
                   onClick={() => this.setDate(time)}
                   className={`day ${this.state.day === time.day ? "active" : ""} ${
-                    this.props.minDate &&
-                    moment(`${time.year}-${time.month}-${time.day}`).isBefore(this.props.minDate)
+                    (minDate &&
+                      moment(`${time.year}-${time.month}-${time.day}`).isBefore(minDate)) ||
+                    (maxDate && moment(`${time.year}-${time.month}-${time.day}`).isAfter(maxDate))
                       ? "disabled"
                       : ""
                   }`}
@@ -254,7 +262,10 @@ class DatePicker extends React.PureComponent<Props, State> {
               ))}
 
               {comingDays.map((time, key) => (
-                <span onClick={() => this.setDate(time)} className="gray-day" key={key}>
+                <span
+                  onClick={() => this.setDate(time)}
+                  className={`gray-day ${this.props.maxDate ? "disabled" : ""}`}
+                  key={key}>
                   {time.day}
                 </span>
               ))}

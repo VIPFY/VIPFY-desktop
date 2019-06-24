@@ -104,7 +104,7 @@ class AppList extends React.Component<Props, State> {
       <div className="genericHolder">
         <div className="header" onClick={this.toggle}>
           <i className={`button-hide fas ${show ? "fa-angle-left" : "fa-angle-down"}`} />
-          <span>Apps</span>
+          <span>My Apps</span>
         </div>
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">

@@ -10,12 +10,7 @@ import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupSaving from "../../popups/universalPopups/saving";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
-
-const REMOVE_EXTERNAL_ACCOUNT = gql`
-  mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
-    deleteLicenceAt(licenceid: $licenceid, time: $time)
-  }
-`;
+import { REMOVE_EXTERNAL_ACCOUNT } from "../../mutations/products";
 
 const UPDATE_CREDENTIALS = gql`
   mutation onUpdateCredentials(

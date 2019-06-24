@@ -316,13 +316,16 @@
 
 .vacation {
   position: relative;
+  height: 5rem;
+  overflow: hidden;
 
   &::after {
     content: "vacation";
     position: absolute;
     width: 100%;
-    top: 27px;
-    right: -26px;
+    top: 25px;
+    right: -25px;
+    font-size: 0.7rem;
     height: 16px;
     background: $vipfy-vacation-blue;
     transform: rotate(44deg);

@@ -235,7 +235,6 @@ class Login extends React.Component<Props, State> {
   };
 
   selectAddress = async address => {
-    console.table(countries);
     let country = address.description
       .split(",")
       .pop()

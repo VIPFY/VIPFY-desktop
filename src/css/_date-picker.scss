@@ -2,10 +2,13 @@ $date-padding-top: 28px;
 $date-padding-bottom: 63px;
 $date-padding-sides: 16px;
 
+.date-picker-wrapper {
+  position: relative;
+}
+
 .date-picker {
   width: 139px;
   height: 24px;
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -13,6 +16,10 @@ $date-padding-sides: 16px;
   background: #F5F5F5FF;
   padding: 4px 8px;
   font-size: 13px;
+
+  .big-angle {
+    font-size: 25px;
+  }
 
   &-text {
     flex: 1;
@@ -24,8 +31,9 @@ $date-padding-sides: 16px;
 
   &-popup {
     cursor: auto;
-    position: fixed;
-    margin: 13px 0 0 -74px;
+    position: absolute;
+    top: 43px;
+    right: -100px;
     width: calc(312px - $date-padding-sides * 2);
     height: calc(368px - 32px - $date-padding-top - $date-padding-bottom);
     box-shadow: 0 0 10px rgba(#000000, 0.08);
@@ -35,7 +43,7 @@ $date-padding-sides: 16px;
     background: #ffffffff;
     z-index: 100;
 
-    .header {
+    &-header {
       display: flex;
       margin: 0 auto 25px;
       align-items: center;
