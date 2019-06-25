@@ -11,9 +11,10 @@ import UniversalCheckbox from "../universalForms/universalCheckbox";
 import PopupSaving from "../../popups/universalPopups/saving";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import Team from "./employeeDetails/team";
+import ManageTeams from "./universal/managing/teams";
 
 interface Props {
-  employeeid: number;
+  employeeid: number; //TODO CHANGE TO EMPLOYEE
   employeename: string;
   moveTo: Function;
 }
@@ -112,13 +113,13 @@ class TeamsSection extends React.Component<Props, State> {
                     <div className="tableEnd">
                       <UniversalButton
                         type="high"
-                        label="Add Team"
+                        label="Manage Teams"
                         customStyles={{
                           fontSize: "12px",
                           lineHeight: "24px",
                           fontWeight: "700",
                           marginRight: "16px",
-                          width: "92px"
+                          width: "104px"
                         }}
                         onClick={() => {
                           this.setState({ add: true });
@@ -128,14 +129,25 @@ class TeamsSection extends React.Component<Props, State> {
                   </div>
                   {teamArray}
                 </div>
-                {this.state.add && (
-                  <AddEmployeeToTeam
+                {/* <AddEmployeeToTeam
                     close={sO => {
                       this.setState({ add: false, savingObject: sO });
                     }}
                     employeeid={employeeid}
                     employeename={employeename}
-                  />
+                  /> */}
+                {this.state.add && (
+                  <ManageTeams
+                    employee={{ id: this.props.employeeid, firstname: this.props.employeename }} //TODO CHANGE employeename
+                    close={() => this.setState({ add: false })}>
+                    <div className="buttonsPopup">
+                      <UniversalButton
+                        label="Close"
+                        type="low"
+                        onClick={() => this.setState({ add: false })}
+                      />
+                    </div>
+                  </ManageTeams>
                 )}
                 {this.state.savingObject && (
                   <PopupSelfSaving

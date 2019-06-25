@@ -14,6 +14,7 @@ import { randomPassword } from "../../common/passwordgen";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
+import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
 
 interface Props {
   moveTo: Function;
@@ -61,6 +62,7 @@ class EmployeeOverview extends React.Component<Props, State> {
   }
 
   addProcess() {
+    console.log("ADD", this.props, this.state);
     switch (this.state.addStage) {
       case 1:
         return (
@@ -76,9 +78,17 @@ class EmployeeOverview extends React.Component<Props, State> {
             continue={data => {
               this.setState({ addteams: data, addStage: 3 });
             }}
-            close={() => this.setState({ addStage: 1 })}
-            employeename={this.state.addpersonal.name}
+            close={() => this.setState({ add: false })}
+            employee={{
+              ...this.state.addpersonal,
+              id: this.state.addpersonal.unitid
+            }}
             teams={this.state.addteams}
+            setOuterState={async s => {
+              console.log("OUTER", s);
+              await this.setState(s);
+              console.log("STATE", this.state);
+            }}
           />
         );
       case 3:
@@ -174,7 +184,16 @@ class EmployeeOverview extends React.Component<Props, State> {
                           width: "92px"
                         }}
                         onClick={() =>
-                          this.setState({ add: true, addStage: 1, addpersonal: {}, apps: [] })
+                          this.setState({
+                            add: true,
+                            addStage: 1,
+                            addpersonal: {
+                              name: "Mr. Pascal Beutlin",
+                              wmail1: "pb@vipfy.store",
+                              unitid: "1260"
+                            },
+                            apps: []
+                          })
                         }
                       />
                     </div>
@@ -187,29 +206,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                         onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
                         <div className="tableMain">
                           <div className="tableColumnBig">
-                            <div
-                              className="managerSquare"
-                              style={
-                                employee.profilepicture
-                                  ? employee.profilepicture.indexOf("/") != -1
-                                    ? {
-                                        backgroundImage: encodeURI(
-                                          `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                            employee.profilepicture
-                                          )})`
-                                        )
-                                      }
-                                    : {
-                                        backgroundImage: encodeURI(
-                                          `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                            employee.profilepicture
-                                          })`
-                                        )
-                                      }
-                                  : {}
-                              }>
-                              {employee.profilepicture ? "" : employee.firstname.slice(0, 1)}
-                            </div>
+                            <PrintEmployeeSquare employee={employee} className="managerSquare" />
                             <span className="name">
                               {employee.firstname} {employee.lastname}
                             </span>
