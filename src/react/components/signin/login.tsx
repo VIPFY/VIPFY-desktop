@@ -28,7 +28,6 @@ class Login extends React.Component<Props, State> {
   };
 
   render() {
-    console.log(this.props.error);
     const store = new Store();
     let user: {
       email: string;
