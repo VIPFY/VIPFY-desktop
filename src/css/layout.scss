@@ -5692,3 +5692,32 @@ progress[value] {
     }
   }
 }
+
+.promocode-holder {
+  margin-top: 40px;
+  text-align: left !important;
+
+  button {
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+
+    span {
+      color: $vipfy-primary-color;
+      transition: all 300ms ease-in-out;
+
+      &:hover {
+        color: $vipfy-secondary-color;
+      }
+    }
+  }
+
+  .promo-success {
+    color: $vipfy-primary-color;
+    font-style: italic;
+    display: flex;
+
+    i {
+      margin-right: 7px;
+    }
+  }
+}

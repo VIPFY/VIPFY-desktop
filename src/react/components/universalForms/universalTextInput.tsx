@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface Props {
   id: string;
+  className?: string;
   livevalue?: Function;
   endvalue?: Function;
   label?: string;
@@ -84,7 +85,9 @@ class UniversalTextInput extends React.Component<Props, State> {
   render() {
     return (
       <div
-        className={`universalLabelInput ${this.props.disabled ? "disabled" : ""}`}
+        className={`universalLabelInput ${this.props.disabled ? "disabled" : ""} ${
+          this.props.className
+        }`}
         style={this.props.width ? { width: this.props.width } : {}}>
         <input
           autoFocus={this.props.focus || false}
