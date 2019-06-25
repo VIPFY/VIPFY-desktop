@@ -1,10 +1,12 @@
 import * as React from "react";
 import gql from "graphql-tag";
+import { times } from "lodash";
 import * as moment from "moment";
 import UserName from "../UserName";
 import { Query, Mutation, graphql } from "react-apollo";
 import UserPicture from "../UserPicture";
-import { showStars, filterError } from "../../common/functions";
+import { showStars, filterError, concatName } from "../../common/functions";
+import UniversalButton from "../universalButtons/universalButton";
 
 interface State {
   changeForce: number;
@@ -13,6 +15,7 @@ interface State {
 interface Props {
   data: { fetchUserSecurityOverview: any };
   forcePasswordChange: Function;
+  search: string;
 }
 
 const CHANGE_ADMIN_STATUS = gql`
@@ -53,9 +56,7 @@ const FETCH_USER_SECURITY_OVERVIEW = gql`
 `;
 
 class UserSecurityTableInner extends React.Component<Props, State> {
-  state = {
-    changeForce: 0
-  };
+  state = { changeForce: 0 };
 
   // changeAdminStatus = async (id, bool) => {
   //   this.setState({ changeAdminStatus: id });
@@ -71,7 +72,6 @@ class UserSecurityTableInner extends React.Component<Props, State> {
   // };
 
   forceReset = async userids => {
-    console.log(userids);
     if (userids.length === 1) {
       this.setState({ changeForce: userids[0] });
     } else {
@@ -93,26 +93,21 @@ class UserSecurityTableInner extends React.Component<Props, State> {
       <table className="security-table">
         <thead>
           <tr>
-            <th className="pad-left">Name</th>
+            <th colSpan={2}>Name</th>
             <th>Created</th>
             <th>Last Active</th>
             <th>PW Length</th>
-            <th>Reset PW</th>
             <th>PW Strength</th>
-            {/*<th>Change on next login</th>
-            <th>Banned</th>
-            <th>Suspended</th>*/}
+            <th>Reset PW</th>
             <th>Admin</th>
           </tr>
         </thead>
         <tbody>
           {this.tableRows()}
           <tr>
-            <td />
-            <td />
-            <td />
-            <td />
-            <td />
+            {times(6, () => (
+              <td />
+            ))}
             <td>
               <button
                 onClick={() =>
@@ -123,7 +118,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
                   )
                 }
                 className="naked-button button">
-                force all
+                Force all
               </button>
             </td>
             <td />
@@ -134,84 +129,94 @@ class UserSecurityTableInner extends React.Component<Props, State> {
   }
 
   tableRows() {
-    return this.props.data.fetchUserSecurityOverview.map(user => (
-      <tr key={`r${user.id}`}>
-        <td className="pad-left">
-          <span className="overview-user" data-recording-sensitive>
+    return this.props.data.fetchUserSecurityOverview
+      .filter(user =>
+        concatName(user.unitid)
+          .toLocaleUpperCase()
+          .includes(this.props.search.toUpperCase())
+      )
+      .map(user => (
+        <tr key={`r${user.id}`}>
+          <td className="data-recording-sensitive">
             <UserPicture unitid={user.id} size="twolines" />
+          </td>
+          <td className="data-recording-sensitive">
             <UserName unitid={user.id} />
-          </span>
-        </td>
-        <td>{moment(parseInt(user.createdate)).format("DD.MM.YYYY")}</td>
-        <td>
-          {user.lastactive ? (
-            moment(parseInt(user.lastactive)).format("DD.MM.YYYY")
-          ) : (
-            <i className="fal fa-minus" />
-          )}
-        </td>
-        <td>{user.passwordlength === null ? "unknown" : user.passwordlength}</td>
-        <td>
-          {user.needspasswordchange ? (
-            <i className="fal fa-minus" />
-          ) : (
-            <button onClick={() => this.forceReset([user.id])} className="naked-button button">
-              Force
-            </button>
-          )}
-        </td>
-        <td>{user.passwordstrength === null ? "unknown" : showStars(user.passwordstrength, 4)}</td>
-        <td>
-          <Mutation
-            mutation={CHANGE_ADMIN_STATUS}
-            optimisticResponse={{
-              __typename: "Mutation",
-              changeAdminStatus: {
-                __typename: "StatusResponse",
-                id: user.id,
-                status: !user.unitid.isadmin
-              }
-            }}
-            update={(proxy, { data: { changeAdminStatus } }) => {
-              const data = proxy.readQuery({ query: FETCH_USER_SECURITY_OVERVIEW });
-              const fetchUserSecurityOverview = data.fetchUserSecurityOverview.map(u => {
-                if (u.id == user.id) {
-                  return { ...u, unitid: { ...u.unitid, isadmin: changeAdminStatus.status } };
-                } else {
-                  return u;
-                }
-              });
-
-              proxy.writeQuery({
-                query: FETCH_USER_SECURITY_OVERVIEW,
-                data: { fetchUserSecurityOverview }
-              });
-            }}>
-            {(mutate, { data, loading, error }) => (
-              <React.Fragment>
-                <label className="switch">
-                  <input
-                    disabled={loading}
-                    onChange={() =>
-                      mutate({ variables: { id: user.id, bool: !user.unitid.isadmin } })
-                    }
-                    checked={data ? data.changeAdminStatus.status : user.unitid.isadmin}
-                    type="checkbox"
-                  />
-                  <span className="slider" />
-                </label>
-
-                {error && <span className="error">{filterError(error)}</span>}
-              </React.Fragment>
+          </td>
+          <td>{moment(parseInt(user.createdate)).format("DD.MM.YYYY")}</td>
+          <td>
+            {user.lastactive ? (
+              moment(parseInt(user.lastactive)).format("DD.MM.YYYY")
+            ) : (
+              <i className="fal fa-minus" />
             )}
-          </Mutation>
-        </td>
-      </tr>
-    ));
+          </td>
+          <td>{user.passwordlength === null ? "unknown" : user.passwordlength}</td>
+          <td>
+            {user.passwordstrength === null ? "unknown" : showStars(user.passwordstrength, 4)}
+          </td>
+          <td>
+            {user.needspasswordchange ? (
+              <i className="fal fa-minus" />
+            ) : (
+              <UniversalButton
+                type="low"
+                onClick={() => this.forceReset([user.id])}
+                label="force"
+              />
+            )}
+          </td>
+          <td>
+            <Mutation
+              mutation={CHANGE_ADMIN_STATUS}
+              optimisticResponse={{
+                __typename: "Mutation",
+                changeAdminStatus: {
+                  __typename: "StatusResponse",
+                  id: user.id,
+                  status: !user.unitid.isadmin
+                }
+              }}
+              update={(proxy, { data: { changeAdminStatus } }) => {
+                const data = proxy.readQuery({ query: FETCH_USER_SECURITY_OVERVIEW });
+                const fetchUserSecurityOverview = data.fetchUserSecurityOverview.map(u => {
+                  if (u.id == user.id) {
+                    return { ...u, unitid: { ...u.unitid, isadmin: changeAdminStatus.status } };
+                  } else {
+                    return u;
+                  }
+                });
+
+                proxy.writeQuery({
+                  query: FETCH_USER_SECURITY_OVERVIEW,
+                  data: { fetchUserSecurityOverview }
+                });
+              }}>
+              {(mutate, { data, loading, error }) => (
+                <React.Fragment>
+                  <label className="switch">
+                    <input
+                      disabled={loading}
+                      onChange={() =>
+                        mutate({ variables: { id: user.id, bool: !user.unitid.isadmin } })
+                      }
+                      checked={data ? data.changeAdminStatus.status : user.unitid.isadmin}
+                      type="checkbox"
+                    />
+                    <span className="slider" />
+                  </label>
+
+                  {error && <span className="error">{filterError(error)}</span>}
+                </React.Fragment>
+              )}
+            </Mutation>
+          </td>
+        </tr>
+      ));
   }
 }
 
-function UserSecurityTable(props) {
+function UserSecurityTable(props: { search: string }) {
   return (
     <Query query={FETCH_USER_SECURITY_OVERVIEW} pollInterval={1000 * 60 * 10}>
       {({ data, loading, error }) => {

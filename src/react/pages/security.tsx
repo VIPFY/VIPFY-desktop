@@ -35,7 +35,7 @@ class Security extends React.Component<Props, State> {
             <span>Overview</span>
           </div>
           <div className={`inside ${this.state.show ? "in" : "out"}`}>
-            <UserSecurityTable />
+            <UserSecurityTable search={this.state.search} />
           </div>
         </div>
       </div>

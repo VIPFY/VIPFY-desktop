@@ -5696,30 +5696,14 @@ progress[value] {
 
 .security-table {  
   padding: 20px 0; 
-
-  .pad-left {
-    padding-left: 20px;
-  }
+  border-spacing: 20px 10px;
 
   tbody {
     tr {
-      height: 56px;
+     height: 56px;
 
       &:hover {
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
-      }
-
-      .overview-user {
-        display: flex;
-        align-items: center;
-
-        .twolines {
-          border-radius: 4px;
-        }
-      
-        span {
-          margin-left: 10px;
-        }
       }
 
       .fa-star {
@@ -5739,7 +5723,9 @@ progress[value] {
       color: crimson;
       position: absolute;
       bottom: 0px;
-      left: 0px;
+      right: 0px;
+      width: 430px;
+      text-align: right;
     }
   }
 }
