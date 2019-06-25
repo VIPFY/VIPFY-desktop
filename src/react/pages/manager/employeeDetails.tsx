@@ -66,7 +66,7 @@ class EmployeeDetails extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error.message}`;
           }
-          const querydata = data.adminme;
+          const querydata = data.fetchSemiPublicUser;
 
           const privatePhones = [];
           const workPhones = [];
