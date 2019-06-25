@@ -3,6 +3,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 
 import Store = require("electron-store");
+import { emailRegex } from "../../common/constants";
 
 interface Props {
   continueFunction: Function;
@@ -37,6 +38,8 @@ class AddMachineUser extends React.Component<Props, State> {
                 id="AddEmail"
                 width="312px"
                 label="Email"
+                errorEvaluation={this.state.email.length > 4 && !this.state.email.match(emailRegex)}
+                errorhint="A valid email looks like this: bilbo@vipfy.com"
                 livevalue={v => this.setState({ email: v })}
                 onEnter={() => this.props.continueFunction(this.state.email)}
               />
@@ -60,7 +63,7 @@ class AddMachineUser extends React.Component<Props, State> {
               <UniversalButton
                 label="Add Email"
                 type="high"
-                disabled={this.state.email == ""}
+                disabled={this.state.email == "" || !this.state.email.match(emailRegex)}
                 onClick={() => this.props.continueFunction(this.state.email)}
               />
             </div>
