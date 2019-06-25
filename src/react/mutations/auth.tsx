@@ -171,6 +171,12 @@ export const APPLY_PROMOCODE = gql`
   }
 `;
 
+export const ADD_PROMOCODE = gql`
+  mutation onAddPromocode($promocode: String!) {
+    addPromocode(promocode: $promocode)
+  }
+`;
+
 export const REDEEM_SETUPTOKEN = gql`
   mutation RedeemSetupToken($setuptoken: String!) {
     redeemSetupToken(setuptoken: $setuptoken) {

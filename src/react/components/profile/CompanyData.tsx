@@ -11,7 +11,7 @@ import { AppContext } from "../../common/functions";
 import { filterError } from "../../common/functions";
 import { unitPicFolder } from "../../common/constants";
 import { me } from "../../queries/auth";
-import { APPLY_PROMOCODE } from "../../mutations/auth";
+import { ADD_PROMOCODE } from "../../mutations/auth";
 import { FETCH_COMPANY } from "../../queries/departments";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -237,6 +237,6 @@ class CompanyData extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(APPLY_PROMOCODE, { name: "applyPromocode" }),
+  graphql(ADD_PROMOCODE, { name: "applyPromocode" }),
   graphql(UPDATE_PIC, { name: "updatePic" })
 )(withApollo(CompanyData));

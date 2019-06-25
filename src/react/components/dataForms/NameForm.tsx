@@ -1,19 +1,14 @@
 import * as React from "react";
-import UniversalButton from "../universalButtons/universalButton";
 import gql from "graphql-tag";
 import { graphql, compose, withApollo, Mutation } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { me } from "../../queries/auth";
 import PopupBase from "../../popups/universalPopups/popupBase";
+import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
-
-const ADD_PROMOCODE = gql`
-  mutation onAddPromocode($promocode: String!) {
-    addPromocode(promocode: $promocode)
-  }
-`;
+import { ADD_PROMOCODE } from "../../mutations/auth";
 
 interface Props {
   setupFinished: Function;
