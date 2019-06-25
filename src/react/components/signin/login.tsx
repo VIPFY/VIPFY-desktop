@@ -1,9 +1,8 @@
 import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
-import UserPicture from "../UserPicture";
-import { defaultPic } from "../../common/constants";
 import Store = require("electron-store");
+import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
 
 interface Props {
   type: string;
@@ -76,26 +75,7 @@ class Login extends React.Component<Props, State> {
                 />
               ) : (
                 <div className="preloggedFullname">
-                  <div
-                    className="accountBullet"
-                    style={
-                      user
-                        ? user!.profilepicture
-                          ? user!.profilepicture.indexOf("/") != -1
-                            ? {
-                                backgroundImage: `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                  user!.profilepicture
-                                )})`
-                              }
-                            : {
-                                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${encodeURI(
-                                  user!.profilepicture
-                                )})`
-                              }
-                          : { backgroundImage: `url(${defaultPic})` }
-                        : {}
-                    }
-                  />
+                  <PrintEmployeeSquare employee={user} className="accountBullet" size={20} />
                   <button
                     title="Click to update your Email"
                     className="naked-button"

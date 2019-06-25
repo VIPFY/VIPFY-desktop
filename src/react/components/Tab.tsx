@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
-import { iconPicFolder } from "../common/constants";
+import { getSourceSetApp, getImageUrlApp } from "../common/images";
 
 interface Props {
   title: string;
@@ -145,15 +145,7 @@ class Tab extends React.Component<Props, State> {
               onDrop={() => this.props.handleDragOver(viewID)}
               title={title}
               onClick={() => setInstance(viewID)}>
-              <img
-                src={
-                  icon && icon.indexOf("/") != -1
-                    ? `https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                        icon
-                      )}`
-                    : `https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(icon)}`
-                }
-              />
+              <img src={getImageUrlApp(icon, 25)} srcSet={getSourceSetApp(icon, 25)} />
               <div>{alias ? alias : appname}</div>
               <i onClick={this.handleClose} className="fal fa-times fa-1x" />
             </li>

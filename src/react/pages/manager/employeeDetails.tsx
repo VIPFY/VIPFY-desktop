@@ -16,6 +16,7 @@ import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import TemporaryLicences from "../../components/manager/employeeDetails/TemporaryLicences";
 import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicences";
 import UploadImage from "../../components/manager/universal/uploadImage";
+import { getImageUrlUser } from "../../common/images";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -104,14 +105,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                     <UploadImage
                       picture={
                         querydata.profilepicture && {
-                          preview:
-                            querydata.profilepicture && querydata.profilepicture.indexOf("/") != -1
-                              ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${
-                                  querydata.profilepicture
-                                }`
-                              : `https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                  querydata.profilepicture
-                                }`
+                          preview: getImageUrlUser(querydata.profilepicture, 96)
                         }
                       }
                       name={`${querydata.firstname} ${querydata.lastname}`}

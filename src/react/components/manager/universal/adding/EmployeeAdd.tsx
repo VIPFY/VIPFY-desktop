@@ -74,7 +74,7 @@ class EmployeeAdd extends React.Component<Props, State> {
                 return { addedEmployees: remainingemployees };
               })
             }>
-            <PrintEmployeeSquare className="image" employee={employee} />
+            <PrintEmployeeSquare className="image" size={88} employee={employee} />
             <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
             {oldemployee ? (
               <React.Fragment>
@@ -112,7 +112,7 @@ class EmployeeAdd extends React.Component<Props, State> {
       } = this.props.integrateEmployee!;
       employeesArray.push(
         <div className="space" key={employee.id}>
-          <PrintEmployeeSquare employee={employee} className="image" />
+          <PrintEmployeeSquare employee={employee} size={88} className="image" />
           <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
           <div className="imageHover">
             <i className="fal fa-trash-alt" />
@@ -231,7 +231,7 @@ class EmployeeAdd extends React.Component<Props, State> {
                       };
                     })
                   }>
-                  <PrintEmployeeSquare employee={employee} className="image" />
+                  <PrintEmployeeSquare employee={employee} size={88} className="image" />
                   <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
 
                   {available ? (
