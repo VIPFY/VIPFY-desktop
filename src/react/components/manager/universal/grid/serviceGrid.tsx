@@ -145,7 +145,8 @@ class ServiceGrid extends React.Component<Props, State> {
                   <div
                     className="space"
                     draggable
-                    onDragStart={() => this.setState({ drag: { new: true } })}>
+                    onDragStart={() => this.setState({ drag: { new: true } })}
+                    onClick={() => this.props.onChange({ action: "add", content: { new: true } })}>
                     <div className="image" style={{ backgroundColor: "#F5F5F5", color: "#20BAA9" }}>
                       <i className="fal fa-plus" />
                     </div>
