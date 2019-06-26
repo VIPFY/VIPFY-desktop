@@ -145,9 +145,9 @@ class LicenceDelete extends React.Component<Props, State> {
                     this.props.savingFunction({ action: "deleted", licenceid: licence.id });
                     this.setState({ savingObject: null });
                   },
-                  saveFunction: () => {
+                  saveFunction: async () => {
                     try {
-                      this.props.deleteLicenceAt({
+                      await this.props.deleteLicenceAt({
                         variables: {
                           licenceid: licence.id,
                           time: moment().utc()
@@ -179,9 +179,9 @@ class LicenceDelete extends React.Component<Props, State> {
                     this.props.savingFunction({ action: "deleted", licenceid: licence.id });
                     this.setState({ savingObject: null });
                   },
-                  saveFunction: () => {
+                  saveFunction: async () => {
                     try {
-                      this.props.removeLicence({
+                      await this.props.removeLicence({
                         variables: {
                           licenceid: licence.id,
                           oldname: `${employee.firstname} ${employee.lastname}`

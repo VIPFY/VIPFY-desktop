@@ -214,6 +214,7 @@ export const fetchCompanyService = gql`
         id
         name
         logo
+        needssubdomain
         description
         icon
         website
@@ -231,6 +232,19 @@ export const fetchCompanyService = gql`
         options
         starttime
         agreed
+        boughtplanid {
+          id
+          planid {
+            id
+            appid {
+              id
+              name
+              logo
+              icon
+              needssubdomain
+            }
+          }
+        }
         teamlicence {
           id
           profilepicture
@@ -295,6 +309,16 @@ export const fetchCompanyService = gql`
         }
         boughtplanid {
           id
+          planid {
+            id
+            appid {
+              id
+              name
+              logo
+              icon
+              needssubdomain
+            }
+          }
         }
       }
     }

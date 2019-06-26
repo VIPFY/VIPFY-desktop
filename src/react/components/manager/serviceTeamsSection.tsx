@@ -13,6 +13,7 @@ import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import TeamServiceDetails from "./teamserviceDetails";
 import Team from "./serviceDetails/team";
 import AddTeam from "./serviceDetails/addTeam";
+import ManageServiceTeams from "./universal/managing/serviceteams";
 
 interface Props {
   service: any;
@@ -172,13 +173,26 @@ class ServiceTeamsSection extends React.Component<Props, State> {
           {teamArray}
         </div>
         {this.state.add && (
-          <AddTeam
+          /* <AddTeam
             close={sO => {
               this.setState({ add: false, savingObject: sO });
             }}
             service={this.props.service}
             teams={this.props.teams}
-          />
+          />*/
+          <ManageServiceTeams
+            close={sO => {
+              this.setState({ add: false });
+            }}
+            service={this.props.service}>
+            <div className="buttonsPopup">
+              <UniversalButton
+                label="Close"
+                type="low"
+                onClick={() => this.setState({ add: false })}
+              />
+            </div>
+          </ManageServiceTeams>
         )}
         {this.state.savingObject && (
           <PopupSelfSaving

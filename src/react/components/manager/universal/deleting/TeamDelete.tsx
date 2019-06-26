@@ -163,8 +163,8 @@ class TeamDelete extends React.Component<Props, State> {
                   this.setState({
                     savingObject: null
                   }),
-                saveFunction: () =>
-                  this.props.removeFromTeam({
+                saveFunction: async () =>
+                  await this.props.removeFromTeam({
                     variables: {
                       teamid: team.unitid.id,
                       userid: employee.id,
