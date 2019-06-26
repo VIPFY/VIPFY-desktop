@@ -237,8 +237,8 @@ class EShower extends React.Component<Props, State> {
                       Employees
                     </span>
                     <span className="pageArrowTitle">></span>
-                    <span className="pageMainTitle">{`${data.adminme.firstname} ${
-                      data.adminme.lastname
+                    <span className="pageMainTitle">{`${data.fetchSemiPublicUser.firstname} ${
+                      data.fetchSemiPublicUser.lastname
                     }`}</span>
                   </div>
                   <Query query={fetchDepartmentsData}>
@@ -276,7 +276,9 @@ class EShower extends React.Component<Props, State> {
 
                 <EServices
                   employeeid={employeeid}
-                  employeename={`${data.adminme.firstname} ${data.adminme.lastname}`}
+                  employeename={`${data.admfetchSemiPublicUserinme.firstname} ${
+                    data.fetchSemiPublicUser.lastname
+                  }`}
                 />
               </React.Fragment>
             );

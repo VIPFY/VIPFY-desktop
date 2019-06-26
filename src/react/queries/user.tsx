@@ -13,7 +13,7 @@ export const QUERY_USER = gql`
 
 export const QUERY_SEMIPUBLICUSER = gql`
   query onFetchSemiPublicUser($unitid: ID!) {
-    adminme(unitid: $unitid) {
+    fetchSemiPublicUser(unitid: $unitid) {
       id
       firstname
       lastname

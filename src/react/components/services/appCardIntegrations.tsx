@@ -7,6 +7,7 @@ import { randomPassword } from "../../common/passwordgen";
 import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 import { me, fetchLicences } from "../../queries/auth";
+import { getBgImageApp } from "../../common/images";
 
 interface Props {
   id: number;
@@ -138,12 +139,7 @@ class AppCardIntegrations extends React.Component<Props, State> {
         <div
           className="appIntegrationLogo"
           style={{
-            backgroundImage:
-              logo.indexOf("/") != -1
-                ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                    logo
-                  )})`
-                : `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${encodeURI(logo)})`
+            backgroundImage: getBgImageApp(logo, 128)
           }}
         />
         <div className="captionIntegration">

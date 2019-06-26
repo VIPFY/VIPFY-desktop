@@ -5,39 +5,23 @@ import { FETCH_EMPLOYEES } from "../../../../queries/departments";
 
 interface Props {
   search: string;
-  team: any;
-  setOuterState: Function;
-  addedEmployees: any[];
-  integrateEmployee: any;
+  employees: any[];
+  onChange: Function;
 }
 
 interface State {
   drag: any;
-  newEmpPopup: Boolean;
-  popup: Boolean;
-  integrateEmployee: any;
-  addedEmployees: any[];
   dragdelete: any;
 }
 
-class EmployeeAdd extends React.Component<Props, State> {
+class EmployeeGrid extends React.Component<Props, State> {
   state = {
-    newEmpPopup: false,
-    popup: false,
     drag: null,
-    integrateEmployee: null,
-    dragdelete: null,
-    addedEmployees: []
+    dragdelete: null
   };
 
-  setBothStates = s => {
-    this.setState(s);
-    this.props.setOuterState(s);
-  };
-
-  printTeamEmployees(employeedata) {
+  printTeamEmployees(interemployees) {
     let employeesArray: JSX.Element[] = [];
-    const interemployees = employeedata.concat(this.props.addedEmployees);
     let employees = [];
     if (interemployees.length > 0) {
       interemployees.sort(function(a, b) {
@@ -56,27 +40,17 @@ class EmployeeAdd extends React.Component<Props, State> {
 
       employees = interemployees.filter(e => e.id);
 
-      console.log("EMPs", employees, employeedata, this.props.addedEmployees);
-
       employees.forEach(employee => {
-        const oldemployee = false || employeedata.find(t => t.id == employee.id);
         employeesArray.push(
           <div
             key={employee.id}
             className="space"
-            draggable={!oldemployee}
-            onDragStart={() => this.setBothStates({ dragdelete: employee })}
-            onClick={() =>
-              this.setBothStates(prevState => {
-                const remainingemployees = this.props.addedEmployees.filter(
-                  e => e.id != employee.id
-                );
-                return { addedEmployees: remainingemployees };
-              })
-            }>
-            <PrintEmployeeSquare className="image" size={88} employee={employee} />
+            draggable={true}
+            onDragStart={() => this.setState({ dragdelete: employee })}
+            onClick={() => this.props.onChange({ action: "remove", content: employee })}>
+            <PrintEmployeeSquare className="image" employee={employee} />
             <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
-            {oldemployee ? (
+            {employee.current ? (
               <React.Fragment>
                 <div className="greyed" />
                 <div className="ribbon ribbon-top-right">
@@ -95,43 +69,18 @@ class EmployeeAdd extends React.Component<Props, State> {
                 <span>Not all services configurated</span>
               </div>
             )}
+            {employee.integrating && (
+              <div className="imageCog">
+                <i className="fal fa-cog fa-spin" />
+                <span>Editing this membership</span>
+              </div>
+            )}
           </div>
         );
       });
     }
-    let j = 0;
-    if (this.props.integrateEmployee) {
-      console.log("INTEGRATE EMP");
-      const employee: {
-        profilepicture: string;
-        firstname: string;
-        lastname: string;
-        integrating: Boolean;
-        id: number;
-        services: any[];
-      } = this.props.integrateEmployee!;
-      employeesArray.push(
-        <div className="space" key={employee.id}>
-          <PrintEmployeeSquare employee={employee} size={88} className="image" />
-          <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
-          <div className="imageHover">
-            <i className="fal fa-trash-alt" />
-            <span>Click or drag to remove</span>
-          </div>
-          {employee.integrating ? (
-            <div className="imageCog">
-              <i className="fal fa-cog fa-spin" />
-              <span>Editing this membership</span>
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
-      );
-      j = 1;
-    }
     let i = 0;
-    while ((employees.length + j + i) % 4 != 0 || employees.length + j + i < 12 || i == 0) {
+    while ((employees.length + i) % 4 != 0 || employees.length + i < 12 || i == 0) {
       employeesArray.push(
         <div className="space" key={`fake-${i}`}>
           <div className="fakeimage" />
@@ -151,28 +100,16 @@ class EmployeeAdd extends React.Component<Props, State> {
           onDrop={e => {
             e.preventDefault();
             if (this.state.drag) {
-              if (this.state.drag!.new) {
-                this.setBothStates({
-                  drag: null,
-                  newEmpPopup: true
-                });
-              }
-              this.setBothStates(prevState => {
-                return {
-                  popup: true,
-                  drag: null,
-                  integrateEmployee: Object.assign(
-                    {},
-                    { integrating: true, services: [], ...prevState.drag }
-                  )
-                };
+              this.setState(prevState => {
+                this.props.onChange({ action: "add", content: prevState.drag });
+                return { drag: null };
               });
             }
           }}
           onDragOver={e => {
             e.preventDefault();
           }}>
-          <div className="addgrid">{this.printTeamEmployees(this.props.team.employees)}</div>
+          <div className="addgrid">{this.printTeamEmployees(this.props.employees)}</div>
         </div>
         <Query query={FETCH_EMPLOYEES}>
           {({ loading, error, data }) => {
@@ -209,29 +146,17 @@ class EmployeeAdd extends React.Component<Props, State> {
             //ausgrauen von Teams, in denen er schon drin ist  employeeTeams
             employees.forEach(e => {
               const employee = e.employee;
-              const available = !(
-                this.props.team.employees.find(a => a.id == employee.id) ||
-                this.props.addedEmployees.find(a => a.id == employee.id)
-              );
+              const available = !this.props.employees.find(a => a.id == employee.id);
               employeeArray.push(
                 <div
                   key={employee.id}
                   className="space"
                   draggable={available}
-                  onDragStart={() => this.setBothStates({ drag: employee })}
+                  onDragStart={() => this.setState({ drag: employee })}
                   onClick={() =>
-                    available &&
-                    this.setBothStates(() => {
-                      return {
-                        popup: true,
-                        integrateEmployee: Object.assign(
-                          {},
-                          { integrating: true, services: [], ...employee }
-                        )
-                      };
-                    })
+                    available && this.props.onChange({ action: "add", content: employee })
                   }>
-                  <PrintEmployeeSquare employee={employee} size={88} className="image" />
+                  <PrintEmployeeSquare employee={employee} className="image" />
                   <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
 
                   {available ? (
@@ -256,11 +181,9 @@ class EmployeeAdd extends React.Component<Props, State> {
                 onDrop={e => {
                   e.preventDefault();
                   if (this.state.dragdelete) {
-                    this.setBothStates(prevState => {
-                      const remainingEmployees = this.props.addedEmployees.filter(
-                        e => e.id != this.state.dragdelete!.id
-                      );
-                      return { addedEmployees: remainingEmployees };
+                    this.setState(prevState => {
+                      this.props.onChange({ action: "remove", content: prevState.dragdelete });
+                      return { dragdelete: null };
                     });
                   }
                 }}
@@ -271,8 +194,8 @@ class EmployeeAdd extends React.Component<Props, State> {
                   <div
                     className="space"
                     draggable
-                    onClick={() => this.setBothStates({ newEmpPopup: true })}
-                    onDragStart={() => this.setBothStates({ drag: { new: true } })}>
+                    onDragStart={() => this.setState({ drag: { new: true } })}
+                    onClick={() => this.props.onChange({ action: "add", content: { new: true } })}>
                     <div className="image" style={{ backgroundColor: "#F5F5F5", color: "#20BAA9" }}>
                       <i className="fal fa-plus" />
                     </div>
@@ -288,4 +211,4 @@ class EmployeeAdd extends React.Component<Props, State> {
     );
   }
 }
-export default EmployeeAdd;
+export default EmployeeGrid;

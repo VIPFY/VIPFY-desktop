@@ -2,6 +2,7 @@ import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import Store = require("electron-store");
+import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
 
 interface Props {
   addMachineUser: Function;
@@ -23,7 +24,7 @@ class ChangeAccount extends React.Component<Props, State> {
     hover: ""
   };
 
-  accounts = [];
+  accounts: any[] = [];
 
   deleteAccount() {
     let machineuserarray: {
@@ -75,24 +76,7 @@ class ChangeAccount extends React.Component<Props, State> {
                 onMouseEnter={() => this.setState({ hover: a.email })}
                 onMouseLeave={() => this.setState({ hover: "" })}
                 onClick={() => this.props.selectAccount(a.email)}>
-                <div
-                  className="accountHolderBullet"
-                  style={
-                    a.profilepicture
-                      ? a.profilepicture.indexOf("/") != -1
-                        ? {
-                            backgroundImage: `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                              a.profilepicture
-                            )})`
-                          }
-                        : {
-                            backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${encodeURI(
-                              a.profilepicture
-                            )})`
-                          }
-                      : { backgroundColor: a.color }
-                  }
-                />
+                <PrintEmployeeSquare employee={a} className="accountHolderBullet" size={20} />
                 <div className="accountHolderText" style={{ paddingTop: "11px" }}>
                   <div>{a.fullname}</div>
                   <div style={{ fontSize: "12px" }}>{a.email}</div>

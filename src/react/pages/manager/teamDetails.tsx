@@ -15,6 +15,7 @@ import TeamGeneralData from "../../components/manager/teamGeneralData";
 import EmployeeSection from "../../components/manager/teamDetails/employeeSection";
 import ServiceSection from "../../components/manager/serviceSection";
 import UploadImage from "../../components/manager/universal/uploadImage";
+import { getImageUrlTeam } from "../../common/images";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -107,13 +108,7 @@ class TeamDetails extends React.Component<Props, State> {
                       picture={{
                         preview:
                           team && team.profilepicture
-                            ? team.profilepicture.indexOf("/") != -1
-                              ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                  team.profilepicture
-                                )}`
-                              : `https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                  team.profilepicture
-                                )}`
+                            ? getImageUrlTeam(team.profilepicture, 96)
                             : null
                       }}
                       name={

@@ -241,7 +241,7 @@ class App extends React.Component<AppProps, AppState> {
                 moveTo={this.moveTo}
                 {...data.me}
                 employees={data.me.company.employees}
-                profilepicture={data.me.profilepicture || data.me.company.profilepicture}
+                profilepicture={data.me.profilepicture}
               />
             );
           }}

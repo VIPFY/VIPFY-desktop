@@ -2,6 +2,7 @@ import * as React from "react";
 import { Query } from "react-apollo";
 import { QUERY_USER } from "../queries/user";
 import { unitPicFolder, defaultPic } from "../common/constants";
+import { getBgImageUser } from "../common/images";
 
 /**
  * Prints the profile picture of a user, or the default picture
@@ -10,6 +11,8 @@ import { unitPicFolder, defaultPic } from "../common/constants";
  * @param size a string representing the desired size. Valid values: inline, twolines, tiny.
  *
  * @example <UserPicture unitid={22} size={inline} /> James
+ *
+ * @deprecated use printEmployeeSquare instead
  *
  * @returns {JSX.Element}
  */
@@ -48,10 +51,9 @@ export default function UserPicture(props: {
               )}`
             : encodeURI(unitPicFolder + user.profilepicture)
           : defaultPic;
-        //user.profilepicture ? unitPicFolder + user.profilepicture : defaultPic;
         const style = {
           cursor: props.onClick ? "pointer" : "",
-          backgroundImage: `url(${picture})`,
+          backgroundImage: getBgImageUser(user.profilepicture, 256),
           backgroundSize: "cover",
           backgroundPosition: "center",
           position: "relative",
