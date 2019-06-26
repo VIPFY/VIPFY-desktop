@@ -5,7 +5,7 @@ interface Props {
   defaultValue?: any;
   options: any[];
   handleChange: Function;
-  option: Option | null;
+  option: Option | null | string;
   touched?: boolean;
 }
 
@@ -38,16 +38,18 @@ class DropDown extends React.PureComponent<Props, State> {
     return (
       <div className="dropdown">
         <button
-          className="naked-button header"
+          className="naked-button dropdown-header"
           onClick={() => this.setState(prev => ({ ...prev, show: !prev.show, touched: true }))}>
           <span>
             {this.props.defaultValue && !touched
               ? this.props.defaultValue.label
-              : touched && this.props.option && this.props.option.label
+              : touched && this.props.option
               ? this.props.option.label
+                ? this.props.option.label
+                : this.props.option
               : ""}
           </span>
-          <i className="fal fa-angle-down" />
+          <i className="fal fa-angle-down big-angle" />
         </button>
 
         <div className={bodyClass}>
@@ -59,7 +61,7 @@ class DropDown extends React.PureComponent<Props, State> {
                 this.props.handleChange(option);
                 this.setState({ show: false });
               }}>
-              {option.label}
+              {option.label ? option.label : option}
             </button>
           ))}
         </div>

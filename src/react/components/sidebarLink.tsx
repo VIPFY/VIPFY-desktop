@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
 import Tooltip from "react-tooltip-lite";
+import { getBgImageApp } from "../common/images";
 
 interface Props {
   licence: any;
@@ -142,13 +143,7 @@ class SidebarLink extends React.Component<Props, State> {
             style={{
               backgroundImage:
                 licence.boughtplanid.planid.appid.icon &&
-                licence.boughtplanid.planid.appid.icon.indexOf("/") != -1
-                  ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                      licence.boughtplanid.planid.appid.icon
-                    )})`
-                  : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                      licence.boughtplanid.planid.appid.icon
-                    )})`
+                getBgImageApp(licence.boughtplanid.planid.appid.icon, 24)
             }}>
             {this.props.openInstances[this.props.licence.id] && (
               <i className="fa fa-circle active-app" />

@@ -11,6 +11,7 @@ import { fetchCards } from "../queries/billing";
 import UserPicture from "../components/UserPicture";
 import PlanHolder from "../components/PlanHolder";
 import Duration from "../common/duration";
+import PrintEmployeeSquare from "../components/manager/universal/squares/printEmployeeSquare";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -397,7 +398,11 @@ class Navigation extends React.Component<Props, State> {
 
           <div className="right-profile-holder">
             <div className="pic-and-name" onClick={() => this.goTo("profile")}>
-              <UserPicture size="right-profile-image" unitid={this.props.id} />
+              <PrintEmployeeSquare
+                employee={this.props}
+                className="right-profile-image"
+                size={32}
+              />
 
               <div className="name-holder">
                 <span className="right-profile-first-name" data-recording-sensitive>

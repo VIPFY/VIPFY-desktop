@@ -1,5 +1,5 @@
 import * as React from "react";
-import { graphql, compose, Query } from "react-apollo";
+import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import Chart from "react-apexcharts";
 import ResizeAware from "react-resize-aware";
@@ -38,12 +38,9 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 
 class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
   render() {
-    //console.log("CHARTPROPS", this.props);
     if (!this.props.data.fetchBoughtplanUsagePerUser) {
       return <div>Error fetching data</div>;
     }
-
-    console.log("DATA", this.props.data.fetchBoughtplanUsagePerUser);
 
     const d = this.props.data.fetchBoughtplanUsagePerUser;
 
@@ -62,8 +59,6 @@ class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
 
     const series = [{ data }];
     const height = d.length * 25 + 100;
-
-    console.log("DATA RESULT", series, height, numTicks, absoluteValues);
 
     return (
       <Chart
@@ -152,48 +147,46 @@ class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
   }
 }
 
-function BoughtplanUsagePerUser(props) {
-  return (
-    <Query
-      query={gql`
-        query fetchBoughtplanUsagePerUser($starttime: Date!, $endtime: Date!, $boughtplanid: ID!) {
-          fetchBoughtplanUsagePerUser(
-            starttime: $starttime
-            endtime: $endtime
-            boughtplanid: $boughtplanid
-          ) {
-            unit {
-              id
-              firstname
-              middlename
-              lastname
-              title
-              profilepicture
-            }
-            totalminutes
+export default props => (
+  <Query
+    query={gql`
+      query fetchBoughtplanUsagePerUser($starttime: Date!, $endtime: Date!, $boughtplanid: ID!) {
+        fetchBoughtplanUsagePerUser(
+          starttime: $starttime
+          endtime: $endtime
+          boughtplanid: $boughtplanid
+        ) {
+          unit {
+            id
+            firstname
+            middlename
+            lastname
+            title
+            profilepicture
           }
+          totalminutes
         }
-      `}
-      variables={{
-        starttime: "2018-01-01",
-        endtime: "2019-02-01",
-        boughtplanid: props.boughtplanid
-      }}>
-      {({ data, loading, error }) => {
-        if (loading) {
-          return <div>Loading</div>;
-        }
-        if (error) {
-          return <div>Error fetching data</div>;
-        }
-        return (
-          <ResizeAware style={{ width: "100%" }}>
-            <BoughtplanUsagePerUserInner {...props} data={data} />
-          </ResizeAware>
-        );
-      }}
-    </Query>
-  );
-}
+      }
+    `}
+    variables={{
+      starttime: "2018-01-01",
+      endtime: moment().toISOString(),
+      boughtplanid: props.boughtplanid
+    }}>
+    {({ data, loading, error }) => {
+      if (loading) {
+        return <div>Loading</div>;
+      }
 
-export default BoughtplanUsagePerUser;
+      if (error) {
+        return <div>Error fetching data</div>;
+      }
+
+      return (
+        <ResizeAware style={{ width: "100%" }}>
+          <BoughtplanUsagePerUserInner {...props} data={data} />
+        </ResizeAware>
+      );
+    }}
+  </Query>
+);

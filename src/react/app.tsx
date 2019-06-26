@@ -146,6 +146,12 @@ class App extends React.Component<AppProps, AppState> {
 
   logMeIn = async (email: string, password: string) => {
     try {
+      // Login will fail if there already is a token, which to be fair,
+      // should never be the case. But never say never...
+      const tokenExists = localStorage.getItem("token");
+      if (tokenExists) {
+        localStorage.removeItem("token");
+      }
       const res = await this.props.signIn({ variables: { email, password } });
       const { ok, token } = res.data.signIn;
 
@@ -235,7 +241,7 @@ class App extends React.Component<AppProps, AppState> {
                 moveTo={this.moveTo}
                 {...data.me}
                 employees={data.me.company.employees}
-                profilepicture={data.me.profilepicture || data.me.company.profilepicture}
+                profilepicture={data.me.profilepicture}
               />
             );
           }}

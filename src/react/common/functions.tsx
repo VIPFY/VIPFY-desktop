@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import moment = require("moment");
+import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
 
 export function showStars(stars) {
   const starsArray: JSX.Element[] = [];
@@ -186,3 +187,10 @@ export const filterAndSort = (licences, property) =>
 
       return 0;
     });
+
+export const AppIcon = ({ app }) => (
+  <div className="app-icon-wrapper">
+    <PrintServiceSquare service={app} appidFunction={a => a} className="app-icon" />
+    <span className="app-name">{app.name}</span>
+  </div>
+);

@@ -71,7 +71,6 @@ class UserSecurityTableInner extends React.Component<Props, State> {
   };
 
   forceReset = async userids => {
-    console.log(userids);
     if (userids.length === 1) {
       this.setState({ changeForce: userids[0] });
     } else {
@@ -89,20 +88,10 @@ class UserSecurityTableInner extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("props", this.props.data);
-
     const rows = this.tableRows();
     return (
       <table>
         <thead>
-          <tr>
-            <th />
-            <th />
-            <th />
-            <th colSpan={3}>Password</th>
-            <th />
-            <th />
-          </tr>
           <tr>
             <th>Name</th>
             <th>Last Active</th>
@@ -146,7 +135,6 @@ class UserSecurityTableInner extends React.Component<Props, State> {
 
   tableRows() {
     return this.props.data.fetchUserSecurityOverview.map(user => {
-      //console.log("user", user);
       return (
         <tr key={`r${user.id}`}>
           <td>
@@ -167,7 +155,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
       <td align="right">{user.suspended ? "yes" : "no"}</td>*/}
           <td>
             {user.needspasswordchange ? (
-              "yes"
+              "required"
             ) : (
               <button onClick={() => this.forceReset([user.id])} className="naked-button button">
                 force

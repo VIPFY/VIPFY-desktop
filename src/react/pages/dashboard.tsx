@@ -37,9 +37,7 @@ export default (props: Props) => {
 
   return (
     <div className="dashboard-working">
-      <div className="dashboardHeading">
-        <div>My Apps</div>
-      </div>
+      <div className="dashboardHeading" />
 
       <AppList licences={filteredLicences} setApp={setApp} />
     </div>

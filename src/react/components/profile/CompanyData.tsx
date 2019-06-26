@@ -16,6 +16,8 @@ import { FETCH_COMPANY } from "../../queries/departments";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Tooltip from "react-tooltip-lite";
+import UploadImage from "../manager/universal/uploadImage";
+import { getImageUrlTeam } from "../../common/images";
 
 const UPDATE_PIC = gql`
   mutation onUpdatePic($file: Upload!) {
@@ -48,7 +50,7 @@ class CompanyData extends React.Component<Props, State> {
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
-  uploadPic = async ({ picture }) => {
+  uploadPic = async picture => {
     try {
       await this.props.updatePic({ variables: { file: picture }, refetchQueries: ["me"] });
 
@@ -107,7 +109,7 @@ class CompanyData extends React.Component<Props, State> {
               }
 
               return (
-                <div className="genericHolder">
+                <div className="managerPage genericHolder">
                   <div className="header" onClick={this.toggle}>
                     <i
                       className={`button-hide fas ${
@@ -118,26 +120,13 @@ class CompanyData extends React.Component<Props, State> {
                   </div>
                   <div className={`inside ${this.state.show ? "in" : "out"}`}>
                     <div className="company-overview">
-                      <div className="pic-holder" onClick={() => showPopup(picPopup)}>
-                        <div
-                          className="imagehoverable pic"
-                          style={{
-                            backgroundImage: fetchCompany.profilepicture
-                              ? fetchCompany.profilepicture.indexOf("/") != -1
-                                ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                    fetchCompany.profilepicture
-                                  )})`
-                                : `url(${encodeURI(unitPicFolder + fetchCompany.profilepicture)})`
-                              : `url(${unitPicFolder}default.png)`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                            position: "relative"
-                          }}>
-                          <div className="imagehover">
-                            <i className="fal fa-camera" />
-                            <span>Update</span>
-                          </div>
-                        </div>
+                      <div className={"pic-holder"} style={{ margin: 0, marginBottom: "16px" }}>
+                        <UploadImage
+                          picture={{ preview: getImageUrlTeam(fetchCompany.profilepicture, 96) }}
+                          onDrop={file => this.uploadPic(file)}
+                          name={fetchCompany.name}
+                          className={"managerBigSquare"}
+                        />
                       </div>
 
                       <ul className="information">
