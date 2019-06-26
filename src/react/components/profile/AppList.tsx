@@ -25,6 +25,7 @@ interface Props {
   licences: Licence[];
   updateLayout: Function;
   bulkUpdateLayout: Function;
+  search?: string;
 }
 
 interface State {
@@ -108,22 +109,34 @@ class AppList extends React.Component<Props, State> {
         </div>
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
-            {licences.map((licence, key) => {
-              return (
-                <AppTile
-                  key={key}
-                  position={key}
-                  preview={preview}
-                  setPreview={this.setPreview}
-                  dragItem={dragItem}
-                  dragStartFunction={this.dragStartFunction}
-                  dragEndFunction={this.dragEndFunction}
-                  handleDrop={this.handleDrop}
-                  licence={licence}
-                  setTeam={this.props.setApp}
-                />
-              );
-            })}
+            {licences
+              .filter(licence => {
+                if (this.props.search) {
+                  const name = licence.boughtplanid.alias
+                    ? licence.boughtplanid.alias
+                    : licence.boughtplanid.planid.appid.name;
+
+                  return name.toUpperCase().includes(this.props.search.toUpperCase());
+                } else {
+                  return true;
+                }
+              })
+              .map((licence, key) => {
+                return (
+                  <AppTile
+                    key={key}
+                    position={key}
+                    preview={preview}
+                    setPreview={this.setPreview}
+                    dragItem={dragItem}
+                    dragStartFunction={this.dragStartFunction}
+                    dragEndFunction={this.dragEndFunction}
+                    handleDrop={this.handleDrop}
+                    licence={licence}
+                    setTeam={this.props.setApp}
+                  />
+                );
+              })}
           </div>
         </div>
       </div>
