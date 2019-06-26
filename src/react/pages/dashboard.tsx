@@ -20,7 +20,11 @@ interface Props {
   statisticData: object;
 }
 
-class Dashboard extends React.Component {
+interface State {
+  search: string;
+}
+
+class Dashboard extends React.Component<Props, State> {
   state = { search: "" };
 
   render() {
@@ -34,22 +38,6 @@ class Dashboard extends React.Component {
       return <ErrorComp error={filterError(this.props.licences.error)} />;
     }
 
-    if (this.props.licences.length < 1) {
-      return (
-        <div className="no-apps">
-          <div>This is your</div>
-          <h1>DASHBOARD</h1>
-          <div>It's a central point of information about your connected services and licenses.</div>
-          <img src={`${__dirname}/../../images/dashboard.png`} alt="Cool pic of a dashboard" />
-          <div>You haven't integrated any services yet.</div>
-          <div>
-            Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
-            services.
-          </div>
-        </div>
-      );
-    }
-
     const filteredLicences = filterAndSort(this.props.licences.fetchLicences, "dashboard");
 
     return (
@@ -58,8 +46,23 @@ class Dashboard extends React.Component {
           <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
-
-        <AppList search={this.state.search} licences={filteredLicences} setApp={setApp} />
+        {this.props.licences.length < 1 ? (
+          <div className="no-apps">
+            <div>This is your</div>
+            <h1>DASHBOARD</h1>
+            <div>
+              It's a central point of information about your connected services and licenses.
+            </div>
+            <img src={`${__dirname}/../../images/dashboard.png`} alt="Cool pic of a dashboard" />
+            <div>You haven't integrated any services yet.</div>
+            <div>
+              Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
+              services.
+            </div>
+          </div>
+        ) : (
+          <AppList search={this.state.search} licences={filteredLicences} setApp={setApp} />
+        )}{" "}
       </div>
     );
   }

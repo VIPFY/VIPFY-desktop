@@ -47,7 +47,8 @@ class UploadImage extends React.Component<Props, State> {
                 ? {
                     backgroundImage: `url(${encodeURI(picture.preview)})`,
                     backgroundPosition: "center",
-                    backgroundSize: "cover"
+                    backgroundSize: "cover",
+                    backgroundColor: "unset"
                   }
                 : (!picture || !picture.preview) && name != ""
                 ? {

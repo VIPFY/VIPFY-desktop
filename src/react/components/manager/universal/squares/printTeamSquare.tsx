@@ -1,8 +1,10 @@
 import * as React from "react";
+import { getBgImageTeam } from "../../../../common/images";
 
 interface Props {
   team: any;
-  className: string | null;
+  className?: string | null;
+  size?: number;
 }
 
 interface State {}
@@ -10,6 +12,7 @@ interface State {}
 class PrintTeamSquare extends React.Component<Props, State> {
   render() {
     const { team } = this.props;
+    const size = this.props.size || 32;
     return (
       <div
         key={team.name}
@@ -18,19 +21,12 @@ class PrintTeamSquare extends React.Component<Props, State> {
         style={
           team.profilepicture
             ? {
-                backgroundImage:
-                  team.profilepicture.indexOf("/") != -1
-                    ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                        team.profilepicture
-                      )})`
-                    : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                        team.profilepicture
-                      )})`,
+                backgroundImage: getBgImageTeam(team.profilepicture, size),
                 backgroundColor: "unset"
               }
             : team.internaldata && team.internaldata.color
             ? { backgroundColor: team.internaldata.color }
-            : {}
+            : { backgroundColor: "#5d76ff" }
         }>
         {team.profilepicture
           ? ""

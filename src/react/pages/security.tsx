@@ -25,7 +25,7 @@ class Security extends React.Component<Props, State> {
               className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
               //onClick={this.toggle}
             />
-            <span>Security</span>
+            <span>User Passwords</span>
           </div>
           <div className={`inside ${this.state.show ? "in" : "out"}`}>
             <div className="inside-padding">

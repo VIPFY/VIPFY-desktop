@@ -74,7 +74,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
           livevalue={v => this.setBothStates({ hiredate: v })}
           startvalue={this.state.hiredate}
         />
-        <UniversalTextInput
+        {/*<UniversalTextInput
           label="Street/Number"
           id="street"
           livevalue={v => this.setBothStates({ street: v })}
@@ -91,7 +91,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
           id="city"
           livevalue={v => this.setBothStates({ city: v })}
           startvalue={this.state.city}
-        />
+        /> */}
         <UniversalTextInput
           label="Private Phone"
           id="pphone1"

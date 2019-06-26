@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import gql from "graphql-tag";
-import * as moment from "moment";
 import { withApollo, Query } from "react-apollo";
 import Notification from "../components/Notification";
 import { filterError, sleep, refetchQueries, AppContext } from "../common/functions";
@@ -9,9 +8,7 @@ import { fetchLicences } from "../queries/auth";
 import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { fetchCards } from "../queries/billing";
 import UserPicture from "../components/UserPicture";
-import PlanHolder from "../components/PlanHolder";
-import Duration from "../common/duration";
-import VoteForApp from "../popups/appVote";
+import PrintEmployeeSquare from "../components/manager/universal/squares/printEmployeeSquare";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -394,7 +391,11 @@ class Navigation extends React.Component<Props, State> {
 
           <div className="right-profile-holder">
             <div className="pic-and-name" onClick={() => this.goTo("profile")}>
-              <UserPicture size="right-profile-image" unitid={this.props.id} />
+              <PrintEmployeeSquare
+                employee={this.props}
+                className="right-profile-image"
+                size={32}
+              />
 
               <div className="name-holder">
                 <span className="right-profile-first-name" data-recording-sensitive>
