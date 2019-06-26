@@ -4,7 +4,6 @@ import { graphql, compose, Query, withApollo } from "react-apollo";
 import * as Dropzone from "react-dropzone";
 
 import LoadingDiv from "../../components/LoadingDiv";
-import UserPicture from "../UserPicture";
 import Duration from "../../common/duration";
 
 import { CHANGE_PASSWORD } from "../../mutations/auth";
@@ -16,6 +15,8 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
 import Consent from "../../popups/universalPopups/Consent";
+import { getImageUrlUser } from "../../common/images";
+import UploadImage from "../manager/universal/uploadImage";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
@@ -102,7 +103,7 @@ class PersonalData extends React.Component<Props, State> {
           if (error) {
             return <div>Error loading data</div>;
           }
-          const { firstname, middlename, lastname, title, createdate } = data.me;
+          const { firstname, middlename, lastname, title, createdate, profilepicture } = data.me;
 
           // Just to be on the safe side
           let consent = "not given";
@@ -127,7 +128,7 @@ class PersonalData extends React.Component<Props, State> {
 
                 return (
                   <div
-                    className="genericHolder"
+                    className="managerPage genericHolder"
                     ref={el => addRenderElement({ key: "profilePersonalHolder", element: el })}>
                     <div className="header" onClick={this.toggle}>
                       <i
@@ -139,26 +140,13 @@ class PersonalData extends React.Component<Props, State> {
                       <span>Personal Data</span>
                     </div>
                     <div className={`inside-profile ${this.state.show ? "in" : "out"}`}>
-                      <div className="pic-holder">
-                        <Dropzone
-                          disabled={this.state.loading}
-                          style={{
-                            width: "unset",
-                            height: "unset",
-                            border: "none"
-                          }}
-                          accept="image/*"
-                          type="file"
-                          multiple={false}
-                          onDrop={([file]) => this.uploadPic(file)}>
-                          <UserPicture
-                            size="pic"
-                            unitid={this.props.id}
-                            updateable={true}
-                            addRenderElement={addRenderElement}
-                            elementName="profilePicture"
-                          />
-                        </Dropzone>
+                      <div className={"pic-holder"} style={{ margin: 0, marginBottom: "16px" }}>
+                        <UploadImage
+                          picture={{ preview: getImageUrlUser(profilepicture, 96) }}
+                          onDrop={file => this.uploadPic(file)}
+                          name={firstname}
+                          className={"managerBigSquare"}
+                        />
                       </div>
 
                       <div className="information">

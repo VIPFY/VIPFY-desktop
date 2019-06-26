@@ -44,6 +44,7 @@ import AppDrop from "../popups/appDrop";
 import RemoveLicence from "../popups/removeLicence";
 import MoveLicence from "../popups/moveLicence";
 import { AppContext } from "../common/functions";
+import { getImageUrlApp, getSourceSetApp } from "../common/images";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onRemoveExternalAccount($licenceid: ID!) {
@@ -948,18 +949,8 @@ class Team extends React.Component<Props, State> {
                                       style={{
                                         float: "left"
                                       }}
-                                      //src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                                      //  app.icon
-                                      //}`}
-                                      src={
-                                        app.icon && app.icon.indexOf("/") != -1
-                                          ? `https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                                              app.icon
-                                            )}`
-                                          : `https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                              app.icon
-                                            )}`
-                                      }
+                                      src={getImageUrlApp(app.icon, 32)}
+                                      srcSet={getSourceSetApp(app.icon, 32)}
                                     />
                                   ) : (
                                     <div

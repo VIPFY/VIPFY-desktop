@@ -35,13 +35,18 @@ interface State {
 }
 
 const CREATE_EMPLOYEE = gql`
-  mutation createEmployee($addpersonal: JSON!, $addteams: [JSON]!, $apps: [JSON]!) {
-    createEmployee(addpersonal: $addpersonal, addteams: $addteams, apps: $apps)
+  mutation onCreateEmployee(
+    $file: Upload
+    $addpersonal: JSON!
+    $addteams: [JSON]!
+    $apps: [JSON]!
+  ) {
+    createEmployee(file: $file, addpersonal: $addpersonal, addteams: $addteams, apps: $apps)
   }
 `;
 
 const DELETE_EMPLOYEE = gql`
-  mutation deleteEmployee($employeeid: ID!) {
+  mutation onDeleteEmployee($employeeid: ID!) {
     deleteEmployee(employeeid: $employeeid)
   }
 `;
@@ -182,9 +187,8 @@ class EmployeeOverview extends React.Component<Props, State> {
               if (error) {
                 return `Error! ${error.message}`;
               }
-              //onsole.log("fetchDepartmentData", data);
 
-              //Sort employees
+              // Sort employees
               let employees: any[] = [];
               let interemployees: any[] = [];
               if (data.fetchDepartmentsData && data.fetchDepartmentsData[0].children_data) {
@@ -368,9 +372,10 @@ class EmployeeOverview extends React.Component<Props, State> {
               <PopupSelfSaving
                 savingmessage="Adding new employee"
                 savedmessage="New employee succesfully added"
-                saveFunction={async () =>
+                saveFunction={async () => {
                   await createEmployee({
                     variables: {
+                      file: this.state.addpersonal.picture,
                       addpersonal: {
                         password: await randomPassword(),
                         ...this.state.addpersonal
@@ -379,8 +384,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                       apps: this.state.apps
                     },
                     refetchQueries: [{ query: fetchDepartmentsData }]
-                  })
-                }
+                  });
+                }}
                 closeFunction={() =>
                   this.setState({
                     saving: false,

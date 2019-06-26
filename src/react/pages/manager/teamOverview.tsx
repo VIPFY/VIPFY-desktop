@@ -199,7 +199,7 @@ class TeamOverview extends React.Component<Props, State> {
                 return `Error! ${error.message}`;
               }
 
-              //Sort teams
+              // Sort teams
               let teams: any[] = [];
               let interteams: any[] = [];
               if (data.fetchCompanyTeams) {
@@ -224,7 +224,6 @@ class TeamOverview extends React.Component<Props, State> {
                 } else {
                   teams = interteams;
                 }
-                console.log("TEAMS", teams);
               }
               return (
                 <div className="table">

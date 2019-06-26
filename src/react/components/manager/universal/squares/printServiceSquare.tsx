@@ -6,6 +6,7 @@ interface Props {
   overlayFunction?: Function;
   additionalStyles?: Object;
   className?: string;
+  size?: number;
 }
 
 interface State {}
@@ -13,6 +14,7 @@ interface State {}
 class PrintServiceSquare extends React.Component<Props, State> {
   render() {
     const { service, appidFunction, overlayFunction, additionalStyles } = this.props;
+    const size = this.props.size || 32;
     return (
       <div
         key={service.id}
@@ -22,14 +24,9 @@ class PrintServiceSquare extends React.Component<Props, State> {
           appidFunction(service).icon
             ? {
                 ...(additionalStyles || {}),
-                backgroundImage:
-                  appidFunction(service).icon.indexOf("/") != -1
-                    ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                        appidFunction(service).icon
-                      )})`
-                    : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                        appidFunction(service).icon
-                      )})`,
+                backgroundImage: `url(https://appimages.vipfy.store/${size}/${size}/fit/${encodeURI(
+                  appidFunction(service).icon
+                )})`,
                 backgroundColor: "unset"
               }
             : additionalStyles || {}

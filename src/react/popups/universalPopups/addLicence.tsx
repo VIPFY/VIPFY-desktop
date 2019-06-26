@@ -3,6 +3,7 @@ import PopupBase from "./popupBase";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { randomPassword } from "../../common/passwordgen";
+import { getBgImageApp, getBgImageUser } from "../../common/images";
 
 interface Props {
   app: {
@@ -108,14 +109,7 @@ class PopupAddLicence extends React.Component<Props, State> {
                 border: "1px solid #253647",
                 backgroundPosition: "center",
                 backgroundSize: "cover",
-                backgroundImage:
-                  icon.indexOf("/") != -1
-                    ? encodeURI(
-                        `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${icon})`
-                      )
-                    : encodeURI(
-                        `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${icon})`
-                      )
+                backgroundImage: getBgImageApp(icon, 70)
               }}
             />
             <div
@@ -136,20 +130,7 @@ class PopupAddLicence extends React.Component<Props, State> {
                 backgroundColor: "#5D76FF",
                 border: "1px solid #253647",
                 boxShadow: "#00000010 0px 6px 10px",
-                backgroundImage:
-                  employee && employee.profilepicture
-                    ? employee.profilepicture.indexOf("/") != -1
-                      ? encodeURI(
-                          `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${
-                            employee.profilepicture
-                          })`
-                        )
-                      : encodeURI(
-                          `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                            employee.profilepicture
-                          })`
-                        )
-                    : ""
+                backgroundImage: employee && getBgImageUser(employee.profilepicture, 48)
               }}>
               {employee
                 ? employee.profilepicture
