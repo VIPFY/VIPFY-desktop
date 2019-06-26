@@ -82,6 +82,7 @@ class TeamGrid extends React.Component<Props, State> {
   }
 
   render() {
+    console.log("TG", this.props);
     return (
       <div className="maingridAddEmployeeTeams">
         <div

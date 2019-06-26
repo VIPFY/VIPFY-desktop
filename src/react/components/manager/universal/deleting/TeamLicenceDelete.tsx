@@ -83,6 +83,7 @@ class TeamLicenceDelete extends React.Component<Props, State> {
   }
 
   render() {
+    console.log("TLD", this.props);
     const { service, close, team } = this.props;
     return (
       <PopupBase
@@ -124,8 +125,8 @@ class TeamLicenceDelete extends React.Component<Props, State> {
                 position: "absolute",
                 top: "8px",
                 left: "8px",
-                width: service.planid.appid.icon ? "48px" : "46px",
-                height: service.planid.appid.icon ? "48px" : "46px",
+                width: service.icon || service.planid.appid.icon ? "48px" : "46px",
+                height: service.icon || service.planid.appid.icon ? "48px" : "46px",
                 borderRadius: "4px",
                 backgroundPosition: "center",
                 backgroundSize: "cover",
@@ -138,16 +139,15 @@ class TeamLicenceDelete extends React.Component<Props, State> {
                 border: "1px solid #253647",
                 boxShadow: "#00000010 0px 6px 10px",
                 backgroundImage:
+                  (service.icon && service.icon.indexOf("/") != -1) ||
                   service.planid.appid.icon.indexOf("/") != -1
                     ? encodeURI(
-                        `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${
-                          service.planid.appid.icon
-                        })`
+                        `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${service.icon ||
+                          service.planid.appid.icon})`
                       )
                     : encodeURI(
-                        `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${
-                          service.planid.appid.icon
-                        })`
+                        `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${service.icon ||
+                          service.planid.appid.icon})`
                       )
               }}
             />
@@ -178,8 +178,8 @@ class TeamLicenceDelete extends React.Component<Props, State> {
                   this.setState({
                     savingObject: null
                   }),
-                saveFunction: () =>
-                  this.props.removeServiceFromTeam({
+                saveFunction: async () =>
+                  await this.props.removeServiceFromTeam({
                     variables: {
                       teamid: team.unitid.id,
                       boughtplanid: service.id,
@@ -195,12 +195,11 @@ class TeamLicenceDelete extends React.Component<Props, State> {
             savedmessage={this.state.savingObject!.savedmessage}
             savingmessage={this.state.savingObject!.savingmessage}
             closeFunction={() => {
+              this.props.savingFunction({ action: "deleted" });
               this.setState({ savingObject: null });
-              close();
             }}
             saveFunction={async () => {
               await this.state.savingObject!.saveFunction();
-              close();
             }}
             maxtime={5000}
           />
