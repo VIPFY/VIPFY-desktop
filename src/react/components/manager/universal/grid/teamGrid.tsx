@@ -14,7 +14,7 @@ interface State {
   dragdelete: any;
 }
 
-class TeamAdd extends React.Component<Props, State> {
+class TeamGrid extends React.Component<Props, State> {
   state = {
     drag: null,
     dragdelete: null
@@ -88,10 +88,12 @@ class TeamAdd extends React.Component<Props, State> {
           className="addgrid-holder"
           onDrop={e => {
             e.preventDefault();
-            this.setState(prevState => {
-              this.props.onChange({ action: "add", content: prevState.drag });
-              return { drag: null };
-            });
+            if (this.state.drag) {
+              this.setState(prevState => {
+                this.props.onChange({ action: "add", content: prevState.drag });
+                return { drag: null };
+              });
+            }
           }}
           onDragOver={e => {
             e.preventDefault();
@@ -161,12 +163,14 @@ class TeamAdd extends React.Component<Props, State> {
                 className="addgrid-holder"
                 onDrop={e => {
                   e.preventDefault();
-                  this.setState(prevState => {
-                    this.props.onChange({ action: "remove", content: prevState.dragdelete });
-                    return {
-                      dragdelete: null
-                    };
-                  });
+                  if (this.state.dragdelete) {
+                    this.setState(prevState => {
+                      this.props.onChange({ action: "remove", content: prevState.dragdelete });
+                      return {
+                        dragdelete: null
+                      };
+                    });
+                  }
                 }}>
                 <div className="addgrid">
                   <div
@@ -189,4 +193,4 @@ class TeamAdd extends React.Component<Props, State> {
     );
   }
 }
-export default TeamAdd;
+export default TeamGrid;

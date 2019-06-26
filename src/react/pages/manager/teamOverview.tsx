@@ -14,6 +14,8 @@ import ColumnServices from "../../components/manager/universal/columns/columnSer
 import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
+import ManageTeamEmployees from "../../components/manager/universal/managing/teamemployees";
+import ManageTeamServices from "../../components/manager/universal/managing/teamservices";
 
 interface Props {
   moveTo: Function;
@@ -106,36 +108,68 @@ class TeamOverview extends React.Component<Props, State> {
     this.setState({ apps, saving: true, add: false });
   }
 
-  addProcess() {
+  addProcess(refetch) {
     switch (this.state.addStage) {
       case 1:
         return (
           <AddTeamGeneralData
-            continue={data => this.setState({ addteam: data, addStage: 2 })}
+            savingFunction={data => this.setState({ addteam: data.content, addStage: 2 })}
             close={() => this.setState({ add: false })}
             addteam={this.state.addteam}
           />
         );
       case 2:
         return (
-          <AddTeamEmployeeData
+          /* <AddTeamEmployeeData
             continue={data => {
               this.setState({ addemployees: data, addStage: 3 });
             }}
             close={() => this.setState({ addStage: 1 })}
             teamname={this.state.addteam.name}
             employees={this.state.addemployees}
-          />
+          /> */
+          <ManageTeamEmployees
+            team={this.state.addteam}
+            close={() => this.setState({ add: false })}>
+            <div className="buttonsPopup">
+              <UniversalButton
+                label="Close"
+                type="low"
+                onClick={() => {
+                  this.setState({ add: false });
+                  refetch();
+                }}
+              />
+              <div className="buttonSeperator" />
+              <UniversalButton
+                label="Manage Services"
+                type="high"
+                onClick={() => this.setState({ addStage: 3 })}
+              />
+            </div>
+          </ManageTeamEmployees>
         );
       case 3:
         return (
-          <AddTeamServices
+          /*<AddTeamServices
             continue={apps => this.addService(apps)}
             close={() => this.setState({ addStage: 2 })}
             employees={this.state.addemployees}
             apps={this.state.apps}
             teamname={this.state.addteam.name}
-          />
+          />*/
+          <ManageTeamServices team={this.state.addteam} close={() => this.setState({ add: false })}>
+            <div className="buttonsPopup">
+              <UniversalButton
+                label="Close"
+                type="low"
+                onClick={() => {
+                  this.setState({ add: false });
+                  refetch();
+                }}
+              />
+            </div>
+          </ManageTeamServices>
         );
       default:
         return <div />;
@@ -157,7 +191,7 @@ class TeamOverview extends React.Component<Props, State> {
             <h1>Teams</h1>
           </div>
           <Query query={fetchCompanyTeams}>
-            {({ loading, error, data }) => {
+            {({ loading, error, data, refetch }) => {
               if (loading) {
                 return "Loading...";
               }
@@ -266,19 +300,19 @@ class TeamOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                     ))}
+                  {this.state.add && (
+                    <PopupBase
+                      fullmiddle={true}
+                      customStyles={{ maxWidth: "1152px" }}
+                      close={() => this.setState({ add: false })}>
+                      {this.addProcess(refetch)}
+                    </PopupBase>
+                  )}
                 </div>
               );
             }}
           </Query>
         </div>
-        {this.state.add && (
-          <PopupBase
-            fullmiddle={true}
-            customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}>
-            {this.addProcess()}
-          </PopupBase>
-        )}
         {this.state.saving && (
           <Mutation mutation={CREATE_TEAM}>
             {createTeam => (

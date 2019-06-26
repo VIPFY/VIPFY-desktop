@@ -488,34 +488,6 @@ class ServiceDetails extends React.Component<Props, State> {
                       type="low"
                       label="Delete"
                       onClick={() => {
-                        /*this.setState({
-                          delete: false,
-                          savingObject: {
-                            savingmessage: "The licence is currently being deleted",
-                            savedmessage: "The licence has been deleted sucessfully.",
-                            maxtime: 5000,
-                            closeFunction: () =>
-                              this.setState({
-                                delete: false
-                              }),
-                            saveFunction: () =>
-                              deleteLicenceAt({
-                                variables: {
-                                  licenceid: e.id,
-                                  time: moment().utc()
-                                },
-                                refetchQueries: [
-                                  { query: fetchLicences },
-                                  { query: me },
-                                  {
-                                    query: fetchUserLicences,
-                                    variables: { unitid: this.props.employeeid }
-                                  }
-                                ]
-                              })
-                          }
-                        });
-                      }}*/
                         this.setState({ delete: false });
                         if (!this.state.keepAccount) {
                           this.props.deleteFunction({

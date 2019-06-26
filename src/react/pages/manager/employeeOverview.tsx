@@ -14,6 +14,9 @@ import { randomPassword } from "../../common/passwordgen";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
+import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
+import ManageTeams from "../../components/manager/universal/managing/teams";
+import ManageServices from "../../components/manager/universal/managing/services";
 
 interface Props {
   moveTo: Function;
@@ -65,36 +68,97 @@ class EmployeeOverview extends React.Component<Props, State> {
     this.setState({ apps, addteams, saving: true, add: false });
   }
 
-  addProcess() {
+  addProcess(refetch) {
+    console.log("ADD", this.props, this.state);
     switch (this.state.addStage) {
       case 1:
         return (
           <AddEmployeePersonalData
-            continue={data => this.setState({ addpersonal: data, addStage: 2 })}
+            continue={data => {
+              this.setState({ addpersonal: data, addStage: 2 });
+              refetch();
+            }}
             close={() => this.setState({ add: false })}
             addpersonal={this.state.addpersonal}
           />
         );
       case 2:
         return (
-          <AddEmployeeTeams
+          /*  <AddEmployeeTeams
             continue={data => {
               this.setState({ addteams: data, addStage: 3 });
             }}
-            close={() => this.setState({ addStage: 1 })}
-            employeename={this.state.addpersonal.name}
+            close={() => this.setState({ add: false })}
+            employee={{
+              ...this.state.addpersonal,
+              id: this.state.addpersonal.unitid
+            }}
             teams={this.state.addteams}
-          />
+            setOuterState={async s => {
+              console.log("OUTER", s);
+              await this.setState(s);
+              console.log("STATE", this.state);
+            }}
+          />*/
+
+          <ManageTeams
+            employee={{
+              ...this.state.addpersonal,
+              firstname: this.state.addpersonal.name,
+              id: this.state.addpersonal.unitid
+            }} //TODO CHANGE employeename
+            close={() => {
+              this.setState({ add: false });
+              refetch();
+            }}>
+            <div className="buttonsPopup">
+              <UniversalButton
+                label="Close"
+                type="low"
+                onClick={() => {
+                  this.setState({ add: false });
+                  refetch();
+                }}
+              />
+              <div className="buttonSeperator" />
+              <UniversalButton
+                label="Manage Services"
+                type="high"
+                onClick={() => this.setState({ addStage: 3 })}
+              />
+            </div>
+          </ManageTeams>
         );
       case 3:
         return (
-          <AddEmployeeServices
+          /* <AddEmployeeServices
             continue={(apps, teams) => this.addUser(apps, teams)}
             close={() => this.setState({ addStage: 2 })}
             teams={this.state.addteams}
             addusername={this.state.addpersonal.name}
             apps={this.state.apps}
-          />
+          />*/
+          <ManageServices
+            employee={{
+              ...this.state.addpersonal,
+              firstname: this.state.addpersonal.name,
+              id: this.state.addpersonal.unitid
+            }} //TODO CHANGE employeename
+            close={() => {
+              this.setState({ add: false });
+              refetch();
+            }}>
+            <div className="buttonsPopup">
+              <UniversalButton
+                label="Close"
+                type="low"
+                onClick={() => {
+                  this.setState({ add: false });
+                  refetch();
+                }}
+              />
+            </div>
+          </ManageServices>
         );
       default:
         return <div />;
@@ -116,7 +180,7 @@ class EmployeeOverview extends React.Component<Props, State> {
             <h1>Employees</h1>
           </div>
           <Query query={fetchDepartmentsData}>
-            {({ loading, error, data }) => {
+            {({ loading, error, data, refetch }) => {
               if (loading) {
                 return "Loading...";
               }
@@ -178,7 +242,12 @@ class EmployeeOverview extends React.Component<Props, State> {
                           width: "92px"
                         }}
                         onClick={() =>
-                          this.setState({ add: true, addStage: 1, addpersonal: {}, apps: [] })
+                          this.setState({
+                            add: true,
+                            addStage: 1,
+                            addpersonal: {},
+                            apps: []
+                          })
                         }
                       />
                     </div>
@@ -191,29 +260,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                         onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
                         <div className="tableMain">
                           <div className="tableColumnBig">
-                            <div
-                              className="managerSquare"
-                              style={
-                                employee.profilepicture
-                                  ? employee.profilepicture.indexOf("/") != -1
-                                    ? {
-                                        backgroundImage: encodeURI(
-                                          `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                            employee.profilepicture
-                                          )})`
-                                        )
-                                      }
-                                    : {
-                                        backgroundImage: encodeURI(
-                                          `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                            employee.profilepicture
-                                          })`
-                                        )
-                                      }
-                                  : {}
-                              }>
-                              {employee.profilepicture ? "" : employee.firstname.slice(0, 1)}
-                            </div>
+                            <PrintEmployeeSquare employee={employee} className="managerSquare" />
                             <span className="name">
                               {employee.firstname} {employee.lastname}
                             </span>
@@ -306,19 +353,19 @@ class EmployeeOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                     ))}
+                  {this.state.add && (
+                    <PopupBase
+                      fullmiddle={true}
+                      customStyles={{ maxWidth: "1152px" }}
+                      close={() => this.setState({ add: false })}>
+                      {this.addProcess(refetch)}
+                    </PopupBase>
+                  )}
                 </div>
               );
             }}
           </Query>
         </div>
-        {this.state.add && (
-          <PopupBase
-            fullmiddle={true}
-            customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}>
-            {this.addProcess()}
-          </PopupBase>
-        )}
         {this.state.saving && (
           <Mutation mutation={CREATE_EMPLOYEE}>
             {createEmployee => (

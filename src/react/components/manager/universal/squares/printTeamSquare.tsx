@@ -26,7 +26,7 @@ class PrintTeamSquare extends React.Component<Props, State> {
               }
             : team.internaldata && team.internaldata.color
             ? { backgroundColor: team.internaldata.color }
-            : {}
+            : { backgroundColor: "#5d76ff" }
         }>
         {team.profilepicture
           ? ""

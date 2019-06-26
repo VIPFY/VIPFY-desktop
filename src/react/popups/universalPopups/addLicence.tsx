@@ -53,9 +53,7 @@ class PopupAddLicence extends React.Component<Props, State> {
 
   printSteps() {
     const steps: JSX.Element[] = [];
-    console.log("PRINT", this.props);
     for (let i = 0; i < this.props.maxstep!; i++) {
-      console.log("PRINTING", i, this.props.currentstep);
       if (i < this.props.currentstep!) {
         steps.push(<div key={`step-${i}`} className="step done" />);
       } else if (i == this.props.currentstep) {
@@ -72,7 +70,6 @@ class PopupAddLicence extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("ADD", this.props);
     const { name, needssubdomain, options, icon } = this.props.app;
     const { employee } = this.props;
     return (

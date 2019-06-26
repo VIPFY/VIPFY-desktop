@@ -5,6 +5,7 @@ import UniversalCheckbox from "../universalForms/universalCheckbox";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import AddTeamService from "./addTeamService";
 import TeamServiceDetails from "./teamserviceDetails";
+import ManageTeamServices from "./universal/managing/teamservices";
 
 interface Props {
   team: any;
@@ -148,13 +149,13 @@ class ServiceSection extends React.Component<Props, State> {
             <div className="tableEnd">
               <UniversalButton
                 type="high"
-                label="Add Service"
+                label="Manage Services"
                 customStyles={{
                   fontSize: "12px",
                   lineHeight: "24px",
                   fontWeight: "700",
                   marginRight: "16px",
-                  width: "92px"
+                  width: "120px"
                 }}
                 onClick={() => {
                   this.setState({ add: true });
@@ -165,12 +166,25 @@ class ServiceSection extends React.Component<Props, State> {
           {serviceArray}
         </div>
         {this.state.add && (
-          <AddTeamService
+          <ManageTeamServices
+            close={sO => {
+              this.setState({ add: false, savingObject: sO });
+            }}
+            team={this.props.team}>
+            <div className="buttonsPopup">
+              <UniversalButton
+                label="Close"
+                type="low"
+                onClick={() => this.setState({ add: false })}
+              />
+            </div>
+          </ManageTeamServices>
+          /* <AddTeamService
             close={sO => {
               this.setState({ add: false, savingObject: sO });
             }}
             team={this.props.team}
-          />
+          /> */
         )}
         {this.state.savingObject && (
           <PopupSelfSaving
