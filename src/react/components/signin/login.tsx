@@ -120,7 +120,7 @@ class Login extends React.Component<Props, State> {
                   this.props.error && this.state.changed ? (
                     <React.Fragment>
                       <i className="fal fa-exclamation-circle" />
-                      <span>Password incorrect</span>
+                      <span>{this.props.error}</span>
                     </React.Fragment>
                   ) : null
                 }
