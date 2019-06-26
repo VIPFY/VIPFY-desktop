@@ -1,6 +1,7 @@
 import * as React from "react";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
+import * as Dropzone from "react-dropzone";
 import EmployeeGerneralDataAdd from "./universal/adding/employeeGeneralDataAdd";
 
 interface Props {
@@ -23,6 +24,7 @@ interface State {
   wmail2: string;
   wphone1: string;
   wphone2: string;
+  picture: Dropzone.DropzoneProps | null;
 }
 
 class AddEmployeePersonalData extends React.Component<Props, State> {
@@ -39,7 +41,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     wmail1: this.props.addpersonal.wmail1 || "",
     wmail2: this.props.addpersonal.wmail2 || "",
     wphone1: this.props.addpersonal.wphone1 || "",
-    wphone2: this.props.addpersonal.wphone2 || ""
+    wphone2: this.props.addpersonal.wphone2 || "",
+    picture: null
   };
 
   render() {
