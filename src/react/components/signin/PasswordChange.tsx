@@ -5,6 +5,8 @@ import { me } from "../../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { CHANGE_PASSWORD } from "../../mutations/auth";
+import UniversalButton from "../universalButtons/universalButton";
+import UniversalTextInput from "../universalForms/universalTextInput";
 
 interface PasswordChangeProps {
   logMeOut: Function;
@@ -37,14 +39,12 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
     this.setState({ newPasswordValid: isValid, newPassword: password });
   }
 
-  private repeatPasswordChanged(e: React.ChangeEvent<HTMLInputElement>): void {
-    const v = e.target.value;
-    this.setState({ repeatPassword: v });
+  private repeatPasswordChanged(repeatPassword): void {
+    this.setState({ repeatPassword });
   }
 
-  private oldPasswordChanged(e: React.ChangeEvent<HTMLInputElement>): void {
-    const v = e.target.value;
-    this.setState({ oldPassword: v });
+  private oldPasswordChanged(oldPassword): void {
+    this.setState({ oldPassword });
   }
 
   private async confirm(): Promise<void> {
@@ -80,6 +80,71 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
   }
 
   render() {
+    return (
+      <section className="welcome">
+        <div className="welcome-holder">
+          <img src={`${__dirname}/../../../images/forgot-password-new.png`} alt="Welcome" />
+          <div className="welcome-text">
+            <h1>Please set your password</h1>
+            <div>
+              Your initial password has been sent to your email. Please replace it to continue.{" "}
+            </div>
+
+            <div className="password-fields">
+              <UniversalTextInput
+                id="oldPassword"
+                livevalue={e => this.oldPasswordChanged(e)}
+                label="Initial Password"
+                width="312px"
+                type="password"
+              />
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label>
+                  <ReactPasswordStrength
+                    className="passwordStrength"
+                    minLength={8}
+                    minScore={2}
+                    scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+                    tooShortWord={"too short"}
+                    inputProps={{
+                      name: "password_input",
+                      autoComplete: "off",
+                      placeholder: "New Password",
+                      className: "cleanup universalTextInput"
+                    }}
+                    changeCallback={(state, feedback) => this.passwordChanged(state, feedback)}
+                  />
+                </label>
+              </div>
+              <UniversalTextInput
+                id="repeat"
+                livevalue={e => this.repeatPasswordChanged(e)}
+                label="Repeat"
+                errorEvaluation={
+                  this.state.newPassword !== null &&
+                  this.state.repeatPassword !== null &&
+                  this.state.newPassword !== this.state.repeatPassword
+                }
+                errorhint="Passwords don't match"
+                width="312px"
+                type="password"
+              />
+            </div>
+            <div className={this.state.error === null ? "formError noError" : "formError oneError"}>
+              {this.state.error}
+            </div>
+
+            <UniversalButton
+              disabled={!this.canSubmit()}
+              customStyles={{ width: "105px" }}
+              label="continue"
+              type="high"
+              onClick={() => this.confirm()}
+            />
+          </div>
+        </div>
+      </section>
+    );
     return (
       <div className="centralize backgroundLogo">
         <div className="presideHolder">
