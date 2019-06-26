@@ -46,7 +46,7 @@ class Dashboard extends React.Component<Props, State> {
           <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
-        {this.props.licences.length < 1 ? (
+        {filteredLicences.length < 1 ? (
           <div className="no-apps">
             <div>This is your</div>
             <h1>DASHBOARD</h1>
@@ -62,7 +62,7 @@ class Dashboard extends React.Component<Props, State> {
           </div>
         ) : (
           <AppList search={this.state.search} licences={filteredLicences} setApp={setApp} />
-        )}{" "}
+        )}
       </div>
     );
   }
