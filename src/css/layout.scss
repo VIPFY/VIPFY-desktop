@@ -1305,12 +1305,35 @@ li {
     overflow-y: auto;
 }
 
-.dashboard-working {
+.dashboard {
+  @extend .managerPage;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
-  padding: 0 48px;
+  padding: 24px 48px 0 48px;
+
+  .no-apps {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 600px;
+    width: 500px;
+    color: #7C7C7CFF;
+    font-size: 20px;
+    text-align: center;
+
+    img {
+      width: 192px;
+      height: 224px;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 44px;
+    }
+  }
 
   .genericHolder {
     box-shadow: unset;
@@ -2751,18 +2774,6 @@ option{
     }
 }
 
-.dashboardHeading{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 5rem;
-  
-  div {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-}
 .addEmployeeButton{
     background-color: #20BAA9;
     color: white;
