@@ -5,6 +5,7 @@ import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
 import AddEmployee from "./addEmployee";
 import Employee from "./employee";
 import { now } from "moment";
+import ManageServiceEmployees from "../universal/managing/serviceemployees";
 
 interface Props {
   licences: any[];
@@ -132,13 +133,26 @@ class EmployeeSection extends React.Component<Props, State> {
           {employeeArray}
         </div>
         {this.state.add && (
-          <AddEmployee
+          /*<AddEmployee
             close={sO => {
               this.setState({ add: false, savingObject: sO });
             }}
             licences={activelicences}
             service={this.props.service}
-          />
+          />*/
+          <ManageServiceEmployees
+            service={this.props.service}
+            close={sO => {
+              this.setState({ add: false });
+            }}>
+            <div className="buttonsPopup">
+              <UniversalButton
+                label="Close"
+                type="low"
+                onClick={() => this.setState({ add: false })}
+              />
+            </div>
+          </ManageServiceEmployees>
         )}
         {this.state.savingObject && (
           <PopupSelfSaving
