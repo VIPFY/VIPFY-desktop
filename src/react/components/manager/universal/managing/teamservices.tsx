@@ -8,10 +8,13 @@ import AddEmployeeToService from "../adding/addEmployeeToService";
 import LicenceDelete from "../deleting/LicenceDelete";
 import PopupSSO from "../../../../popups/universalPopups/PopupSSO";
 import SelfSaving from "../../../../popups/universalPopups/SelfSavingIllustrated";
+import { fetchTeam } from "../../../../queries/departments";
+import TeamLicenceDelete from "../deleting/TeamLicenceDelete";
+import AddServiceToTeam from "../adding/addServiceToTeam";
 
 interface Props {
   heading?: String;
-  employee: any;
+  team: any;
   close: Function;
 }
 
@@ -23,7 +26,7 @@ interface State {
   showLoading: Boolean;
 }
 
-class ManageServices extends React.Component<Props, State> {
+class ManageTeamServices extends React.Component<Props, State> {
   state = {
     search: "",
     deleteService: null,
@@ -50,9 +53,9 @@ class ManageServices extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("MS", this.props, this.state);
+    console.log("TMS", this.props, this.state);
     return (
-      <Query query={fetchUserLicences} variables={{ unitid: this.props.employee.id }}>
+      <Query query={fetchTeam} variables={{ teamid: this.props.team.unitid.id }}>
         {({ loading, error, data, refetch }) => {
           if (loading) {
             return null;
@@ -75,7 +78,7 @@ class ManageServices extends React.Component<Props, State> {
                 getValue={v => this.setState({ search: v })}
               />
               <ServiceGrid
-                services={data.fetchUsersOwnLicences}
+                services={data.fetchTeam.services}
                 search={this.state.search}
                 onChange={s => this.onChange(s, refetch)}
               />
@@ -83,10 +86,10 @@ class ManageServices extends React.Component<Props, State> {
               {this.props.children}
 
               {this.state.deleteService && (
-                <LicenceDelete
+                <TeamLicenceDelete
                   close={() => this.setState({ deleteService: null })}
-                  employee={this.props.employee}
-                  licence={this.state.deleteService}
+                  team={data.fetchTeam}
+                  service={this.state.deleteService}
                   savingFunction={so => {
                     console.log("SAVING");
                     refetch();
@@ -112,7 +115,7 @@ class ManageServices extends React.Component<Props, State> {
                   {this.state.showLoading && (
                     <SelfSaving
                       sso={this.state.ownSSO!}
-                      userids={[this.props.employee.id]}
+                      userids={data.fetchTeam.employees.map(e => e.id)}
                       //  maxTime={7000}
                       closeFunction={() => {
                         this.setState({ showLoading: false, addService: null });
@@ -124,9 +127,9 @@ class ManageServices extends React.Component<Props, State> {
               )}
 
               {this.state.addService && !this.state.addService!.new && (
-                <AddEmployeeToService
+                <AddServiceToTeam
                   close={() => this.setState({ addService: null })}
-                  employee={this.props.employee}
+                  team={data.fetchTeam}
                   service={this.state.addService}
                   savingFunction={so => {
                     refetch();
@@ -141,4 +144,4 @@ class ManageServices extends React.Component<Props, State> {
     );
   }
 }
-export default ManageServices;
+export default ManageTeamServices;

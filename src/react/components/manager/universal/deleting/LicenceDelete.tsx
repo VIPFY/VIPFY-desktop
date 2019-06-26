@@ -147,25 +147,26 @@ class LicenceDelete extends React.Component<Props, State> {
                   },
                   saveFunction: () => {
                     try {
-                    this.props.deleteLicenceAt({
-                      variables: {
-                        licenceid: licence.id,
-                        time: moment().utc()
-                      },
-                      refetchQueries: [
-                        { query: fetchLicences },
-                        { query: me },
-                        {
-                          query: fetchUserLicences,
-                          variables: { unitid: employee.id }
-                        }
-                      ]
-                    })
-                    this.props.savingFunction({ action: "deleted", licenceid: licence.id });
-                } catch (error) {
-                        this.props.savingFunction({ action: "error", licenceid: licence.id });
-                        this.setState({ savingObject: null });
-                      }
+                      this.props.deleteLicenceAt({
+                        variables: {
+                          licenceid: licence.id,
+                          time: moment().utc()
+                        },
+                        refetchQueries: [
+                          { query: fetchLicences },
+                          { query: me },
+                          {
+                            query: fetchUserLicences,
+                            variables: { unitid: employee.id }
+                          }
+                        ]
+                      });
+                      this.props.savingFunction({ action: "deleted", licenceid: licence.id });
+                    } catch (error) {
+                      this.props.savingFunction({ action: "error", licenceid: licence.id });
+                      this.setState({ savingObject: null });
+                    }
+                  }
                 }
               });
             } else {

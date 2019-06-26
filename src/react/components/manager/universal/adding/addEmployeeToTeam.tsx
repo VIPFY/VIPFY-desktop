@@ -18,7 +18,7 @@ interface Props {
 interface State {
   saving: Boolean;
   counter: number;
-  integrateTeam: any;
+  setups: any[];
 }
 
 const ADD_EMPLOYEE_TO_TEAM = gql`
@@ -56,11 +56,11 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
   state = {
     saving: false,
     counter: 0,
-    integrateTeam: null
+    setups: []
   };
 
   componentWillUnmount() {
-    this.setState({ saving: false, counter: 0, integrateTeam: null });
+    this.setState({ saving: false, counter: 0 });
   }
 
   printTeamAddSteps() {
@@ -81,30 +81,32 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
       return (
         <React.Fragment>
           <ul className="checks">
-            {this.state.integrateTeam &&
-              this.state.integrateTeam!.services.map(service => {
-                return (
-                  <li key={service.planid.appid.name} style={{ fontSize: "12px" }}>
-                    {service.setupfinished ? (
-                      <i
-                        className="fal fa-check-circle"
-                        style={{ color: "#20BAA9", marginRight: "4px" }}
-                      />
-                    ) : (
-                      <i
-                        className="fal fa-times-circle"
-                        style={{ color: "#FF2700", marginRight: "4px" }}
-                      />
-                    )}
-                    Individual Teamlicence for <b>{service.planid.appid.name}</b>
-                    {service.setupfinished
-                      ? " successfully configurated"
-                      : service.setupfinished == null
-                      ? "not started"
-                      : " not configured"}
-                  </li>
-                );
-              })}
+            {this.props.team.services.map(service => {
+              return (
+                <li key={service.planid.appid.name} style={{ fontSize: "12px" }}>
+                  {this.state.setups!.find(s => (s.id = service.id)) &&
+                  this.state.setups!.find(s => (s.id = service.id)).setupfinished ? (
+                    <i
+                      className="fal fa-check-circle"
+                      style={{ color: "#20BAA9", marginRight: "4px" }}
+                    />
+                  ) : (
+                    <i
+                      className="fal fa-times-circle"
+                      style={{ color: "#FF2700", marginRight: "4px" }}
+                    />
+                  )}
+                  Individual Teamlicence for <b>{service.planid.appid.name}</b>
+                  {this.state.setups!.find(s => (s.id = service.id)) &&
+                  this.state.setups!.find(s => (s.id = service.id))!.setupfinished
+                    ? " successfully configurated"
+                    : this.state.setups!.find(s => (s.id = service.id)) &&
+                      this.state.setups!.find(s => (s.id = service.id))!.setupfinished == null
+                    ? "not started"
+                    : " not configured"}
+                </li>
+              );
+            })}
             {team.licences.map(licence => {
               return (
                 <li key={licence.boughtplanid.planid.appid.name}>
@@ -151,54 +153,29 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
             cancel={async () => {
               await this.setState(prevState => {
                 let newcounter = prevState.counter + 1;
-                let currentlicence = Object.assign({}, team.services[prevState.counter]);
-                currentlicence.setupfinished = false;
-                currentlicence.setup = {};
-                const newintegrateTeam = Object.assign({}, team);
-                let newintegrateTeam2 = newintegrateTeam;
-                newintegrateTeam2.services = newintegrateTeam2.services.map(a =>
-                  a.id == currentlicence.id ? currentlicence : a
-                );
-                if (newcounter < team.services.length) {
-                  return {
-                    ...prevState,
-                    counter: newcounter,
-                    integrateTeam: newintegrateTeam2
-                  };
-                } else {
-                  return {
-                    ...prevState,
-                    counter: newcounter,
-                    integrateTeam: newintegrateTeam2
-                  };
-                }
+                const currentsetup = prevState.setups;
+                currentsetup.push({ setupfinished: true, setup: {}, id: this.props.employee.id });
+
+                return {
+                  ...prevState,
+                  counter: newcounter,
+                  setups: currentsetup
+                };
               });
             }}
             add={async setup => {
               await this.setState(prevState => {
                 let newcounter = prevState.counter + 1;
-                let currentlicence = Object.assign({}, team.services[prevState.counter]);
-                currentlicence.setupfinished = true;
-                currentlicence.setup = setup;
-                currentlicence.setup.employeeid = this.props.employee.id;
-                const newintegrateTeam = Object.assign({}, team);
-                let newintegrateTeam2 = newintegrateTeam;
-                newintegrateTeam2.services = newintegrateTeam2.services.map(a =>
-                  a.id == currentlicence.id ? currentlicence : a
-                );
-                if (newcounter < team.services.length) {
-                  return {
-                    ...prevState,
-                    counter: newcounter,
-                    integrateTeam: newintegrateTeam2
-                  };
-                } else {
-                  return {
-                    ...prevState,
-                    counter: newcounter,
-                    integrateTeam: newintegrateTeam2
-                  };
-                }
+                setup.id = team.services[this.state.counter].id;
+                setup.employeeid = this.props.employee.id;
+                const currentsetup = prevState.setups;
+                currentsetup.push({ setupfinished: true, setup, id: this.props.employee.id });
+
+                return {
+                  ...prevState,
+                  counter: newcounter,
+                  setups: currentsetup
+                };
               });
             }}
             employee={employee}
@@ -222,14 +199,14 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                   })
                 );
 
-                if (this.state.integrateTeam) {
-                  this.state.integrateTeam!.services.forEach(
+                if (this.state.setups) {
+                  this.state.setups.forEach(
                     s =>
                       s.setupfinished &&
                       promises.push(
                         this.props.addLicence({
                           variables: {
-                            boughtplanid: s.id,
+                            boughtplanid: s.setup.id,
                             username: s.setup.email,
                             password: s.setup.password,
                             loginurl: s.setup.subdomain,

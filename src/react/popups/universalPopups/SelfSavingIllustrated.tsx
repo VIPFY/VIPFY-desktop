@@ -14,7 +14,7 @@ interface Props {
   maxTime?: number;
   sso: SSO;
   fullmiddle?: Boolean;
-  userid?: number;
+  userids?: number;
 }
 
 interface State {
@@ -77,7 +77,7 @@ class SelfSaving extends React.Component<Props, State> {
         sso.images = [iconFile, iconFile];
       }
 
-      await createOwnApp({ variables: { ssoData: sso, userid: this.props.userid } });
+      await createOwnApp({ variables: { ssoData: sso, userids: this.props.userids } });
     }
   };
 

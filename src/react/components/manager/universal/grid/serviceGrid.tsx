@@ -23,6 +23,7 @@ class ServiceGrid extends React.Component<Props, State> {
   printApps(apps) {
     let ownAppsArray: JSX.Element[] = [];
     apps.forEach(app => {
+      console.log("APP", app);
       ownAppsArray.push(
         <div
           key={app.name}
@@ -32,10 +33,18 @@ class ServiceGrid extends React.Component<Props, State> {
           onDragStart={() => this.setState({ dragdelete: app })}>
           <PrintServiceSquare
             service={app}
-            appidFunction={a => a.boughtplanid.planid.appid}
+            appidFunction={a => {
+              if (a.boughtplanid) {
+                return a.boughtplanid.planid.appid;
+              } else {
+                return a.planid.appid;
+              }
+            }}
             className="image"
           />
-          <div className="name">{app.boughtplanid.planid.appid.name}</div>
+          <div className="name">
+            {(app.boughtplanid && app.boughtplanid.planid.appid.name) || app.planid.appid.name}
+          </div>
           <div className="imageHover">
             <i className="fal fa-trash-alt" />
             <span>Click to remove</span>
