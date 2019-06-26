@@ -7,12 +7,14 @@ import { SSO } from "../../interfaces";
 import { CREATE_OWN_APP } from "../../mutations/products";
 import LogoExtractor from "../../components/ssoconfig/LogoExtractor";
 import { fetchLicences } from "../../queries/auth";
+import { SSL_OP_SINGLE_DH_USE } from "constants";
 
 interface Props {
   closeFunction: Function;
   maxTime?: number;
   sso: SSO;
   fullmiddle?: Boolean;
+  userid?: number;
 }
 
 interface State {
@@ -75,7 +77,7 @@ class SelfSaving extends React.Component<Props, State> {
         sso.images = [iconFile, iconFile];
       }
 
-      await createOwnApp({ variables: { ssoData: sso } });
+      await createOwnApp({ variables: { ssoData: sso, userid: this.props.userid } });
     }
   };
 

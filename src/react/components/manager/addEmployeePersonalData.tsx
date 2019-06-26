@@ -84,14 +84,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     confirm: false,
     saving: false,
     success: true,
-    unitid: "1260",
-    parsedName: {
-      title: "Mr.",
-      firstname: "Pascal",
-      middlename: "",
-      lastname: "Beutlin",
-      suffix: ""
-    }
+    unitid: null,
+    parsedName: null
   };
 
   render() {

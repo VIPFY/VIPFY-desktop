@@ -119,7 +119,7 @@ class TeamsSection extends React.Component<Props, State> {
                           lineHeight: "24px",
                           fontWeight: "700",
                           marginRight: "16px",
-                          width: "104px"
+                          width: "120px"
                         }}
                         onClick={() => {
                           this.setState({ add: true });

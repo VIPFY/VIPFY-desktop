@@ -197,7 +197,7 @@ class LicencesSection extends React.Component<Props, State> {
                     <div className="tableEnd">
                       <UniversalButton
                         type="high"
-                        label="Add Licence"
+                        label="Manage Licences"
                         customStyles={{
                           fontSize: "12px",
                           lineHeight: "24px",

@@ -6,6 +6,8 @@ import ServiceGrid from "../grid/serviceGrid";
 import { fetchUserLicences } from "../../../../queries/departments";
 import AddEmployeeToService from "../adding/addEmployeeToService";
 import LicenceDelete from "../deleting/LicenceDelete";
+import PopupSSO from "../../../../popups/universalPopups/PopupSSO";
+import SelfSaving from "../../../../popups/universalPopups/SelfSavingIllustrated";
 
 interface Props {
   heading?: String;
@@ -17,13 +19,17 @@ interface State {
   search: String;
   deleteService: any;
   addService: any;
+  ownSSO: any;
+  showLoading: Boolean;
 }
 
 class ManageServices extends React.Component<Props, State> {
   state = {
     search: "",
     deleteService: null,
-    addService: null
+    addService: null,
+    ownSSO: null,
+    showLoading: false
   };
 
   onChange(s, refetch) {
@@ -90,16 +96,31 @@ class ManageServices extends React.Component<Props, State> {
               )}
 
               {this.state.addService && this.state.addService!.new && (
-                <PopupBase fullmiddle={true} close={() => this.setState({ addTeam: null })}>
-                  <AddServiceGeneralData
-                    close={() => this.setState({ addTeam: null })}
-                    savingFunction={so => {
-                      if (so.action == "success") {
-                        this.setState({ addTeam: so.content });
+                <>
+                  <PopupSSO
+                    cancel={() => this.setState({ addService: null })}
+                    add={values => {
+                      if (values.logo) {
+                        values.images = [values.logo, values.logo];
                       }
+                      delete values.logo;
+
+                      this.setState({ ownSSO: { ...values }, showLoading: true });
                     }}
                   />
-                </PopupBase>
+
+                  {this.state.showLoading && (
+                    <SelfSaving
+                      sso={this.state.ownSSO!}
+                      userid={this.props.employee.id}
+                      //  maxTime={7000}
+                      closeFunction={() => {
+                        this.setState({ showLoading: false, addService: null });
+                        refetch();
+                      }}
+                    />
+                  )}
+                </>
               )}
 
               {this.state.addService && !this.state.addService!.new && (
