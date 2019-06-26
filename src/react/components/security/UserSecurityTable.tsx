@@ -7,6 +7,7 @@ import { Query, Mutation, graphql } from "react-apollo";
 import UserPicture from "../UserPicture";
 import { showStars, filterError, concatName } from "../../common/functions";
 import UniversalButton from "../universalButtons/universalButton";
+import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
 
 interface State {
   changeForce: number;
@@ -43,6 +44,7 @@ const FETCH_USER_SECURITY_OVERVIEW = gql`
         firstname
         lastname
         isadmin
+        profilepicture
       }
       lastactive
       needspasswordchange
@@ -138,7 +140,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
       .map(user => (
         <tr key={`r${user.id}`}>
           <td className="data-recording-sensitive">
-            <UserPicture unitid={user.id} size="twolines" />
+            <PrintEmployeeSquare employee={user.unitid} />
           </td>
           <td className="data-recording-sensitive">
             <UserName unitid={user.id} />
@@ -157,7 +159,9 @@ class UserSecurityTableInner extends React.Component<Props, State> {
           </td>
           <td>
             {user.needspasswordchange ? (
-              <i className="fal fa-minus" />
+              <span style={{ fontWeight: 500, letterSpacing: "0.02em", lineHeight: "34px" }}>
+                <i className="fal fa-fingerprint" /> REQUIRED
+              </span>
             ) : (
               <UniversalButton
                 type="low"

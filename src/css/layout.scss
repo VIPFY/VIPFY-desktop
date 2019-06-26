@@ -1304,12 +1304,35 @@ li {
     overflow-y: auto;
 }
 
-.dashboard-working {
+.dashboard {
+  @extend .managerPage;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
-  padding: 0 48px;
+  padding: 24px 48px 0 48px;
+
+  .no-apps {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 600px;
+    width: 500px;
+    color: #7C7C7CFF;
+    font-size: 20px;
+    text-align: center;
+
+    img {
+      width: 192px;
+      height: 224px;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 44px;
+    }
+  }
 
   .genericHolder {
 
@@ -2749,18 +2772,6 @@ option{
     }
 }
 
-.dashboardHeading{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 5rem;
-  
-  div {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-}
 .addEmployeeButton{
     background-color: #20BAA9;
     color: white;
@@ -3450,7 +3461,6 @@ option{
     background: #fff;
     box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
     margin: auto;
-    max-width: 60rem;
     border-radius: 3px;
     margin-bottom: 2rem;
     width: 100%;
@@ -5705,6 +5715,10 @@ progress[value] {
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
       }
 
+      .managerSquare {
+        margin-top: 0;
+      }
+
       .fa-star {
         color: $vipfy-primary-color;
       }
@@ -5728,6 +5742,35 @@ progress[value] {
     }
   }
 }
+.promocode-holder {
+  margin-top: 40px;
+  text-align: left !important;
+
+  button {
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+
+    span {
+      color: $vipfy-primary-color;
+      transition: all 300ms ease-in-out;
+
+      &:hover {
+        color: $vipfy-secondary-color;
+      }
+    }
+  }
+
+  .promo-success {
+    color: $vipfy-primary-color;
+    font-style: italic;
+    display: flex;
+
+    i {
+      margin-right: 7px;
+    }
+  }
+}
+
 .tooltip-warning {
   position: absolute;
   left: -16px;
