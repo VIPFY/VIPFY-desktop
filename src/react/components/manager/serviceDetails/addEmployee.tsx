@@ -9,6 +9,7 @@ import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
 import PrintCurrent from "../universal/printCurrent";
 import { fetchCompanyService } from "../../../queries/products";
 import { FETCH_EMPLOYEES } from "../../../queries/departments";
+import EmployeeAdd from "../universal/adding/EmployeeAdd";
 
 interface Props {
   service: any;
@@ -144,6 +145,13 @@ class AddEmployee extends React.Component<Props, State> {
             placeholder="Search available services"
             getValue={v => this.setState({ search: v })}
           />
+          {/*<EmployeeAdd
+            team={{ employees: [], name: this.props.teamname }} //TODO Add Teampicture
+            search={this.state.search}
+            setOuterState={s => this.setState(s)}
+            addedEmployees={this.state.addedEmployees}
+            integrateEmployee={this.state.integrateEmployee}
+          />*/}
           <div className="maingridAddEmployeeTeams">
             <div
               className="addgrid-holder"

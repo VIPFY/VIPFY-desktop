@@ -4,6 +4,7 @@ import PopupBase from "./popupBase";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import * as Dropzone from "react-dropzone";
+import Tooltip from "react-tooltip-lite";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
@@ -141,7 +142,16 @@ class PopupSSO extends React.Component<Props, State> {
             livevalue={value => this.setState({ name: value })}
           />
 
-          <div style={{ gridColumn: "2 / -1", display: "flex" }}>
+          <div style={{ gridColumn: "2 / -1", display: "flex", position: "relative" }}>
+            {this.state.protocol == "http://" && (
+              <i
+                title={`Using http is a possible security risk, because the Website does not encrypt your data.
+
+Please be sure that you can trust this Website.`}
+                className="fal fa-exclamation-circle tooltip-warning"
+              />
+            )}
+
             <select
               className="universalTextInput"
               style={{ width: "75px" }}
@@ -198,6 +208,8 @@ class PopupSSO extends React.Component<Props, State> {
             livevalue={value => this.setState({ password: value })}
           />
         </div>
+
+        {this.state.protocol == "http://" && <span className="info" />}
 
         <UniversalButton type="low" onClick={this.props.cancel} label="Cancel" />
         <UniversalButton

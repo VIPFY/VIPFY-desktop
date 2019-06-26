@@ -305,10 +305,10 @@ class AddTeamServices extends React.Component<Props, State> {
       <React.Fragment>
         <span className="mutiplieHeading">
           <span className="bHeading">Add Team </span>
-          <span className="mHeading">
+          {/*<span className="mHeading">
             > General Data > Employees > <span className="active">Services</span>
           </span>
-        </span>
+    </span>*/}
         <span className="secondHolder">Available Services</span>
         <UniversalSearchBox
           placeholder="Search available services"

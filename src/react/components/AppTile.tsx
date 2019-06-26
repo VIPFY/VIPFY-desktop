@@ -1,8 +1,6 @@
 import * as React from "react";
 import { Mutation, graphql } from "react-apollo";
 import gql from "graphql-tag";
-import EditLicence from "../popups/EditLicence";
-import { iconPicFolder } from "../common/constants";
 import { AppContext } from "../common/functions";
 import { fetchLicences, me } from "../queries/auth";
 import moment = require("moment");
@@ -13,6 +11,7 @@ import GenericInputField from "./GenericInputField";
 import UniversalButton from "./universalButtons/universalButton";
 import UniversalTextInput from "./universalForms/universalTextInput";
 import { UPDATE_LAYOUT } from "../mutations/auth";
+import { getBgImageApp } from "../common/images";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -58,7 +57,7 @@ class AppTile extends React.Component<Props, State> {
     password: ""
   };
 
-  async componentDidMount() {
+  /*async componentDidMount() {
     // Make sure that every License has an index
     if (this.props.licence.dashboard === null) {
       try {
@@ -84,7 +83,7 @@ class AppTile extends React.Component<Props, State> {
         console.log(error);
       }
     }
-  }
+  }*/
 
   render() {
     // prettier-ignore
@@ -134,14 +133,7 @@ class AppTile extends React.Component<Props, State> {
                   ? this.props.preview.pic
                   : planid.appid.icon
               })`*/
-                backgroundImage:
-                  planid.appid.icon && planid.appid.icon.indexOf("/") != -1
-                    ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                        planid.appid.icon
-                      )})`
-                    : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                        planid.appid.icon
-                      )})`
+                backgroundImage: planid.appid.icon && getBgImageApp(planid.appid.icon, 160)
               }}>
               {planid.options && planid.options.external && (
                 <div className="ribbon ribbon-top-right">

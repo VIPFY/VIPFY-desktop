@@ -15,6 +15,9 @@ import { now } from "moment";
 import AddServiceGeneralData from "../../components/manager/serviceDetails/addServiceGeneralData";
 import AddTeam from "../../components/manager/serviceDetails/addTeam";
 import AddEmployee from "../../components/manager/serviceDetails/addEmployee";
+import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
+import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
+import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 
 interface Props {
   moveTo: Function;
@@ -66,127 +69,6 @@ class ServiceOverview extends React.Component<Props, State> {
 
   addService(singles) {
     this.setState({ addemployees: singles, saving: true, add: false });
-  }
-
-  renderTeams(teams) {
-    let teamsArray: JSX.Element[] = [];
-    let counter = 0;
-    for (counter = 0; counter < teams.length; counter++) {
-      const team: {
-        profilepicture: string;
-        internaldata: { letters: string; color: string };
-        name: string;
-      } = teams[counter].departmentid;
-      if (teams.length > 6 && counter > 4) {
-        teamsArray.push(
-          <div
-            key="moreTeams"
-            className="managerSquare"
-            style={{
-              color: "#253647",
-              backgroundColor: "#F2F2F2",
-              fontSize: "12px",
-              fontWeight: 400
-            }}>
-            +{teams.length - 5}
-          </div>
-        );
-        break;
-      } else {
-        teamsArray.push(
-          <div
-            key={team.name}
-            title={team.name}
-            className="managerSquare"
-            style={
-              team.profilepicture
-                ? {
-                    backgroundImage:
-                      team.profilepicture.indexOf("/") != -1
-                        ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                            team.profilepicture
-                          )})`
-                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                            team.profilepicture
-                          )})`,
-                    backgroundColor: "unset"
-                  }
-                : team.internaldata && team.internaldata.color
-                ? { backgroundColor: team.internaldata.color }
-                : {}
-            }>
-            {team.profilepicture
-              ? ""
-              : team.internaldata && team.internaldata.letters
-              ? team.internaldata && team.internaldata.letters
-              : team.name.slice(0, 1)}
-          </div>
-        );
-      }
-    }
-    return teamsArray;
-  }
-
-  renderEmployees(licences) {
-    let employeesArray: JSX.Element[] = [];
-    let counter = 0;
-    const activelicences = licences.filter(
-      l =>
-        ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-        (l.options == null || l.options.teamlicence == null)
-    );
-
-    for (counter = 0; counter < activelicences.length; counter++) {
-      const employee: {
-        profilepicture: string;
-        firstname: string;
-        lastname: string;
-      } = activelicences[counter].unitid;
-      if (activelicences.length > 6 && counter > 4) {
-        employeesArray.push(
-          <div
-            key="moreEmployees"
-            className="managerSquare"
-            style={{
-              color: "#253647",
-              backgroundColor: "#F2F2F2",
-              fontSize: "12px",
-              fontWeight: 400
-            }}>
-            +{activelicences.length - 5}
-          </div>
-        );
-        break;
-      } else {
-        employeesArray.push(
-          <div
-            key={`Employee-${counter}`}
-            className="managerSquare"
-            style={
-              employee.profilepicture
-                ? employee.profilepicture.indexOf("/") != -1
-                  ? {
-                      backgroundImage: encodeURI(
-                        `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                          employee.profilepicture
-                        )})`
-                      )
-                    }
-                  : {
-                      backgroundImage: encodeURI(
-                        `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                          employee.profilepicture
-                        })`
-                      )
-                    }
-                : {}
-            }>
-            {employee.profilepicture ? "" : employee.firstname.slice(0, 1)}
-          </div>
-        );
-      }
-    }
-    return employeesArray;
   }
 
   addProcess() {
@@ -255,12 +137,15 @@ class ServiceOverview extends React.Component<Props, State> {
                 />
                 <span className="name">{service.app.name}</span>
               </div>
-              <div className="tableColumnBig">
-                {service.teams ? this.renderTeams(service.teams) : "No single User"}
-              </div>
-              <div className="tableColumnBig">
-                {service.licences ? this.renderEmployees(service.licences) : "No single User"}
-              </div>
+              <ColumnTeams teams={service.teams} teamidFunction={team => team.departmentid} />
+              <ColumnEmployees
+                employees={service.licences}
+                checkFunction={l =>
+                  ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
+                  (l.options == null || l.options.teamlicence == null)
+                }
+                employeeidFunction={e => e.unitid}
+              />
             </div>
             <div className="tableEnd">
               <div className="editOptions">

@@ -10,6 +10,12 @@ import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
 import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
 import AddTeamServices from "../../components/manager/addTeamServices";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
+import ColumnServices from "../../components/manager/universal/columns/columnServices";
+import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
+import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
+import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
+import ManageTeamEmployees from "../../components/manager/universal/managing/teamemployees";
+import ManageTeamServices from "../../components/manager/universal/managing/teamservices";
 
 interface Props {
   moveTo: Function;
@@ -102,147 +108,68 @@ class TeamOverview extends React.Component<Props, State> {
     this.setState({ apps, saving: true, add: false });
   }
 
-  renderSerives(services) {
-    let sortedservices: any[] = [];
-    services.forEach(element => {
-      if (!element.disabled && !element.planid.appid.disabled) {
-        sortedservices.push(element);
-      }
-    });
-    let serviceArray: JSX.Element[] = [];
-    let counter = 0;
-    for (counter = 0; counter < sortedservices.length; counter++) {
-      const service = sortedservices[counter];
-      if (sortedservices.length > 6 && counter > 4) {
-        serviceArray.push(
-          <div
-            key="moreSerivces"
-            className="managerSquare"
-            style={{
-              color: "#253647",
-              backgroundColor: "#F2F2F2",
-              fontSize: "12px",
-              fontWeight: 400
-            }}>
-            +{sortedservices.length - 5}
-          </div>
-        );
-        break;
-      } else {
-        serviceArray.push(
-          <div
-            key={service.id}
-            title={service.planid.appid.name}
-            className="managerSquare"
-            style={
-              service.planid.appid.icon
-                ? {
-                    backgroundImage:
-                      service.planid.appid.icon.indexOf("/") != -1
-                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                            service.planid.appid.icon
-                          )})`
-                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                            service.planid.appid.icon
-                          )})`,
-                    backgroundColor: "unset"
-                  }
-                : {}
-            }>
-            {service.planid.appid.icon ? "" : service.planid.appid.name.slice(0, 1)}
-          </div>
-        );
-      }
-    }
-    return serviceArray;
-  }
-
-  renderEmployees(employees) {
-    let employeesArray: JSX.Element[] = [];
-    let counter = 0;
-    for (counter = 0; counter < employees.length; counter++) {
-      const employee: {
-        profilepicture: string;
-        firstname: string;
-        lastname: string;
-      } = employees[counter];
-      if (employees.length > 6 && counter > 4) {
-        employeesArray.push(
-          <div
-            key="moreEmployees"
-            className="managerSquare"
-            style={{
-              color: "#253647",
-              backgroundColor: "#F2F2F2",
-              fontSize: "12px",
-              fontWeight: 400
-            }}>
-            +{employees.length - 5}
-          </div>
-        );
-        break;
-      } else {
-        employeesArray.push(
-          <div
-            key={`Employee-${counter}`}
-            className="managerSquare"
-            style={
-              employee.profilepicture
-                ? employee.profilepicture.indexOf("/") != -1
-                  ? {
-                      backgroundImage: encodeURI(
-                        `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                          employee.profilepicture
-                        )})`
-                      )
-                    }
-                  : {
-                      backgroundImage: encodeURI(
-                        `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                          employee.profilepicture
-                        })`
-                      )
-                    }
-                : {}
-            }>
-            {employee.profilepicture ? "" : employee.firstname.slice(0, 1)}
-          </div>
-        );
-      }
-    }
-    return employeesArray;
-  }
-
-  addProcess() {
+  addProcess(refetch) {
     switch (this.state.addStage) {
       case 1:
         return (
           <AddTeamGeneralData
-            continue={data => this.setState({ addteam: data, addStage: 2 })}
+            savingFunction={data => this.setState({ addteam: data.content, addStage: 2 })}
             close={() => this.setState({ add: false })}
             addteam={this.state.addteam}
           />
         );
       case 2:
         return (
-          <AddTeamEmployeeData
+          /* <AddTeamEmployeeData
             continue={data => {
               this.setState({ addemployees: data, addStage: 3 });
             }}
             close={() => this.setState({ addStage: 1 })}
             teamname={this.state.addteam.name}
             employees={this.state.addemployees}
-          />
+          /> */
+          <ManageTeamEmployees
+            team={this.state.addteam}
+            close={() => this.setState({ add: false })}>
+            <div className="buttonsPopup">
+              <UniversalButton
+                label="Close"
+                type="low"
+                onClick={() => {
+                  this.setState({ add: false });
+                  refetch();
+                }}
+              />
+              <div className="buttonSeperator" />
+              <UniversalButton
+                label="Manage Services"
+                type="high"
+                onClick={() => this.setState({ addStage: 3 })}
+              />
+            </div>
+          </ManageTeamEmployees>
         );
       case 3:
         return (
-          <AddTeamServices
+          /*<AddTeamServices
             continue={apps => this.addService(apps)}
             close={() => this.setState({ addStage: 2 })}
             employees={this.state.addemployees}
             apps={this.state.apps}
             teamname={this.state.addteam.name}
-          />
+          />*/
+          <ManageTeamServices team={this.state.addteam} close={() => this.setState({ add: false })}>
+            <div className="buttonsPopup">
+              <UniversalButton
+                label="Close"
+                type="low"
+                onClick={() => {
+                  this.setState({ add: false });
+                  refetch();
+                }}
+              />
+            </div>
+          </ManageTeamServices>
         );
       default:
         return <div />;
@@ -264,7 +191,7 @@ class TeamOverview extends React.Component<Props, State> {
             <h1>Teams</h1>
           </div>
           <Query query={fetchCompanyTeams}>
-            {({ loading, error, data }) => {
+            {({ loading, error, data, refetch }) => {
               if (loading) {
                 return "Loading...";
               }
@@ -272,7 +199,7 @@ class TeamOverview extends React.Component<Props, State> {
                 return `Error! ${error.message}`;
               }
 
-              //Sort teams
+              // Sort teams
               let teams: any[] = [];
               let interteams: any[] = [];
               if (data.fetchCompanyTeams) {
@@ -297,7 +224,6 @@ class TeamOverview extends React.Component<Props, State> {
                 } else {
                   teams = interteams;
                 }
-                console.log("TEAMS", teams);
               }
               return (
                 <div className="table">
@@ -342,45 +268,23 @@ class TeamOverview extends React.Component<Props, State> {
                         key={team.name}
                         className="tableRow"
                         onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
-                        {console.log("TEAM", team)}
                         <div className="tableMain">
                           <div className="tableColumnBig">
-                            <div
-                              title={team.name}
-                              className="managerSquare"
-                              style={
-                                team.profilepicture
-                                  ? {
-                                      backgroundImage:
-                                        team.profilepicture.indexOf("/") != -1
-                                          ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                              team.profilepicture
-                                            )})`
-                                          : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                              team.profilepicture
-                                            )})`,
-                                      backgroundColor: "unset"
-                                    }
-                                  : team.internaldata && team.internaldata.color
-                                  ? { backgroundColor: team.internaldata.color }
-                                  : {}
-                              }>
-                              {team.profilepicture
-                                ? ""
-                                : team.internaldata && team.internaldata.letters
-                                ? team.internaldata.letters
-                                : team.name.slice(0, 1)}
-                            </div>
+                            <PrintTeamSquare team={team} />
                             <span className="name">{team.name}</span>
                           </div>
-                          <div className="tableColumnBig">
-                            {team.employees
-                              ? this.renderEmployees(team.employees)
-                              : "No services yet"}
-                          </div>
-                          <div className="tableColumnBig">
-                            {team.services ? this.renderSerives(team.services) : "No services yet"}
-                          </div>
+                          <ColumnEmployees
+                            employees={team.employees}
+                            employeeidFunction={e => e}
+                            checkFunction={e => true}
+                          />
+                          <ColumnServices
+                            services={team.services}
+                            checkFunction={element =>
+                              !element.disabled && !element.planid.appid.disabled
+                            }
+                            appidFunction={element => element.planid.appid}
+                          />
                         </div>
                         <div className="tableEnd">
                           <div className="editOptions">
@@ -396,19 +300,19 @@ class TeamOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                     ))}
+                  {this.state.add && (
+                    <PopupBase
+                      fullmiddle={true}
+                      customStyles={{ maxWidth: "1152px" }}
+                      close={() => this.setState({ add: false })}>
+                      {this.addProcess(refetch)}
+                    </PopupBase>
+                  )}
                 </div>
               );
             }}
           </Query>
         </div>
-        {this.state.add && (
-          <PopupBase
-            fullmiddle={true}
-            customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}>
-            {this.addProcess()}
-          </PopupBase>
-        )}
         {this.state.saving && (
           <Mutation mutation={CREATE_TEAM}>
             {createTeam => (
