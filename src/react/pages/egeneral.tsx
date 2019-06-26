@@ -61,7 +61,7 @@ class EGeneral extends React.Component<Props, State> {
                 }
 
                 console.log("SEMIPUBLIC", data);
-                const querydata = data.adminme;
+                const querydata = data.fetchSemiPublicUser;
                 const userdata = {
                   profilepicutre: querydata.profilepicture,
                   online: querydata.isonline,
