@@ -43,7 +43,7 @@ export default (props: Props) => {
   return (
     <div className="section">
       <div className="heading">
-        <h1>Temporary Licences</h1>
+        <h1>Obtained Licences</h1>
       </div>
 
       <div className="table">

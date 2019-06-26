@@ -1,9 +1,18 @@
 import * as React from "react";
-import { graphql } from "react-apollo";
+import { graphql, Query } from "react-apollo";
+import gql from "graphql-tag";
 import AppTile from "../../components/AppTile";
 import { fetchLicences } from "../../queries/auth";
 import { UPDATE_LAYOUT } from "../../mutations/auth";
 import { Licence } from "../../interfaces";
+import LoadingDiv from "../LoadingDiv";
+import { ErrorComp, filterAndSort } from "../../common/functions";
+
+const BULK_UPDATE_LAYOUT = gql`
+  query onBulkUpdateLayout($layouts: [LayoutInput!]!) {
+    bulkUpdateLayout(layouts: $layouts)
+  }
+`;
 
 export interface Preview {
   name: string;
@@ -15,17 +24,22 @@ interface Props {
   layout?: string[] | null;
   licences: Licence[];
   updateLayout: Function;
+  bulkUpdateLayout: Function;
 }
 
 interface State {
   show: Boolean;
+  loading: boolean;
   dragItem: number | null;
   preview: Preview;
+  error: boolean;
 }
 
 class AppList extends React.Component<Props, State> {
   state = {
     show: true,
+    loading: false,
+    error: false,
     dragItem: null,
     preview: { name: "", pic: "" }
   };
@@ -90,7 +104,7 @@ class AppList extends React.Component<Props, State> {
       <div className="genericHolder">
         <div className="header" onClick={this.toggle}>
           <i className={`button-hide fas ${show ? "fa-angle-left" : "fa-angle-down"}`} />
-          <span>Apps</span>
+          <span>My Apps</span>
         </div>
         <div className={`inside ${show ? "in" : "out"}`}>
           <div className="profile-app-holder">
@@ -117,4 +131,51 @@ class AppList extends React.Component<Props, State> {
   }
 }
 
-export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppList);
+const AppListEnhanced = graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppList);
+
+export default (props: Props) => {
+  if (props.licences && props.licences.length > 20) {
+    const layoutLess = props.licences.filter(licence => licence.dashboard === null);
+
+    if (layoutLess.length >= 20) {
+      let maxValue = props.licences.reduce((acc, cv) => Math.max(acc, cv.dashboard), 0);
+
+      const layouts = layoutLess.map(layout => ({ id: layout.id, dashboard: ++maxValue }));
+      return (
+        <Query query={BULK_UPDATE_LAYOUT} variables={{ layouts }}>
+          {({ data, loading, error }) => {
+            if (loading) {
+              return <LoadingDiv text="Initializing Dashboard..." />;
+            }
+
+            if (error || !data) {
+              return <ErrorComp error={error} />;
+            }
+
+            return (
+              <Query query={fetchLicences} fetchPolicy="network-only">
+                {({ data, loading, error }) => {
+                  if (loading) {
+                    return "Loading...";
+                  }
+
+                  if (error || !data) {
+                    return "Something went wrong";
+                  }
+
+                  const filteredLicences = filterAndSort(props.licences, "dashboard");
+
+                  return <AppListEnhanced {...props} licences={filteredLicences} />;
+                }}
+              </Query>
+            );
+          }}
+        </Query>
+      );
+    } else {
+      return <AppListEnhanced {...props} />;
+    }
+  } else {
+    return <AppListEnhanced {...props} />;
+  }
+};

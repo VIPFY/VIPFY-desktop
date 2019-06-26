@@ -4,13 +4,14 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import { forgotPassword } from "../../mutations/auth";
+import { emailRegex } from "../../common/constants";
 
 interface Props {
   type: string;
   preloggedin?: { email: string; name: string; fullname: string };
   continueFunction?: Function;
   backFunction?: Function;
-  forgotPassword: Function;
+  passwordReset: Function;
 }
 
 interface State {
@@ -25,20 +26,21 @@ class PWReset extends React.Component<Props, State> {
     email: "",
     confirm: false,
     error: "",
-    finished: false
+    finished: false,
+    touched: false
   };
 
-  async sendMail() {
+  sendMail = async () => {
     try {
-      await this.props.forgotPassword({
+      await this.props.passwordReset({
         variables: { email: this.state.email }
       });
 
-      this.setState({ finished: true, confirm: true });
+      await this.setState({ confirm: true });
     } catch (err) {
-      this.setState({ error: "Something went wrong", confirm: false, finished: false });
+      await this.setState({ error: "Something went wrong", confirm: false, finished: false });
     }
-  }
+  };
 
   render() {
     return (
@@ -61,9 +63,9 @@ class PWReset extends React.Component<Props, State> {
                 width="312px"
                 label="Email"
                 livevalue={v => this.setState({ email: v })}
-                errorEvaluation={this.state.error != ""}
-                errorhint={this.state.error}
-                onEnter={() => this.sendMail()}
+                errorEvaluation={this.state.error != "" || !this.state.email.match(emailRegex)}
+                errorhint={this.state.error || "A valid Email looks like this john@vipfy.com"}
+                onEnter={this.sendMail}
               />
             </div>
 
@@ -76,23 +78,18 @@ class PWReset extends React.Component<Props, State> {
               <UniversalButton
                 label="Send"
                 type="high"
-                disabled={this.state.email == ""}
-                onClick={() => this.sendMail()}
+                disabled={this.state.email == "" || !this.state.email.match(emailRegex)}
+                onClick={this.sendMail}
               />
             </div>
 
             {this.state.confirm && (
-              <PopupBase
-                small={true}
-                close={() => this.setState({ confirm: false })}
-                nosidebar={true}
-                closeable={false}>
+              <PopupBase small={true} nosidebar={true} closeable={false}>
                 <p>If we find your email-address in our database, we will send you a reset-link.</p>
                 <UniversalButton
                   type="low"
                   closingAllPopups={true}
                   label="Ok"
-                  disabled={this.state.finished}
                   onClick={() => this.props.continueFunction!(this.state.email)}
                 />
               </PopupBase>
@@ -103,4 +100,4 @@ class PWReset extends React.Component<Props, State> {
     );
   }
 }
-export default graphql(forgotPassword, { name: "forgotPassword" })(PWReset);
+export default graphql(forgotPassword, { name: "passwordReset" })(PWReset);

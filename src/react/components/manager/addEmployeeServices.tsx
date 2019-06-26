@@ -194,9 +194,9 @@ class AddEmployeeServices extends React.Component<Props, State> {
       <React.Fragment>
         <span className="mutiplieHeading">
           <span className="bHeading">Add Employee </span>
-          <span className="mHeading">
+          {/*<span className="mHeading">
             > Personal Data > Teams > <span className="active">Services</span>
-          </span>
+    </span>*/}
         </span>
         <span className="secondHolder">Available Services</span>
         <UniversalSearchBox

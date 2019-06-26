@@ -6,6 +6,7 @@ const { shell } = require("electron");
 import { graphql } from "react-apollo";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
+import { emailRegex } from "../../common/constants";
 
 const SIGNUP = gql`
   mutation onSignUp($email: String!, $name: String!, $privacy: Boolean!, $tOS: Boolean!) {
@@ -51,11 +52,9 @@ class RegisterCompany extends React.Component<Props, State> {
         }
       });
       const { ok, token } = res.data.signUp;
-      console.log("SIGNUP", ok, token);
       localStorage.setItem("token", token);
       this.props.continueFunction();
     } catch (err) {
-      console.log("err", err);
       this.setState({
         error:
           "Registration unsuccessful. Maybe this email is already connected to an VIPFY account?"
@@ -80,6 +79,8 @@ class RegisterCompany extends React.Component<Props, State> {
               <UniversalTextInput
                 id="emailreg"
                 width="312px"
+                errorEvaluation={!this.state.email.match(emailRegex)}
+                errorhint="A valid Email looks like this john@vipfy.com"
                 label="Email"
                 livevalue={v => this.setState({ email: v })}
               />
@@ -129,11 +130,13 @@ class RegisterCompany extends React.Component<Props, State> {
               <UniversalButton
                 label="Continue"
                 type="high"
-                disabled={this.state.email == "" || this.state.company == "" || !this.state.privacy}
-                onClick={
-                  () =>
-                    this.continue() /*this.props.continueFunction(this.state.email, this.state.company)*/
+                disabled={
+                  !this.state.email.match(emailRegex) ||
+                  this.state.email == "" ||
+                  this.state.company == "" ||
+                  !this.state.privacy
                 }
+                onClick={this.continue}
               />
             </div>
             {this.state.register && (

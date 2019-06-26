@@ -58,7 +58,7 @@ class AppTile extends React.Component<Props, State> {
     password: ""
   };
 
-  async componentDidMount() {
+  /*async componentDidMount() {
     // Make sure that every License has an index
     if (this.props.licence.dashboard === null) {
       try {
@@ -84,7 +84,7 @@ class AppTile extends React.Component<Props, State> {
         console.log(error);
       }
     }
-  }
+  }*/
 
   render() {
     // prettier-ignore
@@ -95,14 +95,14 @@ class AppTile extends React.Component<Props, State> {
 
     return (
       <React.Fragment>
-        <AppContext>
+        <AppContext.Consumer>
           {({ showPopup }) => (
             <div
               draggable={true}
               onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
-              className={`profile-app ${vacation ? "vacation" : ""} ${
-                dragItem == id ? "hold" : ""
-              } ${this.state.entered ? "hovered" : ""}`}
+              className={`profile-app ${dragItem == id ? "hold" : ""} ${
+                this.state.entered ? "hovered" : ""
+              }`}
               onDrag={() => this.props.dragStartFunction(id)}
               onDragOver={e => {
                 e.preventDefault();
@@ -149,6 +149,8 @@ class AppTile extends React.Component<Props, State> {
                 </div>
               )}
 
+              {vacation && <div className="vacation" />}
+
               <div className="name">
                 <span>
                   {this.props.preview.name && dragItem == id ? this.props.preview.name : name}
@@ -163,25 +165,25 @@ class AppTile extends React.Component<Props, State> {
                             onClick={e => {
                               this.setState({ newpopup: true });
                               e.stopPropagation();
-                              /*showPopup({
-                              header: `Edit licence of Team: ${name}`,
-                              body: EditLicence,
-                              props: {
-                                closeFunction: () => showPopup(null),
-                                teamname: name,
-                                appname: planid.appid.name,
-                                deleteFunction: async licenceid => {
-                                  await deleteLicenceAt({
-                                    variables: { licenceid, time: moment().utc() },
-                                    refetchQueries: [{ query: fetchLicences }, { query: me }]
-                                  });
-                                },
-                                submitFunction: async variables => {
-                                  await updateCredentials({ variables });
-                                },
-                                id
-                              }
-                            });*/
+                              // showPopup({
+                              //   header: `Edit licence of Team: ${name}`,
+                              //   body: EditLicence,
+                              //   props: {
+                              //     closeFunction: () => showPopup(null),
+                              //     teamname: name,
+                              //     appname: planid.appid.name,
+                              //     deleteFunction: async licenceid => {
+                              //       await deleteLicenceAt({
+                              //         variables: { licenceid, time: moment().utc() },
+                              //         refetchQueries: [{ query: fetchLicences }, { query: me }]
+                              //       });
+                              //     },
+                              //     submitFunction: async variables => {
+                              //       await updateCredentials({ variables });
+                              //     },
+                              //     id
+                              //   }
+                              // });
                             }}
                           />
                         )}
@@ -192,7 +194,7 @@ class AppTile extends React.Component<Props, State> {
               </div>
             </div>
           )}
-        </AppContext>
+        </AppContext.Consumer>
         {this.state.newpopup ? (
           <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
             {deleteLicenceAt => (
@@ -204,7 +206,6 @@ class AppTile extends React.Component<Props, State> {
                     <span className="lightHeading" style={{ marginBottom: "0px" }}>
                       Edit your licence
                     </span>
-                    {/*<span className="medHeading spaceHeading">></span>*/}
                     <span className="medHeading">{name}</span>
                     <UniversalTextInput
                       id={`${name}-email`}

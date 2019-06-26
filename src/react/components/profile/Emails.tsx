@@ -331,54 +331,58 @@ class Emails extends React.Component<Props, State> {
                                 </td>*/}
                                 </form>
                               )}
-                              {this.state.edit == key ? (
-                                <React.Fragment>
-                                  <td>
-                                    <button
-                                      className="naked-button"
-                                      type="submit"
-                                      form={`email-form-${key}`}>
-                                      <i className="fa fa-check" />
-                                    </button>
-                                  </td>
-                                  <td>
-                                    <i
-                                      onClick={() => this.setState({ edit: -1 })}
-                                      className="fa fa-times"
-                                    />
-                                  </td>
-                                </React.Fragment>
+                              {tags && tags.find(tag => tag == "company") ? (
+                                this.state.edit == key ? (
+                                  <React.Fragment>
+                                    <td>
+                                      <button
+                                        className="naked-button"
+                                        type="submit"
+                                        form={`email-form-${key}`}>
+                                        <i className="fa fa-check" />
+                                      </button>
+                                    </td>
+                                    <td>
+                                      <i
+                                        onClick={() => this.setState({ edit: -1 })}
+                                        className="fa fa-times"
+                                      />
+                                    </td>
+                                  </React.Fragment>
+                                ) : (
+                                  <React.Fragment>
+                                    <td className="editButton">
+                                      <i
+                                        onClick={() =>
+                                          /*this.showDeletion(emailData.email)*/ this.setState({
+                                            delete: true,
+                                            oldEmail: {
+                                              email: emailData.email,
+                                              description: emailData.description
+                                            }
+                                          })
+                                        }
+                                        className="fal fa-trash-alt"
+                                      />
+                                    </td>
+                                    <td className="editButton">
+                                      <i
+                                        onClick={() =>
+                                          this.setState({
+                                            update: true,
+                                            oldEmail: {
+                                              email: emailData.email,
+                                              description: emailData.description
+                                            }
+                                          })
+                                        }
+                                        className="fal fa-edit"
+                                      />
+                                    </td>
+                                  </React.Fragment>
+                                )
                               ) : (
-                                <React.Fragment>
-                                  <td className="editButton">
-                                    <i
-                                      onClick={() =>
-                                        /*this.showDeletion(emailData.email)*/ this.setState({
-                                          delete: true,
-                                          oldEmail: {
-                                            email: emailData.email,
-                                            description: emailData.description
-                                          }
-                                        })
-                                      }
-                                      className="fal fa-trash-alt"
-                                    />
-                                  </td>
-                                  <td className="editButton">
-                                    <i
-                                      onClick={() =>
-                                        /*this.setState({ edit: key })*/ this.setState({
-                                          update: true,
-                                          oldEmail: {
-                                            email: emailData.email,
-                                            description: emailData.description
-                                          }
-                                        })
-                                      }
-                                      className="fal fa-edit"
-                                    />
-                                  </td>
-                                </React.Fragment>
+                                ""
                               )}
                             </tr>
                           );
@@ -398,27 +402,21 @@ class Emails extends React.Component<Props, State> {
               <span className="textButton">+</span>
               <span className="textButtonBeside">Add Email</span>
             </button>
-            {this.state.createNew ? (
+            {this.state.createNew && (
               <PopupEmail close={() => this.setState({ createNew: false })} />
-            ) : (
-              ""
             )}
-            {this.state.update ? (
+            {this.state.update && (
               <PopupEmail
                 close={() => this.setState({ update: false })}
                 oldvalues={this.state.oldEmail}
               />
-            ) : (
-              ""
             )}
-            {this.state.delete ? (
+            {this.state.delete && (
               <PopupEmail
                 close={() => this.setState({ delete: false })}
                 delete={true}
                 oldvalues={this.state.oldEmail}
               />
-            ) : (
-              ""
             )}
           </div>
         </div>

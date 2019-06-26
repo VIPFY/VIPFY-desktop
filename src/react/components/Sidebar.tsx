@@ -189,6 +189,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
   render() {
     let { sidebarOpen, licences } = this.props;
 
+    if (!licences) {
+      licences = [];
+    }
+
     const maxValue = licences.reduce((acc, cv) => Math.max(acc, cv.sidebar), 0);
 
     const sidebarLinks = [
@@ -446,7 +450,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
               <li
                 onClick={() => this.props.toggleSidebar()}
                 className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
-                <i className="fal fa-angle-left" />
+                <Tooltip
+                  distance={18}
+                  arrowSize={5}
+                  content={`${sidebarOpen ? "Hide" : "Open"} Sidebar`}
+                  direction="right">
+                  <i className="fal fa-angle-left" />
+                </Tooltip>
               </li>
 
               <li className={`sidebar-main ${sidebarOpen ? "" : "sidebar-nav-small"}`}>

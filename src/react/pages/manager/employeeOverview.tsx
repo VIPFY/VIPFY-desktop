@@ -11,6 +11,9 @@ import AddEmployeeServices from "../../components/manager/addEmployeeServices";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import { randomPassword } from "../../common/passwordgen";
+import ColumnServices from "../../components/manager/universal/columns/columnServices";
+import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
+import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 
 interface Props {
   moveTo: Function;
@@ -60,131 +63,6 @@ class EmployeeOverview extends React.Component<Props, State> {
 
   addUser(apps, addteams) {
     this.setState({ apps, addteams, saving: true, add: false });
-  }
-
-  renderSerives(services) {
-    let sortedservices: any[] = [];
-    services.forEach(element => {
-      if (
-        !element.disabled &&
-        !element.boughtplanid.planid.appid.disabled &&
-        (element.endtime > now() || element.endtime == null)
-      ) {
-        sortedservices.push(element);
-      }
-    });
-    let serviceArray: JSX.Element[] = [];
-    let counter = 0;
-    for (counter = 0; counter < sortedservices.length; counter++) {
-      const service = sortedservices[counter];
-      if (sortedservices.length > 6 && counter > 4) {
-        serviceArray.push(
-          <div
-            key="moreSerivces"
-            className="managerSquare"
-            style={{
-              color: "#253647",
-              backgroundColor: "#F2F2F2",
-              fontSize: "12px",
-              fontWeight: 400
-            }}>
-            +{sortedservices.length - 5}
-          </div>
-        );
-        break;
-      } else {
-        serviceArray.push(
-          <div
-            key={service.id}
-            title={service.boughtplanid.planid.appid.name}
-            className="managerSquare"
-            style={
-              service.boughtplanid.planid.appid.icon
-                ? {
-                    backgroundImage:
-                      service.boughtplanid.planid.appid.icon.indexOf("/") != -1
-                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                            service.boughtplanid.planid.appid.icon
-                          )})`
-                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                            service.boughtplanid.planid.appid.icon
-                          )})`,
-                    backgroundColor: "unset"
-                  }
-                : {}
-            }>
-            {service.boughtplanid.planid.appid.icon
-              ? ""
-              : service.boughtplanid.planid.appid.name.slice(0, 1)}
-            {service.options && service.options.nosetup && (
-              <div className="licenceError">
-                <i className="fal fa-exclamation-circle" />
-              </div>
-            )}
-          </div>
-        );
-      }
-    }
-    return serviceArray;
-  }
-
-  renderTeams(teams) {
-    let teamsArray: JSX.Element[] = [];
-    let counter = 0;
-    for (counter = 0; counter < teams.length; counter++) {
-      const team: {
-        profilepicture: string;
-        internaldata: { letters: string; color: string };
-        name: string;
-      } = teams[counter];
-      if (teams.length > 6 && counter > 4) {
-        teamsArray.push(
-          <div
-            key="moreTeams"
-            className="managerSquare"
-            style={{
-              color: "#253647",
-              backgroundColor: "#F2F2F2",
-              fontSize: "12px",
-              fontWeight: 400
-            }}>
-            +{teams.length - 5}
-          </div>
-        );
-        break;
-      } else {
-        teamsArray.push(
-          <div
-            key={team.name}
-            title={team.name}
-            className="managerSquare"
-            style={
-              team.profilepicture
-                ? {
-                    backgroundImage:
-                      team.profilepicture.indexOf("/") != -1
-                        ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                            team.profilepicture
-                          )})`
-                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                            team.profilepicture
-                          )})`,
-                    backgroundColor: "unset"
-                  }
-                : team.internaldata && team.internaldata.color
-                ? { backgroundColor: team.internaldata.color }
-                : {}
-            }>
-            {team.profilepicture
-              ? ""
-              : team.internaldata && team.internaldata.letters
-              ? team.internaldata.letters
-              : team.name.slice(0, 1)}
-          </div>
-        );
-      }
-    }
-    return teamsArray;
   }
 
   addProcess() {
@@ -361,43 +239,58 @@ class EmployeeOverview extends React.Component<Props, State> {
                               {employee.isonline ? "Online" : "Offline"}
                             </div>
                           </div>
-                          <div className="tableColumnBig">
-                            <Query
-                              query={fetchTeams}
-                              fetchPolicy="network-only" //TODO make better
-                              variables={{ userid: employee.id }}>
-                              {({ loading, error, data }) => {
-                                if (loading) {
-                                  return "Loading...";
-                                }
-                                if (error) {
-                                  return `Error! ${error.message}`;
-                                }
-                                return data.fetchTeams
-                                  ? this.renderTeams(data.fetchTeams)
-                                  : "No teams yet";
-                              }}
-                            </Query>
-                          </div>
-                          <div className="tableColumnBig">
-                            <Query
-                              query={fetchUsersOwnLicences}
-                              variables={{ unitid: employee.id }}
-                              fetchPolicy="network-only" //TODO make better
-                            >
-                              {({ loading, error, data }) => {
-                                if (loading) {
-                                  return "Loading...";
-                                }
-                                if (error) {
-                                  return `Error! ${error.message}`;
-                                }
-                                return data.fetchUsersOwnLicences
-                                  ? this.renderSerives(data.fetchUsersOwnLicences)
-                                  : "No services yet";
-                              }}
-                            </Query>
-                          </div>
+                          <Query
+                            query={fetchTeams}
+                            fetchPolicy="network-only" //TODO make better
+                            variables={{ userid: employee.id }}>
+                            {({ loading, error, data }) => {
+                              if (loading) {
+                                return "Loading...";
+                              }
+                              if (error) {
+                                return `Error! ${error.message}`;
+                              }
+                              return (
+                                <ColumnTeams
+                                  teams={data.fetchTeams}
+                                  teamidFunction={team => team}
+                                />
+                              );
+                            }}
+                          </Query>
+                          <Query
+                            query={fetchUsersOwnLicences}
+                            variables={{ unitid: employee.id }}
+                            fetchPolicy="network-only" //TODO make better
+                          >
+                            {({ loading, error, data }) => {
+                              if (loading) {
+                                return "Loading...";
+                              }
+                              if (error) {
+                                return `Error! ${error.message}`;
+                              }
+                              return (
+                                <ColumnServices
+                                  services={data.fetchUsersOwnLicences}
+                                  checkFunction={element =>
+                                    !element.disabled &&
+                                    !element.boughtplanid.planid.appid.disabled &&
+                                    (element.endtime > now() || element.endtime == null)
+                                  }
+                                  appidFunction={element => element.boughtplanid.planid.appid}
+                                  overlayFunction={service =>
+                                    service.options &&
+                                    service.options.nosetup && (
+                                      <div className="licenceError">
+                                        <i className="fal fa-exclamation-circle" />
+                                      </div>
+                                    )
+                                  }
+                                />
+                              );
+                            }}
+                          </Query>
                         </div>
                         <div className="tableEnd">
                           <div className="editOptions">

@@ -3,6 +3,7 @@ import { withApollo } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { forgotPassword } from "../../mutations/auth";
+import { emailRegex } from "../../common/constants";
 
 interface PasswordResetProps {
   logMeOut: Function;
@@ -13,23 +14,28 @@ interface PasswordResetProps {
 interface PasswordResetState {
   email: string;
   error: string | null;
+  emailError: string;
   loading: boolean;
   message: string;
 }
-
-const emailregex = /^.+\@.+\..+$/;
 
 class PasswordReset extends React.Component<PasswordResetProps, PasswordResetState> {
   state: PasswordResetState = {
     email: "",
     error: null,
+    emailError: "",
     loading: false,
     message: ""
   };
 
   private emailChanged(e: React.ChangeEvent<HTMLInputElement>): void {
     const v = e.target.value;
-    this.setState({ email: v });
+
+    if (!v.match(emailRegex)) {
+      this.setState({ email: v, emailError: "A valid email looks like this: john@vipfy.com" });
+    } else {
+      this.setState({ email: v, emailError: "" });
+    }
   }
 
   private async confirm(): Promise<void> {
@@ -55,7 +61,7 @@ class PasswordReset extends React.Component<PasswordResetProps, PasswordResetSta
   }
 
   private canSubmit(): boolean {
-    return (this.state.email && emailregex.test(this.state.email)) === true;
+    return (this.state.email && emailRegex.test(this.state.email)) === true;
   }
 
   render() {
@@ -82,6 +88,7 @@ class PasswordReset extends React.Component<PasswordResetProps, PasswordResetSta
                       onChange={e => this.emailChanged(e)}
                     />
                   </label>
+                  {this.state.emailError && <span className="error">{this.state.emailError}</span>}
                 </div>
                 <div style={{ color: "darkgreen", minHeight: "2.5em" }}>{this.state.message}</div>
                 {this.canSubmit() ? (

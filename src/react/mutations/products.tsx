@@ -42,27 +42,6 @@ export const CREATE_OWN_APP = gql`
   mutation onCreateOwnApp($ssoData: SSOInput!) {
     createOwnApp(ssoData: $ssoData) {
       id
-      starttime
-      endtime
-      disabled
-      sidebar
-      dashboard
-      boughtplanid {
-        id
-        alias
-        buytime
-        planid {
-          id
-          options
-          appid {
-            id
-            name
-            logo
-            icon
-            teaserdescription
-          }
-        }
-      }
     }
   }
 `;

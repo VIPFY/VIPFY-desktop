@@ -10,9 +10,6 @@ import { me } from "../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { CHANGE_PASSWORD } from "../mutations/auth";
-import EShower from "./eshower";
-import EmployeeOverview from "./manager/employeeOverview";
-import EmployeeDetails from "./manager/employeeDetails";
 import DataNameForm from "../components/dataForms/NameForm";
 import DataNextForm from "../components/dataForms/NextForm";
 import SignUpInGeneral from "../components/dataForms/SignUpInGeneralForm";
@@ -235,7 +232,6 @@ class Login extends React.Component<Props, State> {
   };
 
   selectAddress = async address => {
-    console.table(countries);
     let country = address.description
       .split(",")
       .pop()

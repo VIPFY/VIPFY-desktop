@@ -14,6 +14,7 @@ import { fetchTeam } from "../../queries/departments";
 import TeamGeneralData from "../../components/manager/teamGeneralData";
 import EmployeeSection from "../../components/manager/teamDetails/employeeSection";
 import ServiceSection from "../../components/manager/serviceSection";
+import UploadImage from "../../components/manager/universal/uploadImage";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -35,12 +36,14 @@ interface Props {
 interface State {
   loading: boolean;
   search: string;
+  uploadError: string | null;
 }
 
 class TeamDetails extends React.Component<Props, State> {
   state = {
     loading: false,
-    search: ""
+    search: "",
+    uploadError: null
   };
 
   uploadPic = async (picture: File) => {
@@ -53,7 +56,11 @@ class TeamDetails extends React.Component<Props, State> {
       await this.setState({ loading: false });
     } catch (err) {
       console.log("err", err);
-      await this.setState({ loading: false });
+      await this.setState({ loading: false, uploadError: "Upload failed" }, () => {
+        setTimeout(() => {
+          this.setState({ uploadError: null });
+        }, 2000);
+      });
     }
   };
 
@@ -96,58 +103,28 @@ class TeamDetails extends React.Component<Props, State> {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <div>
-                    <form>
-                      <label>
-                        <div
-                          title={team.name}
-                          className="managerBigSquare"
-                          style={
-                            team.profilepicture
-                              ? {
-                                  backgroundImage:
-                                    team.profilepicture.indexOf("/") != -1
-                                      ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                          team.profilepicture
-                                        )})`
-                                      : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                          team.profilepicture
-                                        )})`,
-                                  backgroundColor: "unset"
-                                }
-                              : team.internaldata && team.internaldata.color
-                              ? { backgroundColor: team.internaldata.color }
-                              : {}
-                          }>
-                          <div className="managerBigLetters">
-                            {team.profilepicture
-                              ? ""
-                              : team.internaldata && team.internaldata.letters
-                              ? team.internaldata.letters
-                              : team.name.slice(0, 1)}
-                          </div>
-                          <div className="imagehover">
-                            <i className="fal fa-camera" />
-                            <span>Upload</span>
-                          </div>
-                        </div>
-
-                        <Dropzone
-                          disabled={this.state.loading}
-                          style={{
-                            width: "0px",
-                            height: "0px",
-                            opacity: 0,
-                            overflow: "hidden",
-                            position: "absolute",
-                            zIndex: -1
-                          }}
-                          accept="image/*"
-                          type="file"
-                          multiple={false}
-                          onDrop={([file]) => this.uploadPic(file)}
-                        />
-                      </label>
-                    </form>
+                    <UploadImage
+                      picture={{
+                        preview:
+                          team && team.profilepicture
+                            ? team.profilepicture.indexOf("/") != -1
+                              ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                                  team.profilepicture
+                                )}`
+                              : `https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
+                                  team.profilepicture
+                                )}`
+                            : null
+                      }}
+                      name={
+                        team.internaldata && team.internaldata.letters
+                          ? team.internaldata.letters
+                          : team.name
+                      }
+                      onDrop={s => this.uploadPic(s)}
+                      className="managerBigSquare"
+                      uploadError={this.state.uploadError}
+                    />
                   </div>
                   <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
                     <div className="table" style={{ marginTop: "24px" }}>
@@ -163,33 +140,6 @@ class TeamDetails extends React.Component<Props, State> {
                 moveTo={this.props.moveTo}
               />
               <ServiceSection team={team} search={this.state.search} moveTo={this.props.moveTo} />
-              {/*<TeamsSection
-                employeeid={employeeid}
-                employeename={`${querydata.firstname} ${querydata.lastname}`}
-              />
-              <LicencesSection
-                employeeid={employeeid}
-                employeename={`${querydata.firstname} ${querydata.lastname}`}
-              />
-              {this.state.changepicture && (
-                <PopupSelfSaving
-                  savingmessage="Saving Profileimage"
-                  savedmessage="Profileimage successfully saved"
-                  saveFunction={async () => {
-                    await this.props.updatePic({
-                      variables: { file: this.state.changepicture },
-                      refetchQueries: ["me"]
-                    });
-                    this.props.client.query({ query: me, fetchPolicy: "network-only" });
-                    this.props.client.query({
-                      query: QUERY_USER,
-                      variables: { userid: this.props.match.params.userid },
-                      fetchPolicy: "network-only"
-                    });
-                  }}
-                  closeFunction={() => this.setState({ changepicture: null })}
-                />
-                )}*/}
             </div>
           );
         }}

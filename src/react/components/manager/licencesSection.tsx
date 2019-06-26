@@ -353,7 +353,7 @@ class LicencesSection extends React.Component<Props, State> {
             return (
               <div className="section" key="Licences">
                 <div className="heading">
-                  <h1>Licences</h1>
+                  <h1>Assigned Licences</h1>
                 </div>
                 <div className="table">
                   <div className="tableHeading">
@@ -371,7 +371,7 @@ class LicencesSection extends React.Component<Props, State> {
                         <h1>Price</h1>
                       </div>
                       <div className="tableColumnSmall">
-                        <h1>Usage/Day</h1>
+                        <h1>min/Month</h1>
                       </div>
                     </div>
                     <div className="tableEnd">
