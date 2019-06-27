@@ -5,7 +5,7 @@ import { Query } from "react-apollo";
 import { fetchTeams } from "../../../../queries/departments";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import TeamDelete from "../deleting/TeamDelete";
-import TeamGrid from "../grid/TeamGrid";
+import TeamGrid from "../grid/teamGrid";
 import AddEmployeeToTeam from "../adding/addEmployeeToTeam";
 import AddTeamGeneralData from "../../addTeamGeneralData";
 import { fetchCompanyService } from "../../../../queries/products";
