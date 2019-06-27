@@ -5,10 +5,10 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import moment = require("moment");
 import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
 
-export function showStars(stars) {
+export function showStars(stars, maxStars = 5) {
   const starsArray: JSX.Element[] = [];
   if (stars) {
-    for (let n = 0; n < 5; n++) {
+    for (let n = 0; n < maxStars; n++) {
       if (n < stars - 0.5) {
         starsArray.push(<i key={`star${n}`} className="fas fa-star" />);
       } else if (n < stars) {
@@ -19,7 +19,7 @@ export function showStars(stars) {
           </span>
         );
       } else {
-        starsArray.push(<i key={`star${n}`} className="far fa-star" />);
+        starsArray.push(<i key={`star${n}`} className="fas fa-star star-empty" />);
       }
     }
   } else {
@@ -98,7 +98,8 @@ export const AppContext = React.createContext();
 
 export const ErrorComp = ({ error }) => <div className="error-field">{filterError(error)}</div>;
 
-export const concatName = (first, middle, last) => `${first} ${middle ? middle : ""} ${last}`;
+export const concatName = ({ firstname, middlename, lastname }) =>
+  `${firstname} ${middlename ? middlename : ""} ${lastname}`;
 
 export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Element[] => {
   let r: JSX.Element[] = [];
