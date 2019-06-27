@@ -58,6 +58,10 @@ class UsageStatistics extends React.Component<Props, State> {
             // Sort would mutate the array
             const usage = data.fetchTotalAppUsage;
 
+            if (usage.length < 1) {
+              return null;
+            }
+
             const mostUsed = usage.sort((a, b) => b.totalminutes - a.totalminutes).slice(0, 3);
 
             const total = usage.reduce((sum, cur) => sum + cur.totalminutes, 0);
