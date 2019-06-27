@@ -17,6 +17,7 @@ interface State {
 
 interface Props {
   client: { query: Function };
+  search?: string;
 }
 
 class AppCompanyChartWrapper extends React.Component<Props, State> {
@@ -87,10 +88,22 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
             }
 
             const total = fetchTotalAppUsage.reduce((sum, cur) => sum + cur.totalminutes, 0);
-            let usage = fetchTotalAppUsage.map(u => ({
-              label: u.app.name,
-              value: (u.totalminutes / total) * 100
-            }));
+            let usage = fetchTotalAppUsage
+              .filter(item => {
+                if (!this.props.search) {
+                  return true;
+                }
+
+                if (item.app.name.toUpperCase().includes(this.props.search.toUpperCase())) {
+                  return true;
+                } else {
+                  return false;
+                }
+              })
+              .map(u => ({
+                label: u.app.name,
+                value: (u.totalminutes / total) * 100
+              }));
 
             //const colors = d.map(u => u.app.color);
 
@@ -125,8 +138,6 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
             const labels = usage.map(u => u.label);
             const series = [{ data: usageValues }];
 
-            const max = Math.max(...usageValues);
-            const numTicks = max / 5;
             const height = usage.length * 25 + 100;
 
             return (
@@ -172,8 +183,7 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
                           }
                           return x.toFixed(0) + "%";
                         }
-                      },
-                      tickAmount: numTicks
+                      }
                     },
                     tooltip: {
                       theme: "light",

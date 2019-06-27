@@ -79,6 +79,7 @@ interface State {
 interface Props {
   data: { fetchUnitApps: any; fetchUnitAppsSimpleStats: any };
   company: object;
+  search?: boolean;
 }
 
 const shortEnglishHumanizer = humanizeDuration.humanizer({
@@ -129,8 +130,21 @@ class AppListInner extends React.Component<Props, State> {
   }
 
   tableRows() {
-    return this.props.data.fetchUnitApps.map(
-      ({ boughtplan, id, licencesused, licencestotal }, key) => {
+    return this.props.data.fetchUnitApps
+      .filter(item => {
+        if (!this.props.search) {
+          return true;
+        }
+
+        const name = item.boughtplan.alias || item.boughtplan.planid.appid.name;
+
+        if (name.toUpperCase().includes(this.props.search.toUpperCase())) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .map(({ boughtplan, id, licencesused, licencestotal }, key) => {
         const stats = this.props.data.fetchUnitAppsSimpleStats.filter(d => d.id == id)[0];
         const {
           endtime,
@@ -263,8 +277,7 @@ class AppListInner extends React.Component<Props, State> {
             </td>
           </tr>
         );
-      }
-    );
+      });
   }
 }
 
