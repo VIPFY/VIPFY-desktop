@@ -138,11 +138,10 @@ class IssuedLicences extends React.Component<Props, State> {
               }
 
               return data.fetchIssuedLicences.map((licence, key) => {
-                const { firstname, middlename, lastname } = licence.unitid;
                 // prettier-ignore
                 const { alias, planid: { appid } } = licence.licenceid.boughtplanid;
                 const serviceName = alias ? alias : appid.name;
-                const userName = concatName(firstname, middlename, lastname);
+                const userName = concatName(licence.unitid);
                 const starttime = moment(licence.starttime).format("LLL");
                 const endtime = moment(licence.endtime).format("LLL");
 
@@ -209,13 +208,7 @@ class IssuedLicences extends React.Component<Props, State> {
                             lic => lic.id == this.state.showEdit
                           );
 
-                          const {
-                            profilepicture,
-                            id,
-                            firstname: fi,
-                            middlename: mi,
-                            lastname: la
-                          } = editLicence.unitid;
+                          const { profilepicture, id } = editLicence.unitid;
 
                           const selectedUser = {
                             label: (
@@ -236,7 +229,7 @@ class IssuedLicences extends React.Component<Props, State> {
                                 ) : (
                                   <i className="fal fa-user" title="Single Account" />
                                 )}
-                                {concatName(fi, mi, la)}
+                                {concatName(editLicence.unitid)}
                               </span>
                             ),
                             value: id

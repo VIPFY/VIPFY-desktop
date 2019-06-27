@@ -103,7 +103,7 @@ class PersonalData extends React.Component<Props, State> {
           if (error) {
             return <div>Error loading data</div>;
           }
-          const { firstname, middlename, lastname, title, createdate, profilepicture } = data.me;
+          const { firstname, title, createdate, profilepicture } = data.me;
 
           // Just to be on the safe side
           let consent = "not given";
@@ -120,7 +120,7 @@ class PersonalData extends React.Component<Props, State> {
                 const information = [
                   {
                     label: "Name",
-                    data: `${title ? title : ""} ${concatName(firstname, middlename, lastname)}`
+                    data: `${title ? title : ""} ${concatName(data.me)}`
                   },
                   //{ label: "Language", data: language },
                   { label: "User for", data: <Duration timestamp={parseInt(createdate)} /> }

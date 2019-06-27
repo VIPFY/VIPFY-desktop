@@ -204,7 +204,6 @@ class TeamOverview extends React.Component<Props, State> {
               let interteams: any[] = [];
               if (data.fetchCompanyTeams) {
                 interteams = data.fetchCompanyTeams;
-                console.log("Interteams", interteams, data);
                 interteams.sort(function(a, b) {
                   let nameA = a.name.toUpperCase();
                   let nameB = b.name.toUpperCase();

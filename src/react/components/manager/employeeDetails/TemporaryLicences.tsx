@@ -3,7 +3,7 @@ import moment = require("moment");
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
 import LoadingDiv from "../../LoadingDiv";
-import { concatName, filterError, ErrorComp } from "../../../common/functions";
+import { concatName, ErrorComp } from "../../../common/functions";
 
 const FETCH_TEMP_LICENCES = gql`
   query onFetchTempLicences($unitid: ID!) {
@@ -77,7 +77,6 @@ export default (props: Props) => {
             }
 
             return data.fetchTempLicences.map(licence => {
-              const { firstname, middlename, lastname } = licence.owner;
               // prettier-ignore
               const { alias, planid: { appid } } = licence.licenceid.boughtplanid;
 
@@ -114,9 +113,7 @@ export default (props: Props) => {
                       </span>
                     </div>
 
-                    <div className="tableColumnSmall content">
-                      {concatName(firstname, middlename, lastname)}
-                    </div>
+                    <div className="tableColumnSmall content">{concatName(licence.owner)}</div>
 
                     <div className="tableColumnSmall content">
                       {moment(licence.starttime).format("LLL")}

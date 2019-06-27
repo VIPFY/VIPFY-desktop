@@ -61,7 +61,7 @@ class MessageCenter extends React.Component<Props> {
       this.props.employees.fetchEmployees.forEach(({ employee }) => {
         if (employee.id != this.props.userid) {
           options.push({
-            name: concatName(employee.firstname, employee.middlename, employee.lastname),
+            name: concatName(employee),
             value: employee.id
           });
         }
