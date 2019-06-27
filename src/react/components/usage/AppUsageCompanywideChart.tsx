@@ -84,7 +84,11 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
             const { fetchTotalAppUsage } = data;
 
             if (fetchTotalAppUsage.length == 0) {
-              return <div>Use any app to see statistics about app usage here</div>;
+              return (
+                <div className="no-app-message">
+                  Use any app to see statistics about app usage here
+                </div>
+              );
             }
 
             const total = fetchTotalAppUsage.reduce((sum, cur) => sum + cur.totalminutes, 0);

@@ -84,6 +84,9 @@
   }
 
   &-overview {
+    position: relative;
+    min-height: 70px;
+
     .header {
       display: flex;
       align-items: center;
@@ -108,6 +111,12 @@
         height: 31px;
         margin: 0 10px 0 20px;
       }
+    }
+
+    .no-app-message {
+      position: absolute;
+      top: 29px;
+      left: 20px;
     }
   }
 }
