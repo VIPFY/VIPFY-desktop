@@ -35,13 +35,13 @@ const cache = new InMemoryCache({
           return null;
         }
       case "Department":
-        if (object.unitid !== undefined) {
-          return `${object.__typename}:${object.unitid}`;
+        if (object.unitid !== undefined && object.unitid.id !== undefined) {
+          return `${object.__typename}:${object.unitid.id}`;
         } else {
           return null;
         }
       case "Team":
-        if (object.unitid !== undefined) {
+        if (object.unitid !== undefined && object.unitid.id !== undefined) {
           return `${object.__typename}:${object.unitid.id}`;
         } else {
           return null;
@@ -59,8 +59,8 @@ const cache = new InMemoryCache({
           return null;
         }
       case "DepartmentData":
-        if (object.unitid !== undefined) {
-          return `${object.__typename}:${object.unitid}`;
+        if (object.unitid !== undefined && object.unitid.id !== undefined) {
+          return `${object.__typename}:${object.unitid.id}`;
         } else {
           return null;
         }
