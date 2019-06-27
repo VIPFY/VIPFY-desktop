@@ -21,6 +21,7 @@ interface AppProps {
   client: ApolloClient<InMemoryCache>;
   history: any;
   logoutFunction: Function;
+  upgradeErrorHandlerSetter: Function;
   me: any;
   moveTo: Function;
   relogMeIn: Function;
@@ -101,6 +102,7 @@ class App extends React.Component<AppProps, AppState> {
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
+    this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
     this.props.history.push("/area");
     this.redeemSetupToken();
   }
