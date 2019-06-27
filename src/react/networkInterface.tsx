@@ -141,8 +141,18 @@ let logout = () => {
   return;
 };
 
+// We pass our logout function here to catch malfunctioning tokens and log the
+// User out in case
+let handleUpgradeError = () => {
+  return;
+};
+
 export const setLogoutFunction = logoutFunc => {
   logout = logoutFunc;
+};
+
+export const setUpgradeErrorHandler = handlerFunc => {
+  logout = handleUpgradeError;
 };
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -154,6 +164,8 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         return console.log(
           `[RightsError]: Message: ${message}, Seems like a user doesn't have the neccessary rights`
         );
+      } else if (data && data.code == 426) {
+        handleUpgradeError();
       }
 
       return console.log(
