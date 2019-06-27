@@ -12,7 +12,9 @@
 @import './titlebar.scss';
 @import './billing.scss';
 @import './domains.scss';
+@import './security.scss';
 @import './statistics.scss';
+@import './dashboard.scss';
 @import './messages.scss';
 @import './profile.scss';
 @import './editor.scss';
@@ -1302,54 +1304,6 @@ li {
 .notificationPopupScroller {
     max-height: 15rem;
     overflow-y: auto;
-}
-
-.dashboard {
-  @extend .managerPage;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: center;
-  padding: 24px 48px 0 48px;
-
-  .no-apps {
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    justify-content: space-between;
-    height: 600px;
-    width: 500px;
-    color: #7C7C7CFF;
-    font-size: 20px;
-    text-align: center;
-
-    img {
-      width: 192px;
-      height: 224px;
-      object-fit: contain;
-    }
-
-    h1 {
-      font-size: 44px;
-    }
-  }
-
-  .genericHolder {
-
-    .inside {
-      .profile-app-holder {
-        max-height: 600px;
-        grid-template-rows: repeat(auto-fill, 10rem);
-        grid-template-columns: repeat(auto-fill, 10rem);
-
-        .profile-app {
-          width: 10em;
-          height: 10em;
-          overflow: unset;
-        }
-      }
-    }
-  }
 }
 
 .welcomeTile{
@@ -5774,45 +5728,6 @@ progress[value] {
   }
 }
 
-.security-table {  
-  padding: 20px 0; 
-  border-spacing: 20px 10px;
-
-  tbody {
-    tr {
-     height: 56px;
-
-      &:hover {
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
-      }
-
-      .managerSquare {
-        margin-top: 0;
-      }
-
-      .fa-star {
-        color: $vipfy-primary-color;
-      }
-
-      .star-empty {
-        color: #ccc;
-      }
-    }
-
-    td {
-      position: relative;
-    }
-
-    .error {
-      color: crimson;
-      position: absolute;
-      bottom: 0px;
-      right: 0px;
-      width: 430px;
-      text-align: right;
-    }
-  }
-}
 .promocode-holder {
   margin-top: 40px;
   text-align: left !important;
