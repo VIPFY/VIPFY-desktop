@@ -94,26 +94,36 @@ class RegisterCompany extends React.Component<Props, State> {
                 livevalue={v => this.setState({ company: v })}
               />
             </div>
-            <div className="agreementBox" style={{ marginTop: "16px" }}>
+            <div
+              className="agreementBox"
+              style={{
+                marginTop: "16px",
+                display: "flex",
+                flexFlow: "column",
+                alignItems: "unset",
+                justifyContent: "space-around",
+                height: "92px"
+              }}>
               <UniversalCheckbox
                 liveValue={v => this.setState({ privacy: v })}
                 style={{ width: "312px" }}>
-                <span
-                  style={{
-                    marginLeft: "8px",
-                    fontSize: "12px",
-                    position: "relative",
-                    top: "-5px"
-                  }}>
+                <span style={{ width: "300px" }}>
                   By registering I agree to the
                   <span
-                    style={{ marginLeft: "4px", marginRight: "4px", color: "#357aa5" }}
+                    style={{ position: "unset", width: "unset" }}
                     onClick={() => shell.openExternal("https://vipfy.store/terms-of-service")}>
-                    Terms of Service
+                    Terms of Service of VIPFY
                   </span>
-                  and
+                </span>
+              </UniversalCheckbox>
+
+              <UniversalCheckbox
+                liveValue={v => this.setState({ privacy: v })}
+                style={{ width: "312px" }}>
+                <span style={{ width: "300px" }}>
+                  By registering I agree to the
                   <span
-                    style={{ marginLeft: "4px", marginRight: "4px", color: "#357aa5" }}
+                    style={{ position: "unset", width: "unset" }}
                     onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
                     Privacy Agreement
                   </span>
@@ -121,6 +131,7 @@ class RegisterCompany extends React.Component<Props, State> {
                 </span>
               </UniversalCheckbox>
             </div>
+
             <div className="login-buttons">
               <UniversalButton
                 label="Cancel"
