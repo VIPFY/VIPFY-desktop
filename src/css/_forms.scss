@@ -160,7 +160,14 @@
       transition: opacity 0.2s ease;
     }
 
+    span {
+      position: absolute;
+      width: 233px;
+      padding-top: 4px;
+    }
+
     svg {
+      margin-right: 13px;
       position: relative;
       z-index: 1;
       fill: none;
