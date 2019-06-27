@@ -234,7 +234,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Teams",
         location: "team",
         icon: "users",
-        show: this.props.isadmin,
+        show: this.props.isadmin && config.showTeams,
         highlight: "teamelement"
       },
       {
