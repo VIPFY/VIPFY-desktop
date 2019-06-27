@@ -33,7 +33,12 @@ class UniversalSearchBox extends React.Component<Props, State> {
   handleChange = async e => {
     e.preventDefault();
     const value = e.target.value;
-    this.setState({ value, endsearch: false });
+    let searching = true;
+
+    if (value === "") {
+      searching = false;
+    }
+    this.setState({ value, searching, endsearch: false });
     if (this.props.getValue) {
       if (this.props.selfitems && !this.state.endsearch) {
         this.props.getValue(null);
@@ -135,8 +140,6 @@ class UniversalSearchBox extends React.Component<Props, State> {
   };
 
   render() {
-    const { value } = this.state;
-
     return (
       <div
         className="genericSearchHolder"
