@@ -112,7 +112,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       this.props.history.push(page);
     });
 
-    const meme = await this.props.client.query({ query: me });
+    /*const meme = await this.props.client.query({ query: me });
 
     const script = document.createElement("script");
 
@@ -137,7 +137,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       this.setState({ script3 });
     };
     this.setState({ script });
-    document.head.appendChild(script);
+    document.head.appendChild(script);*/
 
     if (this.props.consent == null) {
       this.setState({ consentPopup: true });
