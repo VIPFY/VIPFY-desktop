@@ -93,7 +93,7 @@ class UsageStatistics extends React.Component<Props, State> {
             <span>Overview</span>
           </div>
           <div className={`inside ${this.state.showEyecatcher ? "in" : "out"}`}>
-            <AppUsageComanywideChart {...this.props} />
+            <AppUsageComanywideChart search={this.state.searchString} {...this.props} />
           </div>
         </div>
 
@@ -108,7 +108,7 @@ class UsageStatistics extends React.Component<Props, State> {
           </div>
 
           <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
-            <AppTable {...this.props} />
+            <AppTable search={this.state.searchString} {...this.props} />
           </div>
         </div>
       </div>

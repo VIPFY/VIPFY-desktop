@@ -23,7 +23,7 @@ export function showStars(stars, maxStars = 5) {
       }
     }
   } else {
-    starsArray.push(<div key="star0">No Reviews yet</div>);
+    starsArray.push(<div key="star">No Reviews yet</div>);
   }
   return starsArray;
 }

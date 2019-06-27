@@ -4,14 +4,9 @@ import { times } from "lodash";
 import * as moment from "moment";
 import UserName from "../UserName";
 import { Query, Mutation, graphql } from "react-apollo";
-import UserPicture from "../UserPicture";
 import { showStars, filterError, concatName } from "../../common/functions";
 import UniversalButton from "../universalButtons/universalButton";
 import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
-
-interface State {
-  changeForce: number;
-}
 
 interface Props {
   data: { fetchUserSecurityOverview: any };
@@ -58,8 +53,6 @@ const FETCH_USER_SECURITY_OVERVIEW = gql`
 `;
 
 class UserSecurityTableInner extends React.Component<Props, State> {
-  state = { changeForce: 0 };
-
   // changeAdminStatus = async (id, bool) => {
   //   this.setState({ changeAdminStatus: id });
   //   try {
@@ -74,17 +67,11 @@ class UserSecurityTableInner extends React.Component<Props, State> {
   // };
 
   forceReset = async userids => {
-    if (userids.length === 1) {
-      this.setState({ changeForce: userids[0] });
-    } else {
-      this.setState({ changeForce: -1 });
-    }
     try {
       await this.props.forcePasswordChange({
         variables: { userids },
         refetchQueries: [{ query: FETCH_USER_SECURITY_OVERVIEW }]
       });
-      this.setState({ changeForce: 0 });
     } catch (err) {
       console.log("Force reset not possible", err);
     }
@@ -107,21 +94,19 @@ class UserSecurityTableInner extends React.Component<Props, State> {
         <tbody>
           {this.tableRows()}
           <tr>
-            {times(6, () => (
-              <td />
+            {times(6, n => (
+              <td key={n} />
             ))}
             <td>
-              <button
-                onClick={() =>
-                  this.forceReset(
-                    this.props.data.fetchUserSecurityOverview.map(user => {
-                      return user.id;
-                    })
-                  )
-                }
-                className="naked-button button">
-                Force all
-              </button>
+              {this.props.data.fetchUserSecurityOverview > 1 && (
+                <UniversalButton
+                  type="low"
+                  label="Force all"
+                  onClick={() =>
+                    this.forceReset(this.props.data.fetchUserSecurityOverview.map(user => user.id))
+                  }
+                />
+              )}
             </td>
             <td />
           </tr>
@@ -137,8 +122,8 @@ class UserSecurityTableInner extends React.Component<Props, State> {
           .toLocaleUpperCase()
           .includes(this.props.search.toUpperCase())
       )
-      .map(user => (
-        <tr key={`r${user.id}`}>
+      .map((user, key) => (
+        <tr key={key}>
           <td className="data-recording-sensitive">
             <PrintEmployeeSquare employee={user.unitid} />
           </td>
