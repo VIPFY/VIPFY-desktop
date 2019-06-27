@@ -48,7 +48,7 @@ class EmployeeGrid extends React.Component<Props, State> {
             draggable={true}
             onDragStart={() => this.setState({ dragdelete: employee })}
             onClick={() => this.props.onChange({ action: "remove", content: employee })}>
-            <PrintEmployeeSquare className="image" employee={employee} />
+            <PrintEmployeeSquare className="image" employee={employee} size={88} />
             <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
             {employee.current ? (
               <React.Fragment>
@@ -156,7 +156,7 @@ class EmployeeGrid extends React.Component<Props, State> {
                   onClick={() =>
                     available && this.props.onChange({ action: "add", content: employee })
                   }>
-                  <PrintEmployeeSquare employee={employee} className="image" />
+                  <PrintEmployeeSquare employee={employee} className="image" size={88} />
                   <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
 
                   {available ? (
