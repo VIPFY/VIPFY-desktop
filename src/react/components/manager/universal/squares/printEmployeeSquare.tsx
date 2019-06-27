@@ -20,6 +20,7 @@ class PrintEmployeeSquare extends React.Component<Props, State> {
     const name = employee.firstname || employee.lastname || employee.fullname || " "; // fullname is used by login
     return (
       <div
+        title={name}
         className={this.props.className || "managerSquare"}
         style={
           employee.profilepicture
