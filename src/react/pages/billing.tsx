@@ -168,9 +168,7 @@ class Billing extends React.Component<Props, State> {
             <span>Cost Distribution</span>
           </div>
           <div className={`inside ${this.state.showCostDistribution ? "in" : "out"}`}>
-            <div className="nextPaymentChart">
-              <BillingPie {...this.props} />
-            </div>
+            <div className="nextPaymentChart">{/* <BillingPie {...this.props} /> */}</div>
           </div>
         </div>
 
@@ -227,7 +225,7 @@ class Billing extends React.Component<Props, State> {
             <span>Invoices</span>
           </div>
           <div className={`inside ${this.state.showInvocies ? "in" : "out"}`}>
-            <Invoices />
+            {/* <Invoices /> */}
           </div>
         </div>
       </div>
