@@ -34,7 +34,7 @@ class UsageStatistics extends React.Component<Props, State> {
     }
 
     return (
-      <div style={{ marginTop: "50px" }}>
+      <div style={{ margin: "50px" }}>
         <div className="genericHolder">
           <div
             className="header"
