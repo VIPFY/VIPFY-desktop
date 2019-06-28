@@ -52,7 +52,7 @@ class TeamGrid extends React.Component<Props, State> {
 
             <div className="imageHover">
               <i className="fal fa-trash-alt" />
-              <span>Click or drag to remove</span>
+              <span>Click to remove</span>
             </div>
             {team.saving && (
               <div className="imageCog">
