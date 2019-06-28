@@ -140,9 +140,7 @@ class ServiceTeamsSection extends React.Component<Props, State> {
               <div className="tableColumnSmall">
                 <h1>Team</h1>
               </div>
-              <div className="tableColumnSmall">
-                <h1>Leader</h1>
-              </div>
+              <div className="tableColumnSmall">{/* <h1>Leader</h1> */}</div>
               <div className="tableColumnSmall">
                 <h1>#Licences</h1>
               </div>

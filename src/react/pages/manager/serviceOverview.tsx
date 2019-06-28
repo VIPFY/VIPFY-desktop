@@ -77,12 +77,17 @@ class ServiceOverview extends React.Component<Props, State> {
     switch (this.state.addStage) {
       case 1:
         return (
-          <AddServiceGeneralData
-            continue={data => this.setState({ addservice: data, addStage: 2 })}
-            close={() => this.setState({ add: false })}
-            addservice={this.state.addservice}
-            currentServices={this.state.currentServices}
-          />
+          <PopupBase
+            fullmiddle={true}
+            customStyles={{ maxWidth: "1152px" }}
+            close={() => this.setState({ add: false })}>
+            <AddServiceGeneralData
+              continue={data => this.setState({ addservice: data, addStage: 2 })}
+              close={() => this.setState({ add: false })}
+              addservice={this.state.addservice}
+              currentServices={this.state.currentServices}
+            />
+          </PopupBase>
         );
       case 2:
         return (
@@ -257,53 +262,48 @@ class ServiceOverview extends React.Component<Props, State> {
                 }
               }
               return (
-                <div className="table" key="table">
-                  <div className="tableHeading">
-                    <div className="tableMain">
-                      <div className="tableColumnBig">
-                        <h1>Name</h1>
+                <>
+                  <div className="table" key="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div className="tableColumnBig">
+                          <h1>Name</h1>
+                        </div>
+                        <div className="tableColumnBig">
+                          <h1>Teams</h1>
+                        </div>
+                        <div className="tableColumnBig">
+                          <h1>Single Users</h1>
+                        </div>
                       </div>
-                      <div className="tableColumnBig">
-                        <h1>Teams</h1>
-                      </div>
-                      <div className="tableColumnBig">
-                        <h1>Single Users</h1>
+                      <div className="tableEnd">
+                        <UniversalButton
+                          type="high"
+                          label="Add Service"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "92px"
+                          }}
+                          onClick={() =>
+                            this.setState({
+                              add: true,
+                              addStage: 1,
+                              addemployees: [],
+                              addservice: null,
+                              teams: [],
+                              currentServices: data.fetchCompanyServices
+                            })
+                          }
+                        />
                       </div>
                     </div>
-                    <div className="tableEnd">
-                      <UniversalButton
-                        type="high"
-                        label="Add Service"
-                        customStyles={{
-                          fontSize: "12px",
-                          lineHeight: "24px",
-                          fontWeight: "700",
-                          marginRight: "16px",
-                          width: "92px"
-                        }}
-                        onClick={() =>
-                          this.setState({
-                            add: true,
-                            addStage: 1,
-                            addemployees: [],
-                            addservice: null,
-                            teams: [],
-                            currentServices: data.fetchCompanyServices
-                          })
-                        }
-                      />
-                    </div>
+                    {services.length > 0 && this.printServices(services)}
                   </div>
-                  {services.length > 0 && this.printServices(services)}
-                  {this.state.add && (
-                    <PopupBase
-                      fullmiddle={true}
-                      customStyles={{ maxWidth: "1152px" }}
-                      close={() => this.setState({ add: false })}>
-                      {this.addProcess(refetch)}
-                    </PopupBase>
-                  )}
-                </div>
+                  {this.state.add && this.addProcess(refetch)}
+                </>
               );
             }}
           </Query>

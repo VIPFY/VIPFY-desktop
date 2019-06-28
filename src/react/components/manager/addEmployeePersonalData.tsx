@@ -9,6 +9,7 @@ import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import { randomPassword } from "../../common/passwordgen";
+import { filterError } from "../../common/functions";
 
 interface Props {
   close: Function;
@@ -37,6 +38,7 @@ interface State {
   success: Boolean;
   unitid: number | null;
   parsedName: any;
+  error: String | null;
 }
 
 const CREATE_EMPLOYEE = gql`
@@ -86,7 +88,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     saving: false,
     success: true,
     unitid: null,
-    parsedName: null
+    parsedName: null,
+    error: null
   };
 
   render() {
@@ -134,7 +137,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           <PopupSelfSaving
             savingmessage="Employee is being created"
             savedmessage="Employee has been created"
-            errormessage="Something went wrong. Please try again"
+            errormessage={this.state.error || "Something went wrong. Please try again"}
             closeFunction={() =>
               this.state.success
                 ? this.props.continue(this.state)
@@ -194,8 +197,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                   }
                 });
               } catch (err) {
-                console.log("ERR");
-                this.setState({ success: false });
+                console.log("ERR", err);
+                this.setState({ success: false, error: filterError(err) });
                 throw new Error(err.message);
               }
             }}

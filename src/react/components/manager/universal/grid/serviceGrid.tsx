@@ -42,7 +42,11 @@ class ServiceGrid extends React.Component<Props, State> {
             }}
             className="image"
           />
-          <div className="name">
+          <div
+            className="name"
+            title={
+              (app.boughtplanid && app.boughtplanid.planid.appid.name) || app.planid.appid.name
+            }>
             {(app.boughtplanid && app.boughtplanid.planid.appid.name) || app.planid.appid.name}
           </div>
           <div className="imageHover">
@@ -127,7 +131,9 @@ class ServiceGrid extends React.Component<Props, State> {
                   onClick={() => this.props.onChange({ action: "add", content: app })}
                   onDragStart={() => this.setState({ drag: app })}>
                   <PrintServiceSquare service={app} appidFunction={s => s} className="image" />
-                  <div className="name">{app.name}</div>
+                  <div className="name" title={app.name}>
+                    {app.name}
+                  </div>
                   <div className="imageHover">
                     <i className="fal fa-plus" />
                     <span>Click or drag to add</span>

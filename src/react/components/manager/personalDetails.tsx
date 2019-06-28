@@ -6,6 +6,8 @@ import UniversalButton from "../universalButtons/universalButton";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import UniversalDropDownInput from "../universalForms/universalDropdownInput";
+import DatePicker from "../../common/DatePicker";
+import { parseName } from "humanparser";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
@@ -121,7 +123,7 @@ class PersonalDetails extends React.Component<Props, State> {
               </h2>
             </div>
             <div className="tableColumnSmall">
-              <h1>Address</h1>
+              {/*<h1>Address</h1>
               <h2>
                 {querydata.addresses[0] &&
                   querydata.addresses[0].address &&
@@ -134,7 +136,7 @@ class PersonalDetails extends React.Component<Props, State> {
                 {querydata.addresses[0] &&
                   querydata.addresses[0].address &&
                   querydata.addresses[0].address.city}
-              </h2>
+                </h2>*/}
             </div>
             <div className="tableColumnSmall">
               <h1>Private Phone</h1>
@@ -220,7 +222,7 @@ class PersonalDetails extends React.Component<Props, State> {
                       querydata.birthday ? moment(querydata.birthday - 0).format("YYYY-MM-DD") : " "
                     }
                   />
-                  <div className="fieldsSeperator" />
+                  {/*<div className="fieldsSeperator" />
                   <UniversalTextInput
                     id="street"
                     label="Street / Number"
@@ -263,7 +265,7 @@ class PersonalDetails extends React.Component<Props, State> {
                       querydata.addresses[0].address &&
                       querydata.addresses[0].country
                     }
-                  />
+                  /> */}
                   <div className="fieldsSeperator" />
                   <UniversalTextInput
                     id="phone"
@@ -297,19 +299,18 @@ class PersonalDetails extends React.Component<Props, State> {
                   label="Save"
                   type="high"
                   onClick={async () => {
-                    const nameparts = this.state.name.split(" ");
-                    const middlenameArray = nameparts.length > 1 ? nameparts.slice(1, -1) : null;
+                    const parsedName = parseName(this.state.name);
                     try {
                       this.setState({ updateing: true });
                       await updateEmployee({
                         variables: {
                           user: {
                             id: querydata.id,
-                            firstname: nameparts[0],
-                            lastname: nameparts[nameparts.length - 1],
-                            middlename: "",
+                            firstname: parsedName.firstName,
+                            middlename: parsedName.middleName || "",
+                            lastname: parsedName.lastName || "",
                             birthday: this.state.birthday ? this.state.birthday : null,
-                            address: Object.assign(
+                            /*address: Object.assign(
                               {},
                               querydata.addresses[0] && querydata.addresses[0].id
                                 ? { id: querydata.addresses[0].id }
@@ -318,7 +319,7 @@ class PersonalDetails extends React.Component<Props, State> {
                               { zip: this.state.zip },
                               { city: this.state.city },
                               { country: this.state.country }
-                            ),
+                            ),*/
                             phone: Object.assign(
                               {},
                               querydata.privatePhones &&
@@ -382,12 +383,25 @@ class PersonalDetails extends React.Component<Props, State> {
                   Edit Personal Data of {querydata.firstname} {querydata.lastname}
                 </h2>
                 <div>
-                  <UniversalTextInput
+                  {/*<UniversalTextInput
                     id="hiredate"
                     label="Hiredate"
                     type="date"
-                    livevalue={v => this.setState({ hiredate: v })}
+                    livevalue={v => {
+                      console.log("VALUE", v);
+                      this.setState({ hiredate: v });
+                    }}
                     startvalue={
+                      querydata.hiredate ? moment(querydata.hiredate - 0).format("YYYY-MM-DD") : " "
+                    }
+                  />*/}
+                  Hiredate:
+                  <DatePicker
+                    handleChange={v => {
+                      console.log("VALUE", v);
+                      this.setState({ hiredate: v });
+                    }}
+                    value={
                       querydata.hiredate ? moment(querydata.hiredate - 0).format("YYYY-MM-DD") : " "
                     }
                   />

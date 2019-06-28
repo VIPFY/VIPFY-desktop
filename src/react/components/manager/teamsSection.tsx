@@ -97,9 +97,7 @@ class TeamsSection extends React.Component<Props, State> {
                       <div className="tableColumnSmall">
                         <h1>Team</h1>
                       </div>
-                      <div className="tableColumnSmall">
-                        <h1>Leader</h1>
-                      </div>
+                      <div className="tableColumnSmall">{/*<h1>Leader</h1>*/}</div>
                       <div className="tableColumnSmall">
                         <h1>#Teammembers</h1>
                       </div>

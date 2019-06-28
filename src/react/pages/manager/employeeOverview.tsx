@@ -73,14 +73,19 @@ class EmployeeOverview extends React.Component<Props, State> {
     switch (this.state.addStage) {
       case 1:
         return (
-          <AddEmployeePersonalData
-            continue={data => {
-              this.setState({ addpersonal: data, addStage: 2 });
-              refetch();
-            }}
-            close={() => this.setState({ add: false })}
-            addpersonal={this.state.addpersonal}
-          />
+          <PopupBase
+            fullmiddle={true}
+            customStyles={{ maxWidth: "1152px" }}
+            close={() => this.setState({ add: false })}>
+            <AddEmployeePersonalData
+              continue={data => {
+                this.setState({ addpersonal: data, addStage: 2 });
+                refetch();
+              }}
+              close={() => this.setState({ add: false })}
+              addpersonal={this.state.addpersonal}
+            />
+          </PopupBase>
         );
       case 2:
         return (
@@ -217,151 +222,146 @@ class EmployeeOverview extends React.Component<Props, State> {
                 }
               }
               return (
-                <div className="table">
-                  <div className="tableHeading">
-                    <div className="tableMain">
-                      <div className="tableColumnBig">
-                        <h1>Name</h1>
+                <>
+                  <div className="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div className="tableColumnBig">
+                          <h1>Name</h1>
+                        </div>
+                        <div className="tableColumnBig">
+                          <h1>Teams</h1>
+                        </div>
+                        <div className="tableColumnBig">
+                          <h1>Services</h1>
+                        </div>
                       </div>
-                      <div className="tableColumnBig">
-                        <h1>Teams</h1>
-                      </div>
-                      <div className="tableColumnBig">
-                        <h1>Services</h1>
+                      <div className="tableEnd">
+                        <UniversalButton
+                          type="high"
+                          label="Add Employee"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "92px"
+                          }}
+                          onClick={() =>
+                            this.setState({
+                              add: true,
+                              addStage: 1,
+                              addpersonal: {},
+                              apps: []
+                            })
+                          }
+                        />
                       </div>
                     </div>
-                    <div className="tableEnd">
-                      <UniversalButton
-                        type="high"
-                        label="Add Employee"
-                        customStyles={{
-                          fontSize: "12px",
-                          lineHeight: "24px",
-                          fontWeight: "700",
-                          marginRight: "16px",
-                          width: "92px"
-                        }}
-                        onClick={() =>
-                          this.setState({
-                            add: true,
-                            addStage: 1,
-                            addpersonal: {},
-                            apps: []
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  {employees.length > 0 &&
-                    employees.map(employee => (
-                      <div
-                        key={employee.id}
-                        className="tableRow"
-                        onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
-                        <div className="tableMain">
-                          <div className="tableColumnBig">
-                            <PrintEmployeeSquare employee={employee} className="managerSquare" />
-                            <span className="name">
-                              {employee.firstname} {employee.lastname}
-                            </span>
-                            <div
-                              className="status"
-                              style={
-                                employee.isonline
-                                  ? {
-                                      backgroundColor: "#29CC94",
-                                      float: "right",
-                                      marginTop: "18px",
-                                      marginLeft: "0px",
-                                      width: "56px"
+                    {employees.length > 0 &&
+                      employees.map(employee => (
+                        <div
+                          key={employee.id}
+                          className="tableRow"
+                          onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
+                          <div className="tableMain">
+                            <div className="tableColumnBig">
+                              <PrintEmployeeSquare employee={employee} className="managerSquare" />
+                              <span className="name">
+                                {employee.firstname} {employee.lastname}
+                              </span>
+                              <div
+                                className="status"
+                                style={
+                                  employee.isonline
+                                    ? {
+                                        backgroundColor: "#29CC94",
+                                        float: "right",
+                                        marginTop: "18px",
+                                        marginLeft: "0px",
+                                        width: "56px"
+                                      }
+                                    : {
+                                        backgroundColor: "#DB4D3F",
+                                        float: "right",
+                                        marginTop: "18px",
+                                        marginLeft: "0px",
+                                        width: "56px"
+                                      }
+                                }>
+                                {employee.isonline ? "Online" : "Offline"}
+                              </div>
+                            </div>
+                            <Query
+                              query={fetchTeams}
+                              fetchPolicy="network-only" //TODO make better
+                              variables={{ userid: employee.id }}>
+                              {({ loading, error, data }) => {
+                                if (loading) {
+                                  return "Loading...";
+                                }
+                                if (error) {
+                                  return `Error! ${error.message}`;
+                                }
+                                return (
+                                  <ColumnTeams
+                                    teams={data.fetchTeams}
+                                    teamidFunction={team => team}
+                                  />
+                                );
+                              }}
+                            </Query>
+                            <Query
+                              query={fetchUsersOwnLicences}
+                              variables={{ unitid: employee.id }}
+                              fetchPolicy="network-only" //TODO make better
+                            >
+                              {({ loading, error, data }) => {
+                                if (loading) {
+                                  return "Loading...";
+                                }
+                                if (error) {
+                                  return `Error! ${error.message}`;
+                                }
+                                return (
+                                  <ColumnServices
+                                    services={data.fetchUsersOwnLicences}
+                                    checkFunction={element =>
+                                      !element.disabled &&
+                                      !element.boughtplanid.planid.appid.disabled &&
+                                      (element.endtime > now() || element.endtime == null)
                                     }
-                                  : {
-                                      backgroundColor: "#DB4D3F",
-                                      float: "right",
-                                      marginTop: "18px",
-                                      marginLeft: "0px",
-                                      width: "56px"
+                                    appidFunction={element => element.boughtplanid.planid.appid}
+                                    overlayFunction={service =>
+                                      service.options &&
+                                      service.options.nosetup && (
+                                        <div className="licenceError">
+                                          <i className="fal fa-exclamation-circle" />
+                                        </div>
+                                      )
                                     }
-                              }>
-                              {employee.isonline ? "Online" : "Offline"}
+                                  />
+                                );
+                              }}
+                            </Query>
+                          </div>
+                          <div className="tableEnd">
+                            <div className="editOptions">
+                              <i className="fal fa-external-link-alt editbuttons" />
+                              <i
+                                className="fal fa-trash-alt editbuttons"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  this.setState({ willdeleting: employee.id });
+                                }}
+                              />
                             </div>
                           </div>
-                          <Query
-                            query={fetchTeams}
-                            fetchPolicy="network-only" //TODO make better
-                            variables={{ userid: employee.id }}>
-                            {({ loading, error, data }) => {
-                              if (loading) {
-                                return "Loading...";
-                              }
-                              if (error) {
-                                return `Error! ${error.message}`;
-                              }
-                              return (
-                                <ColumnTeams
-                                  teams={data.fetchTeams}
-                                  teamidFunction={team => team}
-                                />
-                              );
-                            }}
-                          </Query>
-                          <Query
-                            query={fetchUsersOwnLicences}
-                            variables={{ unitid: employee.id }}
-                            fetchPolicy="network-only" //TODO make better
-                          >
-                            {({ loading, error, data }) => {
-                              if (loading) {
-                                return "Loading...";
-                              }
-                              if (error) {
-                                return `Error! ${error.message}`;
-                              }
-                              return (
-                                <ColumnServices
-                                  services={data.fetchUsersOwnLicences}
-                                  checkFunction={element =>
-                                    !element.disabled &&
-                                    !element.boughtplanid.planid.appid.disabled &&
-                                    (element.endtime > now() || element.endtime == null)
-                                  }
-                                  appidFunction={element => element.boughtplanid.planid.appid}
-                                  overlayFunction={service =>
-                                    service.options &&
-                                    service.options.nosetup && (
-                                      <div className="licenceError">
-                                        <i className="fal fa-exclamation-circle" />
-                                      </div>
-                                    )
-                                  }
-                                />
-                              );
-                            }}
-                          </Query>
                         </div>
-                        <div className="tableEnd">
-                          <div className="editOptions">
-                            <i className="fal fa-external-link-alt editbuttons" />
-                            <i
-                              className="fal fa-trash-alt editbuttons"
-                              onClick={e => {
-                                e.stopPropagation();
-                                this.setState({ willdeleting: employee.id });
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  {this.state.add && (
-                    <PopupBase
-                      fullmiddle={true}
-                      customStyles={{ maxWidth: "1152px" }}
-                      close={() => this.setState({ add: false })}>
-                      {this.addProcess(refetch)}
-                    </PopupBase>
-                  )}
-                </div>
+                      ))}
+                  </div>
+                  {this.state.add && this.addProcess(refetch)}
+                </>
               );
             }}
           </Query>

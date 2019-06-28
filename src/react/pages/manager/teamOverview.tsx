@@ -112,11 +112,16 @@ class TeamOverview extends React.Component<Props, State> {
     switch (this.state.addStage) {
       case 1:
         return (
-          <AddTeamGeneralData
-            savingFunction={data => this.setState({ addteam: data.content, addStage: 2 })}
-            close={() => this.setState({ add: false })}
-            addteam={this.state.addteam}
-          />
+          <PopupBase
+            fullmiddle={true}
+            customStyles={{ maxWidth: "1152px" }}
+            close={() => this.setState({ add: false })}>
+            <AddTeamGeneralData
+              savingFunction={data => this.setState({ addteam: data.content, addStage: 2 })}
+              close={() => this.setState({ add: false })}
+              addteam={this.state.addteam}
+            />
+          </PopupBase>
         );
       case 2:
         return (
@@ -225,89 +230,84 @@ class TeamOverview extends React.Component<Props, State> {
                 }
               }
               return (
-                <div className="table">
-                  <div className="tableHeading">
-                    <div className="tableMain">
-                      <div className="tableColumnBig">
-                        <h1>Name</h1>
-                      </div>
-                      <div className="tableColumnBig">
-                        <h1>Employees</h1>
-                      </div>
-                      <div className="tableColumnBig">
-                        <h1>Services</h1>
-                      </div>
-                    </div>
-                    <div className="tableEnd">
-                      <UniversalButton
-                        type="high"
-                        label="Add Team"
-                        customStyles={{
-                          fontSize: "12px",
-                          lineHeight: "24px",
-                          fontWeight: "700",
-                          marginRight: "16px",
-                          width: "92px"
-                        }}
-                        onClick={() =>
-                          this.setState({
-                            add: true,
-                            addStage: 1,
-                            addemployees: [],
-                            addteam: {},
-                            apps: []
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  {teams.length > 0 &&
-                    teams.map(team => (
-                      <div
-                        key={team.name}
-                        className="tableRow"
-                        onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
-                        <div className="tableMain">
-                          <div className="tableColumnBig">
-                            <PrintTeamSquare team={team} />
-                            <span className="name">{team.name}</span>
-                          </div>
-                          <ColumnEmployees
-                            employees={team.employees}
-                            employeeidFunction={e => e}
-                            checkFunction={e => true}
-                          />
-                          <ColumnServices
-                            services={team.services}
-                            checkFunction={element =>
-                              !element.disabled && !element.planid.appid.disabled
-                            }
-                            appidFunction={element => element.planid.appid}
-                          />
+                <>
+                  <div className="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div className="tableColumnBig">
+                          <h1>Name</h1>
                         </div>
-                        <div className="tableEnd">
-                          <div className="editOptions">
-                            <i className="fal fa-external-link-alt editbuttons" />
-                            <i
-                              className="fal fa-trash-alt editbuttons"
-                              onClick={e => {
-                                e.stopPropagation();
-                                this.setState({ willdeleting: team });
-                              }}
+                        <div className="tableColumnBig">
+                          <h1>Employees</h1>
+                        </div>
+                        <div className="tableColumnBig">
+                          <h1>Services</h1>
+                        </div>
+                      </div>
+                      <div className="tableEnd">
+                        <UniversalButton
+                          type="high"
+                          label="Add Team"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "92px"
+                          }}
+                          onClick={() =>
+                            this.setState({
+                              add: true,
+                              addStage: 1,
+                              addemployees: [],
+                              addteam: {},
+                              apps: []
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    {teams.length > 0 &&
+                      teams.map(team => (
+                        <div
+                          key={team.name}
+                          className="tableRow"
+                          onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
+                          <div className="tableMain">
+                            <div className="tableColumnBig">
+                              <PrintTeamSquare team={team} />
+                              <span className="name">{team.name}</span>
+                            </div>
+                            <ColumnEmployees
+                              employees={team.employees}
+                              employeeidFunction={e => e}
+                              checkFunction={e => true}
+                            />
+                            <ColumnServices
+                              services={team.services}
+                              checkFunction={element =>
+                                !element.disabled && !element.planid.appid.disabled
+                              }
+                              appidFunction={element => element.planid.appid}
                             />
                           </div>
+                          <div className="tableEnd">
+                            <div className="editOptions">
+                              <i className="fal fa-external-link-alt editbuttons" />
+                              <i
+                                className="fal fa-trash-alt editbuttons"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  this.setState({ willdeleting: team });
+                                }}
+                              />
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  {this.state.add && (
-                    <PopupBase
-                      fullmiddle={true}
-                      customStyles={{ maxWidth: "1152px" }}
-                      close={() => this.setState({ add: false })}>
-                      {this.addProcess(refetch)}
-                    </PopupBase>
-                  )}
-                </div>
+                      ))}
+                  </div>
+                  {this.state.add && this.addProcess(refetch)}
+                </>
               );
             }}
           </Query>
