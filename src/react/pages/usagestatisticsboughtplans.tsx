@@ -17,11 +17,7 @@ interface State {
 }
 
 class UsageStatistics extends React.Component<Props, State> {
-  state = {
-    error: "",
-    showBoughtplans: true,
-    teamname: null
-  };
+  state = { error: "", showBoughtplans: true, teamname: null };
 
   toggleShowBoughtplans = (): void =>
     this.setState(prevState => ({ showBoughtplans: !prevState.showBoughtplans }));
