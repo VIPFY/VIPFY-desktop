@@ -12,7 +12,7 @@ let config = {
 
   showProfile: true,
   showMessageCenter: false,
-  showBilling: true,
+  showBilling: false,
   showTeams: false,
   showDomains: false,
   showMarketplace: false,
