@@ -311,8 +311,10 @@ class App extends React.Component<AppProps, AppState> {
         }}
         className="full-size">
         {this.renderComponents()}
-        {sidebarloaded && localStorage.getItem("token") && (
-          <Query query={tutorial}>
+        {/*sidebarloaded &&
+          localStorage.getItem("token") &&
+          
+            <Query query={tutorial}>
             {({ data, loading, error }) => {
               if (error) {
                 return null;
@@ -333,7 +335,7 @@ class App extends React.Component<AppProps, AppState> {
               );
             }}
           </Query>
-        )}
+          }*/}
         {popup.show && (
           <Popup
             popupHeader={popup.header}
