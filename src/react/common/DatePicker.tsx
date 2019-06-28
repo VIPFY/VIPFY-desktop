@@ -138,7 +138,7 @@ class DatePicker extends React.PureComponent<Props, State> {
       // prettier-ignore
       for (let i = startYear; i < moment().add(30, "y").year(); i++) {
       for (let j = 1; j <= 12; j++) {
-        if(j < moment(minDate).month() + 1) {
+        if(i == startYear && j < moment(minDate).month() + 1) {
           continue;
         }
 
