@@ -27,6 +27,7 @@ interface State {
   email: string;
   company: string;
   privacy: Boolean;
+  tos: boolean;
   register: Boolean;
   error: string;
 }
@@ -36,24 +37,29 @@ class RegisterCompany extends React.Component<Props, State> {
     email: "",
     company: "",
     privacy: false,
+    tos: false,
     register: false,
     error: ""
   };
 
   continue = async () => {
     try {
-      this.setState({ register: true, error: "" });
-      const res = await this.props.signUp({
-        variables: {
-          email: this.state.email,
-          name: this.state.company,
-          privacy: true,
-          tOS: true
-        }
-      });
-      const { ok, token } = res.data.signUp;
-      localStorage.setItem("token", token);
-      this.props.continueFunction();
+      if (this.state.privacy || this.state.tos) {
+        this.setState({ register: true, error: "" });
+        const res = await this.props.signUp({
+          variables: {
+            email: this.state.email,
+            name: this.state.company,
+            privacy: true,
+            tOS: true
+          }
+        });
+        const { ok, token } = res.data.signUp;
+        localStorage.setItem("token", token);
+        this.props.continueFunction();
+      } else {
+        this.setState({ error: "Please accept our Terms of Service and Privacy Agreement" });
+      }
     } catch (err) {
       this.setState({
         error:
@@ -105,7 +111,8 @@ class RegisterCompany extends React.Component<Props, State> {
                 height: "92px"
               }}>
               <UniversalCheckbox
-                liveValue={v => this.setState({ privacy: v })}
+                name="tos"
+                liveValue={v => this.setState({ tos: v })}
                 style={{ width: "312px" }}>
                 <span style={{ width: "300px" }}>
                   By registering I agree to the
@@ -118,6 +125,7 @@ class RegisterCompany extends React.Component<Props, State> {
               </UniversalCheckbox>
 
               <UniversalCheckbox
+                name="privacy"
                 liveValue={v => this.setState({ privacy: v })}
                 style={{ width: "312px" }}>
                 <span style={{ width: "300px" }}>
@@ -145,7 +153,8 @@ class RegisterCompany extends React.Component<Props, State> {
                   !this.state.email.match(emailRegex) ||
                   this.state.email == "" ||
                   this.state.company == "" ||
-                  !this.state.privacy
+                  !this.state.privacy ||
+                  !this.state.tos
                 }
                 onClick={this.continue}
               />
