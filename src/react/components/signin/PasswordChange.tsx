@@ -7,6 +7,7 @@ import { ApolloClient } from "apollo-client";
 import { CHANGE_PASSWORD } from "../../mutations/auth";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
+import { filterError } from "../../common/functions";
 
 interface PasswordChangeProps {
   logMeOut: Function;
@@ -63,7 +64,7 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
       });
       await this.props.client.query({ query: me, fetchPolicy: "network-only" });
     } catch (err) {
-      this.setState({ error: err.message, loading: false });
+      this.setState({ error: filterError(err), loading: false });
     }
   }
 
