@@ -179,7 +179,7 @@ class EmployeeOverview extends React.Component<Props, State> {
           <div className="heading">
             <h1>Employees</h1>
           </div>
-          <Query query={fetchDepartmentsData}>
+          <Query query={fetchDepartmentsData} fetchPolicy="network-only">
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return "Loading...";

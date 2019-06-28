@@ -68,100 +68,104 @@ class EmployeeDetails extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error.message}`;
           }
-          const querydata = data.fetchSemiPublicUser;
+          if (data && data.fetchSemiPublicUser) {
+            const querydata = data.fetchSemiPublicUser;
 
-          const privatePhones = [];
-          const workPhones = [];
+            const privatePhones = [];
+            const workPhones = [];
 
-          querydata.phones.forEach(phone =>
-            phone && phone.tags && phone.tags[0] == ["private"]
-              ? privatePhones.push(phone)
-              : workPhones.push(phone)
-          );
-          querydata.workPhones = workPhones;
-          querydata.privatePhones = privatePhones;
+            querydata.phones.forEach(phone =>
+              phone && phone.tags && phone.tags[0] == ["private"]
+                ? privatePhones.push(phone)
+                : workPhones.push(phone)
+            );
+            querydata.workPhones = workPhones;
+            querydata.privatePhones = privatePhones;
 
-          return (
-            <div className="managerPage">
-              <div className="heading">
-                <h1>
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("emanager")}>
-                    Employee Manager
-                  </span>
-                  <h2>></h2>
-                  <h2>
-                    {querydata.firstname} {querydata.lastname}
-                  </h2>
-                </h1>
-
-                <UniversalSearchBox />
-              </div>
-              <div className="section">
+            return (
+              <div className="managerPage">
                 <div className="heading">
-                  <h1>Personal Data</h1>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <div>
-                    <UploadImage
-                      picture={
-                        querydata.profilepicture && {
-                          preview: getImageUrlUser(querydata.profilepicture, 96)
-                        }
-                      }
-                      name={`${querydata.firstname} ${querydata.lastname}`}
-                      onDrop={file => this.uploadPic(file)}
-                      className="managerBigSquare noBottomMargin"
-                    />
-                    <div
-                      className="status"
-                      style={{
-                        backgroundColor: querydata.isonline ? "#29CC94" : "#DB4D3F"
-                      }}>
-                      {querydata.isonline ? "Online" : "Offline"}
-                    </div>
-                  </div>
-                  <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
-                    <div className="table">
-                      <PersonalDetails querydata={querydata} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <TeamsSection
-                employeeid={employeeid}
-                employeename={`${querydata.firstname} ${querydata.lastname}`}
-                moveTo={this.props.moveTo}
-              />
-              <LicencesSection
-                employeeid={employeeid}
-                employeename={`${querydata.firstname} ${querydata.lastname}`}
-                moveTo={this.props.moveTo}
-                employee={querydata}
-              />
+                  <h1>
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => this.props.moveTo("emanager")}>
+                      Employee Manager
+                    </span>
+                    <h2>></h2>
+                    <h2>
+                      {querydata.firstname} {querydata.lastname}
+                    </h2>
+                  </h1>
 
-              <TemporaryLicences firstName={querydata.firstname} unitid={employeeid} />
-              <IssuedLicences unitid={employeeid} firstName={querydata.firstname} />
-              {this.state.changepicture && (
-                <PopupSelfSaving
-                  savingmessage="Saving Profileimage"
-                  savedmessage="Profileimage successfully saved"
-                  saveFunction={async () => {
-                    await this.props.updatePic({
-                      variables: { file: this.state.changepicture },
-                      refetchQueries: ["me"]
-                    });
-                    this.props.client.query({ query: me, fetchPolicy: "network-only" });
-                    this.props.client.query({
-                      query: QUERY_USER,
-                      variables: { userid: this.props.match.params.userid },
-                      fetchPolicy: "network-only"
-                    });
-                  }}
-                  closeFunction={() => this.setState({ changepicture: null })}
+                  <UniversalSearchBox />
+                </div>
+                <div className="section">
+                  <div className="heading">
+                    <h1>Personal Data</h1>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div>
+                      <UploadImage
+                        picture={
+                          querydata.profilepicture && {
+                            preview: getImageUrlUser(querydata.profilepicture, 96)
+                          }
+                        }
+                        name={`${querydata.firstname} ${querydata.lastname}`}
+                        onDrop={file => this.uploadPic(file)}
+                        className="managerBigSquare noBottomMargin"
+                      />
+                      <div
+                        className="status"
+                        style={{
+                          backgroundColor: querydata.isonline ? "#29CC94" : "#DB4D3F"
+                        }}>
+                        {querydata.isonline ? "Online" : "Offline"}
+                      </div>
+                    </div>
+                    <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
+                      <div className="table">
+                        <PersonalDetails querydata={querydata} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <TeamsSection
+                  employeeid={employeeid}
+                  employeename={`${querydata.firstname} ${querydata.lastname}`}
+                  moveTo={this.props.moveTo}
                 />
-              )}
-            </div>
-          );
+                <LicencesSection
+                  employeeid={employeeid}
+                  employeename={`${querydata.firstname} ${querydata.lastname}`}
+                  moveTo={this.props.moveTo}
+                  employee={querydata}
+                />
+
+                <TemporaryLicences firstName={querydata.firstname} unitid={employeeid} />
+                <IssuedLicences unitid={employeeid} firstName={querydata.firstname} />
+                {this.state.changepicture && (
+                  <PopupSelfSaving
+                    savingmessage="Saving Profileimage"
+                    savedmessage="Profileimage successfully saved"
+                    saveFunction={async () => {
+                      await this.props.updatePic({
+                        variables: { file: this.state.changepicture },
+                        refetchQueries: ["me"]
+                      });
+                      this.props.client.query({ query: me, fetchPolicy: "network-only" });
+                      this.props.client.query({
+                        query: QUERY_USER,
+                        variables: { userid: this.props.match.params.userid },
+                        fetchPolicy: "network-only"
+                      });
+                    }}
+                    closeFunction={() => this.setState({ changepicture: null })}
+                  />
+                )}
+              </div>
+            );
+          }
         }}
       </Query>
     );
