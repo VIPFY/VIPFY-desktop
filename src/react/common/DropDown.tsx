@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { Option } from "../interfaces";
 
 interface Props {
@@ -21,7 +22,29 @@ class DropDown extends React.PureComponent<Props, State> {
     if (this.props.touched) {
       this.setState({ touched: true });
     }
+
+    window.addEventListener("keydown", this.listenKeyboard, true);
+    document.addEventListener("click", this.handleClickOutside, true);
   }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+    document.removeEventListener("click", this.handleClickOutside, true);
+  }
+
+  handleClickOutside = e => {
+    const domNode = ReactDOM.findDOMNode(this);
+
+    if (!domNode || !domNode.contains(e.target)) {
+      this.setState({ show: false });
+    }
+  };
+
+  listenKeyboard = e => {
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.setState({ show: false });
+    }
+  };
 
   render() {
     const { show, touched } = this.state;

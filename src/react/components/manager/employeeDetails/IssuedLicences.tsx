@@ -392,6 +392,7 @@ class IssuedLicences extends React.Component<Props, State> {
                       return data.fetchUserLicences.map((licence, key) => (
                         <LicenceRow
                           key={key}
+                          user={this.props.unitid}
                           objectId={key}
                           addLicence={this.addLicence}
                           licence={licence}

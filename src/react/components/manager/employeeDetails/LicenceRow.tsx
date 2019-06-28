@@ -15,6 +15,7 @@ interface Props {
   error?: null | any;
   defaultValues?: State;
   hideCancel?: boolean;
+  user?: number;
 }
 
 interface State {
@@ -144,30 +145,42 @@ class LicenceRow extends React.Component<Props, State> {
                   return <ErrorComp error={error} />;
                 }
 
-                const options = data.fetchEmployees.map(({ employee }) => ({
-                  label: (
-                    <span key={employee.id} className="employee-option">
-                      {employee.profilepicture ? (
-                        <img
-                          className="options-pic"
-                          src={
-                            employee.profilepicture.indexOf("/") != -1
-                              ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                  employee.profilepicture
-                                )}`
-                              : `https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${encodeURI(
-                                  employee.profilepicture
-                                )}`
-                          }
-                        />
-                      ) : (
-                        <i className="fal fa-user" title="Single Account" />
-                      )}
-                      {concatName(employee)}
-                    </span>
-                  ),
-                  value: employee.id
-                }));
+                const options = data.fetchEmployees
+                  .filter(data => {
+                    if (!this.props.user) {
+                      return true;
+                    }
+
+                    if (data.employee && data.employee.id == this.props.user) {
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  })
+                  .map(({ employee }) => ({
+                    label: (
+                      <span key={employee.id} className="employee-option">
+                        {employee.profilepicture ? (
+                          <img
+                            className="options-pic"
+                            src={
+                              employee.profilepicture.indexOf("/") != -1
+                                ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
+                                    employee.profilepicture
+                                  )}`
+                                : `https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${encodeURI(
+                                    employee.profilepicture
+                                  )}`
+                            }
+                          />
+                        ) : (
+                          <i className="fal fa-user" title="Single Account" />
+                        )}
+                        {concatName(employee)}
+                      </span>
+                    ),
+                    value: employee.id
+                  }));
 
                 const defaultValue = {
                   label: (
