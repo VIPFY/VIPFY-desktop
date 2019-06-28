@@ -239,7 +239,7 @@ class ServiceOverview extends React.Component<Props, State> {
               //Sort teams
               let services: any[] = [];
               let interservices: any[] = [];
-              if (data.fetchCompanyServices) {
+              if (data && data.fetchCompanyServices) {
                 interservices = data.fetchCompanyServices;
                 interservices.sort(function(a, b) {
                   let nameA = a.app.name.toUpperCase();
