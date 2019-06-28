@@ -140,7 +140,7 @@ class IssuedLicences extends React.Component<Props, State> {
               return data.fetchIssuedLicences.map((licence, key) => {
                 // prettier-ignore
                 const { alias, planid: { appid } } = licence.licenceid.boughtplanid;
-                const serviceName = alias ? alias : appid.name;
+                const serviceName = /*alias ? alias : */ appid.name;
                 const userName = concatName(licence.unitid);
                 const starttime = moment(licence.starttime).format("LLL");
                 const endtime = moment(licence.endtime).format("LLL");
