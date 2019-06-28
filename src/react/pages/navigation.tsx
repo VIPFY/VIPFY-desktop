@@ -4,8 +4,8 @@ import gql from "graphql-tag";
 import * as moment from "moment";
 import { withApollo, Query } from "react-apollo";
 import Notification from "../components/Notification";
-import { filterError, sleep, refetchQueries, AppContext } from "../common/functions";
-import { fetchLicences } from "../queries/auth";
+import { filterError, sleep, refetchQueries } from "../common/functions";
+import { fetchLicences, me } from "../queries/auth";
 import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { fetchCards } from "../queries/billing";
 import UserPicture from "../components/UserPicture";
@@ -212,6 +212,13 @@ class Navigation extends React.Component<Props, State> {
         case "promocode":
           await client.query({
             query: FETCH_CREDIT_DATA,
+            ...options
+          });
+          break;
+
+        case "me":
+          await client.query({
+            query: me,
             ...options
           });
           break;
