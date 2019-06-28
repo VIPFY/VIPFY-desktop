@@ -17,11 +17,7 @@ interface State {
 }
 
 class UsageStatistics extends React.Component<Props, State> {
-  state = {
-    error: "",
-    showBoughtplans: true,
-    teamname: null
-  };
+  state = { error: "", showBoughtplans: true, teamname: null };
 
   toggleShowBoughtplans = (): void =>
     this.setState(prevState => ({ showBoughtplans: !prevState.showBoughtplans }));
@@ -34,7 +30,7 @@ class UsageStatistics extends React.Component<Props, State> {
     }
 
     return (
-      <div style={{ marginTop: "50px" }}>
+      <div style={{ margin: "50px" }}>
         <div className="genericHolder">
           <div
             className="header"
