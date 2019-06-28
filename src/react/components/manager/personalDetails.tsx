@@ -383,7 +383,7 @@ class PersonalDetails extends React.Component<Props, State> {
                   Edit Personal Data of {querydata.firstname} {querydata.lastname}
                 </h2>
                 <div>
-                  {/*<UniversalTextInput
+                  <UniversalTextInput
                     id="hiredate"
                     label="Hiredate"
                     type="date"
@@ -394,8 +394,8 @@ class PersonalDetails extends React.Component<Props, State> {
                     startvalue={
                       querydata.hiredate ? moment(querydata.hiredate - 0).format("YYYY-MM-DD") : " "
                     }
-                  />*/}
-                  Hiredate:
+                  />
+                  {/* Hiredate:
                   <DatePicker
                     handleChange={v => {
                       console.log("VALUE", v);
@@ -404,7 +404,7 @@ class PersonalDetails extends React.Component<Props, State> {
                     value={
                       querydata.hiredate ? moment(querydata.hiredate - 0).format("YYYY-MM-DD") : " "
                     }
-                  />
+                  />*/}
                   <div className="fieldsSeperator" />
                   <UniversalTextInput
                     id="position"
