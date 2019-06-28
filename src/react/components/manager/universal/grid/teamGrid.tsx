@@ -46,7 +46,9 @@ class TeamGrid extends React.Component<Props, State> {
             onDragStart={() => this.setState({ dragdelete: team })}
             onClick={() => this.props.onChange({ action: "remove", content: team })}>
             <PrintTeamSquare team={team} className="image" />
-            <div className="name">{team.name}</div>
+            <div className="name" title={team.name}>
+              {team.name}
+            </div>
 
             <div className="imageHover">
               <i className="fal fa-trash-alt" />
@@ -141,7 +143,9 @@ class TeamGrid extends React.Component<Props, State> {
                     available && this.props.onChange({ action: "add", content: team })
                   }>
                   <PrintTeamSquare team={team} className="image" />
-                  <div className="name">{team.name}</div>
+                  <div className="name" title={team.name}>
+                    {team.name}
+                  </div>
 
                   {available ? (
                     <div className="imageHover">

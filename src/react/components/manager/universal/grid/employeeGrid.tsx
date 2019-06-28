@@ -49,7 +49,9 @@ class EmployeeGrid extends React.Component<Props, State> {
             onDragStart={() => this.setState({ dragdelete: employee })}
             onClick={() => this.props.onChange({ action: "remove", content: employee })}>
             <PrintEmployeeSquare className="image" employee={employee} size={88} />
-            <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
+            <div className="name" title={`${employee.firstname} ${employee.lastname}`}>{`${
+              employee.firstname
+            } ${employee.lastname}`}</div>
             {employee.current ? (
               <React.Fragment>
                 <div className="greyed" />
@@ -157,7 +159,9 @@ class EmployeeGrid extends React.Component<Props, State> {
                     available && this.props.onChange({ action: "add", content: employee })
                   }>
                   <PrintEmployeeSquare employee={employee} className="image" size={88} />
-                  <div className="name">{`${employee.firstname} ${employee.lastname}`}</div>
+                  <div className="name" title={`${employee.firstname} ${employee.lastname}`}>{`${
+                    employee.firstname
+                  } ${employee.lastname}`}</div>
 
                   {available ? (
                     <div className="imageHover">

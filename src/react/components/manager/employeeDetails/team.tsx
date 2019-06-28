@@ -110,7 +110,7 @@ class Team extends React.Component<Props, State> {
                 <span className="name">{team.name}</span>
               </div>
               <div className="tableColumnSmall content">
-                {team.internaldata ? team.internaldata.leader : ""}
+                {/*team.internaldata ? team.internaldata.leader : ""*/}
               </div>
               <div className="tableColumnSmall content">{team.employeenumber}</div>
               <div className="tableColumnSmall content">
