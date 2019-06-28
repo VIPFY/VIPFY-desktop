@@ -227,7 +227,7 @@ class ServiceOverview extends React.Component<Props, State> {
           <div className="heading">
             <h1>Services</h1>
           </div>
-          <Query query={fetchCompanyServices}>
+          <Query query={fetchCompanyServices} fetchPolicy="network-only">
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return "Loading...";
