@@ -47,6 +47,10 @@ class SingleStatistic extends React.Component<Props, State> {
   };
 
   render() {
+    if (!this.props.app) {
+      return null;
+    }
+
     return (
       <div className="genericHolder">
         <div className="header">

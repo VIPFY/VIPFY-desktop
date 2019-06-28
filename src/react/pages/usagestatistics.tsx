@@ -72,16 +72,20 @@ class UsageStatistics extends React.Component<Props, State> {
                   {...mostUsed[0]}
                   percentage={(mostUsed[0].totalminutes / total) * 100}
                 />
-                <SingleStatistic
-                  header="Second most used Licence"
-                  {...mostUsed[1]}
-                  percentage={(mostUsed[1].totalminutes / total) * 100}
-                />
-                <SingleStatistic
-                  header="Third most used Licence"
-                  {...mostUsed[2]}
-                  percentage={(mostUsed[2].totalminutes / total) * 100}
-                />
+                {usage.length > 1 && (
+                  <SingleStatistic
+                    header="Second most used Licence"
+                    {...mostUsed[1]}
+                    percentage={(mostUsed[1].totalminutes / total) * 100}
+                  />
+                )}
+                {usage.length > 2 && (
+                  <SingleStatistic
+                    header="Third most used Licence"
+                    {...mostUsed[2]}
+                    percentage={(mostUsed[2].totalminutes / total) * 100}
+                  />
+                )}
               </section>
             );
           }}
