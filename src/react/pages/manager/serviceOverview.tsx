@@ -103,16 +103,16 @@ class ServiceOverview extends React.Component<Props, State> {
           <ManageServiceTeams
             service={this.state.addservice}
             close={() => {
+              //refetch();
               this.setState({ add: false });
-              refetch();
             }}>
             <div className="buttonsPopup">
               <UniversalButton
                 label="Close"
                 type="low"
                 onClick={() => {
-                  this.setState({ add: false });
                   refetch();
+                  this.setState({ add: false });
                 }}
               />
               <div className="buttonSeperator" />
@@ -136,16 +136,16 @@ class ServiceOverview extends React.Component<Props, State> {
           <ManageServiceEmployees
             service={this.state.addservice}
             close={() => {
+              //refetch();
               this.setState({ add: false });
-              refetch();
             }}>
             <div className="buttonsPopup">
               <UniversalButton
                 label="Close"
                 type="low"
                 onClick={() => {
-                  this.setState({ add: false });
                   refetch();
+                  this.setState({ add: false });
                 }}
               />
             </div>
@@ -227,8 +227,9 @@ class ServiceOverview extends React.Component<Props, State> {
           <div className="heading">
             <h1>Services</h1>
           </div>
-          <Query query={fetchCompanyServices} fetchPolicy="network-only">
+          <Query query={fetchCompanyServices} fetchPolicy="cache-and-network">
             {({ loading, error, data, refetch }) => {
+              console.log(loading, error, data);
               if (loading) {
                 return "Loading...";
               }
@@ -239,6 +240,7 @@ class ServiceOverview extends React.Component<Props, State> {
               //Sort teams
               let services: any[] = [];
               let interservices: any[] = [];
+              console.log("SM-DATA", data);
               if (data && data.fetchCompanyServices) {
                 interservices = data.fetchCompanyServices;
                 interservices.sort(function(a, b) {
