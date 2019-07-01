@@ -47,7 +47,7 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
           if (!data.me.company.setupfinished) {
             return (
               <div className="centralize backgroundLogo">
-                <DataNameForm moveTo={() => this.props.moveTo()} />
+                <DataNameForm moveTo={this.props.moveTo} />
               </div>
             );
           }
