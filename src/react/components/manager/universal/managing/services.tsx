@@ -60,6 +60,12 @@ class ManageServices extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error}`;
           }
+
+          const services = [];
+          data.fetchUsersOwnLicences.forEach(
+            l => !(l.tags && l.tags.includes("vacation")) && services.push(l)
+          );
+
           return (
             <PopupBase
               fullmiddle={true}
@@ -75,7 +81,7 @@ class ManageServices extends React.Component<Props, State> {
                 getValue={v => this.setState({ search: v })}
               />
               <ServiceGrid
-                services={data.fetchUsersOwnLicences}
+                services={services}
                 search={this.state.search}
                 onChange={s => this.onChange(s, refetch)}
               />
