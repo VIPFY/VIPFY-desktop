@@ -195,7 +195,7 @@ class TeamOverview extends React.Component<Props, State> {
           <div className="heading">
             <h1>Teams</h1>
           </div>
-          <Query query={fetchCompanyTeams} fetchPolicy="network-only">
+          <Query query={fetchCompanyTeams} fetchPolicy="cache-and-network">
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return "Loading...";
