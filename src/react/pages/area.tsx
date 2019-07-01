@@ -139,7 +139,8 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.setState({ script });
     document.head.appendChild(script);*/
 
-    if (this.props.consent == null) {
+    console.log("LOG: Area -> componentDidMount -> this.props.consent", this.props.consent);
+    if (this.props.consent === null) {
       this.setState({ consentPopup: true });
     }
   };

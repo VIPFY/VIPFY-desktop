@@ -170,6 +170,7 @@ class LicencesSection extends React.Component<Props, State> {
                 );
               }
             });
+
             return (
               <div className="section" key="Licences">
                 <div className="heading">
