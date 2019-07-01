@@ -44,7 +44,7 @@ class RegisterCompany extends React.Component<Props, State> {
 
   continue = async () => {
     try {
-      if (this.state.privacy || this.state.tos) {
+      if (this.state.privacy && this.state.tos) {
         this.setState({ register: true, error: "" });
         const res = await this.props.signUp({
           variables: {
@@ -54,7 +54,7 @@ class RegisterCompany extends React.Component<Props, State> {
             tOS: true
           }
         });
-        const { ok, token } = res.data.signUp;
+        const { token } = res.data.signUp;
         localStorage.setItem("token", token);
         this.props.continueFunction();
       } else {
