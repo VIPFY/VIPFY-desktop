@@ -167,7 +167,7 @@ Please be sure that you can trust this Website.`}
             <UniversalTextInput
               width="166px"
               id="url"
-              label="Url"
+              label="Login-Url"
               type="text"
               modifyValue={value => {
                 if (value.startsWith("https://") || value.startsWith("http://")) {
