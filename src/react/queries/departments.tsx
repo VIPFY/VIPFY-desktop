@@ -381,6 +381,9 @@ export const fetchUserLicences = gql`
       endtime
       starttime
       options
+      tags
+      vacationend
+      vacationstart
       teamlicence {
         id
         profilepicture
