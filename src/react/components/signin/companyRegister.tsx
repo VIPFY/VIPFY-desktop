@@ -117,7 +117,13 @@ class RegisterCompany extends React.Component<Props, State> {
                 <span style={{ width: "300px" }}>
                   By registering I agree to the
                   <span
-                    style={{ position: "unset", width: "unset" }}
+                    style={{
+                      position: "unset",
+                      width: "unset",
+                      paddingLeft: "8px",
+                      paddingRight: "8px",
+                      color: "#20baa9"
+                    }}
                     onClick={() => shell.openExternal("https://vipfy.store/terms-of-service")}>
                     Terms of Service of VIPFY
                   </span>
@@ -131,11 +137,16 @@ class RegisterCompany extends React.Component<Props, State> {
                 <span style={{ width: "300px" }}>
                   By registering I agree to the
                   <span
-                    style={{ position: "unset", width: "unset" }}
+                    style={{
+                      position: "unset",
+                      width: "unset",
+                      paddingLeft: "8px",
+                      paddingRight: "8px",
+                      color: "#20baa9"
+                    }}
                     onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
-                    Privacy Agreement
+                    Privacy Agreement of VIPFY
                   </span>
-                  of VIPFY.
                 </span>
               </UniversalCheckbox>
             </div>
