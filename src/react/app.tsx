@@ -104,10 +104,10 @@ class App extends React.Component<AppProps, AppState> {
     this.props.logoutFunction(this.logMeOut);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
     this.props.history.push("/area");
-    this.redeemSetupToken();
+    //this.redeemSetupToken();
   }
 
-  redeemSetupToken = async () => {
+  redeemSetupToken = async refetch => {
     try {
       const store = new Store();
       if (!store.has("setupkey")) {
@@ -120,8 +120,8 @@ class App extends React.Component<AppProps, AppState> {
       });
       const { token } = res.data.redeemSetupToken;
       localStorage.setItem("token", token);
-      this.forceUpdate();
       store.delete("setuptoken");
+      refetch();
     } catch (err) {
       console.log("setup token error", err);
     }
@@ -146,7 +146,7 @@ class App extends React.Component<AppProps, AppState> {
     location.reload();
   };
 
-  logMeIn = async (email: string, password: string) => {
+  logMeIn = async (email: string, password: string, refetch: Function) => {
     try {
       // Login will fail if there already is a token, which to be fair,
       // should never be the case. But never say never...
@@ -159,7 +159,9 @@ class App extends React.Component<AppProps, AppState> {
 
       if (ok) {
         localStorage.setItem("token", token);
-        this.forceUpdate();
+        //this.forceUpdate();
+        //this.props.client.query({ query: me, fetchPolicy: "network-only", errorPolicy: "ignore" });
+        refetch();
 
         return true;
       }
@@ -183,18 +185,18 @@ class App extends React.Component<AppProps, AppState> {
     if (localStorage.getItem("token")) {
       return (
         <Query query={me} fetchPolicy="network-only">
-          {({ data, loading, error }) => {
+          {({ data, loading, error, refetch }) => {
             if (loading) {
               return <LoadingDiv text="Preparing Vipfy for you" />;
             }
 
             if (error) {
               this.props.client.cache.reset(); // clear graphql cache
-
+              this.redeemSetupToken(refetch);
               return (
                 <div className="centralize backgroundLogo">
                   <SignIn
-                    login={this.logMeIn}
+                    login={(a, b) => this.logMeIn(a, b, refetch)}
                     moveTo={this.moveTo}
                     error={error.networkError ? "network" : filterError(error)}
                     resetError={() => this.setState({ error: "" })}
@@ -250,11 +252,12 @@ class App extends React.Component<AppProps, AppState> {
         </Query>
       );
     } else {
+      this.redeemSetupToken(() => this.forceUpdate());
       return (
         <div className="centralize backgroundLogo">
           <SignIn
             resetError={() => this.setState({ error: "" })}
-            login={this.logMeIn}
+            login={(a, b) => this.logMeIn(a, b, () => this.forceUpdate())}
             moveTo={this.moveTo}
             error={this.state.error}
           />
