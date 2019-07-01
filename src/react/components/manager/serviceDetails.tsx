@@ -11,6 +11,9 @@ import PopupSaving from "../../popups/universalPopups/saving";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
 import { REMOVE_EXTERNAL_ACCOUNT } from "../../mutations/products";
+import PrintTeamSquare from "./universal/squares/printTeamSquare";
+import PrintServiceSquare from "./universal/squares/printServiceSquare";
+import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
 
 const UPDATE_CREDENTIALS = gql`
   mutation onUpdateCredentials(
@@ -99,32 +102,11 @@ class ServiceDetails extends React.Component<Props, State> {
                 onClick={() => this.props.moveTo(`lmanager/${e.boughtplanid.planid.appid.id}`)}>
                 <div className="tableMain">
                   <div className="tableColumnSmall">
-                    <div
+                    <PrintServiceSquare
+                      appidFunction={app => app.boughtplanid.planid.appid}
+                      service={e}
                       className="managerSquare"
-                      style={
-                        e.boughtplanid.planid.appid.icon
-                          ? {
-                              backgroundImage:
-                                e.boughtplanid.planid.appid.icon.indexOf("/") != -1
-                                  ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                                      e.boughtplanid.planid.appid.icon
-                                    )})`
-                                  : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                      e.boughtplanid.planid.appid.icon
-                                    )})`,
-                              backgroundColor: "unset"
-                            }
-                          : {}
-                      }>
-                      {e.boughtplanid.planid.appid.icon
-                        ? ""
-                        : e.boughtplanid.planid.appid.name.slice(0, 1)}
-                      {e.options && e.options.nosetup && (
-                        <div className="licenceError">
-                          <i className="fal fa-exclamation-circle" />
-                        </div>
-                      )}
-                    </div>
+                    />
                     <div className="licenceInfoHolder">
                       <div className="licenceInfoElement">
                         {e.teamaccount ? (
@@ -136,56 +118,12 @@ class ServiceDetails extends React.Component<Props, State> {
                       <div>
                         {e.teamaccount ||
                           (e.teamlicence && (
-                            <div
-                              className="licenceInfoElement"
-                              title={`Assigned via team 
-                                ${(e.teamaccount && e.teamaccount.name) ||
-                                  (e.teamlicence && e.teamlicence.name)}`}
-                              style={
-                                e.teamaccount
-                                  ? e.teamaccount.profilepicture
-                                    ? {
-                                        backgroundImage:
-                                          e.teamaccount.profilepicture.indexOf("/") != -1
-                                            ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                                e.teamaccount.profilepicture
-                                              )})`
-                                            : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                                e.teamaccount.profilepicture
-                                              )})`,
-                                        backgroundColor: "unset"
-                                      }
-                                    : e.teamaccount.internaldata && e.teamaccount.internaldata.color
-                                    ? { backgroundColor: e.teamaccount.internaldata.color }
-                                    : {}
-                                  : e.teamlicence
-                                  ? e.teamlicence.profilepicture
-                                    ? {
-                                        backgroundImage:
-                                          e.teamlicence.profilepicture.indexOf("/") != -1
-                                            ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                                e.teamlicence.profilepicture
-                                              )})`
-                                            : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                                e.teamlicence.profilepicture
-                                              )})`,
-                                        backgroundColor: "unset"
-                                      }
-                                    : e.teamlicence.internaldata && e.teamlicence.internaldata.color
-                                    ? { backgroundColor: e.teamlicence.internaldata.color }
-                                    : {}
-                                  : {}
-                              }>
-                              {e.teamaccount && !e.teamaccount.profilepicture
-                                ? e.teamaccount.internaldata && e.teamaccount.internaldata.letters
-                                  ? e.teamaccount.internaldata.letters
-                                  : e.teamaccount.name.slice(0, 1)
-                                : e.teamlicence && !e.teamlicence.profilepicture
-                                ? e.teamlicence.internaldata && e.teamlicence.internaldata.letters
-                                  ? e.teamlicence.internaldata.letters
-                                  : e.teamlicence.name.slice(0, 1)
-                                : ""}
-                            </div>
+                            <PrintTeamSquare
+                              team={e.teamaccount || e.teamlicence}
+                              title={`Assigned via team ${(e.teamaccount && e.teamaccount.name) ||
+                                (e.teamlicence && e.teamlicence.name)}`}
+                              className="licenceInfoElement whitetext"
+                            />
                           ))}
                       </div>
                     </div>
@@ -427,42 +365,11 @@ class ServiceDetails extends React.Component<Props, State> {
                           }}>
                           <i className="fal fa-trash-alt" />
                         </div>
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "8px",
-                            left: "8px",
-                            width: this.props.employee.profilepicture ? "48px" : "46px",
-                            height: this.props.employee.profilepicture ? "48px" : "46px",
-                            borderRadius: "4px",
-                            backgroundPosition: "center",
-                            backgroundSize: "cover",
-                            lineHeight: "46px",
-                            textAlign: "center",
-                            fontSize: "23px",
-                            color: "white",
-                            fontWeight: 500,
-                            backgroundColor: "#5D76FF",
-                            border: "1px solid #253647",
-                            boxShadow: "#00000010 0px 6px 10px",
-                            backgroundImage: this.props.employee.profilepicture
-                              ? this.props.employee.profilepicture.indexOf("/") != -1
-                                ? encodeURI(
-                                    `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${
-                                      this.props.employee.profilepicture
-                                    })`
-                                  )
-                                : encodeURI(
-                                    `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                      this.props.employee.profilepicture
-                                    })`
-                                  )
-                              : ""
-                          }}>
-                          {this.props.employee.profilepicture
-                            ? ""
-                            : this.props.employee.firstname.slice(0, 1)}
-                        </div>
+                        <PrintEmployeeSquare
+                          employee={this.props.employee}
+                          className="deleteEmployeeBox"
+                          size={this.props.employee.profilepicture ? 48 : 46}
+                        />
                       </div>
                       <div style={{ width: "284px" }}>
                         <div style={{ marginBottom: "16px" }}>

@@ -5,18 +5,19 @@ interface Props {
   team: any;
   className?: string | null;
   size?: number;
+  title?: string;
 }
 
 interface State {}
 
 class PrintTeamSquare extends React.Component<Props, State> {
   render() {
-    const { team } = this.props;
+    const { team, title } = this.props;
     const size = this.props.size || 32;
     return (
       <div
         key={team.name}
-        title={team.name}
+        title={title || team.name}
         className={this.props.className || "managerSquare"}
         style={
           team.profilepicture
