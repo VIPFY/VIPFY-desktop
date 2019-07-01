@@ -196,7 +196,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   isLoggedIn(w): boolean {
-    const l = ["signin", "login", "sign", "new"];
+    const l = ["signin", "login", "sign", "new", "anmelden"];
     const urlParts = ["pathname", "search", "hash", "hostname"];
     console.log("isLoggedIn", this.props.loginUrl, w.src);
     const initial = new URL(this.props.loginUrl);
