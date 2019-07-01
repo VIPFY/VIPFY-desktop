@@ -74,7 +74,7 @@ class UniversalTextInput extends React.Component<Props, State> {
     }
 
     this.setState({ value, notypeing: false });
-    this.timeout = setTimeout(() => this.setState({ notypeing: true }), 250);
+    this.timeout = setTimeout(() => this.setState({ notypeing: true }), 400);
   }
 
   handleKeyUp = e => {

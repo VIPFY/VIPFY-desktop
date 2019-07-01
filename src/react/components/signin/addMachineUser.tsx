@@ -39,7 +39,7 @@ class AddMachineUser extends React.Component<Props, State> {
                 width="312px"
                 label="Email"
                 errorEvaluation={this.state.email.length > 4 && !this.state.email.match(emailRegex)}
-                errorhint="A valid email looks like this: bilbo@vipfy.com"
+                errorhint="A valid email looks like this: john@vipfy.com"
                 livevalue={v => this.setState({ email: v })}
                 onEnter={() => this.props.continueFunction(this.state.email)}
               />
