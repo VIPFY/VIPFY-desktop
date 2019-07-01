@@ -9,7 +9,7 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import { emailRegex } from "../../common/constants";
 
 const SIGNUP = gql`
-  mutation onSignUp($email: String!, $name: String, $privacy: Boolean!, $tOS: Boolean!) {
+  mutation onSignUp($email: String!, $name: String!, $privacy: Boolean!, $tOS: Boolean!) {
     signUp(email: $email, companyname: $name, privacy: $privacy, termsOfService: $tOS) {
       ok
       token
