@@ -117,6 +117,9 @@
                     font-weight: 700;
                     line-height: 40px;
                 }
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             .tableColumnSmall{
                 width: 160px;
@@ -142,11 +145,17 @@
                         top: 40px;
                     }
                 }
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             .name{
                 font-size: 13px;
                 line-height: 56px;
                 margin-left: 16px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             .content{
                 font-size: 13px;
@@ -390,6 +399,8 @@
                     width: 88px;
                     height: 13px;
                     overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                 }
                 .description{
                     position: absolute;
@@ -633,4 +644,26 @@
   &:not(:first-child){
       margin-left: 8px
   }
+}
+.deleteEmployeeBox{
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    border-radius: 4px;
+    background-position: center;
+    background-size: cover;
+    line-height: 46px;
+    text-align: center;
+    font-size: 23px;
+    color: white;
+    font-weight: 500;
+    background-color: #5D76FF;
+    border: 1px solid #253647;
+    box-shadow: #00000010 0px 6px 10px;
+    min-width: 46px;
+    min-height: 46px;
+}
+
+.whitetext{
+    color: white;
 }
