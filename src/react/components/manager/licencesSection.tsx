@@ -157,7 +157,7 @@ class LicencesSection extends React.Component<Props, State> {
                 !e.disabled &&
                 !e.boughtplanid.planid.appid.disabled &&
                 (e.endtime > now() || e.endtime == null) &&
-                !(e.tags && e.tags[0] == "vacation")
+                !(e.tags && e.tags.includes("vacation"))
               ) {
                 appArray.push(
                   <ServiceDetails
