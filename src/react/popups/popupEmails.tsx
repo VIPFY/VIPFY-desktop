@@ -5,6 +5,7 @@ import UniversalButton from "../components/universalButtons/universalButton";
 import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import { emailRegex } from "../common/constants";
+import { filterError } from "../common/functions";
 
 interface Props {
   close: Function;
@@ -24,6 +25,7 @@ interface State {
   confirm: Boolean;
   networking: Boolean;
   networkerror: Boolean;
+  error: string | null;
 }
 
 const CREATE_EMAIL = gql`
@@ -77,7 +79,8 @@ class PopupEmail extends React.Component<Props, State> {
       description: oldvalues && oldvalues.description ? oldvalues.description : "",
       confirm: false,
       networking: false,
-      networkerror: false
+      networkerror: false,
+      error: null
     };
   }
 
@@ -150,8 +153,8 @@ class PopupEmail extends React.Component<Props, State> {
         });
         this.setState({ networking: false, networkerror: false });
       } catch (err) {
-        this.setState({ networking: false, networkerror: true });
-        throw err;
+        this.setState({ networking: false, networkerror: true, error: err.message });
+        //throw err;
       }
     } else {
       try {
@@ -179,8 +182,8 @@ class PopupEmail extends React.Component<Props, State> {
 
         this.setState({ networking: false, networkerror: false });
       } catch (err) {
-        this.setState({ networking: false, networkerror: true });
-        throw err;
+        this.setState({ networking: false, networkerror: true, error: err.message });
+        //throw err;
       }
     }
   };
@@ -224,9 +227,10 @@ class PopupEmail extends React.Component<Props, State> {
               ) : this.state.networkerror ? (
                 <React.Fragment>
                   <div>
-                    Something went wrong
-                    <br />
-                    Please try again or contact support
+                    {/*Something went wrong
+                  <br />
+                  Please try again or contact support*/}
+                    {filterError(this.state.error)}
                   </div>
                   <UniversalButton
                     type="high"
@@ -260,7 +264,7 @@ class PopupEmail extends React.Component<Props, State> {
         </h2>
         <UniversalTextInput
           id="email"
-          label="Email"
+          label="Email (Required)"
           errorEvaluation={!email.match(emailRegex)}
           errorhint="This is not a valid email"
           livevalue={value => this.setState({ email: value })}
@@ -306,9 +310,10 @@ class PopupEmail extends React.Component<Props, State> {
             ) : this.state.networkerror ? (
               <React.Fragment>
                 <div>
-                  Something went wrong
+                  {/*Something went wrong
                   <br />
-                  Please try again or contact support
+                  Please try again or contact support*/}
+                  {filterError(this.state.error)}
                 </div>
                 <UniversalButton
                   type="high"
