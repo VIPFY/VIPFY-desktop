@@ -109,7 +109,7 @@ class CompanyData extends React.Component<Props, State> {
               }
 
               return (
-                <div className="managerPage genericHolder">
+                <div className="managerPage genericHolder" style={{ padding: "0px" }}>
                   <div className="header" onClick={this.toggle}>
                     <i
                       className={`button-hide fas ${

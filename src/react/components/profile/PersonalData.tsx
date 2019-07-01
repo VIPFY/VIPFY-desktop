@@ -129,7 +129,8 @@ class PersonalData extends React.Component<Props, State> {
                 return (
                   <div
                     className="managerPage genericHolder"
-                    ref={el => addRenderElement({ key: "profilePersonalHolder", element: el })}>
+                    ref={el => addRenderElement({ key: "profilePersonalHolder", element: el })}
+                    style={{ padding: "0px" }}>
                     <div className="header" onClick={this.toggle}>
                       <i
                         className={`button-hide fas ${
