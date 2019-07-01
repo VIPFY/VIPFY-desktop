@@ -110,17 +110,26 @@ class UniversalTextInput extends React.Component<Props, State> {
             this.toggleInput(false);
           }}
           onKeyUp={e => this.handleKeyUp(e)}
-          className="cleanup universalTextInput"
-          style={
-            this.props.errorEvaluation && this.state.notypeing
+          className={
+            this.props.type != "date" ? "cleanup universalTextInput" : "universalTextInput"
+          }
+          style={{
+            ...(this.props.type == "date"
+              ? {
+                  border: "none",
+                  borderBottom: "1px solid #20baa9",
+                  fontFamily: "'Roboto', sans-serif"
+                }
+              : {}),
+            ...(this.props.errorEvaluation && this.state.notypeing
               ? {
                   ...(this.props.width ? { width: this.props.width } : {}),
                   borderBottomColor: "#e32022"
                 }
               : this.props.width
               ? { width: this.props.width }
-              : {}
-          }
+              : {})
+          }}
           value={this.state.value}
           onChange={e => this.changeValue(e)}
           ref={input => {
