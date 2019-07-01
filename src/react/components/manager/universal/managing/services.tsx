@@ -63,7 +63,7 @@ class ManageServices extends React.Component<Props, State> {
 
           const services = [];
           data.fetchUsersOwnLicences.forEach(
-            l => !(l.tags && l.tags[0] == "vacation") && services.push(l)
+            l => !(l.tags && l.tags.includes("vacation")) && services.push(l)
           );
 
           return (
