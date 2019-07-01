@@ -109,7 +109,7 @@ export default (props: Props) => {
                         </div>
                       </div>
                       <span className="name" style={{ marginLeft: "0px" }}>
-                        {alias ? alias : appid.name}
+                        {/*alias ? alias : */ appid.name}
                       </span>
                     </div>
 
