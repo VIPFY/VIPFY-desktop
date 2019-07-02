@@ -245,7 +245,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "marketplaceelement"
       },
       {
-        label: "Integrating Accounts",
+        label: "Account Integrator",
         location: "integrations",
         icon: "shapes",
         show: true,
