@@ -5708,6 +5708,7 @@ progress[value] {
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
   overflow-x: hidden;
   overflow-y: auto;
+  position: relative;
 
   .tableRow {
     &:hover .table-cancel {
