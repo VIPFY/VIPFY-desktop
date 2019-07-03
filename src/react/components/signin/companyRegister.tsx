@@ -9,8 +9,20 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import { emailRegex } from "../../common/constants";
 
 const SIGNUP = gql`
-  mutation onSignUp($signUpData: SignUpData!) {
-    signUp(signUpData: $signUpData) {
+  mutation onSignUp(
+    $email: String!
+    $name: String!
+    $privacy: Boolean!
+    $tOS: Boolean!
+    $isPrivate: Boolean
+  ) {
+    signUp(
+      email: $email
+      companyname: $name
+      privacy: $privacy
+      termsOfService: $tOS
+      isprivate: $isPrivate
+    ) {
       ok
       token
     }
@@ -53,13 +65,11 @@ class RegisterCompany extends React.Component<Props, State> {
         this.setState({ register: true, error: "" });
         const res = await this.props.signUp({
           variables: {
-            signUpData: {
-              email: this.state.email,
-              companyname: this.state.company,
-              privacy: this.state.privacy,
-              termsOfService: this.state.tos,
-              isPrivate: this.state.isPrivate
-            }
+            email: this.state.email,
+            name: this.state.company,
+            privacy: this.state.privacy,
+            tOS: this.state.tos,
+            isPrivate: this.state.isPrivate
           }
         });
         const { token } = res.data.signUp;
