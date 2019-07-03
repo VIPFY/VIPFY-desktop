@@ -180,12 +180,12 @@ class PopupBase extends React.Component<Props, State> {
             <div
               className="holderPopup"
               style={{
-                width: this.props.fullmiddle
+                width: sidebarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
+              }}
+              /*this.props.fullmiddle
                   ? "100%"
-                  : sidebarOpen
-                  ? "calc(100% - 240px + 18px)"
-                  : "calc(100% - 48px + 18px)"
-              }}>
+                  :*/
+            >
               <div
                 className="universalPopup"
                 style={Object.assign(
