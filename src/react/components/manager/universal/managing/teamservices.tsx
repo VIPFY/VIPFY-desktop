@@ -70,9 +70,16 @@ class ManageTeamServices extends React.Component<Props, State> {
               close={() => this.props.close()}
               buttonStyles={{ marginTop: "0px" }}>
               <span className="mutiplieHeading">
-                <span className="bHeading">{this.props.heading || "Manage Licences"}</span>
+                <span className="bHeading">{this.props.heading || "Manage Services"}</span>
               </span>
-              <span className="secondHolder">Available Services</span>
+              <span className="secondHolder" style={{ left: "0px", float: "left" }}>
+                Assigned Services
+              </span>
+              <span
+                className="secondHolder"
+                style={{ left: "calc(50% + 16px - 200px)", float: "left" }}>
+                Available Services
+              </span>
               <UniversalSearchBox
                 placeholder="Search available services"
                 getValue={v => this.setState({ search: v })}
