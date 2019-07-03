@@ -243,14 +243,17 @@ class DatePicker extends React.PureComponent<Props, State> {
             ref={this.picker}
             className="date-picker-popup"
             style={
-              this.wrapper &&
-              this.props.holder && {
+              this.wrapper && {
                 position: "fixed",
                 top:
                   this.calculateTop(this.wrapper.current) +
                   50 -
-                  (this.props.holder.current.scrollTop || 0),
-                left: this.calculateLeft(this.wrapper.current) - 16
+                  ((this.props.holder && this.props.holder.current.scrollTop) || 0),
+                left:
+                  this.calculateLeft(this.wrapper.current) +
+                  this.wrapper.current!.offsetWidth -
+                  16 -
+                  156
               }
             }>
             <div className="arrow-up" />
