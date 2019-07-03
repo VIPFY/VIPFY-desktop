@@ -716,7 +716,7 @@
   cursor: pointer;
   border-radius: 4px;
 
-  &:after {
+  /*&:after {
     content: '';
     position: absolute;
     top: 0;
@@ -728,13 +728,13 @@
     border-top: 0;
     margin-left: -5px;
     margin-top: -5px;
-  }
+  }*/
 
   &:hover{
     background-color: rgb(233,248,246);
     color: #20baa9;
-    &:after{
+    /*&:after{
       border-bottom-color: rgb(233,248,246);
-    }
+    }*/
   }
 }
