@@ -58,7 +58,7 @@ class UniversalTextInput extends React.Component<Props, State> {
   }
 
   handleClickOutside(event) {
-    if (this.wrapper && !this.wrapper.current.contains(event.target)) {
+    if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
       this.setState({ context: false });
     }
   }
@@ -219,7 +219,17 @@ class UniversalTextInput extends React.Component<Props, State> {
           <button
             className="cleanup contextButton"
             onClick={() => {
-              this.setState({ context: false, value: clipboard.readText() });
+              let value = clipboard.readText();
+              if (this.props.livevalue) {
+                this.props.livevalue(value);
+              }
+
+              if (this.props.modifyValue) {
+                value = this.props.modifyValue(value);
+              }
+
+              this.setState({ value, notypeing: false, context: false });
+              this.timeout = setTimeout(() => this.setState({ notypeing: true }), 400);
             }}
             style={{
               position: "fixed",

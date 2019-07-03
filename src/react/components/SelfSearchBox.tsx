@@ -9,19 +9,38 @@ interface Props {
 interface State {
   value: string;
   searching: boolean;
+  context: Boolean;
+  clientX: number;
+  clientY: number;
 }
 
 class SelfSearchBox extends React.Component<Props, State> {
   state = {
     value: "",
-    searching: false
+    searching: false,
+    context: false,
+    clientX: 0,
+    clientY: 0
   };
 
-  componentWillUnmount = () => {
+  wrapper = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener("mousedown", e => this.handleClickOutside(e));
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", e => this.handleClickOutside(e));
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
-  };
+  }
+
+  handleClickOutside(event) {
+    if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
+      this.setState({ context: false });
+    }
+  }
 
   handleChange = async e => {
     e.preventDefault();
@@ -99,15 +118,26 @@ class SelfSearchBox extends React.Component<Props, State> {
 
   render() {
     const { value } = this.state;
+    const { clipboard } = require("electron");
 
     return (
       <div
         className="genericSearchHolder"
         onMouseLeave={() => this.toggleSearch(false)}
-        onMouseEnter={() => (this.timeout ? this.cTimeout() : "")}>
+        onMouseEnter={() => (this.timeout ? this.cTimeout() : "")}
+        ref={this.wrapper}>
         <div className="genericSearchBox">
           <div className="searchHolder">
-            <div className="searchField" style={{ left: this.state.searching ? "0px" : "-315px" }}>
+            <div
+              className="searchField"
+              style={{ left: this.state.searching ? "0px" : "-315px" }}
+              onContextMenu={e => {
+                e.preventDefault();
+                console.log("SELF");
+                if (!this.state.searching) {
+                  this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
+                }
+              }}>
               <input
                 value={this.state.value}
                 onChange={input => this.handleChange(input)}
@@ -133,6 +163,22 @@ class SelfSearchBox extends React.Component<Props, State> {
           </div>
         </div>
         {this.state.value != "" ? this.printResults() : ""}
+        {this.state.context && (
+          <button
+            className="cleanup contextButton"
+            onClick={() => {
+              this.setState({ context: false, value: clipboard.readText() });
+            }}
+            style={{
+              position: "fixed",
+              top: this.state.clientY,
+              left: this.state.clientX,
+              right: "auto"
+            }}>
+            <i className="fal fa-paste" />
+            <span style={{ marginLeft: "8px", fontSize: "12px" }}>Paste</span>
+          </button>
+        )}
       </div>
     );
   }
