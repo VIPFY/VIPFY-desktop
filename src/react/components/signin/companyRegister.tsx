@@ -85,10 +85,12 @@ class RegisterCompany extends React.Component<Props, State> {
               <UniversalTextInput
                 id="emailreg"
                 width="312px"
-                errorEvaluation={!this.state.email.match(emailRegex)}
+                errorEvaluation={this.state.email != "" && !this.state.email.match(emailRegex)}
                 errorhint="A valid Email looks like this john@vipfy.com"
                 label="Email"
                 livevalue={v => this.setState({ email: v })}
+                focus={true}
+                required={true}
               />
             </div>
 
