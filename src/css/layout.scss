@@ -4870,7 +4870,8 @@ progress[value] {
             width: 355px;
             background-color: $vipfy-lightgrey;
             line-height: 40px;
-            font-family: "Roboto Light";
+            font-family: "Roboto";
+            font-weight: 300;
             font-size: 13px;
             color: $vipfy-lighttext;
             box-shadow: $vipfy-lightshadow;
@@ -4894,7 +4895,8 @@ progress[value] {
                         color: $vipfy-lighttext;
                         padding-left: 10px;
                         padding-right: 3px;
-                        font-family: "Roboto Light";
+                        font-family: "Roboto";
+                        font-weight: 300;
                     }
                 }
     
@@ -4927,7 +4929,8 @@ progress[value] {
     
             .searchResult{
                 padding: 0px 10px;
-                font-family: "Roboto Light";
+                font-family: "Roboto";
+                font-weight: 300;
                 font-size: 13px;
                 color: $vipfy-lighttext;
                 cursor: pointer;
@@ -5091,7 +5094,8 @@ progress[value] {
         }
 
         .pagePreTitle{
-            font-family: "Roboto Light";
+            font-family: "Roboto";
+            font-weight: 300;
             color: #415E72;
             cursor: pointer;
         }
@@ -5166,7 +5170,8 @@ progress[value] {
         width: 355px;
         background-color: $vipfy-lightgrey;
         line-height: 40px;
-        font-family: "Roboto Light";
+        font-family: "Roboto";
+        font-weight: 300;
         font-size: 13px;
         color: $vipfy-lighttext;
         box-shadow: $vipfy-lightshadow;
@@ -5190,7 +5195,8 @@ progress[value] {
                     color: $vipfy-lighttext;
                     padding-left: 10px;
                     padding-right: 3px;
-                    font-family: "Roboto Light";
+                    font-family: "Roboto";
+                    font-weight: 300;
                 }
             }
 
@@ -5223,7 +5229,8 @@ progress[value] {
 
         .searchResult{
             padding: 0px 10px;
-            font-family: "Roboto Light";
+            font-family: "Roboto";
+            font-weight: 300;
             font-size: 13px;
             color: $vipfy-lighttext;
             cursor: pointer;
