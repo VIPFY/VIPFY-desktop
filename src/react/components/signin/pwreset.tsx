@@ -63,9 +63,10 @@ class PWReset extends React.Component<Props, State> {
                 width="312px"
                 label="Email"
                 livevalue={v => this.setState({ email: v })}
-                errorEvaluation={this.state.error != "" || !this.state.email.match(emailRegex)}
+                errorEvaluation={this.state.email != "" || !this.state.email.match(emailRegex)}
                 errorhint={this.state.error || "A valid Email looks like this john@vipfy.com"}
                 onEnter={this.sendMail}
+                focus={true}
               />
             </div>
 
