@@ -8,6 +8,8 @@ interface Props {
   handleChange: Function;
   option: Option | null | string;
   touched?: boolean;
+  holder?: any;
+  scrollItem?: any;
 }
 
 interface State {
@@ -18,6 +20,8 @@ interface State {
 class DropDown extends React.PureComponent<Props, State> {
   state = { show: false, touched: false };
 
+  wrapper = React.createRef();
+
   componentDidMount() {
     if (this.props.touched) {
       this.setState({ touched: true });
@@ -25,6 +29,36 @@ class DropDown extends React.PureComponent<Props, State> {
 
     window.addEventListener("keydown", this.listenKeyboard, true);
     document.addEventListener("click", this.handleClickOutside, true);
+  }
+
+  calculateTop(element) {
+    if (element) {
+      return element.offsetTop + this.calculateTop(element.offsetParent);
+    }
+    return 0;
+  }
+
+  calculateLeft(element) {
+    if (element) {
+      return element.offsetLeft + this.calculateLeft(element.offsetParent);
+    }
+    return 0;
+  }
+
+  componentDidUpdate() {
+    if (this.state.show) {
+      if (this.props.scrollItem && this.props.holder) {
+        if (this.props.holder.current.scrollTop > this.props.scrollItem.current.offsetTop) {
+          this.setState({ show: false });
+        }
+        if (
+          this.props.holder.current.scrollTop + this.props.holder.current.offsetHeight <
+          this.props.scrollItem.current.offsetTop + this.props.scrollItem.current.offsetHeight
+        ) {
+          this.setState({ show: false });
+        }
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -59,7 +93,7 @@ class DropDown extends React.PureComponent<Props, State> {
     // }
 
     return (
-      <div className="dropdown">
+      <div className="dropdown" ref={this.wrapper}>
         <button
           className="naked-button dropdown-header"
           onClick={() => this.setState(prev => ({ ...prev, show: !prev.show, touched: true }))}>
@@ -75,7 +109,19 @@ class DropDown extends React.PureComponent<Props, State> {
           <i className="fal fa-angle-down big-angle" />
         </button>
 
-        <div className={bodyClass}>
+        <div
+          className={bodyClass}
+          style={
+            this.wrapper && {
+              position: "fixed",
+              width: "155px",
+              top:
+                this.calculateTop(this.wrapper.current) +
+                32 -
+                (this.props.holder.current.scrollTop || 0),
+              left: this.calculateLeft(this.wrapper.current)
+            }
+          }>
           {this.props.options.map((option, key) => (
             <button
               key={key}

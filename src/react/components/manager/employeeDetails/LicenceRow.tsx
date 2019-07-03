@@ -16,6 +16,8 @@ interface Props {
   defaultValues?: State;
   hideCancel?: boolean;
   user?: number;
+  scrollTop?: number;
+  holder?: any;
 }
 
 interface State {
@@ -29,6 +31,8 @@ const INITIAL_STATE = { starttime: "", endtime: "", user: null, sanityCheck: tru
 
 class LicenceRow extends React.Component<Props, State> {
   state = { ...INITIAL_STATE };
+
+  row = React.createRef();
 
   componentDidMount() {
     if (this.props.defaultValues) {
@@ -66,7 +70,7 @@ class LicenceRow extends React.Component<Props, State> {
     const { licence, defaultValues } = this.props;
 
     return (
-      <div className="tableRow">
+      <div className="tableRow" ref={this.row}>
         <div className="tableMain popup-lic">
           <div className="tableColumnSmall">
             <div
@@ -121,6 +125,9 @@ class LicenceRow extends React.Component<Props, State> {
                   : moment().format("YYYY-MM-DD")
               }
               error={this.state.sanityCheck ? "" : "Beginning must be before Ending!"}
+              scrollTop={this.props.scrollTop}
+              holder={this.props.holder}
+              scrollItem={this.row}
             />
           </div>
 
@@ -131,6 +138,9 @@ class LicenceRow extends React.Component<Props, State> {
               handleChange={value => this.handleChange("endtime", value)}
               minDate={moment().format("YYYY-MM-DD")}
               error={this.state.sanityCheck ? "" : "Beginning must be before Ending!"}
+              scrollTop={this.props.scrollTop}
+              holder={this.props.holder}
+              scrollItem={this.row}
             />
           </div>
 
@@ -199,6 +209,8 @@ class LicenceRow extends React.Component<Props, State> {
                     handleChange={value => this.handleChange("user", value)}
                     defaultValue={defaultValue}
                     options={options}
+                    holder={this.props.holder}
+                    scrollItem={this.row}
                   />
                 );
               }}

@@ -10,6 +10,9 @@ interface Props {
   error?: string;
   value: string | moment.Moment;
   customFormat?: string;
+  scrollTop?: number;
+  holder?: any;
+  scrollItem?: any;
 }
 
 interface State {
@@ -33,6 +36,23 @@ class DatePicker extends React.PureComponent<Props, State> {
     year: moment().year()
   };
 
+  wrapper = React.createRef();
+  picker = React.createRef();
+
+  calculateTop(element) {
+    if (element) {
+      return element.offsetTop + this.calculateTop(element.offsetParent);
+    }
+    return 0;
+  }
+
+  calculateLeft(element) {
+    if (element) {
+      return element.offsetLeft + this.calculateLeft(element.offsetParent);
+    }
+    return 0;
+  }
+
   componentDidMount() {
     window.addEventListener("keydown", this.listenKeyboard, true);
     document.addEventListener("click", this.handleClickOutside, true);
@@ -44,6 +64,29 @@ class DatePicker extends React.PureComponent<Props, State> {
         month: moment(this.props.value).month() + 1,
         year: moment(this.props.value).year()
       });
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.state.show) {
+      console.log(
+        "UPDATE",
+        this.props.holder.current,
+        this.props.scrollItem.current,
+        this.props.holder.current.scrollTop,
+        this.props.scrollItem.current.scrollTop
+      );
+      if (this.props.scrollItem && this.props.holder) {
+        if (this.props.holder.current.scrollTop > this.props.scrollItem.current.offsetTop) {
+          this.setState({ show: false });
+        }
+        if (
+          this.props.holder.current.scrollTop + this.props.holder.current.offsetHeight <
+          this.props.scrollItem.current.offsetTop + this.props.scrollItem.current.offsetHeight
+        ) {
+          this.setState({ show: false });
+        }
+      }
     }
   }
 
@@ -190,7 +233,7 @@ class DatePicker extends React.PureComponent<Props, State> {
     const format = this.props.customFormat || "DD MMM YYYY";
 
     return (
-      <div className="date-picker-wrapper">
+      <div className="date-picker-wrapper" ref={this.wrapper}>
         <div className="date-picker" onClick={() => this.setState({ show: true })}>
           <i className="fal fa-calendar" />
           <span className="date-picker-text">
@@ -203,7 +246,19 @@ class DatePicker extends React.PureComponent<Props, State> {
         </div>
 
         {this.state.show && (
-          <div className="date-picker-popup">
+          <div
+            ref={this.picker}
+            className="date-picker-popup"
+            style={
+              this.wrapper && {
+                position: "fixed",
+                top:
+                  this.calculateTop(this.wrapper.current) +
+                  50 -
+                  (this.props.holder.current.scrollTop || 0),
+                left: this.calculateLeft(this.wrapper.current) - 16
+              }
+            }>
             <div className="arrow-up" />
 
             <div className="date-picker-popup-header">
