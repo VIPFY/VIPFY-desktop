@@ -256,7 +256,6 @@ class DatePicker extends React.PureComponent<Props, State> {
                   156
               }
             }>
-            {console.log("Wrapper", this.wrapper)}
             <div className="arrow-up" />
 
             <div className="date-picker-popup-header">
