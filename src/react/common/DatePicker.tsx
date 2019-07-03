@@ -69,13 +69,6 @@ class DatePicker extends React.PureComponent<Props, State> {
 
   componentDidUpdate() {
     if (this.state.show) {
-      console.log(
-        "UPDATE",
-        this.props.holder.current,
-        this.props.scrollItem.current,
-        this.props.holder.current.scrollTop,
-        this.props.scrollItem.current.scrollTop
-      );
       if (this.props.scrollItem && this.props.holder) {
         if (this.props.holder.current.scrollTop > this.props.scrollItem.current.offsetTop) {
           this.setState({ show: false });
@@ -250,7 +243,8 @@ class DatePicker extends React.PureComponent<Props, State> {
             ref={this.picker}
             className="date-picker-popup"
             style={
-              this.wrapper && {
+              this.wrapper &&
+              this.props.holder && {
                 position: "fixed",
                 top:
                   this.calculateTop(this.wrapper.current) +

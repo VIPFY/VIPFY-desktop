@@ -112,7 +112,8 @@ class DropDown extends React.PureComponent<Props, State> {
         <div
           className={bodyClass}
           style={
-            this.wrapper && {
+            this.wrapper &&
+            this.props.holder && {
               position: "fixed",
               width: "155px",
               top:
