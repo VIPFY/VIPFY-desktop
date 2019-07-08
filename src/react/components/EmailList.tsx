@@ -122,7 +122,7 @@ class EmailList extends React.Component<Props, State> {
           }
 
           if (error || !data) {
-            return <ErrorComp error={filterError(error)} />;
+            return <ErrorComp error={error} />;
           }
 
           const fetchEmailList = data.fetchEmails.filter(({ tags }) =>
@@ -147,33 +147,34 @@ class EmailList extends React.Component<Props, State> {
                   </tr>
                 </thead>
                 <tbody>
-                  {fetchEmailList.map(({ email, description }) => (
-                    <Mutation
-                      mutation={REMOVE_EMAIL_TAG}
-                      key={email}
-                      onCompleted={() => this.forceUpdate()}>
-                      {mutate => (
-                        <tr>
-                          <td>{email}</td>
-                          <td>{description}</td>
-                          <td className="naked-button-holder">
-                            <button
-                              title={
-                                billingEmailCheck
-                                  ? "You need at least email for billing"
-                                  : `Remove ${email}`
-                              }
-                              disabled={billingEmailCheck}
-                              type="button"
-                              className="naked-button"
-                              onClick={() => this.showRemoval(email, mutate)}>
-                              <i className="fal fa-trash-alt" />
-                            </button>
-                          </td>
-                        </tr>
-                      )}
-                    </Mutation>
-                  ))}
+                  {fetchEmailList.length > 1 &&
+                    fetchEmailList.map(({ email, description }) => (
+                      <Mutation
+                        mutation={REMOVE_EMAIL_TAG}
+                        key={email}
+                        onCompleted={() => this.forceUpdate()}>
+                        {mutate => (
+                          <tr>
+                            <td>{email}</td>
+                            <td>{description}</td>
+                            <td className="naked-button-holder">
+                              <button
+                                title={
+                                  billingEmailCheck
+                                    ? "You need at least email for billing"
+                                    : `Remove ${email}`
+                                }
+                                disabled={billingEmailCheck}
+                                type="button"
+                                className="naked-button"
+                                onClick={() => this.showRemoval(email, mutate)}>
+                                <i className="fal fa-trash-alt" />
+                              </button>
+                            </td>
+                          </tr>
+                        )}
+                      </Mutation>
+                    ))}
                 </tbody>
               </table>
 

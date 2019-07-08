@@ -4,9 +4,8 @@ import UniversalTextInput from "../components/universalForms/universalTextInput"
 import UniversalButton from "../components/universalButtons/universalButton";
 import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
-import { FETCH_ADDRESSES } from "../queries/contact";
-import UniversalDropDownInput from "../components/universalForms/universalDropdownInput";
-import { countries } from "../constants/countries";
+import { emailRegex } from "../common/constants";
+import { filterError } from "../common/functions";
 
 interface Props {
   close: Function;
@@ -26,6 +25,7 @@ interface State {
   confirm: Boolean;
   networking: Boolean;
   networkerror: Boolean;
+  error: string | null;
 }
 
 const CREATE_EMAIL = gql`
@@ -70,18 +70,24 @@ const FETCH_EMAILS = gql`
 `;
 
 class PopupEmail extends React.Component<Props, State> {
-  state = {
-    email: this.props.oldvalues ? this.props.oldvalues.email : "",
-    description: this.props.oldvalues ? this.props.oldvalues.description : "",
-    confirm: false,
-    networking: true,
-    networkerror: false
-  };
+  constructor(props) {
+    super(props);
+    const { oldvalues } = this.props;
+
+    this.state = {
+      email: oldvalues && oldvalues.email ? oldvalues.email : "",
+      description: oldvalues && oldvalues.description ? oldvalues.description : "",
+      confirm: false,
+      networking: false,
+      networkerror: false,
+      error: null
+    };
+  }
 
   delete = async () => {
-    this.setState({ confirm: true, networking: true });
+    await this.setState({ confirm: true, networking: true });
     try {
-      this.props.deleteEmail({
+      await this.props.deleteEmail({
         variables: { company: true, email: this.props.oldvalues!.email },
         update: proxy => {
           // Read the data from our cache for this query.
@@ -97,15 +103,16 @@ class PopupEmail extends React.Component<Props, State> {
           });
         }
       });
-      this.setState({ networking: false, networkerror: false });
+      await this.setState({ networking: false, networkerror: false });
     } catch (err) {
-      this.setState({ networking: false, networkerror: true });
+      await this.setState({ networking: false, networkerror: true });
       throw err;
     }
   };
 
   confirm = async () => {
     this.setState({ confirm: true, networking: true });
+
     if (this.props.oldvalues) {
       try {
         /*const res = await this.props.updateEmail({
@@ -138,21 +145,20 @@ class PopupEmail extends React.Component<Props, State> {
           }
         });
         console.log("RES", res);*/
-        const res = await this.props.updateEmail({
+        await this.props.updateEmail({
           variables: {
             email: this.props.oldvalues.email,
             emailData: { description: this.state.description }
           }
         });
-        console.log("RES", res);
         this.setState({ networking: false, networkerror: false });
       } catch (err) {
-        this.setState({ networking: false, networkerror: true });
-        throw err;
+        this.setState({ networking: false, networkerror: true, error: err.message });
+        //throw err;
       }
     } else {
       try {
-        await await this.props.createEmail({
+        await this.props.createEmail({
           variables: {
             company: true,
             emailData: { email: this.state.email, description: this.state.description }
@@ -163,6 +169,7 @@ class PopupEmail extends React.Component<Props, State> {
               query: FETCH_EMAILS,
               variables: { company: true }
             });
+            createEmail.tags = ["company"];
             cachedData.fetchEmails.push(createEmail);
             // Write our data back to the cache.
             proxy.writeQuery({
@@ -172,15 +179,18 @@ class PopupEmail extends React.Component<Props, State> {
             });
           }
         });
+
         this.setState({ networking: false, networkerror: false });
       } catch (err) {
-        this.setState({ networking: false, networkerror: true });
-        throw err;
+        this.setState({ networking: false, networkerror: true, error: err.message });
+        //throw err;
       }
     }
   };
 
   render() {
+    const { email } = this.state;
+
     if (this.props.delete) {
       return (
         <PopupBase close={() => this.props.close()} small={true} closeable={false}>
@@ -196,13 +206,7 @@ class PopupEmail extends React.Component<Props, State> {
             </p>
           </div>
           <UniversalButton type="low" closingPopup={true} label="Cancel" />
-          <UniversalButton
-            type="low"
-            label="Delete"
-            onClick={() => {
-              this.delete();
-            }}
-          />
+          <UniversalButton type="low" label="Delete" onClick={this.delete} />
           {this.state.confirm ? (
             <PopupBase
               close={() => this.setState({ confirm: false, networking: true })}
@@ -223,9 +227,10 @@ class PopupEmail extends React.Component<Props, State> {
               ) : this.state.networkerror ? (
                 <React.Fragment>
                   <div>
-                    Something went wrong
-                    <br />
-                    Please try again or contact support
+                    {/*Something went wrong
+                  <br />
+                  Please try again or contact support*/}
+                    {filterError(this.state.error)}
                   </div>
                   <UniversalButton
                     type="high"
@@ -253,16 +258,17 @@ class PopupEmail extends React.Component<Props, State> {
       );
     }
     return (
-      <PopupBase close={() => this.props.close()}>
+      <PopupBase close={this.props.close}>
         <h2 className="lightHeading">
           {this.props.oldvalues ? "Please change your email" : "Please insert your email"}
         </h2>
         <UniversalTextInput
           id="email"
-          label="Email"
+          label="Email (Required)"
+          errorEvaluation={!email.match(emailRegex)}
+          errorhint="This is not a valid email"
           livevalue={value => this.setState({ email: value })}
           width="500px"
-          disabled={true}
           startvalue={this.props.oldvalues ? this.props.oldvalues.email : ""}
         />
         <UniversalTextInput
@@ -276,7 +282,8 @@ class PopupEmail extends React.Component<Props, State> {
         <UniversalButton
           type="high"
           label={this.props.oldvalues ? "Save" : "Confirm"}
-          disabeld={this.state.email == ""}
+          disabled={email == "" || !email.match(emailRegex) || this.state.networking}
+          // Is this intend to work? Why is it not awaited?
           onClick={async () => {
             this.confirm();
           }}
@@ -303,9 +310,10 @@ class PopupEmail extends React.Component<Props, State> {
             ) : this.state.networkerror ? (
               <React.Fragment>
                 <div>
-                  Something went wrong
+                  {/*Something went wrong
                   <br />
-                  Please try again or contact support
+                  Please try again or contact support*/}
+                  {filterError(this.state.error)}
                 </div>
                 <UniversalButton
                   type="high"

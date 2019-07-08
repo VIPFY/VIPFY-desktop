@@ -122,8 +122,8 @@ class Billing extends React.Component<Props, State> {
             <span>Credit Cards</span>
           </div>
           <div className={`inside ${this.state.showCurrentCreditCard ? "in" : "out"}`}>
-            {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
-            {normalizedCards && normalizedCards.length > 1 ? (
+            {/* {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
+            {normalizedCards && normalizedCards.length > 1 && (
               <div className="credit-card-change-button">
                 <button
                   className="payment-data-change-button"
@@ -137,9 +137,7 @@ class Billing extends React.Component<Props, State> {
                   Change default Card
                 </button>
               </div>
-            ) : (
-              ""
-            )}
+            )} */}
             <div className="credit-card-change-button">
               <button
                 className="payment-data-change-button"
@@ -170,9 +168,7 @@ class Billing extends React.Component<Props, State> {
             <span>Cost Distribution</span>
           </div>
           <div className={`inside ${this.state.showCostDistribution ? "in" : "out"}`}>
-            <div className="nextPaymentChart">
-              <BillingPie {...this.props} />
-            </div>
+            <div className="nextPaymentChart">{/* <BillingPie {...this.props} /> */}</div>
           </div>
         </div>
 
@@ -200,7 +196,7 @@ class Billing extends React.Component<Props, State> {
             <span>Billing History</span>
           </div>
           <div className={`inside ${this.state.showBillingHistory ? "in" : "out"}`}>
-            <BillingHistoryChart {...this.props} />
+            {/* <BillingHistoryChart {...this.props} /> */}
           </div>
         </div>
 
@@ -229,7 +225,7 @@ class Billing extends React.Component<Props, State> {
             <span>Invoices</span>
           </div>
           <div className={`inside ${this.state.showInvocies ? "in" : "out"}`}>
-            <Invoices />
+            {/* <Invoices /> */}
           </div>
         </div>
       </div>

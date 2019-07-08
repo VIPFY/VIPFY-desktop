@@ -89,6 +89,7 @@ class SignUpInGeneral extends React.Component<Props, State> {
             <div>{this.fields[this.props.type].text1}</div>
           </div>
         )}
+
         <div className="UniversalInputHolder">
           <UniversalTextInput
             id={this.fields[this.props.type].field2id}
@@ -114,7 +115,7 @@ class SignUpInGeneral extends React.Component<Props, State> {
           <UniversalButton
             label={this.fields[this.props.type].continue}
             type="high"
-            disabeld={
+            disabled={
               (this.fields[this.props.type].field1 && this.state.field1 == "") ||
               this.state.field2 == ""
             }

@@ -4,6 +4,7 @@ import { Query } from "react-apollo";
 import { fetchUsersOwnLicences } from "../queries/departments";
 import moment = require("moment");
 import { con } from "../../locationScripts/utils/util";
+import { getImageUrlApp, getSourceSetApp } from "../common/images";
 
 interface Props {
   person: { firstname: String; lastname: String; id: number };
@@ -151,19 +152,11 @@ class TeamEmployee extends React.Component<Props, State> {
                                     style={{
                                       float: "left"
                                     }}
-                                    //src={`https://storage.googleapis.com/vipfy-imagestore-01/icons/${licence
-                                    //  .boughtplanid.planid.appid.icon ||
-                                    //  "21352134123123-vipfy-fdgd43asfa"}`}
-                                    src={
-                                      licence.boughtplanid.planid.appid.icon &&
-                                      licence.boughtplanid.planid.appid.icon.indexOf("/") != -1
-                                        ? `https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                                            licence.boughtplanid.planid.appid.icon
-                                          )}`
-                                        : `https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                            licence.boughtplanid.planid.appid.icon
-                                          )}`
-                                    }
+                                    src={getImageUrlApp(licence.boughtplanid.planid.appid.icon, 32)}
+                                    srcSet={getSourceSetApp(
+                                      licence.boughtplanid.planid.appid.icon,
+                                      32
+                                    )}
                                   />
                                 ) : (
                                   <div

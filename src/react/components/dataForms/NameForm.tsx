@@ -1,11 +1,14 @@
 import * as React from "react";
-import UniversalButton from "../universalButtons/universalButton";
 import gql from "graphql-tag";
-import { Query, graphql, compose, withApollo } from "react-apollo";
+import { graphql, compose, withApollo, Mutation } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { me } from "../../queries/auth";
 import PopupBase from "../../popups/universalPopups/popupBase";
+import UniversalButton from "../universalButtons/universalButton";
+import UniversalTextInput from "../universalForms/universalTextInput";
+import { filterError } from "../../common/functions";
+import { ADD_PROMOCODE } from "../../mutations/auth";
 
 interface Props {
   setupFinished: Function;
@@ -17,6 +20,8 @@ interface State {
   name: string;
   register: Boolean;
   error: string;
+  showPromoInput: boolean;
+  promocode: string;
 }
 
 export const SETUP_FINISHED = gql`
@@ -45,7 +50,9 @@ class DataNameForm extends React.Component<Props, State> {
   state = {
     name: "",
     register: false,
-    error: ""
+    error: "",
+    showPromoInput: false,
+    promocode: ""
   };
 
   continue = async () => {
@@ -70,59 +77,134 @@ class DataNameForm extends React.Component<Props, State> {
   };
 
   render() {
+    const { showPromoInput, promocode } = this.state;
+
     return (
       <div className="dataGeneralForm">
-        <div className="logo" />
-        <h1>Welcome to VIPFY</h1>
-        <p>
-          Now that you signed up, let's personalize your experience.
-          <br />
-          First of all, what's your Name?
-        </p>
-        <div className="inputHolder">
-          <input
-            value={this.state.name}
-            placeholder="My name is"
-            onChange={e => this.setState({ name: e.target.value })}
+        <div className="holder">
+          <div className="logo" />
+          <img
+            src={`${__dirname}/../../../images/welcome_back.png`}
+            className="illustration-login"
           />
-        </div>
-        <div className="oneIllustrationHolder" />
-        <div className="buttonHolder" style={{ justifyContent: "flex-end" }}>
-          <UniversalButton
-            label="Continue"
-            type="high"
-            disabeld={this.state.name == ""}
-            onClick={() => this.continue()}
-          />
-        </div>
-        {this.state.register ? (
-          <PopupBase
-            close={() => this.setState({ register: false, error: "" })}
-            small={true}
-            closeable={false}
-            nosidebar={true}>
-            {this.state.error != "" ? (
-              <React.Fragment>
-                <div>{this.state.error}</div>
-                <UniversalButton
-                  type="high"
-                  closingPopup={true}
-                  label="Ok"
-                  closingAllPopups={true}
-                />
-              </React.Fragment>
-            ) : (
-              <div>
-                <div style={{ fontSize: "32px", textAlign: "center" }}>
-                  <i className="fal fa-spinner fa-spin" />
-                  <div style={{ marginTop: "32px", fontSize: "16px" }}>Setting up your company</div>
-                </div>
-              </div>
+
+          <div className="holder-right">
+            <h1>Welcome to VIPFY</h1>
+            <p style={{ display: "flex", flexFlow: "column", alignItems: "start" }}>
+              <span>Now that you signed up, let's personalize your experience.</span> <br />
+              <span>First of all, what's your name?</span>
+            </p>
+
+            <div className="UniversalInputHolder">
+              <UniversalTextInput
+                id="AddUser"
+                width="312px"
+                label="My name is"
+                livevalue={v => this.setState({ name: v })}
+                onEnter={() => this.continue()}
+              />
+            </div>
+
+            <Mutation
+              mutation={ADD_PROMOCODE}
+              onCompleted={() => {
+                if (this.state.name) {
+                  setTimeout(() => this.continue(), 1000);
+                }
+              }}>
+              {(mutate, { data, loading, error }) => (
+                <React.Fragment>
+                  <div className="promocode-holder">
+                    <button
+                      disabled={data}
+                      className="naked-button"
+                      onClick={() =>
+                        this.setState(prevState => ({
+                          ...prevState,
+                          showPromoInput: !prevState.showPromoInput
+                        }))
+                      }>
+                      {`${showPromoInput ? "Hide promocode" : "Do you have a promocode?"}`}{" "}
+                      <span>Click here</span> <i className="fal fa-money-bill-wave" />
+                    </button>
+
+                    {showPromoInput ? (
+                      data ? (
+                        <div className="promo-success">
+                          <i className="fal fa-check" />
+                          <span>{`${this.state.promocode} successfully applied.`}</span>
+                        </div>
+                      ) : (
+                        <UniversalTextInput
+                          id="promocode"
+                          width="312px"
+                          className="float-in-left"
+                          label="Promocode"
+                          disabled={loading}
+                          livevalue={v => this.setState({ promocode: v })}
+                          errorEvaluation={error}
+                          errorhint={error && filterError(error)}
+                          onEnter={() => mutate({ variables: { promocode } })}
+                        />
+                      )
+                    ) : (
+                      ""
+                    )}
+                  </div>
+
+                  {!showPromoInput || data ? (
+                    <div className="login-buttons">
+                      <UniversalButton
+                        label="Continue"
+                        type="high"
+                        disabled={this.state.name == ""}
+                        onClick={() => this.continue()}
+                      />
+                    </div>
+                  ) : (
+                    <div className="login-buttons">
+                      <UniversalButton
+                        label="Add Code"
+                        type="high"
+                        disabled={loading || data || !promocode}
+                        onClick={() => mutate({ variables: { promocode } })}
+                      />
+                    </div>
+                  )}
+                </React.Fragment>
+              )}
+            </Mutation>
+
+            {this.state.register && (
+              <PopupBase
+                close={() => this.setState({ register: false, error: "" })}
+                small={true}
+                closeable={false}
+                nosidebar={true}>
+                {this.state.error != "" ? (
+                  <React.Fragment>
+                    <div>{this.state.error}</div>
+                    <UniversalButton
+                      type="high"
+                      closingPopup={true}
+                      label="Ok"
+                      closingAllPopups={true}
+                    />
+                  </React.Fragment>
+                ) : (
+                  <div>
+                    <div style={{ fontSize: "32px", textAlign: "center" }}>
+                      <i className="fal fa-spinner fa-spin" />
+                      <div style={{ marginTop: "32px", fontSize: "16px" }}>
+                        Setting up your company
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </PopupBase>
             )}
-          </PopupBase>
-        ) : (
-          ""
-        )}
+          </div>
+        </div>
       </div>
     );
   }

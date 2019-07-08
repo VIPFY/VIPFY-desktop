@@ -1,26 +1,29 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { graphql, compose, Query, withApollo } from "react-apollo";
+import * as Dropzone from "react-dropzone";
 
 import LoadingDiv from "../../components/LoadingDiv";
-import GenericInputForm from "../../components/GenericInputForm";
-import UserPicture from "../UserPicture";
 import Duration from "../../common/duration";
 
 import { CHANGE_PASSWORD } from "../../mutations/auth";
-import { AppContext, concatName, filterError, refetchQueries } from "../../common/functions";
-import { unitPicFolder } from "../../common/constants";
+import { AppContext, concatName, filterError } from "../../common/functions";
 import { me } from "../../queries/auth";
-import { QUERY_USER } from "../../queries/user";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
+import Consent from "../../popups/universalPopups/Consent";
+import { getImageUrlUser } from "../../common/images";
+import UploadImage from "../manager/universal/uploadImage";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
-    updateProfilePic(file: $file)
+    updateProfilePic(file: $file) {
+      id
+      profilepicture
+    }
   }
 `;
 
@@ -38,9 +41,11 @@ interface State {
   oldpassword: string;
   newpassword: string;
   new2password: string;
-  pwconfirm: Boolean;
-  networking: Boolean;
-  errorupdate: Boolean;
+  pwconfirm: boolean;
+  networking: boolean;
+  errorupdate: boolean;
+  consentPopup: boolean;
+  loading: boolean;
 }
 
 class PersonalData extends React.Component<Props, State> {
@@ -52,22 +57,22 @@ class PersonalData extends React.Component<Props, State> {
     new2password: "",
     pwconfirm: false,
     networking: true,
-    errorupdate: false
+    errorupdate: false,
+    loading: false,
+    consentPopup: false
   };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
-  uploadPic = async ({ picture }) => {
+  uploadPic = async (picture: File) => {
     try {
-      await this.props.updatePic({ variables: { file: picture }, refetchQueries: ["me"] });
-      this.props.client.query({ query: me, fetchPolicy: "network-only" });
-      this.props.client.query({
-        query: QUERY_USER,
-        variables: { userid: this.props.id },
-        fetchPolicy: "network-only"
-      });
-      return true;
+      await this.setState({ loading: true });
+      await this.props.updatePic({ variables: { file: picture } });
+
+      await this.setState({ loading: false });
     } catch (err) {
+      await this.setState({ loading: false });
+
       throw new Error(filterError(err));
     }
   };
@@ -98,92 +103,34 @@ class PersonalData extends React.Component<Props, State> {
           if (error) {
             return <div>Error loading data</div>;
           }
-          const {
-            firstname,
-            middlename,
-            lastname,
-            title,
-            birthday,
-            language,
-            createdate,
-            tutorialprogress
-          } = data.me;
+          const { firstname, title, createdate, profilepicture } = data.me;
+
+          // Just to be on the safe side
+          let consent = "not given";
+
+          if (data.me.consent && data.me.consent === true) {
+            consent = "given";
+          } else if (data.me.consent && data.me.consent === false) {
+            consent = "denied";
+          }
+
           return (
             <AppContext.Consumer>
-              {({ showPopup, addRenderElement, setreshowTutorial }) => {
+              {({ addRenderElement, setreshowTutorial }) => {
                 const information = [
                   {
                     label: "Name",
-                    data: `${title ? title : ""} ${concatName(firstname, middlename, lastname)}`
+                    data: `${title ? title : ""} ${concatName(data.me)}`
                   },
-                  //{ label: "Birthday", data: birthday },
                   //{ label: "Language", data: language },
                   { label: "User for", data: <Duration timestamp={parseInt(createdate)} /> }
                 ];
 
-                const picProps: {
-                  fields: object[];
-                  handleSubmit: Function;
-                  submittingMessage: string;
-                } = {
-                  fields: [
-                    {
-                      name: "picture",
-                      type: "picture",
-                      required: true
-                    }
-                  ],
-                  handleSubmit: this.uploadPic,
-                  submittingMessage: "Uploading Picture... "
-                };
-
-                const passwordProps = {
-                  fields: [
-                    {
-                      type: "password",
-                      name: "pw",
-                      icon: "key",
-                      label: "Current Password",
-                      placeholder: "Your current Password",
-                      required: true
-                    },
-                    {
-                      type: "password",
-                      name: "newPw",
-                      icon: "key",
-                      label: "New Password",
-                      placeholder: "Your new Password",
-                      required: true
-                    },
-                    {
-                      type: "password",
-                      name: "confirmPw",
-                      icon: "key",
-                      label: "Confirm Password",
-                      placeholder: "Enter new Password again",
-                      required: true
-                    }
-                  ],
-                  submittingMessage: "Updating Password... ",
-                  handleSubmit: this.uploadPassword
-                };
-
-                const picPopup: { header: string; body: Function; props: object } = {
-                  header: "Upload a Profile Picture",
-                  body: GenericInputForm,
-                  props: picProps
-                };
-
-                const passwordPopup = {
-                  header: "Change Password",
-                  body: GenericInputForm,
-                  props: passwordProps
-                };
-
                 return (
                   <div
-                    className="genericHolder"
-                    ref={el => addRenderElement({ key: "profilePersonalHolder", element: el })}>
+                    className="managerPage genericHolder"
+                    ref={el => addRenderElement({ key: "profilePersonalHolder", element: el })}
+                    style={{ padding: "0px" }}>
                     <div className="header" onClick={this.toggle}>
                       <i
                         className={`button-hide fas ${
@@ -194,15 +141,12 @@ class PersonalData extends React.Component<Props, State> {
                       <span>Personal Data</span>
                     </div>
                     <div className={`inside-profile ${this.state.show ? "in" : "out"}`}>
-                      <div
-                        className="pic-holder" //{`pic-holder ${this.state.show ? "in" : "out"}`}
-                        onClick={() => showPopup(picPopup)}>
-                        <UserPicture
-                          size="pic"
-                          unitid={this.props.id}
-                          updateable={true}
-                          addRenderElement={addRenderElement}
-                          elementName="profilePicture"
+                      <div className={"pic-holder"} style={{ margin: 0, marginBottom: "16px" }}>
+                        <UploadImage
+                          picture={{ preview: getImageUrlUser(profilepicture, 96) }}
+                          onDrop={file => this.uploadPic(file)}
+                          name={firstname}
+                          className={"managerBigSquare"}
                         />
                       </div>
 
@@ -214,7 +158,7 @@ class PersonalData extends React.Component<Props, State> {
                               <span data-recording-sensitive>{data}</span>
                             </li>
                           ))}
-                          <li>
+                          {/* <li>
                             <label>Tutorials</label>
                             <span>
                               <button
@@ -262,9 +206,9 @@ class PersonalData extends React.Component<Props, State> {
                                 className="naked-button reshow-button"
                                 onClick={() => setreshowTutorial(1)}>
                                 Support
-                              </button>*/}
+                              </button>*&/}
                             </span>
-                          </li>
+                              </li> */}
 
                           <li>
                             <button
@@ -276,6 +220,16 @@ class PersonalData extends React.Component<Props, State> {
                               <i className="fal fa-key" />
                               <span className="textButtonInside">Change Password</span>
                             </button>
+
+                            <button
+                              className="naked-button"
+                              onClick={() => this.setState({ consentPopup: true })}>
+                              <span className="consent">{`Consent ${consent} for sending Usagedata`}</span>
+                            </button>
+
+                            {this.state.consentPopup && (
+                              <Consent close={() => this.setState({ consentPopup: false })} />
+                            )}
                           </li>
                         </ul>
                         {this.state.pwchange ? (
@@ -323,7 +277,7 @@ class PersonalData extends React.Component<Props, State> {
                             <UniversalButton type="low" closingPopup={true} label="Cancel" />
                             <UniversalButton
                               type="high"
-                              disabeld={
+                              disabled={
                                 this.state.oldpassword == "" ||
                                 this.state.newpassword == "" ||
                                 this.state.new2password == "" ||

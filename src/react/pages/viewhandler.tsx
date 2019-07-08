@@ -4,6 +4,7 @@ interface Props {
   showView: number;
   views: { key: number; view: any }[];
   sidebarOpen: Boolean;
+  forceUrl?: string;
 }
 
 interface State {

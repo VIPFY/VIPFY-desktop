@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const UPDATE_LAYOUT = gql`
-  mutation onUpdateLayout($layouts: [LayoutInput]!) {
-    updateLayout(layouts: $layouts)
+  mutation onUpdateLayout($layout: LayoutInput!) {
+    updateLayout(layout: $layout)
   }
 `;
 
@@ -155,7 +155,7 @@ export const agreeTos = gql`
 `;
 
 export const forgotPassword = gql`
-  mutation ForgotPassword($email: String!) {
+  mutation onForgotPassword($email: String!) {
     forgotPassword(email: $email) {
       ok
       email
@@ -168,6 +168,12 @@ export const APPLY_PROMOCODE = gql`
     applyPromocode(promocode: $promocode) {
       ok
     }
+  }
+`;
+
+export const ADD_PROMOCODE = gql`
+  mutation onAddPromocode($promocode: String!) {
+    addPromocode(promocode: $promocode)
   }
 `;
 

@@ -133,7 +133,7 @@ class ChangePlan extends React.Component<Props, State> {
             }
 
             if (error) {
-              return <ErrorComp error={filterError(error)} />;
+              return <ErrorComp error={error} />;
             }
 
             if (!data || data.fetchPlans.length < 1) {
@@ -162,7 +162,7 @@ class ChangePlan extends React.Component<Props, State> {
                 return <LoadingDiv text="Fetching data..." />;
               }
               if (error || !data) {
-                return <ErrorComp error={filterError(error)} />;
+                return <ErrorComp error={error} />;
               }
 
               console.log(data);

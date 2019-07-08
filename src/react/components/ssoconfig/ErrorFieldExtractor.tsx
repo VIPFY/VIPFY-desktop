@@ -8,11 +8,14 @@ interface Props {
   usernameField: string;
   passwordField: string;
   button: string | null;
+  button1: string | null;
+  button2: string | null;
   setResult(errorField: string, hideField: string);
 }
 
 interface State {
   errorField: string | null | undefined;
+  key: string;
 }
 
 enum Stage {
@@ -23,9 +26,14 @@ enum Stage {
   afterSuccessLogin
 }
 
+const sleep = async ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 class ErrorFieldExtractor extends React.PureComponent<Props, State> {
   state = {
-    errorField: undefined
+    errorField: undefined,
+    key: "start"
   };
   render() {
     console.log("render find error", this.props);
@@ -37,6 +45,7 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
         partition="ssoconfig"
         className="invisibleWebview"
         onIpcMessage={e => this.onIpcMessage(e)}
+        key={this.state.key}
       />
     );
   }
@@ -46,9 +55,24 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
   domSuccess: object[] = [];
   stage: Stage = Stage.beforeErrorLogin;
 
-  onIpcMessage(e) {
+  async onIpcMessage(e) {
     console.log("ipc", e);
     switch (e.channel) {
+      case "fillFormField":
+        {
+          const w = e.target;
+          for await (const c of e.args[0]) {
+            const shift = c.toLowerCase() != c;
+            const modifiers = shift ? ["shift"] : [];
+            w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
+            w.sendInputEvent({ type: "char", modifiers, keyCode: c });
+            await sleep(70);
+            w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
+            await sleep(120);
+          }
+          w.send("formFieldFilled");
+        }
+        break;
       case "domMap":
         {
           let tag = e.args[0];
@@ -85,17 +109,7 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
               Object.values(a.attr).some(b => b.includesAny(["err", "alert", "warn"]))
             );
             console.log("Error Object", preferedCandidate, candidates);
-
-            this.stage = Stage.duringSuccessLogin;
-            e.target.send("loginData", {
-              username: this.props.username,
-              password: this.props.password,
-              usernameField: this.props.usernameField,
-              passwordField: this.props.passwordField,
-              button: this.props.button,
-              tagBefore: "ignore",
-              tagAfter: "success"
-            });
+            this.setState({ key: "login" });
           } else if (tag === "ignore") {
             return;
           } else if (tag === "success") {
@@ -132,11 +146,24 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
               usernameField: this.props.usernameField,
               passwordField: this.props.passwordField,
               button: this.props.button,
+              button1: this.props.button1,
+              button2: this.props.button2,
               tagBefore: "during",
               tagAfter: "error"
             }); //password is randomly chosen to get incorrect password
           } else if (this.stage == Stage.afterErrorLogin) {
-            return;
+            this.stage = Stage.duringSuccessLogin;
+            e.target.send("loginData", {
+              username: this.props.username,
+              password: this.props.password,
+              usernameField: this.props.usernameField,
+              passwordField: this.props.passwordField,
+              button: this.props.button,
+              button1: this.props.button1,
+              button2: this.props.button2,
+              tagBefore: "ignore",
+              tagAfter: "success"
+            });
           } else {
             return;
           }

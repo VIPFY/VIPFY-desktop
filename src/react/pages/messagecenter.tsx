@@ -7,8 +7,9 @@ import ConversationList from "../components/message-center/ConversationList";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
 
+import { FETCH_EMPLOYEES } from "../queries/departments";
 import { QUERY_GROUPS } from "../components/message-center/common";
-import { filterError, concatName } from "../common/functions";
+import { concatName } from "../common/functions";
 
 interface Props {
   userid: number;
@@ -23,20 +24,6 @@ const START_CONVERSATION = gql`
       ok
       messagegroup {
         id
-      }
-    }
-  }
-`;
-
-const FETCH_EMPLOYEES = gql`
-  {
-    fetchEmployees {
-      employee {
-        id
-        firstname
-        lastname
-        middlename
-        profilepicture
       }
     }
   }
@@ -74,7 +61,7 @@ class MessageCenter extends React.Component<Props> {
       this.props.employees.fetchEmployees.forEach(({ employee }) => {
         if (employee.id != this.props.userid) {
           options.push({
-            name: concatName(employee.firstname, employee.middlename, employee.lastname),
+            name: concatName(employee),
             value: employee.id
           });
         }

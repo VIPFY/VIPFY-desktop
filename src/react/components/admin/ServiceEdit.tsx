@@ -48,7 +48,7 @@ class ServiceEdit extends React.Component<Props, State> {
             <SearchBox searchFunction={this.searchApp} />
             <div className="apps">
               {this.props.apps
-                .filter(({name}) => name.toLowerCase().includes(seachringFor.toLowerCase()))
+                .filter(({ name }) => name.toLowerCase().includes(seachringFor.toLowerCase()))
                 .map(({ name, id, icon, disabled, hidden }) => (
                   <div
                     title={`${disabled ? "Disabled" : ""} ${hidden ? "Hidden" : ""}`}
@@ -87,7 +87,7 @@ export default () => (
       }
 
       if (error || !data) {
-        return <ErrorComp error={filterError(error)} />;
+        return <ErrorComp error={error} />;
       }
 
       return <ServiceEdit apps={data.adminFetchAllApps} />;

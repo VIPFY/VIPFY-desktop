@@ -16,7 +16,7 @@ import SignUpInGeneral from "../components/dataForms/SignUpInGeneralForm";
 import ChangeAccount from "../components/dataForms/ChangeAccount";
 
 const SIGN_UP = gql`
-  mutation onSignUp($email: String!, $name: NameInput!, $companyData: CompanyInput!) {
+  mutation onSignUp($email: String!, $name: NameInput, $companyData: CompanyInput!) {
     signUp(email: $email, name: $name, companyData: $companyData) {
       ok
       token
@@ -232,7 +232,6 @@ class Login extends React.Component<Props, State> {
   };
 
   selectAddress = async address => {
-    console.table(countries);
     let country = address.description
       .split(",")
       .pop()

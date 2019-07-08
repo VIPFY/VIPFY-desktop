@@ -8,6 +8,7 @@ export const me = gql`
       }
       createdate
       id
+      consent
       title
       birthday
       language
@@ -40,8 +41,9 @@ export const fetchLicences = gql`
       starttime
       endtime
       disabled
-      layoutvertical
-      layouthorizontal
+      sidebar
+      dashboard
+      options
       boughtplanid {
         id
         alias
@@ -58,6 +60,13 @@ export const fetchLicences = gql`
           }
         }
       }
+      view
+      edit
+      delete
+      use
+      vacationstart
+      vacationend
+      tags
     }
   }
 `;

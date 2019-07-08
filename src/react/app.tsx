@@ -10,7 +10,6 @@ import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
 import LoadingDiv from "./components/LoadingDiv";
-import Login from "./pages/login";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
@@ -22,6 +21,7 @@ interface AppProps {
   client: ApolloClient<InMemoryCache>;
   history: any;
   logoutFunction: Function;
+  upgradeErrorHandlerSetter: Function;
   me: any;
   moveTo: Function;
   relogMeIn: Function;
@@ -102,11 +102,12 @@ class App extends React.Component<AppProps, AppState> {
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
+    this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
     this.props.history.push("/area");
-    this.redeemSetupToken();
+    //this.redeemSetupToken();
   }
 
-  redeemSetupToken = async () => {
+  redeemSetupToken = async refetch => {
     try {
       const store = new Store();
       if (!store.has("setupkey")) {
@@ -117,10 +118,10 @@ class App extends React.Component<AppProps, AppState> {
         mutation: REDEEM_SETUPTOKEN,
         variables: { setuptoken }
       });
-      const { ok, token } = res.data.redeemSetupToken;
+      const { token } = res.data.redeemSetupToken;
       localStorage.setItem("token", token);
-      this.forceUpdate();
       store.delete("setuptoken");
+      refetch();
     } catch (err) {
       console.log("setup token error", err);
     }
@@ -145,15 +146,22 @@ class App extends React.Component<AppProps, AppState> {
     location.reload();
   };
 
-  logMeIn = async (email: string, password: string) => {
-    console.log("LOGIN", email, password);
+  logMeIn = async (email: string, password: string, refetch: Function) => {
     try {
+      // Login will fail if there already is a token, which to be fair,
+      // should never be the case. But never say never...
+      const tokenExists = localStorage.getItem("token");
+      if (tokenExists) {
+        localStorage.removeItem("token");
+      }
       const res = await this.props.signIn({ variables: { email, password } });
       const { ok, token } = res.data.signIn;
 
       if (ok) {
         localStorage.setItem("token", token);
-        this.forceUpdate();
+        //this.forceUpdate();
+        //this.props.client.query({ query: me, fetchPolicy: "network-only", errorPolicy: "ignore" });
+        refetch();
 
         return true;
       }
@@ -177,22 +185,20 @@ class App extends React.Component<AppProps, AppState> {
     if (localStorage.getItem("token")) {
       return (
         <Query query={me} fetchPolicy="network-only">
-          {({ data, loading, error }) => {
+          {({ data, loading, error, refetch }) => {
             if (loading) {
               return <LoadingDiv text="Preparing Vipfy for you" />;
             }
 
             if (error) {
-              console.log("ERROR", error);
-              this.setState({ error: filterError(error) });
-              this.props.client.cache.reset(); //clear graphql cache
-
+              this.props.client.cache.reset(); // clear graphql cache
+              this.redeemSetupToken(refetch);
               return (
                 <div className="centralize backgroundLogo">
                   <SignIn
-                    login={this.logMeIn}
+                    login={(a, b) => this.logMeIn(a, b, refetch)}
                     moveTo={this.moveTo}
-                    error={this.state.error}
+                    error={error.networkError ? "network" : filterError(error)}
                     resetError={() => this.setState({ error: "" })}
                   />
                 </div>
@@ -203,7 +209,7 @@ class App extends React.Component<AppProps, AppState> {
                   login={this.logMeIn}
                   moveTo={this.moveTo}
                   register={this.registerMe}
-                  error={filterError(error)}
+                  error={error}
                 />
               );*/
             }
@@ -216,14 +222,11 @@ class App extends React.Component<AppProps, AppState> {
               profilepicture: string;
             }[] = [];
             if (store.has("accounts")) {
-              console.log("STORE BEFORE", store.get("accounts"));
               machineuserarray = store.get("accounts");
               const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
-              console.log("INDEX", i);
               if (i != -1) {
                 machineuserarray.splice(i, 1);
               }
-              console.log("MA", machineuserarray);
             }
             machineuserarray.push({
               email: data.me.emails[0].email,
@@ -231,7 +234,6 @@ class App extends React.Component<AppProps, AppState> {
               fullname: `${data.me.firstname} ${data.me.lastname}`,
               profilepicture: data.me.profilepicture
             });
-            console.log("MA AFTER", machineuserarray);
             store.set("accounts", machineuserarray);
 
             return (
@@ -243,18 +245,19 @@ class App extends React.Component<AppProps, AppState> {
                 moveTo={this.moveTo}
                 {...data.me}
                 employees={data.me.company.employees}
-                profilepicture={data.me.profilepicture || data.me.company.profilepicture}
+                profilepicture={data.me.profilepicture}
               />
             );
           }}
         </Query>
       );
     } else {
+      this.redeemSetupToken(() => this.forceUpdate());
       return (
         <div className="centralize backgroundLogo">
           <SignIn
             resetError={() => this.setState({ error: "" })}
-            login={this.logMeIn}
+            login={(a, b) => this.logMeIn(a, b, () => this.forceUpdate())}
             moveTo={this.moveTo}
             error={this.state.error}
           />
@@ -298,7 +301,6 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    console.log("token there", localStorage.getItem("token"));
     const { placeid, popup, page, sidebarloaded } = this.state;
     return (
       <AppContext.Provider
@@ -312,8 +314,10 @@ class App extends React.Component<AppProps, AppState> {
         }}
         className="full-size">
         {this.renderComponents()}
-        {sidebarloaded && localStorage.getItem("token") && (
-          <Query query={tutorial}>
+        {/*sidebarloaded &&
+          localStorage.getItem("token") &&
+          
+            <Query query={tutorial}>
             {({ data, loading, error }) => {
               if (error) {
                 return null;
@@ -334,7 +338,7 @@ class App extends React.Component<AppProps, AppState> {
               );
             }}
           </Query>
-        )}
+          }*/}
         {popup.show && (
           <Popup
             popupHeader={popup.header}

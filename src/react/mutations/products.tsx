@@ -37,3 +37,17 @@ export const CANCEL_PLAN = gql`
     }
   }
 `;
+
+export const CREATE_OWN_APP = gql`
+  mutation onCreateOwnApp($ssoData: SSOInput!) {
+    createOwnApp(ssoData: $ssoData) {
+      id
+    }
+  }
+`;
+
+export const REMOVE_EXTERNAL_ACCOUNT = gql`
+  mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
+    deleteLicenceAt(licenceid: $licenceid, time: $time)
+  }
+`;

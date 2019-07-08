@@ -70,7 +70,7 @@ class Invoices extends React.Component<Props, State> {
           }
 
           if (error || !fetchBills) {
-            return <ErrorComp error={filterError(error)} />;
+            return <ErrorComp error={error} />;
           }
 
           if (fetchBills.length > 0) {

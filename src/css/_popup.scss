@@ -103,12 +103,12 @@ $modal-wh: 50%;
     font-size: large;
   }
 }
+
 .popup-body-wrapper{
   overflow-y: auto;
-    max-height: 70vh;
-    width: 100%;
+  max-height: 70vh;
+  width: 100%;
 }
-
 
 .backgroundPopup{
   position: fixed;
@@ -121,9 +121,11 @@ $modal-wh: 50%;
   display: flex;
   opacity: 0;
 }
+
 .sideReplicaPopup{
   height: 100%;
 }
+
 .holderPopup{
   width: 100%;
   height: 100%;
@@ -131,9 +133,10 @@ $modal-wh: 50%;
   align-items: center;
   justify-content: center;
 }
+
 .universalPopup{
   width: 100%;
-  max-width: 60rem;
+  max-width: 71rem;
   background: white;
   box-shadow: $vipfy-lightshadow;
   border-radius: $vipfy_bigradius;
@@ -144,6 +147,7 @@ $modal-wh: 50%;
   max-height: 80vh;
   overflow: auto;
 }
+
 .closePopup{
   position: absolute;
   right: 5px;
@@ -160,20 +164,50 @@ $modal-wh: 50%;
     background-color: rgba($vipfy_mainColor, 0.15);
   }
 }
+
 .contentPopup{
   margin: 40px;
+  cursor: initial;
 }
+
 .buttonsPopup{
   display: flex;
   justify-content: flex-end;
   margin-top: 40px;
 }
 
-.autoclose{
+.autoclose {
   height: 8px;
   width: 100%;
   position: absolute;
   background-color: #20baa9;
   bottom: 0;
   left: 0;
+}
+
+.popup {
+  &-sso {
+    display: flex;
+    flex-flow: column;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 341px;
+
+    h3 {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      font-size: 16px;
+    }
+
+    .hide-sso-webview {
+      height: 0;
+      width: 0;
+      opacity: 1;
+      position: absolute;
+      overflow: hidden;
+    }
+  }
 }

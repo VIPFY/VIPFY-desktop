@@ -2,12 +2,13 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import * as moment from "moment";
+import moment = require("moment");
+import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
 
-export function showStars(stars) {
+export function showStars(stars, maxStars = 5) {
   const starsArray: JSX.Element[] = [];
   if (stars) {
-    for (let n = 0; n < 5; n++) {
+    for (let n = 0; n < maxStars; n++) {
       if (n < stars - 0.5) {
         starsArray.push(<i key={`star${n}`} className="fas fa-star" />);
       } else if (n < stars) {
@@ -18,11 +19,11 @@ export function showStars(stars) {
           </span>
         );
       } else {
-        starsArray.push(<i key={`star${n}`} className="far fa-star" />);
+        starsArray.push(<i key={`star${n}`} className="fas fa-star star-empty" />);
       }
     }
   } else {
-    starsArray.push(<div key="star0">No Reviews yet</div>);
+    starsArray.push(<div key="star">No Reviews yet</div>);
   }
   return starsArray;
 }
@@ -80,6 +81,10 @@ export function calculatepartsum(plan, useralready, usercount): number {
 }
 
 export const filterError = error => {
+  if (typeof error == "string") {
+    return error;
+  }
+
   if (error.networkError) {
     return "Sorry, something went wrong.";
   } else if (error.graphQLErrors) {
@@ -91,9 +96,10 @@ export const filterError = error => {
 
 export const AppContext = React.createContext();
 
-export const ErrorComp = ({ error }) => <div className="error-field">{error}</div>;
+export const ErrorComp = ({ error }) => <div className="error-field">{filterError(error)}</div>;
 
-export const concatName = (first, middle, last) => `${first} ${middle ? middle : ""} ${last}`;
+export const concatName = ({ firstname, middlename, lastname }) =>
+  `${firstname} ${middlename ? middlename : ""} ${lastname}`;
 
 export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Element[] => {
   let r: JSX.Element[] = [];
@@ -134,21 +140,6 @@ export const refetchQueries = async (client: ApolloClient<InMemoryCache>, querie
   });
 };
 
-export const layoutChange = (licences, dragItem, dropItem, direction) => {
-  const dragged = licences.find(licence => licence.id == dragItem);
-  const droppedOn = licences.find(licence => licence.id == dropItem);
-
-  dragged.prevLicence.nextLicence = dragged.nextLicence;
-  dragged.nextLicence.prevLicence = dragged.prevLicence;
-  dragged.prevLicence = droppedOn;
-  dragged.nextLicence = droppedOn.nextLicence;
-  droppedOn.nextLicence = dragged;
-  return [
-    { id: dragged!.id, [direction]: droppedOn![direction] },
-    { id: droppedOn!.id, [direction]: dragged![direction] }
-  ];
-};
-
 export const layoutUpdate = (licences, dragItem, dropItem) => {
   const dragged = licences.find(licence => licence.id == dragItem);
 
@@ -156,8 +147,51 @@ export const layoutUpdate = (licences, dragItem, dropItem) => {
   const index = filtered.findIndex(licence => licence.id == dropItem);
   const newLicences = [...filtered.slice(0, index + 1), dragged, ...filtered.slice(index + 1)];
   newLicences.forEach((licence, key) => {
-    licence.layoutvertical = key;
+    licence.sidebar = key;
   });
 
   return newLicences;
 };
+
+/**
+ * Filters and sorts licences
+ * @param licences {Licence[]} An array of the users licences
+ * @param property {string} The component for which it should be sorted. Like sidebar or dashboard
+ *
+ * @returns The sorted Licence Array
+ */
+export const filterAndSort = (licences, property) =>
+  licences
+    .filter(licence => {
+      if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+        return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      if (a[property] === null) {
+        return 1;
+      }
+
+      if (b[property] === null) {
+        return -1;
+      }
+
+      if (a[property] < b[property]) {
+        return -1;
+      }
+
+      if (a[property] > b[property]) {
+        return 1;
+      }
+
+      return 0;
+    });
+
+export const AppIcon = ({ app }) => (
+  <div className="app-icon-wrapper">
+    <PrintServiceSquare service={app} appidFunction={a => a} className="app-icon" />
+    <span className="app-name">{app.name}</span>
+  </div>
+);

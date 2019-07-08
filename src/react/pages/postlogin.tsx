@@ -10,6 +10,7 @@ import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import Welcome from "../pages/welcome";
 import DataNameForm from "../components/dataForms/NameForm";
+import { consentText } from "../common/constants";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -31,22 +32,22 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
             return <LoadingDiv text="Preparing Vipfy for you" />;
           }
 
-          if (error) {
+          if (error || !data) {
             return <div>There was an error</div>;
           }
 
-          // TODO: consent is nessesary for EU citizens
-          //window.smartlook("consentAPI", "Test");
-          window.smartlook("identify", data.me.id, {
-            admin: data.me.isadmin,
-            language: data.me.language
-          });
+          if (data.me && data.me.consent) {
+            window.smartlook("consentAPI", consentText);
+            window.smartlook("identify", data.me.id, {
+              admin: data.me.isadmin,
+              language: data.me.language
+            });
+          }
 
           if (!data.me.company.setupfinished) {
-            //return <Welcome {...this.props} />;
             return (
               <div className="centralize backgroundLogo">
-                <DataNameForm moveTo={() => this.props.moveTo()} />
+                <DataNameForm moveTo={this.props.moveTo} />
               </div>
             );
           }

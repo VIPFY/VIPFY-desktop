@@ -12,11 +12,12 @@ declare module "*.scss" {
 }
 
 import App from "./app";
-import client, { setLogoutFunction } from "./networkInterface";
+import client, { setLogoutFunction, setUpgradeErrorHandler } from "./networkInterface";
 import PasswordReset from "./components/signin/PasswordReset";
 import OuterErrorBoundary from "./error";
 import * as is from "electron-is";
 import { remote } from "electron";
+import UpgradeError from "./upgradeerror";
 
 class Application extends React.Component {
   implementShortCuts = e => {
@@ -68,9 +69,16 @@ class Application extends React.Component {
           <Router>
             <Switch>
               <Route exact path="/passwordreset" component={PasswordReset} />
+              <Route exact path="/upgrade-error" component={UpgradeError} />
               <Route
                 path="/"
-                render={props => <App {...props} logoutFunction={setLogoutFunction} />}
+                render={props => (
+                  <App
+                    {...props}
+                    logoutFunction={setLogoutFunction}
+                    upgradeErrorHandlerSetter={setUpgradeErrorHandler}
+                  />
+                )}
               />
             </Switch>
           </Router>

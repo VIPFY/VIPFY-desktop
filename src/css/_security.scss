@@ -1,0 +1,39 @@
+.security-table {  
+  padding: 20px 0; 
+  border-spacing: 20px 10px;
+
+  tbody {
+    tr {
+     height: 56px;
+
+      &:hover {
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
+      }
+
+      .managerSquare {
+        margin-top: 0;
+      }
+
+      .fa-star {
+        color: $vipfy-primary-color;
+      }
+
+      .star-empty {
+        color: #ccc;
+      }
+    }
+
+    td {
+      position: relative;
+    }
+
+    .error {
+      color: crimson;
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+      width: 430px;
+      text-align: right;
+    }
+  }
+}

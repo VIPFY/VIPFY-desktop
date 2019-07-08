@@ -4,14 +4,14 @@ import gql from "graphql-tag";
 import * as moment from "moment";
 import { withApollo, Query } from "react-apollo";
 import Notification from "../components/Notification";
-import { filterError, sleep, refetchQueries, AppContext } from "../common/functions";
-import { fetchLicences } from "../queries/auth";
+import { filterError, sleep, refetchQueries } from "../common/functions";
+import { fetchLicences, me } from "../queries/auth";
 import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { fetchCards } from "../queries/billing";
 import UserPicture from "../components/UserPicture";
 import PlanHolder from "../components/PlanHolder";
 import Duration from "../common/duration";
-import VoteForApp from "../popups/appVote";
+import PrintEmployeeSquare from "../components/manager/universal/squares/printEmployeeSquare";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -27,13 +27,13 @@ const NOTIFICATION_SUBSCRIPTION = gql`
 
 const FETCH_CREDIT_DATA = gql`
   {
-    fetchCredits {
-      id
-      amount
-      currency
-      spentfor
-      expires
-    }
+    # fetchCredits {
+    #   id
+    #   amount
+    #   currency
+    #   spentfor
+    #   expires
+    # }
 
     fetchCompany {
       createdate
@@ -83,6 +83,19 @@ const FETCH_CREDIT_DATA = gql`
   }
 `;
 
+const FETCH_VIPFY_PLAN = gql`
+  {
+    fetchVipfyPlan {
+      id
+      endtime
+      plan: planid {
+        id
+        name
+      }
+    }
+  }
+`;
+
 interface Props {
   chatOpen: boolean;
   firstname: string;
@@ -99,6 +112,9 @@ interface Props {
   toggleSidebar: Function;
   toggleChat: Function;
   id: number;
+  viewID: number;
+  views: any[];
+  openInstances: any[];
 }
 
 interface State {
@@ -163,7 +179,6 @@ class Navigation extends React.Component<Props, State> {
         errorPolicy: "ignore",
         fetchPolicy: "network-only"
       };
-      //console.log("refetch category", category);
       switch (category) {
         case "ownLicences":
           await client.query({
@@ -200,6 +215,13 @@ class Navigation extends React.Component<Props, State> {
             ...options
           });
           break;
+
+        case "me":
+          await client.query({
+            query: me,
+            ...options
+          });
+          break;
       }
     }
   }
@@ -218,6 +240,30 @@ class Navigation extends React.Component<Props, State> {
 
   toggleSearch = searchFocus => this.setState({ searchFocus });
 
+  backFunction() {
+    if (
+      this.props.viewID != -1 &&
+      document.querySelector(`#webview-${this.props.viewID} webview`) &&
+      document.querySelector(`#webview-${this.props.viewID} webview`)!.canGoBack()
+    ) {
+      document.querySelector(`#webview-${this.props.viewID} webview`)!.goBack();
+    } else {
+      history.back();
+    }
+  }
+
+  forwardFunction() {
+    if (
+      this.props.viewID != -1 &&
+      document.querySelector(`#webview-${this.props.viewID} webview`) &&
+      document.querySelector(`#webview-${this.props.viewID} webview`)!.canGoForward()
+    ) {
+      document.querySelector(`#webview-${this.props.viewID} webview`)!.goForward();
+    } else {
+      history.forward();
+    }
+  }
+
   render() {
     const { chatOpen, sidebarOpen, data } = this.props;
 
@@ -235,7 +281,7 @@ class Navigation extends React.Component<Props, State> {
         ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="leftNavigation">
           <span>
-            <AppContext.Consumer>
+            {/*<AppContext.Consumer>
               {({ showPopup }) => (
                 <button
                   type="button"
@@ -253,13 +299,22 @@ class Navigation extends React.Component<Props, State> {
                   </span>
                 </button>
               )}
-            </AppContext.Consumer>
+                </AppContext.Consumer>*/}
             <button
               type="button"
               className="naked-button genericButton"
-              onClick={() => history.back()}>
+              onClick={() => this.backFunction()}
+              style={{ float: "left", marginRight: "8px" }}>
               <span className="textButton" style={{ width: "unset" }}>
                 <i className="fal fa-long-arrow-left" style={{ paddingRight: "0.2em" }} />
+              </span>
+            </button>
+            <button
+              type="button"
+              className="naked-button genericButton"
+              onClick={() => this.forwardFunction()}>
+              <span className="textButton" style={{ width: "unset" }}>
+                <i className="fal fa-long-arrow-right" style={{ paddingRight: "0.2em" }} />
               </span>
             </button>
           </span>
@@ -281,7 +336,7 @@ class Navigation extends React.Component<Props, State> {
         </div>
 
         <div className="right-infos">
-          {/*<Query query={FETCH_CREDIT_DATA}>
+          <Query query={FETCH_VIPFY_PLAN}>
             {({ data, error, loading }) => {
               if (loading) {
                 return "Fetching Credits...";
@@ -292,69 +347,69 @@ class Navigation extends React.Component<Props, State> {
               }
 
               const vipfyPlan = data.fetchVipfyPlan.plan.name;
-              const { fetchCredits } = data;
-              const expiry = moment(parseInt(data.fetchCompany.createdate)).add(1, "months");
+              // TODO: [VIP-314] Reimplement credits when new structure is clear
+              // const { fetchCredits } = data;
+              const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
 
               return (
-                <AppContext.Consumer>
-                  {({ showPopup }) => (
-                    <React.Fragment>
-                      <div
-                        className="free-month"
-                        onClick={() =>
-                          showPopup({
-                            header: "Choose a Vipfy Plan",
-                            body: PlanHolder,
-                            props: {
-                              currentPlan: 125,
-                              buttonText: "Select",
-                              plans: data.fetchPlans,
-                              updateUpperState: selectedPlan => {
-                                console.log(selectedPlan);
-                                this.setState({ ...INITIALSTATE, selectedPlan, touched: true });
-                              }
-                            }
-                          })
-                        }>
-                        {moment().isAfter(expiry) ? (
-                          vipfyPlan
-                        ) : (
-                          <div>{`${moment().to(expiry, true)} left on free trial`}</div>
-                        )}
-                      </div>
-                      <div className="credits">
-                        {data.fetchCompany.promocode ? (
-                          fetchCredits && fetchCredits.amount > 0 ? (
-                            <div className="credits-holder">
-                              <span>{`${fetchCredits.amount} Vipfy ${fetchCredits.currency}`}</span>
-                              <span className="credits-holder-duration">
-                                expires{" "}
-                                <Duration timestamp={parseInt(fetchCredits.expires)} prefix="in " />
-                              </span>
-                            </div>
-                          ) : (
-                            ""
-                          )
-                        ) : (
-                          <span
-                            className="free-month"
-                            onClick={() => this.props.history.push("/area/profile")}>
-                            Use Promocode
+                <React.Fragment>
+                  <div
+                    className="free-month"
+                    // TODO: [VIP-315] Implement Logic to change VIPFY Plans
+                    // onClick={() =>
+                    //   showPopup({
+                    //     header: "Choose a Vipfy Plan",
+                    //     body: PlanHolder,
+                    //     props: {
+                    //       currentPlan: 125,
+                    //       buttonText: "Select",
+                    //       plans: data.fetchPlans,
+                    //       updateUpperState: selectedPlan => {
+                    //         this.setState({ ...INITIALSTATE, selectedPlan, touched: true });
+                    //       }
+                    //     }
+                    //   })
+                    // }
+                  >
+                    {moment().isAfter(expiry) ? (
+                      `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`
+                    ) : (
+                      <div>{`${moment().to(expiry, true)} left on ${vipfyPlan}`}</div>
+                    )}
+                  </div>
+                  {/* More credit logic */}
+                  {/* <div className="credits">
+                    {data.fetchCompany.promocode ? (
+                      fetchCredits &&
+                      fetchCredits.amount > 0 && (
+                        <div className="credits-holder">
+                          <span>{`${fetchCredits.amount} Vipfy ${fetchCredits.currency}`}</span>
+                          <span className="credits-holder-duration">
+                            expires{" "}
+                            <Duration timestamp={parseInt(fetchCredits.expires)} prefix="in " />
                           </span>
-                        )}
-                      </div>
-                    </React.Fragment>
-                  )}
-                </AppContext.Consumer>
+                        </div>
+                      )
+                    ) : (
+                      <span
+                        className="free-month"
+                        onClick={() => this.props.history.push("/area/profile")}>
+                        Use Promocode
+                      </span>
+                    )}
+                  </div> */}
+                </React.Fragment>
               );
             }}
-          </Query>*/}
-
-          <div className="credits">Free in Beta</div>
+          </Query>
 
           <div className="right-profile-holder">
             <button className="naked-button pic-and-name" onClick={() => this.goTo("profile")}>
-              <UserPicture size="right-profile-image" unitid={this.props.id} />
+              <PrintEmployeeSquare
+                employee={this.props}
+                className="right-profile-image"
+                size={32}
+              />
 
               <div className="name-holder">
                 <span className="right-profile-first-name" data-recording-sensitive>

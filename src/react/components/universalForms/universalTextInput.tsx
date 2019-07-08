@@ -1,24 +1,23 @@
 import * as React from "react";
+import UniversalButton from "../universalButtons/universalButton";
 
 interface Props {
   id: string;
+  className?: string;
   livevalue?: Function;
   endvalue?: Function;
   label?: string;
   type?: string;
+  onBlur?: Function;
   errorEvaluation?: Boolean;
-<<<<<<< HEAD
-  errorhint?: string;
-  startvalue?: string;
-  width?: string;
-  disabled?: Boolean;
-=======
   errorhint?: string | JSX.Element | null;
   startvalue?: string;
   width?: string;
   disabled?: Boolean;
+  focus?: Boolean;
   onEnter?: Function;
->>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
+  modifyValue?: Function;
+  required?: Boolean;
 }
 
 interface State {
@@ -28,6 +27,10 @@ interface State {
   eyeopen: Boolean;
   notypeing: Boolean;
   errorfaded: Boolean;
+  currentid: string;
+  context: Boolean;
+  clientX: number;
+  clientY: number;
 }
 
 class UniversalTextInput extends React.Component<Props, State> {
@@ -37,11 +40,34 @@ class UniversalTextInput extends React.Component<Props, State> {
     inputFocus: false,
     eyeopen: false,
     notypeing: true,
-    errorfaded: false
+    errorfaded: false,
+    currentid: "",
+    context: false,
+    clientX: 0,
+    clientY: 0
   };
 
+  wrapper = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener("mousedown", e => this.handleClickOutside(e));
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", e => this.handleClickOutside(e));
+  }
+
+  handleClickOutside(event) {
+    if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
+      this.setState({ context: false });
+    }
+  }
+
   componentWillReceiveProps = props => {
-    //console.log("Will Update", props);
+    if (this.props.id != "" && this.props.id != props.id) {
+      this.setState({ value: "", currentid: props.id });
+    }
+
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 
@@ -60,29 +86,43 @@ class UniversalTextInput extends React.Component<Props, State> {
   changeValue(e) {
     e.preventDefault();
     clearTimeout(this.timeout);
+    let value = e.target.value;
+
     if (this.props.livevalue) {
-      this.props.livevalue(e.target.value);
+      this.props.livevalue(value);
     }
 
-    this.setState({ value: e.target.value, notypeing: false });
-    this.timeout = setTimeout(() => this.setState({ notypeing: true }), 250);
+    if (this.props.modifyValue) {
+      value = this.props.modifyValue(value);
+    }
+
+    this.setState({ value, notypeing: false });
+    this.timeout = setTimeout(() => this.setState({ notypeing: true }), 400);
   }
 
-<<<<<<< HEAD
-=======
   handleKeyUp = e => {
     if (e.key == "Enter" && this.props.onEnter) {
       this.props.onEnter();
     }
   };
 
->>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
   render() {
+    const { clipboard } = require("electron");
     return (
       <div
-        className="universalLabelInput"
-        style={this.props.width ? { width: this.props.width } : {}}>
+        className={`universalLabelInput ${this.props.disabled ? "disabled" : ""} ${
+          this.props.className
+        }`}
+        style={this.props.width ? { width: this.props.width } : {}}
+        onContextMenu={e => {
+          e.preventDefault();
+          if (!this.props.disabled) {
+            this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
+          }
+        }}
+        ref={this.wrapper}>
         <input
+          autoFocus={this.props.focus || false}
           id={this.props.id}
           type={
             this.props.type == "password"
@@ -91,28 +131,36 @@ class UniversalTextInput extends React.Component<Props, State> {
                 : "password"
               : this.props.type || ""
           }
-          disabled={this.props.disabled}
+          disabled={this.props.disabled ? true : false}
           onFocus={() => this.toggleInput(true)}
-          onBlur={() => this.toggleInput(false)}
-<<<<<<< HEAD
-          className="cleanup universalTextInput"
-          style={
-            this.props.errorEvaluation && this.state.notypeing
-              ? { ...(this.props.width ? { width: this.props.width } : {}), color: "#e32022" }
-=======
+          onBlur={() => {
+            if (this.props.onBlur) {
+              this.props.onBlur();
+            }
+
+            this.toggleInput(false);
+          }}
           onKeyUp={e => this.handleKeyUp(e)}
-          className="cleanup universalTextInput"
-          style={
-            this.props.errorEvaluation && this.state.notypeing
+          className={
+            this.props.type != "date" ? "cleanup universalTextInput" : "universalTextInput"
+          }
+          style={{
+            ...(this.props.type == "date"
+              ? {
+                  border: "none",
+                  borderBottom: "1px solid #20baa9",
+                  fontFamily: "'Roboto', sans-serif"
+                }
+              : {}),
+            ...(this.props.errorEvaluation && this.state.notypeing
               ? {
                   ...(this.props.width ? { width: this.props.width } : {}),
                   borderBottomColor: "#e32022"
                 }
->>>>>>> b4cba30824eff9a5e5d118a69b99b5519e300fcf
               : this.props.width
               ? { width: this.props.width }
-              : {}
-          }
+              : {})
+          }}
           value={this.state.value}
           onChange={e => this.changeValue(e)}
           ref={input => {
@@ -122,7 +170,13 @@ class UniversalTextInput extends React.Component<Props, State> {
         <label
           htmlFor={this.props.id}
           className="universalLabel"
-          style={this.props.errorEvaluation && this.state.notypeing ? { color: "#e32022" } : {}}>
+          style={
+            (this.props.errorEvaluation ||
+              (this.props.required && this.state.value == "" && !this.state.inputFocus)) &&
+            this.state.notypeing
+              ? { color: "#e32022" }
+              : {}
+          }>
           {this.props.label}
         </label>
         {this.props.errorEvaluation && this.state.notypeing ? (
@@ -160,6 +214,32 @@ class UniversalTextInput extends React.Component<Props, State> {
           )
         ) : (
           ""
+        )}
+        {this.state.context && (
+          <button
+            className="cleanup contextButton"
+            onClick={() => {
+              let value = clipboard.readText();
+              if (this.props.livevalue) {
+                this.props.livevalue(value);
+              }
+
+              if (this.props.modifyValue) {
+                value = this.props.modifyValue(value);
+              }
+
+              this.setState({ value, notypeing: false, context: false });
+              this.timeout = setTimeout(() => this.setState({ notypeing: true }), 400);
+            }}
+            style={{
+              position: "fixed",
+              top: this.state.clientY,
+              left: this.state.clientX,
+              right: "auto"
+            }}>
+            <i className="fal fa-paste" />
+            <span style={{ marginLeft: "8px", fontSize: "12px" }}>Paste</span>
+          </button>
         )}
       </div>
     );

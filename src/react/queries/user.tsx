@@ -10,3 +10,33 @@ export const QUERY_USER = gql`
     }
   }
 `;
+
+export const QUERY_SEMIPUBLICUSER = gql`
+  query onFetchSemiPublicUser($unitid: ID!) {
+    fetchSemiPublicUser(unitid: $unitid) {
+      id
+      firstname
+      lastname
+      profilepicture
+      emails {
+        email
+      }
+      phones {
+        id
+        number
+        tags
+      }
+      addresses {
+        id
+        country
+        address
+        tags
+      }
+      position
+      hiredate
+      birthday
+      isadmin
+      isonline
+    }
+  }
+`;

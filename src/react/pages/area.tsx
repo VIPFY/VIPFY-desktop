@@ -31,16 +31,33 @@ import Security from "./security";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
-import AppAdmin from "./appadmin";
+import EManager from "./emanager";
+import LManager from "./lmanager";
+import DManager from "./dmanager";
+import EShower from "./eshower";
+import LShower from "./lshower";
+import DShower from "./dshower";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
 import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
+import AppAdmin from "./appadmin";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
-import {SideBarContext} from "../common/context"
-import ClickTracker from '../components/ClickTracker';
+import { SideBarContext } from "../common/context";
+import ClickTracker from "../components/ClickTracker";
+import EManagerAdmin from "./emanageradmin";
+import EShowerAdmin from "./eshoweradmin";
+import EmployeeOverview from "./manager/employeeOverview";
+import EmployeeDetails from "./manager/employeeDetails";
+import TeamOverview from "./manager/teamOverview";
+import TeamDetails from "./manager/teamDetails";
+import ServiceOverview from "./manager/serviceOverview";
+import ServiceDetails from "./manager/serviceDetails";
+import Consent from "../popups/universalPopups/Consent";
+import UniversalLogin from "./universalLogin";
+import UniversalLoginTest from "../components/admin/UniversalLoginTest";
 
 interface AreaProps {
   history: any[];
@@ -53,6 +70,7 @@ interface AreaProps {
   client: ApolloClient<InMemoryCache>;
   moveTo: Function;
   sidebarloaded: Function;
+  consent?: boolean;
 }
 
 interface AreaState {
@@ -68,6 +86,8 @@ interface AreaState {
   oldWebViews: any[];
   openInstances: any;
   activeTab: null | object;
+  adminOpen: boolean;
+  consentPopup: boolean;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -83,7 +103,9 @@ class Area extends React.Component<AreaProps, AreaState> {
     webviews: [],
     oldWebViews: [],
     openInstances: {},
-    activeTab: null
+    activeTab: null,
+    adminOpen: false,
+    consentPopup: false
   };
 
   componentDidMount = async () => {
@@ -91,7 +113,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       this.props.history.push(page);
     });
 
-    const meme = await this.props.client.query({ query: me });
+    /*const meme = await this.props.client.query({ query: me });
 
     const script = document.createElement("script");
 
@@ -116,12 +138,12 @@ class Area extends React.Component<AreaProps, AreaState> {
       this.setState({ script3 });
     };
     this.setState({ script });
-    document.head.appendChild(script);
+    document.head.appendChild(script);*/
 
-    //this.addWebview(1171);
-    //this.addWebview(1001);
-    //this.addWebview(1001);
-    //this.addWebview(1001);
+    console.log("LOG: Area -> componentDidMount -> this.props.consent", this.props.consent);
+    if (this.props.consent === null) {
+      this.setState({ consentPopup: true });
+    }
   };
 
   componentWillUnmount() {
@@ -175,6 +197,10 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   toggleChat = () => {
     this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
+  };
+
+  toggleAdmin = () => {
+    this.setState(prevState => ({ adminOpen: !prevState.adminOpen }));
   };
 
   toggleSidebar = () => {
@@ -245,6 +271,11 @@ class Area extends React.Component<AreaProps, AreaState> {
     }));
   };
 
+  /*  setInstanceUrl = (viewID: number, url: string) => {
+    const view = this.state.webviews.find(view => view.key == viewID);
+    view.view.props.forceUrl = url;
+  }; */
+
   closeInstance = (viewID: number, licenceID: number) => {
     const position = this.state.webviews.findIndex(view => view.key == viewID);
 
@@ -267,8 +298,10 @@ class Area extends React.Component<AreaProps, AreaState> {
       if (this.props.history.location.pathname.startsWith("/area/app/")) {
         this.setState(prevState => {
           if (prevState.webviews[position]) {
+            this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[position].key };
           } else if (prevState.webviews[0]) {
+            this.props.moveTo(`app/${prevState.webviews[prevState.webviews.length - 1].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[prevState.webviews.length - 1].key };
           } else {
             this.props.moveTo("dashboard");
@@ -349,9 +382,16 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
-      { path: "appadmin", component: AppAdmin },
       { path: "ssoconfig", component: SsoConfigurator },
-      { path: "ssotest", component: SsoTester }
+      { path: "ssotest", component: SsoTester },
+      { path: "emanager", component: EmployeeOverview },
+      { path: "lmanager", component: ServiceOverview },
+      { path: "dmanager", component: TeamOverview },
+      { path: "emanager/:userid", component: EmployeeDetails },
+      { path: "lmanager/:serviceid", component: ServiceDetails },
+      { path: "dmanager/:teamid", component: TeamDetails },
+      { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
+      { path: "universallogin", component: UniversalLogin }
     ];
 
     if (this.props.licences.loading) {
@@ -361,7 +401,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     return (
       <div className="area">
         <ClickTracker />
-        <SideBarContext.Provider value={this.state.sidebarOpen }>
+        <SideBarContext.Provider value={this.state.sidebarOpen}>
           <Route
             render={props => {
               if (!this.props.location.pathname.includes("advisor")) {
@@ -385,7 +425,6 @@ class Area extends React.Component<AreaProps, AreaState> {
               }
             }}
           />
-
           <Route
             render={props => {
               if (!this.props.location.pathname.includes("advisor")) {
@@ -398,6 +437,9 @@ class Area extends React.Component<AreaProps, AreaState> {
                         setApp={this.setApp}
                         toggleChat={this.toggleChat}
                         toggleSidebar={this.toggleSidebar}
+                        viewID={this.state.viewID}
+                        views={this.state.webviews}
+                        openInstances={this.state.openInstances}
                         {...this.props}
                         {...props}
                         {...res}
@@ -410,15 +452,15 @@ class Area extends React.Component<AreaProps, AreaState> {
               }
             }}
           />
-
           <Route
             exact
             path="/area/support"
             render={props => <SupportPage {...this.state} {...this.props} {...props} />}
           />
 
-          {routes.map(({ path, component, admin }) => {
+          {routes.map(({ path, component, admincomponent, admin }) => {
             const RouteComponent = component;
+            const AdminComponent = admincomponent;
 
             if (admin && this.props.company.unit.id != 14) {
               return;
@@ -436,9 +478,12 @@ class Area extends React.Component<AreaProps, AreaState> {
                         sidebarOpen && !props.location.pathname.includes("advisor")
                           ? "sidebar-open"
                           : ""
-                      }`}>
+                      }`}
+                      style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
                       <RouteComponent
                         setApp={this.setApp}
+                        toggleAdmin={this.toggleAdmin}
+                        adminOpen={this.state.adminOpen}
                         {...this.props}
                         {...props}
                         moveTo={this.moveTo}
@@ -462,7 +507,6 @@ class Area extends React.Component<AreaProps, AreaState> {
               </div>
             )}
           />
-
           <Route
             exact
             path="/area/domains/:domain"
@@ -475,6 +519,34 @@ class Area extends React.Component<AreaProps, AreaState> {
               </div>
             )}
           />
+
+          <Route
+            exact
+            path="/area/app/:licenceid"
+            render={props => {
+              console.log("PROPS", props);
+              if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
+                this.setApp(props.match.params.licenceid);
+              }
+              return "";
+            }}
+          />
+          {/*<Route
+            exact
+            path="/area/app/:licenceid/:url"
+            render={props => {
+              console.log("PROPSURL", props);
+              if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
+                this.setApp(props.match.params.licenceid);
+              }
+              this.setInstanceUrl(
+                parseInt(Object.keys(this.state.openInstances[props.match.params.licenceid])[0]),
+                props.match.params.url
+              );
+              return "";
+            }}
+          />*/}
+
           <ViewHandler
             showView={this.state.viewID}
             views={this.state.webviews}
@@ -490,7 +562,11 @@ class Area extends React.Component<AreaProps, AreaState> {
             handleDragLeave={this.handleDragLeave}
             handleClose={this.handleClose}
           />
-        </AppContext.Provider>
+
+          {this.state.consentPopup && (
+            <Consent close={() => this.setState({ consentPopup: false })} />
+          )}
+        </SideBarContext.Provider>
       </div>
     );
   }

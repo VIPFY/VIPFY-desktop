@@ -1,0 +1,158 @@
+$date-padding-top: 28px;
+$date-padding-bottom: 63px;
+$date-padding-sides: 16px;
+
+.date-picker-wrapper {
+  position: relative;
+}
+
+.date-picker {
+  width: 139px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 4px;
+  background: #F5F5F5FF;
+  padding: 4px 8px;
+  font-size: 13px;
+
+  .big-angle {
+    font-size: 25px;
+  }
+
+  &-text {
+    flex: 1;
+    margin: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &-popup {
+    cursor: auto;
+    //position: absolute;
+    //top: 43px;
+    //right: -100px;
+    //width: calc(312px - $date-padding-sides * 2);
+    //height: calc(368px - 32px - $date-padding-top - $date-padding-bottom);
+    box-shadow: 0 0 10px rgba(#000000, 0.08);
+    padding: $date-padding-top $date-padding-sides $date-padding-bottom $date-padding-sides;
+    display: flex;
+    flex-flow: column;
+    background: #ffffffff;
+    z-index: 100;
+
+    &-header {
+      display: flex;
+      margin: 0 auto 25px;
+      align-items: center;
+      position: relative;
+      
+      i {
+        cursor: pointer;
+      }
+    }
+
+    .body {
+      display: grid;
+      grid-template-columns: repeat(7, 40px);
+      grid-template-rows: repeat(7, 32px);
+
+      span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .day {
+        transition: all 300ms ease-in-out;
+        cursor: pointer;
+        position: relative;
+
+        &:hover::after {
+          content: "";
+          position: absolute;
+          height: 24px;
+          width: 24px;
+          background: #F5F5F5ff;
+          box-shadow: 0 2px 2px rgba(0, 0, 0 , 0.16);
+          border-radius: 4px;
+          z-index: -1;
+        }
+      }
+
+      .active {
+        position: relative;
+        color: #ffffff;
+     
+        &::after {
+          @extend .day:hover::after;
+          background: $vipfy-primary-color !important;
+          color: #ffffffff !important;
+          box-shadow: none !important;
+        }
+      }
+      
+
+      &-header {
+        font-weight: bold;
+      }
+
+      .gray-day {
+        @extend .day;
+        color: #A7AEB5ff;
+      }
+
+      .disabled {
+        cursor: not-allowed;
+        color: #A7AEB5ff;
+
+        &:hover::after {
+          height: 0;
+          width: 0;
+          background: #A7AEB5ff;
+          box-shadow: none;
+          border-radius: 0;
+          z-index: 0;
+        }
+      }
+
+      .universalButton {
+        position: absolute;
+        bottom: 7px;
+        right: 7px;
+        font-size: 13px;
+      }
+    }
+
+    i {
+      font-size: 20px;
+    }
+  }
+}
+
+.arrow-up {
+  position: absolute;
+  top: -80px;
+  right: 28%;
+  width: 100px;
+  height: 80px;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 20px solid #ffffff;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #ffffff;
+    transform: rotate(45deg); /* Prefixes... */
+    top: 75px;
+    left: 25px;
+    box-shadow: -1px -1px 10px -2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(#000000, 0.08);
+  }
+}

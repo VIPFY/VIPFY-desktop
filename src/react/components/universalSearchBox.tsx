@@ -2,34 +2,68 @@ import * as React from "react";
 
 interface Props {
   placeholder?: string;
-  selfitems?: {searchstring: string, id?: number}[]; // TODO
+  selfitems?: { searchstring: string; id?: number }[]; // TODO
   getValue?: Function;
   automaticclosing?: Boolean;
+  noautomaticclosing?: Boolean;
+  boxStyles?: Object;
+  resultStyles?: Object;
+  startedsearch?: Boolean;
 }
 
 interface State {
   value: string;
-  searching: boolean;
+  searching: Boolean;
+  endsearch: Boolean;
+  context: Boolean;
+  clientX: number;
+  clientY: number;
 }
 
 class UniversalSearchBox extends React.Component<Props, State> {
   state = {
     value: "",
-    searching: false
+    searching: this.props.startedsearch || false,
+    endsearch: false,
+    context: false,
+    clientX: 0,
+    clientY: 0
   };
 
-  componentWillUnmount = () => {
+  wrapper = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener("mousedown", e => this.handleClickOutside(e));
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", e => this.handleClickOutside(e));
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
-  };
+  }
+
+  handleClickOutside(event) {
+    if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
+      this.setState({ context: false });
+    }
+  }
 
   handleChange = async e => {
     e.preventDefault();
     const value = e.target.value;
-    this.setState({ value });
+    let searching = true;
+
+    if (value === "") {
+      searching = false;
+    }
+    this.setState({ value, searching, endsearch: false });
     if (this.props.getValue) {
-      this.props.getValue(value)
+      if (this.props.selfitems) {
+        this.props.getValue(null);
+      } else {
+        this.props.getValue(value);
+      }
     }
 
     //await this.props.searchFunction(value);
@@ -47,14 +81,20 @@ class UniversalSearchBox extends React.Component<Props, State> {
         e!.preventDefault();
       }
     } else {
-      if (this.props.automaticclosing || this.state.value == ""){
-      this.timeout = setTimeout(() => this.closeSearch(), 300)};
+      if (
+        !this.props.noautomaticclosing &&
+        (this.props.automaticclosing || this.state.value == "")
+      ) {
+        this.timeout = setTimeout(() => this.closeSearch(), 300);
+      }
     }
   };
 
   closeSearch = () => {
+    if (this.props.getValue) {
+      this.props.getValue(this.state.value);
+    }
     this.setState({ searching: false, value: "" });
-    if (this.props.getValue) {this.props.getValue(this.state.value)}
     this.timeout = null;
   };
 
@@ -65,59 +105,80 @@ class UniversalSearchBox extends React.Component<Props, State> {
 
   printResults = () => {
     if (this.props.selfitems) {
-    const possibleValues = [
-      "Jannis Froese",
-      "Pascal Clanget",
-      "Markus Müller",
-      "Nils Vossebein",
-      "Lisa Brödlin",
-      "Anna Reindl",
-      "Jesko Dujmovic",
-      "Osama Haroon"
-    ];
+      const possibleValues = this.props.selfitems!;
 
-    let numresults = 0;
-    let results: JSX.Element[] = [];
-    if (this.state.value != "") {
-      for (let i = 0; i < possibleValues.length; i++) {
-        if (
-          numresults < 5 &&
-          possibleValues[i].toLowerCase().includes(this.state.value.toLowerCase())
-        ) {
-          let index = possibleValues[i].toLowerCase().indexOf(this.state.value.toLowerCase());
-          results.push(
-            <div key={`searchResult-${i}`} className="searchResult">
-              <span>{possibleValues[i].substring(0, index)}</span>
-              <span className="resultHighlight">
-                {possibleValues[i].substring(index, index  this.state.value.length)}
-              </span>
-              <span>{possibleValues[i].substring(index  this.state.value.length)}</span>
-            </div>
-          );
-          numresults++;
+      let numresults = 0;
+      let results: JSX.Element[] = [];
+      if (!this.state.endsearch) {
+        for (let i = 0; i < possibleValues.length; i++) {
+          if (
+            numresults < 5 &&
+            possibleValues[i].searchstring.toLowerCase().includes(this.state.value.toLowerCase())
+          ) {
+            let index = possibleValues[i].searchstring
+              .toLowerCase()
+              .indexOf(this.state.value.toLowerCase());
+            results.push(
+              <div
+                key={`searchResult-${i}`}
+                className="searchResult"
+                onClick={() => {
+                  if (this.props.getValue) {
+                    this.props.getValue(possibleValues[i].id);
+                  }
+                  this.setState({ value: possibleValues[i].searchstring, endsearch: true });
+                }}>
+                <span>{possibleValues[i].searchstring.substring(0, index)}</span>
+                <span className="resultHighlight">
+                  {possibleValues[i].searchstring.substring(index, index + this.state.value.length)}
+                </span>
+                <span>
+                  {possibleValues[i].searchstring.substring(index + this.state.value.length)}
+                </span>
+              </div>
+            );
+            numresults++;
+          }
         }
+        return (
+          <React.Fragment>
+            <div
+              style={
+                this.props.resultStyles
+                  ? {}
+                  : { width: "355px", height: "10px", position: "relative" }
+              }
+            />
+            <div className="resultHolder" style={this.props.resultStyles}>
+              {results}
+            </div>
+          </React.Fragment>
+        );
       }
-      return (
-        <React.Fragment>
-          <div style={{ width: "355px", height: "10px", position: "relative" }} />
-          <div className="resultHolder">{results}</div>
-        </React.Fragment>
-      );
     }
-  }
-};
+  };
 
   render() {
-    const { value } = this.state;
-
+    const { clipboard } = require("electron");
     return (
       <div
         className="genericSearchHolder"
+        style={this.props.boxStyles}
         onMouseLeave={() => this.toggleSearch(false)}
-        onMouseEnter={() => (this.timeout ? this.cTimeout() : "")}>
+        onMouseEnter={() => (this.timeout ? this.cTimeout() : "")}
+        ref={this.wrapper}>
         <div className="genericSearchBox">
           <div className="searchHolder">
-            <div className="searchField" style={{ left: this.state.searching ? "0px" : "-315px" }}>
+            <div
+              className="searchField"
+              style={{ left: this.state.searching ? "0px" : "-315px" }}
+              onContextMenu={e => {
+                e.preventDefault();
+                console.log("CONTEXT", this.state, this.props);
+                if (this.state.searching) {
+                  this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
+                }
+              }}>
               <input
                 value={this.state.value}
                 onChange={input => this.handleChange(input)}
@@ -142,7 +203,31 @@ class UniversalSearchBox extends React.Component<Props, State> {
             </div>
           </div>
         </div>
-        {this.state.value != "" ? this.printResults() : ""}
+        {this.printResults()}
+        {this.state.context && (
+          <button
+            className="cleanup contextButton"
+            onClick={() => {
+              const value = clipboard.readText();
+              if (this.props.getValue) {
+                if (this.props.selfitems) {
+                  this.props.getValue(null);
+                } else {
+                  this.props.getValue(value);
+                }
+              }
+              this.setState({ value, searching: true, endsearch: false, context: false });
+            }}
+            style={{
+              position: "fixed",
+              top: this.state.clientY,
+              left: this.state.clientX,
+              right: "auto"
+            }}>
+            <i className="fal fa-paste" />
+            <span style={{ marginLeft: "8px", fontSize: "12px" }}>Paste</span>
+          </button>
+        )}
       </div>
     );
   }
