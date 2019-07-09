@@ -735,7 +735,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         )}
         {this.state.error ? (
           <Popup
-            popupHeader={"Uupps, sorry it seems that we can't look you in"}
+            popupHeader={"Uupps, sorry it seems that we can't log you in"}
             popupBody={ErrorPopup}
             bodyProps={{ sentence: this.state.error }}
             onClose={this.closePopup}
