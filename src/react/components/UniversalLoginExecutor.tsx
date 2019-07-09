@@ -93,7 +93,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     passwordEntered: false,
     unloaded: true,
     tries: 0,
-    recaptcha: false
+    recaptcha: false,
+    emailEnteredEnd: false,
+    passwordEnteredEnd: false
   };
 
   mounted = 0;
@@ -118,13 +120,16 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       passwordEntered: false,
       unloaded: true,
       tries: 0,
-      recaptcha: false
+      recaptcha: false,
+      emailEnteredEnd: false,
+      passwordEnteredEnd: false
     };
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
     }
     if (this.props.timeout) {
+      console.log("RESET");
       this.timeoutHandle = setTimeout(() => this.sendResult(this.webview, 0), this.props.timeout);
     }
     this.progress = 0;
@@ -195,7 +200,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     );
   }
 
-  isLoggedIn(w): boolean {
+  async isLoggedIn(w) {
     const l = ["signin", "login", "sign", "new", "anmelden"];
     const urlParts = ["pathname", "search", "hash", "hostname"];
     console.log("isLoggedIn", this.props.loginUrl, w.src);
@@ -211,7 +216,83 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       }
     }
 
-    return false;
+    //Check if logout button present
+
+    /*w.getWebContents().executeJavaScript(
+      `ipcRenderer = ipcRenderer || require("electron").ipcRenderer;
+      document.querySelectorAll("#team_menu_user_details").length > 0 && ipcRenderer.sendToHost("loggedInObject", null);`
+    );*/
+
+    // let returnvalue = false;
+
+    console.log("WEBCONTETNS");
+    return await w
+      .getWebContents()
+      .executeJavaScript(
+        `
+        (function() {
+          let attributes = [
+            "name",
+            "id",
+            "aria-label",
+            "aria-roledescription",
+            "placeholder",
+            "ng-model",
+            "data-ng-model",
+            "data-callback",
+            "data-name",
+            "class",
+            "value",
+            "alt",
+            "data-testid",
+            "data-test-id",
+            "href",
+            "data-event-click-target"
+          ];
+          
+          let filterDom = (includesAny, excludesAll) => {
+            includesAny = includesAny.map(i => new RegExp(i));
+            excludesAll = excludesAll.map(i => new RegExp(i));
+            return function(element) {
+              if (!element.hasAttributes()) {
+                return false;
+              }
+              if (element.scrollHeight == 0 || element.scrollWidth == 0) {
+                return false; //don't select elements that aren't visible
+              }
+              for (const attribute of attributes) {
+                const attr = element.attributes.getNamedItem(attribute);
+                if (attr == null) continue;
+                const val = attr.value.toLowerCase();
+                if (val.includesAnyRegExp(excludesAll)) {
+                  return false;
+                }
+              }
+              for (const attribute of attributes) {
+                const attr = element.attributes.getNamedItem(attribute);
+                if (attr === null) continue;
+                const val = attr.value.toLowerCase();
+                //console.log("attr", attribute, val, includesAny);
+                if (val.includesAnyRegExp(includesAny)) {
+                  return true;
+                }
+              }
+              if (includesAny.length == 0) return true;
+              return false;
+            };
+          }
+          
+          return Array.from(document.querySelectorAll("*")).filter(filterDom(["multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editAccountSetting", "navbar-profile-dropdown"],[])).length > 0
+        })();
+        `
+        //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`
+      )
+      .then(e => {
+        console.log("RETURN", e);
+        return e;
+      });
+    //console.log("RETURN ", returnvalue);
+    //return returnvalue;
   }
 
   sendResult(w, delay) {
@@ -230,20 +311,23 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     if (w) {
       setTimeout(
         () =>
-          w.getWebContents().capturePage(image => {
+          w.getWebContents().capturePage(async image => {
+            console.log("PLACE 254", this.state, this.loginState);
+            const loggedin = await this.isLoggedIn(w);
             this.props.setResult(
-              { loggedin: this.isLoggedIn(w), ...this.loginState },
+              { loggedin, ...this.loginState },
               this.props.takeScreenshot ? image.toDataURL({ scaleFactor: 0.5 }) : ""
             );
           }),
         delay
       );
     } else {
+      console.log("PLACE 263");
       setTimeout(() => this.props.setResult({ loggedin: false, ...this.loginState }, ""), delay);
     }
   }
 
-  progressCallback() {
+  async progressCallback() {
     this.progress += this.progressStep;
     this.progress = Math.min(1, this.progress);
     console.log("PROCESS CALLBACK", this.progress);
@@ -252,7 +336,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       this.loginState.emailEntered &&
       this.loginState.passwordEntered &&
       this.webview &&
-      this.isLoggedIn(this.webview)
+      (await this.isLoggedIn(this.webview))
     ) {
       this.progress = 1;
       this.sendResult(this.webview, 0);
@@ -293,6 +377,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         {
           const w = e.target;
           let text = "";
+          console.log("PROPS", this.props, e.args[0]);
           if (e.args[0] == "username") {
             text = this.props.username;
             this.loginState.emailEntered = true;
@@ -303,6 +388,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             throw new Error("unknown string");
           }
           for await (const c of text) {
+            console.log("INSIDE FOR", this.loginState);
             if (this.loginState.unloaded) {
               return;
             }
@@ -319,16 +405,29 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             await this.modifiedSleep(Math.random() * 30 + 200);
           }
           await this.modifiedSleep(500);
+          console.log("FORMFIELDFILLED");
           w.send("formFieldFilled");
+          /*if (e.args[0] == "username") {
+            //text = this.props.username;
+            this.loginState.emailEnteredEnd = true;
+          } else if (e.args[0] == "password") {
+            //text = this.props.password + "\u000d";
+            this.loginState.passwordEnteredEnd = true;
+          } else {
+            throw new Error("unknown string");
+          }*/
 
           if (this.loginState.emailEntered && this.loginState.passwordEntered) {
+            console.log("WAITED");
             this.sendResult(w, 30000);
           }
         }
         break;
       case "getLoginData":
         {
-          if (this.isLoggedIn(e.target)) {
+          if (await this.isLoggedIn(e.target)) {
+            console.log("Place 352");
+            //this.sendResult(this.webview, 0);
             return; //we are done with login
           }
           await sleep(50);
