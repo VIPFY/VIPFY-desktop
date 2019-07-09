@@ -47,8 +47,8 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
 
   render() {
     return (
-      <section className="statistics-overview">
-        <div className="header">
+      <section ref={node => (this.section = node)} className="statistics-overview">
+        <div ref={node => (this.header = node)} className="header">
           <DatePicker
             customFormat="DD MMM YY"
             value={this.state.starttime}

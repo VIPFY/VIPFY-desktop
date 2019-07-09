@@ -23,8 +23,8 @@ interface PostLoginState {}
 
 class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
   state: PostLoginState = {};
-
   render() {
+    console.log(this.props);
     return (
       <Query query={me}>
         {({ data, loading, error }) => {

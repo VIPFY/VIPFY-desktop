@@ -16,6 +16,7 @@ import PostLogin from "./pages/postlogin";
 import gql from "graphql-tag";
 import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
+import TwoFactor from "./pages/TwoFactor";
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -50,6 +51,8 @@ interface AppState {
   page: string;
   sidebarloaded: boolean;
   reshow: string | null;
+  twofactor: string | null;
+  unitid: string | null;
 }
 
 const INITIAL_POPUP = {
@@ -69,7 +72,9 @@ const INITIAL_STATE = {
   renderElements: [],
   page: "dashboard",
   sidebarloaded: false,
-  reshow: null
+  reshow: null,
+  twofactor: null,
+  unitid: null
 };
 
 const tutorial = gql`
@@ -151,19 +156,25 @@ class App extends React.Component<AppProps, AppState> {
       // Login will fail if there already is a token, which to be fair,
       // should never be the case. But never say never...
       const tokenExists = localStorage.getItem("token");
+
       if (tokenExists) {
         localStorage.removeItem("token");
       }
-      const res = await this.props.signIn({ variables: { email, password } });
-      const { ok, token } = res.data.signIn;
 
-      if (ok) {
+      const res = await this.props.signIn({ variables: { email, password } });
+      const { token, twofactor, unitid } = res.data.signIn;
+
+      if (token) {
         localStorage.setItem("token", token);
         //this.forceUpdate();
         //this.props.client.query({ query: me, fetchPolicy: "network-only", errorPolicy: "ignore" });
         refetch();
 
         return true;
+      } else if (twofactor && unitid) {
+        this.setState({ twofactor, unitid });
+      } else {
+        throw new Error("Something went wrong!");
       }
     } catch (err) {
       this.setState({ error: filterError(err) });
@@ -221,6 +232,7 @@ class App extends React.Component<AppProps, AppState> {
               fullname: string;
               profilepicture: string;
             }[] = [];
+
             if (store.has("accounts")) {
               machineuserarray = store.get("accounts");
               const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
@@ -238,6 +250,7 @@ class App extends React.Component<AppProps, AppState> {
 
             return (
               <PostLogin
+                twoFA={this.state.twofactor}
                 sidebarloaded={this.sidebarloaded}
                 setName={this.setName}
                 logMeOut={this.logMeOut}
@@ -251,6 +264,8 @@ class App extends React.Component<AppProps, AppState> {
           }}
         </Query>
       );
+    } else if (this.state.twofactor) {
+      return <TwoFactor twoFactor={this.state.twofactor} unitid={this.state.unitid} />;
     } else {
       this.redeemSetupToken(() => this.forceUpdate());
       return (
@@ -301,7 +316,8 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    const { placeid, popup, page, sidebarloaded } = this.state;
+    const { placeid, popup } = this.state;
+
     return (
       <AppContext.Provider
         value={{
