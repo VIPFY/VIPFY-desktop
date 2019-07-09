@@ -700,7 +700,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                 this.hideLoadingScreen();
               }
             }}
-            speed={10}
+            speed={1}
           />
         ) : (
           <WebView
