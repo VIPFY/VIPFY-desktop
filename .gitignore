@@ -5,4 +5,4 @@ out
 src/**/*.css
 .env
 src/react/components/admin/sites.tsx
-.ssotest.json
+ssotest.json
