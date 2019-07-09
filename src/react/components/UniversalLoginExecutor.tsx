@@ -282,7 +282,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             };
           }
           
-          return Array.from(document.querySelectorAll("*")).filter(filterDom(["multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editAccountSetting", "navbar-profile-dropdown"],[])).length > 0
+          return Array.from(document.querySelectorAll("*")).filter(filterDom(["multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editAccountSetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn"],[])).length > 0
         })();
         `
         //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`

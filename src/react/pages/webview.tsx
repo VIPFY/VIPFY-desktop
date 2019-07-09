@@ -689,7 +689,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         {this.state.options.universallogin ? (
           <UniversalLoginExecutor
             loginUrl={this.state.setUrl}
-            username={this.state.key.email}
+            username={this.state.key.email || this.state.key.username}
             password={this.state.key.password}
             timeout={60000}
             takeScreenshot={false}
