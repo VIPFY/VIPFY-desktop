@@ -85,7 +85,7 @@ class PWReset extends React.Component<Props, State> {
             </div>
 
             {this.state.confirm && (
-              <PopupBase small={true} nosidebar={true} closeable={false}>
+              <PopupBase small={true} fullmiddle={true} closeable={false}>
                 <p>If we find your email-address in our database, we will send you a reset-link.</p>
                 <UniversalButton
                   type="low"
