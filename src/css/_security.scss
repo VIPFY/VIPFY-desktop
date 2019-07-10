@@ -4,10 +4,30 @@
 
   tbody {
     tr {
-     height: 56px;
+      height: 56px;
 
-      &:hover {
+      &:not(:last-child):hover {
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
+      }
+    }
+
+    td {
+      position: relative;
+      max-width: 128px;
+      
+      &:first-child {
+        margin-top: 11px;
+        max-width: 208px;
+        
+        .name {
+          @include hide-overflowing-text;
+          padding: 8px 0 0;
+          margin-left: 45px;
+        }
+      }
+
+      &:last-child {
+        max-width: 72px;
       }
 
       .managerSquare {
@@ -21,10 +41,6 @@
       .star-empty {
         color: #ccc;
       }
-    }
-
-    td {
-      position: relative;
     }
 
     .error {

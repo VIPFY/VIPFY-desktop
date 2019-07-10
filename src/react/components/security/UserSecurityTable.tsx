@@ -52,7 +52,7 @@ const FETCH_USER_SECURITY_OVERVIEW = gql`
   }
 `;
 
-class UserSecurityTableInner extends React.Component<Props, State> {
+class UserSecurityTableInner extends React.Component<Props, {}> {
   // changeAdminStatus = async (id, bool) => {
   //   this.setState({ changeAdminStatus: id });
   //   try {
@@ -82,7 +82,7 @@ class UserSecurityTableInner extends React.Component<Props, State> {
       <table className="security-table">
         <thead>
           <tr>
-            <th colSpan={2}>Name</th>
+            <th>Name</th>
             <th>Created</th>
             <th>Last Active</th>
             <th>PW Length</th>
@@ -126,10 +126,11 @@ class UserSecurityTableInner extends React.Component<Props, State> {
         <tr key={key}>
           <td className="data-recording-sensitive">
             <PrintEmployeeSquare employee={user.unitid} />
+            <div className="name">
+              <UserName unitid={user.id} />
+            </div>
           </td>
-          <td className="data-recording-sensitive">
-            <UserName unitid={user.id} />
-          </td>
+
           <td>{moment(parseInt(user.createdate)).format("DD.MM.YYYY")}</td>
           <td>
             {user.lastactive ? (
@@ -144,15 +145,11 @@ class UserSecurityTableInner extends React.Component<Props, State> {
           </td>
           <td>
             {user.needspasswordchange ? (
-              <span style={{ fontWeight: 500, letterSpacing: "0.02em", lineHeight: "34px" }}>
-                <i className="fal fa-fingerprint" /> REQUIRED
-              </span>
+              <span style={{ lineHeight: "34px" }}>Required</span>
             ) : (
-              <UniversalButton
-                type="low"
-                onClick={() => this.forceReset([user.id])}
-                label="force"
-              />
+              <button className="naked-button" onClick={() => this.forceReset([user.id])}>
+                <span style={{ color: "#20BAA9FF" }}>Force</span>
+              </button>
             )}
           </td>
           <td>
@@ -212,6 +209,7 @@ function UserSecurityTable(props: { search: string }) {
         if (loading) {
           return <div>Loading</div>;
         }
+
         if (error) {
           return <div>Error fetching data</div>;
         }
