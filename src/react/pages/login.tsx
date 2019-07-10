@@ -1151,7 +1151,7 @@ class Login extends React.Component<Props, State> {
                     New Password:
                     <ReactPasswordStrength
                       className="passwordStrength"
-                      minLength={8}
+                      minLength={10}
                       minScore={2}
                       scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
                       tooShortWord={"too short"}
