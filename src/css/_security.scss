@@ -1,10 +1,14 @@
 .security-table {  
-  padding: 20px 0; 
+  padding: 6px 0 0; 
   border-spacing: 20px 10px;
 
   tbody {
     tr {
       height: 56px;
+
+      &:last-child {
+        height: 37px;
+      }
 
       &:not(:last-child):hover {
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
@@ -17,10 +21,10 @@
       
       &:first-child {
         margin-top: 11px;
-        max-width: 208px;
         
         .name {
           @include hide-overflowing-text;
+          max-width: 180px;
           padding: 8px 0 0;
           margin-left: 45px;
         }
