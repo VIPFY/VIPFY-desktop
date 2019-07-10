@@ -21,11 +21,17 @@ interface Props {
 }
 
 class AppCompanyChartWrapper extends React.Component<Props, State> {
-  state = {
-    starttime: "",
-    endtime: "",
-    sortBy: ""
-  };
+  constructor(props) {
+    super(props);
+    const starttime = moment("2019-01-01");
+    const endtime = moment().add("1d");
+
+    this.state = {
+      starttime,
+      endtime,
+      sortBy: ""
+    };
+  }
 
   componentDidUpdate(_, prevState) {
     const { starttime, endtime } = this.state;
@@ -53,14 +59,14 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
             customFormat="DD MMM YY"
             value={this.state.starttime}
             maxDate={this.state.endtime}
-            handleChange={value => this.setState({ starttime: value })}
+            handleChange={value => this.setState({ starttime: moment(value) })}
           />
           <i className="fal fa-minus" />
           <DatePicker
             customFormat="DD MMM YY"
             minDate={this.state.starttime}
             value={this.state.endtime}
-            handleChange={value => this.setState({ endtime: value })}
+            handleChange={value => this.setState({ endtime: moment(value) })}
           />
 
           <DropDown
@@ -71,7 +77,13 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
           />
         </div>
 
-        <Query query={FETCH_TOTAL_APP_USAGE}>
+        <Query
+          query={FETCH_TOTAL_APP_USAGE}
+          variables={{
+            starttime: this.state.starttime.toISOString(),
+            endtime: this.state.endtime.toISOString()
+          }}
+          pollInterval={1000 * 60 * 10}>
           {({ data, loading, error }) => {
             if (loading) {
               return <LoadingDiv text="Fetching data..." />;
@@ -145,14 +157,14 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
             const height = usage.length * 25 + 100;
 
             return (
-              <div style={{ maxHeight: "700px", overflowY: "scroll" }}>
+              <div className="most-used-chart">
                 <Chart
                   height={height}
+                  width="100%"
                   type="bar"
                   series={series}
                   options={{
                     chart: {
-                      background: "#ffffff",
                       toolbar: {
                         show: false
                       }
@@ -167,7 +179,7 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
                     dataLabels: {
                       enabled: false
                     },
-                    colors: ["#20BAA9"],
+                    colors: ["#1B9E90"],
                     stroke: {
                       width: 1,
                       colors: ["#e4e6e8"]
@@ -191,16 +203,10 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
                     },
                     tooltip: {
                       theme: "light",
-                      marker: {
-                        show: false
-                      },
-                      x: {
-                        show: false
-                      },
+                      marker: { show: false },
+                      x: { show: false },
                       y: {
-                        title: {
-                          formatter: () => null
-                        },
+                        title: { formatter: () => null },
                         formatter: x => `${x.toFixed(2)}%`
                       }
                     }

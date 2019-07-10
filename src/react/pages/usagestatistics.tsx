@@ -45,7 +45,7 @@ class UsageStatistics extends React.Component<Props, State> {
           />
         </div>
 
-        <Query query={FETCH_TOTAL_APP_USAGE}>
+        <Query query={FETCH_TOTAL_APP_USAGE} pollInterval={1000 * 60 * 10}>
           {({ data, loading, error }) => {
             if (loading) {
               return <div>Loading</div>;
@@ -98,7 +98,7 @@ class UsageStatistics extends React.Component<Props, State> {
                 this.state.showEyecatcher ? "fa-angle-left" : "fa-angle-down"
               }`}
             />
-            <span>Overview</span>
+            <span>Reports</span>
           </div>
           <div className={`inside ${this.state.showEyecatcher ? "in" : "out"}`}>
             <AppUsageComanywideChart search={this.state.searchString} {...this.props} />
@@ -112,7 +112,7 @@ class UsageStatistics extends React.Component<Props, State> {
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
               }`}
             />
-            <span>Teams</span>
+            <span>Details</span>
           </div>
 
           <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>

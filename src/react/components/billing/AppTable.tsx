@@ -9,6 +9,7 @@ import IconButton from "../../common/IconButton";
 import LoadingDiv from "../LoadingDiv";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
+import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
 
 const REACTIVATE_PLAN = gql`
   mutation onReactivatePlan($planid: ID!) {
@@ -107,20 +108,14 @@ class AppListInner extends React.Component<Props, State> {
     }
 
     return (
-      <table style={{ width: "100%", textAlign: "left" }}>
+      <table className="details-table">
         <thead>
           <tr>
-            <th>App Name</th>
-            {/*<th>Plan Name</th>*/}
+            <th>App</th>
             <th>Team Name</th>
-            <th>
-              Licences
-              <br />
-              Used
-            </th>
-            <th>Time Spend this Month</th>
-            {/*<th>Price per Month</th>
-            <th>Runs Until</th>*/}
+            <th>Total Licences</th>
+            <th>Used Licences</th>
+            <th>Time Spent/Month</th>
             <th />
           </tr>
         </thead>
@@ -170,26 +165,18 @@ class AppListInner extends React.Component<Props, State> {
 
         return (
           <tr key={key}>
-            <td>{appName}</td>
-            {/*<td>{planName}</td>*/}
-            <td>{boughtplan.alias}</td>
             <td>
-              <sup>{licencesused}</sup>/<sub>{licencestotal}</sub>
-            </td>
-            <td>{totalDur}</td>
-            {/*<td>${boughtplan.totalprice}</td>
-              <td>{endSat}</td>*/}
-            <td className="naked-button-holder">
-              <IconButton
-                icon="tachometer-alt-slow"
-                title="show details"
-                onClick={() =>
-                  this.props.history.push({
-                    pathname: `/area/usage/boughtplan/${boughtplan.id}`,
-                    state: { name: alias || appName }
-                  })
-                }
+              <PrintServiceSquare
+                service={boughtplan}
+                appidFunction={boughtplan => boughtplan.planid.appid}
               />
+              <span>{appName}</span>
+            </td>
+            <td>{boughtplan.alias}</td>
+            <td>{licencestotal}</td>
+            <td>{licencesused}</td>
+            <td>{totalDur}</td>
+            <td align="right" className="naked-button-holder">
               {/* Not needed till the Launch of the Marketplace */}
               {/* <button
                   disabled={options && options.external}
@@ -236,8 +223,21 @@ class AppListInner extends React.Component<Props, State> {
                 </Mutation> */}
               <IconButton
                 title="Delete"
+                className="editButtons"
                 onClick={() => this.setState({ showDeletion: key })}
                 icon="trash-alt"
+              />
+
+              <IconButton
+                icon="external-link-alt"
+                title="show details"
+                className="editButtons"
+                onClick={() =>
+                  this.props.history.push({
+                    pathname: `/area/usage/boughtplan/${boughtplan.id}`,
+                    state: { name: alias || appName }
+                  })
+                }
               />
 
               {this.state.showDeletion == key && (
@@ -296,7 +296,7 @@ export default props => (
       }
 
       return (
-        <div style={{ padding: "20px" }}>
+        <div style={{ maxHeight: "415px", overflowY: "auto" }}>
           <AppListInner {...props} data={data} />
         </div>
       );
