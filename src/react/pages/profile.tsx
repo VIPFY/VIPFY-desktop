@@ -15,7 +15,7 @@ interface Props {
 export default (props: Props) => (
   <div id="profile-page">
     <PersonalData id={props.id} />
-    {props.isadmin ? <CompanyData id={props.id} /> : ""}
+    {props.isadmin && <CompanyData id={props.id} />}
     <AppList licences={props.licences.fetchLicences} setApp={props.setApp} />
   </div>
 );

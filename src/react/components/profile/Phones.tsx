@@ -7,6 +7,7 @@ import GenericInputForm from "../GenericInputForm";
 import LoadingDiv from "../LoadingDiv";
 import { filterError, ErrorComp } from "../../common/functions";
 import PopupPhone from "../../popups/popupPhones";
+import Collapsible from "../../common/Collapsible";
 
 const CREATE_PHONE = gql`
   mutation onCreatePhone($phoneData: PhoneInput!, $department: Boolean) {
@@ -65,7 +66,6 @@ interface Props {
 }
 
 interface State {
-  show: boolean;
   edit: number;
   error: string;
   variables: { company: boolean };
@@ -77,7 +77,6 @@ interface State {
 
 class Phones extends React.Component<Props, State> {
   state = {
-    show: true,
     edit: -1,
     error: "",
     variables: {
@@ -89,13 +88,13 @@ class Phones extends React.Component<Props, State> {
     oldPhone: null
   };
 
+  tableRef = React.createRef<HTMLTextAreaElement>();
+
   componentDidMount() {
     if (this.props.company) {
       this.setState({ variables: { company: true } });
     }
   }
-
-  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
   showCreation = () => {
     const creationPopup = {
@@ -220,80 +219,69 @@ class Phones extends React.Component<Props, State> {
     const phoneHeaders = ["Number", "Description", /*"Priority", "Verified",*/ ""];
 
     return (
-      <div className={this.props.inner ? "genericInsideHolder" : "genericHolder"}>
-        <div className="header" onClick={this.toggle}>
-          <i
-            className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
-            //onClick={this.toggle}
-          />
-          <span>Phones</span>
-        </div>
+      <Collapsible child={this.tableRef} title="Phones">
+        <div className="inside-padding" ref={this.tableRef}>
+          <Query query={FETCH_PHONES} variables={this.state.variables}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <LoadingDiv text="Fetching Phones..." />;
+              }
 
-        <div className={`inside ${this.state.show ? "in" : "out"}`}>
-          <div className="inside-padding">
-            <Query query={FETCH_PHONES} variables={this.state.variables}>
-              {({ data, loading, error }) => {
-                if (loading) {
-                  return <LoadingDiv text="Fetching Phones..." />;
-                }
+              if (error) {
+                return filterError(error);
+              }
 
-                if (error) {
-                  return filterError(error);
-                }
-
-                return data.fetchPhones.length > 0 ? (
-                  <table>
-                    <thead className="addresses-header">
-                      <tr>
-                        {phoneHeaders.map(header => (
-                          <th key={header}>{header}</th>
-                        ))}
-                        <th />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.fetchPhones.map(({ tags, id, __typename, ...phoneData }) => {
-                        const normalizedTags =
-                          tags && tags.length > 0
-                            ? tags.map((tag, key) => (
-                                <td key={key}>
-                                  <i
-                                    className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`}
-                                  />
-                                  {tag}
-                                </td>
-                              ))
-                            : "";
-                        //console.log(phoneData);
-                        return (
-                          <tr className="phones-list" key={id}>
-                            {this.state.edit != id ? (
-                              <React.Fragment>
-                                <td>{phoneData.number}</td>
-                                <td>{phoneData.description}</td>
-                              </React.Fragment>
-                            ) : (
-                              <form
-                                className="inline-form"
-                                id={`phone-form-${id}`}
-                                onSubmit={e => this.editPhone(e, id)}>
-                                <td>
-                                  <input
-                                    type="text"
-                                    name="number"
-                                    className="inline-searchbar"
-                                    defaultValue={phoneData.number}
-                                  />
-                                </td>
-                                <td>
-                                  <input
-                                    type="text"
-                                    name="description"
-                                    className="inline-searchbar"
-                                    defaultValue={phoneData.description}
-                                  />
-                                </td>
-                                {/*<td>
+              return data.fetchPhones.length > 0 ? (
+                <table>
+                  <thead className="addresses-header">
+                    <tr>
+                      {phoneHeaders.map(header => (
+                        <th key={header}>{header}</th>
+                      ))}
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.fetchPhones.map(({ tags, id, __typename, ...phoneData }) => {
+                      const normalizedTags =
+                        tags && tags.length > 0
+                          ? tags.map((tag, key) => (
+                              <td key={key}>
+                                <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
+                                {tag}
+                              </td>
+                            ))
+                          : "";
+                      //console.log(phoneData);
+                      return (
+                        <tr className="phones-list" key={id}>
+                          {this.state.edit != id ? (
+                            <React.Fragment>
+                              <td>{phoneData.number}</td>
+                              <td>{phoneData.description}</td>
+                            </React.Fragment>
+                          ) : (
+                            <form
+                              className="inline-form"
+                              id={`phone-form-${id}`}
+                              onSubmit={e => this.editPhone(e, id)}>
+                              <td>
+                                <input
+                                  type="text"
+                                  name="number"
+                                  className="inline-searchbar"
+                                  defaultValue={phoneData.number}
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  name="description"
+                                  className="inline-searchbar"
+                                  defaultValue={phoneData.description}
+                                />
+                              </td>
+                              {/*<td>
                                   <input
                                     name="priority"
                                     type="number"
@@ -324,104 +312,92 @@ class Phones extends React.Component<Props, State> {
                                     />
                                   </div>
                                 </td>*/}
-                              </form>
-                            )}
-                            {this.state.edit == id ? (
-                              <React.Fragment>
-                                <td>
-                                  <button
-                                    className="naked-button"
-                                    type="submit"
-                                    form={`phone-form-${id}`}>
-                                    <i className="fa fa-check" />
-                                  </button>
-                                </td>
-                                <td>
-                                  <i
-                                    onClick={() => this.setState({ edit: -1 })}
-                                    className="fa fa-times"
-                                  />
-                                </td>
-                              </React.Fragment>
-                            ) : (
-                              <React.Fragment>
-                                <td className="editButton">
-                                  <i
-                                    onClick={() =>
-                                      /*this.showDeletion(id)*/ this.setState({
-                                        delete: true,
-                                        oldPhone: {
-                                          number: phoneData.number,
-                                          description: phoneData.description,
-                                          id: id
-                                        }
-                                      })
-                                    }
-                                    className="fal fa-trash-alt"
-                                  />
-                                </td>
-                                <td className="editButton">
-                                  <i
-                                    onClick={() =>
-                                      /*this.setState({ edit: id })*/ this.setState({
-                                        update: true,
-                                        oldPhone: {
-                                          number: phoneData.number,
-                                          description: phoneData.description,
-                                          id: id
-                                        }
-                                      })
-                                    }
-                                    className="fal fa-edit"
-                                  />
-                                </td>
-                              </React.Fragment>
-                            )}
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                ) : (
-                  ""
-                );
-              }}
-            </Query>
+                            </form>
+                          )}
+                          {this.state.edit == id ? (
+                            <React.Fragment>
+                              <td>
+                                <button
+                                  className="naked-button"
+                                  type="submit"
+                                  form={`phone-form-${id}`}>
+                                  <i className="fa fa-check" />
+                                </button>
+                              </td>
+                              <td>
+                                <i
+                                  onClick={() => this.setState({ edit: -1 })}
+                                  className="fa fa-times"
+                                />
+                              </td>
+                            </React.Fragment>
+                          ) : (
+                            <React.Fragment>
+                              <td className="editButton">
+                                <i
+                                  onClick={() =>
+                                    /*this.showDeletion(id)*/ this.setState({
+                                      delete: true,
+                                      oldPhone: {
+                                        number: phoneData.number,
+                                        description: phoneData.description,
+                                        id: id
+                                      }
+                                    })
+                                  }
+                                  className="fal fa-trash-alt"
+                                />
+                              </td>
+                              <td className="editButton">
+                                <i
+                                  onClick={() =>
+                                    /*this.setState({ edit: id })*/ this.setState({
+                                      update: true,
+                                      oldPhone: {
+                                        number: phoneData.number,
+                                        description: phoneData.description,
+                                        id: id
+                                      }
+                                    })
+                                  }
+                                  className="fal fa-edit"
+                                />
+                              </td>
+                            </React.Fragment>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              ) : (
+                ""
+              );
+            }}
+          </Query>
 
-            <button
-              className="naked-button genericButton"
-              onClick={
-                /*this.showCreation*/
-                () => this.setState({ createNew: true })
-              }>
-              <span className="textButton">+</span>
-              <span className="textButtonBeside">Add Phone</span>
-            </button>
-            {this.state.createNew ? (
-              <PopupPhone close={() => this.setState({ createNew: false })} />
-            ) : (
-              ""
-            )}
-            {this.state.update ? (
-              <PopupPhone
-                close={() => this.setState({ update: false })}
-                oldvalues={this.state.oldPhone}
-              />
-            ) : (
-              ""
-            )}
-            {this.state.delete ? (
-              <PopupPhone
-                close={() => this.setState({ delete: false })}
-                delete={true}
-                oldvalues={this.state.oldPhone}
-              />
-            ) : (
-              ""
-            )}
-          </div>
+          <button
+            className="naked-button genericButton"
+            onClick={() => this.setState({ createNew: true })}>
+            <span className="textButton">+</span>
+            <span className="textButtonBeside">Add Phone</span>
+          </button>
+          {this.state.createNew && <PopupPhone close={() => this.setState({ createNew: false })} />}
+          {this.state.update && (
+            <PopupPhone
+              close={() => this.setState({ update: false })}
+              oldvalues={this.state.oldPhone}
+            />
+          )}
+          {this.state.delete && (
+            <PopupPhone
+              close={() => this.setState({ delete: false })}
+              delete={true}
+              oldvalues={this.state.oldPhone}
+            />
+          )}
         </div>
-      </div>
+      </Collapsible>
     );
   }
 }

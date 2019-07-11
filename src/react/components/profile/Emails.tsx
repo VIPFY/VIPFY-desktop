@@ -4,11 +4,10 @@ import { Query, compose, graphql } from "react-apollo";
 
 import Confirmation from "../../popups/Confirmation";
 import GenericInputForm from "../GenericInputForm";
-import CoolCheckbox from "../CoolCheckbox";
 import LoadingDiv from "../LoadingDiv";
 import { filterError, ErrorComp } from "../../common/functions";
-import { filter } from "async";
 import PopupEmail from "../../popups/popupEmails";
+import Collapsible from "../../common/Collapsible";
 
 const CREATE_EMAIL = gql`
   mutation onCreateEmail($emailData: EmailInput!, $company: Boolean, $tags: [String]) {
@@ -60,7 +59,6 @@ interface Props {
 }
 
 interface State {
-  show: boolean;
   edit: number;
   error: string;
   variables: { company: boolean };
@@ -72,7 +70,6 @@ interface State {
 
 class Emails extends React.Component<Props, State> {
   state = {
-    show: true,
     edit: -1,
     error: "",
     variables: {
@@ -84,13 +81,13 @@ class Emails extends React.Component<Props, State> {
     oldEmail: null
   };
 
+  emailRef = React.createRef<HTMLTextAreaElement>();
+
   componentDidMount() {
     if (this.props.company) {
       this.setState({ variables: { company: true } });
     }
   }
-
-  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
   showCreation = () => {
     const creationPopup = {
@@ -235,70 +232,64 @@ class Emails extends React.Component<Props, State> {
     const emailHeaders = ["Email", "Description", /*"Priority", "Verified",*/ ""];
 
     return (
-      <div className={this.props.inner ? "genericInsideHolder" : "genericHolder"}>
-        <div className="header" onClick={this.toggle}>
-          <i className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`} />
-          <span>Emails</span>
-        </div>
+      <Collapsible title="Emails" child={this.emailRef}>
+        <div ref={this.emailRef} className="inside-padding">
+          <Query query={FETCH_EMAILS} variables={this.state.variables}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <LoadingDiv text="Fetching Email Addresses..." />;
+              }
 
-        <div className={`inside ${this.state.show ? "in" : "out"}`}>
-          <div className="inside-padding">
-            <Query query={FETCH_EMAILS} variables={this.state.variables}>
-              {({ data, loading, error }) => {
-                if (loading) {
-                  return <LoadingDiv text="Fetching Email Addresses..." />;
-                }
+              if (error) {
+                return filterError(error);
+              }
 
-                if (error) {
-                  return filterError(error);
-                }
+              if (data.fetchEmails.length > 0) {
+                return (
+                  <table>
+                    <thead className="addresses-header">
+                      <tr>
+                        {emailHeaders.map(header => (
+                          <th key={header}>{header}</th>
+                        ))}
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.fetchEmails.map(({ tags, __typename, ...emailData }, key) => {
+                        // const normalizedTags =
+                        //   tags && tags.length > 0
+                        //     ? tags.map((tag, key) => (
+                        //         <td key={key}>
+                        //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
+                        //           {tag}
+                        //         </td>
+                        //       ))
+                        //     : "";
 
-                if (data.fetchEmails.length > 0) {
-                  return (
-                    <table>
-                      <thead className="addresses-header">
-                        <tr>
-                          {emailHeaders.map(header => (
-                            <th key={header}>{header}</th>
-                          ))}
-                          <th />
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {data.fetchEmails.map(({ tags, __typename, ...emailData }, key) => {
-                          // const normalizedTags =
-                          //   tags && tags.length > 0
-                          //     ? tags.map((tag, key) => (
-                          //         <td key={key}>
-                          //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
-                          //           {tag}
-                          //         </td>
-                          //       ))
-                          //     : "";
+                        return (
+                          <tr className="phones-list" key={key}>
+                            {this.state.edit != key ? (
+                              <React.Fragment>
+                                <td>{emailData.email}</td>
+                                <td>{emailData.description}</td>
+                              </React.Fragment>
+                            ) : (
+                              <form
+                                className="inline-form"
+                                id={`email-form-${key}`}
+                                onSubmit={e => this.editEmail(e, emailData.email)}>
+                                <td>{emailData.email}</td>
 
-                          return (
-                            <tr className="phones-list" key={key}>
-                              {this.state.edit != key ? (
-                                <React.Fragment>
-                                  <td>{emailData.email}</td>
-                                  <td>{emailData.description}</td>
-                                </React.Fragment>
-                              ) : (
-                                <form
-                                  className="inline-form"
-                                  id={`email-form-${key}`}
-                                  onSubmit={e => this.editEmail(e, emailData.email)}>
-                                  <td>{emailData.email}</td>
-
-                                  <td>
-                                    <input
-                                      type="text"
-                                      name="description"
-                                      className="inline-searchbar"
-                                      defaultValue={emailData.description}
-                                    />
-                                  </td>
-                                  {/*<td>
+                                <td>
+                                  <input
+                                    type="text"
+                                    name="description"
+                                    className="inline-searchbar"
+                                    defaultValue={emailData.description}
+                                  />
+                                </td>
+                                {/*<td>
                                   <input
                                     name="priority"
                                     type="number"
@@ -329,98 +320,95 @@ class Emails extends React.Component<Props, State> {
                                     />
                                   </div>
                                 </td>*/}
-                                </form>
-                              )}
-                              {tags && tags.find(tag => tag == "company") ? (
-                                this.state.edit == key ? (
-                                  <React.Fragment>
-                                    <td>
-                                      <button
-                                        className="naked-button"
-                                        type="submit"
-                                        form={`email-form-${key}`}>
-                                        <i className="fa fa-check" />
-                                      </button>
-                                    </td>
-                                    <td>
-                                      <i
-                                        onClick={() => this.setState({ edit: -1 })}
-                                        className="fa fa-times"
-                                      />
-                                    </td>
-                                  </React.Fragment>
-                                ) : (
-                                  <React.Fragment>
-                                    <td className="editButton">
-                                      <i
-                                        onClick={() =>
-                                          /*this.showDeletion(emailData.email)*/ this.setState({
-                                            delete: true,
-                                            oldEmail: {
-                                              email: emailData.email,
-                                              description: emailData.description
-                                            }
-                                          })
-                                        }
-                                        className="fal fa-trash-alt"
-                                      />
-                                    </td>
-                                    <td className="editButton">
-                                      <i
-                                        onClick={() =>
-                                          this.setState({
-                                            update: true,
-                                            oldEmail: {
-                                              email: emailData.email,
-                                              description: emailData.description
-                                            }
-                                          })
-                                        }
-                                        className="fal fa-edit"
-                                      />
-                                    </td>
-                                  </React.Fragment>
-                                )
+                              </form>
+                            )}
+                            {tags && tags.find(tag => tag == "company") ? (
+                              this.state.edit == key ? (
+                                <React.Fragment>
+                                  <td>
+                                    <button
+                                      className="naked-button"
+                                      type="submit"
+                                      form={`email-form-${key}`}>
+                                      <i className="fa fa-check" />
+                                    </button>
+                                  </td>
+                                  <td>
+                                    <i
+                                      onClick={() => this.setState({ edit: -1 })}
+                                      className="fa fa-times"
+                                    />
+                                  </td>
+                                </React.Fragment>
                               ) : (
-                                ""
-                              )}
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  );
-                } else {
-                  return "No emails yet";
-                }
-              }}
-            </Query>
-            <button
-              type="button"
-              className="naked-button genericButton"
-              onClick={/*this.showCreation*/ () => this.setState({ createNew: true })}>
-              <span className="textButton">+</span>
-              <span className="textButtonBeside">Add Email</span>
-            </button>
-            {this.state.createNew && (
-              <PopupEmail close={() => this.setState({ createNew: false })} />
-            )}
-            {this.state.update && (
-              <PopupEmail
-                close={() => this.setState({ update: false })}
-                oldvalues={this.state.oldEmail}
-              />
-            )}
-            {this.state.delete && (
-              <PopupEmail
-                close={() => this.setState({ delete: false })}
-                delete={true}
-                oldvalues={this.state.oldEmail}
-              />
-            )}
-          </div>
+                                <React.Fragment>
+                                  <td className="editButton">
+                                    <i
+                                      onClick={() =>
+                                        /*this.showDeletion(emailData.email)*/ this.setState({
+                                          delete: true,
+                                          oldEmail: {
+                                            email: emailData.email,
+                                            description: emailData.description
+                                          }
+                                        })
+                                      }
+                                      className="fal fa-trash-alt"
+                                    />
+                                  </td>
+                                  <td className="editButton">
+                                    <i
+                                      onClick={() =>
+                                        this.setState({
+                                          update: true,
+                                          oldEmail: {
+                                            email: emailData.email,
+                                            description: emailData.description
+                                          }
+                                        })
+                                      }
+                                      className="fal fa-edit"
+                                    />
+                                  </td>
+                                </React.Fragment>
+                              )
+                            ) : (
+                              ""
+                            )}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                );
+              } else {
+                return "No emails yet";
+              }
+            }}
+          </Query>
+          <button
+            type="button"
+            className="naked-button genericButton"
+            onClick={/*this.showCreation*/ () => this.setState({ createNew: true })}>
+            <span className="textButton">+</span>
+            <span className="textButtonBeside">Add Email</span>
+          </button>
+          {this.state.createNew && <PopupEmail close={() => this.setState({ createNew: false })} />}
+          {this.state.update && (
+            <PopupEmail
+              close={() => this.setState({ update: false })}
+              oldvalues={this.state.oldEmail}
+            />
+          )}
+          {this.state.delete && (
+            <PopupEmail
+              close={() => this.setState({ delete: false })}
+              delete={true}
+              oldvalues={this.state.oldEmail}
+            />
+          )}
         </div>
-      </div>
+      </Collapsible>
     );
   }
 }
