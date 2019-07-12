@@ -40,6 +40,7 @@ const FETCH_USER_SECURITY_OVERVIEW = gql`
         lastname
         isadmin
         profilepicture
+        companyban
       }
       lastactive
       needspasswordchange
@@ -53,19 +54,6 @@ const FETCH_USER_SECURITY_OVERVIEW = gql`
 `;
 
 class UserSecurityTableInner extends React.Component<Props, {}> {
-  // changeAdminStatus = async (id, bool) => {
-  //   this.setState({ changeAdminStatus: id });
-  //   try {
-  //     await this.props.changeAdminStatus({
-  //       variables: { id, bool }
-  //       // refetchQueries: [{ query: FETCHUSERSECURITYOVERVIEW }]
-  //     });
-  //     this.setState({ changeAdminStatus: 0 });
-  //   } catch (err) {
-  //     console.log("Change Admin Status not possible");
-  //   }
-  // };
-
   forceReset = async userids => {
     try {
       await this.props.forcePasswordChange({

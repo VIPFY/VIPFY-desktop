@@ -12,6 +12,7 @@ import { addressFields } from "../../common/constants";
 import { CREATE_ADDRESS } from "../../mutations/contact";
 import { FETCH_ADDRESSES } from "../../queries/contact";
 import PopupAddress from "../../popups/popupAddress";
+import Collapsible from "../../common/Collapsible";
 
 const UPDATE_ADDRESS = gql`
   mutation onUpdateAddress($address: AddressInput!, $id: ID!) {
@@ -45,7 +46,6 @@ interface Props {
 }
 
 interface State {
-  show: boolean;
   edit: number;
   error: string;
   variables: {
@@ -66,7 +66,6 @@ interface State {
 
 class Addresses extends React.Component<Props, State> {
   state = {
-    show: true,
     edit: -1,
     error: "",
     variables: {
@@ -78,6 +77,8 @@ class Addresses extends React.Component<Props, State> {
     delete: false
   };
 
+  addressesRef = React.createRef<HTMLTextAreaElement>();
+
   componentDidMount() {
     if (this.props.company) {
       this.setState({ variables: { company: true } });
@@ -87,8 +88,6 @@ class Addresses extends React.Component<Props, State> {
       this.setState(prevState => ({ variables: { ...prevState.variables, tag: this.props.tag } }));
     }
   }
-
-  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
   showCreation = showPopup => {
     const creationPopup = {
@@ -188,123 +187,108 @@ class Addresses extends React.Component<Props, State> {
     return (
       <AppContext.Consumer>
         {({ showPopup }) => (
-          <div className={this.props.inner ? "genericInsideHolder" : "genericHolder"}>
-            <div className="header" onClick={this.toggle}>
-              <i
-                className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
-                //onClick={this.toggle}
-              />
-              <span>Addresses</span>
-            </div>
-            <div
-              className={`inside ${this.state.show ? "in" : "out"}`}
-              /*style={
-                this.props.tag === "billing" && this.state.show
-                  ? { padding: "20px" }
-                  : { padding: "0px 20px" }
-              }*/
-            >
-              <div className="inside-padding">
-                <Query
-                  pollInterval={60 * 10 * 1000 + 100}
-                  query={FETCH_ADDRESSES}
-                  variables={this.state.variables}>
-                  {({ data, loading, error }) => {
-                    if (loading) {
-                      return <LoadingDiv text="Fetching Addresses..." />;
-                    }
+          <Collapsible title="Addresses" child={this.addressesRef}>
+            <div ref={this.addressesRef} className="inside-padding">
+              <Query
+                pollInterval={60 * 10 * 1000 + 100}
+                query={FETCH_ADDRESSES}
+                variables={this.state.variables}>
+                {({ data, loading, error }) => {
+                  if (loading) {
+                    return <LoadingDiv text="Fetching Addresses..." />;
+                  }
 
-                    if (error) {
-                      return filterError(error);
-                    }
+                  if (error) {
+                    return filterError(error);
+                  }
 
-                    return data.fetchAddresses.length > 0 ? (
-                      <table style={{ width: "100%", marginBottom: "20px" }}>
-                        <thead className="addresses-header">
-                          <tr>
-                            {addressHeaders.map(header => (
-                              <th key={header}>{header}</th>
-                            ))}
-                            <th />
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {data.fetchAddresses.map(
-                            ({ address, description, country, priority, tags, id }) => {
-                              let { street, zip, city } = address;
-                              // const normalizedTags =
-                              //   tags && tags.length > 0
-                              //     ? tags.map((tag, key) => (
-                              //         <span key={key}>
-                              //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
-                              //           {tag}
-                              //         </span>
-                              //       ))
-                              //     : "";
+                  return data.fetchAddresses.length > 0 ? (
+                    <table style={{ width: "100%", marginBottom: "20px" }}>
+                      <thead className="addresses-header">
+                        <tr>
+                          {addressHeaders.map(header => (
+                            <th key={header}>{header}</th>
+                          ))}
+                          <th />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {data.fetchAddresses.map(
+                          ({ address, description, country, priority, tags, id }) => {
+                            let { street, zip, city } = address;
+                            // const normalizedTags =
+                            //   tags && tags.length > 0
+                            //     ? tags.map((tag, key) => (
+                            //         <span key={key}>
+                            //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
+                            //           {tag}
+                            //         </span>
+                            //       ))
+                            //     : "";
 
-                              return (
-                                <tr className="addresses-list" key={id}>
-                                  {this.state.edit != id ? (
-                                    <React.Fragment>
-                                      <td>{street ? street : "not set"}</td>
-                                      <td>{zip ? zip : "not set"}</td>
-                                      <td>{city ? city : "not set"}</td>
-                                      <td>{country}</td>
-                                      <td>{description ? description : "not set"}</td>
-                                      {/*<td>{priority}</td>*/}
-                                      {/* <span className="tags">{normalizedTags}</span> */}
-                                    </React.Fragment>
-                                  ) : (
-                                    <form
-                                      className="inline-form"
-                                      id={`address-form-${id}`}
-                                      onSubmit={e => this.editAddress(e, id, showPopup)}>
-                                      <td>
-                                        <input
-                                          type="text"
-                                          name="street"
-                                          className="inline-searchbar"
-                                          defaultValue={street}
-                                        />
-                                      </td>
-                                      <td>
-                                        <input
-                                          name="zip"
-                                          type="text"
-                                          className="inline-searchbar"
-                                          defaultValue={zip ? zip : "not set"}
-                                        />
-                                      </td>
-                                      <td>
-                                        <input
-                                          type="text"
-                                          name="city"
-                                          className="inline-searchbar"
-                                          defaultValue={city}
-                                        />
-                                      </td>
-                                      <td>
-                                        <select
-                                          name="country"
-                                          className="inline-dropdown"
-                                          defaultValue={country}>
-                                          <option value=""> </option>
-                                          {["DE", "US", "JP", "FR", "PL"].map(tag => (
-                                            <option key={tag} value={tag}>
-                                              {tag}
-                                            </option>
-                                          ))}
-                                        </select>
-                                      </td>
-                                      <td>
-                                        <input
-                                          type="text"
-                                          name="description"
-                                          className="inline-searchbar"
-                                          defaultValue={description}
-                                        />
-                                      </td>
-                                      {/*<td>
+                            return (
+                              <tr className="addresses-list" key={id}>
+                                {this.state.edit != id ? (
+                                  <React.Fragment>
+                                    <td>{street ? street : "not set"}</td>
+                                    <td>{zip ? zip : "not set"}</td>
+                                    <td>{city ? city : "not set"}</td>
+                                    <td>{country}</td>
+                                    <td>{description ? description : "not set"}</td>
+                                    {/*<td>{priority}</td>*/}
+                                    {/* <span className="tags">{normalizedTags}</span> */}
+                                  </React.Fragment>
+                                ) : (
+                                  <form
+                                    className="inline-form"
+                                    id={`address-form-${id}`}
+                                    onSubmit={e => this.editAddress(e, id, showPopup)}>
+                                    <td>
+                                      <input
+                                        type="text"
+                                        name="street"
+                                        className="inline-searchbar"
+                                        defaultValue={street}
+                                      />
+                                    </td>
+                                    <td>
+                                      <input
+                                        name="zip"
+                                        type="text"
+                                        className="inline-searchbar"
+                                        defaultValue={zip ? zip : "not set"}
+                                      />
+                                    </td>
+                                    <td>
+                                      <input
+                                        type="text"
+                                        name="city"
+                                        className="inline-searchbar"
+                                        defaultValue={city}
+                                      />
+                                    </td>
+                                    <td>
+                                      <select
+                                        name="country"
+                                        className="inline-dropdown"
+                                        defaultValue={country}>
+                                        <option value=""> </option>
+                                        {["DE", "US", "JP", "FR", "PL"].map(tag => (
+                                          <option key={tag} value={tag}>
+                                            {tag}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </td>
+                                    <td>
+                                      <input
+                                        type="text"
+                                        name="description"
+                                        className="inline-searchbar"
+                                        defaultValue={description}
+                                      />
+                                    </td>
+                                    {/*<td>
                                         <input
                                           name="priority"
                                           type="number"
@@ -313,7 +297,7 @@ class Addresses extends React.Component<Props, State> {
                                         />
                                       </td>*/}
 
-                                      {/* <div className="tags">
+                                    {/* <div className="tags">
                               <CoolCheckbox
                               name="billing"
                               value={tags ? tags.includes("billing") : false}
@@ -324,115 +308,105 @@ class Addresses extends React.Component<Props, State> {
                               value={tags ? tags.includes("main") : false}
                               />
                             </div> */}
-                                    </form>
-                                  )}
+                                  </form>
+                                )}
 
-                                  {this.state.edit == id ? (
-                                    <React.Fragment>
-                                      <td className="editButton">
-                                        <button
-                                          className="naked-button"
-                                          type="submit"
-                                          form={`address-form-${id}`}>
-                                          <i className="fa fa-check" />
-                                        </button>
-                                      </td>
-                                      <td className="editButton">
-                                        <i
-                                          onClick={() => this.setState({ edit: -1 })}
-                                          className="fa fa-times"
-                                        />
-                                      </td>
-                                    </React.Fragment>
-                                  ) : (
-                                    <React.Fragment>
-                                      <td className="editButton">
-                                        <i
-                                          title="Delete"
-                                          onClick={() =>
-                                            /*this.showDeletion(id, showPopup)*/
-                                            this.setState({
-                                              delete: true,
-                                              oldAddress: {
-                                                country,
-                                                street,
-                                                zip,
-                                                city,
-                                                description,
-                                                id
-                                              }
-                                            })
-                                          }
-                                          className="fal fa-trash-alt"
-                                        />
-                                      </td>
-                                      <td className="editButton">
-                                        <i
-                                          title="Edit"
-                                          onClick={() =>
-                                            /*this.setState({ edit: id })*/
-                                            this.setState({
-                                              update: true,
-                                              oldAddress: {
-                                                country,
-                                                street,
-                                                zip,
-                                                city,
-                                                description,
-                                                id
-                                              }
-                                            })
-                                          }
-                                          className="fal fa-edit"
-                                        />
-                                      </td>
-                                    </React.Fragment>
-                                  )}
-                                </tr>
-                              );
-                            }
-                          )}
-                        </tbody>
-                      </table>
-                    ) : (
-                      ""
-                    );
-                  }}
-                </Query>
-                <button
-                  className="naked-button genericButton"
-                  onClick={() => {
-                    console.log("STATE", this.state);
-                    /*this.showCreation(showPopup)*/ this.setState({ createNew: true });
-                  }}>
-                  <span className="textButton">+</span>
-                  <span className="textButtonBeside">Add Address</span>
-                </button>
-                {this.state.createNew ? (
-                  <PopupAddress close={() => this.setState({ createNew: false })} />
-                ) : (
-                  ""
-                )}
-                {this.state.update ? (
-                  <PopupAddress
-                    close={() => this.setState({ update: false })}
-                    oldvalues={this.state.oldAddress}
-                  />
-                ) : (
-                  ""
-                )}
-                {this.state.delete ? (
-                  <PopupAddress
-                    close={() => this.setState({ delete: false })}
-                    delete={true}
-                    oldvalues={this.state.oldAddress}
-                  />
-                ) : (
-                  ""
-                )}
-              </div>
+                                {this.state.edit == id ? (
+                                  <React.Fragment>
+                                    <td className="editButton">
+                                      <button
+                                        className="naked-button"
+                                        type="submit"
+                                        form={`address-form-${id}`}>
+                                        <i className="fa fa-check" />
+                                      </button>
+                                    </td>
+                                    <td className="editButton">
+                                      <i
+                                        onClick={() => this.setState({ edit: -1 })}
+                                        className="fa fa-times"
+                                      />
+                                    </td>
+                                  </React.Fragment>
+                                ) : (
+                                  <React.Fragment>
+                                    <td className="editButton">
+                                      <i
+                                        title="Delete"
+                                        onClick={() =>
+                                          /*this.showDeletion(id, showPopup)*/
+                                          this.setState({
+                                            delete: true,
+                                            oldAddress: {
+                                              country,
+                                              street,
+                                              zip,
+                                              city,
+                                              description,
+                                              id
+                                            }
+                                          })
+                                        }
+                                        className="fal fa-trash-alt"
+                                      />
+                                    </td>
+                                    <td className="editButton">
+                                      <i
+                                        title="Edit"
+                                        onClick={() =>
+                                          /*this.setState({ edit: id })*/
+                                          this.setState({
+                                            update: true,
+                                            oldAddress: {
+                                              country,
+                                              street,
+                                              zip,
+                                              city,
+                                              description,
+                                              id
+                                            }
+                                          })
+                                        }
+                                        className="fal fa-edit"
+                                      />
+                                    </td>
+                                  </React.Fragment>
+                                )}
+                              </tr>
+                            );
+                          }
+                        )}
+                      </tbody>
+                    </table>
+                  ) : (
+                    ""
+                  );
+                }}
+              </Query>
+              <button
+                className="naked-button genericButton"
+                onClick={() => this.setState({ createNew: true })}>
+                <span className="textButton">+</span>
+                <span className="textButtonBeside">Add Address</span>
+              </button>
+              {this.state.createNew && (
+                <PopupAddress close={() => this.setState({ createNew: false })} />
+              )}
+              {this.state.update && (
+                <PopupAddress
+                  close={() => this.setState({ update: false })}
+                  oldvalues={this.state.oldAddress}
+                />
+              )}
+              {this.state.delete && (
+                <PopupAddress
+                  close={() => this.setState({ delete: false })}
+                  delete={true}
+                  oldvalues={this.state.oldAddress}
+                />
+              )}
             </div>
-          </div>
+          </Collapsible>
         )}
       </AppContext.Consumer>
     );
