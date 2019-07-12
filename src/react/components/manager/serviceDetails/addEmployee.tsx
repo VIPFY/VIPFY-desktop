@@ -172,7 +172,7 @@ class AddEmployee extends React.Component<Props, State> {
               }}>
               <div className="addgrid">{this.printServiceEmployees(this.state.addedLicences)}</div>
             </div>
-            <Query query={FETCH_EMPLOYEES}>
+            <Query pollInterval={60 * 10 * 1000 + 700} query={FETCH_EMPLOYEES}>
               {({ loading, error, data }) => {
                 if (loading) {
                   return "Loading...";

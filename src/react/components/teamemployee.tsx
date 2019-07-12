@@ -63,6 +63,7 @@ class TeamEmployee extends React.Component<Props, State> {
             </div>
             <div className="team-app-holders">
               <Query
+                pollInterval={60 * 10 * 1000 + 1000}
                 query={fetchUsersOwnLicences}
                 variables={{ unitid: person.id }}
                 fetchPolicy="network-only">

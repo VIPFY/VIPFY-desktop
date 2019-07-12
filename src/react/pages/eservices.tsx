@@ -58,6 +58,7 @@ class EServices extends React.Component<Props, State> {
                   </div>
                   <Query
                     query={fetchUserLicences}
+                    pollInterval={60 * 10 * 1000 + 1000}
                     variables={{ unitid: this.props.employeeid }}
                     fetchPolicy="network-only">
                     {({ loading, error, data }) => {
@@ -89,6 +90,7 @@ class EServices extends React.Component<Props, State> {
                                 </div>
                                 <div>{moment(e.starttime - 0).format("DD.MM.YYYY")}</div>
                                 <Query
+                                  pollInterval={60 * 10 * 1000 + 200}
                                   query={gql`
                                     query fetchBoughtplanUsagePerUser(
                                       $starttime: Date!

@@ -123,7 +123,10 @@ class IssuedLicences extends React.Component<Props, State> {
             </div>
           </div>
 
-          <Query query={FETCH_ISSUED_LICENCES} variables={{ unitid: this.props.unitid }}>
+          <Query
+            pollInterval={60 * 10 * 1000}
+            query={FETCH_ISSUED_LICENCES}
+            variables={{ unitid: this.props.unitid }}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching data..." />;
@@ -382,7 +385,10 @@ class IssuedLicences extends React.Component<Props, State> {
                     </div>
                   </div>
 
-                  <Query query={FETCH_USER_LICENCES} variables={{ unitid: this.props.unitid }}>
+                  <Query
+                    pollInterval={60 * 10 * 1000}
+                    query={FETCH_USER_LICENCES}
+                    variables={{ unitid: this.props.unitid }}>
                     {({ data, loading, error }) => {
                       if (loading) {
                         return <LoadingDiv text="Fetching data..." />;

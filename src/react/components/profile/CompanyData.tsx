@@ -98,7 +98,7 @@ class CompanyData extends React.Component<Props, State> {
     return (
       <AppContext.Consumer>
         {({ showPopup }) => (
-          <Query query={FETCH_COMPANY}>
+          <Query pollInterval={60 * 10 * 1000 + 1000} query={FETCH_COMPANY}>
             {({ loading, error, data: { fetchCompany } }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching Company Data..." />;

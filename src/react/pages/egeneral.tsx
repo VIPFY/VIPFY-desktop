@@ -51,7 +51,10 @@ class EGeneral extends React.Component<Props, State> {
         </div>
         <div className={`inside ${this.state.show ? "in" : "out"}`}>
           <div className="inside-padding">
-            <Query query={QUERY_SEMIPUBLICUSER} variables={{ unitid: this.props.employeeid }}>
+            <Query
+              pollInterval={60 * 10 * 1000 + 400}
+              query={QUERY_SEMIPUBLICUSER}
+              variables={{ unitid: this.props.employeeid }}>
               {({ loading, error, data }) => {
                 if (loading) {
                   return "Loading...";

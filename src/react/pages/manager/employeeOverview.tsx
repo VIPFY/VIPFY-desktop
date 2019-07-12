@@ -293,6 +293,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                               </div>
                             </div>
                             <Query
+                              pollInterval={60 * 10 * 1000 + 600}
                               query={fetchTeams}
                               fetchPolicy="network-only" //TODO make better
                               variables={{ userid: employee.id }}>
@@ -312,6 +313,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                               }}
                             </Query>
                             <Query
+                              pollInterval={60 * 10 * 1000 + 300}
                               query={fetchUsersOwnLicences}
                               variables={{ unitid: employee.id }}
                               fetchPolicy="network-only" //TODO make better

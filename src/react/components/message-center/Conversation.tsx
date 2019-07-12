@@ -200,7 +200,10 @@ export default (props: { groupid: number; userid: number }): JSX.Element => {
   }
 
   return (
-    <Query query={QUERY_DIALOG} variables={{ groupid, limit: LIMIT }}>
+    <Query
+      pollInterval={60 * 10 * 1000 + 1000}
+      query={QUERY_DIALOG}
+      variables={{ groupid, limit: LIMIT }}>
       {({ loading, error, data: { fetchDialog }, subscribeToMore, fetchMore }) => {
         if (loading) {
           return <LoadingDiv text="Fetching conversation..." />;

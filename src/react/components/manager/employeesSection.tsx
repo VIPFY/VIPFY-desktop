@@ -57,7 +57,6 @@ class EmployeeSection extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("RERENDER EMPLOYEE");
     const employeeids: number[] = [];
     this.props.employees.forEach(emp => employeeids.push(emp.id));
     return (
@@ -68,10 +67,11 @@ class EmployeeSection extends React.Component<Props, State> {
           if (loading) {
             return "Loading...";
           }
+
           if (error) {
             return `Error! ${error.message}`;
           }
-          console.log("DATA", data, this.props);
+
           let employees: any[] = [];
           let interemployees: any[] = [];
           if (this.props.employees) {

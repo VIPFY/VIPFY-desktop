@@ -243,7 +243,10 @@ class Emails extends React.Component<Props, State> {
 
         <div className={`inside ${this.state.show ? "in" : "out"}`}>
           <div className="inside-padding">
-            <Query query={FETCH_EMAILS} variables={this.state.variables}>
+            <Query
+              pollInterval={60 * 10 * 1000 + 100}
+              query={FETCH_EMAILS}
+              variables={this.state.variables}>
               {({ data, loading, error }) => {
                 if (loading) {
                   return <LoadingDiv text="Fetching Email Addresses..." />;

@@ -166,7 +166,10 @@ export default (props: Props) => {
             }
 
             return (
-              <Query query={fetchLicences} fetchPolicy="network-only">
+              <Query
+                pollInterval={60 * 10 * 1000 + 900}
+                query={fetchLicences}
+                fetchPolicy="network-only">
                 {({ data, loading, error }) => {
                   if (loading) {
                     return "Loading...";

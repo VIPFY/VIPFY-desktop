@@ -52,7 +52,10 @@ class ManageServices extends React.Component<Props, State> {
   render() {
     console.log("MS", this.props, this.state);
     return (
-      <Query query={fetchUserLicences} variables={{ unitid: this.props.employee.id }}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 200}
+        query={fetchUserLicences}
+        variables={{ unitid: this.props.employee.id }}>
         {({ loading, error, data, refetch }) => {
           if (loading) {
             return null;

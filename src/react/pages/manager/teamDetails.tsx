@@ -68,7 +68,7 @@ class TeamDetails extends React.Component<Props, State> {
   render() {
     const teamid = this.props.match.params.teamid;
     return (
-      <Query query={fetchTeam} variables={{ teamid }}>
+      <Query pollInterval={60 * 10 * 1000 + 200} query={fetchTeam} variables={{ teamid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";

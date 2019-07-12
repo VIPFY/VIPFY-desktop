@@ -123,7 +123,10 @@ class LicencesSection extends React.Component<Props, State> {
   render() {
     const employeeid = this.props.employeeid;
     return (
-      <Query query={fetchUserLicences} variables={{ unitid: employeeid }}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 1000}
+        query={fetchUserLicences}
+        variables={{ unitid: employeeid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";

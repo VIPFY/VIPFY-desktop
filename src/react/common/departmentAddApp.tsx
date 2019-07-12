@@ -25,10 +25,8 @@ class DepartmentAddApp extends Component {
   };
 
   departmentPossibleApps(departmentid) {
-    console.log("TESTAPP", departmentid);
-
     return (
-      <Query query={fetchUnitApps} variables={{ departmentid }}>
+      <Query pollInterval={60 * 10 * 1000} query={fetchUnitApps} variables={{ departmentid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";

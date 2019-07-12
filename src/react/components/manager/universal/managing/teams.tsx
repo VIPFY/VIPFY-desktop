@@ -46,9 +46,11 @@ class ManageTeams extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("AET", this.props, this.state);
     return (
-      <Query query={fetchTeams} variables={{ userid: this.props.employee.id }}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 300}
+        query={fetchTeams}
+        variables={{ userid: this.props.employee.id }}>
         {({ loading, error, data, refetch }) => {
           if (loading) {
             return null;

@@ -115,7 +115,7 @@ class EmailList extends React.Component<Props, State> {
 
   render() {
     return (
-      <Query query={FETCH_EMAILS}>
+      <Query pollInterval={60 * 10 * 1000} query={FETCH_EMAILS}>
         {({ data, loading, error }) => {
           if (loading) {
             return <LoadingDiv text="Fetching Emails..." />;

@@ -159,6 +159,7 @@ function BoughtplanUsageChart(props) {
   //console.log("PROPS", props);
   return (
     <Query
+      pollInterval={60 * 10 * 1000 + 700}
       query={gql`
         query fetchUnitApps($departmentid: ID!) {
           fetchUnitApps(departmentid: $departmentid) {

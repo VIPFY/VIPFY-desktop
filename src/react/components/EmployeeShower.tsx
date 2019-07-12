@@ -322,7 +322,10 @@ class EmployeeShower extends React.Component<Props, State> {
           )}
         </div>
         {this.showDepartments()}
-        <Query query={fetchUsersOwnLicences} variables={{ unitid: this.props.userdata.id }}>
+        <Query
+          pollInterval={60 * 10 * 1000}
+          query={fetchUsersOwnLicences}
+          variables={{ unitid: this.props.userdata.id }}>
           {({ loading, error, data }) => {
             if (loading) {
               return "Loading...";

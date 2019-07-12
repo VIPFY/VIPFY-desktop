@@ -227,7 +227,10 @@ class ServiceOverview extends React.Component<Props, State> {
           <div className="heading">
             <h1>Services</h1>
           </div>
-          <Query query={fetchCompanyServices} fetchPolicy="cache-and-network">
+          <Query
+            pollInterval={60 * 10 * 1000 + 900}
+            query={fetchCompanyServices}
+            fetchPolicy="cache-and-network">
             {({ loading, error, data, refetch }) => {
               console.log(loading, error, data);
               if (loading) {
