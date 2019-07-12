@@ -17,6 +17,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import Consent from "../../popups/universalPopups/Consent";
 import { getImageUrlUser } from "../../common/images";
 import UploadImage from "../manager/universal/uploadImage";
+import Collapsible from "../../common/Collapsible";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
@@ -36,7 +37,6 @@ interface Props {
 }
 
 interface State {
-  show: boolean;
   pwchange: boolean;
   oldpassword: string;
   newpassword: string;
@@ -50,7 +50,6 @@ interface State {
 
 class PersonalData extends React.Component<Props, State> {
   state = {
-    show: true,
     pwchange: false,
     oldpassword: "",
     newpassword: "",
@@ -62,7 +61,7 @@ class PersonalData extends React.Component<Props, State> {
     consentPopup: false
   };
 
-  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
+  profileRef = React.createRef<HTMLDivElement>();
 
   uploadPic = async (picture: File) => {
     try {
@@ -127,21 +126,12 @@ class PersonalData extends React.Component<Props, State> {
                 ];
 
                 return (
-                  <div
-                    className="managerPage genericHolder"
-                    ref={el => addRenderElement({ key: "profilePersonalHolder", element: el })}
-                    style={{ padding: "0px" }}>
-                    <div className="header" onClick={this.toggle}>
-                      <i
-                        className={`button-hide fas ${
-                          this.state.show ? "fa-angle-left" : "fa-angle-down"
-                        }`}
-                        //onClick={this.toggle}
-                      />
-                      <span>Personal Data</span>
-                    </div>
-                    <div className={`inside-profile ${this.state.show ? "in" : "out"}`}>
-                      <div className={"pic-holder"} style={{ margin: 0, marginBottom: "16px" }}>
+                  <Collapsible child={this.profileRef} title="Personal Data">
+                    <div
+                      className="inside-profile managerPage"
+                      style={{ padding: "0" }}
+                      ref={this.profileRef}>
+                      <div className="pic-holder" style={{ margin: 0, marginBottom: "16px" }}>
                         <UploadImage
                           picture={{ preview: getImageUrlUser(profilepicture, 96) }}
                           onDrop={file => this.uploadPic(file)}
@@ -341,11 +331,11 @@ class PersonalData extends React.Component<Props, State> {
                           ""
                         )}
                       </div>
-                    </div>
 
-                    {/*<Addresses showPopup={showPopup} />
+                      {/*<Addresses showPopup={showPopup} />
                     <Phones showPopup={showPopup} />*/}
-                  </div>
+                    </div>
+                  </Collapsible>
                 );
               }}
             </AppContext.Consumer>
