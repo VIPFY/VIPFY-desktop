@@ -98,7 +98,7 @@ class ServiceGeneralDataAdd extends React.Component<Props, State> {
             )}
           </div>
         </div>
-        <Query query={fetchApps}>
+        <Query pollInterval={60 * 10 * 1000 + 400} query={fetchApps}>
           {({ loading, error, data }) => {
             if (loading) {
               return "Loading...";

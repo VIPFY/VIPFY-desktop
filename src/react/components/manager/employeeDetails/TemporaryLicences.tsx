@@ -58,7 +58,10 @@ export default (props: Props) => {
           <div className="tableEnd" />
         </div>
 
-        <Query query={FETCH_TEMP_LICENCES} variables={{ unitid: props.unitid }}>
+        <Query
+          pollInterval={60 * 10 * 1000}
+          query={FETCH_TEMP_LICENCES}
+          variables={{ unitid: props.unitid }}>
           {({ data, loading, error }) => {
             if (loading) {
               return <LoadingDiv text="Fetching data..." />;

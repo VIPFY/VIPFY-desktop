@@ -234,7 +234,10 @@ class Emails extends React.Component<Props, State> {
     return (
       <Collapsible title="Emails" child={this.emailRef}>
         <div ref={this.emailRef} className="inside-padding">
-          <Query query={FETCH_EMAILS} variables={this.state.variables}>
+            <Query
+              pollInterval={60 * 10 * 1000 + 100}
+              query={FETCH_EMAILS}
+              variables={this.state.variables}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching Email Addresses..." />;

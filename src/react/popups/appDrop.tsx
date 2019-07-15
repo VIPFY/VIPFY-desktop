@@ -213,6 +213,7 @@ class AppDrop extends Component<Props, State> {
       case 0:
         return (
           <Query
+            pollInterval={60 * 10 * 1000 + 700}
             query={fetchAllBoughtPlansFromCompany}
             variables={{ appid: this.props.appid }}
             fetchPolicy="network-only">
@@ -493,6 +494,7 @@ class AppDrop extends Component<Props, State> {
       case 5:
         return (
           <Query
+            pollInterval={60 * 10 * 1000 + 800}
             query={fetchAllBoughtPlansFromCompany}
             variables={{ appid: this.props.appid }}
             fetchPolicy="network-only">

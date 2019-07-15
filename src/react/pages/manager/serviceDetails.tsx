@@ -63,7 +63,10 @@ class ServiceDetails extends React.Component<Props, State> {
   render() {
     const serviceid = this.props.match.params.serviceid;
     return (
-      <Query query={fetchCompanyService} variables={{ serviceid }}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 1000}
+        query={fetchCompanyService}
+        variables={{ serviceid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";

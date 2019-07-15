@@ -219,7 +219,10 @@ class EShower extends React.Component<Props, State> {
 
     return (
       <div className="genericPage employeeManager">
-        <Query query={QUERY_SEMIPUBLICUSER} variables={{ unitid: employeeid }}>
+        <Query
+          pollInterval={60 * 10 * 1000 + 1000}
+          query={QUERY_SEMIPUBLICUSER}
+          variables={{ unitid: employeeid }}>
           {({ loading, error, data }) => {
             if (loading) {
               return "Loading...";

@@ -189,7 +189,10 @@ class Addresses extends React.Component<Props, State> {
         {({ showPopup }) => (
           <Collapsible title="Addresses" child={this.addressesRef}>
             <div ref={this.addressesRef} className="inside-padding">
-              <Query query={FETCH_ADDRESSES} variables={this.state.variables}>
+              <Query
+                pollInterval={60 * 10 * 1000 + 100}
+                query={FETCH_ADDRESSES}
+                variables={this.state.variables}>
                 {({ data, loading, error }) => {
                   if (loading) {
                     return <LoadingDiv text="Fetching Addresses..." />;

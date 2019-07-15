@@ -94,7 +94,7 @@ class PersonalData extends React.Component<Props, State> {
 
   render() {
     return (
-      <Query query={me}>
+      <Query pollInterval={60 * 10 * 1000 + 4000} query={me}>
         {({ data, loading, error }) => {
           if (loading) {
             return <LoadingDiv text="Loading Data" />;
