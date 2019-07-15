@@ -85,9 +85,13 @@ class SidebarLink extends React.Component<Props, State> {
     const { licence, openInstances, sidebarOpen, active, setTeam } = this.props;
 
     let cssClass = "sidebar-link";
-    const label = licence.boughtplanid.alias
+    let label = licence.boughtplanid.alias
       ? licence.boughtplanid.alias
       : licence.boughtplanid.planid.appid.name;
+
+    if (licence.pending) {
+      label += " - Pending Integration";
+    }
 
     if (!sidebarOpen) {
       cssClass += "-small";
@@ -138,6 +142,7 @@ class SidebarLink extends React.Component<Props, State> {
         }>
         <Tooltip direction="right" arrowSize={5} useHover={!sidebarOpen} content={label}>
           <span className="white-background" />
+          {licence.pending && <span className="licence-pending" />}
           <span
             className="service-logo-small"
             style={{

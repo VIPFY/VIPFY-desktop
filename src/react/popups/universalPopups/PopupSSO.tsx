@@ -146,8 +146,8 @@ class PopupSSO extends React.Component<Props, State> {
             {this.state.protocol == "http://" && (
               <i
                 title={`Using http is a possible security risk, because the Website does not encrypt your data.
-
-Please be sure that you can trust this Website.`}
+                        
+                Please be sure that you can trust this Website.`}
                 className="fal fa-exclamation-circle tooltip-warning"
               />
             )}
@@ -222,4 +222,5 @@ Please be sure that you can trust this Website.`}
     );
   }
 }
+
 export default PopupSSO;
