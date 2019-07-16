@@ -80,10 +80,6 @@ class PersonalData extends React.Component<Props, State> {
     this.setState({ pwconfirm: true, networking: true });
     try {
       const res = await this.props.changePassword({ variables: { ...values } });
-
-      console.log("RES", res);
-
-      await localStorage.setItem("token", res.data.changePassword.token);
       this.setState({ networking: false, errorupdate: false });
       return true;
     } catch (err) {

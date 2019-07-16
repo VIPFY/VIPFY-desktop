@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as moment from "moment";
 import gql from "graphql-tag";
-import { Mutation } from "react-apollo";
+import { withRouter } from "react-router";
+import { Mutation, withApollo } from "react-apollo";
 import { showStars, filterError, ErrorComp } from "../../common/functions";
 import { FORCE_RESET, FETCH_USER_SECURITY_OVERVIEW } from "./UserSecurityTable";
 import ReactPasswordStrength from "react-password-strength";
@@ -28,6 +29,12 @@ const UPDATE_PASSWORD = gql`
       passwordlength
       passwordstrength
     }
+  }
+`;
+
+const IMPERSONATE = gql`
+  mutation onImpersonate($unitid: ID!) {
+    impersonate(unitid: $unitid)
   }
 `;
 
@@ -237,7 +244,7 @@ class UserSecurityRow extends React.Component<Props, State> {
                       </div>
                     </div>
 
-                    <UniversalButton closingPopup={true} label="Cancel" />
+                    <UniversalButton disabled={loading} closingPopup={true} label="Cancel" />
                     <UniversalButton
                       disabled={
                         !password ||
@@ -258,14 +265,55 @@ class UserSecurityRow extends React.Component<Props, State> {
                 )}
               </Mutation>
             )}
+
             <td colSpan={3}>
               <button
                 style={{ color: "#20BAA9FF" }}
                 onClick={() => this.setState({ sudoPopup: true })}
                 className="naked-button">
-                Login as User
+                Impersonate
               </button>
             </td>
+
+            {this.state.sudoPopup && (
+              <Mutation
+                mutation={IMPERSONATE}
+                onCompleted={async data => {
+                  const token = localStorage.getItem("token");
+                  localStorage.setItem("token", data.impersonate);
+                  localStorage.setItem("admin-token", token!);
+
+                  await this.props.history.push("/area/dashboard");
+                  this.props.client.cache.reset(); // clear graphql cache
+
+                  location.reload();
+
+                  this.setState({ sudoPopup: false });
+                }}>
+                {(impersonate, { loading, error }) => (
+                  <PopupBase small={true} close={() => this.setState({ sudoPopup: false })}>
+                    <h1>
+                      Impersonate <UserName unitid={user.id} /> ?
+                    </h1>
+                    <div>Do you want to login as this user?</div>
+
+                    <ErrorComp
+                      error={error}
+                      style={{ opacity: error ? 1 : 0 }}
+                      className="error-field"
+                    />
+
+                    <UniversalButton disabled={loading} closingPopup={true} label="Cancel" />
+                    <UniversalButton
+                      disabled={loading}
+                      onClick={() => impersonate({ variables: { unitid: user.id } })}
+                      type="high"
+                      label="Impersonate"
+                    />
+                  </PopupBase>
+                )}
+              </Mutation>
+            )}
           </tr>
         )}
       </React.Fragment>
@@ -273,4 +321,4 @@ class UserSecurityRow extends React.Component<Props, State> {
   }
 }
 
-export default UserSecurityRow;
+export default withApollo(withRouter(UserSecurityRow));

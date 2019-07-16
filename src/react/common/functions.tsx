@@ -96,7 +96,11 @@ export const filterError = error => {
 
 export const AppContext = React.createContext();
 
-export const ErrorComp = ({ error }) => <div className="error-field">{filterError(error)}</div>;
+export const ErrorComp = props => (
+  <div {...props} className="error-field">
+    {filterError(props.error ? props.error : "")}
+  </div>
+);
 
 export const concatName = ({ firstname, middlename, lastname }) =>
   `${firstname} ${middlename ? middlename : ""} ${lastname}`;
