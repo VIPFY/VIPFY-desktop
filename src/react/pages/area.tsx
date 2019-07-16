@@ -17,7 +17,6 @@ import Settings from "./settings";
 import AdminDashboard from "../components/admin/Dashboard";
 import ServiceCreation from "../components/admin/ServiceCreation";
 import Sidebar from "../components/Sidebar";
-import Team from "./team";
 import Webview from "./webview";
 import ErrorPage from "./error";
 import UsageStatistics from "./usagestatistics";
@@ -31,23 +30,14 @@ import Security from "./security";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
-import EManager from "./emanager";
-import LManager from "./lmanager";
-import DManager from "./dmanager";
-import EShower from "./eshower";
-import LShower from "./lshower";
-import DShower from "./dshower";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
 import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
-import AppAdmin from "./appadmin";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
 import { SideBarContext } from "../common/context";
-import EManagerAdmin from "./emanageradmin";
-import EShowerAdmin from "./eshoweradmin";
 import EmployeeOverview from "./manager/employeeOverview";
 import EmployeeDetails from "./manager/employeeDetails";
 import TeamOverview from "./manager/teamOverview";
@@ -362,7 +352,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "dashboard/:overlay", component: Dashboard },
       { path: "settings", component: Settings },
       { path: "profile", component: Profile },
-      { path: "team", component: Team },
       { path: "security", component: Security },
       { path: "messagecenter", component: MessageCenter },
       { path: "messagecenter/:person", component: MessageCenter },

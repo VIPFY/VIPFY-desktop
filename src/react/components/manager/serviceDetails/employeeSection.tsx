@@ -1,8 +1,6 @@
 import * as React from "react";
 import UniversalButton from "../../../components/universalButtons/universalButton";
-import { Query, Mutation } from "react-apollo";
 import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
-import AddEmployee from "./addEmployee";
 import Employee from "./employee";
 import { now } from "moment";
 import ManageServiceEmployees from "../universal/managing/serviceemployees";
@@ -133,13 +131,6 @@ class EmployeeSection extends React.Component<Props, State> {
           {employeeArray}
         </div>
         {this.state.add && (
-          /*<AddEmployee
-            close={sO => {
-              this.setState({ add: false, savingObject: sO });
-            }}
-            licences={activelicences}
-            service={this.props.service}
-          />*/
           <ManageServiceEmployees
             service={this.props.service}
             close={sO => {
