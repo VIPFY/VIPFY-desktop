@@ -15,43 +15,9 @@ export const signInUser = gql`
   }
 `;
 
-export const addCreateEmployee = gql`
-  mutation addCreateEmployee(
-    $email: String!
-    $password: String!
-    $name: HumanName!
-    $departmentid: ID!
-  ) {
-    addCreateEmployee(
-      email: $email
-      password: $password
-      name: $name
-      departmentid: $departmentid
-    ) {
-      ok
-    }
-  }
-`;
-
-export const addSubDepartment = gql`
-  mutation addSubDepartment($name: String!, $departmentid: ID!) {
-    addSubDepartment(name: $name, departmentid: $departmentid) {
-      ok
-    }
-  }
-`;
-
 export const editDepartment = gql`
   mutation editDepartmentName($departmentid: ID!, $name: String!) {
     editDepartmentName(departmentid: $departmentid, name: $name) {
-      ok
-    }
-  }
-`;
-
-export const deleteSubDepartment = gql`
-  mutation deleteSubDepartment($departmentid: ID!) {
-    deleteSubDepartment(departmentid: $departmentid) {
       ok
     }
   }
@@ -81,34 +47,6 @@ export const fireEmployee = gql`
   }
 `;
 
-export const distributeLicenceToDepartment = gql`
-  mutation distributeLicenceToDepartment(
-    $departmentid: ID!
-    $boughtplanid: ID!
-    $licencetype: String!
-  ) {
-    distributeLicenceToDepartment(
-      departmentid: $departmentid
-      boughtplanid: $boughtplanid
-      licencetype: $licencetype
-    ) {
-      ok
-      error {
-        code
-        message
-      }
-    }
-  }
-`;
-
-export const revokeLicencesFromDepartment = gql`
-  mutation revokeLicencesFromDepartment($departmentid: ID!, $boughtplanid: ID!) {
-    revokeLicencesFromDepartment(departmentid: $departmentid, boughtplanid: $boughtplanid) {
-      ok
-    }
-  }
-`;
-
 export const distributeLicence = gql`
   mutation distributeLicence($licenceid: ID!, $unitid: ID!, $departmentid: ID!) {
     distributeLicence(licenceid: $licenceid, unitid: $unitid, departmentid: $departmentid) {
@@ -117,14 +55,6 @@ export const distributeLicence = gql`
         code
         message
       }
-    }
-  }
-`;
-
-export const revokeLicence = gql`
-  mutation revokeLicence($licenceid: ID!) {
-    revokeLicence(licenceid: $licenceid) {
-      ok
     }
   }
 `;

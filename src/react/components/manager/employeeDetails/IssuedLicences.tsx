@@ -387,7 +387,7 @@ class IssuedLicences extends React.Component<Props, State> {
 
                   <Query
                     pollInterval={60 * 10 * 1000}
-                    query={FETCH_USER_LICENCES}
+                    query={FETCH_USER_LICENCES} //Change to modern version (fetchUsersOwnLicences)
                     variables={{ unitid: this.props.unitid }}>
                     {({ data, loading, error }) => {
                       if (loading) {
