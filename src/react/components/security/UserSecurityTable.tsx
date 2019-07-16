@@ -193,9 +193,11 @@ class UserSecurityTableInner extends React.Component<Props, {}> {
 function UserSecurityTable(props: { search: string }) {
   return (
     <Query
-      pollInterval={60 * 10 * 1000 + 7000}
+      //pollInterval={60 * 10 * 1000 + 7000}
       query={FETCH_USER_SECURITY_OVERVIEW}
-      pollInterval={1000 * 60 * 10}>
+      pollInterval={1000 * 60 * 10}
+      //Make nicer fix instead of fetchPolicy
+      fetchPolicy="network-only">
       {({ data, loading, error }) => {
         if (loading) {
           return <div>Loading</div>;
