@@ -31,22 +31,6 @@ export const addEmployee = gql`
   }
 `;
 
-export const removeEmployee = gql`
-  mutation removeEmployee($unitid: ID!, $departmentid: ID!) {
-    removeEmployee(unitid: $unitid, departmentid: $departmentid) {
-      ok
-    }
-  }
-`;
-
-export const fireEmployee = gql`
-  mutation fireEmployee($unitid: ID!) {
-    fireEmployee(unitid: $unitid) {
-      ok
-    }
-  }
-`;
-
 export const distributeLicence = gql`
   mutation distributeLicence($licenceid: ID!, $unitid: ID!, $departmentid: ID!) {
     distributeLicence(licenceid: $licenceid, unitid: $unitid, departmentid: $departmentid) {
