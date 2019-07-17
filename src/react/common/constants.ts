@@ -4,6 +4,7 @@ export const iconPicFolder = "https://storage.googleapis.com/vipfy-imagestore-01
 export const logoPicFolder = "https://storage.googleapis.com/vipfy-imagestore-01/logos/";
 
 export const defaultPic = `${unitPicFolder}default.png`;
+export const PW_MIN_LENGTH = 10;
 
 export const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
