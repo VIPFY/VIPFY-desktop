@@ -110,26 +110,30 @@ class SidebarApps extends React.Component<Props, State> {
     }
 
     const input = (
-      <input
-        ref={node => {
-          this.searchInput = node;
-        }}
-        value={this.state.searchString}
-        onChange={e => this.setState({ searchString: e.target.value })}
-        placeholder="Search Apps"
-        className={`sidebar-search${sidebarOpen ? "" : "-tooltip"}`}
-        onContextMenu={e => {
-          e.preventDefault();
-          this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
-        }}
-      />
+      <div style={{ width: "100px" }}>
+        <input
+          ref={node => {
+            this.searchInput = node;
+          }}
+          value={this.state.searchString}
+          onChange={e => this.setState({ searchString: e.target.value })}
+          placeholder="Search Apps"
+          className={`sidebar-search${sidebarOpen ? "" : "-tooltip"}`}
+          onContextMenu={e => {
+            e.preventDefault();
+            this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
+          }}
+        />
+      </div>
     );
 
     const SortComponent = (
-      <button className="sidebar-search-tooltip naked-button" onClick={this.toggleApps}>
-        <i className={`fal fa-angle-right ${showApps ? "open" : ""}`} />
-        <span style={{ fontSize: "10px" }}>{`${showApps ? "Hide" : "Show"} Apps`}</span>
-      </button>
+      <div style={{ width: "100px" }}>
+        <button className="sidebar-search-tooltip naked-button" onClick={this.toggleApps}>
+          <i className={`fal fa-angle-right ${showApps ? "open" : ""}`} />
+          <span style={{ fontSize: "10px" }}>{`${showApps ? "Hide" : "Show"} Apps`}</span>
+        </button>
+      </div>
     );
 
     return (
@@ -138,10 +142,10 @@ class SidebarApps extends React.Component<Props, State> {
           <button
             type="button"
             onClick={this.toggleApps}
-            className={`naked-button sidebar-link-apps${sidebarOpen ? "" : "-small"}`}>
+            className="naked-button sidebar-link-apps">
             <Tooltip
               useHover={!sidebarOpen}
-              distance={4}
+              distance={7}
               arrowSize={5}
               direction="right"
               content={SortComponent}>
@@ -169,8 +173,8 @@ class SidebarApps extends React.Component<Props, State> {
         </li>
 
         <li>
-          <ul>
-            {showApps && sidebarOpen && (
+          <ul className="sidebar-apps">
+            {showApps && (
               <li
                 style={sidebarOpen ? { marginLeft: "11px" } : {}}
                 className="sidebar-link"
@@ -178,7 +182,7 @@ class SidebarApps extends React.Component<Props, State> {
                 <Tooltip useHover={!sidebarOpen} direction="right" content={input}>
                   <IconButton icon="search" onClick={() => this.searchInput.focus()} />
                 </Tooltip>
-                {input}
+                {sidebarOpen && input}
                 {this.state.context && (
                   <button
                     className="cleanup contextButton"
