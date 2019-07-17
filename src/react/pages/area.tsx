@@ -404,19 +404,24 @@ class Area extends React.Component<AreaProps, AreaState> {
             render={props => {
               if (!this.props.location.pathname.includes("advisor")) {
                 return (
-                  <Sidebar
-                    sidebarOpen={sidebarOpen}
-                    setApp={this.setApp}
-                    viewID={this.state.viewID}
-                    views={this.state.webviews}
-                    openInstances={this.state.openInstances}
-                    toggleSidebar={this.toggleSidebar}
-                    setInstance={this.setInstance}
-                    {...this.props}
-                    licences={this.props.licences.fetchLicences}
-                    {...props}
-                    moveTo={this.moveTo}
-                  />
+                  <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
+                    {res => (
+                      <Sidebar
+                        sidebarOpen={sidebarOpen}
+                        setApp={this.setApp}
+                        viewID={this.state.viewID}
+                        views={this.state.webviews}
+                        openInstances={this.state.openInstances}
+                        toggleSidebar={this.toggleSidebar}
+                        setInstance={this.setInstance}
+                        {...this.props}
+                        licences={this.props.licences.fetchLicences}
+                        {...props}
+                        {...res}
+                        moveTo={this.moveTo}
+                      />
+                    )}
+                  </Query>
                 );
               } else {
                 return "";
@@ -427,23 +432,18 @@ class Area extends React.Component<AreaProps, AreaState> {
             render={props => {
               if (!this.props.location.pathname.includes("advisor")) {
                 return (
-                  <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
-                    {res => (
-                      <Navigation
-                        chatOpen={chatOpen}
-                        sidebarOpen={sidebarOpen}
-                        setApp={this.setApp}
-                        toggleChat={this.toggleChat}
-                        toggleSidebar={this.toggleSidebar}
-                        viewID={this.state.viewID}
-                        views={this.state.webviews}
-                        openInstances={this.state.openInstances}
-                        {...this.props}
-                        {...props}
-                        {...res}
-                      />
-                    )}
-                  </Query>
+                  <Navigation
+                    chatOpen={chatOpen}
+                    sidebarOpen={sidebarOpen}
+                    setApp={this.setApp}
+                    toggleChat={this.toggleChat}
+                    toggleSidebar={this.toggleSidebar}
+                    viewID={this.state.viewID}
+                    views={this.state.webviews}
+                    openInstances={this.state.openInstances}
+                    {...this.props}
+                    {...props}
+                  />
                 );
               } else {
                 return "";

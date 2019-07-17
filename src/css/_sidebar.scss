@@ -3,13 +3,13 @@
   height: calc(100vh - 32px);
   z-index: 300;
   float: left;
-  overflow: hidden;
   animation: grow 600ms ease-in-out forwards;
   color: #fff;
   user-select: none;
   display: grid;
-  grid-template-rows: 48px 1fr 40px;
+  grid-template-rows: 48px 1fr 40px 40px 20px;
   grid-template-columns: 1fr;
+  grid-row-gap: 10px;
 
   .hold {
     border: solid $vipfy-primary-color 1px;
@@ -23,8 +23,20 @@
     transition: all 300ms ease-in-out;
   }
 
+  .small-profile-pic {
+    transform: translate(-5px, -6px);
+    width: 24px;
+    height: 24px;
+  }
+
+  .sidebar-link-caption-context {
+    @extend .sidebar-link-caption;
+    animation: caption-grow-context 600ms ease-in-out forwards !important;
+  }
+
   .show-more {
-    margin-left: 8px;
+    transform: translateX(8px);
+    transition: all 600ms ease-in-out;
 
     button {
       @extend .sidebar-link;
@@ -39,7 +51,7 @@
       }
 
       i {
-        transition: all 300ms ease-in-out;
+        transition: all 600ms ease-in-out;
       }
 
       .open {
@@ -48,9 +60,10 @@
     }
 
     &-small {
+      transition: all 600ms ease-in-out;
+
       button {
         @extend .sidebar-link-small;
-        margin-left: 8px;
         margin-right: 8px;
       }
 
@@ -111,18 +124,32 @@
     margin: $sidebar-margin;
     position: relative;
     height: 28px;
-    transform: translateX(6px);
+    transform: translateX(9px);
     transition: all 600ms ease-in-out;
 
-    &:hover {
-      background-color: #293E52ff;
+    .highlight {
+      z-index: -1;
+      position: absolute;
+      left: -5px;
+      background: #30475dff;
+      box-shadow: 0 2px 2px #00000029;
       border-radius: 4px;
+    }
+
+    &:hover .highlight {
+      height: 25px;
+      width: 218px;
     }
 
     &-small {
       @extend .sidebar-link;
       padding: 0;
       width: 30px;
+
+      &:hover .highlight {
+        height: 25px;
+        width: 25px;
+      }
     }
 
     .instanceHolder {
@@ -176,8 +203,17 @@
       font-weight: 300;
     }
 
+    .show-more {
+      transform: translateX(8px);
+      text-align: left;
+    }
+
     .invisible {
       animation: caption-shrink 600ms ease-in-out forwards;
+    }
+
+    .invisible-context {
+      animation: caption-shrink-context 600ms ease-in-out forwards !important;
     }
   }
 
@@ -236,6 +272,20 @@
       margin-left: 3px;
     }
   }
+
+  .notification-amount {
+    position: absolute;
+    font-size: 0.6rem;
+    top: -13px;
+    left: 10px;
+    color: #fff;
+    height: 1rem;
+    line-height: 1rem;
+    width: 1rem;
+    text-align: center;
+    border-radius: 1rem;
+    background-color: #20BAA9;
+  }
 }
 
 .sidebar-search {
@@ -250,11 +300,21 @@
 
   &::placeholder {
     color: #ffffff80;
+    transition: all 600ms ease-in-out;
+    opacity: 1;
   }
 
   &-tooltip {
     @extend .sidebar-search;
     color: $vipfy-secondary-color;
+  }
+}
+
+.sidebar-search-hide {
+  @extend .sidebar-search;
+
+  &::placeholder {
+    opacity: 0;
   }
 }
 
@@ -319,6 +379,41 @@
   }
 }
 
+.context-menu {
+  height: 60px;
+  width: 120px;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  position: fixed;
+  bottom: 10px;
+  color: black;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  transform: translateX(-360px);
+  transition: all 300ms ease-in-out;
+  z-index: 100;
+  
+  div {
+    cursor: pointer;
+
+    &:first-of-type {
+      span {
+        color: #718fb8;
+        text-transform: uppercase;
+      }
+    }
+
+    &:nth-child(2) {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+  }
+}
+
 @keyframes shrink {
   from {
     width: $sidebar-width;
@@ -346,6 +441,17 @@
   }
 }
 
+@keyframes caption-shrink-context {
+  from {
+    opacity: 1;
+    padding-left: 6px;
+  } to {
+    opacity: 0;
+    padding-left: 0;
+    width: 0;
+  }
+}
+
 @keyframes caption-grow {
   from {
     opacity: 0;
@@ -356,4 +462,112 @@
     padding-left: 1em;
     width: 200px;
   }
+}
+
+@keyframes caption-grow-context {
+  from {
+    opacity: 0;
+    padding-left: 0;
+    width: 0;
+  } to {
+    opacity: 1;
+    padding-left: 6px;
+    width: 200px;
+  }
+}
+
+.notificationPopup {
+  position: fixed;
+  bottom: 115px;
+  left: 209px;
+  border-radius: 4px;
+  z-index: 1000;
+  width: 24rem;
+  background-color: white;
+  margin: 0.125rem 0 0;
+  background-clip: padding-box;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+  cursor: default;
+  animation: pop-in 150ms ease-in-out 0s forwards;
+  transform-origin: left bottom;
+  color: $vipfy-normaltext;
+
+  @keyframes pop-in {
+    0% {
+      transform: scale(0.1);
+      opacity: 0;
+    }
+  
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+.notificationPopupFooter {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(0,0,0,0.03);
+}
+
+.notificationPopupHeader {
+  padding: 0.75rem 1.25rem;
+  margin: 0;
+  background-color: rgba(0,0,0,0.03);
+  font-size: 0.8rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.notification-item {
+  cursor: pointer;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 0.75rem 1.25rem;
+  position: relative;
+  margin-bottom: -1px;
+  display: flex;
+  flex-wrap: wrap;
+
+  &:hover {
+    background: #eee;
+  }
+
+  &:active {
+    background: $vipfy-primary;
+  }
+}
+
+.bug {
+  color: red;
+}
+
+.notification-icon {
+  color: #3abf94;
+  margin-right: 0.5rem;
+  font-size: 1.5rem;
+  width: 2rem;
+  text-align: center;
+}
+
+.notificationText {
+  margin: 0;
+  font-size: 0.75rem;
+  width: calc(100% - 2.5rem);
+}
+
+.notificationTime {
+  width: calc(100% - 2.5rem);
+  margin-left: 2.5rem;
+  font-size: 0.6rem;
+}
+
+.notificationPopupScroller {
+  max-height: 15rem;
+  overflow-y: auto;
 }

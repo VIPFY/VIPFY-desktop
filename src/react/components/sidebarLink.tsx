@@ -151,7 +151,7 @@ class SidebarLink extends React.Component<Props, State> {
           </span>
         </Tooltip>
 
-        <span className={sidebarOpen ? "sidebar-link-caption" : "show-not"}>{label}</span>
+        <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>{label}</span>
         {this.state.hover ? this.showInstances(licence) : ""}
       </li>
     );

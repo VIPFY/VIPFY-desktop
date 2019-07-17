@@ -109,7 +109,7 @@ class SidebarApps extends React.Component<Props, State> {
       return null;
     }
 
-    const input = (
+    const input = (style = {}) => (
       <div style={{ width: "100px" }}>
         <input
           ref={node => {
@@ -118,7 +118,7 @@ class SidebarApps extends React.Component<Props, State> {
           value={this.state.searchString}
           onChange={e => this.setState({ searchString: e.target.value })}
           placeholder="Search Apps"
-          className={`sidebar-search${sidebarOpen ? "" : "-tooltip"}`}
+          className={`sidebar-search${style ? style : sidebarOpen ? "" : "-tooltip"}`}
           onContextMenu={e => {
             e.preventDefault();
             this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
@@ -152,22 +152,20 @@ class SidebarApps extends React.Component<Props, State> {
               <i className={`fal fa-${icon ? icon : "th-large"} sidebar-icon`} />
             </Tooltip>
 
+            <span
+              style={{ marginLeft: "7px", flex: 1, textAlign: "start" }}
+              className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+              {this.props.header ? this.props.header : "My Apps"}
+            </span>
             {sidebarOpen && (
-              <React.Fragment>
-                <span
-                  style={{ marginLeft: "7px", flex: 1, textAlign: "start" }}
-                  className="sidebar-link-caption">
-                  {this.props.header ? this.props.header : "My Apps"}
-                </span>
-                <Tooltip
-                  arrowSize={5}
-                  distance={12}
-                  useHover={sidebarOpen}
-                  content={`${showApps ? "Hide" : "Show"} Apps`}
-                  direction="right">
-                  <i className={`carret fal fa-angle-right ${showApps ? "open" : ""}`} />
-                </Tooltip>
-              </React.Fragment>
+              <Tooltip
+                arrowSize={5}
+                distance={12}
+                useHover={sidebarOpen}
+                content={`${showApps ? "Hide" : "Show"} Apps`}
+                direction="right">
+                <i className={`carret fal fa-angle-right ${showApps ? "open" : ""}`} />
+              </Tooltip>
             )}
           </button>
         </li>
@@ -179,10 +177,10 @@ class SidebarApps extends React.Component<Props, State> {
                 style={sidebarOpen ? { marginLeft: "11px" } : {}}
                 className="sidebar-link"
                 ref={this.wrapper}>
-                <Tooltip useHover={!sidebarOpen} direction="right" content={input}>
+                <Tooltip useHover={!sidebarOpen} direction="right" content={input()}>
                   <IconButton icon="search" onClick={() => this.searchInput.focus()} />
                 </Tooltip>
-                {sidebarOpen && input}
+                {input(sidebarOpen ? "" : "-hide")}
                 {this.state.context && (
                   <button
                     className="cleanup contextButton"
@@ -267,11 +265,11 @@ class SidebarApps extends React.Component<Props, State> {
                     showMoreApps: !prevState.showMoreApps
                   }))
                 }
-                style={sidebarOpen ? { width: "92%" } : {}}
+                style={sidebarOpen ? { width: "92%" } : { transform: "translateX(11px)" }}
                 className="naked-button">
                 <i className={`fal fa-angle-down ${showMoreApps ? "open" : ""}`} />
 
-                <span className={`${sidebarOpen ? "sidebar-link-caption" : "show-not"}`}>
+                <span className={`${sidebarOpen ? "sidebar-link-caption show-more" : "show-not"}`}>
                   {`Show ${showMoreApps ? "less" : "more"} Apps`}
                 </span>
               </button>
