@@ -118,7 +118,7 @@
 
     &:checked + .generic-form-checkbox {
       svg {
-        stroke: #117f91;
+        stroke: $vipfy-primary-color;
 
         path {
           stroke-dashoffset: 60;
