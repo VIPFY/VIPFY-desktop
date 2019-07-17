@@ -118,7 +118,7 @@
 
     &:checked + .generic-form-checkbox {
       svg {
-        stroke: #117f91;
+        stroke: $vipfy-primary-color;
 
         path {
           stroke-dashoffset: 60;
@@ -658,7 +658,8 @@
 
   .searchResult{
       padding: 0px 10px;
-      font-family: "Roboto Light";
+      font-family: "Roboto";
+      font-weight: 300;
       font-size: 13px;
       color: $vipfy-lighttext;
       cursor: pointer;
@@ -715,7 +716,7 @@
   cursor: pointer;
   border-radius: 4px;
 
-  &:after {
+  /*&:after {
     content: '';
     position: absolute;
     top: 0;
@@ -727,13 +728,13 @@
     border-top: 0;
     margin-left: -5px;
     margin-top: -5px;
-  }
+  }*/
 
   &:hover{
     background-color: rgb(233,248,246);
     color: #20baa9;
-    &:after{
+    /*&:after{
       border-bottom-color: rgb(233,248,246);
-    }
+    }*/
   }
 }

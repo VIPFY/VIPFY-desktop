@@ -25,10 +25,36 @@ interface State {
   showApps: boolean;
   showMoreApps: boolean;
   searchString: string;
+  context: Boolean;
+  clientX: number;
+  clientY: number;
 }
 
 class SidebarApps extends React.Component<Props, State> {
-  state = { searchString: "", showApps: true, showMoreApps: false };
+  state = {
+    searchString: "",
+    showApps: true,
+    showMoreApps: false,
+    context: false,
+    clientX: 0,
+    clientY: 0
+  };
+
+  wrapper = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener("mousedown", e => this.handleClickOutside(e));
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", e => this.handleClickOutside(e));
+  }
+
+  handleClickOutside(event) {
+    if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
+      this.setState({ context: false });
+    }
+  }
 
   toggleApps = () =>
     this.setState(prevState => ({
@@ -77,28 +103,37 @@ class SidebarApps extends React.Component<Props, State> {
   render() {
     const { sidebarOpen, licences, openInstances, icon } = this.props;
     const { showApps, showMoreApps } = this.state;
+    const { clipboard } = require("electron");
 
     if (licences.length < 1) {
       return null;
     }
 
     const input = (
-      <input
-        ref={node => {
-          this.searchInput = node;
-        }}
-        value={this.state.searchString}
-        onChange={e => this.setState({ searchString: e.target.value })}
-        placeholder="Search Apps"
-        className={`sidebar-search${sidebarOpen ? "" : "-tooltip"}`}
-      />
+      <div style={{ width: "100px" }}>
+        <input
+          ref={node => {
+            this.searchInput = node;
+          }}
+          value={this.state.searchString}
+          onChange={e => this.setState({ searchString: e.target.value })}
+          placeholder="Search Apps"
+          className={`sidebar-search${sidebarOpen ? "" : "-tooltip"}`}
+          onContextMenu={e => {
+            e.preventDefault();
+            this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
+          }}
+        />
+      </div>
     );
 
     const SortComponent = (
-      <button className="sidebar-search-tooltip naked-button" onClick={this.toggleApps}>
-        <i className={`fal fa-angle-right ${showApps ? "open" : ""}`} />
-        <span style={{ fontSize: "10px" }}>{`${showApps ? "Hide" : "Show"} Apps`}</span>
-      </button>
+      <div style={{ width: "100px" }}>
+        <button className="sidebar-search-tooltip naked-button" onClick={this.toggleApps}>
+          <i className={`fal fa-angle-right ${showApps ? "open" : ""}`} />
+          <span style={{ fontSize: "10px" }}>{`${showApps ? "Hide" : "Show"} Apps`}</span>
+        </button>
+      </div>
     );
 
     return (
@@ -107,10 +142,10 @@ class SidebarApps extends React.Component<Props, State> {
           <button
             type="button"
             onClick={this.toggleApps}
-            className={`naked-button sidebar-link-apps${sidebarOpen ? "" : "-small"}`}>
+            className="naked-button sidebar-link-apps">
             <Tooltip
               useHover={!sidebarOpen}
-              distance={4}
+              distance={7}
               arrowSize={5}
               direction="right"
               content={SortComponent}>
@@ -138,13 +173,35 @@ class SidebarApps extends React.Component<Props, State> {
         </li>
 
         <li>
-          <ul>
-            {showApps && sidebarOpen && (
-              <li style={sidebarOpen ? { marginLeft: "11px" } : {}} className="sidebar-link">
+          <ul className="sidebar-apps">
+            {showApps && (
+              <li
+                style={sidebarOpen ? { marginLeft: "11px" } : {}}
+                className="sidebar-link"
+                ref={this.wrapper}>
                 <Tooltip useHover={!sidebarOpen} direction="right" content={input}>
                   <IconButton icon="search" onClick={() => this.searchInput.focus()} />
                 </Tooltip>
-                {input}
+                {sidebarOpen && input}
+                {this.state.context && (
+                  <button
+                    className="cleanup contextButton"
+                    onClick={() => {
+                      let value = clipboard.readText();
+                      this.setState({ searchString: value, context: false });
+                    }}
+                    style={{
+                      position: "fixed",
+                      top: this.state.clientY,
+                      left: this.state.clientX,
+                      right: "auto",
+                      color: "#253647",
+                      zIndex: 10000
+                    }}>
+                    <i className="fal fa-paste" />
+                    <span style={{ marginLeft: "8px", fontSize: "12px" }}>Paste</span>
+                  </button>
+                )}
               </li>
             )}
 

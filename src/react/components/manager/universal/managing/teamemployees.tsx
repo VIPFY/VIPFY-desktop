@@ -59,7 +59,10 @@ class ManageTeamEmployees extends React.Component<Props, State> {
   render() {
     console.log("TMS", this.props, this.state);
     return (
-      <Query query={fetchTeam} variables={{ teamid: this.props.team.unitid.id }}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 700}
+        query={fetchTeam}
+        variables={{ teamid: this.props.team.unitid.id }}>
         {({ loading, error, data, refetch }) => {
           if (loading) {
             return null;
@@ -74,9 +77,16 @@ class ManageTeamEmployees extends React.Component<Props, State> {
               close={() => this.props.close()}
               buttonStyles={{ marginTop: "0px" }}>
               <span className="mutiplieHeading">
-                <span className="bHeading">{this.props.heading || "Manage Licences"}</span>
+                <span className="bHeading">{this.props.heading || "Manage Employees"}</span>
               </span>
-              <span className="secondHolder">Available Employees</span>
+              <span className="secondHolder" style={{ left: "0px", float: "left" }}>
+                Assigned Employees
+              </span>
+              <span
+                className="secondHolder"
+                style={{ left: "calc(50% + 16px - 200px)", float: "left" }}>
+                Available Employees
+              </span>
               <UniversalSearchBox
                 placeholder="Search available employees"
                 getValue={v => this.setState({ search: v })}

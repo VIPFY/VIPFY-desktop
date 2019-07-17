@@ -51,7 +51,10 @@ class ManageServiceTeams extends React.Component<Props, State> {
   render() {
     console.log("AET", this.props, this.state);
     return (
-      <Query query={fetchCompanyService} variables={{ serviceid: this.props.service.id }}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 500}
+        query={fetchCompanyService}
+        variables={{ serviceid: this.props.service.id }}>
         {({ loading, error, data, refetch }) => {
           if (loading) {
             return null;
@@ -69,7 +72,14 @@ class ManageServiceTeams extends React.Component<Props, State> {
               <span className="mutiplieHeading">
                 <span className="bHeading">{this.props.heading || "Manage Teams"}</span>
               </span>
-              <span className="secondHolder">Available Teams</span>
+              <span className="secondHolder" style={{ left: "0px", float: "left" }}>
+                Assigned Teams
+              </span>
+              <span
+                className="secondHolder"
+                style={{ left: "calc(50% + 16px - 200px)", float: "left" }}>
+                Available Teams
+              </span>
               <UniversalSearchBox
                 placeholder="Search available teams"
                 getValue={v => this.setState({ search: v })}

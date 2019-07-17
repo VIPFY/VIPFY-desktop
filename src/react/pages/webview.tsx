@@ -689,7 +689,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         {this.state.options.universallogin ? (
           <UniversalLoginExecutor
             loginUrl={this.state.setUrl}
-            username={this.state.key.email}
+            username={this.state.key.email || this.state.key.username}
             password={this.state.key.password}
             timeout={60000}
             takeScreenshot={false}
@@ -700,7 +700,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                 this.hideLoadingScreen();
               }
             }}
-            speed={10}
+            speed={1}
           />
         ) : (
           <WebView
@@ -735,7 +735,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         )}
         {this.state.error ? (
           <Popup
-            popupHeader={"Uupps, sorry it seems that we can't look you in"}
+            popupHeader={"Uupps, sorry it seems that we can't log you in"}
             popupBody={ErrorPopup}
             bodyProps={{ sentence: this.state.error }}
             onClose={this.closePopup}

@@ -130,15 +130,16 @@ class SelfSaving extends React.Component<Props, State> {
               refetchQueries={[{ query: fetchLicences }]}
               onError={() => this.setState({ error: errorMessage })}>
               {(createOwnApp, { loading, data }) => (
-                <div className="hide-sso-webview">
+                <div className="hide-sso-webview" /*style={{ height: "400px", width: "400px" }}*/>
                   <UniversalLoginExecutor
                     loginUrl={this.props.sso.loginurl!}
                     username={this.props.sso!.email!}
                     password={this.props.sso.password!}
                     partition={`self-sso-${this.props.sso.name}`}
-                    timeout={20000}
+                    timeout={40000}
                     takeScreenshot={false}
                     setResult={async result => {
+                      console.log("RESULT", result);
                       if (loading || data) {
                         return;
                       }
@@ -166,6 +167,7 @@ class SelfSaving extends React.Component<Props, State> {
                     <LogoExtractor
                       url={this.props.sso.loginurl!}
                       setResult={async (icon, color) => {
+                        console.log("FAVICON RESULT");
                         if (loading || data) {
                           return;
                         }

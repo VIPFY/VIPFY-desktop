@@ -53,7 +53,10 @@ class TeamsSection extends React.Component<Props, State> {
     const employeename = this.props.employeename;
 
     return (
-      <Query query={fetchTeams} variables={{ userid: employeeid }}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 800}
+        query={fetchTeams}
+        variables={{ userid: employeeid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";

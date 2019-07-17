@@ -149,6 +149,7 @@ class BoughtplanUsagePerUserInner extends React.Component<Props, State> {
 
 export default props => (
   <Query
+    pollInterval={60 * 10 * 1000 + 100}
     query={gql`
       query fetchBoughtplanUsagePerUser($starttime: Date!, $endtime: Date!, $boughtplanid: ID!) {
         fetchBoughtplanUsagePerUser(

@@ -22,7 +22,7 @@ handleClickOutside = () => {
         <div className="deleteEmployee" onClick={() => this.props.fireEmployee(this.props.unitId)}>
           Fire Employee
         </div>
-        <Query query={fetchUsersOwnLicences} variables={{ unitid: this.props.unitId }} fetchPolicy="network-only">
+        <Query pollInterval={60 * 10 * 1000} query={fetchUsersOwnLicences} variables={{ unitid: this.props.unitId }} fetchPolicy="network-only">
           {({ loading, error, data }) => {
             if (loading) {
               return "Loading...";
@@ -62,7 +62,7 @@ handleClickOutside = () => {
         <div className="subaddholder-holder">
           <span>Add personal app</span>
           <div className="subaddholder">
-            <Query query={fetchUnitApps} variables={{ departmentid: this.props.departmentId }} fetchPolicy="network-only">
+            <Query pollInterval={60 * 10 * 1000} query={fetchUnitApps} variables={{ departmentid: this.props.departmentId }} fetchPolicy="network-only">
               {({ loading, error, data }) => {
                 if (loading) {
                   return "Loading...";

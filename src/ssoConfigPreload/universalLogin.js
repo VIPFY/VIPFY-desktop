@@ -75,6 +75,7 @@ ipcRenderer.once("loginData", async (e, key) => {
       didAnything = true;
     }
     button = findConfirmButton();
+    console.log("BUTTON", button);
     if (button) {
       await clickButton(button);
       didAnything = true;
@@ -165,10 +166,21 @@ function triggerMouseEvent(node, eventType) {
 
 function findForm(ignoreForm) {
   if (ignoreForm) return document;
-  const forms = Array.from(document.querySelectorAll("form")).filter(
+  let forms = Array.from(document.querySelectorAll("form")).filter(
     filterDom(["sign.?in", "log.?in"], ["oauth", "facebook", "sign.?up", "forgot", "google"])
   );
   console.log("forms", forms);
+
+  if (forms.length == 0) {
+    forms = Array.from(document.querySelectorAll("form"))
+      .filter(filterDom([], ["oauth", "facebook", "sign.?up", "forgot", "google"]))
+      .filter(
+        e =>
+          Array.from(e.querySelectorAll("input")).filter(
+            filterDom(["email", "user", "log.?in", "name", "pw", "pass"], [])
+          ).length > 0
+      );
+  }
 
   return forms.length == 1 ? forms[0] : document;
 }
@@ -176,12 +188,14 @@ function findForm(ignoreForm) {
 function findPassField() {
   let t = Array.from(findForm().querySelectorAll("input[type=password]"))
     .filter(filterDom(["pass", "pw"], ["repeat", "confirm", "forgot"]))
-    .filter(e => !isHidden(e));
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
   console.log("pass", t);
   if (t.length == 0) {
     t = Array.from(findForm().querySelectorAll("input[type=password]"))
       .filter(filterDom([], ["repeat", "confirm", "forgot"]))
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
   console.log("passB", t);
   return t[0];
@@ -190,12 +204,14 @@ function findPassField() {
 function findEmailField() {
   let t = Array.from(findForm().querySelectorAll("input"))
     .filter(filterDom(["email", "user", "log.?in", "name"], ["pw", "pass"]))
-    .filter(e => !isHidden(e));
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
   console.log("email", t);
   if (t.length == 0) {
     t = Array.from(findForm().querySelectorAll("input[type=email]"))
       .filter(filterDom([], ["pw", "pass"]))
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
   console.log("emailB", t);
   return t[0];
@@ -206,7 +222,8 @@ function findConfirmButton(ignoreForm) {
   if (findForm() != document) {
     t = Array.from(findForm().querySelectorAll("[type='submit']"))
       .filter(filterDom([], ["oauth", "google", "facebook", "forgot", "newsletter"]))
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
   if (t.length == 0) {
     t = Array.from(
@@ -220,7 +237,8 @@ function findConfirmButton(ignoreForm) {
           ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
   console.log("button1", t);
   if (t.length == 0) {
@@ -235,7 +253,8 @@ function findConfirmButton(ignoreForm) {
           ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
   console.log("button2", t);
   if (t.length == 0) {
@@ -250,7 +269,8 @@ function findConfirmButton(ignoreForm) {
           ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
   if (t.length == 0) {
     t = Array.from(
@@ -264,7 +284,8 @@ function findConfirmButton(ignoreForm) {
           ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
 
   console.log("button", t);
@@ -279,7 +300,9 @@ function findCookieButton() {
     document.querySelectorAll(
       "[class~=cc-compliance] > [class~=cc-dismiss], [class~='consent'] > a[class~='call']"
     )
-  ).filter(e => !isHidden(e));
+  )
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
   if (t.length == 0) {
     var trustArc = document.querySelector("[src*='https://consent-pref.trustarc.com/']");
     if (trustArc) {
@@ -300,7 +323,8 @@ function findCookieButton() {
           ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter"]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
   console.log("cookiebutton", t);
   return t[0];

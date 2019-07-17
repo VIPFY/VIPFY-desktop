@@ -63,6 +63,7 @@ interface State {
   showDeletion: boolean;
   tempLicences: { [key: string]: TempLicence };
   editLicenceData: TempLicence | {};
+  scrollTop: number;
 }
 
 class IssuedLicences extends React.Component<Props, State> {
@@ -71,8 +72,11 @@ class IssuedLicences extends React.Component<Props, State> {
     showEdit: null,
     showDeletion: false,
     tempLicences: {},
-    editLicenceData: {}
+    editLicenceData: {},
+    scrollTop: 0
   };
+
+  table = React.createRef();
 
   addLicence = (licence, key) => {
     this.setState(prevState => {
@@ -119,7 +123,10 @@ class IssuedLicences extends React.Component<Props, State> {
             </div>
           </div>
 
-          <Query query={FETCH_ISSUED_LICENCES} variables={{ unitid: this.props.unitid }}>
+          <Query
+            pollInterval={60 * 10 * 1000}
+            query={FETCH_ISSUED_LICENCES}
+            variables={{ unitid: this.props.unitid }}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching data..." />;
@@ -364,7 +371,10 @@ class IssuedLicences extends React.Component<Props, State> {
                   }'s Services`}</span>
                 </span>
 
-                <div className="table table-licences">
+                <div
+                  className="table table-licences"
+                  ref={this.table}
+                  onScroll={e => this.setState({ scrollTop: e.target.scrollTop })}>
                   <div className="tableHeading">
                     <div className="tableMain popup-lic">
                       {headers.map(header => (
@@ -375,7 +385,10 @@ class IssuedLicences extends React.Component<Props, State> {
                     </div>
                   </div>
 
-                  <Query query={FETCH_USER_LICENCES} variables={{ unitid: this.props.unitid }}>
+                  <Query
+                    pollInterval={60 * 10 * 1000}
+                    query={FETCH_USER_LICENCES}
+                    variables={{ unitid: this.props.unitid }}>
                     {({ data, loading, error }) => {
                       if (loading) {
                         return <LoadingDiv text="Fetching data..." />;
@@ -396,6 +409,8 @@ class IssuedLicences extends React.Component<Props, State> {
                           objectId={key}
                           addLicence={this.addLicence}
                           licence={licence}
+                          scrollTop={this.state.scrollTop}
+                          holder={this.table}
                         />
                       ));
                     }}

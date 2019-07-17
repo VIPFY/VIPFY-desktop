@@ -120,10 +120,11 @@ class App extends React.Component<AppProps, AppState> {
       });
       const { token } = res.data.redeemSetupToken;
       localStorage.setItem("token", token);
-      store.delete("setuptoken");
+      store.delete("setupkey");
       refetch();
     } catch (err) {
-      console.log("setup token error", err);
+      const store = new Store();
+      store.delete("setupkey");
     }
   };
 
@@ -302,6 +303,7 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { placeid, popup, page, sidebarloaded } = this.state;
+    console.log("RENDER");
     return (
       <AppContext.Provider
         value={{

@@ -98,7 +98,7 @@ class TeamAdd extends React.Component<Props, State> {
           }}>
           <div className="addgrid">{this.printMyTeams(this.props.teams)}</div>
         </div>
-        <Query query={fetchCompanyTeams}>
+        <Query pollInterval={60 * 10 * 1000 + 300} query={fetchCompanyTeams}>
           {({ loading, error, data }) => {
             if (loading) {
               return "Loading...";
