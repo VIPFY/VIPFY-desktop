@@ -18,7 +18,7 @@ class PrintEmployeeSquare extends React.Component<Props, State> {
     }
     const size = this.props.size || 32;
     const name =
-      (employee.firstname && employee.lastname && `${employee.firstname} ${employee.lastname}`) ||
+      employee.firstname || employee.lastname ||
       employee.fullname ||
       " "; // fullname is used by login
     return (
