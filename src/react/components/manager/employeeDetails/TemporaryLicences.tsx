@@ -61,7 +61,8 @@ export default (props: Props) => {
         <Query
           pollInterval={60 * 10 * 1000}
           query={FETCH_TEMP_LICENCES}
-          variables={{ unitid: props.unitid }}>
+          variables={{ unitid: props.unitid }}
+          fetchPolicy="network-only">
           {({ data, loading, error }) => {
             if (loading) {
               return <LoadingDiv text="Fetching data..." />;
