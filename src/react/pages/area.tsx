@@ -70,6 +70,7 @@ interface AreaProps {
   moveTo: Function;
   sidebarloaded: Function;
   consent?: boolean;
+  style?: Object;
 }
 
 interface AreaState {
@@ -398,7 +399,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     }
 
     return (
-      <div className="area">
+      <div className="area" style={this.props.style}>
         <SideBarContext.Provider value={this.state.sidebarOpen}>
           <Route
             render={props => {

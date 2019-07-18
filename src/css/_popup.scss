@@ -5,11 +5,11 @@ $modal-wh: 50%;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 32px);
   justify-content: center;
   left: 0;
   position: fixed;
-  top: 0;
+  top: 32px;
   width: 100vw;
   z-index: $modal-z;
   animation: lay-over 100ms ease-in;
@@ -112,10 +112,10 @@ $modal-wh: 50%;
 
 .backgroundPopup{
   position: fixed;
-  top: 0;
+  top: 32px;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 32px);
   z-index: 1000000;
   background-color: rgba($vipfy_mainColor, 0.1);
   display: flex;

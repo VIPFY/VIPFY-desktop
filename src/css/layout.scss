@@ -21,6 +21,7 @@
 @import './admin.scss';
 @import './manager.scss';
 @import './dataForms.scss';
+@import './headerNotifications.scss';
 @import './macosx';
 @import './error';
 
@@ -527,7 +528,7 @@ li {
   /*background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);*/
   //background-color: $fullworking-background;
   background-color: white;
-  height: calc(100vh - 3rem - 32px);
+  height: calc(100% - 3rem);
   margin-left: 3rem;
   overflow-y: scroll;
   transition: margin-left 0.6s ease-in-out, margin-right 0.6s ease-in-out;
@@ -926,6 +927,7 @@ li {
 
 .area{
     height: 100%;
+    transition: 400ms ease-in-out height;
 }
 .goToMarketplace {
     font-size: 0.5em;

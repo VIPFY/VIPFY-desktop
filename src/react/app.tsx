@@ -16,6 +16,8 @@ import PostLogin from "./pages/postlogin";
 import gql from "graphql-tag";
 import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
+import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
+import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -238,16 +240,23 @@ class App extends React.Component<AppProps, AppState> {
             store.set("accounts", machineuserarray);
 
             return (
-              <PostLogin
-                sidebarloaded={this.sidebarloaded}
-                setName={this.setName}
-                logMeOut={this.logMeOut}
-                showPopup={data => this.renderPopup(data)}
-                moveTo={this.moveTo}
-                {...data.me}
-                employees={data.me.company.employees}
-                profilepicture={data.me.profilepicture}
-              />
+              <HeaderNotificationContext.Consumer>
+                {context => {
+                  return (
+                    <PostLogin
+                      sidebarloaded={this.sidebarloaded}
+                      setName={this.setName}
+                      logMeOut={this.logMeOut}
+                      showPopup={data => this.renderPopup(data)}
+                      moveTo={this.moveTo}
+                      {...data.me}
+                      employees={data.me.company.employees}
+                      profilepicture={data.me.profilepicture}
+                      context={context}
+                    />
+                  );
+                }}
+              </HeaderNotificationContext.Consumer>
             );
           }}
         </Query>
@@ -315,8 +324,9 @@ class App extends React.Component<AppProps, AppState> {
           setreshowTutorial: this.setreshowTutorial
         }}
         className="full-size">
-        {this.renderComponents()}
-        {/*sidebarloaded &&
+        <HeaderNotificationProvider>
+          {this.renderComponents()}
+          {/*sidebarloaded &&
           localStorage.getItem("token") &&
           
             <Query query={tutorial}>
@@ -341,16 +351,17 @@ class App extends React.Component<AppProps, AppState> {
             }}
           </Query>
           }*/}
-        {popup.show && (
-          <Popup
-            popupHeader={popup.header}
-            popupBody={popup.body}
-            bodyProps={popup.props}
-            onClose={this.closePopup}
-            type={popup.type}
-            info={popup.info}
-          />
-        )}
+          {popup.show && (
+            <Popup
+              popupHeader={popup.header}
+              popupBody={popup.body}
+              bodyProps={popup.props}
+              onClose={this.closePopup}
+              type={popup.type}
+              info={popup.info}
+            />
+          )}
+        </HeaderNotificationProvider>
       </AppContext.Provider>
     );
   }
