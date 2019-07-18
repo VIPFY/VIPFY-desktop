@@ -218,27 +218,26 @@ li {
   transition-timing-function: ease-in-out;
 }
 
-.navigation{
-    /*background-color: #333;
-    background: linear-gradient(#333 0%, #222 50%);*/
-    height: 3em;
-    /*color: white;*/
-    display: flex;
-    justify-content: space-between;
-    //background-color: #fff !important;
-    //box-shadow: 0 0 10px #e8e8e8;
-    background-color: #f5f5f5;
-    margin-left: 3rem;
-    transition: margin-left 0.6s ease-in-out;
-    position: relative;
-    z-index: 200;
-    user-select: none;
+.sidebar-open {
+  margin-left: 15rem !important;
+}
+
+.navigation {
+  height: 3em;
+  display: flex;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  margin-left: 3rem;
+  transition: margin-left 0.6s ease-in-out;
+  position: relative;
+  z-index: 200;
+  user-select: none;
 }
 .navigationButton{
-    font-size: 2em;
-    line-height: 1em;
-    padding: 0.5em 0.5em;
-    cursor: pointer;
+  font-size: 2em;
+  line-height: 1em;
+  padding: 0.5em 0.5em;
+  cursor: pointer;
 }
 
 .navigationButton:hover{
