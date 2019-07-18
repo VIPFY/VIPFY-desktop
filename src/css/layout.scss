@@ -4219,9 +4219,12 @@ progress[value] {
         font-size: 10px;
       }
 
-      .universalCoverButton {
+      .universal-buttons {
         align-self: flex-end;
         flex: 1;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
       }
 
       .formError {
