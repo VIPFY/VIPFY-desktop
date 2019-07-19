@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import { Link } from "react-router-dom";
-import { ErrorComp, filterError } from "../../common/functions";
+import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../LoadingDiv";
 import SearchBox from "../SearchBox";
-import { iconPicFolder } from "../../common/constants";
+import { preAppImageUrl } from "../../common/constants";
 import Service from "./Service";
 import { FETCH_APPS } from "./apollo";
 
@@ -55,7 +55,7 @@ class ServiceEdit extends React.Component<Props, State> {
                     key={id}
                     className={`app ${disabled ? "disabled" : ""} ${hidden ? "hidden" : ""}`}
                     onClick={() => this.setState({ showApp: id })}>
-                    <img height="100px" width="100px" src={`${iconPicFolder}${icon}`} alt={name} />
+                    <img height="100px" width="100px" src={`${preAppImageUrl}${icon}`} alt={name} />
                     <h3>{name}</h3>
                   </div>
                 ))}
