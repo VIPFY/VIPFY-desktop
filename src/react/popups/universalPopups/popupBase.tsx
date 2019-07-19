@@ -171,21 +171,23 @@ class PopupBase extends React.Component<Props, State> {
                 this.close();
               }
             }}>
-            {this.props.fullmiddle ? (
+            {/* {this.props.fullmiddle ? (
               ""
             ) : (
-              <div className="sideReplicaPopup" style={{ width: sidebarOpen ? "240px" : "48px" }} />
-            )}
+               <div className="sideReplicaPopup" style={{ width: sidebarOpen ? "240px" : "48px" }} />
+            )} */}
 
             <div
               className="holderPopup"
-              style={{
-                width: this.props.fullmiddle
+              style={
+                {
+                  //width: sidebarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
+                }
+              }
+              /*this.props.fullmiddle
                   ? "100%"
-                  : sidebarOpen
-                  ? "calc(100% - 240px + 18px)"
-                  : "calc(100% - 48px + 18px)"
-              }}>
+                  :*/
+            >
               <div
                 className="universalPopup"
                 style={Object.assign(

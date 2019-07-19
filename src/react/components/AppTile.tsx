@@ -128,11 +128,6 @@ class AppTile extends React.Component<Props, State> {
                 this.props.setPreview(clearPreview);
               }}
               style={{
-                /*`url(${iconPicFolder}${
-                this.props.preview.pic && dragItem == id
-                  ? this.props.preview.pic
-                  : planid.appid.icon
-              })`*/
                 backgroundImage: planid.appid.icon && getBgImageApp(planid.appid.icon, 160)
               }}>
               {planid.options && planid.options.external && (

@@ -146,6 +146,7 @@ class ServiceDetails extends React.Component<Props, State> {
                   </div>
                   <div className="tableColumnSmall content">
                     <Query
+                      pollInterval={60 * 10 * 1000 + 500}
                       query={gql`
                         query fetchBoughtplanUsagePerUser(
                           $starttime: Date!

@@ -9,7 +9,7 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import { emailRegex } from "../../common/constants";
 
 const SIGNUP = gql`
-  mutation onSignUp($email: String!, $name: String, $privacy: Boolean!, $tOS: Boolean!) {
+  mutation onSignUp($email: String!, $name: String!, $privacy: Boolean!, $tOS: Boolean!) {
     signUp(email: $email, companyname: $name, privacy: $privacy, termsOfService: $tOS) {
       ok
       token
@@ -85,10 +85,12 @@ class RegisterCompany extends React.Component<Props, State> {
               <UniversalTextInput
                 id="emailreg"
                 width="312px"
-                errorEvaluation={!this.state.email.match(emailRegex)}
+                errorEvaluation={this.state.email != "" && !this.state.email.match(emailRegex)}
                 errorhint="A valid Email looks like this john@vipfy.com"
                 label="Email"
                 livevalue={v => this.setState({ email: v })}
+                focus={true}
+                required={true}
               />
             </div>
 
@@ -114,7 +116,7 @@ class RegisterCompany extends React.Component<Props, State> {
                 name="tos"
                 liveValue={v => this.setState({ tos: v })}
                 style={{ width: "312px" }}>
-                <span style={{ width: "300px" }}>
+                <span style={{ width: "300px", fontSize: "13px", paddingTop: "1px" }}>
                   By registering I agree to the
                   <span
                     style={{
@@ -134,7 +136,7 @@ class RegisterCompany extends React.Component<Props, State> {
                 name="privacy"
                 liveValue={v => this.setState({ privacy: v })}
                 style={{ width: "312px" }}>
-                <span style={{ width: "300px" }}>
+                <span style={{ width: "300px", fontSize: "13px", paddingTop: "1px" }}>
                   By registering I agree to the
                   <span
                     style={{

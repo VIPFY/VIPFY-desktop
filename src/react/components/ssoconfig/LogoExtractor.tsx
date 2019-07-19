@@ -26,6 +26,15 @@ class LogoExtractor extends React.PureComponent<Props, State> {
     color: undefined,
     colors: undefined
   };
+
+  componentDidMount() {
+    this.timeout = setTimeout(() => this.props.setResult(null, "", []), 20000);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timeout);
+  }
+
   render() {
     return (
       <WebView
@@ -87,6 +96,7 @@ class LogoExtractor extends React.PureComponent<Props, State> {
       this.state.color !== undefined &&
       this.state.colors !== undefined
     ) {
+      clearTimeout(this.timeout);
       this.props.setResult(this.state.icon!, this.state.color!, this.state.colors!);
     }
   }

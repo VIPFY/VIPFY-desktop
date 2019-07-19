@@ -64,7 +64,10 @@ class EmployeeDetails extends React.Component<Props, State> {
     const employeeid = this.props.match.params.userid;
 
     return (
-      <Query query={QUERY_SEMIPUBLICUSER} variables={{ unitid: employeeid }}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 300}
+        query={QUERY_SEMIPUBLICUSER}
+        variables={{ unitid: employeeid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";

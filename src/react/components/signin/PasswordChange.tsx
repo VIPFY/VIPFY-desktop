@@ -8,6 +8,7 @@ import { CHANGE_PASSWORD } from "../../mutations/auth";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
+import { PW_MIN_LENGTH } from "../../common/constants";
 
 interface PasswordChangeProps {
   logMeOut: Function;
@@ -103,7 +104,7 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
                 <label>
                   <ReactPasswordStrength
                     className="passwordStrength"
-                    minLength={8}
+                    minLength={PW_MIN_LENGTH}
                     minScore={2}
                     scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
                     tooShortWord={"too short"}
@@ -178,7 +179,7 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
                     New Password:
                     <ReactPasswordStrength
                       className="passwordStrength"
-                      minLength={8}
+                      minLength={PW_MIN_LENGTH}
                       minScore={2}
                       scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
                       tooShortWord={"too short"}

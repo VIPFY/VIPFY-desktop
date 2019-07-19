@@ -68,6 +68,16 @@ class ChangeAccount extends React.Component<Props, State> {
         <h1 style={{ textAlign: "center" }}>Change Account</h1>
 
         <div className="accountArrayHolder">
+          <div className="accountHolder" onClick={() => this.props.addMachineUser!()}>
+            <div className="accountHolderBullet">
+              <i className="fal fa-user-plus" />
+            </div>
+            <div
+              className="accountHolderText"
+              style={{ lineHeight: "19px", paddingTop: "19px", fontSize: "14px" }}>
+              Add account
+            </div>
+          </div>
           {this.accounts.length > 0 &&
             this.accounts.map(a => (
               <div
@@ -82,7 +92,6 @@ class ChangeAccount extends React.Component<Props, State> {
                   <div style={{ fontSize: "12px" }}>{a.email}</div>
                 </div>
 
-                {/* {this.state.hover == a.email && ( */}
                 <button
                   onClick={e => {
                     e.stopPropagation();
@@ -91,20 +100,8 @@ class ChangeAccount extends React.Component<Props, State> {
                   className="naked-button">
                   <i className="fal fa-trash-alt accountDelete" />
                 </button>
-                {/* )} */}
               </div>
             ))}
-
-          <div className="accountHolder" onClick={() => this.props.addMachineUser!()}>
-            <div className="accountHolderBullet">
-              <i className="fal fa-user-plus" />
-            </div>
-            <div
-              className="accountHolderText"
-              style={{ lineHeight: "19px", paddingTop: "19px", fontSize: "14px" }}>
-              Add account
-            </div>
-          </div>
         </div>
         <div className="buttonHolder">
           <UniversalButton label="Cancel" type="low" onClick={() => this.props.backFunction()} />

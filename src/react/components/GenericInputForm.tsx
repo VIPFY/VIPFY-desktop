@@ -385,9 +385,9 @@ class GenericInputForm extends React.Component<Props, State> {
                     return (
                       <img
                         alt={this.state.values[name].name}
-                        height="100px"
-                        width="100px"
-                        className="img-circle"
+                        height="200px"
+                        width="200px"
+                        className="preview-img"
                         src={this.state.values[name].preview}
                       />
                     );
