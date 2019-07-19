@@ -110,7 +110,6 @@ class UniversalTextInput extends React.Component<Props, State> {
 
   render() {
     const { clipboard } = require("electron");
-    console.log("INPUTFIELD", this.props, this.state);
     return (
       <div
         className={`universalLabelInput ${this.props.disabled ? "disabled" : ""} ${
@@ -225,7 +224,8 @@ class UniversalTextInput extends React.Component<Props, State> {
           <button
             className="cleanup inputInsideButton"
             tabIndex={-1}
-            onClick={() => this.props.deleteFunction()}>
+            onClick={() => this.props.deleteFunction()}
+            style={{ color: "#253647" }}>
             <i className="fal fa-trash-alt" />
           </button>
         )}

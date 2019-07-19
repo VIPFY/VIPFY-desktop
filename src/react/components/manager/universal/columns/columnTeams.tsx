@@ -7,6 +7,7 @@ interface Props {
   overlayFunction?: Function;
   teams: any[];
   style?: Object;
+  fake?: Boolean;
 }
 
 interface State {
@@ -30,30 +31,50 @@ class ColumnTeams extends React.Component<Props, State> {
   render() {
     const { teams, teamidFunction, checkFunction, overlayFunction } = this.props;
     let teamsArray: JSX.Element[] = [];
-    let counter = 0;
-    for (counter = 0; counter < teams.length; counter++) {
-      const team: {
-        profilepicture: string;
-        internaldata: { letters: string; color: string };
-        name: string;
-      } = teamidFunction(teams[counter]);
-      if (teams.length > this.state.numteams && counter > this.state.numteams - 2) {
+
+    if (this.props.fake) {
+      const amount = Math.random() * 4 + 1;
+      let fakecounter = 0;
+      for (fakecounter = 0; fakecounter < Math.min(amount, this.state.numteams); fakecounter++) {
         teamsArray.push(
           <div
-            key="moreTeams"
-            className="managerSquare"
+            key={`key-${fakecounter}`}
+            className="managerSquare animateLoading"
             style={{
               color: "#253647",
               backgroundColor: "#F2F2F2",
               fontSize: "12px",
               fontWeight: 400
-            }}>
-            +{teams.length - this.state.numteams + 1}
-          </div>
+            }}
+          />
         );
-        break;
-      } else {
-        teamsArray.push(<PrintTeamSquare key={`team-${counter}`} team={team} />);
+      }
+    } else {
+      let counter = 0;
+      for (counter = 0; counter < teams.length; counter++) {
+        const team: {
+          profilepicture: string;
+          internaldata: { letters: string; color: string };
+          name: string;
+        } = teamidFunction(teams[counter]);
+        if (teams.length > this.state.numteams && counter > this.state.numteams - 2) {
+          teamsArray.push(
+            <div
+              key="moreTeams"
+              className="managerSquare"
+              style={{
+                color: "#253647",
+                backgroundColor: "#F2F2F2",
+                fontSize: "12px",
+                fontWeight: 400
+              }}>
+              +{teams.length - this.state.numteams + 1}
+            </div>
+          );
+          break;
+        } else {
+          teamsArray.push(<PrintTeamSquare key={`team-${counter}`} team={team} />);
+        }
       }
     }
 

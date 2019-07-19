@@ -38,6 +38,10 @@ export const QUERY_SEMIPUBLICUSER = gql`
       birthday
       isadmin
       isonline
+      lastactive
+      passwordlength
+      passwordstrength
+      twofa
     }
   }
 `;

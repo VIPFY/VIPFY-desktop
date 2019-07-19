@@ -323,7 +323,15 @@ class EmployeeOverview extends React.Component<Props, State> {
                               variables={{ userid: employee.id }}>
                               {({ loading, error, data }) => {
                                 if (loading) {
-                                  return "Loading...";
+                                  return (
+                                    <ColumnTeams
+                                      style={{ width: "20%" }}
+                                      teams={data.fetchTeams}
+                                      teamidFunction={team => team}
+                                      {...this.props}
+                                      fake={true}
+                                    />
+                                  );
                                 }
                                 if (error) {
                                   return `Error! ${error.message}`;
@@ -334,6 +342,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                     teams={data.fetchTeams}
                                     teamidFunction={team => team}
                                     {...this.props}
+                                    fake={false}
                                   />
                                 );
                               }}
@@ -346,7 +355,28 @@ class EmployeeOverview extends React.Component<Props, State> {
                             >
                               {({ loading, error, data }) => {
                                 if (loading) {
-                                  return "Loading...";
+                                  return (
+                                    <ColumnServices
+                                      style={{ width: "30%" }}
+                                      services={data.fetchUsersOwnLicences}
+                                      checkFunction={element =>
+                                        !element.disabled &&
+                                        !element.boughtplanid.planid.appid.disabled &&
+                                        (element.endtime > now() || element.endtime == null)
+                                      }
+                                      appidFunction={element => element.boughtplanid.planid.appid}
+                                      overlayFunction={service =>
+                                        service.options &&
+                                        service.options.nosetup && (
+                                          <div className="licenceError">
+                                            <i className="fal fa-exclamation-circle" />
+                                          </div>
+                                        )
+                                      }
+                                      {...this.props}
+                                      fake={true}
+                                    />
+                                  );
                                 }
                                 if (error) {
                                   return `Error! ${error.message}`;
@@ -370,6 +400,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                       )
                                     }
                                     {...this.props}
+                                    fake={false}
                                   />
                                 );
                               }}

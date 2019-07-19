@@ -48,6 +48,8 @@ const FETCH_ISSUED_LICENCES = gql`
 interface Props {
   firstName: string;
   unitid: string;
+  showTimeAway?: Boolean;
+  closeTimeAway: Function;
 }
 
 interface TempLicence {
@@ -89,7 +91,7 @@ class IssuedLicences extends React.Component<Props, State> {
 
   render() {
     const headers = ["App", "Type", "Beginning", "Ending", "Replacement"];
-    const tableHeaders = ["App", "Issued to", "Beginning", "Ending"];
+    const tableHeaders = ["App", "Issued to", "Beginning", "Ending", ""];
 
     return (
       <div className="section">
@@ -137,11 +139,12 @@ class IssuedLicences extends React.Component<Props, State> {
               }
 
               if (!data.fetchIssuedLicences || data.fetchIssuedLicences.length < 1) {
-                return (
+                /*return (
                   <span className="no-element">
                     {`No one has access to ${this.props.firstName}'s Licences yet.`}{" "}
                   </span>
-                );
+                );*/
+                return "";
               }
 
               return data.fetchIssuedLicences.map((licence, key) => {
@@ -190,6 +193,7 @@ class IssuedLicences extends React.Component<Props, State> {
                       <div className="tableColumnSmall content">{starttime}</div>
 
                       <div className="tableColumnSmall content">{endtime}</div>
+                      <div className="tableColumnSmall" />
                     </div>
 
                     <div className="tableEnd">
@@ -339,123 +343,130 @@ class IssuedLicences extends React.Component<Props, State> {
           </Query>
         </div>
 
-        {this.state.showCreation && (
-          <Mutation
-            mutation={GIVE_TEMPORARY_ACCESS}
-            update={(cache, { data: { giveTemporaryAccess } }) => {
-              const { fetchIssuedLicences } = cache.readQuery({
-                query: FETCH_ISSUED_LICENCES,
-                variables: { unitid: this.props.unitid }
-              });
-
-              const { licences } = giveTemporaryAccess;
-
-              if (licences && licences.length > 0) {
-                cache.writeQuery({
+        {this.state.showCreation ||
+          (this.props.showTimeAway && (
+            <Mutation
+              mutation={GIVE_TEMPORARY_ACCESS}
+              update={(cache, { data: { giveTemporaryAccess } }) => {
+                const { fetchIssuedLicences } = cache.readQuery({
                   query: FETCH_ISSUED_LICENCES,
-                  variables: { unitid: this.props.unitid },
-                  data: { fetchIssuedLicences: fetchIssuedLicences.concat(licences) }
+                  variables: { unitid: this.props.unitid }
                 });
-              }
-            }}
-            onCompleted={() => this.setState({ showCreation: false })}>
-            {(mutate, { loading, data, error }) => (
-              <PopupBase
-                buttonStyles={{ justifyContent: "space-between" }}
-                fullmiddle={true}
-                customStyles={{ maxWidth: "1152px" }}
-                close={() => this.setState({ showCreation: false })}>
-                <span className="mutiplieHeading">
-                  <span style={{ fontWeight: "bold" }} className="mHeading">{`${
-                    this.props.firstName
-                  }'s Services`}</span>
-                </span>
 
-                <div
-                  className="table table-licences"
-                  ref={this.table}
-                  onScroll={e => this.setState({ scrollTop: e.target.scrollTop })}>
-                  <div className="tableHeading">
-                    <div className="tableMain popup-lic">
-                      {headers.map(header => (
-                        <div key={header} className="tableColumnSmall">
-                          <h1>{header}</h1>
-                        </div>
-                      ))}
+                const { licences } = giveTemporaryAccess;
+
+                if (licences && licences.length > 0) {
+                  cache.writeQuery({
+                    query: FETCH_ISSUED_LICENCES,
+                    variables: { unitid: this.props.unitid },
+                    data: { fetchIssuedLicences: fetchIssuedLicences.concat(licences) }
+                  });
+                }
+              }}
+              onCompleted={() => this.setState({ showCreation: false })}>
+              {(mutate, { loading, data, error }) => (
+                <PopupBase
+                  buttonStyles={{ justifyContent: "space-between" }}
+                  fullmiddle={true}
+                  customStyles={{ maxWidth: "1152px" }}
+                  close={() => {
+                    this.setState({ showCreation: false });
+                    this.props.closeTimeAway();
+                  }}>
+                  <span className="mutiplieHeading">
+                    <span style={{ fontWeight: "bold" }} className="mHeading">{`${
+                      this.props.firstName
+                    }'s Services`}</span>
+                  </span>
+
+                  <div
+                    className="table table-licences"
+                    ref={this.table}
+                    onScroll={e => this.setState({ scrollTop: e.target.scrollTop })}>
+                    <div className="tableHeading">
+                      <div className="tableMain popup-lic">
+                        {headers.map(header => (
+                          <div key={header} className="tableColumnSmall">
+                            <h1>{header}</h1>
+                          </div>
+                        ))}
+                      </div>
                     </div>
+
+                    <Query
+                      pollInterval={60 * 10 * 1000}
+                      query={FETCH_USER_LICENCES}
+                      variables={{ unitid: this.props.unitid }}>
+                      {({ data, loading, error }) => {
+                        if (loading) {
+                          return <LoadingDiv text="Fetching data..." />;
+                        }
+
+                        if (error || !data) {
+                          return <ErrorComp error={error} />;
+                        }
+
+                        if (data.fetchUserLicences.length < 1) {
+                          return <span>Seems like the User has no Licences yet.</span>;
+                        }
+
+                        return data.fetchUserLicences.map((licence, key) => (
+                          <LicenceRow
+                            key={key}
+                            user={this.props.unitid}
+                            objectId={key}
+                            addLicence={this.addLicence}
+                            licence={licence}
+                            scrollTop={this.state.scrollTop}
+                            holder={this.table}
+                          />
+                        ));
+                      }}
+                    </Query>
                   </div>
 
-                  <Query
-                    pollInterval={60 * 10 * 1000}
-                    query={FETCH_USER_LICENCES}
-                    variables={{ unitid: this.props.unitid }}>
-                    {({ data, loading, error }) => {
-                      if (loading) {
-                        return <LoadingDiv text="Fetching data..." />;
-                      }
-
-                      if (error || !data) {
-                        return <ErrorComp error={error} />;
-                      }
-
-                      if (data.fetchUserLicences.length < 1) {
-                        return <span>Seems like the User has no Licences yet.</span>;
-                      }
-
-                      return data.fetchUserLicences.map((licence, key) => (
-                        <LicenceRow
-                          key={key}
-                          user={this.props.unitid}
-                          objectId={key}
-                          addLicence={this.addLicence}
-                          licence={licence}
-                          scrollTop={this.state.scrollTop}
-                          holder={this.table}
-                        />
-                      ));
-                    }}
-                  </Query>
-                </div>
-
-                {error && <div className="error">{filterError(error)}</div>}
-                {data && data.errors && data.errors.length > 0 && (
-                  <div className="error">
-                    {`Sorry, something went wrong with the following Licences:
+                  {error && <div className="error">{filterError(error)}</div>}
+                  {data && data.errors && data.errors.length > 0 && (
+                    <div className="error">
+                      {`Sorry, something went wrong with the following Licences:
                     ${data.errors.map(err => <span key={err}>{err}</span>)}`}
-                  </div>
-                )}
+                    </div>
+                  )}
 
-                <UniversalButton
-                  label="Cancel"
-                  type="low"
-                  disabled={loading}
-                  onClick={() => this.setState({ showCreation: false })}
-                />
+                  <UniversalButton
+                    label="Cancel"
+                    type="low"
+                    disabled={loading}
+                    onClick={() => {
+                      this.setState({ showCreation: false });
+                      this.props.closeTimeAway();
+                    }}
+                  />
 
-                <UniversalButton
-                  label="Save"
-                  type="high"
-                  disabled={Object.keys(this.state.tempLicences).length < 1 || loading}
-                  onClick={() => {
-                    const licences = Object.values(this.state.tempLicences).map(
-                      (licence: Licence) => ({
-                        impersonator: licence.user,
-                        id: licence.licenceid,
-                        starttime: licence.starttime,
-                        endtime: licence.endtime,
-                        use: true,
-                        view: true,
-                        tags: ["vacation"]
-                      })
-                    );
+                  <UniversalButton
+                    label="Save"
+                    type="high"
+                    disabled={Object.keys(this.state.tempLicences).length < 1 || loading}
+                    onClick={() => {
+                      const licences = Object.values(this.state.tempLicences).map(
+                        (licence: Licence) => ({
+                          impersonator: licence.user,
+                          id: licence.licenceid,
+                          starttime: licence.starttime,
+                          endtime: licence.endtime,
+                          use: true,
+                          view: true,
+                          tags: ["vacation"]
+                        })
+                      );
 
-                    mutate({ variables: { licences } });
-                  }}
-                />
-              </PopupBase>
-            )}
-          </Mutation>
-        )}
+                      mutate({ variables: { licences } });
+                    }}
+                  />
+                </PopupBase>
+              )}
+            </Mutation>
+          ))}
       </div>
     );
   }
