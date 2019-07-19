@@ -30,10 +30,37 @@
     .error {
       color: crimson;
       position: absolute;
-      bottom: 0px;
-      right: 0px;
+      bottom: 0;
+      right: 0;
       width: 430px;
       text-align: right;
+    }
+  }
+}
+
+.security-settings {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: space-between;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 400;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 50px 1fr 50px;
+    grid-template-rows: 1fr 1fr;
+
+    h3 {
+
+    }
+
+    p {
+      font-size: 10px;
+      opacity: 0.6; 
     }
   }
 }

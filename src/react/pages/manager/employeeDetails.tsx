@@ -2,7 +2,6 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
 import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
-import * as Dropzone from "react-dropzone";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
 import TeamsSection from "../../components/manager/teamsSection";
@@ -17,6 +16,8 @@ import TemporaryLicences from "../../components/manager/employeeDetails/Temporar
 import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicences";
 import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
+import UniversalButton from "../../components/universalButtons/universalButton";
+import PopupBase from "../../popups/universalPopups/popupBase";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -35,11 +36,13 @@ interface Props {
 
 interface State {
   loading: boolean;
+  showSecurityPopup: boolean;
 }
 
 class EmployeeDetails extends React.Component<Props, State> {
   state = {
-    loading: false
+    loading: false,
+    showSecurityPopup: true
   };
 
   uploadPic = async (picture: File) => {
@@ -129,6 +132,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                       </div>
                     </div>
                   </div>
+                  <UniversalButton type="high" onClick={() => console.log("HI")} label="Security" />
                 </div>
                 <TeamsSection
                   employeeid={employeeid}
@@ -162,6 +166,25 @@ class EmployeeDetails extends React.Component<Props, State> {
                     }}
                     closeFunction={() => this.setState({ changepicture: null })}
                   />
+                )}
+
+                {this.state.showSecurityPopup && (
+                  <PopupBase small={true}>
+                    <section className="security-settings">
+                      <h1>Security Settings</h1>
+                      <ul>
+                        <li>
+                          <i className="fal fa-key start" />
+                          <h3>Reset Password</h3>
+                          <p>
+                            Protect your account using a strong and unique login password that you
+                            don’t use for anything else
+                          </p>
+                        </li>
+                        <li>Two-Factor Authentication</li>
+                      </ul>
+                    </section>
+                  </PopupBase>
                 )}
               </div>
             );
