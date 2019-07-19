@@ -18,6 +18,7 @@ import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
+import SecurityPopup from "./securityPopup";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -132,7 +133,11 @@ class EmployeeDetails extends React.Component<Props, State> {
                       </div>
                     </div>
                   </div>
-                  <UniversalButton type="high" onClick={() => console.log("HI")} label="Security" />
+                  <UniversalButton
+                    type="high"
+                    onClick={() => this.setState({ showSecurityPopup: true })}
+                    label="Security"
+                  />
                 </div>
                 <TeamsSection
                   employeeid={employeeid}
@@ -169,21 +174,10 @@ class EmployeeDetails extends React.Component<Props, State> {
                 )}
 
                 {this.state.showSecurityPopup && (
-                  <PopupBase small={true}>
-                    <section className="security-settings">
-                      <h1>Security Settings</h1>
-                      <ul>
-                        <li>
-                          <i className="fal fa-key start" />
-                          <h3>Reset Password</h3>
-                          <p>
-                            Protect your account using a strong and unique login password that you
-                            don’t use for anything else
-                          </p>
-                        </li>
-                        <li>Two-Factor Authentication</li>
-                      </ul>
-                    </section>
+                  <PopupBase>
+                    <SecurityPopup
+                      closeFunction={() => this.setState({ showSecurityPopup: false })}
+                    />
                   </PopupBase>
                 )}
               </div>
