@@ -3,8 +3,6 @@ require("dotenv").config();
 let config = {
   backendHost: process.env.SERVER_NAME || "api.vipfy.store",
   backendPort: process.env.SERVER_PORT || 443,
-  wsName: process.env.WS_NAME || "localhost",
-  wsPort: process.env.WS_PORT || 4003,
   backendSSL:
     process.env.SERVER_SSL !== "0" &&
     process.env.SERVER_SSL !== "false" &&
