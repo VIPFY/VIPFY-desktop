@@ -10,8 +10,6 @@ import config from "../configurationManager";
 
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
-const WS_NAME = config.wsName;
-const WS_PORT = config.wsPort;
 // eslint-disable-next-line
 const secure = config.backendSSL ? "s" : "";
 
@@ -110,7 +108,7 @@ const middlewareLink = setContext(() => ({
 
 // Refresh the tokens after the user makes a request
 const afterwareLink = new ApolloLink((operation, forward) => {
-  return forward!(operation).map(response => {
+  return forward(operation).map(response => {
     const {
       response: { headers }
     } = operation.getContext();
@@ -128,7 +126,7 @@ const afterwareLink = new ApolloLink((operation, forward) => {
 
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
 const wsLink = new WebSocketLink({
-  uri: `ws${secure}://${WS_NAME}:${WS_PORT}/subscriptions`,
+  uri: `ws${secure}://${SERVER_NAME}:${SERVER_PORT}/subscriptions`,
   options: {
     reconnect: true,
     connectionParams: () => ({
