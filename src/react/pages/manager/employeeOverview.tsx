@@ -226,13 +226,16 @@ class EmployeeOverview extends React.Component<Props, State> {
                   <div className="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" style={{ width: "20%" }}>
                           <h1>Name</h1>
                         </div>
-                        <div className="tableColumnBig">
+                        <div className="tableColumnSmall" style={{ width: "5%" }}>
+                          <h1>Status</h1>
+                        </div>
+                        <div className="tableColumnBig" style={{ width: "20%" }}>
                           <h1>Teams</h1>
                         </div>
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" style={{ width: "30%" }}>
                           <h1>Services</h1>
                         </div>
                       </div>
@@ -265,12 +268,12 @@ class EmployeeOverview extends React.Component<Props, State> {
                           className="tableRow"
                           onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
                           <div className="tableMain">
-                            <div className="tableColumnBig">
+                            <div className="tableColumnBig" style={{ width: "20%" }}>
                               <PrintEmployeeSquare employee={employee} className="managerSquare" />
                               <span className="name">
                                 {employee.firstname} {employee.lastname}
                               </span>
-                              <div
+                              {/* <div
                                 className="status"
                                 style={
                                   employee.isonline
@@ -284,6 +287,27 @@ class EmployeeOverview extends React.Component<Props, State> {
                                     : {
                                         backgroundColor: "#DB4D3F",
                                         float: "right",
+                                        marginTop: "18px",
+                                        marginLeft: "0px",
+                                        width: "56px"
+                                      }
+                                }>
+                                {employee.isonline ? "Online" : "Offline"}
+                              </div>*/}
+                            </div>
+                            <div className="tableColumnSmall" style={{ width: "5%" }}>
+                              <div
+                                className="status"
+                                style={
+                                  employee.isonline
+                                    ? {
+                                        backgroundColor: "#29CC94",
+                                        marginTop: "18px",
+                                        marginLeft: "0px",
+                                        width: "56px"
+                                      }
+                                    : {
+                                        backgroundColor: "#DB4D3F",
                                         marginTop: "18px",
                                         marginLeft: "0px",
                                         width: "56px"
@@ -306,8 +330,10 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 }
                                 return (
                                   <ColumnTeams
+                                    style={{ width: "20%" }}
                                     teams={data.fetchTeams}
                                     teamidFunction={team => team}
+                                    {...this.props}
                                   />
                                 );
                               }}
@@ -327,6 +353,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 }
                                 return (
                                   <ColumnServices
+                                    style={{ width: "30%" }}
                                     services={data.fetchUsersOwnLicences}
                                     checkFunction={element =>
                                       !element.disabled &&
@@ -342,6 +369,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                         </div>
                                       )
                                     }
+                                    {...this.props}
                                   />
                                 );
                               }}

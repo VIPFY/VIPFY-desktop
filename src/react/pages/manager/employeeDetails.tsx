@@ -88,17 +88,16 @@ class EmployeeDetails extends React.Component<Props, State> {
             return (
               <div className="managerPage">
                 <div className="heading">
-                  <h1>
+                  <span className="h1">
                     <span
                       style={{ cursor: "pointer" }}
                       onClick={() => this.props.moveTo("emanager")}>
                       Employee Manager
                     </span>
-                    <h2>></h2>
-                    <h2>
+                    <span className="h2">
                       {querydata.firstname} {querydata.lastname}
-                    </h2>
-                  </h1>
+                    </span>
+                  </span>
 
                   <UniversalSearchBox />
                 </div>
@@ -127,8 +126,11 @@ class EmployeeDetails extends React.Component<Props, State> {
                       </div>
                     </div>
                     <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
-                      <div className="table">
+                      <div
+                        className="table"
+                        style={{ display: "grid", gridTemplateColumns: "1fr 160px" }}>
                         <PersonalDetails querydata={querydata} />
+                        <div className="personalEditButtons">Test</div>
                       </div>
                     </div>
                   </div>

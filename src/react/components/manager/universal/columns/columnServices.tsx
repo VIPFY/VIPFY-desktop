@@ -8,9 +8,23 @@ interface Props {
   services: any[];
 }
 
-interface State {}
+interface State {
+  numservices: number;
+}
 
 class ColumnServices extends React.Component<Props, State> {
+  state = { numservices: 6 };
+  ref = React.createRef();
+
+  componentDidUpdate() {
+    if (
+      this.ref &&
+      this.ref.current &&
+      Math.floor((this.ref.current.offsetWidth - 10) / 40) != this.state.numservices
+    ) {
+      this.setState({ numservices: Math.floor((this.ref.current.offsetWidth - 10) / 40) });
+    }
+  }
   render() {
     const { appidFunction, checkFunction, overlayFunction } = this.props;
     let sortedservices: any[] = [];
@@ -23,7 +37,7 @@ class ColumnServices extends React.Component<Props, State> {
     let counter = 0;
     for (counter = 0; counter < sortedservices.length; counter++) {
       const service = sortedservices[counter];
-      if (sortedservices.length > 6 && counter > 4) {
+      if (sortedservices.length > this.state.numservices && counter > this.state.numservices - 2) {
         serviceArray.push(
           <div
             key="moreSerivces"
@@ -34,7 +48,7 @@ class ColumnServices extends React.Component<Props, State> {
               fontSize: "12px",
               fontWeight: 400
             }}>
-            +{sortedservices.length - 5}
+            +{sortedservices.length - this.state.numservices + 1}
           </div>
         );
         break;
@@ -49,7 +63,11 @@ class ColumnServices extends React.Component<Props, State> {
         );
       }
     }
-    return <div className="tableColumnBig">{serviceArray}</div>;
+    return (
+      <div className="tableColumnBig" style={this.props.style || {}} ref={this.ref}>
+        {serviceArray}
+      </div>
+    );
   }
 }
 export default ColumnServices;

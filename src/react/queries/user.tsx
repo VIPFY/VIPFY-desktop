@@ -16,6 +16,7 @@ export const QUERY_SEMIPUBLICUSER = gql`
     fetchSemiPublicUser(unitid: $unitid) {
       id
       firstname
+      middlename
       lastname
       profilepicture
       emails {
