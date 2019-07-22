@@ -1,8 +1,10 @@
 import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
+import ResetPassword from "../../popups/universalPopups/resetPassword";
 
 interface Props {
   closeFunction: Function;
+  user: any;
 }
 
 interface State {
@@ -38,6 +40,13 @@ class SecurityPopup extends React.Component<Props, State> {
         </ul>
 
         <UniversalButton type="low" label="back" onClick={this.props.closeFunction} />
+
+        {this.state.showPasswordReset && (
+          <ResetPassword
+            user={this.props.user}
+            close={() => this.setState({ showPasswordReset: false })}
+          />
+        )}
       </section>
     );
   }

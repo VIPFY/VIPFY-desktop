@@ -140,4 +140,30 @@
       grid-column: 4 / 5;
     }
   }
+
+  .update-password {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+
+    h1 {
+      margin-bottom: 16px;
+    }
+
+    .instruction {
+      margin-bottom: 48px;
+    }
+
+    .error-field {
+      margin: unset;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    .fa-spinner {
+      font-size: 27px;
+      color: $vipfy-primary-color;
+      margin-top: 10px;
+    }
+  }
 }

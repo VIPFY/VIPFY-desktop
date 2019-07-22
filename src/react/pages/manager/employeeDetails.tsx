@@ -179,6 +179,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                 {this.state.showSecurityPopup && (
                   <PopupBase>
                     <SecurityPopup
+                      user={querydata}
                       closeFunction={() => this.setState({ showSecurityPopup: false })}
                     />
                   </PopupBase>
