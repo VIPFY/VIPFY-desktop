@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import { Link } from "react-router-dom";
-import { ErrorComp, filterError } from "../../common/functions";
+import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../LoadingDiv";
 import SearchBox from "../SearchBox";
-import { iconPicFolder } from "../../common/constants";
+import { preAppImageUrl } from "../../common/constants";
 import Service from "./Service";
 import { FETCH_APPS } from "./apollo";
 
@@ -22,21 +22,21 @@ interface App {
 
 interface State {
   apps: App[];
-  seachringFor: string;
+  seachingFor: string;
   showApp: null | number;
 }
 
 class ServiceEdit extends React.Component<Props, State> {
   state = {
     apps: [],
-    seachringFor: "",
+    seachingFor: "",
     showApp: null
   };
 
-  searchApp = (searchValue: string) => this.setState({ seachringFor: searchValue });
+  searchApp = (searchValue: string) => this.setState({ seachingFor: searchValue });
 
   render() {
-    const { showApp, seachringFor } = this.state;
+    const { showApp, seachingFor } = this.state;
 
     return (
       <section className="admin">
@@ -48,14 +48,14 @@ class ServiceEdit extends React.Component<Props, State> {
             <SearchBox searchFunction={this.searchApp} />
             <div className="apps">
               {this.props.apps
-                .filter(({ name }) => name.toLowerCase().includes(seachringFor.toLowerCase()))
+                .filter(({ name }) => name.toLowerCase().includes(seachingFor.toLowerCase()))
                 .map(({ name, id, icon, disabled, hidden }) => (
                   <div
                     title={`${disabled ? "Disabled" : ""} ${hidden ? "Hidden" : ""}`}
                     key={id}
                     className={`app ${disabled ? "disabled" : ""} ${hidden ? "hidden" : ""}`}
                     onClick={() => this.setState({ showApp: id })}>
-                    <img height="100px" width="100px" src={`${iconPicFolder}${icon}`} alt={name} />
+                    <img height="100px" width="100px" src={`${preAppImageUrl}${icon}`} alt={name} />
                     <h3>{name}</h3>
                   </div>
                 ))}
@@ -68,7 +68,7 @@ class ServiceEdit extends React.Component<Props, State> {
           className="button-nav"
           onClick={() => {
             if (showApp) {
-              this.setState({ showApp: null, seachringFor: "" });
+              this.setState({ showApp: null, seachingFor: "" });
             }
           }}>
           <i className="fal fa-arrow-alt-from-right" />

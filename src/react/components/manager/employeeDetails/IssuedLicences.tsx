@@ -396,7 +396,8 @@ class IssuedLicences extends React.Component<Props, State> {
                     <Query
                       pollInterval={60 * 10 * 1000}
                       query={FETCH_USER_LICENCES}
-                      variables={{ unitid: this.props.unitid }}>
+                      variables={{ unitid: this.props.unitid }}
+                      fetchPolicy="network-only">
                       {({ data, loading, error }) => {
                         if (loading) {
                           return <LoadingDiv text="Fetching data..." />;
