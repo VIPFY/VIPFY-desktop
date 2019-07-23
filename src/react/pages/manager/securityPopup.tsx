@@ -30,7 +30,11 @@ class SecurityPopup extends React.Component<Props, State> {
 
   render() {
     return (
-      <PopupBase close={this.props.closeFunction} closeable={true}>
+      <PopupBase
+        styles={{ maxWidth: "656px" }}
+        small={true}
+        close={this.props.closeFunction}
+        closeable={true}>
         <section className="security-settings">
           <h1>{this.state.show2FA ? "Two-Factor Authentication" : "Security Settings"}</h1>
           {this.state.show2FA ? (
@@ -98,7 +102,10 @@ class SecurityPopup extends React.Component<Props, State> {
 
           {this.state.showYubikey && <Yubikey />}
           {this.state.showGoogleAuth && (
-            <GoogleAuth close={() => this.setState({ showGoogleAuth: false })} />
+            <GoogleAuth
+              user={this.props.user}
+              close={() => this.setState({ showGoogleAuth: false })}
+            />
           )}
         </section>
 

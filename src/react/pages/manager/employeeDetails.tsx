@@ -44,7 +44,7 @@ interface State {
 class EmployeeDetails extends React.Component<Props, State> {
   state = {
     loading: false,
-    showSecurityPopup: true,
+    showSecurityPopup: false,
     showTimeAway: false
   };
 
@@ -219,9 +219,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                             marginRight: "16px",
                             width: "120px"
                           }}
-                          onClick={() => {
-                            //this.setState({ add: true });
-                          }}
+                          onClick={() => this.setState({ showSecurityPopup: true })}
                         />
                       </div>
                     </div>
@@ -255,11 +253,6 @@ class EmployeeDetails extends React.Component<Props, State> {
                       </div>
                     </div>
                   </div>
-                  <UniversalButton
-                    type="high"
-                    onClick={() => this.setState({ showSecurityPopup: true })}
-                    label="Security"
-                  />
                 </div>
                 <TeamsSection
                   employeeid={employeeid}

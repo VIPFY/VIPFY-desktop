@@ -11,7 +11,6 @@ interface Props {
   notimer?: boolean;
   dialog?: boolean;
   fullmiddle?: boolean;
-  customStyles?: Object;
   buttonStyles?: Object;
   nooutsideclose?: boolean;
   nosidebar?: boolean;
