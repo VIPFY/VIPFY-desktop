@@ -17,7 +17,6 @@ import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicen
 import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import PopupBase from "../../popups/universalPopups/popupBase";
 import SecurityPopup from "./securityPopup";
 
 const UPDATE_PIC = gql`
@@ -177,12 +176,10 @@ class EmployeeDetails extends React.Component<Props, State> {
                 )}
 
                 {this.state.showSecurityPopup && (
-                  <PopupBase>
-                    <SecurityPopup
-                      user={querydata}
-                      closeFunction={() => this.setState({ showSecurityPopup: false })}
-                    />
-                  </PopupBase>
+                  <SecurityPopup
+                    user={querydata}
+                    closeFunction={() => this.setState({ showSecurityPopup: false })}
+                  />
                 )}
               </div>
             );

@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as QRCode from "qrcode";
 import { times } from "lodash";
 import UniversalButton from "../components/universalButtons/universalButton";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
@@ -19,8 +18,7 @@ class TwoFactor extends React.Component<Props, State> {
 
   async componentDidMount() {
     try {
-      const qrCode = await QRCode.toDataURL(this.props.twoFactor);
-      this.setState({ qrCode });
+      this.setState({ qrCode: "ne" });
     } catch (error) {
       console.log("LOG: TwoFactor -> componentDidMount -> error", error);
       this.setState({ error: "Couldn't generate QR Code. Please reload." });

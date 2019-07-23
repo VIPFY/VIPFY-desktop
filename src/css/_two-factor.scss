@@ -26,29 +26,6 @@
     }
   }
 
-  form {
-    display: flex;
-    justify-content: space-between;
-    
-    input {
-      text-align: center;
-      width: 48px;
-      height: 48px;
-      border-radius: 4px;
-      background: #F5F5F5FF;
-      box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
-      outline: none;
-      border: 0;
-
-      &::-webkit-outer-spin-button,
-      &::-webkit-inner-spin-button {
-        /* display: none; <- Crashes Chrome on hover */
-        -webkit-appearance: none;
-        margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
-      }
-    }
-  }
-
   .universalCoverButton {
     align-self: flex-end;
     position: absolute;
@@ -57,6 +34,31 @@
 
     div {
       width: 80px;
+    }
+  }
+}
+
+#two-factor-form {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  
+  input {
+    text-align: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    background: #F5F5F5FF;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
+    outline: none;
+    border: 0;
+    margin: 0 8px;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      /* display: none; <- Crashes Chrome on hover */
+      -webkit-appearance: none;
+      margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
     }
   }
 }

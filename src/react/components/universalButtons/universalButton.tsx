@@ -10,6 +10,7 @@ interface Props {
   additionalClickFunction?: Function;
   customStyles?: Object;
   form?: string;
+  className?: string;
 }
 
 interface State {
@@ -71,7 +72,7 @@ class UniversalButton extends React.Component<Props, State> {
       <React.Fragment>
         <button
           form={this.props.form}
-          className="cleanup universalCoverButton"
+          className={`cleanup universalCoverButton ${this.props.className}`}
           onClick={e => this.click(e)}
           style={
             this.props.customStyles ? {} : { width: this.props.label.length > 6 ? undefined : 90 }
