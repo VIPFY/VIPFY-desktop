@@ -1,8 +1,21 @@
-.security-table {  
-  padding: 6px 0 0; 
+.security-table {
+  padding: 6px 0 0;
   border-spacing: 20px 10px;
 
+  
   tbody {
+    .update-password {
+      min-height: 300px;
+      display: flex;
+      flex-flow: column;
+      justify-content: space-between;
+
+      .error-field {
+        margin: 0;
+        margin-top: 20px;
+      }
+    }
+
     tr {
       height: 56px;
 

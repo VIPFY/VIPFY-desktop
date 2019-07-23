@@ -116,7 +116,7 @@ class RegisterCompany extends React.Component<Props, State> {
                 name="tos"
                 liveValue={v => this.setState({ tos: v })}
                 style={{ width: "312px" }}>
-                <span style={{ width: "300px" }}>
+                <span style={{ width: "300px", fontSize: "13px", paddingTop: "1px" }}>
                   By registering I agree to the
                   <span
                     style={{
@@ -136,7 +136,7 @@ class RegisterCompany extends React.Component<Props, State> {
                 name="privacy"
                 liveValue={v => this.setState({ privacy: v })}
                 style={{ width: "312px" }}>
-                <span style={{ width: "300px" }}>
+                <span style={{ width: "300px", fontSize: "13px", paddingTop: "1px" }}>
                   By registering I agree to the
                   <span
                     style={{

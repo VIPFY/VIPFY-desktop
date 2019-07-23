@@ -12,6 +12,7 @@ import ColumnTeams from "../../components/manager/universal/columns/columnTeams"
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 import ManageServiceTeams from "../../components/manager/universal/managing/serviceteams";
 import ManageServiceEmployees from "../../components/manager/universal/managing/serviceemployees";
+import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 
 interface Props {
   moveTo: Function;
@@ -152,21 +153,7 @@ class ServiceOverview extends React.Component<Props, State> {
             onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
             <div className="tableMain">
               <div className="tableColumnBig">
-                <div
-                  title={service.app.name}
-                  className="managerSquare"
-                  style={{
-                    backgroundImage:
-                      service.app.icon.indexOf("/") != -1
-                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                            service.app.icon
-                          )})`
-                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                            service.app.icon
-                          )})`,
-                    backgroundColor: "unset"
-                  }}
-                />
+                <PrintServiceSquare appidFunction={s => s.app} service={service} />
                 <span className="name">{service.app.name}</span>
               </div>
               <ColumnTeams teams={service.teams} teamidFunction={team => team.departmentid} />

@@ -271,6 +271,7 @@ export const fetchCompanyService = gql`
             profilepicture
           }
           employeenumber
+          createdate
         }
         boughtplanid {
           id
