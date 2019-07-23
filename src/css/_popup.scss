@@ -5,11 +5,11 @@ $modal-wh: 50%;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 32px);
   justify-content: center;
   left: 0;
   position: fixed;
-  top: 0;
+  top: 32px;
   width: 100vw;
   z-index: $modal-z;
   animation: lay-over 100ms ease-in;
@@ -112,10 +112,10 @@ $modal-wh: 50%;
 
 .backgroundPopup{
   position: fixed;
-  top: 0;
+  top: 32px;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 32px);
   z-index: 1000000;
   background-color: rgba($vipfy_mainColor, 0.1);
   display: flex;
@@ -130,8 +130,10 @@ $modal-wh: 50%;
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
+  //align-items: center;
   justify-content: center;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .universalPopup{
@@ -143,22 +145,30 @@ $modal-wh: 50%;
   position: relative;
   height: auto;
   //transform: scale(0);
-  margin-bottom: 50px;
-  max-height: 80vh;
+  //margin-bottom: 50px;
+  //max-height: 80vh;
   overflow: auto;
+  margin-top: 56px; //+32px == 88px
+  margin-bottom: 88px
 }
 
 .closePopup{
   position: absolute;
-  right: 5px;
-  top: 5px;
-  width: 30px;
-  line-height: 30px;
+  //right: 5px;
+  //top: 5px;
+  //width: 30px;
+  //line-height: 30px;
   text-align: center;
-  font-size: 15px;
+  //font-size: 15px;
   cursor: pointer;
   border-radius: $vipfy_smallradius;
   transition: background-color 200ms ease-in-out;
+
+  right: 8px;
+  top: 8px;
+  width: 24px;
+  line-height: 24px;
+  font-size: 16px;
 
   &:hover{
     background-color: rgba($vipfy_mainColor, 0.15);
@@ -166,7 +176,8 @@ $modal-wh: 50%;
 }
 
 .contentPopup{
-  margin: 40px;
+  //margin: 40px;
+  margin: 32px 48px 24px 48px;
   cursor: initial;
 }
 
@@ -209,5 +220,37 @@ $modal-wh: 50%;
       position: absolute;
       overflow: hidden;
     }
+  }
+}
+
+.formPopup{
+  h1{
+    font-size: 24px;
+    display: block;
+    text-align: center;
+    padding-bottom: 24px;
+    margin-block-start: unset;
+    margin-block-end: unset;
+    margin-inline-start: unset;
+    margin-inline-end: unset;
+  }
+  h2{
+    font-size: 16px;
+    display: block;
+    text-align: center;
+    padding-bottom: 48px;
+    margin-block-start: unset;
+    margin-block-end: unset;
+    margin-inline-start: unset;
+    margin-inline-end: unset;
+    font-weight: 400;
+  }
+  .universalLabelInput{
+    width: 100%;
+    margin-bottom: 40px;
+  }
+  .buttonsPopup{
+    margin-top: 56px;
+    justify-content: space-between;
   }
 }

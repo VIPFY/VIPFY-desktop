@@ -14,6 +14,7 @@ import { REMOVE_EXTERNAL_ACCOUNT } from "../../mutations/products";
 import PrintTeamSquare from "./universal/squares/printTeamSquare";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
+import FormPopup from "../../popups/universalPopups/formPopup";
 
 const UPDATE_CREDENTIALS = gql`
   mutation onUpdateCredentials(
@@ -236,7 +237,63 @@ class ServiceDetails extends React.Component<Props, State> {
                   </div>
                 </div>
                 {this.state.edit && (
-                  <PopupBase
+                  <FormPopup
+                    key={`${this.props.employeename}-${e.boughtplanid.planid.appid.name}`}
+                    heading="Edit Licence"
+                    subHeading={`Edit licence from ${this.props.employeename} of ${
+                      e.boughtplanid.planid.appid.name
+                    }`}
+                    close={() => this.setState({ edit: false })}
+                    submit={values => {
+                      console.log("SUBMIT", values);
+                      this.setState({ edit: false });
+                    }}
+                    submitDisabled={values =>
+                      (e.boughtplanid.planid.appid.needssubdomain && values.subdomain == "") ||
+                      values.email == "" ||
+                      values.password == ""
+                    }
+                    nooutsideclose={true}
+                    fields={(e.boughtplanid.planid.appid.needssubdomain
+                      ? [
+                          {
+                            id: `${this.props.employeename}-${
+                              e.boughtplanid.planid.appid.name
+                            }-subdomain`,
+                            options: {
+                              label: "Subdomain",
+                              children: (
+                                <span className="small">
+                                  Please insert your subdomain.
+                                  <br />
+                                  {e.boughtplanid.planid.appid.options.predomain}YOUR SUBDOMAIN
+                                  {e.boughtplanid.planid.appid.options.afterdomain}
+                                </span>
+                              )
+                            }
+                          }
+                        ]
+                      : []
+                    ).concat([
+                      {
+                        id: `${this.props.employeename}-${e.boughtplanid.planid.appid.name}-email`,
+                        options: {
+                          label: `Username for your ${e.boughtplanid.planid.appid.name}-Account`
+                        }
+                      },
+                      {
+                        id: `${this.props.employeename}-${
+                          e.boughtplanid.planid.appid.name
+                        }-password`,
+                        options: {
+                          label: `Password for your ${e.boughtplanid.planid.appid.name}-Account`,
+                          type: "password"
+                        }
+                      }
+                    ])}
+                  />
+
+                  /*<PopupBase
                     small={true}
                     close={() => this.setState({ edit: false, email: "", password: "" })}>
                     <span className="lightHeading">
@@ -329,7 +386,7 @@ class ServiceDetails extends React.Component<Props, State> {
                     ) : (
                       ""
                     )}
-                  </PopupBase>
+                    </PopupBase>*/
                 )}
                 {this.state.delete && (
                   <PopupBase

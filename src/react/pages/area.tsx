@@ -57,6 +57,7 @@ import ServiceDetails from "./manager/serviceDetails";
 import Consent from "../popups/universalPopups/Consent";
 import UniversalLogin from "./universalLogin";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest";
+import ResizeAware from "react-resize-aware";
 
 interface AreaProps {
   history: any[];
@@ -478,14 +479,16 @@ class Area extends React.Component<AreaProps, AreaState> {
                           : ""
                       }`}
                       style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
-                      <RouteComponent
-                        setApp={this.setApp}
-                        toggleAdmin={this.toggleAdmin}
-                        adminOpen={this.state.adminOpen}
-                        {...this.props}
-                        {...props}
-                        moveTo={this.moveTo}
-                      />
+                      <ResizeAware>
+                        <RouteComponent
+                          setApp={this.setApp}
+                          toggleAdmin={this.toggleAdmin}
+                          adminOpen={this.state.adminOpen}
+                          {...this.props}
+                          {...props}
+                          moveTo={this.moveTo}
+                        />
+                      </ResizeAware>
                     </div>
                   )}
                 />

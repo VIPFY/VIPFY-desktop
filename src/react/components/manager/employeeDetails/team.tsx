@@ -110,14 +110,14 @@ class Team extends React.Component<Props, State> {
                 <span className="name">{team.name}</span>
               </div>
               <div className="tableColumnSmall content">
-                {/*team.internaldata ? team.internaldata.leader : ""*/}
+                {moment(team.createdate - 0).format("DD.MM.YYYY")}
               </div>
               <div className="tableColumnSmall content">{team.employeenumber}</div>
               <div className="tableColumnSmall content">
                 {team.licences ? team.licences.length : ""}
               </div>
               <div className="tableColumnSmall content">
-                {moment(team.createdate - 0).format("DD.MM.YYYY")}
+                {/*team.internaldata ? team.internaldata.leader : ""*/}
               </div>
             </div>
             <div className="tableEnd">

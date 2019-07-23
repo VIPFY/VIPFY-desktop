@@ -119,7 +119,7 @@ class DropDown extends React.PureComponent<Props, State> {
               top:
                 this.calculateTop(this.wrapper.current) +
                 32 -
-                (this.props.holder.current.scrollTop || 0),
+                ((this.props.holder.current && this.props.holder.current.scrollTop) || 0),
               left: this.calculateLeft(this.wrapper.current)
             }
           }>

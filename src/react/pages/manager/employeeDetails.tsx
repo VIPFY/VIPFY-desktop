@@ -18,6 +18,7 @@ import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
+import moment = require("moment");
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -37,12 +38,14 @@ interface Props {
 interface State {
   loading: boolean;
   showSecurityPopup: boolean;
+  showTimeAway: Boolean;
 }
 
 class EmployeeDetails extends React.Component<Props, State> {
   state = {
     loading: false,
-    showSecurityPopup: true
+    showSecurityPopup: true,
+    showTimeAway: false
   };
 
   uploadPic = async (picture: File) => {
@@ -67,7 +70,7 @@ class EmployeeDetails extends React.Component<Props, State> {
         pollInterval={60 * 10 * 1000 + 300}
         query={QUERY_SEMIPUBLICUSER}
         variables={{ unitid: employeeid }}>
-        {({ loading, error, data }) => {
+        {({ loading, error, data, refetch }) => {
           if (loading) {
             return "Loading...";
           }
@@ -76,6 +79,7 @@ class EmployeeDetails extends React.Component<Props, State> {
           }
           if (data && data.fetchSemiPublicUser) {
             const querydata = data.fetchSemiPublicUser;
+            console.log("SEMIPUBLIC", data.fetchSemiPublicUser);
 
             const privatePhones = [];
             const workPhones = [];
@@ -91,17 +95,16 @@ class EmployeeDetails extends React.Component<Props, State> {
             return (
               <div className="managerPage">
                 <div className="heading">
-                  <h1>
+                  <span className="h1">
                     <span
                       style={{ cursor: "pointer" }}
                       onClick={() => this.props.moveTo("emanager")}>
                       Employee Manager
                     </span>
-                    <h2>></h2>
-                    <h2>
+                    <span className="h2">
                       {querydata.firstname} {querydata.lastname}
-                    </h2>
-                  </h1>
+                    </span>
+                  </span>
 
                   <UniversalSearchBox />
                 </div>
@@ -130,8 +133,125 @@ class EmployeeDetails extends React.Component<Props, State> {
                       </div>
                     </div>
                     <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
-                      <div className="table">
-                        <PersonalDetails querydata={querydata} />
+                      <div
+                        className="table"
+                        style={{ display: "grid", gridTemplateColumns: "1fr 160px" }}>
+                        <PersonalDetails querydata={querydata} refetch={refetch} />
+                        <div className="personalEditButtons">
+                          {/*<UniversalButton
+                            label="Change Password"
+                            type="medium"
+                            customStyles={{
+                              width: "128px",
+                              fontSize: "12px",
+                              lineHeight: "24px",
+                              marginTop: "8px"
+                            }}
+                          />
+                          <UniversalButton
+                            label="Manage Time Away"
+                            type="medium"
+                            customStyles={{
+                              width: "128px",
+                              fontSize: "12px",
+                              lineHeight: "24px",
+                              marginTop: "8px"
+                            }}
+                          />
+                          <UniversalButton
+                            label="Used Devices"
+                            type="medium"
+                            customStyles={{
+                              width: "128px",
+                              fontSize: "12px",
+                              lineHeight: "24px",
+                              marginTop: "8px"
+                            }}
+                          />*/}
+                          <UniversalButton
+                            type="high"
+                            label="Manage Absence"
+                            customStyles={{
+                              width: "120px",
+                              fontWeight: "700",
+                              fontSize: "12px",
+                              lineHeight: "24px",
+                              marginTop: "8px"
+                            }}
+                            onClick={() => this.setState({ showTimeAway: true })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="section">
+                  <div className="heading">
+                    <h1>Security</h1>
+                  </div>
+                  <div className="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div className="tableColumnSmall">
+                          <h1>Last active</h1>
+                        </div>
+                        <div className="tableColumnSmall">
+                          <h1>Password length</h1>
+                        </div>
+                        <div className="tableColumnSmall">
+                          <h1>Password strength</h1>
+                        </div>
+                        <div className="tableColumnSmall">
+                          <h1>Is Admin</h1>
+                        </div>
+                        <div className="tableColumnSmall">
+                          <h1>Two Factor</h1>
+                        </div>
+                      </div>
+                      <div className="tableEnd">
+                        <UniversalButton
+                          type="high"
+                          label="Manage Security"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "120px"
+                          }}
+                          onClick={() => {
+                            //this.setState({ add: true });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="tableRow">
+                      <div className="tableMain">
+                        <div className="tableColumnSmall content">
+                          {querydata.lastactive
+                            ? moment(querydata.lastactive - 0).format("DD.MM.YYYY HH:mm:ss")
+                            : "Never"}
+                        </div>
+                        <div className="tableColumnSmall content">{querydata.passwordlength}</div>
+                        <div className="tableColumnSmall content">{querydata.passwordstrength}</div>
+                        <div className="tableColumnSmall content">
+                          {querydata.isadmin ? "Yes" : "No"}
+                        </div>
+                        <div className="tableColumnSmall content">
+                          {querydata.twofa[0] || "None"}
+                        </div>
+                      </div>
+                      <div className="tableEnd">
+                        {/*<div className="editOptions">
+                          <i className="fal fa-external-link-alt editbuttons" />
+                          <i
+                            className="fal fa-trash-alt editbuttons"
+                            onClick={e => {
+                              e.stopPropagation();
+                              this.setState({ delete: true });
+                            }}
+                          />
+                          </div>*/}
                       </div>
                     </div>
                   </div>
@@ -154,7 +274,12 @@ class EmployeeDetails extends React.Component<Props, State> {
                 />
 
                 <TemporaryLicences firstName={querydata.firstname} unitid={employeeid} />
-                <IssuedLicences unitid={employeeid} firstName={querydata.firstname} />
+                <IssuedLicences
+                  unitid={employeeid}
+                  firstName={querydata.firstname}
+                  showTimeAway={this.state.showTimeAway}
+                  closeTimeAway={() => this.setState({ showTimeAway: false })}
+                />
                 {this.state.changepicture && (
                   <PopupSelfSaving
                     savingmessage="Saving Profileimage"
