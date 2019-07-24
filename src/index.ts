@@ -1,4 +1,4 @@
-import { app, BrowserWindow, autoUpdater, dialog, protocol, session, process } from "electron";
+import { app, BrowserWindow, autoUpdater, dialog, protocol, session } from "electron";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   APOLLO_DEVELOPER_TOOLS
@@ -8,10 +8,10 @@ import path = require("path");
 import Store = require("electron-store");
 import * as is from "electron-is";
 
-process.on('uncaughtException', (error) => {
+process.on("uncaughtException", error => {
   console.error("Uncaught Exception!!!");
   console.error(error);
-})
+});
 
 const store = new Store();
 const key = getSetupKey();
@@ -46,7 +46,7 @@ if (!disableUpdater) {
       detail: "A new version has been downloaded. Restart the application to apply the updates."
     };
 
-    autoUpdater.on("error", (error) => {
+    autoUpdater.on("error", error => {
       console.error("Autoupdater error", error);
     });
 
@@ -132,7 +132,7 @@ function checkSetupKey(key) {
 }
 
 const createWindow = async () => {
-  if(!disableUpdater) {
+  if (!disableUpdater) {
     try {
       autoUpdater.checkForUpdates();
       setInterval(function() {
