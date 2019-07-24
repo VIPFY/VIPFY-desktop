@@ -8,6 +8,7 @@ import gql from "graphql-tag";
 import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 import DatePicker from "../../common/DatePicker";
 import { parseName } from "humanparser";
+import SelfSaving from "../../popups/universalPopups/SelfSavingIllustrated";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
@@ -667,6 +668,8 @@ class PersonalDetails extends React.Component<Props, State> {
                   label="Save"
                   type="high"
                   onClick={async () => {
+                    this.setState({ updateing: true });
+                    return;
                     try {
                       this.setState({ updateing: true });
                       switch (this.state.edit!.id) {
@@ -850,15 +853,16 @@ class PersonalDetails extends React.Component<Props, State> {
                   }}
                 />
                 {this.state.updateing ? (
-                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
-                    <i className="fal fa-cog fa-spin" />
-                    <span>Saving</span>
-                  </PopupBase>
+                  <SelfSaving />
                 ) : (
+                  /*<PopupBase small={true} close={() => this.setState({ updateing: false })}>
+                    <i className="fal fa-spinner fa-spin" />
+                    <span>Saving</span>
+                  </PopupBase>*/
                   ""
                 )}
                 {this.state.error ? (
-                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
+                  <PopupBase small={true} close={() => this.setState({ updateing: false })}>
                     <span>Something went wrong :( Please try again or contact support</span>
                     <UniversalButton
                       type="high"

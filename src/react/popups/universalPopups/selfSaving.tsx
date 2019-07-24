@@ -3,13 +3,15 @@ import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 
 interface Props {
-  savingmessage: String;
-  savedmessage: String;
+  savingmessage: string;
+  savedmessage: string;
   closeFunction: Function;
   maxtime?: number;
   fullmiddle?: Boolean;
   saveFunction: Function;
-  errormessage?: String;
+  errormessage?: string;
+  heading?: string;
+  subHeading?: string;
 }
 
 interface State {
@@ -54,8 +56,12 @@ class PopupSelfSaving extends React.Component<Props, State> {
         }
       }, this.props.maxtime);
     }
+    const { heading, subHeading } = this.props;
     return (
-      <PopupBase nooutsideclose={true} fullmiddle={this.props.fullmiddle} dialog={true}>
+      <PopupBase nooutsideclose={true} small={true}>
+        <h1>{heading}</h1>
+        {subHeading && <h2>{subHeading}</h2>}
+
         {this.state.tolong ? (
           <>
             <div>
