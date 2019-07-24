@@ -2,20 +2,12 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query, Mutation } from "react-apollo";
-import { fetchCompanyTeams } from "../../queries/departments";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
-import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
-import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
-import AddTeamServices from "../../components/manager/addTeamServices";
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { fetchCompanyServices } from "../../queries/products";
 import { now } from "moment";
 import AddServiceGeneralData from "../../components/manager/serviceDetails/addServiceGeneralData";
-import AddTeam from "../../components/manager/serviceDetails/addTeam";
-import AddEmployee from "../../components/manager/serviceDetails/addEmployee";
-import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 import ManageServiceTeams from "../../components/manager/universal/managing/serviceteams";
@@ -127,13 +119,6 @@ class ServiceOverview extends React.Component<Props, State> {
         );
       case 3:
         return (
-          /*<AddEmployee
-            continue={singles => this.addService(singles)}
-            close={() => this.setState({ addStage: 2 })}
-            addedLicences={this.state.addemployees}
-            licences={[]}
-            service={this.state.addservice}
-          />*/
           <ManageServiceEmployees
             service={this.state.addservice}
             close={() => {
