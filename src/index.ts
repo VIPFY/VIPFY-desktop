@@ -1,4 +1,4 @@
-import { app, BrowserWindow, autoUpdater, dialog, protocol, session } from "electron";
+import { app, BrowserWindow, autoUpdater, dialog, protocol, session, process } from "electron";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   APOLLO_DEVELOPER_TOOLS
@@ -7,6 +7,11 @@ import { enableLiveReload } from "electron-compile";
 import path = require("path");
 import Store = require("electron-store");
 import * as is from "electron-is";
+
+process.on('uncaughtException', (error) => {
+  console.error("Uncaught Exception!!!");
+  console.error(error);
+})
 
 const store = new Store();
 const key = getSetupKey();
@@ -40,6 +45,10 @@ if (!disableUpdater) {
       message: process.platform === "win32" ? releaseNotes : releaseName,
       detail: "A new version has been downloaded. Restart the application to apply the updates."
     };
+
+    autoUpdater.on("error", (error) => {
+      console.error("Autoupdater error", error);
+    });
 
     dialog.showMessageBox(dialogOpts, response => {
       if (response === 0) {
@@ -123,24 +132,26 @@ function checkSetupKey(key) {
 }
 
 const createWindow = async () => {
-  try {
-    autoUpdater.checkForUpdates();
-    setInterval(function() {
-      try {
-        if (!disableUpdater) {
-          autoUpdater.checkForUpdates();
+  if(!disableUpdater) {
+    try {
+      autoUpdater.checkForUpdates();
+      setInterval(function() {
+        try {
+          if (!disableUpdater) {
+            autoUpdater.checkForUpdates();
+          }
+        } catch (err) {
+          console.log("autoupdate failed");
+          console.log(err);
         }
-      } catch (err) {
-        console.log("autoupdate failed");
-        console.log(err);
-      }
-    }, 1000 * 60 * 10);
-  } catch (err) {
-    disableUpdater = true;
-    console.error(err);
-    console.error("you can ignore that error if this is run from source");
-    console.log("reverting to devmode");
-    isDevMode = true;
+      }, 1000 * 60 * 10);
+    } catch (err) {
+      disableUpdater = true;
+      console.error(err);
+      console.error("you can ignore that error if this is run from source");
+      console.log("reverting to devmode");
+      isDevMode = true;
+    }
   }
 
   protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
