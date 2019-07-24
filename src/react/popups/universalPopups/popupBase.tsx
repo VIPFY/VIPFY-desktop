@@ -55,6 +55,10 @@ class PopupBase extends React.Component<Props, State> {
     }
   };
 
+  componentWillUnmount() {
+    this.setState({ isopen: false, autoclosing: false });
+  }
+
   componentDidMount() {
     setTimeout(() => this.open(true), 1);
   }

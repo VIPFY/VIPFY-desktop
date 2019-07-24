@@ -38,6 +38,10 @@ class PopupSelfSaving extends React.Component<Props, State> {
     }
   };
 
+  componentWillUnmount() {
+    this.setState({ tolong: false, saved: false, error: null });
+  }
+
   componentWillReceiveProps = async props => {};
 
   close() {
@@ -58,10 +62,9 @@ class PopupSelfSaving extends React.Component<Props, State> {
     }
     const { heading, subHeading } = this.props;
     return (
-      <PopupBase nooutsideclose={true} small={true}>
+      <PopupBase nooutsideclose={true} small={true} additionalclassName="formPopup">
         <h1>{heading}</h1>
         {subHeading && <h2>{subHeading}</h2>}
-
         {this.state.tolong ? (
           <>
             <div>
@@ -79,14 +82,22 @@ class PopupSelfSaving extends React.Component<Props, State> {
             <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
           </>
         ) : this.state.saved ? (
-          <>
-            <div>{this.props.savedmessage}</div>
-            <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
-          </>
+          <div>
+            <div style={{ fontSize: "32px", textAlign: "center" }}>
+              <i style={{ color: "#20BAA9" }} className="fal fa-smile" />
+              <div style={{ marginTop: "32px", fontSize: "16px" }}>{this.props.savedmessage}</div>
+              <UniversalButton
+                type="high"
+                label="Continue"
+                onClick={() => this.close()}
+                customStyles={{ marginTop: "16px" }}
+              />
+            </div>
+          </div>
         ) : (
           <div>
             <div style={{ fontSize: "32px", textAlign: "center" }}>
-              <i className="fal fa-spinner fa-spin" />
+              <i style={{ color: "#20BAA9" }} className="fal fa-spinner fa-spin" />
               <div style={{ marginTop: "32px", fontSize: "16px" }}>{this.props.savingmessage}</div>
             </div>
           </div>

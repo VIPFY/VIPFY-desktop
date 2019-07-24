@@ -5,10 +5,9 @@ import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
 import { Mutation, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
-import UniversalDropDownInput from "../universalForms/universalDropdownInput";
-import DatePicker from "../../common/DatePicker";
 import { parseName } from "humanparser";
-import SelfSaving from "../../popups/universalPopups/SelfSavingIllustrated";
+import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
+import { sleep } from "../../common/functions";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
@@ -668,6 +667,7 @@ class PersonalDetails extends React.Component<Props, State> {
                   label="Save"
                   type="high"
                   onClick={async () => {
+                    console.log("THIS STATE", this.state);
                     this.setState({ updateing: true });
                     return;
                     try {
@@ -853,7 +853,19 @@ class PersonalDetails extends React.Component<Props, State> {
                   }}
                 />
                 {this.state.updateing ? (
-                  <SelfSaving />
+                  <PopupSelfSaving
+                    heading={`Save ${this.state.edit.label} of ${this.generateName(
+                      querydata.firstname,
+                      querydata.middlename,
+                      querydata.lastname
+                    )}`}
+                    saveFunction={async () => await sleep(5000)}
+                    closeFunction={() =>
+                      this.setState({ edit: null, updateing: false, editvalue: null })
+                    }
+                    savingmessage="Saving"
+                    savedmessage={`${this.state.edit.label} saved`}
+                  />
                 ) : (
                   /*<PopupBase small={true} close={() => this.setState({ updateing: false })}>
                     <i className="fal fa-spinner fa-spin" />
