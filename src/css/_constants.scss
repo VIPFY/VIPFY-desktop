@@ -184,6 +184,7 @@ $rccs-valid-font-size: 0.4rem;
 
 .collapsible {
   height: auto;
+  min-height: 80px;
   overflow: hidden !important;
   transition: all 0.3s ease-in-out !important;
 }
