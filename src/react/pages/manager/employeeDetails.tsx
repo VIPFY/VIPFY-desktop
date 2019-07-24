@@ -273,25 +273,6 @@ class EmployeeDetails extends React.Component<Props, State> {
                   showTimeAway={this.state.showTimeAway}
                   closeTimeAway={() => this.setState({ showTimeAway: false })}
                 />
-                {this.state.changepicture && (
-                  <PopupSelfSaving
-                    savingmessage="Saving Profileimage"
-                    savedmessage="Profileimage successfully saved"
-                    saveFunction={async () => {
-                      await this.props.updatePic({
-                        variables: { file: this.state.changepicture },
-                        refetchQueries: ["me"]
-                      });
-                      this.props.client.query({ query: me, fetchPolicy: "network-only" });
-                      this.props.client.query({
-                        query: QUERY_USER,
-                        variables: { userid: this.props.match.params.userid },
-                        fetchPolicy: "network-only"
-                      });
-                    }}
-                    closeFunction={() => this.setState({ changepicture: null })}
-                  />
-                )}
               </div>
             );
           }
