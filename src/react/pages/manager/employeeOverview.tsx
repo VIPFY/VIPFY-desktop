@@ -89,23 +89,6 @@ class EmployeeOverview extends React.Component<Props, State> {
         );
       case 2:
         return (
-          /*  <AddEmployeeTeams
-            continue={data => {
-              this.setState({ addteams: data, addStage: 3 });
-            }}
-            close={() => this.setState({ add: false })}
-            employee={{
-              ...this.state.addpersonal,
-              id: this.state.addpersonal.unitid
-            }}
-            teams={this.state.addteams}
-            setOuterState={async s => {
-              console.log("OUTER", s);
-              await this.setState(s);
-              console.log("STATE", this.state);
-            }}
-          />*/
-
           <ManageTeams
             employee={{
               ...this.state.addpersonal,
@@ -136,13 +119,6 @@ class EmployeeOverview extends React.Component<Props, State> {
         );
       case 3:
         return (
-          /* <AddEmployeeServices
-            continue={(apps, teams) => this.addUser(apps, teams)}
-            close={() => this.setState({ addStage: 2 })}
-            teams={this.state.addteams}
-            addusername={this.state.addpersonal.name}
-            apps={this.state.apps}
-          />*/
           <ManageServices
             employee={{
               ...this.state.addpersonal,

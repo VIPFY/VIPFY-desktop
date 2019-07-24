@@ -130,13 +130,6 @@ class TeamsSection extends React.Component<Props, State> {
                   </div>
                   {teamArray}
                 </div>
-                {/* <AddEmployeeToTeam
-                    close={sO => {
-                      this.setState({ add: false, savingObject: sO });
-                    }}
-                    employeeid={employeeid}
-                    employeename={employeename}
-                  /> */}
                 {this.state.add && (
                   <ManageTeams
                     employee={{ id: this.props.employeeid, firstname: this.props.employeename }} //TODO CHANGE employeename
