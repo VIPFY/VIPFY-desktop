@@ -33,7 +33,10 @@ export default function UserPicture(props: {
   const customStyle = props.style ? props.style : {};
 
   return (
-    <Query query={QUERY_USER} variables={{ userid: props.unitid }}>
+    <Query
+      pollInterval={60 * 10 * 1000 + 400}
+      query={QUERY_USER}
+      variables={{ userid: props.unitid }}>
       {({ loading, error, data }) => {
         if (loading) {
           return <span />;

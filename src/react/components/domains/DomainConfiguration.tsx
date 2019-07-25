@@ -43,7 +43,7 @@ class Configuration extends React.Component<Props, State> {
           <li>Zone</li>
         </ul>
 
-        <Query query={FETCH_DOMAIN} variables={{ id: this.props.id }}>
+        <Query pollInterval={60 * 10 * 1000} query={FETCH_DOMAIN} variables={{ id: this.props.id }}>
           {({ data, loading, error }) => {
             if (loading) {
               return <LoadingDiv text="Fetching Domain..." />;
