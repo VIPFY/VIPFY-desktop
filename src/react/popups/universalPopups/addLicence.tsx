@@ -9,6 +9,7 @@ import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import { fetchUserLicences } from "../../queries/departments";
 import { fetchCompanyService } from "../../queries/products";
+import { concatName } from "../../common/functions";
 
 interface Props {
   app: {
@@ -115,23 +116,6 @@ class PopupAddLicence extends React.Component<Props, State> {
     );
   }
 
-  generateName(first, middle, last) {
-    let name = first;
-    if (!name) {
-      name = middle;
-    } else if (middle) {
-      name += " ";
-      name += middle;
-    }
-    if (!name) {
-      name = last;
-    } else if (last) {
-      name += " ";
-      name += last;
-    }
-    return name;
-  }
-
   render() {
     const { name, needssubdomain, options, icon, id } = this.props.app;
     const { employee, cancel, success, team, addStyles, empty } = this.props;
@@ -142,11 +126,7 @@ class PopupAddLicence extends React.Component<Props, State> {
         heading="Add Account"
         subHeading={
           employee
-            ? `Add an account of ${name} to ${this.generateName(
-                employee.firstname,
-                employee.middlename,
-                employee.lastname
-              )}`
+            ? `Add an account of ${name} to ${concatName(employee)}`
             : `Add an empty account of ${name}`
         }
         addStyles={addStyles}

@@ -7,6 +7,7 @@ import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import { fetchUserLicences } from "../../../../queries/departments";
+import { concatName } from "../../../../common/functions";
 
 interface Props {
   close: Function;
@@ -135,23 +136,6 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
     }
   }
 
-  generateName(first, middle, last) {
-    let name = first;
-    if (!name) {
-      name = middle;
-    } else if (middle) {
-      name += " ";
-      name += middle;
-    }
-    if (!name) {
-      name = last;
-    } else if (last) {
-      name += " ";
-      name += last;
-    }
-    return name;
-  }
-
   render() {
     const { team, close, employee } = this.props;
     console.log("AETT", this.props, this.state);
@@ -164,11 +148,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
         additionalclassName="formPopup"
         nooutsideclose={true}>
         <h1>Add To Team</h1>
-        <h2>{`Add ${this.generateName(
-          employee.firstname,
-          employee.middlename,
-          employee.lastname
-        )} to Team ${team.name}`}</h2>
+        <h2>{`Add ${concatName(employee)} to Team ${team.name}`}</h2>
         {team.services && team.services.length > 0 && (
           <div>
             <h3>Includes {team.services.length} Team-Services</h3>

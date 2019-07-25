@@ -7,7 +7,7 @@ import { Mutation, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import { sleep } from "../../common/functions";
+import { sleep, concatName } from "../../common/functions";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
@@ -175,23 +175,6 @@ class PersonalDetails extends React.Component<Props, State> {
     editvalue: null,
     editvalueArray: []
   };
-
-  generateName(first, middle, last) {
-    let name = first;
-    if (!name) {
-      name = middle;
-    } else if (middle) {
-      name += " ";
-      name += middle;
-    }
-    if (!name) {
-      name = last;
-    } else if (last) {
-      name += " ";
-      name += last;
-    }
-    return name;
-  }
 
   printEditForm() {
     switch (this.state.edit.id) {
@@ -458,18 +441,12 @@ class PersonalDetails extends React.Component<Props, State> {
                   edit: {
                     id: "name",
                     label: "Name",
-                    startvalue: this.generateName(
-                      querydata.firstname,
-                      querydata.middlename,
-                      querydata.lastname
-                    )
+                    startvalue: concatName(querydata)
                   }
                 })
               }>
               <h1>Name</h1>
-              <h2>
-                {this.generateName(querydata.firstname, querydata.middlename, querydata.lastname)}
-              </h2>
+              <h2>{concatName(querydata)}</h2>
               <div className="profileEditButton">
                 <i className="fal fa-pencil editbuttons" />
               </div>
@@ -653,10 +630,7 @@ class PersonalDetails extends React.Component<Props, State> {
           <Mutation mutation={UPDATE_DATA}>
             {updateEmployee => (
               <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
-                <h2 className="boldHeading">
-                  Edit Personal Data of{" "}
-                  {this.generateName(querydata.firstname, querydata.middlename, querydata.lastname)}
-                </h2>
+                <h2 className="boldHeading">Edit Personal Data of {concatName(querydata)}</h2>
                 <div>{this.printEditForm()}</div>
                 <UniversalButton
                   label="Cancel"
@@ -854,11 +828,7 @@ class PersonalDetails extends React.Component<Props, State> {
                 />
                 {this.state.updateing ? (
                   <PopupSelfSaving
-                    heading={`Save ${this.state.edit.label} of ${this.generateName(
-                      querydata.firstname,
-                      querydata.middlename,
-                      querydata.lastname
-                    )}`}
+                    heading={`Save ${this.state.edit.label} of ${concatName(querydata)}`}
                     saveFunction={async () => {
                       switch (this.state.edit!.id) {
                         case "name":
