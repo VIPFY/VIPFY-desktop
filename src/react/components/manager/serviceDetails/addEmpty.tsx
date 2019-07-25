@@ -102,13 +102,15 @@ class AddEmpty extends React.Component<Props, State> {
   render() {
     return (
       <PopupAddLicence
+        key="addEmpty"
         nooutsideclose={true}
         app={this.props.service}
         cancel={() => {
           this.setState({ addedLicence: null });
           this.props.close();
         }}
-        add={setup => {
+        success={() => this.props.close()}
+        /*add={setup => {
           this.props.close({
             savedmessage: "Empty licence has been successfully added",
             savingmessage: "Empty licence is currently added",
@@ -141,7 +143,8 @@ class AddEmpty extends React.Component<Props, State> {
               });
             }
           });
-        }}
+        }}*/
+        //success={() => console.log("DONE")}
         empty={true}
       />
     );

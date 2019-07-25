@@ -244,21 +244,75 @@ class ServiceDetails extends React.Component<Props, State> {
                       e.boughtplanid.planid.appid.name
                     }`}
                     close={() => this.setState({ edit: false })}
-                    submit={values => {
+                    submit={async values => {
                       console.log("SUBMIT", values);
-                      this.setState({ edit: false });
+                      // this.setState({ edit: false });
+                      await updateCredentials({
+                        variables: {
+                          licenceid: e.id,
+                          username:
+                            values[
+                              `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-email`
+                            ],
+                          password:
+                            values[
+                              `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-password`
+                            ],
+                          loginurl:
+                            values[
+                              `${this.props.employee.id}-${
+                                e.boughtplanid.planid.appid.id
+                              }-subdomain`
+                            ] &&
+                            values[
+                              `${this.props.employee.id}-${
+                                e.boughtplanid.planid.appid.id
+                              }-subdomain`
+                            ] != ""
+                              ? `${e.boughtplanid.planid.appid.options.predomain}${
+                                  values[
+                                    `${this.props.employee.id}-${
+                                      e.boughtplanid.planid.appid.id
+                                    }-subdomain`
+                                  ]
+                                }${e.boughtplanid.planid.appid.options.afterdomain}`
+                              : null
+                        },
+                        refetchQueries: [
+                          {
+                            query: fetchUserLicences,
+                            variables: { unitid: this.props.employeeid }
+                          }
+                        ]
+                      });
                     }}
                     submitDisabled={values =>
-                      (e.boughtplanid.planid.appid.needssubdomain && values.subdomain == "") ||
-                      values.email == "" ||
-                      values.password == ""
+                      !values ||
+                      (e.boughtplanid.planid.appid.needssubdomain &&
+                        (!values[
+                          `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-subdomain`
+                        ] ||
+                          values[
+                            `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-subdomain`
+                          ] == "")) ||
+                      !values[
+                        `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-email`
+                      ] ||
+                      values[`${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-email`] ==
+                        "" ||
+                      !values[
+                        `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-password`
+                      ] ||
+                      values[
+                        `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-password`
+                      ] == ""
                     }
                     nooutsideclose={true}
                     fields={(e.boughtplanid.planid.appid.needssubdomain
                       ? [
                           {
-                            id: `${this.props.employeename}-${
-                              e.boughtplanid.planid.appid.name
+                            id: `${this.props.employee.id}-${
+                              e.boughtplanid.planid.appid.id
                             }-subdomain`,
                             options: {
                               label: "Subdomain",
@@ -276,15 +330,13 @@ class ServiceDetails extends React.Component<Props, State> {
                       : []
                     ).concat([
                       {
-                        id: `${this.props.employeename}-${e.boughtplanid.planid.appid.name}-email`,
+                        id: `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-email`,
                         options: {
                           label: `Username for your ${e.boughtplanid.planid.appid.name}-Account`
                         }
                       },
                       {
-                        id: `${this.props.employeename}-${
-                          e.boughtplanid.planid.appid.name
-                        }-password`,
+                        id: `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-password`,
                         options: {
                           label: `Password for your ${e.boughtplanid.planid.appid.name}-Account`,
                           type: "password"
@@ -292,101 +344,6 @@ class ServiceDetails extends React.Component<Props, State> {
                       }
                     ])}
                   />
-
-                  /*<PopupBase
-                    small={true}
-                    close={() => this.setState({ edit: false, email: "", password: "" })}>
-                    <span className="lightHeading">
-                      Edit licence from {this.props.employeename} of{" "}
-                      {e.boughtplanid.planid.appid.name}
-                    </span>
-                    {e.boughtplanid.planid.appid.needssubdomain ? (
-                      <UniversalTextInput
-                        id={`${name}-subdomain`}
-                        label="Subdomain"
-                        livevalue={value => this.setState({ subdomain: value })}>
-                        <span className="small">
-                          Please insert your subdomain.
-                          <br />
-                          {e.boughtplanid.planid.appid.options.predomain}YOUR SUBDOMAIN
-                          {e.boughtplanid.planid.appid.options.afterdomain}
-                        </span>
-                      </UniversalTextInput>
-                    ) : (
-                      ""
-                    )}
-                    <UniversalTextInput
-                      id={`${name}-email`}
-                      label={`Username for your ${name}-Account`}
-                      livevalue={value => this.setState({ email: value })}
-                    />
-                    <UniversalTextInput
-                      id={`${name}-password`}
-                      label={`Password for your ${name}-Account`}
-                      type="password"
-                      livevalue={value => this.setState({ password: value })}
-                    />
-                    <UniversalButton
-                      type="high"
-                      disabled={
-                        (e.boughtplanid.planid.appid.needssubdomain &&
-                          this.state.subdomain == "") ||
-                        this.state.email == "" ||
-                        this.state.password == ""
-                      }
-                      label="Confirm"
-                      onClick={async () => {
-                        this.setState({ confirmedit: true, networkedit: true, updated: false });
-                        try {
-                          await updateCredentials({
-                            variables: {
-                              licenceid: e.id,
-                              username: this.state.email,
-                              password: this.state.password,
-                              loginurl:
-                                this.state.subdomain != ""
-                                  ? `${e.boughtplanid.planid.appid.options.predomain}${
-                                      this.state.subdomain
-                                    }${e.boughtplanid.planid.appid.options.afterdomain}`
-                                  : ""
-                            },
-                            refetchQueries: [
-                              {
-                                query: fetchUserLicences,
-                                variables: { unitid: this.props.employeeid }
-                              }
-                            ]
-                          });
-                          this.setState({ updated: true, networkedit: false });
-                        } catch (err) {
-                          this.setState({ erroredit: err });
-                          //this.setState({ networkedit: false });
-                          console.log("err");
-                          throw err;
-                        }
-                      }}
-                    />
-
-                    {this.state.confirmedit ? (
-                      <PopupSaving
-                        finished={this.state.updated}
-                        savingmessage="The licence is currently being updated"
-                        savedmessage="The licence has been updated sucessfully."
-                        error={this.state.erroredit}
-                        maxtime={5000}
-                        closeFunction={() =>
-                          this.setState({
-                            edit: false,
-                            email: "",
-                            password: "",
-                            confirmedit: false
-                          })
-                        }
-                      />
-                    ) : (
-                      ""
-                    )}
-                    </PopupBase>*/
                 )}
                 {this.state.delete && (
                   <PopupBase

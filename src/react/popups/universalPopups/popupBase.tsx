@@ -55,6 +55,10 @@ class PopupBase extends React.Component<Props, State> {
     }
   };
 
+  componentWillUnmount() {
+    this.setState({ isopen: false, autoclosing: false });
+  }
+
   componentDidMount() {
     setTimeout(() => this.open(true), 1);
   }
@@ -170,7 +174,7 @@ class PopupBase extends React.Component<Props, State> {
             style={this.state.isopen ? showBackground : hideBackground}
             onClick={e => {
               e.stopPropagation();
-              if (this.props.nooutsideclose) {
+              if (!this.props.nooutsideclose) {
                 this.close();
               }
             }}>

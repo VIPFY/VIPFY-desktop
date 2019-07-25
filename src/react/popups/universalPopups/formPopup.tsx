@@ -2,6 +2,7 @@ import * as React from "react";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
+import PopupSelfSaving from "./selfSaving";
 
 interface Props {
   key: string;
@@ -12,14 +13,24 @@ interface Props {
   nooutsideclose?: boolean;
   submit: Function;
   submitDisabled?: Function;
+  savingHeading?: string;
+  explainImage?: JSX.Element;
+  cancelLabel?: string;
+  confirmLabel?: string;
+  addStyles?: Object;
 }
 
 interface State {
   values: Object;
+  save: Boolean;
 }
 
 class FormPopup extends React.Component<Props, State> {
-  state = { values: {} };
+  state = { values: {}, save: false };
+
+  componentWillUnmount() {
+    this.setState({ values: {}, save: false });
+  }
 
   render() {
     const {
@@ -30,25 +41,37 @@ class FormPopup extends React.Component<Props, State> {
       nooutsideclose,
       submit,
       key,
-      submitDisabled
+      submitDisabled,
+      savingHeading,
+      explainImage,
+      cancelLabel,
+      confirmLabel,
+      addStyles
     } = this.props;
-    console.log("PopupFields", this.state, this.props);
     return (
       <PopupBase
         nooutsideclose={nooutsideclose}
         small={true}
-        key={key}
         close={close}
-        additionalclassName="formPopup">
+        additionalclassName="formPopup"
+        styles={addStyles}>
         <h1>{heading}</h1>
         {subHeading && <h2>{subHeading}</h2>}
+        {explainImage && (
+          <div style={{ marginBottom: "36px", display: "flex", justifyContent: "center" }}>
+            {explainImage}
+          </div>
+        )}
         {fields &&
           fields.map(field => (
             <UniversalTextInput
+              key={field.id}
               id={field.id}
               {...field.options}
               livevalue={v => {
-                this.setState(oldstate => ({ ...oldstate, [field.id]: v }));
+                this.setState(oldstate => ({
+                  values: { ...oldstate.values, [field.id]: v }
+                }));
               }}
               width="100%"
             />
@@ -59,14 +82,21 @@ class FormPopup extends React.Component<Props, State> {
             this.setState({ values: {} });
             close();
           }}
-          label="Cancel"
+          label={cancelLabel || "Cancel"}
         />
         <UniversalButton
           type="high"
           disabled={submitDisabled && submitDisabled(this.state.values)}
-          label="Confirm"
-          onClick={() => submit(this.state.values)}
+          label={confirmLabel || "Confirm"}
+          onClick={() => this.setState({ save: true })}
         />
+        {this.state.save && (
+          <PopupSelfSaving
+            saveFunction={async () => await submit(this.state.values)}
+            heading={savingHeading || "Process Data"}
+            closeFunction={() => close()}
+          />
+        )}
       </PopupBase>
     );
   }
