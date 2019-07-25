@@ -190,3 +190,27 @@
     text-align: center;
   }
 }
+
+.yubikeys {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+
+  ol {
+    all: initial;
+    list-style: decimal;
+    align-self: left;
+
+    li {
+      all: initial;
+      list-style: decimal;
+      display: list-item !important;
+      margin-bottom: 24px !important;
+      margin-left: 10px;
+
+      &:nth-child(2) {
+        margin-bottom: 48px !important;
+      }
+    }
+  }
+}

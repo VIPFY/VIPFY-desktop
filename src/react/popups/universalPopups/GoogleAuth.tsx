@@ -7,11 +7,19 @@ import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { User } from "../../interfaces";
 
-const GENERATE_SECRET = gql`
+export const GENERATE_SECRET = gql`
   query onGenerateSecret($type: TWOFA_TYPE!, $userid: ID) {
     generateSecret(type: $type, userid: $userid) {
       qrCode
       codeId
+      yubikey {
+        rp
+        user
+        pubKeyCredParams
+        attestation
+        timeout
+        challenge
+      }
     }
   }
 `;

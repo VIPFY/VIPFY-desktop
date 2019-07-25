@@ -96,6 +96,7 @@ export const filterError = error => {
 
 export const AppContext = React.createContext();
 
+// TODO: [VIP-433] Better logic in case of an undefined error
 export const ErrorComp = ({ error }) => <div className="error-field">{filterError(error)}</div>;
 
 export const concatName = ({ firstname, middlename, lastname }) =>

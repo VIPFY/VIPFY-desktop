@@ -54,7 +54,7 @@ class SecurityPopup extends React.Component<Props, State> {
                 />
               </li>
 
-              <li style={{ cursor: "unset" }}>
+              {/* <li style={{ cursor: "unset" }}>
                 <i className="fal fa-lock-alt start" />
                 <h3>Yubikey</h3>
                 <p className="settings-info">
@@ -68,7 +68,7 @@ class SecurityPopup extends React.Component<Props, State> {
                   className="button-end"
                   onClick={() => this.setState({ showYubikey: true })}
                 />
-              </li>
+              </li> */}
             </ul>
           ) : (
             <ul>
@@ -86,7 +86,7 @@ class SecurityPopup extends React.Component<Props, State> {
               <li onClick={() => this.setState({ show2FA: true })}>
                 <i className="fal fa-lock-alt start" />
                 <h3>Two-Factor Authentication</h3>
-                <p className="settings-info">Authenticator App or Yubikey is recommended</p>
+                <p className="settings-info">Authenticator App is recommended</p>
                 <p className="settings-message" />
                 <i className="fal fa-pen end" />
               </li>
@@ -100,7 +100,13 @@ class SecurityPopup extends React.Component<Props, State> {
             />
           )}
 
-          {this.state.showYubikey && <Yubikey />}
+          {/* {this.state.showYubikey && (
+            <Yubikey
+              user={this.props.user}
+              close={() => this.setState({ showGoogleAuth: false })}
+            />
+          )} */}
+
           {this.state.showGoogleAuth && (
             <GoogleAuth
               user={this.props.user}
