@@ -145,7 +145,7 @@ class ServiceOverview extends React.Component<Props, State> {
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
-      if (service.licences.find(l => l.endtime == null || l.endtime > now())) {
+      if (service.licences.find(l => l && (l.endtime == null || l.endtime > now()))) {
         serviceArray.push(
           <div
             key={service.name}
@@ -160,6 +160,7 @@ class ServiceOverview extends React.Component<Props, State> {
               <ColumnEmployees
                 employees={service.licences}
                 checkFunction={l =>
+                  l &&
                   ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
                   (l.options == null || l.options.teamlicence == null)
                 }

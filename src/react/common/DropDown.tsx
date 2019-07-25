@@ -91,7 +91,6 @@ class DropDown extends React.PureComponent<Props, State> {
       bodyClass += " slide-up";
     }
     // }
-
     return (
       <div className="dropdown" ref={this.wrapper}>
         <button
@@ -108,33 +107,34 @@ class DropDown extends React.PureComponent<Props, State> {
           </span>
           <i className="fal fa-angle-down big-angle" />
         </button>
-
-        <div
-          className={bodyClass}
-          style={
-            this.wrapper &&
-            this.props.holder && {
-              position: "fixed",
-              width: "155px",
-              top:
-                this.calculateTop(this.wrapper.current) +
-                32 -
-                ((this.props.holder.current && this.props.holder.current.scrollTop) || 0),
-              left: this.calculateLeft(this.wrapper.current)
-            }
-          }>
-          {this.props.options.map((option, key) => (
-            <button
-              key={key}
-              className="naked-button dropdown-option"
-              onClick={() => {
-                this.props.handleChange(option);
-                this.setState({ show: false });
-              }}>
-              {option.label ? option.label : option}
-            </button>
-          ))}
-        </div>
+        {this.state.show && (
+          <div
+            className={bodyClass}
+            style={
+              this.wrapper &&
+              this.props.holder && {
+                position: "fixed",
+                width: "155px",
+                top:
+                  this.calculateTop(this.wrapper.current) +
+                  32 -
+                  ((this.props.holder.current && this.props.holder.current.scrollTop) || 0),
+                left: this.calculateLeft(this.wrapper.current)
+              }
+            }>
+            {this.props.options.map((option, key) => (
+              <button
+                key={key}
+                className="naked-button dropdown-option"
+                onClick={() => {
+                  this.props.handleChange(option);
+                  this.setState({ show: false });
+                }}>
+                {option.label ? option.label : option}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   }

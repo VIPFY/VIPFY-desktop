@@ -859,7 +859,180 @@ class PersonalDetails extends React.Component<Props, State> {
                       querydata.middlename,
                       querydata.lastname
                     )}`}
-                    saveFunction={async () => await sleep(5000)}
+                    saveFunction={async () => {
+                      switch (this.state.edit!.id) {
+                        case "name":
+                          const parsedName = parseName(this.state.editvalue);
+                          await updateEmployee({
+                            variables: {
+                              user: {
+                                id: querydata.id,
+                                firstname: parsedName.firstName,
+                                middlename: parsedName.middleName || "",
+                                lastname: parsedName.lastName || ""
+                              }
+                            }
+                          });
+                          break;
+
+                        case "emails":
+                          const promisesEmails: any[] = [];
+                          this.state.editvalueArray.forEach(edit => {
+                            if (edit) {
+                              if (
+                                edit.newemail &&
+                                !edit.emaildeleted &&
+                                edit.email &&
+                                edit.email.includes("@")
+                              ) {
+                                //new valid email
+                                promisesEmails.push(
+                                  this.props.createEmail({
+                                    variables: {
+                                      userid: querydata.id,
+                                      emailData: {
+                                        email: edit.email
+                                      }
+                                    }
+                                  })
+                                );
+                              } else if (edit.emaildeleted) {
+                                promisesEmails.push(
+                                  this.props.deleteEmail({
+                                    variables: {
+                                      userid: querydata.id,
+                                      email: edit.oldemail
+                                    }
+                                  })
+                                );
+                              } /*else {
+                              promisesEmails.push(
+                                this.props.updateEmail({
+                                  variables: {
+                                    userid: querydata.id,
+                                    emailData: {
+                                      email: edit.email
+                                    },
+                                    email: edit.oldemail
+                                  }
+                                })
+                              );
+                            }*/
+                            }
+                          });
+                          await Promise.all(promisesEmails);
+                          this.props.refetch();
+                          this.setState({ editvalueArray: [] });
+                          break;
+
+                        case "workphones":
+                          const promisesPhones: any[] = [];
+                          this.state.editvalueArray.forEach(edit => {
+                            if (edit) {
+                              if (edit.newphone && !edit.phonedeleted && edit.number) {
+                                //new valid email
+                                promisesPhones.push(
+                                  this.props.createPhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      phoneData: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              } else if (edit.phonedeleted && !edit.newphone) {
+                                promisesPhones.push(
+                                  this.props.deletePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id
+                                    }
+                                  })
+                                );
+                              } else if (!(edit.phonedeleted && edit.newphone) && edit.number) {
+                                promisesPhones.push(
+                                  this.props.updatePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id,
+                                      phone: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              }
+                            }
+                          });
+                          await Promise.all(promisesPhones);
+                          this.props.refetch();
+                          this.setState({ editvalueArray: [] });
+                          break;
+
+                        case "privatephones":
+                          const promisespPhones: any[] = [];
+                          this.state.editvalueArray.forEach(edit => {
+                            if (edit) {
+                              if (edit.newphone && !edit.phonedeleted && edit.number) {
+                                //new valid email
+                                promisespPhones.push(
+                                  this.props.createPhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      phoneData: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              } else if (edit.phonedeleted && !edit.newphone) {
+                                promisespPhones.push(
+                                  this.props.deletePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id
+                                    }
+                                  })
+                                );
+                              } else if (!(edit.phonedeleted && edit.newphone) && edit.number) {
+                                promisespPhones.push(
+                                  this.props.updatePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id,
+                                      phone: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              }
+                            }
+                          });
+                          await Promise.all(promisespPhones);
+                          this.props.refetch();
+                          this.setState({ editvalueArray: [] });
+                          break;
+
+                        default:
+                          await updateEmployee({
+                            variables: {
+                              user: {
+                                id: querydata.id,
+                                [this.state.edit!.id]: this.state.editvalue
+                                  ? this.state.editvalue
+                                  : null
+                              }
+                            }
+                          });
+                          break;
+                      }
+                    }}
                     closeFunction={() =>
                       this.setState({ edit: null, updateing: false, editvalue: null })
                     }

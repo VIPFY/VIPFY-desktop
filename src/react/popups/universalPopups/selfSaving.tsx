@@ -3,8 +3,8 @@ import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 
 interface Props {
-  savingmessage: string;
-  savedmessage: string;
+  savingmessage?: string;
+  savedmessage?: string;
   closeFunction: Function;
   maxtime?: number;
   fullmiddle?: Boolean;
@@ -12,6 +12,8 @@ interface Props {
   errormessage?: string;
   heading?: string;
   subHeading?: string;
+  handleError?: Function;
+  noInternalErrorShow?: Boolean;
 }
 
 interface State {
@@ -32,13 +34,20 @@ class PopupSelfSaving extends React.Component<Props, State> {
       await this.props.saveFunction();
       this.setState({ saved: true });
     } catch (err) {
-      this.setState({ error: err });
+      if (this.props.handleError) {
+        this.props.handleError(err);
+      }
+      if (!this.props.noInternalErrorShow) {
+        this.setState({ error: err });
+      }
       console.error("ERROR", err);
-      //throw Error(err);
     }
   };
 
   componentWillUnmount() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
     this.setState({ tolong: false, saved: false, error: null });
   }
 
@@ -85,7 +94,9 @@ class PopupSelfSaving extends React.Component<Props, State> {
           <div>
             <div style={{ fontSize: "32px", textAlign: "center" }}>
               <i style={{ color: "#20BAA9" }} className="fal fa-smile" />
-              <div style={{ marginTop: "32px", fontSize: "16px" }}>{this.props.savedmessage}</div>
+              <div style={{ marginTop: "32px", fontSize: "16px" }}>
+                {this.props.savedmessage || "Saved"}
+              </div>
               <UniversalButton
                 type="high"
                 label="Continue"
@@ -98,7 +109,9 @@ class PopupSelfSaving extends React.Component<Props, State> {
           <div>
             <div style={{ fontSize: "32px", textAlign: "center" }}>
               <i style={{ color: "#20BAA9" }} className="fal fa-spinner fa-spin" />
-              <div style={{ marginTop: "32px", fontSize: "16px" }}>{this.props.savingmessage}</div>
+              <div style={{ marginTop: "32px", fontSize: "16px" }}>
+                {this.props.savingmessage || "Saving"}
+              </div>
             </div>
           </div>
         )}

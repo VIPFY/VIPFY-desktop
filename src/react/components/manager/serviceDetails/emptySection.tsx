@@ -50,7 +50,7 @@ class EmptySection extends React.Component<Props, State> {
     let licences: any[] = [];
     let interlicences: any[] = [];
     if (this.props.licences) {
-      interlicences = this.props.licences.filter(l => l.unitid == null);
+      interlicences = this.props.licences.filter(l => l && l.unitid == null);
       /*interlicences.sort(function(a, b) {
         let nameA = `${a.unitid.firstname} ${a.unitid.lastname}`.toUpperCase();
         let nameB = `${b.unitid.firstname} ${b.unitid.lastname}`.toUpperCase();
