@@ -6,6 +6,7 @@ import LoadingDiv from "../../components/LoadingDiv";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { User } from "../../interfaces";
+import TwoFactorForm from "../../common/TwoFactorForm";
 
 export const GENERATE_SECRET = gql`
   query onGenerateSecret($type: TWOFA_TYPE!, $userid: ID) {
@@ -45,14 +46,6 @@ interface State {
   loading: boolean;
   error: string;
   submitted: boolean;
-  code: {
-    1: number | string;
-    2: number | string;
-    3: number | string;
-    4: number | string;
-    5: number | string;
-    6: number | string;
-  };
 }
 
 class GoogleAuth extends React.Component<Props, State> {
@@ -60,15 +53,11 @@ class GoogleAuth extends React.Component<Props, State> {
     showInput: false,
     loading: false,
     error: "",
-    submitted: false,
-    code: { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "" }
+    submitted: false
   };
 
-  handleSubmit = async e => {
-    e.preventDefault();
-
+  handleSubmit = async code => {
     try {
-      const code = Object.values(this.state.code).reduce((acc, cv) => acc + cv);
       await this.setState({ loading: true });
 
       await this.props.verifyToken({
@@ -86,39 +75,8 @@ class GoogleAuth extends React.Component<Props, State> {
     }
   };
 
-  handleChange = e => {
-    const name = e.target.name;
-    const value = e.target.value;
-
-    if (value > 9) {
-      if (name < 6) {
-        this[parseInt(name) + 1].focus();
-        this.setState(prevState => ({
-          code: { ...prevState.code, [parseInt(name) + 1]: value[1] }
-        }));
-      }
-    } else {
-      this.setState(prevState => ({ code: { ...prevState.code, [name]: value } }));
-    }
-  };
-
   render() {
     const { loading, error } = this.state;
-
-    const first = [1, 2, 3];
-    const second = [4, 5, 6];
-    const mapFields = items =>
-      items.map(item => (
-        <input
-          key={item}
-          ref={node => (this[item] = node)}
-          onChange={this.handleChange}
-          value={this.state.code[item]}
-          required={true}
-          name={item}
-          type="number"
-        />
-      ));
 
     if (this.state.submitted) {
       return (
@@ -157,13 +115,13 @@ class GoogleAuth extends React.Component<Props, State> {
               {loading ? (
                 <i className="fal fa-spinner fa-spin" />
               ) : (
-                <form id="two-factor-form" onSubmit={this.handleSubmit}>
-                  {mapFields(first)}
-
-                  <i className="fal fa-minus" style={{ display: "flex", alignItems: "center" }} />
-
-                  {mapFields(second)}
-                </form>
+                <TwoFactorForm
+                  buttonLabel="confirm"
+                  handleSubmit={values => this.handleSubmit(values)}
+                  fieldNumber={6}
+                  seperator={4}
+                  buttonStyles={{ position: "absolute", bottom: "25px", right: "44px" }}
+                />
               )}
 
               <span style={{ opacity: error ? 1 : 0 }} className="error-field">
@@ -186,15 +144,7 @@ class GoogleAuth extends React.Component<Props, State> {
           )}
         </section>
         <UniversalButton disabled={loading} type="low" closingPopup={true} label="cancel" />
-        {this.state.showInput ? (
-          <UniversalButton
-            type="high"
-            disabled={loading || Object.values(this.state.code).some(item => item.length == 0)}
-            form="two-factor-form"
-            label="confirm"
-            onClick={this.handleSubmit}
-          />
-        ) : (
+        {!this.state.showInput && (
           <UniversalButton
             type="high"
             label="confirm"

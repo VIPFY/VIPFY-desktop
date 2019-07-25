@@ -81,6 +81,10 @@ export function calculatepartsum(plan, useralready, usercount): number {
 }
 
 export const filterError = error => {
+  if (!error) {
+    return "";
+  }
+
   if (typeof error == "string") {
     return error;
   }
@@ -97,7 +101,11 @@ export const filterError = error => {
 export const AppContext = React.createContext();
 
 // TODO: [VIP-433] Better logic in case of an undefined error
-export const ErrorComp = ({ error }) => <div className="error-field">{filterError(error)}</div>;
+export const ErrorComp = props => (
+  <div style={{ opacity: props.error ? 1 : 0 }} className="error-field">
+    {filterError(props.error)}
+  </div>
+);
 
 export const concatName = ({ firstname, middlename, lastname }) =>
   `${firstname} ${middlename ? middlename : ""} ${lastname}`;

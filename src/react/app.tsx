@@ -251,7 +251,6 @@ class App extends React.Component<AppProps, AppState> {
 
             return (
               <PostLogin
-                twoFA={this.state.twofactor}
                 sidebarloaded={this.sidebarloaded}
                 setName={this.setName}
                 logMeOut={this.logMeOut}
@@ -266,7 +265,13 @@ class App extends React.Component<AppProps, AppState> {
         </Query>
       );
     } else if (this.state.twofactor) {
-      return <TwoFactor twoFactor={this.state.twofactor} unitid={this.state.unitid} />;
+      return (
+        <TwoFactor
+          moveTo={this.moveTo}
+          twoFactor={this.state.twofactor}
+          unitid={this.state.unitid}
+        />
+      );
     } else {
       this.redeemSetupToken(() => this.forceUpdate());
       return (
