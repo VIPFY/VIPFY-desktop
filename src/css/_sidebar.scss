@@ -1,6 +1,7 @@
 .sidebar {
   background-color: #253647ff;
-  height: calc(100vh - 32px);
+  //height: calc(100vh - 32px);
+  height: 100%;
   z-index: 300;
   float: left;
   animation: grow 600ms ease-in-out forwards;

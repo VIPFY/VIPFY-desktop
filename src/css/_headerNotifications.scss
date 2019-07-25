@@ -1,0 +1,29 @@
+.headerInformationHolder{
+    position: relative;
+    height: 0px;
+    transition: 400ms ease-in-out height;
+    overflow: hidden;
+
+    .headerNotification{
+        background-color: #323232;
+        line-height: 48px;
+        height: 0px;
+        transition: 400ms ease-in-out height;
+        position: absolute;
+        top: 0px;
+        width: 100%;
+
+        &.errorNotification{
+            background-color: #c73544;
+        }
+        &.warningNotification{
+            background-color: #2D84E6;
+        }
+        &.open{
+            height: 48px;
+        }
+    }
+    &.open{
+        height: 48px;
+    }
+}
