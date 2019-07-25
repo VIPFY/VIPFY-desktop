@@ -280,13 +280,13 @@ class EmployeeOverview extends React.Component<Props, State> {
                                         backgroundColor: "#29CC94",
                                         marginTop: "18px",
                                         marginLeft: "0px",
-                                        width: "56px"
+                                        width: "100%"
                                       }
                                     : {
                                         backgroundColor: "#DB4D3F",
                                         marginTop: "18px",
                                         marginLeft: "0px",
-                                        width: "56px"
+                                        width: "100%"
                                       }
                                 }>
                                 {employee.isonline ? "Online" : "Offline"}
