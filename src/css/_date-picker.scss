@@ -31,11 +31,11 @@ $date-padding-sides: 16px;
 
   &-popup {
     cursor: auto;
-    position: absolute;
-    top: 43px;
-    right: -100px;
-    width: calc(312px - $date-padding-sides * 2);
-    height: calc(368px - 32px - $date-padding-top - $date-padding-bottom);
+    //position: absolute;
+    //top: 43px;
+    //right: -100px;
+    //width: calc(312px - $date-padding-sides * 2);
+    //height: calc(368px - 32px - $date-padding-top - $date-padding-bottom);
     box-shadow: 0 0 10px rgba(#000000, 0.08);
     padding: $date-padding-top $date-padding-sides $date-padding-bottom $date-padding-sides;
     display: flex;

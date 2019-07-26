@@ -187,6 +187,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
             timeout={60000}
             partition="ssotest"
             setResult={(result, image) => {
+              console.log("SEND BACK RESULT", result);
               const ct = this.state.currentTest;
               this.setState(prev => {
                 let sites = [...prev.sites];

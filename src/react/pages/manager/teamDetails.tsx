@@ -1,14 +1,9 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
-import * as Dropzone from "react-dropzone";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
-import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
-import LicencesSection from "../../components/manager/licencesSection";
-import PersonalDetails from "../../components/manager/personalDetails";
-import TeamsSection from "../../components/manager/teamsSection";
 
 import { fetchTeam } from "../../queries/departments";
 import TeamGeneralData from "../../components/manager/teamGeneralData";
@@ -68,7 +63,7 @@ class TeamDetails extends React.Component<Props, State> {
   render() {
     const teamid = this.props.match.params.teamid;
     return (
-      <Query query={fetchTeam} variables={{ teamid }}>
+      <Query pollInterval={60 * 10 * 1000 + 200} query={fetchTeam} variables={{ teamid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";

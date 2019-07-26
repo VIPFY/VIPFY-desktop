@@ -15,20 +15,39 @@ interface State {
   value: string;
   searching: Boolean;
   endsearch: Boolean;
+  context: Boolean;
+  clientX: number;
+  clientY: number;
 }
 
 class UniversalSearchBox extends React.Component<Props, State> {
   state = {
     value: "",
     searching: this.props.startedsearch || false,
-    endsearch: false
+    endsearch: false,
+    context: false,
+    clientX: 0,
+    clientY: 0
   };
 
-  componentWillUnmount = () => {
+  wrapper = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener("mousedown", e => this.handleClickOutside(e));
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", e => this.handleClickOutside(e));
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
-  };
+  }
+
+  handleClickOutside(event) {
+    if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
+      this.setState({ context: false });
+    }
+  }
 
   handleChange = async e => {
     e.preventDefault();
@@ -40,7 +59,7 @@ class UniversalSearchBox extends React.Component<Props, State> {
     }
     this.setState({ value, searching, endsearch: false });
     if (this.props.getValue) {
-      if (this.props.selfitems && !this.state.endsearch) {
+      if (this.props.selfitems) {
         this.props.getValue(null);
       } else {
         this.props.getValue(value);
@@ -140,15 +159,26 @@ class UniversalSearchBox extends React.Component<Props, State> {
   };
 
   render() {
+    const { clipboard } = require("electron");
     return (
       <div
         className="genericSearchHolder"
         style={this.props.boxStyles}
         onMouseLeave={() => this.toggleSearch(false)}
-        onMouseEnter={() => (this.timeout ? this.cTimeout() : "")}>
+        onMouseEnter={() => (this.timeout ? this.cTimeout() : "")}
+        ref={this.wrapper}>
         <div className="genericSearchBox">
           <div className="searchHolder">
-            <div className="searchField" style={{ left: this.state.searching ? "0px" : "-315px" }}>
+            <div
+              className="searchField"
+              style={{ left: this.state.searching ? "0px" : "-315px" }}
+              onContextMenu={e => {
+                e.preventDefault();
+                console.log("CONTEXT", this.state, this.props);
+                if (this.state.searching) {
+                  this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
+                }
+              }}>
               <input
                 value={this.state.value}
                 onChange={input => this.handleChange(input)}
@@ -174,6 +204,30 @@ class UniversalSearchBox extends React.Component<Props, State> {
           </div>
         </div>
         {this.printResults()}
+        {this.state.context && (
+          <button
+            className="cleanup contextButton"
+            onClick={() => {
+              const value = clipboard.readText();
+              if (this.props.getValue) {
+                if (this.props.selfitems) {
+                  this.props.getValue(null);
+                } else {
+                  this.props.getValue(value);
+                }
+              }
+              this.setState({ value, searching: true, endsearch: false, context: false });
+            }}
+            style={{
+              position: "fixed",
+              top: this.state.clientY,
+              left: this.state.clientX,
+              right: "auto"
+            }}>
+            <i className="fal fa-paste" />
+            <span style={{ marginLeft: "8px", fontSize: "12px" }}>Paste</span>
+          </button>
+        )}
       </div>
     );
   }

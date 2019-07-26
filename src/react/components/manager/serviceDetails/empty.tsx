@@ -59,7 +59,7 @@ class Empty extends React.Component<Props, State> {
           <div className="tableRow" onClick={() => this.setState({ distribute: true })}>
             <div className="tableMain">
               <div className="tableColumnSmall">
-                <span className="name" style={{ fontSize: "10px" }}>
+                <span className="name">
                   {(licence.options && licence.options.identifier) || "empty"}
                 </span>
               </div>
@@ -89,7 +89,7 @@ class Empty extends React.Component<Props, State> {
             {this.state.distribute && (
               <PopupBase small={true} close={() => this.setState({ distribute: false })}>
                 <div>Who should get access to this account?</div>
-                <Query query={FETCH_EMPLOYEES}>
+                <Query pollInterval={60 * 10 * 1000 + 100} query={FETCH_EMPLOYEES}>
                   {({ loading, error, data }) => {
                     if (loading) {
                       return "Loading...";

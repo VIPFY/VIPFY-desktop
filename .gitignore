@@ -4,3 +4,5 @@ out
 .cache
 src/**/*.css
 .env
+src/react/components/admin/sitesfilled.tsx
+ssotest.json

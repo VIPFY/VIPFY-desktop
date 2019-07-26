@@ -9,6 +9,7 @@ import IconButton from "../../common/IconButton";
 import LoadingDiv from "../LoadingDiv";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
+import Collapsible from "../../common/Collapsible";
 
 const REACTIVATE_PLAN = gql`
   mutation onReactivatePlan($planid: ID!) {
@@ -281,25 +282,33 @@ class AppListInner extends React.Component<Props, State> {
   }
 }
 
-export default props => (
-  <Query
-    query={FETCH_UNIT_APPS}
-    variables={{ departmentid: props.company.unit.id }}
-    pollInterval={1000 * 60 * 10}>
-    {({ data, loading, error }) => {
-      if (loading) {
-        return <LoadingDiv text="Fetching data..." />;
-      }
+export default class AppListOuter extends React.Component<{ company: any }, {}> {
+  teamRef = React.createRef<HTMLTextAreaElement>();
 
-      if (error) {
-        return <div>Error fetching data</div>;
-      }
+  render() {
+    return (
+      <Query
+        query={FETCH_UNIT_APPS}
+        variables={{ departmentid: this.props.company.unit.id }}
+        pollInterval={1000 * 60 * 10}>
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <LoadingDiv text="Fetching data..." />;
+          }
 
-      return (
-        <div style={{ padding: "20px" }}>
-          <AppListInner {...props} data={data} />
-        </div>
-      );
-    }}
-  </Query>
-);
+          if (error) {
+            return <div>Error fetching data</div>;
+          }
+
+          return (
+            <Collapsible child={this.teamRef} title="Teams">
+              <div ref={this.teamRef} style={{ padding: "20px" }}>
+                <AppListInner {...this.props} data={data} />
+              </div>
+            </Collapsible>
+          );
+        }}
+      </Query>
+    );
+  }
+}

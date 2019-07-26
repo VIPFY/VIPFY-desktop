@@ -107,7 +107,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
       this.props.location.pathname.startsWith(`/area/${location}`) ||
       `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
     ) {
-      cssClass += " sidebar-active";
+      cssClass += ` sidebar-active${sidebarOpen ? "" : "-small"}`;
     }
 
     if (show) {
@@ -125,7 +125,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
             direction="right">
             <i className={`fal fa-${icon} sidebar-icon`} />
           </Tooltip>
-          {sidebarOpen && <span className="sidebar-link-caption">{label}</span>}
+          <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>{label}</span>
         </li>
       );
     } else {
@@ -245,7 +245,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "marketplaceelement"
       },
       {
-        label: "Integrating Accounts",
+        label: "Account Integrator",
         location: "integrations",
         icon: "shapes",
         show: true,
@@ -443,26 +443,25 @@ class Sidebar extends React.Component<SidebarProps, State> {
     return (
       <AppContext.Consumer>
         {context => (
-          <div
+          <ul
             className={`sidebar${sidebarOpen ? "" : "-small"}`}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
-            <ul className="sidebar-link-holder">
-              <li
-                onClick={() => this.props.toggleSidebar()}
-                className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
-                <Tooltip
-                  distance={18}
-                  arrowSize={5}
-                  content={`${sidebarOpen ? "Hide" : "Open"} Sidebar`}
-                  direction="right">
-                  <i className="fal fa-angle-left" />
-                </Tooltip>
-              </li>
+            <li
+              onClick={() => this.props.toggleSidebar()}
+              className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
+              <Tooltip
+                distance={18}
+                arrowSize={5}
+                content={`${sidebarOpen ? "Hide" : "Open"} Sidebar`}
+                direction="right">
+                <i className="fal fa-angle-left" />
+              </Tooltip>
+            </li>
 
-              <li className={`sidebar-main ${sidebarOpen ? "" : "sidebar-nav-small"}`}>
-                <ul>{sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}</ul>
+            <li className="sidebar-main">
+              <ul>{sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}</ul>
 
-                {/*
+              {/*
               <li
                 className="sidebar-link"
                 style={
@@ -497,7 +496,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 )}
               </li> */}
 
-                {/* <li className="sidebar-link">
+              {/* <li className="sidebar-link">
                 <span>
                   <div
                     style={{ display: "inline-block", width: "100px" }}
@@ -594,41 +593,38 @@ class Sidebar extends React.Component<SidebarProps, State> {
                   ""
                 )}
               </li> */}
-                {/* Without temporary licences */}
-                <SidebarApps
-                  setApp={this.props.setApp}
-                  setInstance={this.props.setInstance}
-                  sidebarOpen={sidebarOpen}
-                  openInstances={this.props.openInstances}
-                  licences={filteredLicences.filter(({ tags }) => tags.length < 1)}
-                  viewID={this.props.viewID}
-                />
+              {/* Without temporary licences */}
+              <SidebarApps
+                setApp={this.props.setApp}
+                setInstance={this.props.setInstance}
+                sidebarOpen={sidebarOpen}
+                openInstances={this.props.openInstances}
+                licences={filteredLicences.filter(({ tags }) => tags.length < 1)}
+                viewID={this.props.viewID}
+              />
 
-                {/* Temporary licences */}
-                <SidebarApps
-                  header="Temporary Apps"
-                  icon="island-tropical"
-                  setApp={this.props.setApp}
-                  setInstance={this.props.setInstance}
-                  sidebarOpen={sidebarOpen}
-                  openInstances={this.props.openInstances}
-                  licences={filteredLicences.filter(({ tags }) => tags.length > 0)}
-                  viewID={this.props.viewID}
-                />
-              </li>
+              {/* Temporary licences */}
+              <SidebarApps
+                header="Temporary Apps"
+                icon="island-tropical"
+                setApp={this.props.setApp}
+                setInstance={this.props.setInstance}
+                sidebarOpen={sidebarOpen}
+                openInstances={this.props.openInstances}
+                licences={filteredLicences.filter(({ tags }) => tags.length > 0)}
+                viewID={this.props.viewID}
+              />
+            </li>
 
-              <li
-                className={`sidebar-link${sidebarOpen ? "" : "-small"}`}
-                onClick={() => this.props.logMeOut()}>
-                <Tooltip arrowSize={5} content="Logout" direction="right" useHover={!sidebarOpen}>
-                  <i className="fal fa-sign-out-alt sidebar-icon" />
-                </Tooltip>
-                <span className={`${sidebarOpen ? "sidebar-link-caption" : "show-not"}`}>
-                  Logout
-                </span>
-              </li>
-            </ul>
-          </div>
+            <li
+              className={`sidebar-link${sidebarOpen ? "" : "-small"}`}
+              onClick={() => this.props.logMeOut()}>
+              <Tooltip arrowSize={5} content="Logout" direction="right" useHover={!sidebarOpen}>
+                <i className="fal fa-sign-out-alt sidebar-icon" />
+              </Tooltip>
+              <span className={`${sidebarOpen ? "sidebar-link-caption" : "show-not"}`}>Logout</span>
+            </li>
+          </ul>
         )}
       </AppContext.Consumer>
     );

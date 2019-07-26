@@ -120,10 +120,11 @@ class App extends React.Component<AppProps, AppState> {
       });
       const { token } = res.data.redeemSetupToken;
       localStorage.setItem("token", token);
-      store.delete("setuptoken");
+      store.delete("setupkey");
       refetch();
     } catch (err) {
-      console.log("setup token error", err);
+      const store = new Store();
+      store.delete("setupkey");
     }
   };
 
@@ -203,15 +204,6 @@ class App extends React.Component<AppProps, AppState> {
                   />
                 </div>
               );
-
-              /*return (
-                <Login
-                  login={this.logMeIn}
-                  moveTo={this.moveTo}
-                  register={this.registerMe}
-                  error={error}
-                />
-              );*/
             }
 
             const store = new Store();
@@ -263,7 +255,6 @@ class App extends React.Component<AppProps, AppState> {
           />
         </div>
       );
-      //return <Login login={this.logMeIn} moveTo={this.moveTo} error={this.state.error} />;
     }
   };
 
@@ -302,6 +293,7 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { placeid, popup, page, sidebarloaded } = this.state;
+    console.log("RENDER");
     return (
       <AppContext.Provider
         value={{
@@ -340,6 +332,7 @@ class App extends React.Component<AppProps, AppState> {
           </Query>
           }*/}
         {popup.show && (
+          //TODO VIP-411 Replace old Popup with new PopupBase
           <Popup
             popupHeader={popup.header}
             popupBody={popup.body}

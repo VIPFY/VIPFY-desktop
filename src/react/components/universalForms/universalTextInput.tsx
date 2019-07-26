@@ -1,4 +1,5 @@
 import * as React from "react";
+import UniversalButton from "../universalButtons/universalButton";
 
 interface Props {
   id: string;
@@ -17,6 +18,8 @@ interface Props {
   onEnter?: Function;
   modifyValue?: Function;
   required?: Boolean;
+  deleteFunction?: Function;
+  style?: Object;
 }
 
 interface State {
@@ -27,6 +30,9 @@ interface State {
   notypeing: Boolean;
   errorfaded: Boolean;
   currentid: string;
+  context: Boolean;
+  clientX: number;
+  clientY: number;
 }
 
 class UniversalTextInput extends React.Component<Props, State> {
@@ -37,8 +43,27 @@ class UniversalTextInput extends React.Component<Props, State> {
     eyeopen: false,
     notypeing: true,
     errorfaded: false,
-    currentid: ""
+    currentid: "",
+    context: false,
+    clientX: 0,
+    clientY: 0
   };
+
+  wrapper = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener("mousedown", e => this.handleClickOutside(e));
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", e => this.handleClickOutside(e));
+  }
+
+  handleClickOutside(event) {
+    if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
+      this.setState({ context: false });
+    }
+  }
 
   componentWillReceiveProps = props => {
     if (this.props.id != "" && this.props.id != props.id) {
@@ -84,12 +109,23 @@ class UniversalTextInput extends React.Component<Props, State> {
   };
 
   render() {
+    const { clipboard } = require("electron");
     return (
       <div
         className={`universalLabelInput ${this.props.disabled ? "disabled" : ""} ${
           this.props.className
         }`}
-        style={this.props.width ? { width: this.props.width } : {}}>
+        style={Object.assign(
+          { ...this.props.style },
+          this.props.width ? { width: this.props.width } : {}
+        )}
+        onContextMenu={e => {
+          e.preventDefault();
+          if (!this.props.disabled) {
+            this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
+          }
+        }}
+        ref={this.wrapper}>
         <input
           autoFocus={this.props.focus || false}
           id={this.props.id}
@@ -183,6 +219,41 @@ class UniversalTextInput extends React.Component<Props, State> {
           )
         ) : (
           ""
+        )}
+        {this.props.deleteFunction && (
+          <button
+            className="cleanup inputInsideButton"
+            tabIndex={-1}
+            onClick={() => this.props.deleteFunction()}
+            style={{ color: "#253647" }}>
+            <i className="fal fa-trash-alt" />
+          </button>
+        )}
+        {this.state.context && (
+          <button
+            className="cleanup contextButton"
+            onClick={() => {
+              let value = clipboard.readText();
+              if (this.props.livevalue) {
+                this.props.livevalue(value);
+              }
+
+              if (this.props.modifyValue) {
+                value = this.props.modifyValue(value);
+              }
+
+              this.setState({ value, notypeing: false, context: false });
+              this.timeout = setTimeout(() => this.setState({ notypeing: true }), 400);
+            }}
+            style={{
+              position: "fixed",
+              top: this.state.clientY,
+              left: this.state.clientX,
+              right: "auto"
+            }}>
+            <i className="fal fa-paste" />
+            <span style={{ marginLeft: "8px", fontSize: "12px" }}>Paste</span>
+          </button>
         )}
       </div>
     );

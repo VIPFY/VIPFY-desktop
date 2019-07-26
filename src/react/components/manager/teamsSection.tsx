@@ -53,7 +53,10 @@ class TeamsSection extends React.Component<Props, State> {
     const employeename = this.props.employeename;
 
     return (
-      <Query query={fetchTeams} variables={{ userid: employeeid }}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 800}
+        query={fetchTeams}
+        variables={{ userid: employeeid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";
@@ -97,16 +100,16 @@ class TeamsSection extends React.Component<Props, State> {
                       <div className="tableColumnSmall">
                         <h1>Team</h1>
                       </div>
-                      <div className="tableColumnSmall">{/*<h1>Leader</h1>*/}</div>
+                      <div className="tableColumnSmall">
+                        <h1>Created at</h1>
+                      </div>
                       <div className="tableColumnSmall">
                         <h1>#Teammembers</h1>
                       </div>
                       <div className="tableColumnSmall">
                         <h1>#Shared Licences</h1>
                       </div>
-                      <div className="tableColumnSmall">
-                        <h1>Created at</h1>
-                      </div>
+                      <div className="tableColumnSmall">{/*<h1>Leader</h1>*/}</div>
                     </div>
                     <div className="tableEnd">
                       <UniversalButton
@@ -127,13 +130,6 @@ class TeamsSection extends React.Component<Props, State> {
                   </div>
                   {teamArray}
                 </div>
-                {/* <AddEmployeeToTeam
-                    close={sO => {
-                      this.setState({ add: false, savingObject: sO });
-                    }}
-                    employeeid={employeeid}
-                    employeename={employeename}
-                  /> */}
                 {this.state.add && (
                   <ManageTeams
                     employee={{ id: this.props.employeeid, firstname: this.props.employeename }} //TODO CHANGE employeename

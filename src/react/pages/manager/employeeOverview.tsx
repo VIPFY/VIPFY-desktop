@@ -89,23 +89,6 @@ class EmployeeOverview extends React.Component<Props, State> {
         );
       case 2:
         return (
-          /*  <AddEmployeeTeams
-            continue={data => {
-              this.setState({ addteams: data, addStage: 3 });
-            }}
-            close={() => this.setState({ add: false })}
-            employee={{
-              ...this.state.addpersonal,
-              id: this.state.addpersonal.unitid
-            }}
-            teams={this.state.addteams}
-            setOuterState={async s => {
-              console.log("OUTER", s);
-              await this.setState(s);
-              console.log("STATE", this.state);
-            }}
-          />*/
-
           <ManageTeams
             employee={{
               ...this.state.addpersonal,
@@ -136,13 +119,6 @@ class EmployeeOverview extends React.Component<Props, State> {
         );
       case 3:
         return (
-          /* <AddEmployeeServices
-            continue={(apps, teams) => this.addUser(apps, teams)}
-            close={() => this.setState({ addStage: 2 })}
-            teams={this.state.addteams}
-            addusername={this.state.addpersonal.name}
-            apps={this.state.apps}
-          />*/
           <ManageServices
             employee={{
               ...this.state.addpersonal,
@@ -226,13 +202,16 @@ class EmployeeOverview extends React.Component<Props, State> {
                   <div className="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" style={{ width: "20%" }}>
                           <h1>Name</h1>
                         </div>
-                        <div className="tableColumnBig">
+                        <div className="tableColumnSmall" style={{ width: "5%" }}>
+                          <h1>Status</h1>
+                        </div>
+                        <div className="tableColumnBig" style={{ width: "20%" }}>
                           <h1>Teams</h1>
                         </div>
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" style={{ width: "30%" }}>
                           <h1>Services</h1>
                         </div>
                       </div>
@@ -265,12 +244,12 @@ class EmployeeOverview extends React.Component<Props, State> {
                           className="tableRow"
                           onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
                           <div className="tableMain">
-                            <div className="tableColumnBig">
+                            <div className="tableColumnBig" style={{ width: "20%" }}>
                               <PrintEmployeeSquare employee={employee} className="managerSquare" />
                               <span className="name">
                                 {employee.firstname} {employee.lastname}
                               </span>
-                              <div
+                              {/* <div
                                 className="status"
                                 style={
                                   employee.isonline
@@ -290,41 +269,97 @@ class EmployeeOverview extends React.Component<Props, State> {
                                       }
                                 }>
                                 {employee.isonline ? "Online" : "Offline"}
+                              </div>*/}
+                            </div>
+                            <div className="tableColumnSmall" style={{ width: "5%" }}>
+                              <div
+                                className="status"
+                                style={
+                                  employee.isonline
+                                    ? {
+                                        backgroundColor: "#29CC94",
+                                        marginTop: "18px",
+                                        marginLeft: "0px",
+                                        width: "100%"
+                                      }
+                                    : {
+                                        backgroundColor: "#DB4D3F",
+                                        marginTop: "18px",
+                                        marginLeft: "0px",
+                                        width: "100%"
+                                      }
+                                }>
+                                {employee.isonline ? "Online" : "Offline"}
                               </div>
                             </div>
                             <Query
+                              pollInterval={60 * 10 * 1000 + 600}
                               query={fetchTeams}
                               fetchPolicy="network-only" //TODO make better
                               variables={{ userid: employee.id }}>
                               {({ loading, error, data }) => {
                                 if (loading) {
-                                  return "Loading...";
+                                  return (
+                                    <ColumnTeams
+                                      style={{ width: "20%" }}
+                                      teams={data.fetchTeams}
+                                      teamidFunction={team => team}
+                                      {...this.props}
+                                      fake={true}
+                                    />
+                                  );
                                 }
                                 if (error) {
                                   return `Error! ${error.message}`;
                                 }
                                 return (
                                   <ColumnTeams
+                                    style={{ width: "20%" }}
                                     teams={data.fetchTeams}
                                     teamidFunction={team => team}
+                                    {...this.props}
+                                    fake={false}
                                   />
                                 );
                               }}
                             </Query>
                             <Query
+                              pollInterval={60 * 10 * 1000 + 300}
                               query={fetchUsersOwnLicences}
                               variables={{ unitid: employee.id }}
                               fetchPolicy="network-only" //TODO make better
                             >
                               {({ loading, error, data }) => {
                                 if (loading) {
-                                  return "Loading...";
+                                  return (
+                                    <ColumnServices
+                                      style={{ width: "30%" }}
+                                      services={data.fetchUsersOwnLicences}
+                                      checkFunction={element =>
+                                        !element.disabled &&
+                                        !element.boughtplanid.planid.appid.disabled &&
+                                        (element.endtime > now() || element.endtime == null)
+                                      }
+                                      appidFunction={element => element.boughtplanid.planid.appid}
+                                      overlayFunction={service =>
+                                        service.options &&
+                                        service.options.nosetup && (
+                                          <div className="licenceError">
+                                            <i className="fal fa-exclamation-circle" />
+                                          </div>
+                                        )
+                                      }
+                                      {...this.props}
+                                      fake={true}
+                                    />
+                                  );
                                 }
                                 if (error) {
                                   return `Error! ${error.message}`;
                                 }
                                 return (
                                   <ColumnServices
+                                    style={{ width: "30%" }}
                                     services={data.fetchUsersOwnLicences}
                                     checkFunction={element =>
                                       !element.disabled &&
@@ -340,6 +375,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                                         </div>
                                       )
                                     }
+                                    {...this.props}
+                                    fake={false}
                                   />
                                 );
                               }}

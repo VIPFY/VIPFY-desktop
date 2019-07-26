@@ -4870,7 +4870,8 @@ progress[value] {
             width: 355px;
             background-color: $vipfy-lightgrey;
             line-height: 40px;
-            font-family: "Roboto Light";
+            font-family: "Roboto";
+            font-weight: 300;
             font-size: 13px;
             color: $vipfy-lighttext;
             box-shadow: $vipfy-lightshadow;
@@ -4894,7 +4895,8 @@ progress[value] {
                         color: $vipfy-lighttext;
                         padding-left: 10px;
                         padding-right: 3px;
-                        font-family: "Roboto Light";
+                        font-family: "Roboto";
+                        font-weight: 300;
                     }
                 }
     
@@ -4927,7 +4929,8 @@ progress[value] {
     
             .searchResult{
                 padding: 0px 10px;
-                font-family: "Roboto Light";
+                font-family: "Roboto";
+                font-weight: 300;
                 font-size: 13px;
                 color: $vipfy-lighttext;
                 cursor: pointer;
@@ -4994,6 +4997,30 @@ progress[value] {
             transition: background-color 200ms ease-in-out;
             &:hover{
                 background-color: #37C8BA;
+                box-shadow: 0px 2px 2px rgba(#000000,0.14);
+            }
+            .universalCoverButton:focus > &{
+                box-shadow: 0px 2px 2px rgba(#000000,0.14);
+            }
+        }
+
+        &.disabled{
+            background-color: #cbcbcb;
+            color: #767676;
+            font-weight: 800;
+            cursor: initial;
+        }
+    }
+
+    &.medium{
+        &.useable{
+            border: 1px solid #20baa9;
+            color: #20baa9;
+            transition: background-color 200ms ease-in-out;
+            transition: color 200ms ease-in-out;
+            &:hover{
+                background-color: #20baa9;
+                color: white;
                 box-shadow: 0px 2px 2px rgba(#000000,0.14);
             }
             .universalCoverButton:focus > &{
@@ -5091,7 +5118,8 @@ progress[value] {
         }
 
         .pagePreTitle{
-            font-family: "Roboto Light";
+            font-family: "Roboto";
+            font-weight: 300;
             color: #415E72;
             cursor: pointer;
         }
@@ -5166,7 +5194,8 @@ progress[value] {
         width: 355px;
         background-color: $vipfy-lightgrey;
         line-height: 40px;
-        font-family: "Roboto Light";
+        font-family: "Roboto";
+        font-weight: 300;
         font-size: 13px;
         color: $vipfy-lighttext;
         box-shadow: $vipfy-lightshadow;
@@ -5190,7 +5219,8 @@ progress[value] {
                     color: $vipfy-lighttext;
                     padding-left: 10px;
                     padding-right: 3px;
-                    font-family: "Roboto Light";
+                    font-family: "Roboto";
+                    font-weight: 300;
                 }
             }
 
@@ -5223,7 +5253,8 @@ progress[value] {
 
         .searchResult{
             padding: 0px 10px;
-            font-family: "Roboto Light";
+            font-family: "Roboto";
+            font-weight: 300;
             font-size: 13px;
             color: $vipfy-lighttext;
             cursor: pointer;
@@ -5708,6 +5739,7 @@ progress[value] {
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
   overflow-x: hidden;
   overflow-y: auto;
+  position: relative;
 
   .tableRow {
     &:hover .table-cancel {

@@ -137,6 +137,8 @@ class RegisterCompany extends React.Component<Props, State> {
                 errorhint="A valid Email looks like this john@vipfy.com"
                 label="Email"
                 livevalue={v => this.setState({ email: v })}
+                focus={true}
+                required={true}
               />
             </div>
 
