@@ -527,7 +527,8 @@ li {
   /*background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);*/
   //background-color: $fullworking-background;
   background-color: white;
-  height: calc(100% - 3rem);
+  //height: calc(100% - 3rem);
+  height: 100%;
   margin-left: 3rem;
   overflow-y: scroll;
   transition: margin-left 0.6s ease-in-out, margin-right 0.6s ease-in-out;
@@ -537,6 +538,7 @@ li {
 .marginLeft {
   margin-left: 3rem;
   height: 100%;
+  transition: 600ms margin-left ease;
   //transition: margin-left 0.6s ease-in-out;
 }
 

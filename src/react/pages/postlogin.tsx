@@ -74,34 +74,30 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
             return <PasswordChange {...this.props} />;
           }
           return (
-            <Query pollInterval={60 * 10 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
+            <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
               {({ data, error, loading }) => {
-                if (loading) {
-                  return "Fetching Credits...";
-                }
-
-                if (error || !data) {
+                console.log("PLAN", this.props);
+                if (error) {
                   return filterError(error);
                 }
+                if (data && data.fetchVipfyPlan) {
+                  const vipfyPlan = data.fetchVipfyPlan.plan.name;
+                  // TODO: [VIP-314] Reimplement credits when new structure is clear
+                  // const { fetchCredits } = data;
+                  const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
 
-                console.log("PLAN", this.props);
-
-                const vipfyPlan = data.fetchVipfyPlan.plan.name;
-                // TODO: [VIP-314] Reimplement credits when new structure is clear
-                // const { fetchCredits } = data;
-                const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
-
-                if (this.props.context) {
-                  if (moment().isAfter(expiry)) {
-                    this.props.context.addHeaderNotification(
-                      `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
-                      { type: "error", key: "expire" }
-                    );
-                  } else {
-                    this.props.context.addHeaderNotification(
-                      `${moment().to(expiry, true)} left on ${vipfyPlan}`,
-                      { type: "warning", key: "left", dismissButton: { label: "Dismiss" } }
-                    );
+                  if (this.props.context) {
+                    if (moment().isAfter(expiry)) {
+                      this.props.context.addHeaderNotification(
+                        `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
+                        { type: "error", key: "expire" }
+                      );
+                    } else {
+                      this.props.context.addHeaderNotification(
+                        `${moment().to(expiry, true)} left on ${vipfyPlan}`,
+                        { type: "warning", key: "left", dismissButton: { label: "Dismiss" } }
+                      );
+                    }
                   }
                 }
                 return (

@@ -240,7 +240,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
   handleClickOutside = e => {
     const domNode = ReactDOM.findDOMNode(this);
 
-    if (!domNode || !domNode.contains(e.target)) {
+    if (
+      (!domNode || !domNode.contains(e.target)) &&
+      (this.state.showNotification || this.state.notify)
+    ) {
+      console.log("CLICK OUTSIDE", this.state);
       this.setState({ showNotification: false, notify: false });
     }
   };
@@ -261,7 +265,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
       this.props.location.pathname.startsWith(`/area/${location}`) ||
       `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
     ) {
-      cssClass += ` sidebar-active${sidebarOpen ? "" : "-small"}`;
+      //cssClass += ` sidebar-active${sidebarOpen ? "" : "-small"}`;
+      cssClass += " sidebar-active";
     }
 
     if (show) {
@@ -269,18 +274,22 @@ class Sidebar extends React.Component<SidebarProps, State> {
         <li
           key={location}
           className={cssClass}
-          onClick={() => this.goTo(location)}
           ref={el => this.maybeaddHighlightReference(location, highlight, el, addRenderElement)}>
-          <Tooltip
-            distance={12}
-            arrowSize={5}
-            useHover={!sidebarOpen}
-            content={label}
-            direction="right">
-            <i className={`fal fa-${icon} sidebar-icon`} />
-          </Tooltip>
-          <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>{label}</span>
-          <span className="highlight" />
+          <button className="naked-button itemHolder" onClick={() => this.goTo(location)}>
+            <Tooltip
+              distance={12}
+              arrowSize={5}
+              useHover={!sidebarOpen}
+              content={label}
+              direction="right">
+              <div className="naked-button sidebarButton">
+                <i className={`fal fa-${icon} sidebar-icon`} />
+              </div>
+            </Tooltip>
+            <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+              {label}
+            </span>
+          </button>
         </li>
       );
     } else {
@@ -541,15 +550,18 @@ class Sidebar extends React.Component<SidebarProps, State> {
           <ul
             className={`sidebar${sidebarOpen ? "" : "-small"}`}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
-            <li
-              onClick={() => this.props.toggleSidebar()}
-              className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
+            <li className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
               <Tooltip
                 distance={18}
                 arrowSize={5}
                 content={`${sidebarOpen ? "Hide" : "Open"} Sidebar`}
                 direction="right">
-                <i className="fal fa-angle-left" />
+                <button
+                  className="naked-button sidebarButton"
+                  onClick={() => this.props.toggleSidebar()}
+                  style={{ margin: "8px 12px" }}>
+                  <i className="fal fa-angle-left" />
+                </button>
               </Tooltip>
             </li>
 
@@ -580,65 +592,94 @@ class Sidebar extends React.Component<SidebarProps, State> {
             </li>
 
             <li
-              onClick={this.toggleNotificationPopup}
               className={`sidebar-link${sidebarOpen ? "" : "-small"} ${
                 this.state.notify ? "notify-user" : ""
-              }`}>
-              <i className="far fa-bell" />
-              <span className="notification-amount">
-                {this.props.loading || (!this.props.data && !this.props.data.fetchNotifications)
-                  ? 0
-                  : this.props.data.fetchNotifications.length}
-              </span>
-              <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
-                Notifications
-              </span>
+              }`}
+              style={{ height: "24px", marginTop: "16px" }}>
+              <button className="naked-button itemHolder" onClick={this.toggleNotificationPopup}>
+                <Tooltip
+                  distance={12}
+                  arrowSize={5}
+                  useHover={!sidebarOpen}
+                  content="Notifications"
+                  direction="right">
+                  <div className="naked-button sidebarButton">
+                    <i className="far fa-bell" />
+                    <span className="notification-amount">
+                      {this.props.loading ||
+                      (!this.props.data && !this.props.data.fetchNotifications)
+                        ? 0
+                        : this.props.data.fetchNotifications.length}
+                    </span>
+                  </div>
+                </Tooltip>
+                <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+                  Notifications
+                </span>
+              </button>
             </li>
 
             {this.state.showNotification && (
-              <Notification data={this.props.data} refetch={this.props.refetch} />
+              <Notification
+                data={this.props.data}
+                refetch={this.props.refetch}
+                style={{
+                  left: sidebarOpen ? "210px" : "50px",
+                  zIndex: 1000
+                }}
+              />
             )}
 
-            <li
-              onClick={() => this.setState(prevState => ({ contextMenu: !prevState.contextMenu }))}
-              className="sidebar-link">
-              <PrintEmployeeSquare
-                hideTitle={true}
-                size={24}
-                className="managerSquare small-profile-pic"
-                employee={this.props}
-              />
-              <span
-                className={`sidebar-link-caption-context ${
-                  sidebarOpen ? "" : "invisible-context"
-                }`}>
-                <UserName unitid={this.props.id} />
-              </span>
-            </li>
-
-            <li />
-
-            <div
-              className="context-menu"
-              style={{
-                transform: this.state.contextMenu ? "translateX(0)" : "",
-                left: sidebarOpen ? "210px" : "50px"
-              }}>
-              <div>
-                <UserName unitid={this.props.id} />
-              </div>
-              <div
-                onClick={() => {
-                  this.props.history.push("/area/profile");
-                  this.setState({ contextMenu: false });
-                }}>
-                <span>Profile</span>
-                <i className="fal fa-external-link-alt" />
-              </div>
-              <button className="naked-button" onClick={this.props.logMeOut}>
-                Log out
+            <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
+              <button
+                className="naked-button itemHolder"
+                onClick={() =>
+                  this.setState(prevState => ({ contextMenu: !prevState.contextMenu }))
+                }>
+                <Tooltip
+                  distance={12}
+                  arrowSize={5}
+                  useHover={!sidebarOpen}
+                  content={<UserName unitid={this.props.id} />}
+                  direction="right">
+                  <div className="naked-button sidebarButton">
+                    <PrintEmployeeSquare
+                      hideTitle={true}
+                      size={24}
+                      className="managerSquare small-profile-pic"
+                      employee={this.props}
+                      styles={{ marginTop: "0px" }}
+                    />
+                  </div>
+                </Tooltip>
+                <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+                  <UserName unitid={this.props.id} />
+                </span>
               </button>
-            </div>
+            </li>
+            {this.state.contextMenu && (
+              <div
+                className="context-menu"
+                style={{
+                  left: sidebarOpen ? "210px" : "50px",
+                  zIndex: 1000
+                }}>
+                <div>
+                  <UserName unitid={this.props.id} />
+                </div>
+                <div
+                  onClick={() => {
+                    this.props.history.push("/area/profile");
+                    this.setState({ contextMenu: false });
+                  }}>
+                  <span>Profile</span>
+                  <i className="fal fa-external-link-alt" />
+                </div>
+                <button className="naked-button" onClick={this.props.logMeOut}>
+                  Log out
+                </button>
+              </div>
+            )}
           </ul>
         )}
       </AppContext.Consumer>

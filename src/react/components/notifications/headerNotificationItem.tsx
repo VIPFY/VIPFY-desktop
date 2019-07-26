@@ -41,7 +41,9 @@ class HeaderNotificationItem extends Component<Props, State> {
       <div className={classes} style={this.props.show ? { zIndex: 1 } : { zIndex: 0 }}>
         <span>{message}</span>
         {dismissButton && (
-          <button className="headerNotificationButton" onClick={() => this.props.dismiss()}>
+          <button
+            className="naked-button headerNotificationButton"
+            onClick={() => this.props.dismiss()}>
             {dismissButton.label}
           </button>
         )}

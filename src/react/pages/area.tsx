@@ -48,6 +48,7 @@ import Consent from "../popups/universalPopups/Consent";
 import UniversalLogin from "./universalLogin";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
+import HistoryButtons from "../components/HistoryButtons";
 
 interface AreaProps {
   history: any[];
@@ -419,7 +420,7 @@ class Area extends React.Component<AreaProps, AreaState> {
               }
             }}
           />
-          <Route
+          {/*<Route
             render={props => {
               if (!this.props.location.pathname.includes("advisor")) {
                 return (
@@ -439,6 +440,11 @@ class Area extends React.Component<AreaProps, AreaState> {
               } else {
                 return "";
               }
+            }}
+          />*/}
+          <Route
+            render={props => {
+              return <HistoryButtons viewID={this.state.viewID} />;
             }}
           />
           <Route

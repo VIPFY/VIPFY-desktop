@@ -51,7 +51,12 @@ class SidebarApps extends React.Component<Props, State> {
   }
 
   handleClickOutside(event) {
-    if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
+    if (
+      this.state.context &&
+      this.wrapper &&
+      this.wrapper.current &&
+      !this.wrapper.current.contains(event.target)
+    ) {
       this.setState({ context: false });
     }
   }
@@ -110,7 +115,7 @@ class SidebarApps extends React.Component<Props, State> {
     }
 
     const input = (style = {}) => (
-      <div style={{ width: "100px" }}>
+      <div style={{ marginLeft: "8px", width: "calc(100% - 48px)" }}>
         <input
           ref={node => {
             this.searchInput = node;
@@ -136,70 +141,79 @@ class SidebarApps extends React.Component<Props, State> {
       </div>
     );
 
+    console.log("APPS", this.props.licences);
     return (
-      <ul>
-        <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`} style={{ marginTop: "40px" }}>
+      <ul style={{ marginTop: "40px" }}>
+        <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
           <button
             type="button"
             onClick={this.toggleApps}
-            className="naked-button sidebar-link-apps">
-            <Tooltip
-              useHover={!sidebarOpen}
-              distance={7}
-              arrowSize={5}
-              direction="right"
-              content={SortComponent}>
-              <i className={`fal fa-${icon ? icon : "th-large"} sidebar-icon`} />
-            </Tooltip>
-
-            <span
-              style={{ marginLeft: "7px", flex: 1, textAlign: "start" }}
-              className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
-              {this.props.header ? this.props.header : "My Apps"}
-            </span>
-            {sidebarOpen && (
+            className="naked-button itemHolder" /*sidebar-link-apps*/
+            style={{ justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <Tooltip
+                useHover={!sidebarOpen}
+                distance={7}
                 arrowSize={5}
-                distance={12}
-                useHover={sidebarOpen}
-                content={`${showApps ? "Hide" : "Show"} Apps`}
-                direction="right">
-                <i className={`carret fal fa-angle-right ${showApps ? "open" : ""}`} />
+                direction="right"
+                content={SortComponent}>
+                <div className="naked-button sidebarButton">
+                  <i className={`fal fa-${icon ? icon : "th-large"} sidebar-icon`} />
+                </div>
               </Tooltip>
-            )}
+              <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+                {this.props.header ? this.props.header : "My Apps"}
+              </span>
+            </div>
+
+            <Tooltip
+              arrowSize={5}
+              distance={12}
+              useHover={sidebarOpen}
+              content={`${showApps ? "Hide" : "Show"} Apps`}
+              direction="right">
+              <div className="naked-button sidebarButton showMore">
+                <i className={`carret fal fa-angle-right ${showApps ? "open" : ""}`} />
+              </div>
+            </Tooltip>
           </button>
         </li>
 
         <li>
           <ul className="sidebar-apps">
             {showApps && (
-              <li
-                style={sidebarOpen ? { marginLeft: "11px" } : {}}
-                className="sidebar-link"
-                ref={this.wrapper}>
-                <Tooltip useHover={!sidebarOpen} direction="right" content={input()}>
-                  <IconButton icon="search" onClick={() => this.searchInput.focus()} />
-                </Tooltip>
-                {input(sidebarOpen ? "" : "-hide")}
-                {this.state.context && (
-                  <button
-                    className="cleanup contextButton"
-                    onClick={() => {
-                      let value = clipboard.readText();
-                      this.setState({ searchString: value, context: false });
-                    }}
-                    style={{
-                      position: "fixed",
-                      top: this.state.clientY,
-                      left: this.state.clientX,
-                      right: "auto",
-                      color: "#253647",
-                      zIndex: 10000
-                    }}>
-                    <i className="fal fa-paste" />
-                    <span style={{ marginLeft: "8px", fontSize: "12px" }}>Paste</span>
-                  </button>
-                )}
+              <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`} ref={this.wrapper}>
+                <button
+                  type="button"
+                  onClick={() => this.searchInput.focus()}
+                  className="naked-button itemHolder" /*sidebar-link-apps*/
+                >
+                  <Tooltip useHover={!sidebarOpen} direction="right" content={input()}>
+                    <div className="naked-button sidebarButton">
+                      <i className="carret fal fa-search" />
+                    </div>
+                  </Tooltip>
+                  {input(sidebarOpen ? "" : "-hide")}
+                  {this.state.context && (
+                    <button
+                      className="cleanup contextButton"
+                      onClick={() => {
+                        let value = clipboard.readText();
+                        this.setState({ searchString: value, context: false });
+                      }}
+                      style={{
+                        position: "fixed",
+                        top: this.state.clientY,
+                        left: this.state.clientX,
+                        right: "auto",
+                        color: "#253647",
+                        zIndex: 10000
+                      }}>
+                      <i className="fal fa-paste" />
+                      <span style={{ marginLeft: "8px", fontSize: "12px" }}>Paste</span>
+                    </button>
+                  )}
+                </button>
               </li>
             )}
 
@@ -217,9 +231,35 @@ class SidebarApps extends React.Component<Props, State> {
                       .includes(this.state.searchString.toUpperCase());
                   }
                 })
-                .sort((a, b) => a.sidebar - b.sidebar)
+                //.sort((a, b) => a.sidebar - b.sidebar)
+                .sort((a, b) => {
+                  let nameA = a.boughtplanid.planid.appid.name.toUpperCase();
+                  let nameB = b.boughtplanid.planid.appid.name.toUpperCase();
+                  if (nameA < nameB) {
+                    return -1;
+                  }
+                  if (nameA > nameB) {
+                    return 1;
+                  }
+
+                  // If Appname equals
+
+                  let nameC = a.boughtplanid.alias.toUpperCase();
+                  let nameD = b.boughtplanid.alias.toUpperCase();
+                  if (nameC < nameD) {
+                    return -1;
+                  }
+                  if (nameC > nameD) {
+                    return 1;
+                  }
+
+                  return 0;
+                })
                 .filter((_, index) => (showMoreApps ? true : index < 5))
                 .map(licence => {
+                  if (!licence) {
+                    return;
+                  }
                   const maxValue = licences.reduce((acc, cv) => Math.max(acc, cv.sidebar), 0);
 
                   // Make sure that every License has an index
@@ -251,29 +291,31 @@ class SidebarApps extends React.Component<Props, State> {
         </li>
 
         {showApps && licences.length > 5 && (
-          <li className={`show-more${sidebarOpen ? "" : "-small"}`}>
-            <Tooltip
-              useHover={!sidebarOpen}
-              direction="right"
-              distance={1}
-              content={`Show ${showMoreApps ? "less" : "more"} Apps`}>
-              <button
-                type="button"
-                onClick={() =>
-                  this.setState(prevState => ({
-                    ...prevState,
-                    showMoreApps: !prevState.showMoreApps
-                  }))
-                }
-                style={sidebarOpen ? { width: "92%" } : { transform: "translateX(11px)" }}
-                className="naked-button">
-                <i className={`fal fa-angle-down ${showMoreApps ? "open" : ""}`} />
-
-                <span className={`${sidebarOpen ? "sidebar-link-caption show-more" : "show-not"}`}>
-                  {`Show ${showMoreApps ? "less" : "more"} Apps`}
-                </span>
-              </button>
-            </Tooltip>
+          <li className={`sidebar-link show-more${sidebarOpen ? "" : "-small"}`}>
+            <button
+              type="button"
+              onClick={() =>
+                this.setState(prevState => ({
+                  ...prevState,
+                  showMoreApps: !prevState.showMoreApps
+                }))
+              }
+              className="naked-button itemHolder" /*sidebar-link-apps*/
+              style={{ color: "#ffffff80" }}>
+              <Tooltip
+                arrowSize={5}
+                distance={12}
+                useHover={!sidebarOpen}
+                direction="right"
+                content={`Show ${showMoreApps ? "less" : "more"} Apps`}>
+                <div className="naked-button sidebarButton showMore">
+                  <i className={`fal fa-angle-down ${showMoreApps ? "open" : ""}`} />
+                </div>
+              </Tooltip>
+              <span className="sidebar-link-caption">
+                {`Show ${showMoreApps ? "less" : "more"} Apps`}
+              </span>
+            </button>
           </li>
         )}
       </ul>
