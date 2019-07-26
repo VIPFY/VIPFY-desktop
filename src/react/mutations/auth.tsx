@@ -11,6 +11,8 @@ export const signInUser = gql`
     signIn(email: $email, password: $password) {
       ok
       token
+      twofactor
+      unitid
     }
   }
 `;

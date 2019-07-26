@@ -5,10 +5,8 @@ import LoadingDiv from "../components/LoadingDiv";
 import Area from "./area";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { CHANGE_PASSWORD } from "../mutations/auth";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
-import Welcome from "../pages/welcome";
 import DataNameForm from "../components/dataForms/NameForm";
 import { consentText } from "../common/constants";
 
@@ -23,7 +21,6 @@ interface PostLoginState {}
 
 class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
   state: PostLoginState = {};
-
   render() {
     return (
       <Query query={me}>
