@@ -11,7 +11,6 @@ import { sleep, refetchQueries } from "../common/functions";
 import { fetchLicences, me } from "../queries/auth";
 import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { fetchCards } from "../queries/billing";
-
 import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";

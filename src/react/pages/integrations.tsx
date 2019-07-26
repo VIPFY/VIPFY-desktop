@@ -226,7 +226,6 @@ class Integrations extends React.Component<Props, AppPageState> {
 
   showapps = apps => {
     if (apps.length > 0) {
-      //console.log("APPS", apps);
       return apps.map(appDetails => this.renderAppCard(appDetails));
     }
     if (this.state.searchstring === "") {

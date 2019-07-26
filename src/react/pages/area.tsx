@@ -22,7 +22,7 @@ import ErrorPage from "./error";
 import UsageStatistics from "./usagestatistics";
 import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 
-import { fetchLicences, me } from "../queries/auth";
+import { fetchLicences } from "../queries/auth";
 // import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
@@ -47,6 +47,7 @@ import ServiceDetails from "./manager/serviceDetails";
 import Consent from "../popups/universalPopups/Consent";
 import UniversalLogin from "./universalLogin";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest";
+import PendingIntegrations from "../components/admin/PendingIntegrations";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 
@@ -180,6 +181,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidCatch(error, info) {
+    console.log("LOG: Area -> componentDidCatch -> error, info", error, info);
     this.moveTo("/area/error");
   }
 
@@ -329,6 +331,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           return tab;
         }
       });
+
       return { webviews };
     });
   };
@@ -373,6 +376,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
+      { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
       { path: "ssoconfig", component: SsoConfigurator },
       { path: "ssotest", component: SsoTester },
       { path: "emanager", component: EmployeeOverview },
