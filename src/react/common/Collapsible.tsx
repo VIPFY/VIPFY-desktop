@@ -46,10 +46,6 @@ class Collapsible extends React.Component<Props, State> {
 
   render() {
     const { show } = this.state;
-    console.log(
-      "LOG: Collapsible -> componentDidMount -> this.props.child.current",
-      this.props.child.current
-    );
 
     return (
       <section className={`genericHolder ${this.props.className}`}>

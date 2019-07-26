@@ -52,7 +52,7 @@ interface Password {
 }
 
 interface State {
-  secondRow: boolean;
+  showEdit: boolean;
   passwordPopup: boolean;
   sudoPopup: boolean;
   password: null | Password;
@@ -61,7 +61,7 @@ interface State {
 
 class UserSecurityRow extends React.Component<Props, State> {
   state = {
-    secondRow: false,
+    showEdit: false,
     passwordPopup: false,
     sudoPopup: false,
     password: null,
@@ -161,112 +161,92 @@ class UserSecurityRow extends React.Component<Props, State> {
           </td>
           <td>
             <IconButton
-              icon="cog"
-              onClick={() => this.setState(prevState => ({ secondRow: !prevState.secondRow }))}
+              className="security-edit-button"
+              icon="pen"
+              onClick={() => this.setState(prevState => ({ showEdit: !prevState.showEdit }))}
             />
           </td>
         </tr>
 
-        {this.state.secondRow && (
-          <tr>
-            <td colSpan={3}>
-              <button
-                onClick={() => this.setState({ passwordPopup: true })}
-                className="naked-button"
-                style={{ color: "#20BAA9FF" }}>
-                Change Password
-              </button>
-            </td>
+        {this.state.showEdit && (
+          <Mutation
+            mutation={UPDATE_PASSWORD}
+            onCompleted={() => this.setState({ passwordPopup: false })}>
+            {(updatePassword, { loading, error }) => (
+              <PopupBase small={true} close={() => this.setState({ passwordPopup: false })}>
+                <div className="update-password">
+                  <h1>
+                    Update Password of <UserName unitid={user.id} />
+                  </h1>
+                  <div>You can enter a new password for the user here</div>
 
-            {this.state.passwordPopup && (
-              <Mutation
-                mutation={UPDATE_PASSWORD}
-                onCompleted={() => this.setState({ passwordPopup: false })}>
-                {(updatePassword, { loading, error }) => (
-                  <PopupBase small={true} close={() => this.setState({ passwordPopup: false })}>
-                    <div className="update-password">
-                      <h1>
-                        Update Password of <UserName unitid={user.id} />
-                      </h1>
-                      <div>You can enter a new password for the user here</div>
+                  <ReactPasswordStrength
+                    className="passwordStrength"
+                    minLength={PW_MIN_LENGTH}
+                    minScore={2}
+                    scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+                    tooShortWord={"too short"}
+                    inputProps={{
+                      name: "password_input",
+                      autoComplete: "off",
+                      placeholder: "New Password",
+                      className: "cleanup universalTextInput"
+                    }}
+                    changeCallback={state => this.handlePasswordChange("password", state)}
+                  />
 
-                      <ReactPasswordStrength
-                        className="passwordStrength"
-                        minLength={PW_MIN_LENGTH}
-                        minScore={2}
-                        scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                        tooShortWord={"too short"}
-                        inputProps={{
-                          name: "password_input",
-                          autoComplete: "off",
-                          placeholder: "New Password",
-                          className: "cleanup universalTextInput"
-                        }}
-                        changeCallback={state => this.handlePasswordChange("password", state)}
-                      />
+                  <ReactPasswordStrength
+                    className="passwordStrength"
+                    minLength={PW_MIN_LENGTH}
+                    minScore={2}
+                    scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+                    tooShortWord={"too short"}
+                    inputProps={{
+                      name: "password_input_repeat",
+                      autoComplete: "off",
+                      placeholder: "Repeat Password",
+                      className: "cleanup universalTextInput"
+                    }}
+                    changeCallback={state => this.handlePasswordChange("passwordRepeat", state)}
+                  />
 
-                      <ReactPasswordStrength
-                        className="passwordStrength"
-                        minLength={PW_MIN_LENGTH}
-                        minScore={2}
-                        scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                        tooShortWord={"too short"}
-                        inputProps={{
-                          name: "password_input_repeat",
-                          autoComplete: "off",
-                          placeholder: "Repeat Password",
-                          className: "cleanup universalTextInput"
-                        }}
-                        changeCallback={state => this.handlePasswordChange("passwordRepeat", state)}
-                      />
+                  {error && <ErrorComp error={error} />}
 
-                      {error && <ErrorComp error={error} />}
+                  <div
+                    style={{
+                      opacity:
+                        password &&
+                        passwordRepeat &&
+                        passwordRepeat.password.length >= PW_MIN_LENGTH &&
+                        password.password.length != passwordRepeat.password.length
+                          ? 1
+                          : 0
+                    }}
+                    className="error-field">
+                    Passwords don't match
+                  </div>
+                </div>
 
-                      <div
-                        style={{
-                          opacity:
-                            password &&
-                            passwordRepeat &&
-                            passwordRepeat.password.length >= PW_MIN_LENGTH &&
-                            password.password.length != passwordRepeat.password.length
-                              ? 1
-                              : 0
-                        }}
-                        className="error-field">
-                        Passwords don't match
-                      </div>
-                    </div>
-
-                    <UniversalButton closingPopup={true} label="Cancel" />
-                    <UniversalButton
-                      disabled={
-                        !password ||
-                        !passwordRepeat ||
-                        password.score < 2 ||
-                        password.password != passwordRepeat.password ||
-                        loading
-                      }
-                      onClick={() =>
-                        updatePassword({
-                          variables: { password: password.password, unitid: user.id }
-                        })
-                      }
-                      type="high"
-                      label="Update Password"
-                    />
-                  </PopupBase>
-                )}
-              </Mutation>
+                <UniversalButton closingPopup={true} label="Cancel" />
+                <UniversalButton
+                  disabled={
+                    !password ||
+                    !passwordRepeat ||
+                    password.score < 2 ||
+                    password.password != passwordRepeat.password ||
+                    loading
+                  }
+                  onClick={() =>
+                    updatePassword({
+                      variables: { password: password.password, unitid: user.id }
+                    })
+                  }
+                  type="high"
+                  label="Update Password"
+                />
+              </PopupBase>
             )}
-            <td colSpan={3}>
-              <button
-                style={{ color: "#20BAA9FF" }}
-                onClick={() => this.setState({ sudoPopup: true })}
-                className="naked-button">
-                Login as User
-              </button>
-            </td>
-          </tr>
+          </Mutation>
         )}
       </React.Fragment>
     );
