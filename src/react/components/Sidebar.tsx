@@ -1,10 +1,10 @@
 import * as React from "react";
 import Tooltip from "react-tooltip-lite";
+import * as moment from "moment";
+import * as ReactDOM from "react-dom";
 import { Licence } from "../interfaces";
 import { AppContext } from "../common/functions";
 import config from "../../configurationManager";
-import * as moment from "moment";
-import * as ReactDOM from "react-dom";
 import SidebarApps from "./SidebarApps";
 
 interface SidebarLinks {
