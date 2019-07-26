@@ -267,9 +267,9 @@ class Navigation extends React.Component<Props, State> {
   }
 
   stopImpersonation = async () => {
-    const adminToken = localStorage.getItem("admin-token");
+    const adminToken = localStorage.getItem("impersonator-token");
     localStorage.setItem("token", adminToken!);
-    localStorage.removeItem("admin-token");
+    localStorage.removeItem("impersonator-token");
 
     await this.props.history.push("/area/dashboard");
     this.props.client.cache.reset(); // clear graphql cache

@@ -143,7 +143,7 @@ class App extends React.Component<AppProps, AppState> {
     this.setState(INITIAL_STATE); // clear state
     this.props.client.cache.reset(); // clear graphql cache
     localStorage.removeItem("token");
-    localStorage.removeItem("admin-token");
+    localStorage.removeItem("impersonator-token");
 
     this.props.history.push("/");
     location.reload();

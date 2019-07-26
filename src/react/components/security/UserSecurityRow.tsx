@@ -281,7 +281,7 @@ class UserSecurityRow extends React.Component<Props, State> {
                 onCompleted={async data => {
                   const token = localStorage.getItem("token");
                   localStorage.setItem("token", data.impersonate);
-                  localStorage.setItem("admin-token", token!);
+                  localStorage.setItem("impersonator-token", token!);
 
                   await this.props.history.push("/area/dashboard");
                   this.props.client.cache.reset(); // clear graphql cache
