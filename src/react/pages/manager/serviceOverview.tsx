@@ -2,24 +2,17 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query, Mutation } from "react-apollo";
-import { fetchCompanyTeams } from "../../queries/departments";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
-import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
-import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
-import AddTeamServices from "../../components/manager/addTeamServices";
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { fetchCompanyServices } from "../../queries/products";
 import { now } from "moment";
 import AddServiceGeneralData from "../../components/manager/serviceDetails/addServiceGeneralData";
-import AddTeam from "../../components/manager/serviceDetails/addTeam";
-import AddEmployee from "../../components/manager/serviceDetails/addEmployee";
-import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 import ManageServiceTeams from "../../components/manager/universal/managing/serviceteams";
 import ManageServiceEmployees from "../../components/manager/universal/managing/serviceemployees";
+import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 
 interface Props {
   moveTo: Function;
@@ -126,13 +119,6 @@ class ServiceOverview extends React.Component<Props, State> {
         );
       case 3:
         return (
-          /*<AddEmployee
-            continue={singles => this.addService(singles)}
-            close={() => this.setState({ addStage: 2 })}
-            addedLicences={this.state.addemployees}
-            licences={[]}
-            service={this.state.addservice}
-          />*/
           <ManageServiceEmployees
             service={this.state.addservice}
             close={() => {
@@ -159,7 +145,7 @@ class ServiceOverview extends React.Component<Props, State> {
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
-      if (service.licences.find(l => l.endtime == null || l.endtime > now())) {
+      if (service.licences.find(l => l && (l.endtime == null || l.endtime > now()))) {
         serviceArray.push(
           <div
             key={service.name}
@@ -167,27 +153,14 @@ class ServiceOverview extends React.Component<Props, State> {
             onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
             <div className="tableMain">
               <div className="tableColumnBig">
-                <div
-                  title={service.app.name}
-                  className="managerSquare"
-                  style={{
-                    backgroundImage:
-                      service.app.icon.indexOf("/") != -1
-                        ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                            service.app.icon
-                          )})`
-                        : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                            service.app.icon
-                          )})`,
-                    backgroundColor: "unset"
-                  }}
-                />
+                <PrintServiceSquare appidFunction={s => s.app} service={service} />
                 <span className="name">{service.app.name}</span>
               </div>
               <ColumnTeams teams={service.teams} teamidFunction={team => team.departmentid} />
               <ColumnEmployees
                 employees={service.licences}
                 checkFunction={l =>
+                  l &&
                   ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
                   (l.options == null || l.options.teamlicence == null)
                 }
@@ -227,7 +200,10 @@ class ServiceOverview extends React.Component<Props, State> {
           <div className="heading">
             <h1>Services</h1>
           </div>
-          <Query query={fetchCompanyServices} fetchPolicy="cache-and-network">
+          <Query
+            pollInterval={60 * 10 * 1000 + 900}
+            query={fetchCompanyServices}
+            fetchPolicy="cache-and-network">
             {({ loading, error, data, refetch }) => {
               console.log(loading, error, data);
               if (loading) {

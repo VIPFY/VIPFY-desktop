@@ -91,7 +91,7 @@ class DataNameForm extends React.Component<Props, State> {
           <div className="holder-right">
             <h1>Welcome to VIPFY</h1>
             <p style={{ display: "flex", flexFlow: "column", alignItems: "start" }}>
-              <span>Now that you signed up, let's personalize your experience.</span> <br />
+              <span>Let's personalize your experience.</span> <br />
               <span>First of all, what's your name?</span>
             </p>
 
@@ -125,7 +125,7 @@ class DataNameForm extends React.Component<Props, State> {
                         }))
                       }>
                       {`${showPromoInput ? "Hide promocode" : "Do you have a promocode?"}`}{" "}
-                      <span>Click here</span> <i className="fal fa-money-bill-wave" />
+                      <span>Click here</span>
                     </button>
 
                     {showPromoInput ? (

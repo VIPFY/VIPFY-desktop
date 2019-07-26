@@ -269,7 +269,7 @@ class PopupPhone extends React.Component<Props, State> {
             small={true}
             closeable={false}
             autoclosing={10}
-            autoclosingFunction={() => this.setState({ networking: false, networkerror: true })}
+            autoclosingFunction={() => this.setState({ networking: false, networkerror: false })}
             notimer={true}>
             {this.state.networking ? (
               <div>

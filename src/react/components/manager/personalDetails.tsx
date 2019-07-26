@@ -3,17 +3,18 @@ import moment = require("moment");
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
-import { Mutation } from "react-apollo";
+import { Mutation, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
-import UniversalDropDownInput from "../universalForms/universalDropdownInput";
-import DatePicker from "../../common/DatePicker";
 import { parseName } from "humanparser";
+import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
+import { sleep, concatName } from "../../common/functions";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
     updateEmployee(user: $user) {
       id
       firstname
+      middlename
       lastname
       birthday
       hiredate
@@ -36,6 +37,13 @@ const UPDATE_DATA = gql`
 `;
 interface Props {
   querydata: any;
+  createEmail: Function;
+  updateEmail: Function;
+  deleteEmail: Function;
+  createPhone: Function;
+  deletePhone: Function;
+  updatePhone: Function;
+  refetch: Function;
 }
 
 interface State {
@@ -57,7 +65,73 @@ interface State {
   workPhone: string;
   workPhone2: string;
   error: string | null;
+  edit: Object | null;
+  editvalue: String | null;
+  editvalueArray: Object[];
 }
+
+const CREATE_EMAIL = gql`
+  mutation onCreateEmail($emailData: EmailInput!, $company: Boolean, $userid: ID) {
+    createEmail(emailData: $emailData, forCompany: $company, userid: $userid) {
+      email
+      description
+      priority
+      verified
+      tags
+    }
+  }
+`;
+
+const UPDATE_EMAIL = gql`
+  mutation onUpdateEmail($email: String!, $emailData: EmailUpdateInput!, $userid: ID) {
+    updateEmail08(email: $email, emailData: $emailData, userid: $userid) {
+      email
+      description
+    }
+  }
+`;
+
+const DELETE_EMAIL = gql`
+  mutation onDeleteEmail($email: String!, $company: Boolean, $userid: ID) {
+    deleteEmail(email: $email, forCompany: $company, userid: $userid) {
+      ok
+    }
+  }
+`;
+
+const CREATE_PHONE = gql`
+  mutation onCreatePhone($phoneData: PhoneInput!, $department: Boolean, $userid: ID) {
+    createPhone(phoneData: $phoneData, department: $department, userid: $userid) {
+      id
+      number
+      description
+      priority
+      verified
+      tags
+    }
+  }
+`;
+
+const UPDATE_PHONE = gql`
+  mutation onUpdatePhone($phone: PhoneInput!, $id: ID!, $userid: ID) {
+    updatePhone(phone: $phone, id: $id, userid: $userid) {
+      id
+      number
+      description
+      priority
+      verified
+      tags
+    }
+  }
+`;
+
+const DELETE_PHONE = gql`
+  mutation onDeletePhone($id: ID!, $department: Boolean, $userid: ID) {
+    deletePhone(id: $id, department: $department, userid: $userid) {
+      ok
+    }
+  }
+`;
 
 class PersonalDetails extends React.Component<Props, State> {
   state = {
@@ -96,31 +170,342 @@ class PersonalDetails extends React.Component<Props, State> {
     email2: this.props.querydata.email2,
     workPhone: this.props.querydata.workPhone,
     workPhone2: this.props.querydata.workPhone2,
-    error: null
+    error: null,
+    edit: null,
+    editvalue: null,
+    editvalueArray: []
   };
+
+  printEditForm() {
+    switch (this.state.edit.id) {
+      case "emails":
+        const emailforms: JSX.Element[] = [];
+        let newemail = false;
+        if (Math.max(this.props.querydata.emails.length, this.state.editvalueArray.length) > 0) {
+          const emails = this.props.querydata.emails.map((email, index) => {
+            if (this.state.editvalueArray[index]) {
+              return this.state.editvalueArray[index];
+            } else {
+              return { ...email, disabled: true };
+            }
+          });
+          this.state.editvalueArray.forEach(
+            (email, index) => index >= this.props.querydata.emails.length && emails.push(email)
+          );
+          let first = true;
+          emails.forEach((email, index) => {
+            if (!first && !email.emaildeleted) {
+              emailforms.push(<div key={`sep-${index}`} className="fieldsSeperator" />);
+            }
+            if (!email.emaildeleted) {
+              first = false;
+            }
+            newemail =
+              newemail || (!email.emaildeleted && (email.email == null || email.email == ""));
+            emailforms.push(
+              <UniversalTextInput
+                id={`${this.state.edit.id}-${email.oldemail || email.email}`}
+                label={this.state.edit.label}
+                livevalue={v =>
+                  this.setState(({ editvalueArray }) => {
+                    editvalueArray[index] = {
+                      email: v,
+                      oldemail: email.oldemail || email.email,
+                      newemail: email.newemail
+                    };
+                    return { editvalueArray };
+                  })
+                }
+                startvalue={email.email}
+                deleteFunction={() => {
+                  this.setState(({ editvalueArray }) => {
+                    editvalueArray[index] = { emaildeleted: true, oldemail: email.email };
+                    return { editvalueArray };
+                  });
+                }}
+                style={email.emaildeleted && { display: "none" }}
+                disabled={email.disabled}
+              />
+            );
+          });
+        }
+        if (!newemail) {
+          emailforms.push(
+            <UniversalButton
+              type="low"
+              label="Add Email"
+              onClick={() =>
+                this.setState(({ editvalueArray }) => {
+                  editvalueArray[
+                    Math.max(editvalueArray.length, this.props.querydata.emails.length)
+                  ] = {
+                    email: null,
+                    oldemail: Math.max(editvalueArray.length, this.props.querydata.emails.length),
+                    newemail: true
+                  };
+                  return { editvalueArray };
+                })
+              }
+            />
+          );
+        }
+        return emailforms;
+
+      case "workphones":
+        const phoneforms: JSX.Element[] = [];
+        let newphone = false;
+        if (
+          Math.max(this.props.querydata.workPhones.length, this.state.editvalueArray.length) > 0
+        ) {
+          const phones = this.props.querydata.workPhones.map((phone, index) => {
+            if (this.state.editvalueArray[index]) {
+              const update = this.state.editvalueArray[index];
+              return { ...phone, ...update };
+            } else {
+              return { ...phone };
+            }
+          });
+          this.state.editvalueArray.forEach(
+            (phone, index) => index >= this.props.querydata.workPhones.length && phones.push(phone)
+          );
+          let first = true;
+          phones.forEach((phone, index) => {
+            if (!first && !phone.phonedeleted) {
+              phoneforms.push(<div key={`sep-${index}`} className="fieldsSeperator" />);
+            }
+            if (!phone.phonedeleted) {
+              first = false;
+            }
+            newphone =
+              newphone || (!phone.phonedeleted && (phone.number == null || phone.number == ""));
+            phoneforms.push(
+              <UniversalTextInput
+                id={`${this.state.edit.id}-${phone.id}`}
+                label={this.state.edit.label}
+                livevalue={v =>
+                  this.setState(({ editvalueArray }) => {
+                    editvalueArray[index] = {
+                      ...phone,
+                      number: v
+                    };
+                    return { editvalueArray };
+                  })
+                }
+                startvalue={phone.number}
+                deleteFunction={() => {
+                  this.setState(({ editvalueArray }) => {
+                    editvalueArray[index] = { ...phone, phonedeleted: true };
+                    return { editvalueArray };
+                  });
+                }}
+                style={phone.phonedeleted && { display: "none" }}
+                disabled={phone.disabled}
+              />
+            );
+          });
+        }
+        if (!newphone) {
+          phoneforms.push(
+            <UniversalButton
+              type="low"
+              label="Add Workphone"
+              onClick={() =>
+                this.setState(({ editvalueArray }) => {
+                  editvalueArray[
+                    Math.max(editvalueArray.length, this.props.querydata.workPhones.length)
+                  ] = {
+                    number: null,
+                    newphone: true,
+                    tags: ["work"],
+                    id: `new-${Math.max(
+                      editvalueArray.length,
+                      this.props.querydata.privatePhones.length
+                    )}`
+                  };
+                  return { editvalueArray };
+                })
+              }
+            />
+          );
+        }
+        return phoneforms;
+
+      case "privatephones":
+        const privatephoneforms: JSX.Element[] = [];
+        let privatenewphone = false;
+        if (
+          Math.max(this.props.querydata.privatePhones.length, this.state.editvalueArray.length) > 0
+        ) {
+          const phones = this.props.querydata.privatePhones.map((phone, index) => {
+            if (this.state.editvalueArray[index]) {
+              const update = this.state.editvalueArray[index];
+              return { ...phone, ...update };
+            } else {
+              return { ...phone };
+            }
+          });
+          this.state.editvalueArray.forEach(
+            (phone, index) =>
+              index >= this.props.querydata.privatePhones.length && phones.push(phone)
+          );
+          let first = true;
+          phones.forEach((phone, index) => {
+            if (!first && !phone.phonedeleted) {
+              privatephoneforms.push(<div key={`sep-${index}`} className="fieldsSeperator" />);
+            }
+            if (!phone.phonedeleted) {
+              first = false;
+            }
+            privatenewphone =
+              privatenewphone ||
+              (!phone.phonedeleted && (phone.number == null || phone.number == ""));
+            privatephoneforms.push(
+              <UniversalTextInput
+                id={`${this.state.edit.id}-${phone.id}`}
+                label={this.state.edit.label}
+                livevalue={v =>
+                  this.setState(({ editvalueArray }) => {
+                    editvalueArray[index] = {
+                      ...phone,
+                      number: v
+                    };
+                    return { editvalueArray };
+                  })
+                }
+                startvalue={phone.number}
+                deleteFunction={() => {
+                  this.setState(({ editvalueArray }) => {
+                    editvalueArray[index] = { ...phone, phonedeleted: true };
+                    return { editvalueArray };
+                  });
+                }}
+                style={phone.phonedeleted && { display: "none" }}
+                disabled={phone.disabled}
+              />
+            );
+          });
+        }
+        if (!privatenewphone) {
+          privatephoneforms.push(
+            <UniversalButton
+              type="low"
+              label="Add Privatephone"
+              onClick={() =>
+                this.setState(({ editvalueArray }) => {
+                  editvalueArray[
+                    Math.max(editvalueArray.length, this.props.querydata.privatePhones.length)
+                  ] = {
+                    number: null,
+                    newphone: true,
+                    tags: ["private"],
+                    id: `new-${Math.max(
+                      editvalueArray.length,
+                      this.props.querydata.privatePhones.length
+                    )}`
+                  };
+                  return { editvalueArray };
+                })
+              }
+            />
+          );
+        }
+        return privatephoneforms;
+
+      default:
+        return (
+          <UniversalTextInput
+            id={this.state.edit.id}
+            label={this.state.edit.label}
+            livevalue={v => this.setState({ editvalue: v })}
+            startvalue={this.state.edit.startvalue}
+            type={this.state.edit.type}
+          />
+        );
+    }
+  }
 
   render() {
     const querydata = this.props.querydata;
     return (
       <React.Fragment>
         <div
-          className="tableRow"
-          style={{ height: "80px" }}
-          onClick={() => this.setState({ popupline1: true })}>
-          <div className="tableMain">
-            <div className="tableColumnSmall">
+          className="tableRowShow"
+          style={{ height: "80px", width: "100%" }}
+          //onClick={() => this.setState({ popupline1: true })}
+        >
+          <div className="tableMain" style={{ width: "100%" }}>
+            <div
+              className="tableColumnSmall editable"
+              onClick={() =>
+                this.setState({
+                  edit: {
+                    id: "name",
+                    label: "Name",
+                    startvalue: concatName(querydata)
+                  }
+                })
+              }>
               <h1>Name</h1>
-              <h2>
-                {querydata.firstname} {querydata.lastname}
-              </h2>
+              <h2>{concatName(querydata)}</h2>
+              <div className="profileEditButton">
+                <i className="fal fa-pencil editbuttons" />
+              </div>
             </div>
-            <div className="tableColumnSmall">
+            <div
+              className="tableColumnSmall editable"
+              onClick={() =>
+                this.setState({
+                  edit: {
+                    id: "birthday",
+                    label: "Birthday",
+                    startvalue: querydata.birthday
+                      ? moment(querydata.birthday - 0).format("YYYY-MM-DD")
+                      : " ",
+                    type: "date"
+                  }
+                })
+              }>
               <h1>Birthday</h1>
               <h2>
                 {querydata.birthday
                   ? moment(querydata.birthday - 0).format("DD.MM.YYYY")
                   : "Not set"}
               </h2>
+              <div className="profileEditButton">
+                <i className="fal fa-pencil editbuttons" />
+              </div>
+            </div>
+            <div
+              className="tableColumnSmall editable"
+              onClick={() =>
+                this.setState({
+                  edit: {
+                    id: "privatephones",
+                    label: "Privatephone",
+                    startvalue: querydata.privatePhones
+                  }
+                })
+              }>
+              <h1>
+                Private Phone{" "}
+                <span className="morehint">
+                  {querydata.privatePhones.length > 2 &&
+                    `+${querydata.privatePhones.length - 2} more`}
+                </span>
+              </h1>
+              <h2>
+                {querydata.privatePhones &&
+                  querydata.privatePhones[0] &&
+                  querydata.privatePhones[0].number}
+              </h2>
+              <h2 className="second">
+                {querydata.privatePhones &&
+                  querydata.privatePhones[1] &&
+                  querydata.privatePhones[1].number}
+              </h2>
+              <div className="profileEditButton">
+                <i className="fal fa-pencil editbuttons" />
+              </div>
             </div>
             <div className="tableColumnSmall">
               {/*<h1>Address</h1>
@@ -138,210 +523,302 @@ class PersonalDetails extends React.Component<Props, State> {
                   querydata.addresses[0].address.city}
                 </h2>*/}
             </div>
-            <div className="tableColumnSmall">
-              <h1>Private Phone</h1>
-              <h2>
-                {querydata.privatePhones &&
-                  querydata.privatePhones[0] &&
-                  querydata.privatePhones[0].number}
-              </h2>
-              <h2 className="second">
-                {querydata.privatePhones &&
-                  querydata.privatePhones[1] &&
-                  querydata.privatePhones[1].number}
-              </h2>
-            </div>
-          </div>
-          <div className="tableEnd">
-            <div className="editOptions">
-              <i className="fal fa-pencil editbuttons" />
-            </div>
           </div>
         </div>
         <div
-          className="tableRow"
-          style={{ height: "80px" }}
-          onClick={() => this.setState({ popupline2: true })}>
-          <div className="tableMain">
-            <div className="tableColumnSmall">
+          className="tableRowShow"
+          style={{ height: "80px", width: "100%" }}
+          // onClick={() => this.setState({ popupline2: true })}
+        >
+          <div className="tableMain" style={{ width: "100%" }}>
+            <div
+              className="tableColumnSmall editable"
+              onClick={() =>
+                this.setState({
+                  edit: {
+                    id: "hiredate",
+                    label: "Hiredate",
+                    startvalue: querydata.hiredate
+                      ? moment(querydata.hiredate - 0).format("YYYY-MM-DD")
+                      : " ",
+                    type: "date"
+                  }
+                })
+              }>
               <h1>Hiredate</h1>
               <h2>
                 {querydata.hiredate
                   ? moment(querydata.hiredate - 0).format("DD.MM.YYYY")
                   : "Not set"}
               </h2>
+              <div className="profileEditButton">
+                <i className="fal fa-pencil editbuttons" />
+              </div>
             </div>
-            <div className="tableColumnSmall">
+            <div
+              className="tableColumnSmall editable"
+              onClick={() =>
+                this.setState({
+                  edit: {
+                    id: "position",
+                    label: "Position",
+                    startvalue: querydata.position
+                  }
+                })
+              }>
               <h1>Position</h1>
               <h2>{querydata.position}</h2>
+              <div className="profileEditButton">
+                <i className="fal fa-pencil editbuttons" />
+              </div>
             </div>
-            <div className="tableColumnSmall">
-              <h1>Workmail</h1>
+            <div
+              className="tableColumnSmall editable"
+              onClick={() =>
+                this.setState({
+                  edit: {
+                    id: "emails",
+                    label: "Email",
+                    startvalue: querydata.emails
+                  }
+                })
+              }>
+              <h1>
+                Workmail{" "}
+                <span className="morehint">
+                  {querydata.emails.length > 2 && `+${querydata.emails.length - 2} more`}
+                </span>
+              </h1>
               <h2>{querydata.emails && querydata.emails[0] && querydata.emails[0].email}</h2>
               <h2 className="second">
                 {querydata.emails && querydata.emails[1] && querydata.emails[1].email}
               </h2>
+              <div className="profileEditButton">
+                <i className="fal fa-pencil editbuttons" />
+              </div>
             </div>
-            <div className="tableColumnSmall">
-              <h1>Work Phone</h1>
+            <div
+              className="tableColumnSmall editable"
+              onClick={() =>
+                this.setState({
+                  edit: {
+                    id: "workphones",
+                    label: "Workphone",
+                    startvalue: querydata.workPhones
+                  }
+                })
+              }>
+              <h1>
+                Work Phone{" "}
+                <span className="morehint">
+                  {querydata.workPhones.length > 2 && `+${querydata.workPhones.length - 2} more`}
+                </span>
+              </h1>
               <h2>
                 {querydata.workPhones && querydata.workPhones[0] && querydata.workPhones[0].number}
               </h2>
               <h2 className="second">
                 {querydata.workPhones && querydata.workPhones[1] && querydata.workPhones[1].number}
               </h2>
-            </div>
-          </div>
-          <div className="tableEnd">
-            <div className="editOptions">
-              <i className="fal fa-pencil editbuttons" />
+              <div className="profileEditButton">
+                <i className="fal fa-pencil editbuttons" />
+              </div>
             </div>
           </div>
         </div>
-        {this.state.popupline1 ? (
+        {this.state.edit && (
           <Mutation mutation={UPDATE_DATA}>
             {updateEmployee => (
               <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
-                <h2 className="boldHeading">
-                  Edit Personal Data of {querydata.firstname} {querydata.lastname}
-                </h2>
-                <div>
-                  <UniversalTextInput
-                    id="name"
-                    label="Name"
-                    livevalue={v => this.setState({ name: v })}
-                    startvalue={`${querydata.firstname || ""} ${querydata.lastname || ""}`}
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="birthday"
-                    label="Birthday"
-                    type="date"
-                    livevalue={v => this.setState({ birthday: v })}
-                    startvalue={
-                      querydata.birthday ? moment(querydata.birthday - 0).format("YYYY-MM-DD") : " "
-                    }
-                  />
-                  {/*<div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="street"
-                    label="Street / Number"
-                    livevalue={v => this.setState({ street: v })}
-                    startvalue={
-                      querydata.addresses[0] &&
-                      querydata.addresses[0].address &&
-                      querydata.addresses[0].address.street
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="zip"
-                    label="Zip"
-                    livevalue={v => this.setState({ zip: v })}
-                    startvalue={
-                      querydata.addresses[0] &&
-                      querydata.addresses[0].address &&
-                      querydata.addresses[0].address.zip
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="city"
-                    label="City"
-                    livevalue={v => this.setState({ city: v })}
-                    startvalue={
-                      querydata.addresses[0] &&
-                      querydata.addresses[0].address &&
-                      querydata.addresses[0].address.city
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalDropDownInput
-                    id="country"
-                    label="Country"
-                    livecode={v => this.setState({ country: v })}
-                    startvalue={
-                      querydata.addresses[0] &&
-                      querydata.addresses[0].address &&
-                      querydata.addresses[0].country
-                    }
-                  /> */}
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="phone"
-                    label="Private Phone"
-                    livevalue={v => this.setState({ phone1: v })}
-                    startvalue={
-                      querydata.privatePhones &&
-                      querydata.privatePhones[0] &&
-                      querydata.privatePhones[0].number
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="phone2"
-                    label="Private Phone 2"
-                    disabled={this.state.phone1 == ""}
-                    livevalue={v => this.setState({ phone2: v })}
-                    startvalue={
-                      querydata.privatePhones &&
-                      querydata.privatePhones[1] &&
-                      querydata.privatePhones[1].number
-                    }
-                  />
-                </div>
+                <h2 className="boldHeading">Edit Personal Data of {concatName(querydata)}</h2>
+                <div>{this.printEditForm()}</div>
                 <UniversalButton
                   label="Cancel"
                   type="low"
-                  onClick={() => this.setState({ popupline1: false })}
+                  onClick={() => this.setState({ edit: null, editvalue: null, editvalueArray: [] })}
                 />
                 <UniversalButton
                   label="Save"
                   type="high"
                   onClick={async () => {
-                    const parsedName = parseName(this.state.name);
+                    console.log("THIS STATE", this.state);
+                    this.setState({ updateing: true });
+                    return;
                     try {
                       this.setState({ updateing: true });
-                      await updateEmployee({
-                        variables: {
-                          user: {
-                            id: querydata.id,
-                            firstname: parsedName.firstName,
-                            middlename: parsedName.middleName || "",
-                            lastname: parsedName.lastName || "",
-                            birthday: this.state.birthday ? this.state.birthday : null,
-                            /*address: Object.assign(
-                              {},
-                              querydata.addresses[0] && querydata.addresses[0].id
-                                ? { id: querydata.addresses[0].id }
-                                : {},
-                              { street: this.state.street },
-                              { zip: this.state.zip },
-                              { city: this.state.city },
-                              { country: this.state.country }
-                            ),*/
-                            phone: Object.assign(
-                              {},
-                              querydata.privatePhones &&
-                                querydata.privatePhones[0] &&
-                                querydata.privatePhones[0].id
-                                ? { id: querydata.privatePhones[0].id }
-                                : {},
-                              { number: this.state.phone1 || "" }
-                            ),
-                            phone2: Object.assign(
-                              {},
-                              querydata.privatePhones &&
-                                querydata.privatePhones[1] &&
-                                querydata.privatePhones[1].id
-                                ? { id: querydata.privatePhones[1].id }
-                                : {},
-                              { number: this.state.phone2 || "" }
-                            )
-                          }
-                        }
-                      });
-                      this.setState({ popupline1: false, updateing: false });
+                      switch (this.state.edit!.id) {
+                        case "name":
+                          const parsedName = parseName(this.state.editvalue);
+                          await updateEmployee({
+                            variables: {
+                              user: {
+                                id: querydata.id,
+                                firstname: parsedName.firstName,
+                                middlename: parsedName.middleName || "",
+                                lastname: parsedName.lastName || ""
+                              }
+                            }
+                          });
+                          break;
+
+                        case "emails":
+                          const promisesEmails: any[] = [];
+                          this.state.editvalueArray.forEach(edit => {
+                            if (edit) {
+                              if (
+                                edit.newemail &&
+                                !edit.emaildeleted &&
+                                edit.email &&
+                                edit.email.includes("@")
+                              ) {
+                                //new valid email
+                                promisesEmails.push(
+                                  this.props.createEmail({
+                                    variables: {
+                                      userid: querydata.id,
+                                      emailData: {
+                                        email: edit.email
+                                      }
+                                    }
+                                  })
+                                );
+                              } else if (edit.emaildeleted) {
+                                promisesEmails.push(
+                                  this.props.deleteEmail({
+                                    variables: {
+                                      userid: querydata.id,
+                                      email: edit.oldemail
+                                    }
+                                  })
+                                );
+                              } /*else {
+                                promisesEmails.push(
+                                  this.props.updateEmail({
+                                    variables: {
+                                      userid: querydata.id,
+                                      emailData: {
+                                        email: edit.email
+                                      },
+                                      email: edit.oldemail
+                                    }
+                                  })
+                                );
+                              }*/
+                            }
+                          });
+                          await Promise.all(promisesEmails);
+                          this.props.refetch();
+                          this.setState({ editvalueArray: [] });
+                          break;
+
+                        case "workphones":
+                          const promisesPhones: any[] = [];
+                          this.state.editvalueArray.forEach(edit => {
+                            if (edit) {
+                              if (edit.newphone && !edit.phonedeleted && edit.number) {
+                                //new valid email
+                                promisesPhones.push(
+                                  this.props.createPhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      phoneData: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              } else if (edit.phonedeleted && !edit.newphone) {
+                                promisesPhones.push(
+                                  this.props.deletePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id
+                                    }
+                                  })
+                                );
+                              } else if (!(edit.phonedeleted && edit.newphone) && edit.number) {
+                                promisesPhones.push(
+                                  this.props.updatePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id,
+                                      phone: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              }
+                            }
+                          });
+                          await Promise.all(promisesPhones);
+                          this.props.refetch();
+                          this.setState({ editvalueArray: [] });
+                          break;
+
+                        case "privatephones":
+                          const promisespPhones: any[] = [];
+                          this.state.editvalueArray.forEach(edit => {
+                            if (edit) {
+                              if (edit.newphone && !edit.phonedeleted && edit.number) {
+                                //new valid email
+                                promisespPhones.push(
+                                  this.props.createPhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      phoneData: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              } else if (edit.phonedeleted && !edit.newphone) {
+                                promisespPhones.push(
+                                  this.props.deletePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id
+                                    }
+                                  })
+                                );
+                              } else if (!(edit.phonedeleted && edit.newphone) && edit.number) {
+                                promisespPhones.push(
+                                  this.props.updatePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id,
+                                      phone: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              }
+                            }
+                          });
+                          await Promise.all(promisespPhones);
+                          this.props.refetch();
+                          this.setState({ editvalueArray: [] });
+                          break;
+
+                        default:
+                          await updateEmployee({
+                            variables: {
+                              user: {
+                                id: querydata.id,
+                                [this.state.edit!.id]: this.state.editvalue
+                                  ? this.state.editvalue
+                                  : null
+                              }
+                            }
+                          });
+                          break;
+                      }
+                      this.setState({ edit: null, updateing: false, editvalue: null });
                     } catch (err) {
                       //this.setState({ popupline1: false, updateting: false });
                       this.setState({ updateing: false, error: err });
@@ -350,15 +827,197 @@ class PersonalDetails extends React.Component<Props, State> {
                   }}
                 />
                 {this.state.updateing ? (
-                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
-                    <i className="fal fa-cog fa-spin" />
-                    <span>Saving</span>
-                  </PopupBase>
+                  <PopupSelfSaving
+                    heading={`Save ${this.state.edit.label} of ${concatName(querydata)}`}
+                    saveFunction={async () => {
+                      switch (this.state.edit!.id) {
+                        case "name":
+                          const parsedName = parseName(this.state.editvalue);
+                          await updateEmployee({
+                            variables: {
+                              user: {
+                                id: querydata.id,
+                                firstname: parsedName.firstName,
+                                middlename: parsedName.middleName || "",
+                                lastname: parsedName.lastName || ""
+                              }
+                            }
+                          });
+                          break;
+
+                        case "emails":
+                          const promisesEmails: any[] = [];
+                          this.state.editvalueArray.forEach(edit => {
+                            if (edit) {
+                              if (
+                                edit.newemail &&
+                                !edit.emaildeleted &&
+                                edit.email &&
+                                edit.email.includes("@")
+                              ) {
+                                //new valid email
+                                promisesEmails.push(
+                                  this.props.createEmail({
+                                    variables: {
+                                      userid: querydata.id,
+                                      emailData: {
+                                        email: edit.email
+                                      }
+                                    }
+                                  })
+                                );
+                              } else if (edit.emaildeleted) {
+                                promisesEmails.push(
+                                  this.props.deleteEmail({
+                                    variables: {
+                                      userid: querydata.id,
+                                      email: edit.oldemail
+                                    }
+                                  })
+                                );
+                              } /*else {
+                              promisesEmails.push(
+                                this.props.updateEmail({
+                                  variables: {
+                                    userid: querydata.id,
+                                    emailData: {
+                                      email: edit.email
+                                    },
+                                    email: edit.oldemail
+                                  }
+                                })
+                              );
+                            }*/
+                            }
+                          });
+                          await Promise.all(promisesEmails);
+                          this.props.refetch();
+                          this.setState({ editvalueArray: [] });
+                          break;
+
+                        case "workphones":
+                          const promisesPhones: any[] = [];
+                          this.state.editvalueArray.forEach(edit => {
+                            if (edit) {
+                              if (edit.newphone && !edit.phonedeleted && edit.number) {
+                                //new valid email
+                                promisesPhones.push(
+                                  this.props.createPhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      phoneData: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              } else if (edit.phonedeleted && !edit.newphone) {
+                                promisesPhones.push(
+                                  this.props.deletePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id
+                                    }
+                                  })
+                                );
+                              } else if (!(edit.phonedeleted && edit.newphone) && edit.number) {
+                                promisesPhones.push(
+                                  this.props.updatePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id,
+                                      phone: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              }
+                            }
+                          });
+                          await Promise.all(promisesPhones);
+                          this.props.refetch();
+                          this.setState({ editvalueArray: [] });
+                          break;
+
+                        case "privatephones":
+                          const promisespPhones: any[] = [];
+                          this.state.editvalueArray.forEach(edit => {
+                            if (edit) {
+                              if (edit.newphone && !edit.phonedeleted && edit.number) {
+                                //new valid email
+                                promisespPhones.push(
+                                  this.props.createPhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      phoneData: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              } else if (edit.phonedeleted && !edit.newphone) {
+                                promisespPhones.push(
+                                  this.props.deletePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id
+                                    }
+                                  })
+                                );
+                              } else if (!(edit.phonedeleted && edit.newphone) && edit.number) {
+                                promisespPhones.push(
+                                  this.props.updatePhone({
+                                    variables: {
+                                      userid: querydata.id,
+                                      id: edit.id,
+                                      phone: {
+                                        number: edit.number,
+                                        tags: edit.tags
+                                      }
+                                    }
+                                  })
+                                );
+                              }
+                            }
+                          });
+                          await Promise.all(promisespPhones);
+                          this.props.refetch();
+                          this.setState({ editvalueArray: [] });
+                          break;
+
+                        default:
+                          await updateEmployee({
+                            variables: {
+                              user: {
+                                id: querydata.id,
+                                [this.state.edit!.id]: this.state.editvalue
+                                  ? this.state.editvalue
+                                  : null
+                              }
+                            }
+                          });
+                          break;
+                      }
+                    }}
+                    closeFunction={() =>
+                      this.setState({ edit: null, updateing: false, editvalue: null })
+                    }
+                    savingmessage="Saving"
+                    savedmessage={`${this.state.edit.label} saved`}
+                  />
                 ) : (
+                  /*<PopupBase small={true} close={() => this.setState({ updateing: false })}>
+                    <i className="fal fa-spinner fa-spin" />
+                    <span>Saving</span>
+                  </PopupBase>*/
                   ""
                 )}
                 {this.state.error ? (
-                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
+                  <PopupBase small={true} close={() => this.setState({ updateing: false })}>
                     <span>Something went wrong :( Please try again or contact support</span>
                     <UniversalButton
                       type="high"
@@ -372,155 +1031,16 @@ class PersonalDetails extends React.Component<Props, State> {
               </PopupBase>
             )}
           </Mutation>
-        ) : (
-          ""
-        )}
-        {this.state.popupline2 ? (
-          <Mutation mutation={UPDATE_DATA}>
-            {updateEmployee => (
-              <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
-                <h2 className="boldHeading">
-                  Edit Personal Data of {querydata.firstname} {querydata.lastname}
-                </h2>
-                <div>
-                  <UniversalTextInput
-                    id="hiredate"
-                    label="Hiredate"
-                    type="date"
-                    livevalue={v => {
-                      console.log("VALUE", v);
-                      this.setState({ hiredate: v });
-                    }}
-                    startvalue={
-                      querydata.hiredate ? moment(querydata.hiredate - 0).format("YYYY-MM-DD") : " "
-                    }
-                  />
-                  {/* Hiredate:
-                  <DatePicker
-                    handleChange={v => {
-                      console.log("VALUE", v);
-                      this.setState({ hiredate: v });
-                    }}
-                    value={
-                      querydata.hiredate ? moment(querydata.hiredate - 0).format("YYYY-MM-DD") : " "
-                    }
-                  />*/}
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="position"
-                    label="Position"
-                    livevalue={v => this.setState({ position: v })}
-                    startvalue={querydata.position}
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="email"
-                    label="Workmail"
-                    livevalue={v => this.setState({ email: v })}
-                    startvalue={
-                      querydata.emails && querydata.emails[0] && querydata.emails[0].email
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="email"
-                    label="Workmail 2"
-                    livevalue={v => this.setState({ email2: v })}
-                    startvalue={
-                      querydata.emails && querydata.emails[1] && querydata.emails[1].email
-                    }
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="workPhone"
-                    label="Workphone"
-                    livevalue={v => this.setState({ workPhone: v })}
-                    startvalue={querydata.workPhones[0] && querydata.workPhones[0].number}
-                  />
-                  <div className="fieldsSeperator" />
-                  <UniversalTextInput
-                    id="workPhone2"
-                    label="Workphone 2"
-                    disabled={this.state.workPhone == ""}
-                    livevalue={v => this.setState({ workPhone2: v })}
-                    startvalue={querydata.workPhones[1] && querydata.workPhones[1].number}
-                  />
-                </div>
-                <UniversalButton
-                  label="Cancel"
-                  type="low"
-                  onClick={() => this.setState({ popupline2: false })}
-                />
-                <UniversalButton
-                  label="Save"
-                  type="high"
-                  onClick={async () => {
-                    try {
-                      this.setState({ updateing: true });
-                      await updateEmployee({
-                        variables: {
-                          user: {
-                            id: querydata.id,
-                            hiredate: this.state.hiredate ? this.state.hiredate : null,
-                            position: this.state.position,
-                            email: this.state.email,
-                            email2: this.state.email2,
-                            workPhone: Object.assign(
-                              {},
-                              querydata.workPhones &&
-                                querydata.workPhones[0] &&
-                                querydata.workPhones[0].id
-                                ? { id: querydata.workPhones[0].id }
-                                : {},
-                              { number: this.state.workPhone || "" }
-                            ),
-                            workPhone2: Object.assign(
-                              {},
-                              querydata.workPhones &&
-                                querydata.workPhones[1] &&
-                                querydata.workPhones[1].id
-                                ? { id: querydata.workPhones[1].id }
-                                : {},
-                              { number: this.state.workPhone2 || "" }
-                            )
-                          }
-                        }
-                      });
-                      this.setState({ popupline2: false, updateing: false });
-                    } catch (err) {
-                      this.setState({ updateing: false, error: err });
-                      console.log("err", err);
-                    }
-                  }}
-                />
-                {this.state.updateing ? (
-                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
-                    <i className="fal fa-cog fa-spin" />
-                    <span>Saving</span>
-                  </PopupBase>
-                ) : (
-                  ""
-                )}
-                {this.state.error ? (
-                  <PopupBase dialog={true} close={() => this.setState({ updateing: false })}>
-                    <span>Something went wrong :( Please try again or contact support</span>
-                    <UniversalButton
-                      type="high"
-                      label="Ok"
-                      onClick={() => this.setState({ error: null })}
-                    />
-                  </PopupBase>
-                ) : (
-                  ""
-                )}
-              </PopupBase>
-            )}
-          </Mutation>
-        ) : (
-          ""
         )}
       </React.Fragment>
     );
   }
 }
-export default PersonalDetails;
+export default compose(
+  graphql(CREATE_EMAIL, { name: "createEmail" }),
+  graphql(UPDATE_EMAIL, { name: "updateEmail" }),
+  graphql(DELETE_EMAIL, { name: "deleteEmail" }),
+  graphql(CREATE_PHONE, { name: "createPhone" }),
+  graphql(UPDATE_PHONE, { name: "updatePhone" }),
+  graphql(DELETE_PHONE, { name: "deletePhone" })
+)(PersonalDetails);

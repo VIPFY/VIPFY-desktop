@@ -32,6 +32,7 @@ interface State {
   ssoCheck: Boolean;
   icon: File | null;
   color: string;
+  receivedIcon: Boolean;
 }
 
 interface Result {
@@ -54,7 +55,8 @@ class SelfSaving extends React.Component<Props, State> {
     error: "",
     ssoCheck: false,
     icon: null,
-    color: ""
+    color: "",
+    receivedIcon: false
   };
 
   close() {
@@ -68,11 +70,11 @@ class SelfSaving extends React.Component<Props, State> {
   fullPath = path => `${__dirname}/../../../images/sso_creation_${path}.png`;
 
   createOwnSSO = async (createOwnApp: Function) => {
-    if (this.state.ssoCheck && this.state.icon && this.state.color) {
+    if (this.state.ssoCheck) {
       const { sso } = this.props;
       sso.color = this.state.color;
 
-      if (!sso.images) {
+      if (!sso.images && this.state.icon) {
         const [, a] = this.state.icon!.data.split(":");
         const [mime, b] = a.split(";");
         const [, iconDataEncoded] = b.split(",");
@@ -109,7 +111,7 @@ class SelfSaving extends React.Component<Props, State> {
     }
 
     const errorMessage = "Sorry, this seems to take additional time. Our Support will take a look.";
-
+    console.log("SelfSaving", this.state, this.props);
     return (
       <PopupBase styles={{ maxWidth: "432px" }} nooutsideclose={true} fullmiddle={true}>
         {this.state.tooLong ? (
@@ -170,8 +172,6 @@ class SelfSaving extends React.Component<Props, State> {
                               await this.createOwnSSO(createOwnApp);
                             }
                           } else {
-                            // TODO: [VIP-257] Write logic to inform support
-
                             failedIntegration({
                               variables: {
                                 data: {
@@ -197,7 +197,7 @@ class SelfSaving extends React.Component<Props, State> {
                     )}
                   </Mutation>
 
-                  {!this.state.icon && (
+                  {!this.state.receivedIcon && (
                     <LogoExtractor
                       url={this.props.sso.loginurl!}
                       setResult={async (icon, color) => {
@@ -206,7 +206,7 @@ class SelfSaving extends React.Component<Props, State> {
                           return;
                         }
 
-                        await this.setState({ icon, color });
+                        await this.setState({ receivedIcon: true, icon, color });
 
                         if (this.state.ssoCheck) {
                           await this.createOwnSSO(createOwnApp);

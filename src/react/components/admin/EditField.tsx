@@ -3,6 +3,7 @@ import CoolCheckbox from "../CoolCheckbox";
 import { filterError, AppContext } from "../../common/functions";
 import GenericInputForm from "../GenericInputForm";
 import Confirmation from "../../popups/Confirmation";
+import { preAppImageUrl } from "../../common/constants";
 
 interface Props {
   name: string;
@@ -147,9 +148,6 @@ class EditField extends React.Component<Props, State> {
               );
 
             case "picture": {
-              const defaultFolder = encodeURI(
-                `https://storage.googleapis.com/vipfy-imagestore-01/${app}/`
-              );
               const picProps: {
                 fields: object[];
                 handleSubmit: Function;
@@ -184,9 +182,9 @@ class EditField extends React.Component<Props, State> {
                     onClick={() => showPopup(multiple ? deletePopup : picPopup)}>
                     {value ? (
                       <div
-                        className="imagehoverable pic"
+                        className={`imagehoverable ${this.props.icon ? "icon" : ""}`}
                         style={{
-                          backgroundImage: `url(${folder ? folder : defaultFolder}${pic})`
+                          backgroundImage: `url(${folder ? folder : preAppImageUrl}${pic})`
                         }}>
                         <div className="imagehover">
                           <i className={`fal fa-${multiple ? "minus" : "camera"}`} />

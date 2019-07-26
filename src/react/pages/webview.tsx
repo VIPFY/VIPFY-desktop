@@ -734,6 +734,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           />
         )}
         {this.state.error ? (
+          //TODO VIP-411 Replace old Popup with new PopupBase
           <Popup
             popupHeader={"Uupps, sorry it seems that we can't log you in"}
             popupBody={ErrorPopup}
@@ -744,6 +745,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           ""
         )}
         {this.state.popup && (
+          //TODO VIP-411 Replace old Popup with new PopupBase
           <Popup
             popupHeader={this.state.popup.type}
             popupBody={AcceptLicence}

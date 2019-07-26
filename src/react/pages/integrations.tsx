@@ -287,6 +287,7 @@ class Integrations extends React.Component<Props, AppPageState> {
       <div>
         {this.renderLoading(this.props.products.allApps)}
         {this.state.popup && (
+          //TODO VIP-411 Replace old Popup with new PopupBase
           <Popup
             popupHeader={this.state.popupHeading}
             popupBody={this.state.popupBody}

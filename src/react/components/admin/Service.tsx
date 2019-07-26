@@ -125,15 +125,17 @@ const Service = (props: Props) => {
 
         return (
           <section className="service">
-            {filteredFields.map(field => (
-              <EditField
-                key={field.name}
-                app={app.name}
-                defaultValue={defaultValues[field.name]}
-                onSubmit={handleSubmit}
-                {...field}
-              />
-            ))}
+            {filteredFields.map(field => {
+              return (
+                <EditField
+                  key={field.name}
+                  app={app.name}
+                  defaultValue={defaultValues[field.name]}
+                  onSubmit={handleSubmit}
+                  {...field}
+                />
+              );
+            })}
           </section>
         );
       }}

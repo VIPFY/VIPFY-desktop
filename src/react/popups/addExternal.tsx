@@ -140,7 +140,10 @@ class ShowEmployee extends React.Component<Props, State> {
             <i className={`button-hide fas fa-angle-${this.state.showPlans ? "left" : "down"}`} />
             <span>{`Step ${step++}: Choose a Team`}</span>
           </div>
-          <Query query={FETCH_ALL_BOUGHTPLANS} variables={{ appid, external: true }}>
+          <Query
+            pollInterval={60 * 10 * 1000 + 800}
+            query={FETCH_ALL_BOUGHTPLANS}
+            variables={{ appid, external: true }}>
             {({ data, error, loading }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching Plans..." />;

@@ -336,7 +336,7 @@ class Navigation extends React.Component<Props, State> {
         </div>
 
         <div className="right-infos">
-          <Query query={FETCH_VIPFY_PLAN}>
+          <Query pollInterval={60 * 10 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
             {({ data, error, loading }) => {
               if (loading) {
                 return "Fetching Credits...";

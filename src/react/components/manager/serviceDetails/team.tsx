@@ -6,6 +6,7 @@ import { fetchCompanyService } from "../../../queries/products";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import moment = require("moment");
+import PrintTeamSquare from "../universal/squares/printTeamSquare";
 
 interface Props {
   service: any;
@@ -84,31 +85,7 @@ class Team extends React.Component<Props, State> {
           <div className="tableRow" onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
             <div className="tableMain">
               <div className="tableColumnSmall">
-                <div
-                  className="managerSquare"
-                  style={
-                    team.profilepicture
-                      ? {
-                          backgroundImage:
-                            team.profilepicture.indexOf("/") != -1
-                              ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                  team.profilepicture
-                                )})`
-                              : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                  team.profilepicture
-                                )})`,
-                          backgroundColor: "unset"
-                        }
-                      : team.internaldata && team.internaldata.color
-                      ? { backgroundColor: team.internaldata.color }
-                      : {}
-                  }>
-                  {team.profilepicture
-                    ? ""
-                    : team.internaldata && team.internaldata.letters
-                    ? team.internaldata.letters
-                    : team.name.slice(0, 1)}
-                </div>
+                <PrintTeamSquare team={team} />
                 <span className="name">{team.name}</span>
               </div>
               <div className="tableColumnSmall content">
@@ -117,7 +94,8 @@ class Team extends React.Component<Props, State> {
               <div className="tableColumnSmall content">{team.employeenumber}</div>
               <div className="tableColumnSmall content">Integrated Accounts</div>
               <div className="tableColumnSmall content">
-                {moment(team.createdate - 0).format("DD.MM.YYYY")}
+                {(team.createdate && moment(team.createdate).format("DD.MM.YYYY")) ||
+                  "Date not set"}
               </div>
             </div>
             <div className="tableEnd">

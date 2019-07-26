@@ -29,16 +29,14 @@
   }
 
   .genericHolder {
-    .inside {
-      .profile-app-holder {
-        grid-template-rows: repeat(auto-fill, 10rem);
-        grid-template-columns: repeat(auto-fill, 10rem);
+    .profile-app-holder {
+      grid-template-rows: repeat(auto-fill, 11rem);
+      grid-template-columns: repeat(auto-fill, 11rem);
 
-        .profile-app {
-          width: 10em;
-          height: 10em;
-          overflow: unset;
-        }
+      .profile-app {
+        width: 10em;
+        height: 10em;
+        overflow: unset;
       }
     }
   }

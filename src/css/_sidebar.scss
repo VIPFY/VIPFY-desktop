@@ -1,11 +1,64 @@
 .sidebar {
   background-color: #253647ff;
-  transition: width 0.6s ease-in-out;
-  width:  $sidebar-width;
   height: calc(100vh - 32px);
   z-index: 300;
   float: left;
   overflow: hidden;
+  animation: grow 600ms ease-in-out forwards;
+  color: #fff;
+  user-select: none;
+  display: grid;
+  grid-template-rows: 48px 1fr 40px;
+  grid-template-columns: 1fr;
+
+  .hold {
+    border: solid $vipfy-primary-color 1px;
+    opacity: 0.3;
+    transition: all 300ms ease-in-out;
+  }
+
+  .hovered {
+    opacity: 0.4;
+    border-style: dotted;
+    transition: all 300ms ease-in-out;
+  }
+
+  .show-more {
+    margin-left: 8px;
+
+    button {
+      @extend .sidebar-link;
+      color: #ffffff80;
+
+      &:hover {
+        background-color: $sidebar-background;
+      }
+
+      .sidebar-link-caption {
+        padding-left: 24px;
+      }
+
+      i {
+        transition: all 300ms ease-in-out;
+      }
+
+      .open {
+        transform: rotate(180deg);
+       }
+    }
+
+    &-small {
+      button {
+        @extend .sidebar-link-small;
+        margin-left: 8px;
+        margin-right: 8px;
+      }
+
+      .open {
+        transform: rotate(180deg);
+       }
+    }
+  }
 
   &-main {
     overflow-x: hidden;
@@ -55,11 +108,11 @@
     display: flex;
     align-items: center;
     list-style: none;
-    padding: 0 0 0 11px;
     margin: $sidebar-margin;
-    transition: all 300ms ease-in-out;
     position: relative;
     height: 28px;
+    transform: translateX(6px);
+    transition: all 600ms ease-in-out;
 
     &:hover {
       background-color: #293E52ff;
@@ -69,9 +122,7 @@
     &-small {
       @extend .sidebar-link;
       padding: 0;
-      width: 32px;
-      display: flex;
-      justify-content: center;
+      width: 30px;
     }
 
     .instanceHolder {
@@ -86,89 +137,6 @@
 
         &:hover {
           background-color: $vipfy-primary-color;
-        }
-      }
-    }
-
-    @keyframes fadeInSidebar {
-      0% {
-        opacity: 0;
-      }
-      
-      80% {
-        opacity: 1;
-      }
-    }
-
-    &-app {
-      @extend .sidebar-link;
-      animation: fadeInSidebar 200ms ease-out normal backwards;
-
-      @for $x from 1 through 40 {
-        &:nth-child(#{$x}) {
-          animation-delay: $x * 50ms;
-        }
-      }
-    }
-
-    &-holder {
-      -webkit-margin-after: 0;
-      -webkit-margin-before: 0;
-      -webkit-padding-start: 0;
-      color: #fff;
-      overflow: hidden;
-      user-select: none;
-      height: 100%;
-      display: grid;
-      grid-template-rows: 48px 1fr 40px;
-      grid-template-columns: 1fr;
-
-      .hold {
-        border: solid $vipfy-primary-color 1px;
-        opacity: 0.3;
-        transition: all 300ms ease-in-out;
-      }
-  
-      .hovered {
-        opacity: 0.4;
-        border-style: dotted;
-        transition: all 300ms ease-in-out;
-      }
-
-      .show-more {
-        margin-left: 8px;
-
-        button {
-          @extend .sidebar-link;
-          color: #ffffff80;
-
-          &:hover {
-            background-color: $sidebar-background;
-          }
-
-          .sidebar-link-caption {
-            padding-left: 24px;
-          }
-
-          i {
-            transition: all 300ms ease-in-out;
-          }
-
-          .open {
-            transform: rotate(180deg);
-           }
-        }
-
-        &-small {
-          button {
-            @extend .sidebar-link-small;
-            margin-left: 8px;
-            margin-right: 8px;
-          }
-
-          .open {
-            transform: rotate(180deg);
-           }
         }
       }
     }
@@ -201,29 +169,45 @@
     }
 
     &-caption {
-      @include hide-overflowing-text;
-      opacity: 100;
-      padding-left: 1em;
+      white-space: nowrap;
+      animation: caption-grow 600ms ease-in-out forwards;
       transition: all 0.6s ease-in-out;
       font-size: 16px;
       font-weight: 300;
+    }
+
+    .invisible {
+      animation: caption-shrink 600ms ease-in-out forwards;
     }
   }
 
   &-small {
     @extend .sidebar;
-    width: 48px;
-  }
-
-  &-nav-small {
-    width: 48px;
+    animation: shrink 600ms ease-in-out forwards;
   }
 
   &-active {
-    background: #30475dff;
-    transition: all 600ms ease-in-out;
-    box-shadow: 0 2px 2px #00000029;
-    border-radius: 4px;
+    position: relative;
+
+    &::after {
+      content: "";
+      z-index: -1;
+      position: absolute;
+      left: -5px;
+      background: #30475dff;
+      box-shadow: 0 2px 2px #00000029;
+      border-radius: 4px;
+      height: 25px;
+      width: 219px;
+    }
+
+    &-small {
+      @extend .sidebar-active;
+
+      &::after {
+        width: 25px;
+      }
+    }
   }
 
   &-search-tooltip {
@@ -246,6 +230,12 @@
   .fa-search {
     color: #ffffff80;
   }
+
+  &-apps {
+    .sidebar-link-small {
+      margin-left: 3px;
+    }
+  }
 }
 
 .sidebar-search {
@@ -266,11 +256,6 @@
     @extend .sidebar-search;
     color: $vipfy-secondary-color;
   }
-}
-
-.sidebar-open {
-  margin-left: $sidebar-width !important;
-  transition: margin-left 0.6s ease-in-out;
 }
 
 .sidebarfree {
@@ -342,5 +327,44 @@
     transform: rotate(44deg);
     z-index: 1;
     color: #fff;
+  }
+}
+
+@keyframes shrink {
+  from {
+    width: $sidebar-width;
+  } to {
+    width: 48px;
+  }
+}
+
+@keyframes grow {
+  from {
+    width: 48px;
+  } to {
+    width: $sidebar-width;
+  }
+}
+
+@keyframes caption-shrink {
+  from {
+    opacity: 1;
+    padding-left: 1em;
+  } to {
+    opacity: 0;
+    padding-left: 0;
+    width: 0;
+  }
+}
+
+@keyframes caption-grow {
+  from {
+    opacity: 0;
+    padding-left: 0;
+    width: 0;
+  } to {
+    opacity: 1;
+    padding-left: 1em;
+    width: 200px;
   }
 }

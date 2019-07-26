@@ -94,7 +94,7 @@ class ServiceGrid extends React.Component<Props, State> {
           }}>
           <div className="addgrid">{this.printApps(this.props.services)}</div>
         </div>
-        <Query query={fetchApps}>
+        <Query pollInterval={60 * 10 * 1000 + 300} query={fetchApps}>
           {({ loading, error, data }) => {
             if (loading) {
               return "Loading...";
@@ -125,7 +125,7 @@ class ServiceGrid extends React.Component<Props, State> {
             apps.forEach(app => {
               appsArray.push(
                 <div
-                  key={app.name}
+                  key={app.id}
                   className="space"
                   draggable
                   onClick={() => this.props.onChange({ action: "add", content: app })}
