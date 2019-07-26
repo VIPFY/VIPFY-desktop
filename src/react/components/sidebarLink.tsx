@@ -14,6 +14,7 @@ interface Props {
   handleDrop: Function;
   handleDragStart: Function | null;
   isSearching: boolean;
+  selected: boolean;
 }
 
 interface State {
@@ -142,7 +143,9 @@ class SidebarLink extends React.Component<Props, State> {
                 }
               : () => null
           }
-          className="naked-button itemHolder" /*sidebar-link-apps*/
+          className={`naked-button itemHolder${
+            this.props.selected ? " selected" : ""
+          }`} /*sidebar-link-apps*/
         >
           <Tooltip direction="right" arrowSize={5} useHover={!sidebarOpen} content={label}>
             <div className="naked-button sidebarButton">

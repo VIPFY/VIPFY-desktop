@@ -297,6 +297,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
   };
 
   render() {
+    console.log("SIDEBAR", this.props);
     let { sidebarOpen, licences } = this.props;
 
     if (!licences) {
@@ -401,21 +402,22 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Universal Login",
         location: "universallogin",
         icon: "pager",
-        show: this.props.isadmin && config.showUniversalLoginDebug,
+        show:
+          this.props.isadmin && config.showUniversalLoginDebug && this.props.company.unit.id == 14,
         important: false
       },
       {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
-        show: this.props.isadmin && config.showAdmin,
+        show: this.props.isadmin && config.showAdmin && this.props.company.unit.id == 14,
         highlight: "adminelement"
       },
       {
         label: "SSO Configurator",
         location: "ssoconfig",
         icon: "dice-d12",
-        show: this.props.isadmin && config.showSsoConfig,
+        show: this.props.isadmin && config.showSsoConfig && this.props.company.unit.id == 14,
         highlight: "ssoconfig"
       },
       {
@@ -629,7 +631,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
               />
             )}
 
-            <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
+            <li
+              className={`sidebar-link${sidebarOpen ? "" : "-small"}${
+                this.props.location.pathname.startsWith("/area/profile") ||
+                `${this.props.location.pathname}/dashboard`.startsWith("/area/profile")
+                  ? " sidebar-active"
+                  : ""
+              }`}>
               <button
                 className="naked-button itemHolder"
                 onClick={() =>

@@ -460,7 +460,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           {routes.map(({ path, component, admincomponent, admin }) => {
             const RouteComponent = component;
             const AdminComponent = admincomponent;
-
+            console.log("COMPANY", this.props);
             if (admin && this.props.company.unit.id != 14) {
               return;
             } else {

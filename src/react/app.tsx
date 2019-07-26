@@ -302,7 +302,6 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { placeid, popup, page, sidebarloaded } = this.state;
-    console.log("RENDER");
     return (
       <AppContext.Provider
         value={{

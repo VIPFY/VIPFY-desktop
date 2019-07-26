@@ -25,6 +25,11 @@
       background: #30475dff;
       box-shadow: 0 2px 2px #00000029;
     }
+
+    &.selected{
+      background: #30475daa;
+      box-shadow: 0 2px 2px #00000029;
+    }
   }
 
   .hold {
