@@ -85,11 +85,11 @@ class GoogleAuth extends React.Component<Props, State> {
           small={true}
           close={this.props.close}>
           <section className="auth-apps">
-            <h1>Set up Google Authenticator</h1>
+            <h1>Set up your Authenticator</h1>
             <p>
-              Set up of Google Authenticator was successful. From now on, whenever you sign in to
-              your account, you’ll need to enter both your password and also an authentication code
-              sent to your mobile device
+              Set up of your Authenticator was successful. From now on, whenever you sign in to your
+              account, you’ll need to enter both your password and also an authentication code sent
+              to your mobile device
             </p>
           </section>
 
@@ -105,12 +105,12 @@ class GoogleAuth extends React.Component<Props, State> {
         closeable={true}
         small={true}>
         <section className="auth-apps">
-          <h1>Set up Google Authenticator</h1>
+          <h1>Set up your Authenticator</h1>
           {this.state.showInput ? (
             <React.Fragment>
               <p>
-                Please enter your 6-digit authentication code from the Google Authenticator app.
-                „123456“ will appear below the code
+                Please enter your 6-digit authentication code from your Authenticator app. "VIPFY"
+                will appear below the code
               </p>
               {loading ? (
                 <i className="fal fa-spinner fa-spin" />
@@ -131,8 +131,8 @@ class GoogleAuth extends React.Component<Props, State> {
           ) : (
             <React.Fragment>
               <p>
-                Download the free Google Google Authenticator app, click add, and then scan this QR
-                code to set up your account
+                Download one of the free Authenticator apps - like Google Authenticator -, click
+                add, and then scan this QR code to set up your account
               </p>
               <img
                 alt="The QR code to scan"
