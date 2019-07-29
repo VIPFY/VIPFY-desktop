@@ -248,6 +248,7 @@ class App extends React.Component<AppProps, AppState> {
                 showPopup={data => this.renderPopup(data)}
                 moveTo={this.moveTo}
                 {...data.me}
+                history={this.props.history}
                 employees={data.me.company.employees}
                 profilepicture={data.me.profilepicture}
               />
@@ -265,6 +266,7 @@ class App extends React.Component<AppProps, AppState> {
       );
     } else {
       this.redeemSetupToken(() => this.forceUpdate());
+
       return (
         <div className="centralize backgroundLogo">
           <SignIn

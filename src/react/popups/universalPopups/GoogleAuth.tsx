@@ -32,7 +32,8 @@ const VERIFY_TOKEN = gql`
 `;
 
 interface Props {
-  close: Function;
+  close?: Function;
+  finishSetup?: Function;
   verifyToken: Function;
   user: User;
   data: {
@@ -83,7 +84,7 @@ class GoogleAuth extends React.Component<Props, State> {
         <PopupBase
           buttonStyles={{ justifyContent: "center" }}
           small={true}
-          close={this.props.close}>
+          close={this.props.close ? this.props.close : null}>
           <section className="auth-apps">
             <h1>Set up your Authenticator</h1>
             <p>
@@ -92,8 +93,11 @@ class GoogleAuth extends React.Component<Props, State> {
               to your mobile device
             </p>
           </section>
-
-          <UniversalButton type="high" closingPopup={true} label="ok" />
+          {this.props.finishSetup ? (
+            <UniversalButton type="high" onClick={() => this.props.finishSetup()} label="ok" />
+          ) : (
+            <UniversalButton type="high" closingPopup={true} label="ok" />
+          )}
         </PopupBase>
       );
     }
@@ -143,7 +147,9 @@ class GoogleAuth extends React.Component<Props, State> {
             </React.Fragment>
           )}
         </section>
-        <UniversalButton disabled={loading} type="low" closingPopup={true} label="cancel" />
+        {this.props.close && (
+          <UniversalButton disabled={loading} type="low" closingPopup={true} label="cancel" />
+        )}
         {!this.state.showInput && (
           <UniversalButton
             type="high"

@@ -130,7 +130,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.setState({ script });
     document.head.appendChild(script);*/
 
-    console.log("LOG: Area -> componentDidMount -> this.props.consent", this.props.consent);
     if (this.props.consent === null) {
       this.setState({ consentPopup: true });
     }
@@ -348,7 +347,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   render() {
     const { sidebarOpen, chatOpen } = this.state;
     const routes = [
-      { path: "", component: Security },
+      { path: "", component: Dashboard },
       { path: "dashboard", component: Dashboard },
       { path: "dashboard/:overlay", component: Dashboard },
       { path: "settings", component: Settings },

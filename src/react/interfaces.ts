@@ -48,6 +48,25 @@ export interface User {
   config: JSON;
 }
 
+export interface SecurityUser {
+  unitid: any;
+  id: number;
+  createdate: string;
+  lastactive: string;
+  passwordlength: number;
+  passwordstrength: number;
+  banned: boolean;
+  suspended: boolean;
+  needspasswordchange: boolean;
+  twofactormethods: {
+    twofaid: number;
+    twofatype: string;
+    twofacreated: string;
+    twofalastused: string;
+    twofacount: number;
+  }[];
+}
+
 export interface PublicUser {
   id: number;
   firstname: string;

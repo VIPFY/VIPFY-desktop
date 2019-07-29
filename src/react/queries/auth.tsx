@@ -30,6 +30,7 @@ export const me = gql`
       firstlogin
       config
       tutorialprogress
+      needstwofa
     }
   }
 `;

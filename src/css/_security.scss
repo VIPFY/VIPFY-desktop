@@ -3,18 +3,6 @@
   border-spacing: 20px 10px;
   
   tbody {
-    .update-password {
-      min-height: 300px;
-      display: flex;
-      flex-flow: column;
-      justify-content: space-between;
-
-      .error-field {
-        margin: 0;
-        margin-top: 20px;
-      }
-    }
-
     tr {
       height: 56px;
 
@@ -89,6 +77,9 @@
   h1 {
     font-size: 1.5rem;
     font-weight: 400;
+  }
+  
+  & > h1 {
     margin-bottom: 40px;
   }
 
@@ -188,12 +179,30 @@
       margin-top: 10px;
     }
   }
+
+  .contentPopup {
+    text-align: center;
+
+    h1,
+    div {
+      margin-bottom: 20px;
+    }
+  }
+
+  .update-password {
+    text-align: initial;
+    min-height: 300px;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+  }
 }
 
 .auth-apps {
   display: flex;
   flex-flow: column;
   align-items: center;
+  min-height: 222px;
 
   p {
     text-align: center;

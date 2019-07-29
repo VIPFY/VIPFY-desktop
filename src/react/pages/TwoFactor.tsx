@@ -84,4 +84,5 @@ class TwoFactor extends React.Component<Props, State> {
     );
   }
 }
+
 export default TwoFactor;
