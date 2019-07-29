@@ -7,7 +7,7 @@ import PopupSelfSaving from "./selfSaving";
 interface Props {
   key: string;
   heading: string;
-  subHeading?: string;
+  subHeading?: string | JSX.Element;
   fields: { id: string; options: any }[];
   close: Function;
   nooutsideclose?: boolean;

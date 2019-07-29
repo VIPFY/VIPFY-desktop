@@ -19,7 +19,15 @@ import * as is from "electron-is";
 import { remote } from "electron";
 import UpgradeError from "./upgradeerror";
 
-class Application extends React.Component {
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { sleep } from "./common/functions";
+
+interface IndexProps {
+  client: ApolloClient<InMemoryCache>;
+}
+
+class Application extends React.Component<IndexProps> {
   implementShortCuts = e => {
     const mainWindow = remote.getCurrentWindow();
 
@@ -60,6 +68,8 @@ class Application extends React.Component {
     if (is.macOS()) {
       document.body.classList.remove("mac");
     }
+    this.props.client.cache.reset(); // clear graphql cache
+    localStorage.removeItem("token");
   }
 
   render = () => {

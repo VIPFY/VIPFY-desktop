@@ -1,7 +1,7 @@
 #titlebar {
   position: fixed;
   display: grid;
-  grid-template-columns: 188px 1fr 46px 138px;
+  grid-template-columns: 138px 102px calc(100% - 138px - 240px) 138px;
   grid-template-rows: 32px;
   width: 100%;
   background: #1c2935;
@@ -11,9 +11,9 @@
   -webkit-app-region: drag;
 
   &-logo {    
-    padding-left: 15px;
-    grid-column: 1 / 2;
-    display: flex;
+    padding-left: 8px;
+    display: grid;
+    grid-template-columns: 32px 106px;
     align-items: center;
     
     &-img {
@@ -21,14 +21,12 @@
       background-position: center;
       background-repeat: no-repeat;
       background-size: contain;
-      height: 2rem;
-      width: 20px;
+      height: 24px;
+      width: 24px;
     }
 
     #versionnumber {
       font-family: "Roboto";
-      padding: 0.5rem 0 0.5rem 40px;
-      width: 195px;
     }
   }
 
@@ -40,8 +38,8 @@
     justify-content: center;
     align-items: center;*/
     display: flex;
-    margin-left: 50px;
-    max-width: 916px;
+    //margin-left: 50px;
+    //max-width: 916px;
   }
 
   .active {
@@ -156,5 +154,24 @@
 
   #restore-button {
     display: none;
+  }
+}
+#header-arrows{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0px 16px;
+
+  .historyButton{
+    height: 24px;
+    width: 24px;
+    border: 1px solid white;
+    border-radius: 4px;
+    line-height: 24px;
+    -webkit-app-region: no-drag;
+    transition: 200ms background-color;
+    &:hover{
+      background-color: #20BAA9;
+    }
   }
 }

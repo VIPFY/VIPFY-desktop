@@ -5,12 +5,13 @@ import LoadingDiv from "../components/LoadingDiv";
 import Area from "./area";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { CHANGE_PASSWORD } from "../mutations/auth";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
-import Welcome from "../pages/welcome";
 import DataNameForm from "../components/dataForms/NameForm";
 import { consentText } from "../common/constants";
+import gql from "graphql-tag";
+import moment = require("moment");
+import { filterError } from "../common/functions";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -20,6 +21,19 @@ interface PostLoginProps {
 }
 
 interface PostLoginState {}
+
+const FETCH_VIPFY_PLAN = gql`
+  {
+    fetchVipfyPlan {
+      id
+      endtime
+      plan: planid {
+        id
+        name
+      }
+    }
+  }
+`;
 
 class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
   state: PostLoginState = {};
@@ -59,7 +73,42 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
           if (data.me.needspasswordchange) {
             return <PasswordChange {...this.props} />;
           }
-          return <Area {...this.props} />;
+          return (
+            <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
+              {({ data, error, loading }) => {
+                console.log("PLAN", this.props);
+                if (error) {
+                  return filterError(error);
+                }
+                if (data && data.fetchVipfyPlan) {
+                  const vipfyPlan = data.fetchVipfyPlan.plan.name;
+                  // TODO: [VIP-314] Reimplement credits when new structure is clear
+                  // const { fetchCredits } = data;
+                  const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
+
+                  if (this.props.context) {
+                    if (moment().isAfter(expiry)) {
+                      this.props.context.addHeaderNotification(
+                        `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
+                        { type: "error", key: "expire" }
+                      );
+                    } else {
+                      this.props.context.addHeaderNotification(
+                        `${moment().to(expiry, true)} left on ${vipfyPlan}`,
+                        { type: "warning", key: "left", dismissButton: { label: "Dismiss" } }
+                      );
+                    }
+                  }
+                }
+                return (
+                  <Area
+                    {...this.props}
+                    style={this.props.context.isactive() ? { height: "calc(100% - 48px)" } : {}}
+                  />
+                );
+              }}
+            </Query>
+          );
         }}
       </Query>
     );

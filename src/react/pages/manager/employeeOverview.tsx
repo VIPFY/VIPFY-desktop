@@ -301,10 +301,10 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 if (loading) {
                                   return (
                                     <ColumnTeams
+                                      {...this.props}
                                       style={{ width: "20%" }}
                                       teams={data.fetchTeams}
                                       teamidFunction={team => team}
-                                      {...this.props}
                                       fake={true}
                                     />
                                   );
@@ -314,10 +314,10 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 }
                                 return (
                                   <ColumnTeams
+                                    {...this.props}
                                     style={{ width: "20%" }}
                                     teams={data.fetchTeams}
                                     teamidFunction={team => team}
-                                    {...this.props}
                                     fake={false}
                                   />
                                 );
@@ -333,6 +333,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 if (loading) {
                                   return (
                                     <ColumnServices
+                                      {...this.props}
                                       style={{ width: "30%" }}
                                       services={data.fetchUsersOwnLicences}
                                       checkFunction={element =>
@@ -349,7 +350,6 @@ class EmployeeOverview extends React.Component<Props, State> {
                                           </div>
                                         )
                                       }
-                                      {...this.props}
                                       fake={true}
                                     />
                                   );
@@ -359,6 +359,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 }
                                 return (
                                   <ColumnServices
+                                    {...this.props}
                                     style={{ width: "30%" }}
                                     services={data.fetchUsersOwnLicences}
                                     checkFunction={element =>
@@ -375,7 +376,6 @@ class EmployeeOverview extends React.Component<Props, State> {
                                         </div>
                                       )
                                     }
-                                    {...this.props}
                                     fake={false}
                                   />
                                 );

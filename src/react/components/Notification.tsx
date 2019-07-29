@@ -22,6 +22,7 @@ interface Props {
   refetch: Function;
   readNotification: Function;
   readAll: Function;
+  style?: Object;
 }
 
 interface State {
@@ -128,7 +129,7 @@ class Notification extends React.Component<Props, State> {
     const dataExists = dataLength > 0;
 
     return (
-      <div className="notificationPopup">
+      <div className="notificationPopup" style={this.props.style}>
         <div className="notificationPopupHeader">
           {`You have ${dataExists ? dataLength : "no"} new notification${
             dataLength == 1 ? "" : "s"

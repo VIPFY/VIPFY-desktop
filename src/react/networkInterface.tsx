@@ -119,7 +119,7 @@ const afterwareLink = new ApolloLink((operation, forward) => {
         localStorage.setItem("token", token);
       }
     }
-
+    dismissHeaderNotification("network", true);
     return response;
   });
 });
@@ -147,12 +147,28 @@ let handleUpgradeError = () => {
   return;
 };
 
+let addHeaderNotification = (message, key) => {
+  return;
+};
+
+let dismissHeaderNotification = (a, b) => {
+  return;
+};
+
 export const setLogoutFunction = logoutFunc => {
   logout = logoutFunc;
 };
 
 export const setUpgradeErrorHandler = handlerFunc => {
-  logout = handleUpgradeError;
+  handleUpgradeError = handlerFunc;
+};
+
+export const setHeaderNotification = addFunction => {
+  addHeaderNotification = addFunction;
+};
+
+export const setDismissHeaderNotification = removeFunction => {
+  dismissHeaderNotification = removeFunction;
 };
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -175,6 +191,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 
   if (networkError) {
+    addHeaderNotification("Network Problem", "network");
     console.log(`[Network error]: ${networkError}`);
   }
 });

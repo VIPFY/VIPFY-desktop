@@ -14,6 +14,7 @@ interface Props {
   handleDrop: Function;
   handleDragStart: Function | null;
   isSearching: boolean;
+  selected: boolean;
 }
 
 interface State {
@@ -108,56 +109,65 @@ class SidebarLink extends React.Component<Props, State> {
         }`}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        onDrop={event => {
-          this.setState({ entered: false });
-          this.props.handleDrop(
-            licence.id,
-            event.dataTransfer.getData("text")
-            // event.pageY - event.currentTarget.getBoundingClientRect().top <=
-            //   event.currentTarget.getBoundingClientRect().height / 2
-          );
-        }}
-        draggable={this.props.isSearching}
-        onDragStart={event => {
-          event.dataTransfer.setData("text", licence.id);
-          //this.props.handleDragStart(event);
-          this.setState({ dragging: true });
-        }}
-        onDragOver={e => {
-          e.preventDefault();
-          this.setState({ entered: true });
-        }}
-        onDragLeave={() => this.setState({ entered: false })}
-        onDragEnd={() => this.setState({ dragging: false })}
-        ref={el => (this.el = el)}
-        onClick={
-          this.props.openInstances &&
-          (!this.props.openInstances[licence.id] ||
-            (this.props.openInstances[licence.id] &&
-              Object.keys(openInstances[licence.id]).length == 1))
-            ? () => {
-                setTeam(licence.id);
-              }
-            : () => null
-        }>
-        <Tooltip direction="right" arrowSize={5} useHover={!sidebarOpen} content={label}>
-          <span className="white-background" />
-          {licence.pending && <span className="licence-pending" />}
-          <span
-            className="service-logo-small"
-            style={{
-              backgroundImage:
-                licence.boughtplanid.planid.appid.icon &&
-                getBgImageApp(licence.boughtplanid.planid.appid.icon, 24)
-            }}>
-            {this.props.openInstances[this.props.licence.id] && (
-              <i className="fa fa-circle active-app" />
-            )}
-          </span>
-        </Tooltip>
+        // onDrop={event => {
+        //      this.setState({ entered: false });
+        //      this.props.handleDrop(
+        //        licence.id,
+        //       event.dataTransfer.getData("text")
+        // event.pageY - event.currentTarget.getBoundingClientRect().top <=
+        //   event.currentTarget.getBoundingClientRect().height / 2
+        //      );
+        //    }}
+        //  draggable={this.props.isSearching}
+        //   onDragStart={event => {
+        //     event.dataTransfer.setData("text", licence.id);
+        //     this.props.handleDragStart(event);
+        //    this.setState({ dragging: true });
+        //  }}
+        // onDragOver={e => {
+        //    e.preventDefault();
+        //    this.setState({ entered: true });
+        //  }}
+        // onDragLeave={() => this.setState({ entered: false })}
+        // onDragEnd={() => this.setState({ dragging: false })}
+        ref={el => (this.el = el)}>
+        <button
+          type="button"
+          onClick={
+            this.props.openInstances &&
+            (!this.props.openInstances[licence.id] ||
+              (this.props.openInstances[licence.id] &&
+                Object.keys(openInstances[licence.id]).length == 1))
+              ? () => {
+                  setTeam(licence.id);
+                }
+              : () => null
+          }
+          className={`naked-button itemHolder${
+            this.props.selected ? " selected" : ""
+          }`} /*sidebar-link-apps*/
+        >
+          <Tooltip direction="right" arrowSize={5} useHover={!sidebarOpen} content={label}>
+            <div className="naked-button sidebarButton">
+              <span className="white-background" />
+              {licence.pending && <span className="licence-pending" />}
+              <span
+                className="service-logo-small"
+                style={{
+                  backgroundImage:
+                    licence.boughtplanid.planid.appid.icon &&
+                    getBgImageApp(licence.boughtplanid.planid.appid.icon, 24)
+                }}>
+                {this.props.openInstances[this.props.licence.id] && (
+                  <i className="fa fa-circle active-app" />
+                )}
+              </span>
+            </div>
+          </Tooltip>
 
-        <span className={sidebarOpen ? "sidebar-link-caption" : "show-not"}>{label}</span>
-        {this.state.hover ? this.showInstances(licence) : ""}
+          <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>{label}</span>
+          {this.state.hover ? this.showInstances(licence) : ""}
+        </button>
       </li>
     );
   }

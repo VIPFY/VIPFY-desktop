@@ -1,0 +1,48 @@
+.headerInformationHolder{
+    position: relative;
+    height: 0px;
+    transition: 400ms ease-in-out height;
+    overflow: hidden;
+
+    .headerNotification{
+        background-color: #323232;
+        line-height: 48px;
+        height: 0px;
+        transition: 400ms ease-in-out height;
+        position: absolute;
+        top: 0px;
+        width: 100%;
+
+        &.errorNotification{
+            background-color: #c73544;
+            text-align: center;
+        }
+        &.warningNotification{
+            background-color: #D0CC4D;
+            position: relative;
+            text-align: center;
+        }
+        &.open{
+            height: 48px;
+        }
+        .headerNotificationButton{
+            height: 32px;
+            margin-left: 16px;
+            border: 1px solid #253647;
+            line-height: 32px;
+            border-radius: 4px;
+            padding: 0px 10px;
+            transition: 200ms background-color, 200ms color;
+            position: absolute;
+            right: 24px;
+            top: 8px;
+            &:hover{
+                background-color: #253647;
+                color: white;
+            }
+        }
+    }
+    &.open{
+        height: 48px;
+    }
+}
