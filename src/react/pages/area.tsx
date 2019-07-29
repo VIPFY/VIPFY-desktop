@@ -182,7 +182,7 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   componentDidCatch(error, info) {
     console.log("LOG: Area -> componentDidCatch -> error, info", error, info);
-    this.moveTo("/area/error");
+    this.moveTo("error");
   }
 
   setSidebar = value => {
@@ -460,7 +460,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           {routes.map(({ path, component, admincomponent, admin }) => {
             const RouteComponent = component;
             const AdminComponent = admincomponent;
-            console.log("COMPANY", this.props);
+            //  console.log("COMPANY", this.props);
             if (admin && this.props.company.unit.id != 14) {
               return;
             } else {
