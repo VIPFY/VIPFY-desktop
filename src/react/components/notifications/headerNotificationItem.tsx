@@ -23,14 +23,19 @@ class HeaderNotificationItem extends Component<Props, State> {
 
     let classes = "headerNotification";
 
+    let icon = "";
+
     switch (type) {
       case "error":
         classes += " errorNotification";
+        icon = "times-circle";
         break;
       case "warning":
         classes += " warningNotification";
+        icon = "exclamation-triangle";
         break;
       default:
+        icon = "info-circle";
     }
 
     if (open && this.state && this.state.mounted) {
@@ -39,7 +44,10 @@ class HeaderNotificationItem extends Component<Props, State> {
 
     return (
       <div className={classes} style={this.props.show ? { zIndex: 1 } : { zIndex: 0 }}>
-        <span>{message}</span>
+        <span>
+          {<i className={`fal fa-${icon}`} style={{ marginRight: "16px" }} />}
+          {message}
+        </span>
         {dismissButton && (
           <button
             className="naked-button headerNotificationButton"
