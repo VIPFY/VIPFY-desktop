@@ -136,13 +136,22 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
               {this.state.error}
             </div>
 
-            <UniversalButton
-              disabled={!this.canSubmit()}
-              customStyles={{ width: "105px" }}
-              label="continue"
-              type="high"
-              onClick={() => this.confirm()}
-            />
+            <div className="universal-buttons">
+              <UniversalButton
+                customStyles={{ width: "105px" }}
+                label="Back"
+                type="low"
+                onClick={() => this.abort()}
+              />
+
+              <UniversalButton
+                disabled={!this.canSubmit()}
+                customStyles={{ width: "105px" }}
+                label="continue"
+                type="high"
+                onClick={() => this.confirm()}
+              />
+            </div>
           </div>
         </div>
       </section>
