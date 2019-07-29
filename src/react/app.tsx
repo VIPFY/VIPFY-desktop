@@ -16,6 +16,7 @@ import PostLogin from "./pages/postlogin";
 import gql from "graphql-tag";
 import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
+import { logger, resetLoggingContext } from "../logger";
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -143,6 +144,7 @@ class App extends React.Component<AppProps, AppState> {
     this.setState(INITIAL_STATE); // clear state
     this.props.client.cache.reset(); // clear graphql cache
     localStorage.removeItem("token");
+    resetLoggingContext();
     this.props.history.push("/");
     location.reload();
   };

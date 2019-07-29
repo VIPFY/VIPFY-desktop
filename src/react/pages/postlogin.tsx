@@ -11,6 +11,7 @@ import FirstLogin from "../components/signin/FirstLogin";
 import Welcome from "../pages/welcome";
 import DataNameForm from "../components/dataForms/NameForm";
 import { consentText } from "../common/constants";
+import { logger } from "../../logger";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -32,7 +33,7 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
             return <LoadingDiv text="Preparing Vipfy for you" />;
           }
 
-          if (error || !data) {
+          if (error || !data || !data.me) {
             return <div>There was an error</div>;
           }
 
@@ -43,6 +44,10 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
               language: data.me.language
             });
           }
+
+          logger.addContext("userid", data.me.id);
+          logger.addContext("isadmin", data.me.isadmin);
+          logger.addContext("language", data.me.language);
 
           if (!data.me.company.setupfinished) {
             return (
