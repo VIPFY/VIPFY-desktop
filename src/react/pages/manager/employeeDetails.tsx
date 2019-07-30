@@ -2,7 +2,6 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
 import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
-import * as Dropzone from "react-dropzone";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
 import TeamsSection from "../../components/manager/teamsSection";
@@ -18,6 +17,7 @@ import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicen
 import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
+import SecurityPopup from "./securityPopup";
 import moment = require("moment");
 
 const UPDATE_PIC = gql`
@@ -38,12 +38,14 @@ interface Props {
 
 interface State {
   loading: boolean;
+  showSecurityPopup: boolean;
   showTimeAway: Boolean;
 }
 
 class EmployeeDetails extends React.Component<Props, State> {
   state = {
     loading: false,
+    showSecurityPopup: false,
     showTimeAway: false
   };
 
@@ -234,9 +236,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                               marginRight: "16px",
                               width: "120px"
                             }}
-                            onClick={() => {
-                              //this.setState({ add: true });
-                            }}
+                            onClick={() => this.setState({ showSecurityPopup: true })}
                           />
                         )}
                       </div>
@@ -298,6 +298,32 @@ class EmployeeDetails extends React.Component<Props, State> {
                   closeTimeAway={() => this.setState({ showTimeAway: false })}
                   isadmin={this.props.isadmin}
                 />
+                {this.state.changepicture && (
+                  <PopupSelfSaving
+                    savingmessage="Saving Profileimage"
+                    savedmessage="Profileimage successfully saved"
+                    saveFunction={async () => {
+                      await this.props.updatePic({
+                        variables: { file: this.state.changepicture },
+                        refetchQueries: ["me"]
+                      });
+                      this.props.client.query({ query: me, fetchPolicy: "network-only" });
+                      this.props.client.query({
+                        query: QUERY_USER,
+                        variables: { userid: this.props.match.params.userid },
+                        fetchPolicy: "network-only"
+                      });
+                    }}
+                    closeFunction={() => this.setState({ changepicture: null })}
+                  />
+                )}
+
+                {this.state.showSecurityPopup && (
+                  <SecurityPopup
+                    user={querydata}
+                    closeFunction={() => this.setState({ showSecurityPopup: false })}
+                  />
+                )}
               </div>
             );
           }

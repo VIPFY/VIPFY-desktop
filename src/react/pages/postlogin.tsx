@@ -7,6 +7,7 @@ import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
 import { consentText } from "../common/constants";
+import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment = require("moment");
 import { filterError } from "../common/functions";
@@ -15,9 +16,15 @@ interface PostLoginProps {
   logMeOut: Function;
   moveTo: Function;
   sidebarloaded: Function;
+  setName: Function;
+  showPopup: Function;
+  qrCode?: string;
+  twoFAid?: string;
+  employess: number;
+  profilepicture: string;
+  history: any;
+  context: any;
 }
-
-interface PostLoginState {}
 
 const FETCH_VIPFY_PLAN = gql`
   {
@@ -32,102 +39,97 @@ const FETCH_VIPFY_PLAN = gql`
   }
 `;
 
-class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
-  state: PostLoginState = {};
+const PostLogin = (props: PostLoginProps) => (
+  <Query query={me}>
+    {({ data, loading, error, refetch }) => {
+      const { context, ...clearProps } = props;
 
-  shouldComponentUpdate(nextProps, nextState) {
-    for (let i in nextProps) {
-      if (nextProps[i] !== this.props[i]) {
-        console.debug("Übeltäter", i, this.props[i], nextProps[i]);
-        if (i !== "showPopup") {
-          return true;
-        }
+      if (loading) {
+        return <LoadingDiv text="Preparing Vipfy for you" />;
       }
-    }
-    for (let i in nextState) {
-      if (nextState[i] !== this.state[i]) {
-        console.debug("Übeltäter", i, this.state[i], nextState[i]);
+
+      if (error || !data) {
+        return <div>There was an error</div>;
       }
-    }
-    return false;
-  }
 
-  render() {
-    console.log("POSTLOGIN", this.props);
-    const { context, ...clearprops } = this.props;
-    return (
-      <Query query={me}>
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <LoadingDiv text="Preparing Vipfy for you" />;
-          }
+      if (data.me && data.me.consent) {
+        window.smartlook("consentAPI", consentText);
+        window.smartlook("identify", data.me.id, {
+          admin: data.me.isadmin,
+          language: data.me.language
+        });
+      }
 
-          if (error || !data) {
-            return <div>There was an error</div>;
-          }
+      if (!data.me.company.setupfinished) {
+        return (
+          <div className="centralize backgroundLogo">
+            <DataNameForm moveTo={props.moveTo} />
+          </div>
+        );
+      }
 
-          if (data.me && data.me.consent) {
-            window.smartlook("consentAPI", consentText);
-            window.smartlook("identify", data.me.id, {
-              admin: data.me.isadmin,
-              language: data.me.language
-            });
-          }
+      if (data.me.firstlogin) {
+        return <FirstLogin {...clearProps} />;
+      }
 
-          if (!data.me.company.setupfinished) {
-            return (
-              <div className="centralize backgroundLogo">
-                <DataNameForm moveTo={this.props.moveTo} />
-              </div>
-            );
-          }
+      if (data.me.needspasswordchange) {
+        return <PasswordChange {...clearProps} />;
+      }
 
-          if (data.me.firstlogin) {
-            return <FirstLogin {...clearprops} />;
-          }
-
-          if (data.me.needspasswordchange) {
-            return <PasswordChange {...clearprops} />;
-          }
-          return (
-            <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
-              {({ data, error, loading }) => {
-                if (error) {
-                  return filterError(error);
-                }
-                if (data && data.fetchVipfyPlan) {
-                  const vipfyPlan = data.fetchVipfyPlan.plan.name;
-                  // TODO: [VIP-314] Reimplement credits when new structure is clear
-                  // const { fetchCredits } = data;
-                  const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
-
-                  if (context) {
-                    if (moment().isAfter(expiry)) {
-                      context.addHeaderNotification(
-                        `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
-                        { type: "error", key: "expire" }
-                      );
-                    } else {
-                      context.addHeaderNotification(
-                        `${moment().to(expiry, true)} left on ${vipfyPlan}`,
-                        { type: "warning", key: "left", dismissButton: { label: "Dismiss" } }
-                      );
-                    }
-                  }
-                }
-                return (
-                  <Area
-                    {...clearprops}
-                    style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
-                  />
-                );
+      if (data.me.needstwofa) {
+        return (
+          <div style={{ display: "flex", flexFlow: "column", alignItems: "center" }}>
+            <h1>Please set up Two-Factor Authentication</h1>
+            <GoogleAuth
+              finishSetup={() => {
+                refetch();
+                clearProps.history.push("/area/dashboard");
               }}
-            </Query>
-          );
-        }}
-      </Query>
-    );
-  }
-}
+              user={data.me}
+            />
+          </div>
+        );
+      }
 
-export default PostLogin;
+      return (
+        <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
+          {({ data, error }) => {
+            if (error) {
+              return filterError(error);
+            }
+
+            if (data && data.fetchVipfyPlan) {
+              const vipfyPlan = data.fetchVipfyPlan.plan.name;
+              // TODO: [VIP-314] Reimplement credits when new structure is clear
+              // const { fetchCredits } = data;
+              const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
+
+              if (context) {
+                if (moment().isAfter(expiry)) {
+                  context.addHeaderNotification(
+                    `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
+                    { type: "error", key: "expire" }
+                  );
+                } else {
+                  context.addHeaderNotification(
+                    `${moment().to(expiry, true)} left on ${vipfyPlan}`,
+                    { type: "warning", key: "left", dismissButton: { label: "Dismiss" } }
+                  );
+                }
+              }
+            }
+
+            return (
+              <Area
+                {...clearProps}
+                style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
+              />
+            );
+          }}
+        </Query>
+      );
+    }}
+  </Query>
+);
+
+export default withApollo(PostLogin);
