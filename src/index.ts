@@ -199,6 +199,7 @@ const createWindow = async () => {
   mainWindow.on("close", () => {
     try {
       mainWindow.webContents.session.clearStorageData();
+      session.fromPartition("services").clearStorageData();
     } catch (err) {
       console.log(err);
     }

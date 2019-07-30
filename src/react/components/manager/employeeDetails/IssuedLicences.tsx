@@ -50,6 +50,7 @@ interface Props {
   unitid: string;
   showTimeAway?: Boolean;
   closeTimeAway: Function;
+  isadmin?: Boolean;
 }
 
 interface TempLicence {
@@ -110,18 +111,20 @@ class IssuedLicences extends React.Component<Props, State> {
             </div>
 
             <div className="tableEnd">
-              <UniversalButton
-                type="high"
-                label="Issue new Licence"
-                customStyles={{
-                  fontSize: "12px",
-                  lineHeight: "24px",
-                  fontWeight: "700",
-                  marginRight: "16px",
-                  width: "132px"
-                }}
-                onClick={() => this.setState({ showCreation: true })}
-              />
+              {this.props.isadmin && (
+                <UniversalButton
+                  type="high"
+                  label="Issue new Licence"
+                  customStyles={{
+                    fontSize: "12px",
+                    lineHeight: "24px",
+                    fontWeight: "700",
+                    marginRight: "16px",
+                    width: "132px"
+                  }}
+                  onClick={() => this.setState({ showCreation: true })}
+                />
+              )}
             </div>
           </div>
 
@@ -197,17 +200,19 @@ class IssuedLicences extends React.Component<Props, State> {
                     </div>
 
                     <div className="tableEnd">
-                      <div className="editOptions">
-                        <IconButton
-                          onClick={() => this.setState({ showEdit: licence.id })}
-                          icon="edit"
-                        />
+                      {this.props.isadmin && (
+                        <div className="editOptions">
+                          <IconButton
+                            onClick={() => this.setState({ showEdit: licence.id })}
+                            icon="edit"
+                          />
 
-                        <IconButton
-                          onClick={() => this.setState({ showDeletion: true })}
-                          icon="trash-alt"
-                        />
-                      </div>
+                          <IconButton
+                            onClick={() => this.setState({ showDeletion: true })}
+                            icon="trash-alt"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {this.state.showEdit && (

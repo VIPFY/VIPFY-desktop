@@ -43,13 +43,13 @@ class HistoryButtons extends React.Component<Props, State> {
           type="button"
           className="naked-button historyButton"
           onClick={() => this.backFunction()}>
-          <i className="fal fa-long-arrow-left" />
+          <i className="fal fa-arrow-left" />
         </button>
         <button
           type="button"
           className="naked-button historyButton"
           onClick={() => this.forwardFunction()}>
-          <i className="fal fa-long-arrow-right" />
+          <i className="fal fa-arrow-right" />
         </button>
       </>
     );

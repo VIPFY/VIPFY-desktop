@@ -120,6 +120,7 @@ class CompanyData extends React.Component<Props, State> {
                         onDrop={file => this.uploadPic(file)}
                         name={fetchCompany.name}
                         className={"managerBigSquare"}
+                        isadmin={this.props.isadmin}
                       />
                     </div>
 

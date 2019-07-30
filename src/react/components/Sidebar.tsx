@@ -14,6 +14,7 @@ import { fetchCards } from "../queries/billing";
 import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
+import ProfileMenu from "./ProfileMenu";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -215,7 +216,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
       document: NOTIFICATION_SUBSCRIPTION,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
-          console.log("%c Subscription", "background: red;", subscriptionData);
           return prev;
         }
 
@@ -238,12 +238,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
   handleClickOutside = e => {
     const domNode = ReactDOM.findDOMNode(this);
-
+    console.log("CLICK", e.target, this.state);
     if (
       (!domNode || !domNode.contains(e.target)) &&
       (this.state.showNotification || this.state.notify)
     ) {
-      console.log("CLICK OUTSIDE", this.state);
       this.setState({ showNotification: false, notify: false });
     }
   };
@@ -297,7 +296,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
   };
 
   render() {
-    console.log("SIDEBAR", this.props);
     let { sidebarOpen, licences } = this.props;
 
     if (!licences) {
@@ -434,7 +432,18 @@ class Sidebar extends React.Component<SidebarProps, State> {
       if (licence.sidebar === null) {
         licence.sidebar = maxValue + 1;
       }
-      if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+      if (
+        !(
+          (!licence.disabled &&
+            !licence.boughtplanid.planid.appid.disabled &&
+            (licence.endtime > moment.now() || licence.endtime == null) &&
+            !licence.vacationstart) ||
+          (licence.vacationstart &&
+            licence.vacationstart <= moment.now() &&
+            ((licence.vacationend && licence.vacationend > moment.now()) ||
+              licence.vacationend == null))
+        )
+      ) {
         return false;
       }
 
@@ -628,6 +637,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                   left: sidebarOpen ? "210px" : "50px",
                   zIndex: 1000
                 }}
+                closeme={() => this.setState({ showNotification: false })}
               />
             )}
 
@@ -665,27 +675,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
               </button>
             </li>
             {this.state.contextMenu && (
-              <div
-                className="context-menu"
-                style={{
-                  left: sidebarOpen ? "210px" : "50px",
-                  zIndex: 1000
-                }}>
-                <div>
-                  <UserName unitid={this.props.id} />
-                </div>
-                <div
-                  onClick={() => {
-                    this.props.history.push("/area/profile");
-                    this.setState({ contextMenu: false });
-                  }}>
-                  <span>Profile</span>
-                  <i className="fal fa-external-link-alt" />
-                </div>
-                <button className="naked-button" onClick={this.props.logMeOut}>
-                  Log out
-                </button>
-              </div>
+              <ProfileMenu
+                closeme={() => this.setState({ contextMenu: false })}
+                sidebarOpen={this.props.sidebarOpen}
+                history={this.props.history}
+                id={this.props.id}
+                logMeOut={this.props.logMeOut}
+              />
             )}
           </ul>
         )}

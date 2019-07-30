@@ -3,8 +3,6 @@ import { Query, withApollo } from "react-apollo";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
 import Area from "./area";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
@@ -16,7 +14,6 @@ import { filterError } from "../common/functions";
 
 interface PostLoginProps {
   logMeOut: Function;
-  client: ApolloClient<InMemoryCache>;
   moveTo: Function;
   sidebarloaded: Function;
   setName: Function;
@@ -26,6 +23,7 @@ interface PostLoginProps {
   employess: number;
   profilepicture: string;
   history: any;
+  context: any;
 }
 
 const FETCH_VIPFY_PLAN = gql`
@@ -44,6 +42,8 @@ const FETCH_VIPFY_PLAN = gql`
 const PostLogin = (props: PostLoginProps) => (
   <Query query={me}>
     {({ data, loading, error, refetch }) => {
+      const { context, ...clearProps } = props;
+
       if (loading) {
         return <LoadingDiv text="Preparing Vipfy for you" />;
       }
@@ -69,11 +69,11 @@ const PostLogin = (props: PostLoginProps) => (
       }
 
       if (data.me.firstlogin) {
-        return <FirstLogin {...props} />;
+        return <FirstLogin {...clearProps} />;
       }
 
       if (data.me.needspasswordchange) {
-        return <PasswordChange {...props} />;
+        return <PasswordChange {...clearProps} />;
       }
 
       if (data.me.needstwofa) {
@@ -83,7 +83,7 @@ const PostLogin = (props: PostLoginProps) => (
             <GoogleAuth
               finishSetup={() => {
                 refetch();
-                props.history.push("/area/dashboard");
+                clearProps.history.push("/area/dashboard");
               }}
               user={data.me}
             />
@@ -104,14 +104,14 @@ const PostLogin = (props: PostLoginProps) => (
               // const { fetchCredits } = data;
               const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
 
-              if (props.context) {
+              if (context) {
                 if (moment().isAfter(expiry)) {
-                  props.context.addHeaderNotification(
+                  context.addHeaderNotification(
                     `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
                     { type: "error", key: "expire" }
                   );
                 } else {
-                  props.context.addHeaderNotification(
+                  context.addHeaderNotification(
                     `${moment().to(expiry, true)} left on ${vipfyPlan}`,
                     { type: "warning", key: "left", dismissButton: { label: "Dismiss" } }
                   );
@@ -121,8 +121,8 @@ const PostLogin = (props: PostLoginProps) => (
 
             return (
               <Area
-                {...props}
-                style={props.context.isactive() ? { height: "calc(100% - 40px)" } : {}}
+                {...clearProps}
+                style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
               />
             );
           }}

@@ -26,6 +26,7 @@ class TwoFactor extends React.Component<Props, State> {
 
   handleToken = ({ validate2FA }) => {
     localStorage.setItem("token", validate2FA);
+    localStorage.removeItem("twoFAToken");
 
     this.props.moveTo("dashboard");
   };

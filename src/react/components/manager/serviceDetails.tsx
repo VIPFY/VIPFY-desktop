@@ -63,6 +63,7 @@ interface State {
     saveFunction: Function;
   } | null;
   keepAccount: Boolean;
+  isadmin?: Boolean;
 }
 
 const REMOVE_LICENCE = gql`
@@ -147,7 +148,7 @@ class ServiceDetails extends React.Component<Props, State> {
                   </div>
                   <div className="tableColumnSmall content">
                     <Query
-                      pollInterval={60 * 10 * 1000 + 500}
+                      //pollInterval={60 * 10 * 1000 + 500}
                       query={gql`
                         query fetchBoughtplanUsagePerUser(
                           $starttime: Date!
@@ -213,28 +214,31 @@ class ServiceDetails extends React.Component<Props, State> {
                             </React.Fragment>
                           );
                         }
+                        return "";
                       }}
                     </Query>
                   </div>
                 </div>
                 <div className="tableEnd">
-                  <div className="editOptions">
-                    <i className="fal fa-external-link-alt editbuttons" />
-                    <i
-                      className="fal fa-pencil editbuttons"
-                      onClick={e => {
-                        e.stopPropagation();
-                        this.setState({ edit: true });
-                      }}
-                    />
-                    <i
-                      className="fal fa-trash-alt editbuttons"
-                      onClick={e => {
-                        e.stopPropagation();
-                        this.setState({ delete: true, keepAccount: true });
-                      }}
-                    />
-                  </div>
+                  {this.props.isadmin && (
+                    <div className="editOptions">
+                      <i className="fal fa-external-link-alt editbuttons" />
+                      <i
+                        className="fal fa-pencil editbuttons"
+                        onClick={e => {
+                          e.stopPropagation();
+                          this.setState({ edit: true });
+                        }}
+                      />
+                      <i
+                        className="fal fa-trash-alt editbuttons"
+                        onClick={e => {
+                          e.stopPropagation();
+                          this.setState({ delete: true, keepAccount: true });
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
                 {this.state.edit && (
                   <FormPopup
@@ -245,8 +249,6 @@ class ServiceDetails extends React.Component<Props, State> {
                     }`}
                     close={() => this.setState({ edit: false })}
                     submit={async values => {
-                      console.log("SUBMIT", values);
-                      // this.setState({ edit: false });
                       await updateCredentials({
                         variables: {
                           licenceid: e.id,

@@ -98,6 +98,12 @@ const httpLink = createUploadLink({
   //uri: `https://us-central1-vipfy-148316.cloudfunctions.net/backend/graphql`,
   credentials: "same-origin"
 });
+// const httpLink = new BatchHttpLink({
+//   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
+//   //uri: `https://us-central1-vipfy-148316.cloudfunctions.net/backend/graphql`,
+//   credentials: "same-origin",
+//   batchMax: 100
+// });
 
 // Pass the tokens to the server to authenticate the user
 const middlewareLink = setContext(() => ({

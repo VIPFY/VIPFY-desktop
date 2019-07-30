@@ -50,6 +50,7 @@ import UniversalLoginTest from "../components/admin/UniversalLoginTest";
 import PendingIntegrations from "../components/admin/PendingIntegrations";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
+import CompanyDetails from "./manager/companyDetails";
 
 interface AreaProps {
   history: any[];
@@ -180,7 +181,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidCatch(error, info) {
-    console.log("LOG: Area -> componentDidCatch -> error, info", error, info);
     this.moveTo("error");
   }
 
@@ -376,16 +376,18 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
-      { path: "ssoconfig", component: SsoConfigurator },
-      { path: "ssotest", component: SsoTester },
-      { path: "emanager", component: EmployeeOverview },
-      { path: "lmanager", component: ServiceOverview },
-      { path: "dmanager", component: TeamOverview },
-      { path: "emanager/:userid", component: EmployeeDetails },
-      { path: "lmanager/:serviceid", component: ServiceDetails },
-      { path: "dmanager/:teamid", component: TeamDetails },
+      { path: "ssoconfig", component: SsoConfigurator, admin: true },
+      { path: "ssotest", component: SsoTester, admin: true },
+      { path: "emanager", component: EmployeeOverview, admin: true },
+      { path: "lmanager", component: ServiceOverview, admin: true },
+      { path: "dmanager", component: TeamOverview, admin: true },
+      { path: "emanager/:userid", component: EmployeeDetails, admin: true },
+      { path: "profile/:userid", component: EmployeeDetails, addprops: { profile: true } },
+      { path: "lmanager/:serviceid", component: ServiceDetails, admin: true },
+      { path: "dmanager/:teamid", component: TeamDetails, admin: true },
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
-      { path: "universallogin", component: UniversalLogin }
+      { path: "universallogin", component: UniversalLogin },
+      { path: "company", component: CompanyDetails, admin: true }
     ];
 
     if (this.props.licences.loading) {
@@ -456,10 +458,9 @@ class Area extends React.Component<AreaProps, AreaState> {
             render={props => <SupportPage {...this.state} {...this.props} {...props} />}
           />
 
-          {routes.map(({ path, component, admincomponent, admin }) => {
+          {routes.map(({ path, component, admincomponent, admin, addprops }) => {
             const RouteComponent = component;
             const AdminComponent = admincomponent;
-            //  console.log("COMPANY", this.props);
             if (admin && this.props.company.unit.id != 14) {
               return;
             } else {
@@ -483,9 +484,10 @@ class Area extends React.Component<AreaProps, AreaState> {
                           setApp={this.setApp}
                           toggleAdmin={this.toggleAdmin}
                           adminOpen={this.state.adminOpen}
+                          moveTo={this.moveTo}
+                          {...addprops}
                           {...this.props}
                           {...props}
-                          moveTo={this.moveTo}
                         />
                       </ResizeAware>
                     </div>
@@ -524,7 +526,6 @@ class Area extends React.Component<AreaProps, AreaState> {
             exact
             path="/area/app/:licenceid"
             render={props => {
-              console.log("PROPS", props);
               if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
                 this.setApp(props.match.params.licenceid);
               }

@@ -17,8 +17,6 @@ class HeaderNotificationItem extends Component<Props, State> {
   }
 
   render() {
-    console.log("HeaderNotificationItem", this.props, this.state);
-
     const { message, type, open, dismissButton } = this.props.notification;
 
     let classes = "headerNotification";
