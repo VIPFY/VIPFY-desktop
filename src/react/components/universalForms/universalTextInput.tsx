@@ -1,5 +1,4 @@
 import * as React from "react";
-import UniversalButton from "../universalButtons/universalButton";
 
 interface Props {
   id: string;

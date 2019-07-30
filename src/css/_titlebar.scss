@@ -11,9 +11,9 @@
   -webkit-app-region: drag;
 
   &-logo {    
-    padding-left: 8px;
+    //padding-left: 8px;
     display: grid;
-    grid-template-columns: 32px 106px;
+    grid-template-columns: 48px 90px;
     align-items: center;
     
     &-img {
@@ -23,6 +23,7 @@
       background-size: contain;
       height: 24px;
       width: 24px;
+      margin-left: 12px;
     }
 
     #versionnumber {

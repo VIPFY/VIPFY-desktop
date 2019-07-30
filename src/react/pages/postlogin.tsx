@@ -118,7 +118,7 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
                 return (
                   <Area
                     {...clearprops}
-                    style={context.isActive ? { height: "calc(100% - 48px)" } : {}}
+                    style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
                   />
                 );
               }}
