@@ -14,6 +14,7 @@ import { fetchCards } from "../queries/billing";
 import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
+import ProfileMenu from "./ProfileMenu";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -636,6 +637,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                   left: sidebarOpen ? "210px" : "50px",
                   zIndex: 1000
                 }}
+                closeme={() => this.setState({ showNotification: false })}
               />
             )}
 
@@ -673,35 +675,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
               </button>
             </li>
             {this.state.contextMenu && (
-              <div
-                className="context-menu"
-                style={{
-                  left: sidebarOpen ? "210px" : "50px",
-                  zIndex: 1000
-                }}>
-                <button
-                  className="naked-button"
-                  onClick={() => {
-                    this.props.history.push("/area/company");
-                    this.setState({ contextMenu: false });
-                  }}>
-                  <span>Company Settings</span>
-                  <i className="fal fa-external-link-alt" />
-                </button>
-                <button
-                  className="naked-button"
-                  onClick={() => {
-                    this.props.history.push(`/area/profile/${this.props.id}`);
-                    this.setState({ contextMenu: false });
-                  }}>
-                  <span>Profile</span>
-                  <i className="fal fa-external-link-alt" />
-                </button>
-                <button className="naked-button" onClick={this.props.logMeOut}>
-                  <span>Log out</span>
-                  <i className="fal fa-sign-out-alt" />
-                </button>
-              </div>
+              <ProfileMenu
+                closeme={() => this.setState({ contextMenu: false })}
+                sidebarOpen={this.props.sidebarOpen}
+                history={this.props.history}
+                id={this.props.id}
+                logMeOut={this.props.logMeOut}
+              />
             )}
           </ul>
         )}
