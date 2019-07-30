@@ -1,8 +1,8 @@
 export interface Licence {
   id: number;
   options: JSON;
-  starttime: string;
-  endtime: Date;
+  starttime: number | string;
+  endtime: number | Date;
   agreed: boolean;
   disabled: boolean;
   key: JSON;
@@ -14,6 +14,8 @@ export interface Licence {
   edit: boolean;
   view: boolean;
   delete: boolean;
+  vacationstart?: number | Date;
+  vacationend?: number | Date;
 }
 
 export interface Unit {

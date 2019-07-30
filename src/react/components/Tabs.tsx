@@ -24,8 +24,10 @@ const Tabs = (props: Props) => (
         <Tab
           {...props}
           key={key}
+          index={key}
           active={view.key == props.viewID}
           viewID={view.key}
+          activeViewId={props.viewID}
           licenceid={view.licenceID}
           title={view.instanceTitle}
           closeTab={props.handleClose}

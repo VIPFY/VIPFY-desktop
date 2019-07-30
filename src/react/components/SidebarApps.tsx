@@ -7,7 +7,7 @@ import SidebarLink from "./sidebarLink";
 import { Licence } from "../interfaces";
 import { layoutUpdate } from "../common/functions";
 import { fetchLicences } from "../queries/auth";
-import IconButton from "../common/IconButton";
+import * as moment from "moment";
 
 interface Props {
   sidebarOpen: boolean;
@@ -229,7 +229,6 @@ class SidebarApps extends React.Component<Props, State> {
       </div>
     );
 
-    console.log("APPS", this.props.licences, this.state);
     return (
       <ul
         style={{ marginTop: "40px" }}
@@ -348,6 +347,16 @@ class SidebarApps extends React.Component<Props, State> {
 
                   return 0;
                 })
+                /*.filter(
+                  l =>
+                    (!l.disabled &&
+                      !l.boughtplanid.planid.appid.disabled &&
+                      (l.endtime > moment.now() || l.endtime == null) &&
+                      !l.vacationstart) ||
+                    (l.vacationstart &&
+                      l.vacationstart <= moment.now() &&
+                      ((l.vacationend && l.vacationend > moment.now()) || l.vacationend == null))
+                )*/
                 .filter((_, index) => (showMoreApps ? true : index < 5))
                 .map((licence, index) => {
                   if (!licence) {

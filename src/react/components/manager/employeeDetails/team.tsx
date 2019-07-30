@@ -12,6 +12,7 @@ interface Props {
   team: any;
   deleteFunction: Function;
   moveTo: Function;
+  isadmin?: Boolean;
 }
 
 interface State {
@@ -121,16 +122,18 @@ class Team extends React.Component<Props, State> {
               </div>
             </div>
             <div className="tableEnd">
-              <div className="editOptions">
-                <i className="fal fa-external-link-alt editbuttons" />
-                <i
-                  className="fal fa-trash-alt editbuttons"
-                  onClick={e => {
-                    e.stopPropagation();
-                    this.setState({ delete: true });
-                  }}
-                />
-              </div>
+              {this.props.isadmin && (
+                <div className="editOptions">
+                  <i className="fal fa-external-link-alt editbuttons" />
+                  <i
+                    className="fal fa-trash-alt editbuttons"
+                    onClick={e => {
+                      e.stopPropagation();
+                      this.setState({ delete: true });
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {this.state.delete && (

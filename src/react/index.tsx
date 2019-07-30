@@ -22,6 +22,7 @@ import UpgradeError from "./upgradeerror";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { sleep } from "./common/functions";
+const { session } = require("electron").remote;
 
 interface IndexProps {
   client: ApolloClient<InMemoryCache>;
@@ -70,6 +71,7 @@ class Application extends React.Component<IndexProps> {
     }
     this.props.client.cache.reset(); // clear graphql cache
     localStorage.removeItem("token");
+    session.fromPartition("services").clearStorageData();
   }
 
   render = () => {
