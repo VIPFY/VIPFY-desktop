@@ -18,6 +18,7 @@ import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
+const { session } = require("electron").remote;
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -145,6 +146,7 @@ class App extends React.Component<AppProps, AppState> {
     this.setState(INITIAL_STATE); // clear state
     this.props.client.cache.reset(); // clear graphql cache
     localStorage.removeItem("token");
+    session.fromPartition("services").clearStorageData();
     this.props.history.push("/");
     location.reload();
   };

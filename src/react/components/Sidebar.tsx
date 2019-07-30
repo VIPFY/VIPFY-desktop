@@ -215,7 +215,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
       document: NOTIFICATION_SUBSCRIPTION,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
-          console.log("%c Subscription", "background: red;", subscriptionData);
           return prev;
         }
 
@@ -243,7 +242,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
       (!domNode || !domNode.contains(e.target)) &&
       (this.state.showNotification || this.state.notify)
     ) {
-      console.log("CLICK OUTSIDE", this.state);
       this.setState({ showNotification: false, notify: false });
     }
   };
@@ -297,7 +295,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
   };
 
   render() {
-    console.log("SIDEBAR", this.props);
     let { sidebarOpen, licences } = this.props;
 
     if (!licences) {
@@ -434,7 +431,18 @@ class Sidebar extends React.Component<SidebarProps, State> {
       if (licence.sidebar === null) {
         licence.sidebar = maxValue + 1;
       }
-      if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+      if (
+        !(
+          (!licence.disabled &&
+            !licence.boughtplanid.planid.appid.disabled &&
+            (licence.endtime > moment.now() || licence.endtime == null) &&
+            !licence.vacationstart) ||
+          (licence.vacationstart &&
+            licence.vacationstart <= moment.now() &&
+            ((licence.vacationend && licence.vacationend > moment.now()) ||
+              licence.vacationend == null))
+        )
+      ) {
         return false;
       }
 
@@ -671,19 +679,27 @@ class Sidebar extends React.Component<SidebarProps, State> {
                   left: sidebarOpen ? "210px" : "50px",
                   zIndex: 1000
                 }}>
-                <div>
-                  <UserName unitid={this.props.id} />
-                </div>
-                <div
+                <button
+                  className="naked-button"
                   onClick={() => {
-                    this.props.history.push("/area/profile");
+                    this.props.history.push("/area/company");
+                    this.setState({ contextMenu: false });
+                  }}>
+                  <span>Company Settings</span>
+                  <i className="fal fa-external-link-alt" />
+                </button>
+                <button
+                  className="naked-button"
+                  onClick={() => {
+                    this.props.history.push(`/area/profile/${this.props.id}`);
                     this.setState({ contextMenu: false });
                   }}>
                   <span>Profile</span>
                   <i className="fal fa-external-link-alt" />
-                </div>
+                </button>
                 <button className="naked-button" onClick={this.props.logMeOut}>
-                  Log out
+                  <span>Log out</span>
+                  <i className="fal fa-sign-out-alt" />
                 </button>
               </div>
             )}

@@ -114,6 +114,7 @@ class TeamDetails extends React.Component<Props, State> {
                       onDrop={s => this.uploadPic(s)}
                       className="managerBigSquare"
                       uploadError={this.state.uploadError}
+                      isadmin={this.props.isadmin}
                     />
                   </div>
                   <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>

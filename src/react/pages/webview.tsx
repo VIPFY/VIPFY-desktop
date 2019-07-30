@@ -12,6 +12,7 @@ import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
+import { randomPassword } from '../common/passwordgen';
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -693,14 +694,14 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             password={this.state.key.password}
             timeout={60000}
             takeScreenshot={false}
-            partition="services"
+            partition={`service-${this.state.licenceId}`}
             className={cssClassWeb}
             setResult={({ loggedin, emailEntered, passwordEntered }) => {
               if (loggedin && emailEntered && passwordEntered) {
                 this.hideLoadingScreen();
               }
             }}
-            speed={1}
+            speed={10}
           />
         ) : (
           <WebView

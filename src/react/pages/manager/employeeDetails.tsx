@@ -33,6 +33,7 @@ interface Props {
   moveTo: Function;
   updatePic: Function;
   client: ApolloClient<InMemoryCache>;
+  profile?: Boolean;
 }
 
 interface State {
@@ -62,6 +63,8 @@ class EmployeeDetails extends React.Component<Props, State> {
 
   render() {
     const employeeid = this.props.match.params.userid;
+
+    console.log(this.props);
 
     return (
       <Query
@@ -94,14 +97,20 @@ class EmployeeDetails extends React.Component<Props, State> {
               <div className="managerPage">
                 <div className="heading">
                   <span className="h1">
-                    <span
-                      style={{ cursor: "pointer" }}
-                      onClick={() => this.props.moveTo("emanager")}>
-                      Employee Manager
-                    </span>
-                    <span className="h2">
-                      {querydata.firstname} {querydata.lastname}
-                    </span>
+                    {this.props.profile ? (
+                      <span>Profile</span>
+                    ) : (
+                      <>
+                        <span
+                          style={{ cursor: "pointer" }}
+                          onClick={() => this.props.moveTo("emanager")}>
+                          Employee Manager
+                        </span>
+                        <span className="h2">
+                          {querydata.firstname} {querydata.lastname}
+                        </span>
+                      </>
+                    )}
                   </span>
 
                   <UniversalSearchBox />
@@ -121,6 +130,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                         name={`${querydata.firstname} ${querydata.lastname}`}
                         onDrop={file => this.uploadPic(file)}
                         className="managerBigSquare noBottomMargin"
+                        isadmin={this.props.isadmin}
                       />
                       <div
                         className="status"
@@ -134,7 +144,11 @@ class EmployeeDetails extends React.Component<Props, State> {
                       <div
                         className="table"
                         style={{ display: "grid", gridTemplateColumns: "1fr 160px" }}>
-                        <PersonalDetails querydata={querydata} refetch={refetch} />
+                        <PersonalDetails
+                          querydata={querydata}
+                          refetch={refetch}
+                          isadmin={this.props.isadmin}
+                        />
                         <div className="personalEditButtons">
                           {/*<UniversalButton
                             label="Change Password"
@@ -166,18 +180,20 @@ class EmployeeDetails extends React.Component<Props, State> {
                               marginTop: "8px"
                             }}
                           />*/}
-                          <UniversalButton
-                            type="high"
-                            label="Manage Absence"
-                            customStyles={{
-                              width: "120px",
-                              fontWeight: "700",
-                              fontSize: "12px",
-                              lineHeight: "24px",
-                              marginTop: "8px"
-                            }}
-                            onClick={() => this.setState({ showTimeAway: true })}
-                          />
+                          {this.props.isadmin && (
+                            <UniversalButton
+                              type="high"
+                              label="Manage Absence"
+                              customStyles={{
+                                width: "120px",
+                                fontWeight: "700",
+                                fontSize: "12px",
+                                lineHeight: "24px",
+                                marginTop: "8px"
+                              }}
+                              onClick={() => this.setState({ showTimeAway: true })}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -207,20 +223,22 @@ class EmployeeDetails extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        <UniversalButton
-                          type="high"
-                          label="Manage Security"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "120px"
-                          }}
-                          onClick={() => {
-                            //this.setState({ add: true });
-                          }}
-                        />
+                        {this.props.isadmin && (
+                          <UniversalButton
+                            type="high"
+                            label="Manage Security"
+                            customStyles={{
+                              fontSize: "12px",
+                              lineHeight: "24px",
+                              fontWeight: "700",
+                              marginRight: "16px",
+                              width: "120px"
+                            }}
+                            onClick={() => {
+                              //this.setState({ add: true });
+                            }}
+                          />
+                        )}
                       </div>
                     </div>
                     <div className="tableRow">
@@ -258,20 +276,27 @@ class EmployeeDetails extends React.Component<Props, State> {
                   employeeid={employeeid}
                   employeename={`${querydata.firstname} ${querydata.lastname}`}
                   moveTo={this.props.moveTo}
+                  isadmin={this.props.isadmin}
                 />
                 <LicencesSection
                   employeeid={employeeid}
                   employeename={`${querydata.firstname} ${querydata.lastname}`}
                   moveTo={this.props.moveTo}
                   employee={querydata}
+                  isadmin={this.props.isadmin}
                 />
 
-                <TemporaryLicences firstName={querydata.firstname} unitid={employeeid} />
+                <TemporaryLicences
+                  firstName={querydata.firstname}
+                  unitid={employeeid}
+                  isadmin={this.props.isadmin}
+                />
                 <IssuedLicences
                   unitid={employeeid}
                   firstName={querydata.firstname}
                   showTimeAway={this.state.showTimeAway}
                   closeTimeAway={() => this.setState({ showTimeAway: false })}
+                  isadmin={this.props.isadmin}
                 />
               </div>
             );

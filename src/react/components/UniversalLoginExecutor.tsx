@@ -165,6 +165,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     //   });
   }
   componentWillUnmount() {
+    session.fromPartition(this.props.partition).clearStorageData();
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;

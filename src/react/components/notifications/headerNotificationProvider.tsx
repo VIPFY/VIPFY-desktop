@@ -27,7 +27,6 @@ class HeaderNotificationProvider extends Component<Props, State> {
     message,
     { key, noDuplicates = true, ...options }: { key?: String; noDuplicates?: Boolean } = {}
   ) => {
-    console.log("add Notification", message, key);
     if (
       noDuplicates &&
       (this.state.notifications.findIndex(n => n.key == key) > -1 ||
@@ -95,15 +94,8 @@ class HeaderNotificationProvider extends Component<Props, State> {
         notifications: notificationadded
       };
     });
-    console.log("KEYID", keyid);
 
     return keyid;
-  };
-
-  isactive = () => {
-    return (
-      this.state.notifications && this.state.notifications[0] && this.state.notifications[0].open
-    );
   };
 
   dismissHeaderNotification = (key, redoable = false) => {
@@ -116,7 +108,6 @@ class HeaderNotificationProvider extends Component<Props, State> {
   };
 
   handleExitedHeaderNotification = (key, redoable) => {
-    console.log("Exited");
     this.setState(({ notifications, pastnotifications }) => {
       const remaining = notifications.filter(item => item.key !== key);
       if (remaining[0]) {
@@ -135,15 +126,38 @@ class HeaderNotificationProvider extends Component<Props, State> {
     });
   };
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.children !== nextProps.children) {
+      return true;
+    }
+    if (this.state.notifications.length !== nextState.notifications.length) {
+      return true;
+    }
+    if (
+      this.state.notifications !== nextState.notifications &&
+      JSON.stringify(this.state.notifications) !== JSON.stringify(nextState.notifications)
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  functions = {
+    addHeaderNotification: this.addHeaderNotification,
+    dismissHeaderNotification: this.dismissHeaderNotification
+  };
+
   render() {
     const { notifications } = this.state;
-
     return (
       <HeaderNotificationContext.Provider
         value={{
-          addHeaderNotification: this.addHeaderNotification,
-          dismissHeaderNotification: this.dismissHeaderNotification,
-          isactive: this.isactive
+          ...this.functions,
+          isActive:
+            this.state.notifications &&
+            this.state.notifications[0] &&
+            this.state.notifications[0].open
         }}>
         <div
           className={`headerInformationHolder ${

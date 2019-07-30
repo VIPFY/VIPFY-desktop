@@ -40,7 +40,6 @@ class ServiceAdd extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("SA", this.props, this.state);
     return (
       <div className="maingridAddEmployeeTeams">
         <div

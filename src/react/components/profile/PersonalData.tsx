@@ -81,8 +81,6 @@ class PersonalData extends React.Component<Props, State> {
     try {
       const res = await this.props.changePassword({ variables: { ...values } });
 
-      console.log("RES", res);
-
       await localStorage.setItem("token", res.data.changePassword.token);
       this.setState({ networking: false, errorupdate: false });
       return true;
@@ -137,6 +135,7 @@ class PersonalData extends React.Component<Props, State> {
                           onDrop={file => this.uploadPic(file)}
                           name={firstname}
                           className={"managerBigSquare"}
+                          isadmin={this.props.isadmin}
                         />
                       </div>
 

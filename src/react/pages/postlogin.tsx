@@ -3,8 +3,6 @@ import { Query, withApollo } from "react-apollo";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
 import Area from "./area";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
@@ -15,7 +13,6 @@ import { filterError } from "../common/functions";
 
 interface PostLoginProps {
   logMeOut: Function;
-  client: ApolloClient<InMemoryCache>;
   moveTo: Function;
   sidebarloaded: Function;
 }
@@ -38,7 +35,26 @@ const FETCH_VIPFY_PLAN = gql`
 class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
   state: PostLoginState = {};
 
+  shouldComponentUpdate(nextProps, nextState) {
+    for (let i in nextProps) {
+      if (nextProps[i] !== this.props[i]) {
+        console.debug("Übeltäter", i, this.props[i], nextProps[i]);
+        if (i !== "showPopup") {
+          return true;
+        }
+      }
+    }
+    for (let i in nextState) {
+      if (nextState[i] !== this.state[i]) {
+        console.debug("Übeltäter", i, this.state[i], nextState[i]);
+      }
+    }
+    return false;
+  }
+
   render() {
+    console.log("POSTLOGIN", this.props);
+    const { context, ...clearprops } = this.props;
     return (
       <Query query={me}>
         {({ data, loading, error }) => {
@@ -67,16 +83,15 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
           }
 
           if (data.me.firstlogin) {
-            return <FirstLogin {...this.props} />;
+            return <FirstLogin {...clearprops} />;
           }
 
           if (data.me.needspasswordchange) {
-            return <PasswordChange {...this.props} />;
+            return <PasswordChange {...clearprops} />;
           }
           return (
             <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
               {({ data, error, loading }) => {
-                console.log("PLAN", this.props);
                 if (error) {
                   return filterError(error);
                 }
@@ -86,14 +101,14 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
                   // const { fetchCredits } = data;
                   const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
 
-                  if (this.props.context) {
+                  if (context) {
                     if (moment().isAfter(expiry)) {
-                      this.props.context.addHeaderNotification(
+                      context.addHeaderNotification(
                         `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
                         { type: "error", key: "expire" }
                       );
                     } else {
-                      this.props.context.addHeaderNotification(
+                      context.addHeaderNotification(
                         `${moment().to(expiry, true)} left on ${vipfyPlan}`,
                         { type: "warning", key: "left", dismissButton: { label: "Dismiss" } }
                       );
@@ -102,8 +117,8 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
                 }
                 return (
                   <Area
-                    {...this.props}
-                    style={this.props.context.isactive() ? { height: "calc(100% - 48px)" } : {}}
+                    {...clearprops}
+                    style={context.isActive ? { height: "calc(100% - 48px)" } : {}}
                   />
                 );
               }}
@@ -115,4 +130,4 @@ class PostLogin extends React.Component<PostLoginProps, PostLoginState> {
   }
 }
 
-export default withApollo(PostLogin);
+export default PostLogin;
