@@ -134,7 +134,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.setState({ script });
     document.head.appendChild(script);*/
 
-    console.log("LOG: Area -> componentDidMount -> this.props.consent", this.props.consent);
     if (this.props.consent === null) {
       this.setState({ consentPopup: true });
     }
@@ -182,7 +181,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidCatch(error, info) {
-    console.log("LOG: Area -> componentDidCatch -> error, info", error, info);
     this.moveTo("error");
   }
 
@@ -463,7 +461,6 @@ class Area extends React.Component<AreaProps, AreaState> {
           {routes.map(({ path, component, admincomponent, admin, addprops }) => {
             const RouteComponent = component;
             const AdminComponent = admincomponent;
-            console.log("SIDEBAR", path, admin, addprops);
             if (admin && this.props.company.unit.id != 14) {
               return;
             } else {
@@ -529,7 +526,6 @@ class Area extends React.Component<AreaProps, AreaState> {
             exact
             path="/area/app/:licenceid"
             render={props => {
-              console.log("PROPS", props);
               if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
                 this.setApp(props.match.params.licenceid);
               }

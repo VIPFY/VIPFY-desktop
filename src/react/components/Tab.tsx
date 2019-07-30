@@ -81,10 +81,10 @@ class Tab extends React.Component<Props, State> {
               return (
                 <li
                   className={`titlebar-tab ${active ? "active" : ""}`}
-                  draggable={true}
+                  //draggable={true}
                   // Workaround because clicking the middle button to close a tab caused the event to be
                   // fired twice.
-                  onMouseEnter={e => {
+                  /*onMouseEnter={e => {
                     e.preventDefault();
                     this.setState({ mouseOver: true });
                   }}
@@ -106,7 +106,7 @@ class Tab extends React.Component<Props, State> {
                     }
                   }}
                   onDragEnd={() => this.props.handleDragEnd()}
-                  onDrop={() => this.props.handleDragOver(viewID)}
+                  onDrop={() => this.props.handleDragOver(viewID)}*/
                   title={title}
                   onClick={() => setInstance(viewID)}>
                   <img src="./images/Vipfy-white.svg" />

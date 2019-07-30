@@ -18,6 +18,7 @@ interface Props {
   progress?: (progress: number) => void;
   speed?: number;
   className?: string;
+  style?: Object | null;
 }
 
 interface State {
@@ -197,6 +198,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         className={this.props.className}
         useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
         onIpcMessage={e => this.onIpcMessage(e)}
+        style={this.props.style || {}}
       />
     );
   }

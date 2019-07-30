@@ -13,6 +13,7 @@ import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
 import { randomPassword } from '../common/passwordgen';
+import HeaderNotificationContext from '../components/notifications/headerNotificationContext';
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -683,7 +684,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
 
     return (
-      <div className={cssClass} id={`webview-${this.props.viewID}`}>
+      <HeaderNotificationContext.Consumer>{
+        context => {
+          return (
+      <div className={cssClass} id={`webview-${this.props.viewID}`}
+      >
         {this.state.showLoadingScreen && (
           <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} />
         )}
@@ -702,6 +707,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
               }
             }}
             speed={10}
+            style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}
           />
         ) : (
           <WebView
@@ -712,6 +718,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             src={this.state.currentUrl || this.state.setUrl}
             partition="services"
             onDidNavigate={e => this.onDidNavigate(e.target.src)}
+            style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}
             //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
             onDidFailLoad={(code, desc, url, isMain) => {
               if (isMain) {
@@ -754,7 +761,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             onClose={this.closePopup}
           />
         )}
-      </div>
+      </div>)}
+      }</HeaderNotificationContext.Consumer>
     );
   }
 }
