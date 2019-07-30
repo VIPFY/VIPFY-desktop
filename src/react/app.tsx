@@ -17,6 +17,8 @@ import gql from "graphql-tag";
 import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
 import TwoFactor from "./pages/TwoFactor";
+import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
+import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -165,14 +167,13 @@ class App extends React.Component<AppProps, AppState> {
       const res = await this.props.signIn({ variables: { email, password } });
       const { token, twofactor, unitid } = res.data.signIn;
 
-      if (token) {
+      if (token && !twofactor) {
         localStorage.setItem("token", token);
         //this.forceUpdate();
         //this.props.client.query({ query: me, fetchPolicy: "network-only", errorPolicy: "ignore" });
         refetch();
-
-        return true;
       } else if (twofactor && unitid) {
+        localStorage.setItem("twoFAToken", token);
         this.setState({ twofactor, unitid });
       } else {
         throw new Error("Something went wrong!");
@@ -241,17 +242,23 @@ class App extends React.Component<AppProps, AppState> {
             store.set("accounts", machineuserarray);
 
             return (
-              <PostLogin
-                sidebarloaded={this.sidebarloaded}
-                setName={this.setName}
-                logMeOut={this.logMeOut}
-                showPopup={data => this.renderPopup(data)}
-                moveTo={this.moveTo}
-                {...data.me}
-                history={this.props.history}
-                employees={data.me.company.employees}
-                profilepicture={data.me.profilepicture}
-              />
+              <HeaderNotificationContext.Consumer>
+                {context => {
+                  return (
+                    <PostLogin
+                      sidebarloaded={this.sidebarloaded}
+                      setName={this.setName}
+                      logMeOut={this.logMeOut}
+                      showPopup={data => this.renderPopup(data)}
+                      moveTo={this.moveTo}
+                      {...data.me}
+                      employees={data.me.company.employees}
+                      profilepicture={data.me.profilepicture}
+                      context={context}
+                    />
+                  );
+                }}
+              </HeaderNotificationContext.Consumer>
             );
           }}
         </Query>
@@ -314,7 +321,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    const { placeid, popup } = this.state;
+    const { placeid, popup, page, sidebarloaded } = this.state;
 
     return (
       <AppContext.Provider
@@ -327,8 +334,9 @@ class App extends React.Component<AppProps, AppState> {
           setreshowTutorial: this.setreshowTutorial
         }}
         className="full-size">
-        {this.renderComponents()}
-        {/*sidebarloaded &&
+        <HeaderNotificationProvider>
+          {this.renderComponents()}
+          {/*sidebarloaded &&
           localStorage.getItem("token") &&
           
             <Query query={tutorial}>
@@ -353,17 +361,17 @@ class App extends React.Component<AppProps, AppState> {
             }}
           </Query>
           }*/}
-        {popup.show && (
-          //TODO VIP-411 Replace old Popup with new PopupBase
-          <Popup
-            popupHeader={popup.header}
-            popupBody={popup.body}
-            bodyProps={popup.props}
-            onClose={this.closePopup}
-            type={popup.type}
-            info={popup.info}
-          />
-        )}
+          {popup.show && (
+            <Popup
+              popupHeader={popup.header}
+              popupBody={popup.body}
+              bodyProps={popup.props}
+              onClose={this.closePopup}
+              type={popup.type}
+              info={popup.info}
+            />
+          )}
+        </HeaderNotificationProvider>
       </AppContext.Provider>
     );
   }

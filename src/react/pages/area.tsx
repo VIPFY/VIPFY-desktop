@@ -22,7 +22,7 @@ import ErrorPage from "./error";
 import UsageStatistics from "./usagestatistics";
 import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 
-import { fetchLicences, me } from "../queries/auth";
+import { fetchLicences } from "../queries/auth";
 // import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
@@ -47,7 +47,9 @@ import ServiceDetails from "./manager/serviceDetails";
 import Consent from "../popups/universalPopups/Consent";
 import UniversalLogin from "./universalLogin";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest";
+import PendingIntegrations from "../components/admin/PendingIntegrations";
 import ResizeAware from "react-resize-aware";
+import HistoryButtons from "../components/HistoryButtons";
 
 interface AreaProps {
   history: any[];
@@ -61,6 +63,7 @@ interface AreaProps {
   moveTo: Function;
   sidebarloaded: Function;
   consent?: boolean;
+  style?: Object;
 }
 
 interface AreaState {
@@ -177,7 +180,8 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidCatch(error, info) {
-    this.moveTo("/area/error");
+    console.log("LOG: Area -> componentDidCatch -> error, info", error, info);
+    this.moveTo("error");
   }
 
   setSidebar = value => {
@@ -326,6 +330,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           return tab;
         }
       });
+
       return { webviews };
     });
   };
@@ -370,6 +375,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
+      { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
       { path: "ssoconfig", component: SsoConfigurator },
       { path: "ssotest", component: SsoTester },
       { path: "emanager", component: EmployeeOverview },
@@ -387,49 +393,27 @@ class Area extends React.Component<AreaProps, AreaState> {
     }
 
     return (
-      <div className="area">
+      <div className="area" style={this.props.style}>
         <SideBarContext.Provider value={this.state.sidebarOpen}>
-          <Route
-            render={props => {
-              if (!this.props.location.pathname.includes("advisor")) {
-                return (
-                  <Sidebar
-                    sidebarOpen={sidebarOpen}
-                    setApp={this.setApp}
-                    viewID={this.state.viewID}
-                    views={this.state.webviews}
-                    openInstances={this.state.openInstances}
-                    toggleSidebar={this.toggleSidebar}
-                    setInstance={this.setInstance}
-                    {...this.props}
-                    licences={this.props.licences.fetchLicences}
-                    {...props}
-                    moveTo={this.moveTo}
-                  />
-                );
-              } else {
-                return "";
-              }
-            }}
-          />
           <Route
             render={props => {
               if (!this.props.location.pathname.includes("advisor")) {
                 return (
                   <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
                     {res => (
-                      <Navigation
-                        chatOpen={chatOpen}
+                      <Sidebar
                         sidebarOpen={sidebarOpen}
                         setApp={this.setApp}
-                        toggleChat={this.toggleChat}
-                        toggleSidebar={this.toggleSidebar}
                         viewID={this.state.viewID}
                         views={this.state.webviews}
                         openInstances={this.state.openInstances}
+                        toggleSidebar={this.toggleSidebar}
+                        setInstance={this.setInstance}
                         {...this.props}
+                        licences={this.props.licences.fetchLicences}
                         {...props}
                         {...res}
+                        moveTo={this.moveTo}
                       />
                     )}
                   </Query>
@@ -437,6 +421,33 @@ class Area extends React.Component<AreaProps, AreaState> {
               } else {
                 return "";
               }
+            }}
+          />
+          {/*<Route
+            render={props => {
+              if (!this.props.location.pathname.includes("advisor")) {
+                return (
+                  <Navigation
+                    chatOpen={chatOpen}
+                    sidebarOpen={sidebarOpen}
+                    setApp={this.setApp}
+                    toggleChat={this.toggleChat}
+                    toggleSidebar={this.toggleSidebar}
+                    viewID={this.state.viewID}
+                    views={this.state.webviews}
+                    openInstances={this.state.openInstances}
+                    {...this.props}
+                    {...props}
+                  />
+                );
+              } else {
+                return "";
+              }
+            }}
+          />*/}
+          <Route
+            render={props => {
+              return <HistoryButtons viewID={this.state.viewID} />;
             }}
           />
           <Route
@@ -448,7 +459,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           {routes.map(({ path, component, admincomponent, admin }) => {
             const RouteComponent = component;
             const AdminComponent = admincomponent;
-
+            //  console.log("COMPANY", this.props);
             if (admin && this.props.company.unit.id != 14) {
               return;
             } else {

@@ -5,9 +5,9 @@ import UniversalTextInput from "../components/universalForms/universalTextInput"
 import TwoFactorForm from "../common/TwoFactorForm";
 import { ErrorComp } from "../common/functions";
 
-const VALIDATE_TOKEN = gql`
-  mutation onValidateToken($userid: ID!, $type: TWOFA_TYPE!, $token: String!) {
-    validateToken(userid: $userid, type: $type, token: $token)
+const VALIDATE_2FA = gql`
+  mutation onValidate2FA($userid: ID!, $type: TWOFA_TYPE!, $token: String!, $twoFAToken: String!) {
+    validate2FA(userid: $userid, type: $type, token: $token, twoFAToken: $twoFAToken)
   }
 `;
 
@@ -19,18 +19,20 @@ interface Props {
 
 class TwoFactor extends React.Component<Props, State> {
   handleSubmit = (token, validateToken) => {
-    validateToken({ variables: { userid: this.props.unitid, type: "totp", token } });
+    const twoFAToken = localStorage.getItem("twoFAToken");
+
+    validateToken({ variables: { userid: this.props.unitid, type: "totp", token, twoFAToken } });
   };
 
-  handleToken = ({ validateToken }) => {
-    localStorage.setItem("token", validateToken);
+  handleToken = ({ validate2FA }) => {
+    localStorage.setItem("token", validate2FA);
 
     this.props.moveTo("dashboard");
   };
 
   render() {
     return (
-      <Mutation mutation={VALIDATE_TOKEN} onCompleted={this.handleToken}>
+      <Mutation mutation={VALIDATE_2FA} onCompleted={this.handleToken}>
         {(validateToken, { error, loading }) => (
           <section className="two-factor">
             <div className="dataGeneralForm">

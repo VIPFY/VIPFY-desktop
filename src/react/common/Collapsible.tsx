@@ -23,7 +23,7 @@ class Collapsible extends React.Component<Props, State> {
         if (!this.props.child.current.classList.contains("collapsible")) {
           this.props.child.current.classList.add("collapsible");
         }
-      }, 500);
+      }, 750);
     }
   }
 

@@ -236,7 +236,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                           {querydata.isadmin ? "Yes" : "No"}
                         </div>
                         <div className="tableColumnSmall content">
-                          {querydata.twofa[0] || "None"}
+                          {(querydata.twofa && querydata.twofa[0]) || "None"}
                         </div>
                       </div>
                       <div className="tableEnd">

@@ -138,6 +138,8 @@ class AppTile extends React.Component<Props, State> {
 
               {vacation && <div className="vacation" />}
 
+              {this.props.licence.pending && <span className="pending">Pending...</span>}
+
               <div className="name">
                 <span>
                   {this.props.preview.name && dragItem == id ? this.props.preview.name : name}
