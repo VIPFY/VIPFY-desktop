@@ -2,6 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import gql from "graphql-tag";
 import * as moment from "moment";
+import { decode } from "jsonwebtoken";
 import { withApollo, Query } from "react-apollo";
 import { filterError } from "../common/functions";
 
@@ -9,6 +10,7 @@ import UserPicture from "../components/UserPicture";
 import PlanHolder from "../components/PlanHolder";
 import Duration from "../common/duration";
 import PrintEmployeeSquare from "../components/manager/universal/squares/printEmployeeSquare";
+import UniversalButton from "../components/universalButtons/universalButton";
 
 const FETCH_VIPFY_PLAN = gql`
   {
@@ -117,6 +119,17 @@ class Navigation extends React.Component<Props, State> {
     }
   }
 
+  stopImpersonation = async () => {
+    const adminToken = localStorage.getItem("impersonator-token");
+    localStorage.setItem("token", adminToken!);
+    localStorage.removeItem("impersonator-token");
+
+    await this.props.history.push("/area/dashboard");
+    this.props.client.cache.reset(); // clear graphql cache
+
+    location.reload();
+  };
+
   render() {
     const { chatOpen, sidebarOpen, data } = this.props;
 
@@ -128,9 +141,17 @@ class Navigation extends React.Component<Props, State> {
       return filterError(this.props.error);
     }
 
+    const token = localStorage.getItem("token");
+
+    const { user, admin } = decode(token);
+
+    if (admin) {
+      console.log("LOG: render -> user.admin", admin);
+    }
+
     return (
-      <div
-        className={`navigation ${chatOpen ? "chat-open" : ""}
+      <section
+        className={`navigation ${admin ? "info-admin" : ""} ${chatOpen ? "chat-open" : ""}
         ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="leftNavigation">
           <span>
@@ -153,6 +174,16 @@ class Navigation extends React.Component<Props, State> {
             </button>
           </span>
         </div>
+        {admin && (
+          <div className="impersonator">
+            <span>{`You are logged in as User ${user.unitid}. You act in his name now!`}</span>
+            <UniversalButton
+              onClick={this.stopImpersonation}
+              type="low"
+              label="Stop impersonation"
+            />
+          </div>
+        )}
 
         <div className="right-infos">
           <Query pollInterval={60 * 10 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
@@ -241,7 +272,7 @@ class Navigation extends React.Component<Props, State> {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 }
