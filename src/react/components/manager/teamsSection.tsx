@@ -17,6 +17,7 @@ interface Props {
   employeeid: number; //TODO CHANGE TO EMPLOYEE
   employeename: string;
   moveTo: Function;
+  isadmin?: Boolean;
 }
 
 interface State {
@@ -86,6 +87,7 @@ class TeamsSection extends React.Component<Props, State> {
                   team={team}
                   deleteFunction={sO => this.setState({ savingObject: sO })}
                   moveTo={this.props.moveTo}
+                  isadmin={this.props.isadmin}
                 />
               );
             });
@@ -100,43 +102,38 @@ class TeamsSection extends React.Component<Props, State> {
                       <div className="tableColumnSmall">
                         <h1>Team</h1>
                       </div>
-                      <div className="tableColumnSmall">{/*<h1>Leader</h1>*/}</div>
+                      <div className="tableColumnSmall">
+                        <h1>Created at</h1>
+                      </div>
                       <div className="tableColumnSmall">
                         <h1>#Teammembers</h1>
                       </div>
                       <div className="tableColumnSmall">
                         <h1>#Shared Licences</h1>
                       </div>
-                      <div className="tableColumnSmall">
-                        <h1>Created at</h1>
-                      </div>
+                      <div className="tableColumnSmall">{/*<h1>Leader</h1>*/}</div>
                     </div>
                     <div className="tableEnd">
-                      <UniversalButton
-                        type="high"
-                        label="Manage Teams"
-                        customStyles={{
-                          fontSize: "12px",
-                          lineHeight: "24px",
-                          fontWeight: "700",
-                          marginRight: "16px",
-                          width: "120px"
-                        }}
-                        onClick={() => {
-                          this.setState({ add: true });
-                        }}
-                      />
+                      {this.props.isadmin && (
+                        <UniversalButton
+                          type="high"
+                          label="Manage Teams"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "120px"
+                          }}
+                          onClick={() => {
+                            this.setState({ add: true });
+                          }}
+                        />
+                      )}
                     </div>
                   </div>
                   {teamArray}
                 </div>
-                {/* <AddEmployeeToTeam
-                    close={sO => {
-                      this.setState({ add: false, savingObject: sO });
-                    }}
-                    employeeid={employeeid}
-                    employeename={employeename}
-                  /> */}
                 {this.state.add && (
                   <ManageTeams
                     employee={{ id: this.props.employeeid, firstname: this.props.employeename }} //TODO CHANGE employeename

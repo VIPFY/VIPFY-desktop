@@ -13,9 +13,10 @@ export const QUERY_USER = gql`
 
 export const QUERY_SEMIPUBLICUSER = gql`
   query onFetchSemiPublicUser($unitid: ID!) {
-    fetchSemiPublicUser(unitid: $unitid) {
+    fetchSemiPublicUser(userid: $unitid) {
       id
       firstname
+      middlename
       lastname
       profilepicture
       emails {
@@ -37,6 +38,12 @@ export const QUERY_SEMIPUBLICUSER = gql`
       birthday
       isadmin
       isonline
+      lastactive
+      passwordlength
+      passwordstrength
+      twofa
+      deleted
+      companyban
     }
   }
 `;

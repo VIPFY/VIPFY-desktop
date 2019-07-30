@@ -9,6 +9,8 @@ interface Props {
   closingAllPopups?: Boolean;
   additionalClickFunction?: Function;
   customStyles?: Object;
+  form?: string;
+  className?: string;
 }
 
 interface State {
@@ -69,7 +71,8 @@ class UniversalButton extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <button
-          className="cleanup universalCoverButton"
+          form={this.props.form}
+          className={`cleanup universalCoverButton ${this.props.className}`}
           onClick={e => this.click(e)}
           style={
             this.props.customStyles ? {} : { width: this.props.label.length > 6 ? undefined : 90 }

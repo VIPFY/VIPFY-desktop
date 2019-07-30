@@ -58,6 +58,14 @@
     }
   }
 
+  .failed-sso {
+    border-spacing: 20px 10px;
+
+    webview {
+      height: 800px;
+    }
+  }
+
   .apps {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
@@ -169,6 +177,11 @@
         background-size: cover;
         background-position: center;
         position: relative;
+      }
+
+      .icon {
+        width: 24px;
+        height: 24px;
       }
 
       .alt {

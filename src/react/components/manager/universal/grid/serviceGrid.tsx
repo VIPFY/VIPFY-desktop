@@ -125,7 +125,7 @@ class ServiceGrid extends React.Component<Props, State> {
             apps.forEach(app => {
               appsArray.push(
                 <div
-                  key={app.name}
+                  key={app.id}
                   className="space"
                   draggable
                   onClick={() => this.props.onChange({ action: "add", content: app })}

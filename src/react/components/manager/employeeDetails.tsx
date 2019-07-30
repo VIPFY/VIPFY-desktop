@@ -294,4 +294,5 @@ class EmployeeDetails extends React.Component<Props, State> {
     );
   }
 }
+
 export default EmployeeDetails;

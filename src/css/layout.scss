@@ -7,6 +7,8 @@
 @import './tooltip.scss';
 @import './popup.scss';
 @import './sidebar.scss';
+@import './dropdown.scss';
+@import './two-factor.scss';
 @import './app-accordion.scss';
 @import './creditCards.scss';
 @import './titlebar.scss';
@@ -21,6 +23,7 @@
 @import './admin.scss';
 @import './manager.scss';
 @import './dataForms.scss';
+@import './headerNotifications.scss';
 @import './macosx';
 @import './error';
 
@@ -219,33 +222,48 @@ li {
 }
 
 .navigation{
-    height: 3em;
-    display: flex;
-    justify-content: space-between;
-    background-color: #f5f5f5;
-    margin-left: 3rem;
-    transition: margin-left 0.6s ease-in-out;
-    position: relative;
-    z-index: 200;
-    user-select: none;
+  height: 3em;
+  display: flex;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  margin-left: 3rem;
+  transition: margin-left 0.6s ease-in-out;
+  position: relative;
+  z-index: 200;
+  user-select: none;
 
-    .impersonator {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-    }
+  .impersonator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+  }
 }
 
 .info-admin {
   background-color: lightcoral;
+
+.sidebar-open {
+  margin-left: 15rem !important;
 }
 
+// .navigation {
+//   height: 3em;
+//   display: flex;
+//   justify-content: space-between;
+//   background-color: #f5f5f5;
+//   margin-left: 3rem;
+//   transition: margin-left 0.6s ease-in-out;
+//   position: relative;
+//   z-index: 200;
+//   user-select: none;
+// }
+
 .navigationButton{
-    font-size: 2em;
-    line-height: 1em;
-    padding: 0.5em 0.5em;
-    cursor: pointer;
+  font-size: 2em;
+  line-height: 1em;
+  padding: 0.5em 0.5em;
+  cursor: pointer;
 }
 
 .navigationButton:hover{
@@ -359,7 +377,7 @@ li {
     height: calc(100vh - 3em);*/
 }
 .newMainPosition{
-    height: calc(100vh - 3em - 32px);
+    height: 100%
 }
 
 .pic-and-name {
@@ -534,7 +552,8 @@ li {
   /*background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);*/
   //background-color: $fullworking-background;
   background-color: white;
-  height: calc(100vh - 3rem - 32px);
+  //height: calc(100% - 3rem);
+  height: 100%;
   margin-left: 3rem;
   overflow-y: scroll;
   transition: margin-left 0.6s ease-in-out, margin-right 0.6s ease-in-out;
@@ -544,6 +563,7 @@ li {
 .marginLeft {
   margin-left: 3rem;
   height: 100%;
+  transition: 600ms margin-left ease;
   //transition: margin-left 0.6s ease-in-out;
 }
 
@@ -933,6 +953,7 @@ li {
 
 .area{
     height: 100%;
+    transition: 400ms ease-in-out height;
 }
 .goToMarketplace {
     font-size: 0.5em;
@@ -1105,42 +1126,6 @@ li {
   }
 }
 
-.right-profile-notifications {
-  font-size: 1rem;
-  color: #253647;
-  border: solid 1.3px;
-  font-weight: 700;
-  height: 2rem;
-  line-height: 2rem;
-  width: 2rem;
-  text-align: center;
-  border-radius: 2rem;
-  position: relative;
-  transition: all 500ms ease-in-out;
-
-  &:hover {
-    background-color: #253647;
-    color: #fff;
-    transition: all 300ms ease-in-out;
-  }
-
-  .notification-amount {
-    position: absolute;
-    font-size: 0.6rem;
-    top: -5px;
-    right: -3px;
-    color: #fff;
-    height: 1rem;
-    line-height: 1rem;
-    width: 1rem;
-    text-align: center;
-    border-radius: 1rem;
-    //background-color: hsla(0, 77%, 56%, 0.729);
-    //background-color: #117f91;
-    background-color: #20BAA9;
-  }
-}
-
 .right-profile-caret {
   display: inline-block;
   width: 0;
@@ -1219,98 +1204,6 @@ li {
       font-weight: bold;
     }
   }
-}
-
-.notificationPopup {
-  position: absolute;
-  z-index: 1000;
-  min-width: 15rem;
-  background-color: white;
-  top: 2.5rem;
-  right: 0;
-  margin: 0.125rem 0 0;
-  background-clip: padding-box;
-  border: 1px solid #e9ecef;
-  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.175);
-  cursor: default;
-  animation: pop-in 150ms ease-in-out 0s forwards;
-  transform-origin: right top;
-
-  @keyframes pop-in {
-    0% {
-      transform: scale(0.1);
-      opacity: 0;
-    }
-  
-    100%{
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-}
-
-.notificationPopupFooter {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.8rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: rgba(0,0,0,0.03);
-}
-
-.notificationPopupHeader {
-    padding: 0.75rem 1.25rem;
-    margin: 0;
-    background-color: rgba(0,0,0,0.03);
-    font-size: 0.8rem;
-    font-weight: bold;
-    white-space: nowrap;
-}
-
-.notification-item {
-  cursor: pointer;
-  align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-  padding: 0.75rem 1.25rem;
-  position: relative;
-  margin-bottom: -1px;
-  display: flex;
-  flex-wrap: wrap;
-
-  &:hover {
-    background: #eee;
-  }
-
-  &:active {
-    background: $vipfy-primary;
-  }
-}
-
-.bug {
-  color: red;
-}
-
-.notification-icon {
-  color: #3abf94;
-  margin-right: 0.5rem;
-  font-size: 1.5rem;
-  width: 2rem;
-  text-align: center;
-}
-
-.notificationText {
-    margin: 0;
-    font-size: 0.75rem;
-    width: calc(100% - 2.5rem);
-}
-.notificationTime {
-    width: calc(100% - 2.5rem);
-    margin-left: 2.5rem;
-    font-size: 0.6rem;
-}
-.notificationPopupScroller {
-    max-height: 15rem;
-    overflow-y: auto;
 }
 
 .welcomeTile{
@@ -4226,9 +4119,12 @@ progress[value] {
         font-size: 10px;
       }
 
-      .universalCoverButton {
+      .universal-buttons {
         align-self: flex-end;
         flex: 1;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
       }
 
       .formError {
@@ -5004,6 +4900,30 @@ progress[value] {
             transition: background-color 200ms ease-in-out;
             &:hover{
                 background-color: #37C8BA;
+                box-shadow: 0px 2px 2px rgba(#000000,0.14);
+            }
+            .universalCoverButton:focus > &{
+                box-shadow: 0px 2px 2px rgba(#000000,0.14);
+            }
+        }
+
+        &.disabled{
+            background-color: #cbcbcb;
+            color: #767676;
+            font-weight: 800;
+            cursor: initial;
+        }
+    }
+
+    &.medium{
+        &.useable{
+            border: 1px solid #20baa9;
+            color: #20baa9;
+            transition: background-color 200ms ease-in-out;
+            transition: color 200ms ease-in-out;
+            &:hover{
+                background-color: #20baa9;
+                color: white;
                 box-shadow: 0px 2px 2px rgba(#000000,0.14);
             }
             .universalCoverButton:focus > &{

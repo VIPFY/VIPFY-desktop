@@ -311,7 +311,7 @@ class PopupAddress extends React.Component<Props, State> {
             small={true}
             closeable={false}
             autoclosing={10}
-            autoclosingFunction={() => this.setState({ networking: false, networkerror: true })}
+            autoclosingFunction={() => this.setState({ networking: false, networkerror: false })}
             notimer={true}>
             {this.state.networking ? (
               <div>
@@ -342,8 +342,8 @@ class PopupAddress extends React.Component<Props, State> {
               <React.Fragment>
                 <div>
                   {this.props.oldvalues
-                    ? "Your Adress has been successfully updated"
-                    : "Your Adress has been successfully created"}
+                    ? "Your Address has been successfully updated"
+                    : "Your Address has been successfully created"}
                 </div>
                 <UniversalButton
                   type="high"

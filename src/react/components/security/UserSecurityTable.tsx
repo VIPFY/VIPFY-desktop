@@ -1,7 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { times } from "lodash";
-
 import { Query, graphql } from "react-apollo";
 import { concatName } from "../../common/functions";
 import UniversalButton from "../universalButtons/universalButton";
@@ -38,6 +37,13 @@ export const FETCH_USER_SECURITY_OVERVIEW = gql`
       banned
       suspended
       createdate
+      twofactormethods {
+        twofaid
+        twofatype
+        twofacreated
+        twofalastused
+        twofacount
+      }
     }
   }
 `;
@@ -56,7 +62,10 @@ class UserSecurityTable extends React.Component<Props> {
 
   render() {
     return (
-      <Query pollInterval={60 * 10 * 1000 + 7000} query={FETCH_USER_SECURITY_OVERVIEW}>
+      <Query
+        pollInterval={60 * 10 * 1000 + 7000}
+        query={FETCH_USER_SECURITY_OVERVIEW}
+        fetchPolicy="network-only">
         {({ data, loading, error }) => {
           if (loading) {
             return <div>Loading</div>;
@@ -71,12 +80,10 @@ class UserSecurityTable extends React.Component<Props> {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Created</th>
                   <th>Last Active</th>
-                  <th>PW Length</th>
                   <th>PW Strength</th>
-                  <th>Reset PW</th>
-                  <th>Admin</th>
+                  <th>Admin Rights</th>
+                  <th>Two Factor Authentication</th>
                   <th />
                 </tr>
               </thead>
@@ -91,7 +98,7 @@ class UserSecurityTable extends React.Component<Props> {
                     <UserSecurityRow key={key} user={user} />
                   ))}
                 <tr>
-                  {times(5, n => (
+                  {times(3, n => (
                     <td key={n} />
                   ))}
                   <td colSpan={3}>

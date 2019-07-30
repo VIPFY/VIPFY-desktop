@@ -80,6 +80,8 @@ class PersonalData extends React.Component<Props, State> {
     this.setState({ pwconfirm: true, networking: true });
     try {
       const res = await this.props.changePassword({ variables: { ...values } });
+
+      await localStorage.setItem("token", res.data.changePassword.token);
       this.setState({ networking: false, errorupdate: false });
       return true;
     } catch (err) {
@@ -133,6 +135,7 @@ class PersonalData extends React.Component<Props, State> {
                           onDrop={file => this.uploadPic(file)}
                           name={firstname}
                           className={"managerBigSquare"}
+                          isadmin={this.props.isadmin}
                         />
                       </div>
 

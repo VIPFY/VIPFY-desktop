@@ -125,14 +125,6 @@ class TeamOverview extends React.Component<Props, State> {
         );
       case 2:
         return (
-          /* <AddTeamEmployeeData
-            continue={data => {
-              this.setState({ addemployees: data, addStage: 3 });
-            }}
-            close={() => this.setState({ addStage: 1 })}
-            teamname={this.state.addteam.name}
-            employees={this.state.addemployees}
-          /> */
           <ManageTeamEmployees
             team={this.state.addteam}
             close={() => this.setState({ add: false })}>
@@ -156,13 +148,6 @@ class TeamOverview extends React.Component<Props, State> {
         );
       case 3:
         return (
-          /*<AddTeamServices
-            continue={apps => this.addService(apps)}
-            close={() => this.setState({ addStage: 2 })}
-            employees={this.state.addemployees}
-            apps={this.state.apps}
-            teamname={this.state.addteam.name}
-          />*/
           <ManageTeamServices team={this.state.addteam} close={() => this.setState({ add: false })}>
             <div className="buttonsPopup">
               <UniversalButton

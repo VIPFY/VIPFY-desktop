@@ -237,6 +237,15 @@ $shadow-color: #f0f3ff;
     }
   }
 
+  .pending {
+    position: absolute;
+    top: 26px;
+    left: 31px;
+    transform: rotate(45deg);
+    width: 90%;
+    overflow: hidden;
+  }
+
   &-holder {
     display: grid;
     grid-template-rows: repeat(auto-fill, 8rem);

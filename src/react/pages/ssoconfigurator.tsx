@@ -62,7 +62,6 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
   state = {
     error: "",
     showBoughtplans: true,
-
     loginUrl: "",
     username: "",
     password: "",

@@ -59,7 +59,7 @@ class Empty extends React.Component<Props, State> {
           <div className="tableRow" onClick={() => this.setState({ distribute: true })}>
             <div className="tableMain">
               <div className="tableColumnSmall">
-                <span className="name" style={{ fontSize: "10px" }}>
+                <span className="name">
                   {(licence.options && licence.options.identifier) || "empty"}
                 </span>
               </div>

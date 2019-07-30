@@ -5,6 +5,9 @@ import PopupAddLicence from "../../../../popups/universalPopups/addLicence";
 import PopupSelfSaving from "../../../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import PrintServiceSquare from "../squares/printServiceSquare";
+import { fetchUserLicences } from "../../../../queries/departments";
+import { concatName } from "../../../../common/functions";
 
 interface Props {
   close: Function;
@@ -19,6 +22,8 @@ interface State {
   saving: Boolean;
   counter: number;
   setups: any[];
+  addAccounts: Boolean;
+  addTeam: Boolean;
 }
 
 const ADD_EMPLOYEE_TO_TEAM = gql`
@@ -56,7 +61,9 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
   state = {
     saving: false,
     counter: 0,
-    setups: []
+    setups: [],
+    addAccounts: false,
+    addTeam: false
   };
 
   componentWillUnmount() {
@@ -137,16 +144,158 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
         buttonStyles={{ marginTop: "0px" }}
         fullmiddle={true}
         small={true}
-        close={() => close()}>
-        <div>
+        close={() => close()}
+        additionalclassName="formPopup"
+        nooutsideclose={true}>
+        <h1>Add To Team</h1>
+        <h2>{`Add ${concatName(employee)} to Team ${team.name}`}</h2>
+        {team.services && team.services.length > 0 && (
+          <div>
+            <h3>Includes {team.services.length} Team-Services</h3>
+            <div className="serviceIconHolderTeamAdd">
+              {team.services.map((service, index) => (
+                <PrintServiceSquare
+                  service={service}
+                  appidFunction={e => e.planid.appid}
+                  overlayFunction={s =>
+                    this.state.addAccounts && this.state.setups[index] ? (
+                      this.state.setups[index].setupsuccess ? (
+                        <i
+                          className="fal fa-check-square"
+                          style={{
+                            color: "#37C8BA",
+                            fontSize: "32px",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            width: "32px",
+                            borderRadius: "4px"
+                          }}
+                        />
+                      ) : (
+                        <i
+                          className="fal fa-times-square"
+                          style={{
+                            color: "#37C8BA",
+                            fontSize: "32px",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            width: "32px",
+                            borderRadius: "4px"
+                          }}
+                        />
+                      )
+                    ) : (
+                      <i
+                        className="fal fa-question-square"
+                        style={{
+                          color: "#37C8BA",
+                          fontSize: "32px",
+                          backgroundColor: "rgba(0,0,0,0.5)",
+                          width: "32px",
+                          borderRadius: "4px"
+                        }}
+                      />
+                    )
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        <UniversalButton type="low" onClick={() => close()} label="Cancel" />
+        <UniversalButton
+          type="high"
+          onClick={() => this.setState({ addTeam: true })}
+          label="Confirm"
+        />
+
+        {this.state.addTeam && (
+          <PopupSelfSaving
+            savedmessage={`${employee.firstname} added to team ${team.name}`}
+            savingmessage={`Adding ${employee.firstname} to team ${team.name}`}
+            closeFunction={() => close()}
+            saveFunction={async () => {
+              try {
+                await this.props.addToTeam({
+                  variables: { employeeid: employee.id, teamid: this.props.team.unitid.id },
+                  refetchQueries: [
+                    {
+                      query: fetchUserLicences,
+                      variables: { unitid: this.props.employee.id }
+                    }
+                  ]
+                });
+                if (team.services && team.services.length > 0) {
+                  this.setState({ addAccounts: true, addTeam: false });
+                } else {
+                  this.props.savingFunction({ action: "success" });
+                }
+              } catch (err) {
+                this.props.savingFunction({ action: "error", message: err });
+              }
+            }}
+          />
+        )}
+
+        {this.state.addAccounts &&
+          team.services &&
+          team.services.length > 0 &&
+          team.services.length > this.state.counter && (
+            <PopupAddLicence
+              key={`${team.id}-${team.services[this.state.counter].planid.appid.id}`}
+              nooutsideclose={true}
+              app={team.services[this.state.counter].planid.appid}
+              team={team}
+              addStyles={{ marginTop: "288px" }}
+              cancel={async () => {
+                await this.setState(prevState => {
+                  let newcounter = prevState.counter + 1;
+                  const currentsetup = prevState.setups;
+                  currentsetup.push({ setupsuccess: false });
+
+                  return {
+                    ...prevState,
+                    counter: newcounter,
+                    setups: currentsetup
+                  };
+                });
+                if (this.state.counter == team.services.length) {
+                  //Finished
+                  this.props.savingFunction({ action: "success" });
+                }
+              }}
+              success={err => {
+                if (err && err.error) {
+                  this.props.savingFunction({ action: "error", message: err });
+                } else {
+                  this.setState(prevState => {
+                    let newcounter = prevState.counter + 1;
+                    const currentsetup = prevState.setups;
+                    currentsetup.push({ setupsuccess: true });
+
+                    return {
+                      ...prevState,
+                      counter: newcounter,
+                      setups: currentsetup
+                    };
+                  });
+                }
+                if (this.state.counter == team.services.length) {
+                  //Finished
+                  this.props.savingFunction({ action: "success" });
+                }
+              }}
+              employee={employee}
+            />
+          )}
+
+        {/*<div>
           <h1 className="cleanup lightHeading">
             Add {employee.fullname} to team {team.name}
           </h1>
-        </div>
+        </div>*/}
 
-        {this.printTeamAddSteps()}
+        {/*this.printTeamAddSteps()*/}
 
-        {team.services && team.services.length > 0 && team.services.length > this.state.counter && (
+        {/*team.services && team.services.length > 0 && team.services.length > this.state.counter && (
           <PopupAddLicence
             nooutsideclose={true}
             app={team.services[this.state.counter].planid.appid}
@@ -183,7 +332,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
             maxstep={team.services.length}
             currentstep={this.state.counter}
           />
-        )}
+          )*/}
 
         {this.state.saving && (
           <PopupSelfSaving

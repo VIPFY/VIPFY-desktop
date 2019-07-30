@@ -1,5 +1,4 @@
 import * as React from "react";
-import UniversalButton from "../universalButtons/universalButton";
 
 interface Props {
   id: string;
@@ -18,6 +17,8 @@ interface Props {
   onEnter?: Function;
   modifyValue?: Function;
   required?: Boolean;
+  deleteFunction?: Function;
+  style?: Object;
 }
 
 interface State {
@@ -113,7 +114,10 @@ class UniversalTextInput extends React.Component<Props, State> {
         className={`universalLabelInput ${this.props.disabled ? "disabled" : ""} ${
           this.props.className
         }`}
-        style={this.props.width ? { width: this.props.width } : {}}
+        style={Object.assign(
+          { ...this.props.style },
+          this.props.width ? { width: this.props.width } : {}
+        )}
         onContextMenu={e => {
           e.preventDefault();
           if (!this.props.disabled) {
@@ -214,6 +218,15 @@ class UniversalTextInput extends React.Component<Props, State> {
           )
         ) : (
           ""
+        )}
+        {this.props.deleteFunction && (
+          <button
+            className="cleanup inputInsideButton"
+            tabIndex={-1}
+            onClick={() => this.props.deleteFunction()}
+            style={{ color: "#253647" }}>
+            <i className="fal fa-trash-alt" />
+          </button>
         )}
         {this.state.context && (
           <button
