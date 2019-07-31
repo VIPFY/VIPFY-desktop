@@ -31,12 +31,11 @@
 
   .single-statistics {
     display: flex;
-    justify-content: space-between;
 
     .genericHolder {
-      width: 304px;
+      width: 320px;
       max-width: unset;
-      margin-right: unset;
+      margin-right: 32px;
 
       .body {
         height: 128px;
