@@ -6,6 +6,29 @@
   align-content: center;
   padding: 24px 48px 0;
 
+  &-apps {
+    display: flex;
+    justify-content: space-between;
+
+    .profile-app-holder {
+      padding: 56px 0;
+      width: 100%;
+      grid-template-rows: repeat(auto-fill, 11rem);
+      grid-template-columns: repeat(auto-fill, 11rem);
+      margin: unset;
+
+      .profile-app {
+        width: 10em;
+        height: 10em;
+        overflow: unset;
+      }
+    }
+
+    .dropdown {
+      margin: 16px 32px 0 0;
+    }
+  }
+
   .no-apps {
     display: flex;
     flex-flow: column;
@@ -25,22 +48,6 @@
 
     h1 {
       font-size: 44px;
-    }
-  }
-
-  .genericHolder {
-    .profile-app-holder {
-      grid-template-rows: repeat(auto-fill, 11rem);
-      grid-template-columns: repeat(auto-fill, 11rem);
-      grid-gap: 56px;
-      margin: unset;
-      padding: 56px 32px;
-
-      .profile-app {
-        width: 10em;
-        height: 10em;
-        overflow: unset;
-      }
     }
   }
 }

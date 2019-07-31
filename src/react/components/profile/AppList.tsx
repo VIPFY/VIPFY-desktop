@@ -3,11 +3,13 @@ import { graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
 import AppTile from "../../components/AppTile";
 import { fetchLicences } from "../../queries/auth";
-import { UPDATE_LAYOUT } from "../../mutations/auth";
 import { Licence } from "../../interfaces";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp, filterAndSort } from "../../common/functions";
 import Collapsible from "../../common/Collapsible";
+import DropDown from "../../common/DropDown";
+import { FETCH_TOTAL_APP_USAGE } from "../../queries/products";
+import { UPDATE_LAYOUT } from "../../mutations/auth";
 
 const BULK_UPDATE_LAYOUT = gql`
   query onBulkUpdateLayout($layouts: [LayoutInput!]!) {
@@ -35,6 +37,7 @@ interface State {
   dragItem: number | null;
   preview: Preview;
   error: boolean;
+  sortBy: string;
 }
 
 class AppList extends React.Component<Props, State> {
@@ -42,7 +45,8 @@ class AppList extends React.Component<Props, State> {
     loading: false,
     error: false,
     dragItem: null,
-    preview: { name: "", pic: "" }
+    preview: { name: "", pic: "" },
+    sortBy: "Sort By"
   };
 
   appListRef = React.createRef<HTMLDivElement>();
@@ -92,6 +96,11 @@ class AppList extends React.Component<Props, State> {
     }
   };
 
+  handleName = licence =>
+    licence.boughtplanid.alias
+      ? licence.boughtplanid.alias
+      : licence.boughtplanid.planid.appid.name;
+
   render() {
     const { dragItem, preview } = this.state;
     const { licences } = this.props;
@@ -102,35 +111,78 @@ class AppList extends React.Component<Props, State> {
 
     return (
       <Collapsible child={this.appListRef} title={this.props.header ? this.props.header : "Apps"}>
-        <div ref={this.appListRef} className="profile-app-holder">
-          {licences
-            .filter(licence => {
-              if (this.props.search) {
-                const name = licence.boughtplanid.alias
-                  ? licence.boughtplanid.alias
-                  : licence.boughtplanid.planid.appid.name;
+        <div ref={this.appListRef} className="dashboard-apps">
+          <div className="profile-app-holder">
+            {licences
+              .filter(licence => {
+                if (this.props.search) {
+                  const name = this.handleName(licence);
 
-                return name.toUpperCase().includes(this.props.search.toUpperCase());
-              } else {
-                return true;
-              }
-            })
-            .map((licence, key) => {
-              return (
-                <AppTile
-                  key={key}
-                  position={key}
-                  preview={preview}
-                  setPreview={this.setPreview}
-                  dragItem={dragItem}
-                  dragStartFunction={this.dragStartFunction}
-                  dragEndFunction={this.dragEndFunction}
-                  handleDrop={this.handleDrop}
-                  licence={licence}
-                  setTeam={this.props.setApp}
-                />
-              );
-            })}
+                  return name.toUpperCase().includes(this.props.search.toUpperCase());
+                } else {
+                  return true;
+                }
+              })
+              .sort((a, b) => {
+                const aName = this.handleName(a).toUpperCase();
+                const bName = this.handleName(b).toUpperCase();
+
+                switch (this.state.sortBy) {
+                  case "A-Z": {
+                    if (aName < bName) {
+                      return -1;
+                    } else if (aName > bName) {
+                      return 1;
+                    } else {
+                      return 0;
+                    }
+                  }
+
+                  case "Z-A": {
+                    if (bName < aName) {
+                      return -1;
+                    } else if (bName > aName) {
+                      return 1;
+                    } else {
+                      return 0;
+                    }
+                  }
+
+                  case "Most Used":
+                    return this.handleName(b).value - this.handleName(a).value;
+
+                  case "Least Used":
+                    return this.handleName(a).value - this.handleName(b).value;
+
+                  default:
+                    return null;
+                }
+              })
+              .map((licence, key) => {
+                return (
+                  <AppTile
+                    key={key}
+                    position={key}
+                    preview={preview}
+                    setPreview={this.setPreview}
+                    dragItem={dragItem}
+                    dragStartFunction={this.dragStartFunction}
+                    dragEndFunction={this.dragEndFunction}
+                    handleDrop={this.handleDrop}
+                    licence={licence}
+                    setTeam={this.props.setApp}
+                  />
+                );
+              })}
+          </div>
+
+          <DropDown
+            option={this.state.sortBy}
+            defaultValue={{ label: "Sort By" }}
+            handleChange={value => this.setState({ sortBy: value })}
+            // TODO: [VIP-449] Implement Statistics to sort by "Most Used", "Least Used"
+            options={["A-Z", "Z-A"]}
+          />
         </div>
       </Collapsible>
     );
