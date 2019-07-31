@@ -42,15 +42,16 @@ class HeaderNotificationItem extends Component<Props, State> {
 
     return (
       <div className={classes} style={this.props.show ? { zIndex: 1 } : { zIndex: 0 }}>
-        <span>
-          {
-            <i
-              className={`fal fa-${icon}`}
-              style={{ marginRight: "16px", lineHeight: "40px", fontSize: "24px" }}
-            />
-          }
+        <div
+          style={{
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+          }}>
+          <i className={`fal fa-${icon}`} style={{ marginRight: "16px", fontSize: "24px" }} />
           <span style={{ lineHeight: "40px" }}>{message}</span>
-        </span>
+        </div>
         {dismissButton && (
           <button
             className="naked-button headerNotificationButton"

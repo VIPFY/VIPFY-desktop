@@ -133,12 +133,6 @@ class HeaderNotificationProvider extends Component<Props, State> {
     if (this.state.notifications.length !== nextState.notifications.length) {
       return true;
     }
-    console.log(
-      "CHECK RERENDER",
-      JSON.stringify(this.state.notifications),
-      JSON.stringify(nextState.notifications),
-      JSON.stringify(this.state.notifications) !== JSON.stringify(nextState.notifications)
-    );
     if (
       this.state.notifications !== nextState.notifications &&
       JSON.stringify(this.state.notifications) !== JSON.stringify(nextState.notifications)
