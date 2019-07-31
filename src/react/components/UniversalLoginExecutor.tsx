@@ -18,6 +18,7 @@ interface Props {
   progress?: (progress: number) => void;
   speed?: number;
   className?: string;
+  style?: Object | null;
 }
 
 interface State {
@@ -165,6 +166,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     //   });
   }
   componentWillUnmount() {
+    session.fromPartition(this.props.partition).clearStorageData();
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
@@ -196,6 +198,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         className={this.props.className}
         useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
         onIpcMessage={e => this.onIpcMessage(e)}
+        style={this.props.style || {}}
       />
     );
   }
@@ -282,7 +285,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             };
           }
           
-          return Array.from(document.querySelectorAll("*")).filter(filterDom(["multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editAccountSetting", "navbar-profile-dropdown"],[])).length > 0
+          return Array.from(document.querySelectorAll("*")).filter(filterDom(["multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editAccountSetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn"],[])).length > 0
         })();
         `
         //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`

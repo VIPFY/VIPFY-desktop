@@ -12,6 +12,7 @@ interface Props {
   team: any;
   deleteFunction: Function;
   moveTo: Function;
+  isadmin?: Boolean;
 }
 
 interface State {
@@ -110,27 +111,29 @@ class Team extends React.Component<Props, State> {
                 <span className="name">{team.name}</span>
               </div>
               <div className="tableColumnSmall content">
-                {/*team.internaldata ? team.internaldata.leader : ""*/}
+                {moment(team.createdate - 0).format("DD.MM.YYYY")}
               </div>
               <div className="tableColumnSmall content">{team.employeenumber}</div>
               <div className="tableColumnSmall content">
                 {team.licences ? team.licences.length : ""}
               </div>
               <div className="tableColumnSmall content">
-                {moment(team.createdate - 0).format("DD.MM.YYYY")}
+                {/*team.internaldata ? team.internaldata.leader : ""*/}
               </div>
             </div>
             <div className="tableEnd">
-              <div className="editOptions">
-                <i className="fal fa-external-link-alt editbuttons" />
-                <i
-                  className="fal fa-trash-alt editbuttons"
-                  onClick={e => {
-                    e.stopPropagation();
-                    this.setState({ delete: true });
-                  }}
-                />
-              </div>
+              {this.props.isadmin && (
+                <div className="editOptions">
+                  <i className="fal fa-external-link-alt editbuttons" />
+                  <i
+                    className="fal fa-trash-alt editbuttons"
+                    onClick={e => {
+                      e.stopPropagation();
+                      this.setState({ delete: true });
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {this.state.delete && (

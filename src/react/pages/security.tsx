@@ -1,44 +1,43 @@
 import * as React from "react";
 import UserSecurityTable from "../components/security/UserSecurityTable";
 import UniversalSearchBox from "../components/universalSearchBox";
+import Collapsible from "../common/Collapsible";
 
 interface Props {
   showPopup: Function;
+  history: any;
+  client: any;
 }
 
 interface State {
-  show: boolean;
   search: string;
 }
 
-class Security extends React.Component<Props, State> {
-  state = {
-    show: true,
-    search: ""
-  };
+export const SecurityContext = React.createContext();
 
-  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
+class Security extends React.Component<Props, State> {
+  state = { search: "" };
+
+  securityRef = React.createRef<HTMLTextAreaElement>();
 
   render() {
     return (
-      <div className="managerPage">
-        <div className="heading">
-          <h1>Security</h1>
-          <UniversalSearchBox getValue={v => this.setState({ search: v })} />
-        </div>
+      <SecurityContext.Provider value={{ history: this.props.history, client: this.props.client }}>
+        {
+          <div className="managerPage">
+            <div className="heading">
+              <h1>Security</h1>
+              <UniversalSearchBox getValue={v => this.setState({ search: v })} />
+            </div>
 
-        <div className="genericHolder">
-          <div className="header" onClick={() => this.toggle()}>
-            <i
-              className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
-            />
-            <span>Overview</span>
+            <Collapsible child={this.securityRef} title="Overview">
+              <div ref={this.securityRef}>
+                <UserSecurityTable search={this.state.search} />
+              </div>
+            </Collapsible>
           </div>
-          <div className={`inside ${this.state.show ? "in" : "out"}`}>
-            <UserSecurityTable search={this.state.search} />
-          </div>
-        </div>
-      </div>
+        }
+      </SecurityContext.Provider>
     );
   }
 }

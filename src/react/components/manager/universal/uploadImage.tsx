@@ -8,6 +8,7 @@ interface Props {
   name: string;
   className: string;
   uploadError?: string | null;
+  isadmin?: Boolean;
 }
 
 interface State {
@@ -69,26 +70,29 @@ class UploadImage extends React.Component<Props, State> {
 
             {this.props.uploadError && <div className="uploadError">{this.props.uploadError}</div>}
 
-            <div className="imagehover">
-              <i className="fal fa-camera" />
-              <span style={{ lineHeight: "normal" }}>Upload</span>
-            </div>
+            {this.props.isadmin && (
+              <div className="imagehover">
+                <i className="fal fa-camera" />
+                <span style={{ lineHeight: "normal" }}>Upload</span>
+              </div>
+            )}
           </div>
-
-          <Dropzone
-            style={{
-              width: "0px",
-              height: "0px",
-              opacity: 0,
-              overflow: "hidden",
-              position: "absolute",
-              zIndex: -1
-            }}
-            accept="image/*"
-            type="file"
-            multiple={false}
-            onDrop={([file]) => this.setBothStates(file)}
-          />
+          {this.props.isadmin && (
+            <Dropzone
+              style={{
+                width: "0px",
+                height: "0px",
+                opacity: 0,
+                overflow: "hidden",
+                position: "absolute",
+                zIndex: -1
+              }}
+              accept="image/*"
+              type="file"
+              multiple={false}
+              onDrop={([file]) => this.setBothStates(file)}
+            />
+          )}
         </label>
       </form>
     );

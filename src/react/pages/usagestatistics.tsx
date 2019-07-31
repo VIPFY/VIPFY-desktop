@@ -14,8 +14,6 @@ interface Props {
 interface State {
   bills: any[];
   error: string;
-  showBoughtplans: Boolean;
-  showEyecatcher: Boolean;
   searchString: string;
 }
 
@@ -23,16 +21,8 @@ class UsageStatistics extends React.Component<Props, State> {
   state = {
     bills: [],
     error: "",
-    showBoughtplans: true,
-    showEyecatcher: true,
     searchString: ""
   };
-
-  toogleShowBoughtplan = (): void =>
-    this.setState(prevState => ({ showBoughtplans: !prevState.showBoughtplans }));
-
-  toggleShowEyecatcher = (): void =>
-    this.setState(prevState => ({ showEyecatcher: !prevState.showEyecatcher }));
 
   render() {
     return (
@@ -45,7 +35,7 @@ class UsageStatistics extends React.Component<Props, State> {
           />
         </div>
 
-        <Query query={FETCH_TOTAL_APP_USAGE} pollInterval={1000 * 60 * 10}>
+        <Query pollInterval={60 * 10 * 1000 + 1000} query={FETCH_TOTAL_APP_USAGE}>
           {({ data, loading, error }) => {
             if (loading) {
               return <div>Loading</div>;
@@ -91,34 +81,9 @@ class UsageStatistics extends React.Component<Props, State> {
           }}
         </Query>
 
-        <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowEyecatcher()}>
-            <i
-              className={`button-hide fas ${
-                this.state.showEyecatcher ? "fa-angle-left" : "fa-angle-down"
-              }`}
-            />
-            <span>Reports</span>
-          </div>
-          <div className={`inside ${this.state.showEyecatcher ? "in" : "out"}`}>
-            <AppUsageComanywideChart search={this.state.searchString} {...this.props} />
-          </div>
-        </div>
+        <AppUsageComanywideChart search={this.state.searchString} {...this.props} />
 
-        <div className="genericHolder">
-          <div className="header" onClick={() => this.toogleShowBoughtplan()}>
-            <i
-              className={`button-hide fas ${
-                this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
-              }`}
-            />
-            <span>Details</span>
-          </div>
-
-          <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
-            <AppTable search={this.state.searchString} {...this.props} />
-          </div>
-        </div>
+        <AppTable search={this.state.searchString} {...this.props} />
       </div>
     );
   }

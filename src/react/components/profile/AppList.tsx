@@ -7,6 +7,7 @@ import { UPDATE_LAYOUT } from "../../mutations/auth";
 import { Licence } from "../../interfaces";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp, filterAndSort } from "../../common/functions";
+import Collapsible from "../../common/Collapsible";
 
 const BULK_UPDATE_LAYOUT = gql`
   query onBulkUpdateLayout($layouts: [LayoutInput!]!) {
@@ -29,7 +30,6 @@ interface Props {
 }
 
 interface State {
-  show: Boolean;
   loading: boolean;
   dragItem: number | null;
   preview: Preview;
@@ -38,16 +38,14 @@ interface State {
 
 class AppList extends React.Component<Props, State> {
   state = {
-    show: true,
     loading: false,
     error: false,
     dragItem: null,
     preview: { name: "", pic: "" }
   };
 
+  appListRef = React.createRef<HTMLDivElement>();
   setPreview = (preview: Preview) => this.setState({ preview });
-
-  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 
   dragStartFunction = (item: number): void => this.setState({ dragItem: item });
   dragEndFunction = (): void => this.setState({ dragItem: null });
@@ -94,7 +92,7 @@ class AppList extends React.Component<Props, State> {
   };
 
   render() {
-    const { show, dragItem, preview } = this.state;
+    const { dragItem, preview } = this.state;
     const { licences } = this.props;
 
     if (licences.length == 0) {
@@ -102,44 +100,38 @@ class AppList extends React.Component<Props, State> {
     }
 
     return (
-      <div className="genericHolder">
-        <div className="header" onClick={this.toggle}>
-          <i className={`button-hide fas ${show ? "fa-angle-left" : "fa-angle-down"}`} />
-          <span>My Apps</span>
-        </div>
-        <div className={`inside ${show ? "in" : "out"}`}>
-          <div className="profile-app-holder">
-            {licences
-              .filter(licence => {
-                if (this.props.search) {
-                  const name = licence.boughtplanid.alias
-                    ? licence.boughtplanid.alias
-                    : licence.boughtplanid.planid.appid.name;
+      <Collapsible child={this.appListRef} title="My Apps">
+        <div ref={this.appListRef} className="profile-app-holder">
+          {licences
+            .filter(licence => {
+              if (this.props.search) {
+                const name = licence.boughtplanid.alias
+                  ? licence.boughtplanid.alias
+                  : licence.boughtplanid.planid.appid.name;
 
-                  return name.toUpperCase().includes(this.props.search.toUpperCase());
-                } else {
-                  return true;
-                }
-              })
-              .map((licence, key) => {
-                return (
-                  <AppTile
-                    key={key}
-                    position={key}
-                    preview={preview}
-                    setPreview={this.setPreview}
-                    dragItem={dragItem}
-                    dragStartFunction={this.dragStartFunction}
-                    dragEndFunction={this.dragEndFunction}
-                    handleDrop={this.handleDrop}
-                    licence={licence}
-                    setTeam={this.props.setApp}
-                  />
-                );
-              })}
-          </div>
+                return name.toUpperCase().includes(this.props.search.toUpperCase());
+              } else {
+                return true;
+              }
+            })
+            .map((licence, key) => {
+              return (
+                <AppTile
+                  key={key}
+                  position={key}
+                  preview={preview}
+                  setPreview={this.setPreview}
+                  dragItem={dragItem}
+                  dragStartFunction={this.dragStartFunction}
+                  dragEndFunction={this.dragEndFunction}
+                  handleDrop={this.handleDrop}
+                  licence={licence}
+                  setTeam={this.props.setApp}
+                />
+              );
+            })}
         </div>
-      </div>
+      </Collapsible>
     );
   }
 }
@@ -166,7 +158,10 @@ export default (props: Props) => {
             }
 
             return (
-              <Query query={fetchLicences} fetchPolicy="network-only">
+              <Query
+                pollInterval={60 * 10 * 1000 + 900}
+                query={fetchLicences}
+                fetchPolicy="network-only">
                 {({ data, loading, error }) => {
                   if (loading) {
                     return "Loading...";

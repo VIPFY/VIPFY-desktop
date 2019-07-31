@@ -179,12 +179,6 @@ class ServiceSection extends React.Component<Props, State> {
               />
             </div>
           </ManageTeamServices>
-          /* <AddTeamService
-            close={sO => {
-              this.setState({ add: false, savingObject: sO });
-            }}
-            team={this.props.team}
-          /> */
         )}
         {this.state.savingObject && (
           <PopupSelfSaving

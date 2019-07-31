@@ -96,7 +96,6 @@ class BoughtplanUsagePerUser extends React.Component<Props, State> {
             }
 
             const { fetchBoughtplanUsagePerUser: usagePerUser } = data;
-            console.log("LOG: BoughtplanUsagePerUser -> render -> usagePerUser", usagePerUser);
 
             if (usagePerUser.length == 0) {
               return (

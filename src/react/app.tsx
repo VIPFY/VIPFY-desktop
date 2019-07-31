@@ -16,6 +16,10 @@ import PostLogin from "./pages/postlogin";
 import gql from "graphql-tag";
 import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
+import TwoFactor from "./pages/TwoFactor";
+import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
+import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
+const { session } = require("electron").remote;
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -50,6 +54,8 @@ interface AppState {
   page: string;
   sidebarloaded: boolean;
   reshow: string | null;
+  twofactor: string | null;
+  unitid: string | null;
 }
 
 const INITIAL_POPUP = {
@@ -69,7 +75,9 @@ const INITIAL_STATE = {
   renderElements: [],
   page: "dashboard",
   sidebarloaded: false,
-  reshow: null
+  reshow: null,
+  twofactor: null,
+  unitid: null
 };
 
 const tutorial = gql`
@@ -143,6 +151,9 @@ class App extends React.Component<AppProps, AppState> {
     this.setState(INITIAL_STATE); // clear state
     this.props.client.cache.reset(); // clear graphql cache
     localStorage.removeItem("token");
+    localStorage.removeItem("impersonator-token");
+
+    session.fromPartition("services").clearStorageData();
     this.props.history.push("/");
     location.reload();
   };
@@ -152,19 +163,24 @@ class App extends React.Component<AppProps, AppState> {
       // Login will fail if there already is a token, which to be fair,
       // should never be the case. But never say never...
       const tokenExists = localStorage.getItem("token");
+
       if (tokenExists) {
         localStorage.removeItem("token");
       }
-      const res = await this.props.signIn({ variables: { email, password } });
-      const { ok, token } = res.data.signIn;
 
-      if (ok) {
+      const res = await this.props.signIn({ variables: { email, password } });
+      const { token, twofactor, unitid } = res.data.signIn;
+
+      if (token && !twofactor) {
         localStorage.setItem("token", token);
         //this.forceUpdate();
         //this.props.client.query({ query: me, fetchPolicy: "network-only", errorPolicy: "ignore" });
         refetch();
-
-        return true;
+      } else if (twofactor && unitid) {
+        localStorage.setItem("twoFAToken", token);
+        this.setState({ twofactor, unitid });
+      } else {
+        throw new Error("Something went wrong!");
       }
     } catch (err) {
       this.setState({ error: filterError(err) });
@@ -204,15 +220,6 @@ class App extends React.Component<AppProps, AppState> {
                   />
                 </div>
               );
-
-              /*return (
-                <Login
-                  login={this.logMeIn}
-                  moveTo={this.moveTo}
-                  register={this.registerMe}
-                  error={error}
-                />
-              );*/
             }
 
             const store = new Store();
@@ -222,6 +229,7 @@ class App extends React.Component<AppProps, AppState> {
               fullname: string;
               profilepicture: string;
             }[] = [];
+
             if (store.has("accounts")) {
               machineuserarray = store.get("accounts");
               const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
@@ -238,22 +246,38 @@ class App extends React.Component<AppProps, AppState> {
             store.set("accounts", machineuserarray);
 
             return (
-              <PostLogin
-                sidebarloaded={this.sidebarloaded}
-                setName={this.setName}
-                logMeOut={this.logMeOut}
-                showPopup={data => this.renderPopup(data)}
-                moveTo={this.moveTo}
-                {...data.me}
-                employees={data.me.company.employees}
-                profilepicture={data.me.profilepicture}
-              />
+              <HeaderNotificationContext.Consumer>
+                {context => {
+                  return (
+                    <PostLogin
+                      sidebarloaded={this.sidebarloaded}
+                      setName={this.setName}
+                      logMeOut={this.logMeOut}
+                      showPopup={data => this.renderPopup(data)}
+                      moveTo={this.moveTo}
+                      {...data.me}
+                      employees={data.me.company.employees}
+                      profilepicture={data.me.profilepicture}
+                      context={context}
+                    />
+                  );
+                }}
+              </HeaderNotificationContext.Consumer>
             );
           }}
         </Query>
       );
+    } else if (this.state.twofactor) {
+      return (
+        <TwoFactor
+          moveTo={this.moveTo}
+          twoFactor={this.state.twofactor}
+          unitid={this.state.unitid}
+        />
+      );
     } else {
       this.redeemSetupToken(() => this.forceUpdate());
+
       return (
         <div className="centralize backgroundLogo">
           <SignIn
@@ -264,7 +288,6 @@ class App extends React.Component<AppProps, AppState> {
           />
         </div>
       );
-      //return <Login login={this.logMeIn} moveTo={this.moveTo} error={this.state.error} />;
     }
   };
 
@@ -303,7 +326,7 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { placeid, popup, page, sidebarloaded } = this.state;
-    console.log("RENDER");
+
     return (
       <AppContext.Provider
         value={{
@@ -315,8 +338,9 @@ class App extends React.Component<AppProps, AppState> {
           setreshowTutorial: this.setreshowTutorial
         }}
         className="full-size">
-        {this.renderComponents()}
-        {/*sidebarloaded &&
+        <HeaderNotificationProvider>
+          {this.renderComponents()}
+          {/*sidebarloaded &&
           localStorage.getItem("token") &&
           
             <Query query={tutorial}>
@@ -341,16 +365,17 @@ class App extends React.Component<AppProps, AppState> {
             }}
           </Query>
           }*/}
-        {popup.show && (
-          <Popup
-            popupHeader={popup.header}
-            popupBody={popup.body}
-            bodyProps={popup.props}
-            onClose={this.closePopup}
-            type={popup.type}
-            info={popup.info}
-          />
-        )}
+          {popup.show && (
+            <Popup
+              popupHeader={popup.header}
+              popupBody={popup.body}
+              bodyProps={popup.props}
+              onClose={this.closePopup}
+              type={popup.type}
+              info={popup.info}
+            />
+          )}
+        </HeaderNotificationProvider>
       </AppContext.Provider>
     );
   }

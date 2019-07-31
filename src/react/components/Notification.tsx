@@ -4,6 +4,7 @@ import { graphql, compose } from "react-apollo";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import { filterError, ErrorComp } from "../common/functions";
 import * as moment from "moment";
+import * as ReactDOM from "react-dom";
 
 const READ_NOTIFICATION = gql`
   mutation onReadNotification($id: ID!) {
@@ -22,6 +23,8 @@ interface Props {
   refetch: Function;
   readNotification: Function;
   readAll: Function;
+  style?: Object;
+  closeme: Function;
 }
 
 interface State {
@@ -35,6 +38,21 @@ class Notification extends React.Component<Props, State> {
     loading: false,
     error: "",
     hover: false
+  };
+
+  componentDidMount() {
+    document.addEventListener("click", this.handleClickOutside, true);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("click", this.handleClickOutside, true);
+  }
+  handleClickOutside = e => {
+    const domNode = ReactDOM.findDOMNode(this);
+    console.log("CLICK", e.target, this.state);
+    if (!domNode || !domNode.contains(e.target)) {
+      this.props.closeme();
+    }
   };
 
   fetchNotifications = async () => {
@@ -128,7 +146,7 @@ class Notification extends React.Component<Props, State> {
     const dataExists = dataLength > 0;
 
     return (
-      <div className="notificationPopup">
+      <div className="notificationPopup" style={this.props.style}>
         <div className="notificationPopupHeader">
           {`You have ${dataExists ? dataLength : "no"} new notification${
             dataLength == 1 ? "" : "s"

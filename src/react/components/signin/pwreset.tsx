@@ -63,7 +63,7 @@ class PWReset extends React.Component<Props, State> {
                 width="312px"
                 label="Email"
                 livevalue={v => this.setState({ email: v })}
-                errorEvaluation={this.state.email != "" || !this.state.email.match(emailRegex)}
+                errorEvaluation={this.state.email != "" && !this.state.email.match(emailRegex)}
                 errorhint={this.state.error || "A valid Email looks like this john@vipfy.com"}
                 onEnter={this.sendMail}
                 focus={true}
@@ -85,7 +85,7 @@ class PWReset extends React.Component<Props, State> {
             </div>
 
             {this.state.confirm && (
-              <PopupBase small={true} nosidebar={true} closeable={false}>
+              <PopupBase small={true} fullmiddle={true} closeable={false}>
                 <p>If we find your email-address in our database, we will send you a reset-link.</p>
                 <UniversalButton
                   type="low"

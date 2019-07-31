@@ -35,10 +35,11 @@ const FETCH_TEMP_LICENCES = gql`
 interface Props {
   unitid: string;
   firstName: string;
+  isadmin?: Boolean;
 }
 
 export default (props: Props) => {
-  const headers = ["App", "Owner", "Beginning", "Ending"];
+  const headers = ["App", "Owner", "Beginning", "Ending", ""];
 
   return (
     <div className="section">
@@ -58,7 +59,11 @@ export default (props: Props) => {
           <div className="tableEnd" />
         </div>
 
-        <Query query={FETCH_TEMP_LICENCES} variables={{ unitid: props.unitid }}>
+        <Query
+          pollInterval={60 * 10 * 1000}
+          query={FETCH_TEMP_LICENCES}
+          variables={{ unitid: props.unitid }}
+          fetchPolicy="network-only">
           {({ data, loading, error }) => {
             if (loading) {
               return <LoadingDiv text="Fetching data..." />;
@@ -69,11 +74,12 @@ export default (props: Props) => {
             }
 
             if (data.fetchTempLicences.length < 1) {
-              return (
+              /*return (
                 <span className="no-element">
-                  {`${props.firstName} has no access to other peoples licences yet.'`}
+                  {`${props.firstName} has no access to other peoples licences yet.`}
                 </span>
-              );
+              );*/
+              return "";
             }
 
             return data.fetchTempLicences.map(licence => {
@@ -122,6 +128,7 @@ export default (props: Props) => {
                     <div className="tableColumnSmall content">
                       {moment(licence.endtime).format("LLL")}
                     </div>
+                    <div className="tableColumnSmall" />
                   </div>
                 </div>
               );

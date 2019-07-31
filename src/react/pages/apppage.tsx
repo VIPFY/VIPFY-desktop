@@ -543,6 +543,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             </div>
           </div>
           {this.state.popup ? (
+            //TODO VIP-411 Replace old Popup with new PopupBase
             <Popup
               popupHeader={this.state.popupHeading}
               popupBody={this.state.popupBody}

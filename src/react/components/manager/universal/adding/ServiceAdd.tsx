@@ -40,7 +40,6 @@ class ServiceAdd extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("SA", this.props, this.state);
     return (
       <div className="maingridAddEmployeeTeams">
         <div
@@ -68,7 +67,7 @@ class ServiceAdd extends React.Component<Props, State> {
           }}>
           <div className="addgrid">{this.printApps(this.props.apps)}</div>
         </div>
-        <Query query={fetchApps}>
+        <Query pollInterval={60 * 10 * 1000 + 600} query={fetchApps}>
           {({ loading, error, data }) => {
             if (loading) {
               return "Loading...";

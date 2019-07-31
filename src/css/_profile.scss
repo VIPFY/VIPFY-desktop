@@ -34,15 +34,6 @@ $shadow-color: #f0f3ff;
     grid-template-columns: 2fr 7fr;
   }
 
-  .header {
-    //border-bottom: $border;
-    //font-weight: bold;
-    //grid-area: header;
-    //padding: 0.5rem 0;
-    //position: relative;
-    //text-align: center;
-  }
-
   .pic-holder {
     align-items: center;
     display: flex;
@@ -244,6 +235,15 @@ $shadow-color: #f0f3ff;
     &:nth-child(#{$x}) {
       animation-delay: $x * 50ms;
     }
+  }
+
+  .pending {
+    position: absolute;
+    top: 26px;
+    left: 31px;
+    transform: rotate(45deg);
+    width: 90%;
+    overflow: hidden;
   }
 
   &-holder {

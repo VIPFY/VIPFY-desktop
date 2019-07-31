@@ -34,6 +34,7 @@ class TeamGerneralDataAdd extends React.Component<Props, State> {
           onDrop={file => this.setBothStates({ picture: file })}
           name={name}
           className={"profilepicture big"}
+          isadmin={this.props.isadmin}
         />
         <UniversalTextInput
           label="Name (Required)"

@@ -432,7 +432,7 @@ class Domains extends React.Component<Props, State> {
           <div className={`domain-table ${this.state.showDomains ? "in" : "out"}`}>
             {this.renderHeaders(headers)}
             <div className="domain-table-body">
-              <Query query={FETCH_DOMAINS}>
+              <Query pollInterval={60 * 10 * 1000 + 1000} query={FETCH_DOMAINS}>
                 {({ loading, error, data }) => {
                   if (loading) {
                     return <LoadingDiv text="Loading..." />;
@@ -490,7 +490,7 @@ class Domains extends React.Component<Props, State> {
           <div className={`domain-table ${this.state.showExternal ? "in" : "out"}`}>
             {this.renderHeaders(externalHeaders)}
             <div className="domain-table-body">
-              <Query query={FETCH_DOMAINS}>
+              <Query pollInterval={60 * 10 * 1000 + 100} query={FETCH_DOMAINS}>
                 {({ loading, error, data }) => {
                   if (loading) {
                     return <LoadingDiv text="Fetching Domains..." />;
@@ -592,7 +592,10 @@ class Domains extends React.Component<Props, State> {
             <span>Domain Suggestions</span>
           </div>
 
-          <Query query={FETCH_SUGGESTIONS} variables={{ name: "pasquale" }}>
+          <Query
+            pollInterval={60 * 10 * 1000}
+            query={FETCH_SUGGESTIONS}
+            variables={{ name: "pasquale" }}>
             {({ data, error, loading }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching data..." />;
