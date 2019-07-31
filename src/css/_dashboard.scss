@@ -32,6 +32,9 @@
     .profile-app-holder {
       grid-template-rows: repeat(auto-fill, 11rem);
       grid-template-columns: repeat(auto-fill, 11rem);
+      grid-gap: 56px;
+      margin: unset;
+      padding: 56px 32px;
 
       .profile-app {
         width: 10em;

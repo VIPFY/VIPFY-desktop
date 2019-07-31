@@ -24,9 +24,10 @@ interface Props {
   setApp?: Function;
   layout?: string[] | null;
   licences: Licence[];
+  search?: string;
+  header?: string;
   updateLayout: Function;
   bulkUpdateLayout: Function;
-  search?: string;
 }
 
 interface State {
@@ -100,7 +101,7 @@ class AppList extends React.Component<Props, State> {
     }
 
     return (
-      <Collapsible child={this.appListRef} title="My Apps">
+      <Collapsible child={this.appListRef} title={this.props.header ? this.props.header : "Apps"}>
         <div ref={this.appListRef} className="profile-app-holder">
           {licences
             .filter(licence => {
@@ -138,7 +139,12 @@ class AppList extends React.Component<Props, State> {
 
 const AppListEnhanced = graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppList);
 
-export default (props: Props) => {
+export default (props: {
+  setApp?: Function;
+  licences: Licence[];
+  search?: string;
+  header?: string;
+}) => {
   if (props.licences && props.licences.length > 20) {
     const layoutLess = props.licences.filter(licence => licence.dashboard === null);
 
@@ -146,6 +152,7 @@ export default (props: Props) => {
       let maxValue = props.licences.reduce((acc, cv) => Math.max(acc, cv.dashboard), 0);
 
       const layouts = layoutLess.map(layout => ({ id: layout.id, dashboard: ++maxValue }));
+
       return (
         <Query query={BULK_UPDATE_LAYOUT} variables={{ layouts }}>
           {({ data, loading, error }) => {
@@ -157,26 +164,9 @@ export default (props: Props) => {
               return <ErrorComp error={error} />;
             }
 
-            return (
-              <Query
-                pollInterval={60 * 10 * 1000 + 900}
-                query={fetchLicences}
-                fetchPolicy="network-only">
-                {({ data, loading, error }) => {
-                  if (loading) {
-                    return "Loading...";
-                  }
+            const filteredLicences = filterAndSort(props.licences, "dashboard");
 
-                  if (error || !data) {
-                    return "Something went wrong";
-                  }
-
-                  const filteredLicences = filterAndSort(props.licences, "dashboard");
-
-                  return <AppListEnhanced {...props} licences={filteredLicences} />;
-                }}
-              </Query>
-            );
+            return <AppListEnhanced {...props} licences={filteredLicences} />;
           }}
         </Query>
       );
