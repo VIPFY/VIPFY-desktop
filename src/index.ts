@@ -196,6 +196,15 @@ const createWindow = async () => {
     enableLiveReload({ strategy: "react-hmr" });
   }
 
+  mainWindow.on("close", () => {
+    try {
+      mainWindow.webContents.session.clearStorageData();
+      session.fromPartition("services").clearStorageData();
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
     // Dereference the window object, usually you would store windows
@@ -211,7 +220,7 @@ const createWindow = async () => {
 app.on("ready", createWindow);
 
 // Quit when all windows are closed.
-app.on("window-all-closed", () => {
+app.on("window-all-closed", async () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {

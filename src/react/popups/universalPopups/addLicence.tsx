@@ -119,15 +119,20 @@ class PopupAddLicence extends React.Component<Props, State> {
   render() {
     const { name, needssubdomain, options, icon, id } = this.props.app;
     const { employee, cancel, success, team, addStyles, empty } = this.props;
-    console.log("ADDLICENCE", this.props);
     return (
       <FormPopup
         key={`addLicence-${id}-${(employee && employee.id) || ""}`}
         heading="Add Account"
         subHeading={
-          employee
-            ? `Add an account of ${name} to ${concatName(employee)}`
-            : `Add an empty account of ${name}`
+          employee ? (
+            <span>
+              Add an account of {name} to
+              <br />
+              {concatName(employee)}
+            </span>
+          ) : (
+            <span>Add an empty account of {name}</span>
+          )
         }
         addStyles={addStyles}
         nooutsideclose={true}
@@ -151,7 +156,7 @@ class PopupAddLicence extends React.Component<Props, State> {
                       label: "Subdomain",
                       children: (
                         <span className="small">
-                          Please insert your subdomain.
+                          Subdomain for ${name}
                           <br />
                           {options.predomain}YOUR SUBDOMAIN
                           {options.afterdomain}
@@ -166,13 +171,13 @@ class PopupAddLicence extends React.Component<Props, State> {
             {
               id: `${employee && employee.id}-${id}-email`,
               options: {
-                label: `Username for your ${name}-Account`
+                label: `Username for ${name}`
               }
             },
             {
               id: `${employee && employee.id}-${id}-password`,
               options: {
-                label: `Password for your ${name}-Account`,
+                label: `Password for ${name}`,
                 type: "password"
               }
             }
@@ -231,12 +236,13 @@ class PopupAddLicence extends React.Component<Props, State> {
             <div
               style={{
                 position: "absolute",
-                top: "0px",
-                left: "0px",
+                top: "-5px",
+                left: "-5px",
                 width: "48px",
                 height: "48px",
                 borderRadius: "4px",
-                border: "1px dashed #707070"
+                //border: "1px dashed #707070"
+                backgroundColor: "#f3f3f3"
               }}
             />
             <div
@@ -251,10 +257,11 @@ class PopupAddLicence extends React.Component<Props, State> {
                 textAlign: "center",
                 borderRadius: "4px",
                 backgroundColor: "white",
-                border: "1px solid #253647",
+                //border: "1px solid #253647",
                 backgroundPosition: "center",
                 backgroundSize: "cover",
-                backgroundImage: getBgImageApp(icon, 70)
+                backgroundImage: getBgImageApp(icon, 70),
+                boxShadow: "rgba(0,0,0,0.16) 0px 0px 4px"
               }}
             />
             <div
@@ -273,9 +280,10 @@ class PopupAddLicence extends React.Component<Props, State> {
                 color: "white",
                 fontWeight: 500,
                 backgroundColor: "#5D76FF",
-                border: "1px solid #253647",
-                boxShadow: "#00000010 0px 6px 10px",
-                backgroundImage: employee && getBgImageUser(employee.profilepicture, 48)
+                //border: "1px solid #253647",
+                //boxShadow: "#00000010 0px 6px 10px",
+                backgroundImage: employee && getBgImageUser(employee.profilepicture, 48),
+                boxShadow: "rgba(0, 0, 0, 0.25) 3px 3px 6px"
               }}>
               {employee ? (employee.profilepicture ? "" : employee.firstname.slice(0, 1)) : "E"}
             </div>

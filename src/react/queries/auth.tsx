@@ -30,6 +30,7 @@ export const me = gql`
       firstlogin
       config
       tutorialprogress
+      needstwofa
     }
   }
 `;
@@ -44,6 +45,7 @@ export const fetchLicences = gql`
       sidebar
       dashboard
       options
+      pending
       boughtplanid {
         id
         alias

@@ -124,6 +124,7 @@
     "humanize-duration": "^3.17.0",
     "humanparser": "^1.10.0",
     "icojs": "^0.12.2",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
     "log4js": "^4.5.1",
     "moment": "^2.24.0",

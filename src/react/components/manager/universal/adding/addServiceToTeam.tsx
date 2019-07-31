@@ -102,7 +102,6 @@ class AddServiceToTeam extends React.Component<Props, State> {
 
   render() {
     const { team, close, service } = this.props;
-    console.log("AETT", this.props, this.state);
     return (
       <PopupBase
         buttonStyles={{ marginTop: "0px" }}
@@ -154,7 +153,6 @@ class AddServiceToTeam extends React.Component<Props, State> {
                 currentemployee.setupfinished = true;
                 currentemployee.setup = setup;
                 const currentteam = Object.assign({}, prevState.currentteam);
-                console.log("CT", currentteam);
                 const currentteam2 = currentteam;
                 currentteam2.employees = currentteam2.employees.map(a =>
                   a.id == currentemployee.id ? currentemployee : a
@@ -189,7 +187,6 @@ class AddServiceToTeam extends React.Component<Props, State> {
             savingmessage={`Adding ${service.name} to team ${team.name}`}
             closeFunction={() => close()}
             saveFunction={async () => {
-              console.log("SAVE", this.props, this.state);
               try {
                 await this.props.addServiceToTeam({
                   variables: {

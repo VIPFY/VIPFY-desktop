@@ -35,6 +35,7 @@ const FETCH_TEMP_LICENCES = gql`
 interface Props {
   unitid: string;
   firstName: string;
+  isadmin?: Boolean;
 }
 
 export default (props: Props) => {

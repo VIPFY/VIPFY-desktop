@@ -93,14 +93,10 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("AEPD", this.props, this.state);
     return (
       <React.Fragment>
         <span>
           <span className="bHeading">{this.props.heading || "Add Employee"}</span>
-          {/*<span className="mHeading">
-            > <span className="active">Personal Data</span> > Teams > Services
-    </span>*/}
         </span>
         <EmployeeGerneralDataAdd
           addpersonal={this.props.addpersonal}

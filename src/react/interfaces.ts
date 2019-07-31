@@ -1,8 +1,8 @@
 export interface Licence {
   id: number;
   options: JSON;
-  starttime: string;
-  endtime: Date;
+  starttime: number | string;
+  endtime: number | Date;
   agreed: boolean;
   disabled: boolean;
   key: JSON;
@@ -14,6 +14,8 @@ export interface Licence {
   edit: boolean;
   view: boolean;
   delete: boolean;
+  vacationstart?: number | Date;
+  vacationend?: number | Date;
 }
 
 export interface Unit {
@@ -46,6 +48,25 @@ export interface User {
   companyban: boolean;
   country: string;
   config: JSON;
+}
+
+export interface SecurityUser {
+  unitid: any;
+  id: number;
+  createdate: string;
+  lastactive: string;
+  passwordlength: number;
+  passwordstrength: number;
+  banned: boolean;
+  suspended: boolean;
+  needspasswordchange: boolean;
+  twofactormethods: {
+    twofaid: number;
+    twofatype: string;
+    twofacreated: string;
+    twofalastused: string;
+    twofacount: number;
+  }[];
 }
 
 export interface PublicUser {

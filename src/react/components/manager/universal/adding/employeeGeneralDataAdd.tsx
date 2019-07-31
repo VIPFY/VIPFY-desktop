@@ -53,6 +53,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
           onDrop={file => console.log("TODO PASCAL")}
           picture={null}
           name={this.state.name}
+          isadmin={this.props.isadmin}
         />
         <UniversalTextInput
           label="Name (Required)"

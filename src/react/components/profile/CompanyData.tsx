@@ -97,14 +97,16 @@ class CompanyData extends React.Component<Props, State> {
       <AppContext.Consumer>
         {({ showPopup }) => (
           <Query pollInterval={60 * 10 * 1000 + 1000} query={FETCH_COMPANY}>
-            {({ loading, error, data: { fetchCompany } }) => {
+            {({ loading, error, data }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching Company Data..." />;
               }
 
-              if (error || !fetchCompany) {
+              if (error || (!data && !data.fetchCompany)) {
                 return filterError(error);
               }
+
+              const { fetchCompany } = data;
 
               return (
                 <Collapsible child={this.companyRef} title="Company Data">
@@ -118,6 +120,7 @@ class CompanyData extends React.Component<Props, State> {
                         onDrop={file => this.uploadPic(file)}
                         name={fetchCompany.name}
                         className={"managerBigSquare"}
+                        isadmin={this.props.isadmin}
                       />
                     </div>
 
