@@ -1,7 +1,7 @@
 import { configure, getLogger } from "log4js";
 import config from "./configurationManager";
 
-let activeAppenders = [];
+let activeAppenders = ["logstash"];
 if (config.isDevelopment) {
   activeAppenders.push("stdout");
 }
@@ -19,7 +19,9 @@ configure({
       keepFileExt: true
     },
     console: { type: "console", layout: { type: "messagePassThrough" } },
-    stdout: { type: "stdout", layout: { type: "coloured" } }
+    stdout: { type: "stdout", layout: { type: "coloured" } },
+    logstash: { type: '@log4js-node/logstash-http', url: 'http://3.122.223.175:8080/_bulk', application: 'logstash-log4js', logType: 'application', logChannel: 'node' }
+  
   },
   categories: { default: { appenders: activeAppenders, level: "debug", enableCallStack: true } }
 });
