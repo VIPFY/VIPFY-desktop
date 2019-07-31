@@ -1,5 +1,6 @@
 export interface Licence {
   id: number;
+  pending: boolean;
   options: JSON;
   starttime: number | string;
   endtime: number | Date;

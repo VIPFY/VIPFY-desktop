@@ -8,7 +8,6 @@ import LoadingDiv from "../LoadingDiv";
 import { ErrorComp, filterAndSort } from "../../common/functions";
 import Collapsible from "../../common/Collapsible";
 import DropDown from "../../common/DropDown";
-import { FETCH_TOTAL_APP_USAGE } from "../../queries/products";
 import { UPDATE_LAYOUT } from "../../mutations/auth";
 
 const BULK_UPDATE_LAYOUT = gql`
@@ -120,7 +119,7 @@ class AppList extends React.Component<Props, State> {
 
                   return name.toUpperCase().includes(this.props.search.toUpperCase());
                 } else {
-                  return true;
+                  return !licence.pending;
                 }
               })
               .sort((a, b) => {
