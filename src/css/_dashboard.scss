@@ -13,13 +13,12 @@
     .profile-app-holder {
       padding: 56px 0;
       width: 100%;
+      margin: unset;
       grid-template-rows: repeat(auto-fill, 11rem);
       grid-template-columns: repeat(auto-fill, 11rem);
-      margin: unset;
+      grid-row-gap: 40px;
 
       .profile-app {
-        width: 10em;
-        height: 10em;
         overflow: unset;
       }
     }

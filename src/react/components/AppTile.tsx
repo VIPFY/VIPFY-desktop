@@ -10,6 +10,7 @@ import UniversalButton from "./universalButtons/universalButton";
 import UniversalTextInput from "./universalForms/universalTextInput";
 import { UPDATE_LAYOUT } from "../mutations/auth";
 import { getBgImageApp } from "../common/images";
+import IconButton from "../common/IconButton";
 
 const REMOVE_EXTERNAL_ACCOUNT = gql`
   mutation onDeleteLicenceAt($licenceid: ID!, $time: Date!) {
@@ -129,6 +130,7 @@ class AppTile extends React.Component<Props, State> {
             <span>
               {this.props.preview.name && dragItem == id ? this.props.preview.name : name}
             </span>
+            <IconButton icon="pencil" onClick={() => this.setState({ newpopup: true })} />
           </div>
         </div>
 
