@@ -1,17 +1,17 @@
 .mac {
   #titlebar {
-    height: 37px;
-    border-bottom: 1px solid black;
-    grid-template-rows: 37px;
-    grid-template-columns: 80px 1fr;
+    //height: 37px;
+    //border-bottom: 1px solid black;
+    //grid-template-rows: 37px;
+    //grid-template-columns: 80px 1fr;
 
-    #header-react {
-      grid-column: 2;
-    }
+   // #header-react {
+   //   grid-column: 2;
+   // }
   }
 
   #App {
-    margin-top: 38px;
+   // margin-top: 38px;
   }
   
   #titlebar-logo,
