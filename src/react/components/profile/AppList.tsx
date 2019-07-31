@@ -119,7 +119,7 @@ class AppList extends React.Component<Props, State> {
 
                   return name.toUpperCase().includes(this.props.search.toUpperCase());
                 } else {
-                  return !licence.pending;
+                  return true;
                 }
               })
               .sort((a, b) => {

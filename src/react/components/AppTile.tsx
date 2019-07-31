@@ -1,13 +1,11 @@
 import * as React from "react";
 import { Mutation, graphql } from "react-apollo";
 import gql from "graphql-tag";
-import { AppContext } from "../common/functions";
 import { fetchLicences, me } from "../queries/auth";
 import moment = require("moment");
 import { Licence } from "../interfaces";
 import { Preview } from "./profile/AppList";
 import PopupBase from "../popups/universalPopups/popupBase";
-import GenericInputField from "./GenericInputField";
 import UniversalButton from "./universalButtons/universalButton";
 import UniversalTextInput from "./universalForms/universalTextInput";
 import { UPDATE_LAYOUT } from "../mutations/auth";
@@ -87,103 +85,53 @@ class AppTile extends React.Component<Props, State> {
 
   render() {
     // prettier-ignore
-    const { dragItem, licence: { tags, id, boughtplanid: { planid, alias } } } = this.props;
+    const { dragItem, licence: { id, boughtplanid: { planid, alias } } } = this.props;
     const name = alias ? alias : planid.appid.name;
     const clearPreview = { name: "", pic: "" };
-    const vacation = tags.find(el => el == "vacation");
 
     return (
       <React.Fragment>
-        <AppContext.Consumer>
-          {({ showPopup }) => (
-            <div
-              draggable={true}
-              onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
-              className={`profile-app ${dragItem == id ? "hold" : ""} ${
-                this.state.entered ? "hovered" : ""
-              }`}
-              onDrag={() => this.props.dragStartFunction(id)}
-              onDragOver={e => {
-                e.preventDefault();
+        <div
+          draggable={true}
+          onClick={() => (this.props.setTeam ? this.props.setTeam(id) : "")}
+          className={`profile-app ${dragItem == id ? "hold" : ""} ${
+            this.state.entered ? "hovered" : ""
+          }`}
+          onDrag={() => this.props.dragStartFunction(id)}
+          onDragOver={e => {
+            e.preventDefault();
 
-                if (!this.state.entered) {
-                  this.setState({ entered: true });
-                  this.props.setPreview({ pic: planid.appid.icon, name });
-                }
-              }}
-              onDragLeave={() => {
-                if (this.state.entered) {
-                  this.setState({ entered: false });
-                  this.props.setPreview(clearPreview);
-                }
-              }}
-              onDragEnd={() => {
-                this.setState({ entered: false });
-                this.props.setPreview(clearPreview);
-                this.props.dragEndFunction();
-              }}
-              onDrop={() => {
-                this.setState({ entered: false });
-                this.props.handleDrop(id);
-                this.props.setPreview(clearPreview);
-              }}
-              style={{
-                backgroundImage: planid.appid.icon && getBgImageApp(planid.appid.icon, 160)
-              }}>
-              {planid.options && planid.options.external && (
-                <div className="ribbon ribbon-top-right">
-                  <span>external</span>
-                </div>
-              )}
+            if (!this.state.entered) {
+              this.setState({ entered: true });
+              this.props.setPreview({ pic: planid.appid.icon, name });
+            }
+          }}
+          onDragLeave={() => {
+            if (this.state.entered) {
+              this.setState({ entered: false });
+              this.props.setPreview(clearPreview);
+            }
+          }}
+          onDragEnd={() => {
+            this.setState({ entered: false });
+            this.props.setPreview(clearPreview);
+            this.props.dragEndFunction();
+          }}
+          onDrop={() => {
+            this.setState({ entered: false });
+            this.props.handleDrop(id);
+            this.props.setPreview(clearPreview);
+          }}
+          style={{
+            backgroundImage: planid.appid.icon && getBgImageApp(planid.appid.icon, 160)
+          }}>
+          <div className="name">
+            <span>
+              {this.props.preview.name && dragItem == id ? this.props.preview.name : name}
+            </span>
+          </div>
+        </div>
 
-              {vacation && <div className="vacation" />}
-
-              {this.props.licence.pending && <span className="pending">Pending...</span>}
-
-              <div className="name">
-                <span>
-                  {this.props.preview.name && dragItem == id ? this.props.preview.name : name}
-                </span>
-                {planid.options && planid.options.external && (
-                  <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
-                    {deleteLicenceAt => (
-                      <Mutation mutation={UPDATE_CREDENTIALS}>
-                        {updateCredentials => (
-                          <i
-                            className="fal fa-edit"
-                            onClick={e => {
-                              this.setState({ newpopup: true });
-                              e.stopPropagation();
-                              // showPopup({
-                              //   header: `Edit licence of Team: ${name}`,
-                              //   body: EditLicence,
-                              //   props: {
-                              //     closeFunction: () => showPopup(null),
-                              //     teamname: name,
-                              //     appname: planid.appid.name,
-                              //     deleteFunction: async licenceid => {
-                              //       await deleteLicenceAt({
-                              //         variables: { licenceid, time: moment().utc() },
-                              //         refetchQueries: [{ query: fetchLicences }, { query: me }]
-                              //       });
-                              //     },
-                              //     submitFunction: async variables => {
-                              //       await updateCredentials({ variables });
-                              //     },
-                              //     id
-                              //   }
-                              // });
-                            }}
-                          />
-                        )}
-                      </Mutation>
-                    )}
-                  </Mutation>
-                )}
-              </div>
-            </div>
-          )}
-        </AppContext.Consumer>
         {this.state.newpopup ? (
           <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
             {deleteLicenceAt => (
