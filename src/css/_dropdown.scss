@@ -1,7 +1,7 @@
 $dropdown-bg: #f5f5f5ff;
 
 .dropdown {
-  width: 139px;
+  width: 125px;
   height: 24px;
   background: $dropdown-bg;
   border-radius: 4px;
@@ -65,13 +65,13 @@ $dropdown-bg: #f5f5f5ff;
   from {
     max-height: 0;
   } to {
-    max-height: 150px;
+    max-height: 72px;
   }
 }
 
 @keyframes slide-up {
   from {
-    max-height: 150px;
+    max-height: 72px;
     opacity: 1;
   } to {
     max-height: 0;
