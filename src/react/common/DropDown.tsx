@@ -10,6 +10,7 @@ interface Props {
   touched?: boolean;
   holder?: any;
   scrollItem?: any;
+  header: string;
 }
 
 interface State {
@@ -103,7 +104,7 @@ class DropDown extends React.PureComponent<Props, State> {
               ? this.props.option.label
                 ? this.props.option.label
                 : this.props.option
-              : ""}
+              : this.props.header}
           </span>
           <i className="fal fa-angle-down big-angle" />
         </button>

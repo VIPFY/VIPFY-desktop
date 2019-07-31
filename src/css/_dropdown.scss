@@ -1,7 +1,7 @@
 $dropdown-bg: #f5f5f5ff;
 
 .dropdown {
-  width: 125px;
+  width: 109px;
   height: 24px;
   background: $dropdown-bg;
   border-radius: 4px;
@@ -49,7 +49,7 @@ $dropdown-bg: #f5f5f5ff;
 
       &:hover {
         border-radius: 4px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14);
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
       }
 
       span {
@@ -71,7 +71,7 @@ $dropdown-bg: #f5f5f5ff;
 
 @keyframes slide-up {
   from {
-    max-height: 72px;
+    max-height: 72 px;
     opacity: 1;
   } to {
     max-height: 0;

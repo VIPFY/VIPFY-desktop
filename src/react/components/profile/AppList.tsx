@@ -177,7 +177,7 @@ class AppList extends React.Component<Props, State> {
 
           <DropDown
             option={this.state.sortBy}
-            defaultValue={{ label: "Sort By" }}
+            header="Sort By"
             handleChange={value => this.setState({ sortBy: value })}
             // TODO: [VIP-449] Implement Statistics to sort by "Most Used", "Least Used"
             options={["A-Z", "Z-A"]}
