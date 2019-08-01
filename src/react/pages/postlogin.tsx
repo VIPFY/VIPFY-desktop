@@ -7,7 +7,7 @@ import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
 import { consentText } from "../common/constants";
-import { logger } from "../../logger";
+import { logger, addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment = require("moment");
@@ -61,9 +61,11 @@ const PostLogin = (props: PostLoginProps) => (
         });
       }
 
-      logger.addContext("userid", data.me.id);
-      logger.addContext("isadmin", data.me.isadmin);
-      logger.addContext("language", data.me.language);
+      addToLoggerContext("userid", data.me.id);
+      addToLoggerContext("isadmin", data.me.isadmin);
+      addToLoggerContext("language", data.me.language);
+      addToLoggerContext("companyid", data.me.company.unit.id);
+      addToLoggerContext("companyname", data.me.company.name);
 
       if (!data.me.company.setupfinished) {
         return (

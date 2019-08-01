@@ -1,7 +1,8 @@
 import { configure, getLogger } from "log4js";
 import config from "./configurationManager";
+import * as os from "os";
 
-let activeAppenders = ["logstash"];
+let activeAppenders = ["logstash_filtered"];
 if (config.isDevelopment) {
   activeAppenders.push("stdout");
 }
@@ -20,10 +21,10 @@ configure({
     },
     console: { type: "console", layout: { type: "messagePassThrough" } },
     stdout: { type: "stdout", layout: { type: "coloured" } },
-    logstash: { type: '@log4js-node/logstash-http', url: 'http://3.122.223.175:8080/_bulk', application: 'logstash-log4js', logType: 'application', logChannel: 'node' }
-  
+    logstash: { type: '@log4js-node/logstash-http', url: 'https://clientlogs.vipfy.store/_bulk' },
+    logstash_filtered: { type: 'logLevelFilter', appender: 'logstash', level: 'info' }
   },
-  categories: { default: { appenders: activeAppenders, level: "debug", enableCallStack: true } }
+  categories: { default: { appenders: activeAppenders, level: "trace", enableCallStack: true } }
 });
 
 export const logger = getLogger("vipfy");
@@ -38,3 +39,16 @@ console.log = consoleLogger.debug.bind(consoleLogger);
 console.info = consoleLogger.info.bind(consoleLogger);
 console.warn = consoleLogger.warn.bind(consoleLogger);
 console.error = consoleLogger.error.bind(consoleLogger);
+
+export const addToLoggerContext = (key: string, value: any) => {
+  consoleLogger.addContext(key, value);
+  logger.addContext(key, value);
+}
+
+addToLoggerContext("process_start_time", new Date(process.getCreationTime()));
+addToLoggerContext("host_arch", os.arch());
+addToLoggerContext("freemem", os.freemem());
+addToLoggerContext("totalmem", os.totalmem());
+addToLoggerContext("os_platform", os.platform());
+addToLoggerContext("os_version", os.release());
+addToLoggerContext("host_uptime", os.uptime());

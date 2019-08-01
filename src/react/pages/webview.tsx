@@ -216,7 +216,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       console.log("ACCEPT");
       this.switchApp();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -528,7 +528,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         try {
           await this.props.logError({ variables: { data } });
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
         this.setState({
           error:
