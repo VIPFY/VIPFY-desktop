@@ -7,6 +7,7 @@ import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
 import { consentText } from "../common/constants";
+import { logger, addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment = require("moment");
@@ -48,7 +49,7 @@ const PostLogin = (props: PostLoginProps) => (
         return <LoadingDiv text="Preparing Vipfy for you" />;
       }
 
-      if (error || !data) {
+      if (error || !data || !data.me) {
         return <div>There was an error</div>;
       }
 
@@ -60,10 +61,16 @@ const PostLogin = (props: PostLoginProps) => (
         });
       }
 
+      addToLoggerContext("userid", data.me.id);
+      addToLoggerContext("isadmin", data.me.isadmin);
+      addToLoggerContext("language", data.me.language);
+      addToLoggerContext("companyid", data.me.company.unit.id);
+      addToLoggerContext("companyname", data.me.company.name);
+
       if (!data.me.company.setupfinished) {
         return (
           <div className="centralize backgroundLogo">
-            <DataNameForm moveTo={props.moveTo} />
+            <DataNameForm moveTo={this.props.moveTo} />
           </div>
         );
       }

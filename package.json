@@ -90,6 +90,7 @@
     }
   },
   "dependencies": {
+    "@log4js-node/logstash-http": "^1.0.0",
     "@nivo/bar": "^0.49.1",
     "@personare/react-freshdesk-widget": "^0.3.0",
     "@types/electron-devtools-installer": "^2.2.0",
@@ -125,6 +126,7 @@
     "icojs": "^0.12.2",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
+    "log4js": "^4.5.1",
     "moment": "^2.24.0",
     "nivo": "^0.31.0",
     "node-abi": "^2.7.0",

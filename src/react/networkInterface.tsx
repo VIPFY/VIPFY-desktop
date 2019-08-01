@@ -7,6 +7,7 @@ import { onError } from "apollo-link-error";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
+import {logger} from "../logger";
 
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
@@ -183,14 +184,14 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       if (data && data.code == 401) {
         logout();
       } else if (data && data.code == 403) {
-        return console.log(
+        return logger.error(
           `[RightsError]: Message: ${message}, Seems like a user doesn't have the neccessary rights`
         );
       } else if (data && data.code == 426) {
         handleUpgradeError();
       }
 
-      return console.log(
+      return logger.error(
         `[GraphQLError]: Message: ${message}, Type: ${name}, Location: ${locations}, Path: ${path}`
       );
     });
@@ -198,7 +199,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
   if (networkError) {
     addHeaderNotification("Network Problem", "network");
-    console.log(`[Network error]: ${networkError}`);
+    logger.warn(`[Network error]: ${networkError}`);
   }
 });
 

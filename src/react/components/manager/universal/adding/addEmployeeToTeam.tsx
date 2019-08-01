@@ -372,7 +372,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                 await Promise.all(promises);
                 this.props.savingFunction({ action: "success" });
               } catch (error) {
-                console.log(error);
+                console.error(error);
                 this.props.savingFunction({ action: "error", message: error });
               }
             }}
