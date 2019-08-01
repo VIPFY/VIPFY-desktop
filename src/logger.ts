@@ -31,6 +31,13 @@ configure({
 export const logger = getLogger("vipfy");
 export const resetLoggingContext = () => {
   logger.clearContext();
+  addToLoggerContext("process_start_time", new Date(process.getCreationTime()));
+  addToLoggerContext("host_arch", os.arch());
+  addToLoggerContext("freemem", os.freemem());
+  addToLoggerContext("totalmem", os.totalmem());
+  addToLoggerContext("os_platform", os.platform());
+  addToLoggerContext("os_version", os.release());
+  addToLoggerContext("host_uptime", os.uptime());
 };
 
 const consoleLogger = getLogger("vipfy.console");
