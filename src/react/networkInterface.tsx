@@ -7,7 +7,7 @@ import { onError } from "apollo-link-error";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
-import {logger} from "../logger";
+import { logger } from "../logger";
 
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;

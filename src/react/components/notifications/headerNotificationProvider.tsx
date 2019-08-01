@@ -35,13 +35,14 @@ class HeaderNotificationProvider extends Component<Props, State> {
       return null;
     }
 
-    //close old notification
+    // close old notification
     if (this.state.notifications.length > 0) {
       this.setState(({ notifications }) => {
-        notifications[0].open = false;
-        return {
-          notifications: notifications
-        };
+        if (notifications[0].key != "impersonation") {
+          notifications[0].open = false;
+        }
+
+        return { notifications };
       });
       return setTimeout(() => this.addHeaderNotificationFinish(message, key, options), 400);
     } else {
@@ -67,14 +68,20 @@ class HeaderNotificationProvider extends Component<Props, State> {
             return 0;
           case "warning":
             return 1;
-          default:
+          case "impersonation":
             return 2;
+
+          default:
+            return 3;
         }
       }
 
       let notificationadded = [
         ...notifications.map(n => {
-          n.open = false;
+          if (n.key != "impersonation") {
+            n.open = false;
+          }
+
           return n;
         }),
         notification
@@ -90,9 +97,8 @@ class HeaderNotificationProvider extends Component<Props, State> {
           return typeorder;
         }
       });
-      return {
-        notifications: notificationadded
-      };
+
+      return { notifications: notificationadded };
     });
 
     return keyid;
@@ -150,6 +156,7 @@ class HeaderNotificationProvider extends Component<Props, State> {
 
   render() {
     const { notifications } = this.state;
+
     return (
       <HeaderNotificationContext.Provider
         value={{
