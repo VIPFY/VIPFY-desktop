@@ -1,6 +1,7 @@
 import { configure, getLogger } from "log4js";
 import config from "./configurationManager";
 import * as os from "os";
+import * as is from "electron-is";
 
 let activeAppenders = ["logstash_filtered"];
 if (config.isDevelopment) {
@@ -52,3 +53,9 @@ addToLoggerContext("totalmem", os.totalmem());
 addToLoggerContext("os_platform", os.platform());
 addToLoggerContext("os_version", os.release());
 addToLoggerContext("host_uptime", os.uptime());
+
+if(is.renderer()) {
+  window.onerror = function (msg, url, lineNo, columnNo, error) {
+    logger.error(error)
+  }
+}

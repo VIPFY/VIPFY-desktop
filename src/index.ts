@@ -7,7 +7,7 @@ import { enableLiveReload } from "electron-compile";
 import path = require("path");
 import Store = require("electron-store");
 import * as is from "electron-is";
-import logger from "./logger";
+import { logger } from "./logger";
 
 process.on("uncaughtException", error => {
   logger.error(error);
@@ -178,6 +178,9 @@ const createWindow = async () => {
   });
 
   mainWindow.once("ready-to-show", () => {
+    mainWindow.webContents.on('did-fail-load', (event, code, desc, url, isMainFrame) => {
+      logger.warn(`failed loading; ${isMainFrame} ${code} ${url}`, event);
+    });
     mainWindow.webContents.setZoomFactor(1.0);
     mainWindow.show();
   });
