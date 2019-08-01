@@ -60,7 +60,7 @@ class SingleStatistic extends React.Component<Props, State> {
           <Chart
             options={this.state.options}
             series={this.state.series}
-            height="128"
+            height="160"
             type="radialBar"
             className="circle"
           />
