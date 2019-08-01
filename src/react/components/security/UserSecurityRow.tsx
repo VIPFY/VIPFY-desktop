@@ -33,9 +33,10 @@ class UserSecurityRow extends React.Component<Props, State> {
 
   render() {
     const { user } = this.props;
+
     return (
       <React.Fragment>
-        <tr>
+        <tr onClick={() => this.setState(prevState => ({ showEdit: !prevState.showEdit }))}>
           <td className="data-recording-sensitive">
             <PrintEmployeeSquare employee={user.unitid} />
             <div className="name">
@@ -107,11 +108,14 @@ class UserSecurityRow extends React.Component<Props, State> {
 
           <td>{user.twofactormethods.length > 0 ? "ON" : "OFF"}</td>
 
-          <td>
+          <td align="right">
             <IconButton
               className="security-edit-button"
               icon="pen"
-              onClick={() => this.setState(prevState => ({ showEdit: !prevState.showEdit }))}
+              onClick={e => {
+                e.stopPropagation();
+                this.setState(prevState => ({ showEdit: !prevState.showEdit }));
+              }}
             />
           </td>
         </tr>

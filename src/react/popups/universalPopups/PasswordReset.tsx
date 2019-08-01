@@ -11,7 +11,8 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 
 interface Props {
   closeFunction: Function;
-  unitid: number;
+  unitids: number[];
+  bulk?: boolean;
 }
 
 export default (props: Props) => (
@@ -21,20 +22,31 @@ export default (props: Props) => (
         <h1>Force Password Change</h1>
         {data ? (
           <React.Fragment>
-            <div>Forcing Password Change was successful</div>
+            <div className="sub-header">Forcing Password Change was successful</div>
             <UniversalButton onClick={() => props.closeFunction()} type="high" label="ok" />{" "}
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <div>
-              Do you really want to force <UserName unitid={props.unitid} /> to change his password?
-            </div>
+            {props.bulk ? (
+              <div className="sub-header">
+                Do you really want to force all employees to change their password?
+              </div>
+            ) : (
+              <div className="sub-header">
+                Do you really want to force <UserName unitid={props.unitids[0]} /> to change his
+                password?
+              </div>
+            )}
             <ErrorComp onClick={props.closeFunction} error={error} className="error-field" />
-            <UniversalButton disabled={loading} closingPopup={true} label="no" />
+            <UniversalButton
+              onClick={props.closeFunction}
+              disabled={loading}
+              closingPopup={true}
+              label="no"
+            />
             <UniversalButton
               disabled={loading}
-              onClick={() => forceReset({ variables: { userids: [props.unitid] } })}
-              type="high"
+              onClick={() => forceReset({ variables: { userids: [...props.unitids] } })}
               label="Yes"
             />
           </React.Fragment>

@@ -48,7 +48,6 @@ export default (props: Props) => (
             <UniversalButton
               disabled={loading}
               onClick={() => impersonate({ variables: { unitid: props.unitid } })}
-              type="high"
               label="Yes"
             />
           </PopupBase>

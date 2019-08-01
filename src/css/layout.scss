@@ -2968,13 +2968,20 @@ option{
   line-height: 1;
   border: 0;
   font-family: inherit;
-  font-size: inherit;
   padding: 0;
 
+  .universalTextInput {
+    text-align: left;
+
+    &:hover {
+      background-color: unset;
+    }
+  }
+
   .ReactPasswordStrength-strength-desc {
-      width: auto;
-      font-size: 80%;
-      padding: 0;
+    width: auto;
+    font-size: 80%;
+    padding: 0;
   }
 
   input {

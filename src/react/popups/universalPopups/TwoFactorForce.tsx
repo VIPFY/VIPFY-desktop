@@ -24,12 +24,12 @@ export default (props: Props) => (
         <h1>Force Two-Factor Authentication</h1>
         {data ? (
           <React.Fragment>
-            <div>Forcing Two-Factor Authentication was successful</div>
+            <div className="sub-header">Forcing Two-Factor Authentication was successful</div>
             <UniversalButton onClick={() => props.closeFunction()} type="high" label="ok" />
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <div>
+            <div className="sub-header">
               Do you really want to force <UserName unitid={props.unitid} /> to use Two-Factor
               Authentication?
             </div>
@@ -43,7 +43,6 @@ export default (props: Props) => (
             <UniversalButton
               disabled={loading || data}
               onClick={() => force2FA({ variables: { userid: props.unitid, type: "totp" } })}
-              type="high"
               label="Yes"
             />
           </React.Fragment>
