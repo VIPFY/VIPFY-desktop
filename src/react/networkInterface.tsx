@@ -96,7 +96,6 @@ const cache = new InMemoryCache({
 });
 const httpLink = createUploadLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
-  //uri: `https://us-central1-vipfy-148316.cloudfunctions.net/backend/graphql`,
   credentials: "same-origin"
 });
 // const httpLink = new BatchHttpLink({
@@ -109,7 +108,8 @@ const httpLink = createUploadLink({
 // Pass the tokens to the server to authenticate the user
 const middlewareLink = setContext(() => ({
   headers: {
-    "x-token": localStorage.getItem("token")
+    "x-token": localStorage.getItem("token"),
+    "i-token": localStorage.getItem("impersonator-token")
   }
 }));
 
