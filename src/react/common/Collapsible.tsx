@@ -49,7 +49,9 @@ class Collapsible extends React.Component<Props, State> {
   }
 
   handleResize = () => {
-    this.props.child.current.style.height = "unset";
+    if (this.state.show) {
+      this.props.child.current.style.height = "unset";
+    }
   };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
