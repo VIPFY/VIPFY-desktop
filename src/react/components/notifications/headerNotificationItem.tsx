@@ -12,12 +12,14 @@ interface State {
 }
 
 class HeaderNotificationItem extends Component<Props, State> {
+  state = { mounted: false };
+
   componentDidMount() {
     this.setState({ mounted: true });
   }
 
   render() {
-    const { message, type, open, dismissButton } = this.props.notification;
+    const { message, type, open, dismissButton, dismissFunction } = this.props.notification;
 
     let classes = "headerNotification";
 
@@ -42,14 +44,26 @@ class HeaderNotificationItem extends Component<Props, State> {
 
     return (
       <div className={classes} style={this.props.show ? { zIndex: 1 } : { zIndex: 0 }}>
-        <span>
-          {<i className={`fal fa-${icon}`} style={{ marginRight: "16px" }} />}
-          {message}
-        </span>
+        <div
+          style={{
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+          }}>
+          <i className={`fal fa-${icon}`} style={{ marginRight: "16px", fontSize: "24px" }} />
+          <span style={{ lineHeight: "40px" }}>{message}</span>
+        </div>
         {dismissButton && (
           <button
             className="naked-button headerNotificationButton"
-            onClick={() => this.props.dismiss()}>
+            onClick={() => {
+              if (dismissFunction) {
+                dismissFunction();
+              }
+
+              this.props.dismiss();
+            }}>
             {dismissButton.label}
           </button>
         )}

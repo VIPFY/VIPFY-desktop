@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as moment from "moment";
 import gql from "graphql-tag";
-import { Mutation } from "react-apollo";
+import { withRouter } from "react-router";
+import { Mutation, withApollo } from "react-apollo";
 import { showStars, filterError } from "../../common/functions";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./UserSecurityTable";
 import UserName from "../UserName";
@@ -128,4 +129,4 @@ class UserSecurityRow extends React.Component<Props, State> {
   }
 }
 
-export default UserSecurityRow;
+export default withApollo(withRouter(UserSecurityRow));

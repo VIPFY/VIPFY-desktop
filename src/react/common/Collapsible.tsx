@@ -14,6 +14,8 @@ class Collapsible extends React.Component<Props, State> {
   state = { show: true };
 
   componentDidMount() {
+    window.addEventListener("resize", this.handleResize, true);
+
     if (this.props.child && this.props.child.current) {
       // Needed to correctly render the height
       setTimeout(() => {
@@ -41,6 +43,16 @@ class Collapsible extends React.Component<Props, State> {
       }
     }
   }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize, true);
+  }
+
+  handleResize = () => {
+    if (this.state.show) {
+      this.props.child.current.style.height = "unset";
+    }
+  };
 
   toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
 

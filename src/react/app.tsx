@@ -16,6 +16,7 @@ import PostLogin from "./pages/postlogin";
 import gql from "graphql-tag";
 import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
+import { logger, resetLoggingContext } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
@@ -151,6 +152,9 @@ class App extends React.Component<AppProps, AppState> {
     this.setState(INITIAL_STATE); // clear state
     this.props.client.cache.reset(); // clear graphql cache
     localStorage.removeItem("token");
+    localStorage.removeItem("impersonator-token");
+    resetLoggingContext();
+
     session.fromPartition("services").clearStorageData();
     this.props.history.push("/");
     location.reload();

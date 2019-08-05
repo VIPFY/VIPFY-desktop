@@ -41,6 +41,7 @@ export type WebViewState = {
   error: string | null;
   loggedIn: boolean;
   errorshowed: boolean;
+  progress?: number;
 };
 
 export type WebViewProps = {
@@ -89,7 +90,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     appid: -1,
     error: null,
     loggedIn: false,
-    errorshowed: false
+    errorshowed: false,
+    progress: undefined
   };
 
   static getDerivedStateFromProps(
@@ -102,7 +104,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         ...prevState,
         previousLicenceId: prevState.licenceId,
         licenceId: nextProps.licenceID,
-        showLoadingScreen: true
+        showLoadingScreen: true,
+        progress: undefined
       };
     } else {
       return prevState;
@@ -216,7 +219,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       console.log("ACCEPT");
       this.switchApp();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -289,7 +292,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       unitId: licence.unit.id,
       options: licence.boughtPlan.plan.app.options,
       appid: licence.boughtPlan.plan.app.id,
-      key: licence.key
+      key: licence.key,
+      progress: undefined
     });
   }
 
@@ -528,7 +532,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         try {
           await this.props.logError({ variables: { data } });
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
         this.setState({
           error:
@@ -690,7 +694,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       <div className={cssClass} id={`webview-${this.props.viewID}`}
       >
         {this.state.showLoadingScreen && (
-          <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} />
+          <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} progress={this.state.progress} />
         )}
         {this.state.options.universallogin ? (
           <UniversalLoginExecutor
@@ -706,6 +710,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                 this.hideLoadingScreen();
               }
             }}
+            progress={(progress) => this.setState({progress})}
             speed={10}
             style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}
           />

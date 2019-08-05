@@ -71,7 +71,7 @@ class DataNameForm extends React.Component<Props, State> {
       await this.props.client.query({ query: me, fetchPolicy: "network-only" });
       this.props.moveTo("dashboard");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       this.setState({ error: "Could not set your name. Please try again." });
     }
   };

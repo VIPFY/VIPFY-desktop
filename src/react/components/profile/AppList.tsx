@@ -87,7 +87,7 @@ class AppList extends React.Component<Props, State> {
 
       await Promise.all([p1, p2]);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

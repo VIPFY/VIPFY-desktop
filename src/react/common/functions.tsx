@@ -103,7 +103,7 @@ export const AppContext = React.createContext();
 // TODO: [VIP-433] Better logic in case of an undefined error
 export const ErrorComp = props => (
   <div style={{ opacity: props.error ? 1 : 0 }} className="error-field">
-    {filterError(props.error)}
+    {props.error && filterError(props.error)}
   </div>
 );
 
