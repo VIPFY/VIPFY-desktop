@@ -7,7 +7,7 @@ import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
 import { consentText } from "../common/constants";
-import { logger, addToLoggerContext } from "../../logger";
+import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment = require("moment");
@@ -67,10 +67,31 @@ const PostLogin = (props: PostLoginProps) => (
       addToLoggerContext("companyid", data.me.company.unit.id);
       addToLoggerContext("companyname", data.me.company.name);
 
+      const adminToken = localStorage.getItem("impersonator-token");
+
+      if (adminToken) {
+        context.addHeaderNotification("You are impersonating another user", {
+          type: "impersonation",
+          key: "impersonator",
+          dismissButton: {
+            label: "Stop Impersonation",
+            dismissFunction: async () => {
+              localStorage.setItem("token", adminToken!);
+              localStorage.removeItem("impersonator-token");
+
+              await props.history.push("/area/dashboard");
+              props.client.cache.reset(); // clear graphql cache
+
+              location.reload();
+            }
+          }
+        });
+      }
+
       if (!data.me.company.setupfinished) {
         return (
           <div className="centralize backgroundLogo">
-            <DataNameForm moveTo={this.props.moveTo} />
+            <DataNameForm moveTo={props.moveTo} />
           </div>
         );
       }
