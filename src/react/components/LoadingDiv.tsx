@@ -13,7 +13,7 @@ export default ({
 }) => (
     <div id="loading-screen" className="mainPosition" style={style}>
       <div className="loadingTextBlock">
-        {progress && <progress max="100" value={progress*100} style={{position: "relative", left: "-3rem"}} />}
+        {progress && <progress max="100" value={progress*100} />}
         {/*<div className="centerText inspirationalText">
         <div>{text}</div>
       </div>
