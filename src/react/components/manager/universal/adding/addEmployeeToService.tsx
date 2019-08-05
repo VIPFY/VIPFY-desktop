@@ -121,7 +121,7 @@ class AddEmployeeToService extends React.Component<Props, State> {
 
                 this.props.savingFunction({ action: "success" });
               } catch (error) {
-                console.log(error);
+                console.error(error);
                 this.props.savingFunction({ action: "error", message: error });
               }
             }}

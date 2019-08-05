@@ -7,10 +7,10 @@ import { enableLiveReload } from "electron-compile";
 import path = require("path");
 import Store = require("electron-store");
 import * as is from "electron-is";
+import { logger } from "./logger";
 
 process.on("uncaughtException", error => {
-  console.error("Uncaught Exception!!!");
-  console.error(error);
+  logger.error(error);
 });
 
 const store = new Store();
@@ -47,7 +47,7 @@ if (!disableUpdater) {
     };
 
     autoUpdater.on("error", error => {
-      console.error("Autoupdater error", error);
+      logger.error("Autoupdater error", error);
     });
 
     dialog.showMessageBox(dialogOpts, response => {
@@ -141,28 +141,25 @@ const createWindow = async () => {
             autoUpdater.checkForUpdates();
           }
         } catch (err) {
-          console.log("autoupdate failed");
-          console.log(err);
+          logger.warn("autoupdate failed");
+          logger.warn(err);
         }
       }, 1000 * 60 * 10);
     } catch (err) {
       disableUpdater = true;
-      console.error(err);
-      console.error("you can ignore that error if this is run from source");
-      console.log("reverting to devmode");
-      isDevMode = true;
+      logger.error(err);
     }
   }
 
   protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
-      console.error("Failed to register vipfy protocol");
+      logger.error("Failed to register vipfy protocol", error);
     }
   });
 
   session.fromPartition("services").protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
-      console.error("Failed to register vipfy protocol");
+      logger.error("Failed to register vipfy protocol", error);
     }
   });
 
@@ -181,6 +178,9 @@ const createWindow = async () => {
   });
 
   mainWindow.once("ready-to-show", () => {
+    mainWindow.webContents.on('did-fail-load', (event, code, desc, url, isMainFrame) => {
+      logger.warn(`failed loading; ${isMainFrame} ${code} ${url}`, event);
+    });
     mainWindow.webContents.setZoomFactor(1.0);
     mainWindow.show();
   });
@@ -201,7 +201,7 @@ const createWindow = async () => {
       mainWindow.webContents.session.clearStorageData();
       session.fromPartition("services").clearStorageData();
     } catch (err) {
-      console.log(err);
+      logger.error(err);
     }
   });
 

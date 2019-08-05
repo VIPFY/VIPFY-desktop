@@ -22,11 +22,17 @@ interface Props {
 }
 
 class AppCompanyChartWrapper extends React.Component<Props, State> {
-  state = {
-    starttime: "",
-    endtime: "",
-    sortBy: ""
-  };
+  constructor(props) {
+    super(props);
+    const starttime = moment("2019-01-01");
+    const endtime = moment().add("1d");
+
+    this.state = {
+      starttime,
+      endtime,
+      sortBy: ""
+    };
+  }
 
   statisticsRef = React.createRef<HTMLTextAreaElement>();
 

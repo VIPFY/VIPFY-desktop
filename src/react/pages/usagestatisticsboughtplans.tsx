@@ -3,6 +3,8 @@ import { withApollo } from "react-apollo";
 
 import BoughtplanUsagePerUser from "../components/usage/BoughtplanUsagePerUser";
 import UniversalButton from "../components/universalButtons/universalButton";
+import IconButton from "../common/IconButton";
+import UniversalSearchBox from "../components/universalSearchBox";
 
 interface Props {
   company: any;
@@ -14,10 +16,11 @@ interface State {
   error: string;
   showBoughtplans: Boolean;
   teamname: string | null;
+  searchString: string;
 }
 
 class UsageStatistics extends React.Component<Props, State> {
-  state = { error: "", showBoughtplans: true, teamname: null };
+  state = { error: "", showBoughtplans: true, teamname: null, searchString: "" };
 
   toggleShowBoughtplans = (): void =>
     this.setState(prevState => ({ showBoughtplans: !prevState.showBoughtplans }));
@@ -30,12 +33,20 @@ class UsageStatistics extends React.Component<Props, State> {
     }
 
     return (
-      <div style={{ margin: "50px" }}>
+      <div className="statistic-team">
+        <div className="statistic-team-header">
+          <IconButton icon="arrow-left" onClick={() => history.back()} />
+          <h2>Usage Statistics</h2>
+          <span>{teamname}</span>
+        </div>
+
+        <UniversalSearchBox
+          getValue={value => this.setState({ searchString: value })}
+          placeholder="Search Usage Statistics"
+        />
+
         <div className="genericHolder">
-          <div
-            className="header"
-            onClick={() => this.toggleShowBoughtplans()}
-            style={{ backgroundColor: "#e4e6e8" }}>
+          <div className="header" onClick={() => this.toggleShowBoughtplans()}>
             <i
               className={`button-hide fas ${
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
@@ -46,10 +57,10 @@ class UsageStatistics extends React.Component<Props, State> {
           <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
             <BoughtplanUsagePerUser
               {...this.props}
+              search={this.state.searchString}
               boughtplanid={this.props.match.params.boughtplanid}
             />
           </div>
-          <UniversalButton type="high" label="Back" onClick={() => history.back()} />
         </div>
       </div>
     );
