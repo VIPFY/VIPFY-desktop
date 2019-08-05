@@ -26,7 +26,7 @@ export default (props: Props) => (
         onCompleted={async data => {
           const token = localStorage.getItem("token");
           localStorage.setItem("token", data.impersonate);
-          localStorage.setItem("admin-token", token!);
+          localStorage.setItem("impersonator-token", token!);
 
           await history.push("/area/dashboard");
           client.cache.reset(); // clear graphql cache

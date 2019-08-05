@@ -7,6 +7,7 @@ import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
 import { consentText } from "../common/constants";
+import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment = require("moment");
@@ -48,7 +49,7 @@ const PostLogin = (props: PostLoginProps) => (
         return <LoadingDiv text="Preparing Vipfy for you" />;
       }
 
-      if (error || !data) {
+      if (error || !data || !data.me) {
         return <div>There was an error</div>;
       }
 
@@ -57,6 +58,33 @@ const PostLogin = (props: PostLoginProps) => (
         window.smartlook("identify", data.me.id, {
           admin: data.me.isadmin,
           language: data.me.language
+        });
+      }
+
+      addToLoggerContext("userid", data.me.id);
+      addToLoggerContext("isadmin", data.me.isadmin);
+      addToLoggerContext("language", data.me.language);
+      addToLoggerContext("companyid", data.me.company.unit.id);
+      addToLoggerContext("companyname", data.me.company.name);
+
+      const adminToken = localStorage.getItem("impersonator-token");
+
+      if (adminToken) {
+        context.addHeaderNotification("You are impersonating another user", {
+          type: "impersonation",
+          key: "impersonator",
+          dismissButton: {
+            label: "Stop Impersonation",
+            dismissFunction: async () => {
+              localStorage.setItem("token", adminToken!);
+              localStorage.removeItem("impersonator-token");
+
+              await props.history.push("/area/dashboard");
+              props.client.cache.reset(); // clear graphql cache
+
+              location.reload();
+            }
+          }
         });
       }
 

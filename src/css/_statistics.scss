@@ -45,6 +45,10 @@
       width: 320px;
       max-width: unset;
 
+      .header {
+        cursor: unset;
+      }
+
       &:not(:last-child) {
         margin-right: 32px;
       }

@@ -12,12 +12,14 @@ interface State {
 }
 
 class HeaderNotificationItem extends Component<Props, State> {
+  state = { mounted: false };
+
   componentDidMount() {
     this.setState({ mounted: true });
   }
 
   render() {
-    const { message, type, open, dismissButton } = this.props.notification;
+    const { message, type, open, dismissButton, dismissFunction } = this.props.notification;
 
     let classes = "headerNotification";
 
@@ -55,7 +57,13 @@ class HeaderNotificationItem extends Component<Props, State> {
         {dismissButton && (
           <button
             className="naked-button headerNotificationButton"
-            onClick={() => this.props.dismiss()}>
+            onClick={() => {
+              if (dismissFunction) {
+                dismissFunction();
+              }
+
+              this.props.dismiss();
+            }}>
             {dismissButton.label}
           </button>
         )}
