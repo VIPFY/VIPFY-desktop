@@ -204,7 +204,7 @@ class AddServiceToTeam extends React.Component<Props, State> {
 
                 await this.props.savingFunction({ action: "success" });
               } catch (error) {
-                console.log(error);
+                console.error(error);
                 await this.props.savingFunction({ action: "error", message: error });
               }
             }}

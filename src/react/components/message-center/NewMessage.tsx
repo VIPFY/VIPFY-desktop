@@ -44,7 +44,7 @@ class NewMessage extends React.Component<Props> {
 
       this.setState({ value: "" });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
