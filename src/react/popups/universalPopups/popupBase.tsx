@@ -10,10 +10,10 @@ interface Props {
   autoclosingFunction?: Function;
   notimer?: boolean;
   dialog?: boolean;
-  fullmiddle?: boolean;
+  fullMiddle?: boolean;
   buttonStyles?: Object;
   nooutsideclose?: boolean;
-  nosidebar?: boolean;
+  noSidebar?: boolean;
   styles?: Object;
   additionalclassName?: string;
 }
@@ -177,21 +177,17 @@ class PopupBase extends React.Component<Props, State> {
                 this.close();
               }
             }}>
-            {/*this.props.fullmiddle ? (
-              ""
-            ) : (*/}
-            <div className="sideReplicaPopup" style={{ width: sidebarOpen ? "240px" : "48px" }} />
-            {/*})*/}
-
+            <div
+              className="sideReplicaPopup"
+              style={{ width: sidebarOpen && !this.props.noSidebar ? "240px" : "48px" }}
+            />
             <div
               className="holderPopup"
               style={{
-                width: sidebarOpen ? "calc(100% - 240px)" : "calc(100% - 48px)"
-              }}
-              /*this.props.fullmiddle
-                  ? "100%"
-                  :*/
-            >
+                width:
+                  sidebarOpen && !this.props.noSidebar ? "calc(100% - 240px)" : "calc(100% - 48px)",
+                alignItems: this.props.fullMiddle ? "center" : "flex-start"
+              }}>
               <div
                 className="universalPopup"
                 style={Object.assign(
