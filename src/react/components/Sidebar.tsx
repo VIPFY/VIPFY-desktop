@@ -238,7 +238,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
   handleClickOutside = e => {
     const domNode = ReactDOM.findDOMNode(this);
-    console.log("CLICK", e.target, this.state);
     if (
       (!domNode || !domNode.contains(e.target)) &&
       (this.state.showNotification || this.state.notify)

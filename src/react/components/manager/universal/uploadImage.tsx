@@ -9,6 +9,7 @@ interface Props {
   className: string;
   uploadError?: string | null;
   isadmin?: Boolean;
+  mainClassName?: string;
 }
 
 interface State {
@@ -39,7 +40,7 @@ class UploadImage extends React.Component<Props, State> {
   render() {
     const { picture, name } = this.state;
     return (
-      <form className="profilepicture">
+      <form className={`profilepicture ${this.props.mainClassName}`}>
         <label>
           <div
             className={this.props.className}
@@ -67,6 +68,10 @@ class UploadImage extends React.Component<Props, State> {
             )*/}
 
             {!(picture && picture.preview) && name && name.slice(0, 1)}
+
+            {!(picture && picture.preview) && !name && (
+              <i className="fal fa-pen" style={{ color: "#253647" }} />
+            )}
 
             {this.props.uploadError && <div className="uploadError">{this.props.uploadError}</div>}
 
