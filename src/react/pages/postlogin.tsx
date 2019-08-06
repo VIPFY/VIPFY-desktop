@@ -27,6 +27,10 @@ interface PostLoginProps {
   context: any;
 }
 
+interface State {
+  firstLogin: boolean;
+}
+
 const FETCH_VIPFY_PLAN = gql`
   {
     fetchVipfyPlan {
@@ -40,124 +44,141 @@ const FETCH_VIPFY_PLAN = gql`
   }
 `;
 
-const PostLogin = (props: PostLoginProps) => (
-  <Query query={me}>
-    {({ data, loading, error, refetch }) => {
-      const { context, ...clearProps } = props;
+class PostLogin extends React.Component<PostLoginProps, State> {
+  state = { firstLogin: false };
 
-      if (loading) {
-        return <LoadingDiv text="Preparing Vipfy for you" />;
-      }
+  reachedArea = false;
 
-      if (error || !data || !data.me) {
-        return <div>There was an error</div>;
-      }
+  render() {
+    return (
+      <Query query={me}>
+        {({ data, loading, error, refetch }) => {
+          const { context, ...clearProps } = this.props;
 
-      if (data.me && data.me.consent) {
-        window.smartlook("consentAPI", consentText);
-        window.smartlook("identify", data.me.id, {
-          admin: data.me.isadmin,
-          language: data.me.language
-        });
-      }
-
-      addToLoggerContext("userid", data.me.id);
-      addToLoggerContext("isadmin", data.me.isadmin);
-      addToLoggerContext("language", data.me.language);
-      addToLoggerContext("companyid", data.me.company.unit.id);
-      addToLoggerContext("companyname", data.me.company.name);
-
-      const adminToken = localStorage.getItem("impersonator-token");
-
-      if (adminToken) {
-        context.addHeaderNotification("You are impersonating another user", {
-          type: "impersonation",
-          key: "impersonator",
-          dismissButton: {
-            label: "Stop Impersonation",
-            dismissFunction: async () => {
-              localStorage.setItem("token", adminToken!);
-              localStorage.removeItem("impersonator-token");
-
-              await props.history.push("/area/dashboard");
-              props.client.cache.reset(); // clear graphql cache
-
-              location.reload();
-            }
+          if (loading) {
+            return <LoadingDiv text="Preparing Vipfy for you" />;
           }
-        });
-      }
 
-      if (!data.me.company.setupfinished) {
-        return (
-          <div className="centralize backgroundLogo">
-            <DataNameForm moveTo={props.moveTo} />
-          </div>
-        );
-      }
+          if (error || !data || !data.me) {
+            return <div>There was an error</div>;
+          }
 
-      if (data.me.firstlogin) {
-        return <FirstLogin {...clearProps} />;
-      }
+          if (data.me && data.me.consent) {
+            window.smartlook("consentAPI", consentText);
+            window.smartlook("identify", data.me.id, {
+              admin: data.me.isadmin,
+              language: data.me.language
+            });
+          }
 
-      if (data.me.needspasswordchange) {
-        return <PasswordChange {...clearProps} />;
-      }
+          addToLoggerContext("userid", data.me.id);
+          addToLoggerContext("isadmin", data.me.isadmin);
+          addToLoggerContext("language", data.me.language);
+          addToLoggerContext("companyid", data.me.company.unit.id);
+          addToLoggerContext("companyname", data.me.company.name);
 
-      if (data.me.needstwofa) {
-        return (
-          <div style={{ display: "flex", flexFlow: "column", alignItems: "center" }}>
-            <h1>Please set up Two-Factor Authentication</h1>
-            <GoogleAuth
-              finishSetup={() => {
-                refetch();
-                clearProps.history.push("/area/dashboard");
-              }}
-              user={data.me}
-            />
-          </div>
-        );
-      }
+          const adminToken = localStorage.getItem("impersonator-token");
 
-      return (
-        <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
-          {({ data, error }) => {
-            if (error) {
-              return filterError(error);
-            }
+          if (adminToken) {
+            context.addHeaderNotification("You are impersonating another user", {
+              type: "impersonation",
+              key: "impersonator",
+              dismissButton: {
+                label: "Stop Impersonation",
+                dismissFunction: async () => {
+                  localStorage.setItem("token", adminToken!);
+                  localStorage.removeItem("impersonator-token");
 
-            if (data && data.fetchVipfyPlan) {
-              const vipfyPlan = data.fetchVipfyPlan.plan.name;
-              // TODO: [VIP-314] Reimplement credits when new structure is clear
-              // const { fetchCredits } = data;
-              const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
+                  await props.history.push("/area/dashboard");
+                  props.client.cache.reset(); // clear graphql cache
 
-              if (context) {
-                if (moment().isAfter(expiry)) {
-                  context.addHeaderNotification(
-                    `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
-                    { type: "error", key: "expire" }
-                  );
-                } else {
-                  context.addHeaderNotification(
-                    `${moment().to(expiry, true)} left on ${vipfyPlan}`,
-                    { type: "warning", key: "left", dismissButton: { label: "Dismiss" } }
-                  );
+                  location.reload();
                 }
               }
-            }
+            });
+          }
 
+          if (!data.me.company.setupfinished) {
             return (
-              <Area
+              <div className="centralize backgroundLogo">
+                <DataNameForm moveTo={props.moveTo} />
+              </div>
+            );
+          }
+
+          if (data.me.firstlogin && !this.state.firstLogin) {
+            return (
+              <FirstLogin
+                setFirstLogin={() => this.setState({ firstLogin: true })}
                 {...clearProps}
-                style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
               />
             );
-          }}
-        </Query>
-      );
-    }}
-  </Query>
-);
+          }
+
+          if (data.me.needspasswordchange && !this.reachedArea) {
+            return <PasswordChange firstLogin={this.state.firstLogin} {...clearProps} />;
+          }
+
+          if (data.me.needstwofa) {
+            return (
+              <div style={{ display: "flex", flexFlow: "column", alignItems: "center" }}>
+                <h1>Please set up Two-Factor Authentication</h1>
+                <GoogleAuth
+                  finishSetup={() => {
+                    refetch();
+                    clearProps.history.push("/area/dashboard");
+                  }}
+                  user={data.me}
+                />
+              </div>
+            );
+          }
+
+          if (!this.reachedArea) {
+            this.reachedArea = true;
+          }
+
+          return (
+            <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
+              {({ data, error }) => {
+                if (error) {
+                  return filterError(error);
+                }
+
+                if (data && data.fetchVipfyPlan) {
+                  const vipfyPlan = data.fetchVipfyPlan.plan.name;
+                  // TODO: [VIP-314] Reimplement credits when new structure is clear
+                  // const { fetchCredits } = data;
+                  const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
+
+                  if (context) {
+                    if (moment().isAfter(expiry)) {
+                      context.addHeaderNotification(
+                        `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
+                        { type: "error", key: "expire" }
+                      );
+                    } else {
+                      context.addHeaderNotification(
+                        `${moment().to(expiry, true)} left on ${vipfyPlan}`,
+                        { type: "warning", key: "left", dismissButton: { label: "Dismiss" } }
+                      );
+                    }
+                  }
+                }
+
+                return (
+                  <Area
+                    {...clearProps}
+                    style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
+                  />
+                );
+              }}
+            </Query>
+          );
+        }}
+      </Query>
+    );
+  }
+}
 
 export default withApollo(PostLogin);

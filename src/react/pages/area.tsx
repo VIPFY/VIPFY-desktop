@@ -51,6 +51,7 @@ import PendingIntegrations from "../components/admin/PendingIntegrations";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
+import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
 
 interface AreaProps {
   history: any[];
@@ -65,6 +66,8 @@ interface AreaProps {
   sidebarloaded: Function;
   consent?: boolean;
   style?: Object;
+  needspasswordchange: boolean;
+  emails: string[];
 }
 
 interface AreaState {
@@ -566,6 +569,10 @@ class Area extends React.Component<AreaProps, AreaState> {
 
           {this.state.consentPopup && (
             <Consent close={() => this.setState({ consentPopup: false })} />
+          )}
+
+          {this.props.needspasswordchange && (
+            <ForcedPasswordChange email={this.props.emails[0].email} />
           )}
         </SideBarContext.Provider>
       </div>
