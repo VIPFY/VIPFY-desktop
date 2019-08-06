@@ -439,28 +439,6 @@ class TeamOverview extends React.Component<Props, State> {
               />
             )}
           </Mutation>
-
-          /* <PopupBase
-            fullmiddle={true}
-            dialog={true}
-            close={() => this.setState({ willdeleting: null })}
-            closeable={false}>
-            <p>Do you really want to delete the team?</p>
-            {this.printRemoveLicences(this.state.willdeleting)}
-            <UniversalButton type="low" closingPopup={true} label="Cancel" />
-            <UniversalButton
-              type="low"
-              label="Delete"
-              onClick={() => {
-                this.setState(prevState => {
-                  return {
-                    willdeleting: null,
-                    deleting: prevState.willdeleting!.unitid.id
-                  };
-                });
-              }}
-            />
-          </PopupBase>*/
         )}
         {this.state.deleting && (
           <Mutation mutation={DELETE_TEAM}>

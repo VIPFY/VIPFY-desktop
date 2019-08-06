@@ -170,7 +170,7 @@ class EmployeeDetails extends React.Component<Props, State> {
               </div>
             </div>
 
-            {this.state.delete ? (
+            {this.state.delete && (
               <DeletePopup
                 key="deleteEmployee"
                 heading="Remove Access"
@@ -197,125 +197,6 @@ class EmployeeDetails extends React.Component<Props, State> {
                   })
                 }
               />
-            ) : (
-              /*<PopupBase
-                small={true}
-                close={() => this.setState({ delete: false })}
-                closeable={false}
-                buttonStyles={{ marginTop: "0px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <div style={{ position: "relative", width: "88px", height: "112px" }}>
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "0px",
-                        left: "0px",
-                        width: "48px",
-                        height: "48px",
-                        borderRadius: "4px",
-                        border: "1px dashed #707070"
-                      }}
-                    />
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "40px",
-                        left: "16px",
-                        width: "70px",
-                        height: "70px",
-                        fontSize: "32px",
-                        lineHeight: "70px",
-                        textAlign: "center",
-                        borderRadius: "4px",
-                        backgroundColor: "#F5F5F5",
-                        border: "1px solid #253647"
-                      }}>
-                      <i className="fal fa-trash-alt" />
-                    </div>
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "8px",
-                        left: "8px",
-                        width: employee.profilepicture ? "48px" : "46px",
-                        height: employee.profilepicture ? "48px" : "46px",
-                        borderRadius: "4px",
-                        backgroundPosition: "center",
-                        backgroundSize: "cover",
-                        lineHeight: "46px",
-                        textAlign: "center",
-                        fontSize: "23px",
-                        color: "white",
-                        fontWeight: 500,
-                        backgroundColor: "#5D76FF",
-                        border: "1px solid #253647",
-                        boxShadow: "#00000010 0px 6px 10px",
-                        backgroundImage: employee.profilepicture
-                          ? employee.profilepicture.indexOf("/") != -1
-                            ? encodeURI(
-                                `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${
-                                  employee.profilepicture
-                                })`
-                              )
-                            : encodeURI(
-                                `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                  employee.profilepicture
-                                })`
-                              )
-                          : ""
-                      }}>
-                      {employee.profilepicture ? "" : employee.firstname.slice(0, 1)}
-                    </div>
-                  </div>
-                  <div style={{ width: "284px" }}>
-                    <div style={{ marginBottom: "16px" }}>
-                      Do you really want to remove access to <b>{this.props.team.name}</b> for{" "}
-                      <b>
-                        {employee.firstname} {employee.lastname}
-                      </b>
-                    </div>
-                    {this.printRemoveLicences(employee)}
-                  </div>
-                </div>
-                {/*<div>
-                  Do you really want to remove{" "}
-                  {`${this.state.delete!.firstname} ${this.state.delete!.lastname}} from{" "}
-                  <b>{this.props.team.name}</b>
-                  {this.printRemoveLicences(employee)}
-                </div>*&/}
-                <UniversalButton type="low" closingPopup={true} label="Cancel" />
-                <UniversalButton
-                  type="low"
-                  label="Delete"
-                  onClick={() => {
-                    this.setState({ delete: false });
-                    this.props.deleteFunction({
-                      savingmessage: "The user is currently being removed from the team",
-                      savedmessage: "The user has been removed successfully.",
-                      maxtime: 5000,
-                      closeFunction: () =>
-                        this.setState({
-                          savingObject: null
-                        }),
-                      saveFunction: () =>
-                        removeFromTeam({
-                          variables: {
-                            teamid: this.props.team.unitid.id,
-                            userid: employee!.id,
-                            keepLicences: this.state.keepLicences
-                          },
-                          refetchQueries: [
-                            {
-                              query: fetchTeam,
-                              variables: { teamid: this.props.team.unitid.id }
-                            }
-                          ]
-                        })
-                    });
-                  }}
-                />
-              </PopupBase>*/
-              ""
             )}
           </div>
         )}
