@@ -56,8 +56,6 @@ class Dashboard extends React.Component<Props, State> {
       });
     }
 
-    console.log(appLists["Pending Apps"]);
-
     return (
       <div className="dashboard">
         <div className="heading">
