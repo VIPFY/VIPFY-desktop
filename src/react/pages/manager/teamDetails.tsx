@@ -71,21 +71,18 @@ class TeamDetails extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error.message}`;
           }
-          console.log("Team", data);
 
           const team = data.fetchTeam;
-          console.log("LOG: TeamDetails -> render -> team", team);
 
           return (
             <div className="managerPage">
               <div className="heading">
-                <h1>
+                <span className="h1">
                   <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("dmanager")}>
                     Team Manager
                   </span>
-                  <h2>></h2>
-                  <h2>{team.name}</h2>
-                </h1>
+                  <span className="h2">{team.name}</span>
+                </span>
 
                 <UniversalSearchBox
                   getValue={v => {

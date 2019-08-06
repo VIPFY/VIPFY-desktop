@@ -149,7 +149,8 @@ $modal-wh: 50%;
   //max-height: 80vh;
   overflow: auto;
   margin-top: 56px; //+32px == 88px
-  margin-bottom: 88px
+  margin-bottom: 88px;
+  max-height: calc(100vh - 88px - 88px);
 }
 
 .closePopup{

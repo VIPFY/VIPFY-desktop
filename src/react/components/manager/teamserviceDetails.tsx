@@ -6,6 +6,8 @@ import { fetchTeam } from "../../queries/departments";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import moment = require("moment");
+import { concatName } from "../../common/functions";
+import DeletePopup from "../../popups/universalPopups/deletePopup";
 
 interface Props {
   service: any;
@@ -134,7 +136,34 @@ class TeamServiceDetails extends React.Component<Props, State> {
             </div>
 
             {this.state.delete ? (
-              <PopupBase
+              <DeletePopup
+                key="deleteLicence"
+                heading="Delete Licence"
+                subHeading={`If you delete licence access for ${team.name} to ${
+                  service.planid.appid.name
+                }, you remove access for the following team members`}
+                employees={this.props.team.employees}
+                services={[service]}
+                main="service"
+                close={() => this.setState({ delete: false })}
+                submit={values =>
+                  removeServiceFromTeam({
+                    variables: {
+                      teamid: team.unitid.id,
+                      boughtplanid: service.id,
+                      keepLicences: values[`m-${service.id}`]
+                    },
+                    refetchQueries: [
+                      {
+                        query: fetchTeam,
+                        variables: { teamid: team.unitid.id }
+                      }
+                    ]
+                  })
+                }
+              />
+            ) : (
+              /* <PopupBase
                 small={true}
                 close={() => this.setState({ delete: false })}
                 closeable={false}
@@ -212,7 +241,7 @@ class TeamServiceDetails extends React.Component<Props, State> {
                 {/*<div>
                   Do you really want to remove {service.name} from <b>{team.name}</b>
                   {this.printRemoveService()}
-                </div>*/}
+                </div>*&/}
                 <UniversalButton type="low" closingPopup={true} label="Cancel" />
                 <UniversalButton
                   type="low"
@@ -244,8 +273,7 @@ class TeamServiceDetails extends React.Component<Props, State> {
                     });
                   }}
                 />
-              </PopupBase>
-            ) : (
+              </PopupBase>*/
               ""
             )}
           </div>

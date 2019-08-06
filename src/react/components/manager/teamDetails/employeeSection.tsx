@@ -41,7 +41,6 @@ class EmployeeSection extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("RERENDER EMPLOYEE");
     let employees: any[] = [];
     let interemployees: any[] = [];
     if (this.props.employees) {

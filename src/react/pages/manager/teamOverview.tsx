@@ -16,6 +16,8 @@ import PrintEmployeeSquare from "../../components/manager/universal/squares/prin
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 import ManageTeamEmployees from "../../components/manager/universal/managing/teamemployees";
 import ManageTeamServices from "../../components/manager/universal/managing/teamservices";
+import DeletePopup from "../../popups/universalPopups/deletePopup";
+import FormPopup from "../../popups/universalPopups/formPopup";
 
 interface Props {
   moveTo: Function;
@@ -32,6 +34,7 @@ interface State {
   deleting: number | null;
   willdeleting: number | null;
   keepLicences: { service: number; employee: number }[];
+  isadmin?: boolean;
 }
 
 const CREATE_TEAM = gql`
@@ -104,7 +107,6 @@ class TeamOverview extends React.Component<Props, State> {
   }
 
   addService(apps) {
-    console.log(apps);
     this.setState({ apps, saving: true, add: false });
   }
 
@@ -113,13 +115,14 @@ class TeamOverview extends React.Component<Props, State> {
       case 1:
         return (
           <PopupBase
-            fullmiddle={true}
-            customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}>
+            small={true}
+            close={() => this.setState({ add: false })}
+            additionalclassName="formPopup">
             <AddTeamGeneralData
               savingFunction={data => this.setState({ addteam: data.content, addStage: 2 })}
               close={() => this.setState({ add: false })}
               addteam={this.state.addteam}
+              isadmin={this.props.isadmin}
             />
           </PopupBase>
         );
@@ -165,6 +168,49 @@ class TeamOverview extends React.Component<Props, State> {
         return <div />;
     }
   }
+
+  loading() {
+    const amountFakes = Math.random() * 10 + 1;
+    const fakeArray: JSX.Element[] = [];
+
+    for (let index = 0; index < amountFakes; index++) {
+      fakeArray.push(
+        <div className="tableRow">
+          <div className="tableMain">
+            <div className="tableColumnBig">
+              <PrintTeamSquare team={{}} fake={true} />
+              <span className="name" />
+            </div>
+            <ColumnEmployees
+              employees={[null]}
+              employeeidFunction={e => e}
+              checkFunction={e => true}
+              fake={true}
+            />
+            <ColumnServices
+              services={[null]}
+              checkFunction={element => !element.disabled && !element.planid.appid.disabled}
+              appidFunction={element => element.planid.appid}
+              fake={true}
+            />
+          </div>
+          <div className="tableEnd" />
+        </div>
+      );
+    }
+    return fakeArray;
+  }
+
+  getKeepLicences(values) {
+    const keepLicences = [];
+    Object.keys(values).forEach(s => {
+      values[s].forEach(i => {
+        keepLicences.push({ service: s.substring(2), employee: i });
+      });
+    });
+    return keepLicences;
+  }
+
   render() {
     return (
       <div className="managerPage">
@@ -186,7 +232,46 @@ class TeamOverview extends React.Component<Props, State> {
             fetchPolicy="cache-and-network">
             {({ loading, error, data, refetch }) => {
               if (loading) {
-                return "Loading...";
+                return (
+                  <div className="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div className="tableColumnBig">
+                          <h1>Name</h1>
+                        </div>
+                        <div className="tableColumnBig">
+                          <h1>Employees</h1>
+                        </div>
+                        <div className="tableColumnBig">
+                          <h1>Services</h1>
+                        </div>
+                      </div>
+                      <div className="tableEnd">
+                        <UniversalButton
+                          type="high"
+                          label="Add Team"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "92px"
+                          }}
+                          onClick={() =>
+                            this.setState({
+                              add: true,
+                              addStage: 1,
+                              addemployees: [],
+                              addteam: {},
+                              apps: []
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    {this.loading()}
+                  </div>
+                );
               }
               if (error) {
                 return `Error! ${error.message}`;
@@ -330,7 +415,32 @@ class TeamOverview extends React.Component<Props, State> {
           </Mutation>
         )}
         {this.state.willdeleting && (
-          <PopupBase
+          <Mutation mutation={DELETE_TEAM}>
+            {deleteTeam => (
+              <DeletePopup
+                key="deleteTeam"
+                heading="Delete Team"
+                subHeading={`If you delete ${
+                  this.state.willdeleting!.name
+                }, you delete the following services of the following people`}
+                employees={this.state.willdeleting!.employees}
+                services={this.state.willdeleting!.services}
+                main="service"
+                close={() => this.setState({ willdeleting: null })}
+                submit={values =>
+                  deleteTeam({
+                    variables: {
+                      teamid: this.state.willdeleting!.unitid.id,
+                      keepLicences: this.getKeepLicences(values)
+                    },
+                    refetchQueries: [{ query: fetchCompanyTeams }]
+                  })
+                }
+              />
+            )}
+          </Mutation>
+
+          /* <PopupBase
             fullmiddle={true}
             dialog={true}
             close={() => this.setState({ willdeleting: null })}
@@ -342,7 +452,6 @@ class TeamOverview extends React.Component<Props, State> {
               type="low"
               label="Delete"
               onClick={() => {
-                console.log("THISSTATE", this.state);
                 this.setState(prevState => {
                   return {
                     willdeleting: null,
@@ -351,7 +460,7 @@ class TeamOverview extends React.Component<Props, State> {
                 });
               }}
             />
-          </PopupBase>
+          </PopupBase>*/
         )}
         {this.state.deleting && (
           <Mutation mutation={DELETE_TEAM}>

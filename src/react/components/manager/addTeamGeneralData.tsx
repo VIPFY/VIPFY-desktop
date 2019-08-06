@@ -14,6 +14,7 @@ interface Props {
   continue?: Function;
   addteam?: any;
   createTeam: Function;
+  isadmin?: boolean;
 }
 
 interface State {
@@ -42,16 +43,16 @@ class AddTeamGeneralData extends React.Component<Props, State> {
 
     return (
       <React.Fragment>
-        <span>
-          <span className="bHeading">Add Team </span>
-          {/*<span className="mHeading">
-            > <span className="active">General Data</span> > Employees > Services
-    </span>*/}
-        </span>
-        <TeamGerneralDataAdd setOuterState={s => this.setState(s)} picture={picture} name={name} />
-        <div className="buttonsPopup">
+        <h1>Add Team</h1>
+        <TeamGerneralDataAdd
+          setOuterState={s => this.setState(s)}
+          picture={picture}
+          name={name}
+          isadmin={this.props.isadmin}
+        />
+        <div className="buttonsPopup" style={{ justifyContent: "space-between" }}>
           <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />
-          <div className="buttonSeperator" />
+
           <UniversalButton
             label="Create"
             type="high"

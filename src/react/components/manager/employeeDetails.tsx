@@ -5,6 +5,8 @@ import UniversalButton from "../universalButtons/universalButton";
 import { fetchTeam } from "../../queries/departments";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
+import DeletePopup from "../../popups/universalPopups/deletePopup";
+import { concatName } from "../../common/functions";
 
 interface Props {
   employee: any;
@@ -110,6 +112,7 @@ class EmployeeDetails extends React.Component<Props, State> {
 
   render() {
     const employee = this.props.employee;
+    const team = this.props.team;
     return (
       <Mutation mutation={REMOVE_EMPLOYEE_FROM_TEAM} key={employee.id}>
         {removeFromTeam => (
@@ -168,7 +171,34 @@ class EmployeeDetails extends React.Component<Props, State> {
             </div>
 
             {this.state.delete ? (
-              <PopupBase
+              <DeletePopup
+                key="deleteEmployee"
+                heading="Remove Access"
+                subHeading={`If you remove access to ${team.name} for ${concatName(
+                  employee
+                )}, you remove the following services`}
+                employees={[employee]}
+                services={this.props.team.services}
+                main="employee"
+                close={() => this.setState({ delete: false })}
+                submit={values =>
+                  removeFromTeam({
+                    variables: {
+                      teamid: this.props.team.unitid.id,
+                      userid: employee!.id,
+                      keepLicences: values[`m-${employee!.id}`]
+                    },
+                    refetchQueries: [
+                      {
+                        query: fetchTeam,
+                        variables: { teamid: this.props.team.unitid.id }
+                      }
+                    ]
+                  })
+                }
+              />
+            ) : (
+              /*<PopupBase
                 small={true}
                 close={() => this.setState({ delete: false })}
                 closeable={false}
@@ -252,7 +282,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                   {`${this.state.delete!.firstname} ${this.state.delete!.lastname}} from{" "}
                   <b>{this.props.team.name}</b>
                   {this.printRemoveLicences(employee)}
-                </div>*/}
+                </div>*&/}
                 <UniversalButton type="low" closingPopup={true} label="Cancel" />
                 <UniversalButton
                   type="low"
@@ -284,8 +314,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                     });
                   }}
                 />
-              </PopupBase>
-            ) : (
+              </PopupBase>*/
               ""
             )}
           </div>
