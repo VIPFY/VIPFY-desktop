@@ -33,6 +33,7 @@ const VERIFY_TOKEN = gql`
 
 interface Props {
   close?: Function;
+  dontClose?: boolean;
   finishSetup?: Function;
   verifyToken: Function;
   user: User;
@@ -105,8 +106,10 @@ class GoogleAuth extends React.Component<Props, State> {
     return (
       <PopupBase
         buttonStyles={{ justifyContent: "space-between" }}
-        close={this.props.close}
-        closeable={true}
+        close={this.props.dontClose ? undefined : this.props.close}
+        closeable={this.props.dontClose ? false : true}
+        noSidebar={this.props.dontClose ? true : false}
+        nooutsideclose={this.props.dontClose ? true : false}
         small={true}>
         <section className="auth-apps">
           <h1>Set up your Authenticator</h1>
