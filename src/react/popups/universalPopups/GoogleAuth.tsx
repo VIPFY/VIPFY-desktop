@@ -26,8 +26,8 @@ export const GENERATE_SECRET = gql`
 `;
 
 const VERIFY_TOKEN = gql`
-  mutation onVerifyToken($userid: ID!, $type: TWOFA_TYPE!, $code: String!, $codeId: ID!) {
-    verifyToken(userid: $userid, type: $type, code: $code, codeId: $codeId)
+  mutation onVerify2FA($userid: ID!, $type: TWOFA_TYPE!, $code: String!, $codeId: ID!) {
+    verify2FA(userid: $userid, type: $type, code: $code, codeId: $codeId)
   }
 `;
 
