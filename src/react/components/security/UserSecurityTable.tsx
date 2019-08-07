@@ -94,6 +94,21 @@ class UserSecurityTable extends React.Component<Props> {
                       .toLocaleUpperCase()
                       .includes(this.props.search.toUpperCase())
                   )
+                  .sort((a, b) => {
+                    const nameA = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                    const nameB = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+
+                    if (nameA < nameB) {
+                      return -1;
+                    }
+
+                    if (nameA > nameB) {
+                      return 1;
+                    }
+
+                    // names must be equal
+                    return 0;
+                  })
                   .map((user, key) => (
                     <UserSecurityRow key={key} user={user} />
                   ))}
