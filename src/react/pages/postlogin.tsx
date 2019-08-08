@@ -106,16 +106,14 @@ const PostLogin = (props: PostLoginProps) => (
 
       if (data.me.needstwofa) {
         return (
-          <div style={{ display: "flex", flexFlow: "column", alignItems: "center" }}>
-            <h1>Please set up Two-Factor Authentication</h1>
-            <GoogleAuth
-              finishSetup={() => {
-                refetch();
-                clearProps.history.push("/area/dashboard");
-              }}
-              user={data.me}
-            />
-          </div>
+          <GoogleAuth
+            dontClose={true}
+            finishSetup={() => {
+              refetch();
+              clearProps.history.push("/area/dashboard");
+            }}
+            user={data.me}
+          />
         );
       }
 
