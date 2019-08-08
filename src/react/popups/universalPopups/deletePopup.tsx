@@ -11,7 +11,7 @@ interface Props {
   subHeading?: string | JSX.Element;
   services: any[];
   employees: any[];
-  main: any;
+  main?: any;
   close: Function;
   nooutsideclose?: boolean;
   submit: Function;

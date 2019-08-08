@@ -17,9 +17,11 @@ import ColumnTeams from "../../components/manager/universal/columns/columnTeams"
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
 import ManageTeams from "../../components/manager/universal/managing/teams";
 import ManageServices from "../../components/manager/universal/managing/services";
+import DeletePopup from "../../popups/universalPopups/deletePopup";
 
 interface Props {
   moveTo: Function;
+  isadmin?: boolean;
 }
 
 interface State {
@@ -74,9 +76,11 @@ class EmployeeOverview extends React.Component<Props, State> {
       case 1:
         return (
           <PopupBase
-            fullmiddle={true}
-            customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}>
+            //fullmiddle={true}
+            small={true}
+            //customStyles={{ maxWidth: "1152px" }}
+            close={() => this.setState({ add: false })}
+            additionalclassName="formPopup deletePopup">
             <AddEmployeePersonalData
               continue={data => {
                 this.setState({ addpersonal: data, addStage: 2 });
@@ -84,6 +88,7 @@ class EmployeeOverview extends React.Component<Props, State> {
               }}
               close={() => this.setState({ add: false })}
               addpersonal={this.state.addpersonal}
+              isadmin={this.props.isadmin}
             />
           </PopupBase>
         );
@@ -145,6 +150,53 @@ class EmployeeOverview extends React.Component<Props, State> {
         return <div />;
     }
   }
+
+  loading() {
+    const amountFakes = Math.random() * 10 + 1;
+    const fakeArray: JSX.Element[] = [];
+
+    for (let index = 0; index < amountFakes; index++) {
+      fakeArray.push(
+        <div className="tableRow">
+          <div className="tableMain">
+            <div className="tableColumnBig" style={{ width: "20%" }}>
+              <PrintTeamSquare team={{}} fake={true} />
+              <span className="name" />
+            </div>
+            <div className="tableColumnSmall" style={{ width: "5%" }}>
+              <div
+                className="status"
+                style={{
+                  backgroundColor: "#F2F2F2",
+                  marginTop: "18px",
+                  marginLeft: "0px",
+                  width: "40px",
+                  height: "16px"
+                }}
+              />
+            </div>
+            <ColumnTeams
+              {...this.props}
+              style={{ width: "20%" }}
+              teams={[null]}
+              teamidFunction={team => team}
+              fake={true}
+            />
+            <ColumnServices
+              style={{ width: "30%" }}
+              services={[null]}
+              checkFunction={element => !element.disabled && !element.planid.appid.disabled}
+              appidFunction={element => element.planid.appid}
+              fake={true}
+            />
+          </div>
+          <div className="tableEnd" />
+        </div>
+      );
+    }
+    return fakeArray;
+  }
+
   render() {
     return (
       <div className="managerPage">
@@ -163,7 +215,48 @@ class EmployeeOverview extends React.Component<Props, State> {
           <Query query={fetchDepartmentsData} fetchPolicy="network-only">
             {({ loading, error, data, refetch }) => {
               if (loading) {
-                return "Loading...";
+                return (
+                  <div className="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div className="tableColumnBig" style={{ width: "20%" }}>
+                          <h1>Name</h1>
+                        </div>
+                        <div className="tableColumnSmall" style={{ width: "5%" }}>
+                          <h1>Status</h1>
+                        </div>
+                        <div className="tableColumnBig" style={{ width: "20%" }}>
+                          <h1>Teams</h1>
+                        </div>
+                        <div className="tableColumnBig" style={{ width: "30%" }}>
+                          <h1>Services</h1>
+                        </div>
+                      </div>
+                      <div className="tableEnd">
+                        <UniversalButton
+                          type="high"
+                          label="Add Employee"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "92px"
+                          }}
+                          onClick={() =>
+                            this.setState({
+                              add: true,
+                              addStage: 1,
+                              addpersonal: {},
+                              apps: []
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    {this.loading()}
+                  </div>
+                );
               }
               if (error) {
                 return `Error! ${error.message}`;
@@ -437,41 +530,21 @@ class EmployeeOverview extends React.Component<Props, State> {
           </Mutation>
         )}
         {this.state.willdeleting && (
-          <PopupBase
-            fullmiddle={true}
-            dialog={true}
-            close={() => this.setState({ willdeleting: null })}
-            closeable={false}>
-            <p>Do you really want to delete the employee?</p>
-            <UniversalButton type="low" closingPopup={true} label="Cancel" />
-            <UniversalButton
-              type="low"
-              label="Delete"
-              onClick={() =>
-                this.setState(prevState => {
-                  return { willdeleting: null, deleting: prevState.willdeleting };
-                })
-              }
-            />
-          </PopupBase>
-        )}
-        {this.state.deleting && (
           <Mutation mutation={DELETE_EMPLOYEE}>
             {deleteEmployee => (
-              <PopupSelfSaving
-                savingmessage="Deleting employee"
-                savedmessage="Employee succesfully deleted"
-                saveFunction={async () =>
-                  await deleteEmployee({
+              <DeletePopup
+                key="removeEmployee"
+                heading="Remove Employee"
+                subHeading="By removing the employee from the company, you remove all accounts aswell"
+                services={[]}
+                employees={[]}
+                close={() => this.setState({ willdeleting: null })}
+                submit={() =>
+                  deleteEmployee({
                     variables: {
-                      employeeid: this.state.deleting
+                      employeeid: this.state.willdeleting
                     },
                     refetchQueries: [{ query: fetchDepartmentsData }]
-                  })
-                }
-                closeFunction={() =>
-                  this.setState({
-                    deleting: null
                   })
                 }
               />
