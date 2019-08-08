@@ -32,7 +32,7 @@ class HeaderNotificationItem extends Component<Props, State> {
         break;
       case "warning":
         classes += " warningNotification";
-        icon = "exclamation-triangle";
+        icon = "exclamation-circle";
         break;
       default:
         icon = "info-circle";
