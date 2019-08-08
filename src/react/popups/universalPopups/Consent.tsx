@@ -21,7 +21,7 @@ interface Props {
 export default (props: Props) => (
   <Mutation mutation={SET_CONSENT} onError={props.close} onCompleted={props.close}>
     {setConsent => (
-      <PopupBase dialog={true}>
+      <PopupBase buttonStyles={{ justifyContent: "space-between" }} dialog={true}>
         {consentText}
         <UniversalButton
           onClick={() => {

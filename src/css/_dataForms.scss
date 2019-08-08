@@ -55,7 +55,7 @@ $fullWidth: 904px;
     .login-buttons {
       flex: 1;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: flex-end;
       width: 313px;
 
@@ -226,7 +226,7 @@ $fullWidth: 904px;
     top: 104px;
     left: 328px;
     width: 312px;
-    max-height: 393px;
+    height: 350px;
     overflow-y: auto;
 
     .accountHolder {

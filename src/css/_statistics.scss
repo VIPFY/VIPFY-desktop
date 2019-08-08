@@ -116,16 +116,12 @@
       justify-content: flex-end;
       margin: 16px 16px 0 0;
 
-      i {
+      .fa-minus {
         margin: 0 12px;
       }
     
       .date-picker {
         width: 100px;
-
-        i {
-          margin: 0 1px;
-        }
       }
 
       .dropdown {
