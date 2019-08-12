@@ -17,40 +17,17 @@ class HeaderNotificationProvider extends Component<Props, State> {
   };
 
   componentDidMount() {
-    setHeaderNotification((message, key) => {
-      this.addHeaderNotification(message, { key: key, noDuplicates: true, type: "error" });
+    setHeaderNotification(async (message, options) => {
+      console.log("SETHEADERNOT", message, options);
+      await this.addHeaderNotification(message, { noDuplicates: true, ...options });
     });
     setDismissHeaderNotification((key, redoable) => this.dismissHeaderNotification(key, redoable));
   }
 
-  addHeaderNotification = (
+  addHeaderNotification = async (
     message,
     { key, noDuplicates = true, ...options }: { key?: String; noDuplicates?: Boolean } = {}
   ) => {
-    if (
-      noDuplicates &&
-      (this.state.notifications.findIndex(n => n.key == key) > -1 ||
-        this.state.pastnotifications.findIndex(n => n.key == key) > -1)
-    ) {
-      return null;
-    }
-
-    // close old notification
-    if (this.state.notifications.length > 0) {
-      this.setState(({ notifications }) => {
-        if (notifications[0].key != "impersonation") {
-          notifications[0].open = false;
-        }
-
-        return { notifications };
-      });
-      return setTimeout(() => this.addHeaderNotificationFinish(message, key, options), 400);
-    } else {
-      return this.addHeaderNotificationFinish(message, key, options);
-    }
-  };
-
-  addHeaderNotificationFinish = (message, key, options) => {
     const keyid = key || new Date().getTime() + Math.random();
 
     const notification = {
@@ -58,17 +35,26 @@ class HeaderNotificationProvider extends Component<Props, State> {
       message,
       ...options,
       time: new Date().getTime(),
-      open: true
+      open: false
     };
 
-    this.setState(({ notifications }) => {
+    let opennew = false;
+    await this.setState(({ notifications, pastnotifications }) => {
+      if (
+        noDuplicates &&
+        (notifications.findIndex(n => n.key == key) > -1 ||
+          pastnotifications.findIndex(n => n.key == key) > -1)
+      ) {
+        return;
+      }
+
       function getOrderNum(type) {
         switch (type) {
-          case "error":
-            return 0;
-          case "warning":
-            return 1;
           case "impersonation":
+            return 0;
+          case "error":
+            return 1;
+          case "warning":
             return 2;
 
           default:
@@ -76,16 +62,7 @@ class HeaderNotificationProvider extends Component<Props, State> {
         }
       }
 
-      let notificationadded = [
-        ...notifications.map(n => {
-          if (n.key != "impersonation") {
-            n.open = false;
-          }
-
-          return n;
-        }),
-        notification
-      ];
+      let notificationadded = [...notifications, notification];
       notificationadded.sort(function(
         a: { type?: String; time: number },
         b: { type?: String; time: number }
@@ -98,10 +75,36 @@ class HeaderNotificationProvider extends Component<Props, State> {
         }
       });
 
-      return { notifications: notificationadded };
-    });
+      opennew = true;
 
-    return keyid;
+      return { notifications: notificationadded, pastnotifications };
+    });
+    if (opennew) {
+      if (this.state.notifications.length > 1) {
+        if (!this.state.notifications[0].open) {
+          this.setState(({ notifications }) => {
+            notifications.map(n => {
+              n.open = false;
+              return n;
+            });
+            return { notifications };
+          });
+          setTimeout(
+            () =>
+              this.setState(({ notifications }) => {
+                notifications[0].open = true;
+                return { notifications };
+              }),
+            400
+          );
+        }
+      } else {
+        this.setState(({ notifications }) => {
+          notifications[0].open = true;
+          return { notifications };
+        });
+      }
+    }
   };
 
   dismissHeaderNotification = (key, redoable = false) => {
@@ -156,7 +159,6 @@ class HeaderNotificationProvider extends Component<Props, State> {
 
   render() {
     const { notifications } = this.state;
-
     return (
       <HeaderNotificationContext.Provider
         value={{
