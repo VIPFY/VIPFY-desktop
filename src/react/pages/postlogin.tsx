@@ -74,16 +74,17 @@ const PostLogin = (props: PostLoginProps) => (
           type: "impersonation",
           key: "impersonator",
           dismissButton: {
-            label: "Stop Impersonation",
-            dismissFunction: async () => {
-              localStorage.setItem("token", adminToken!);
-              localStorage.removeItem("impersonator-token");
+            label: "Stop Impersonation"
+          },
+          dismissFunction: async () => {
+            console.log("DEIMPERSONARE");
+            localStorage.setItem("token", adminToken!);
+            localStorage.removeItem("impersonator-token");
 
-              await props.history.push("/area/dashboard");
-              props.client.cache.reset(); // clear graphql cache
+            await props.history.push("/area/dashboard");
+            props.client.cache.reset(); // clear graphql cache
 
-              location.reload();
-            }
+            location.reload();
           }
         });
       }
