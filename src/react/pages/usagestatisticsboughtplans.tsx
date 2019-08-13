@@ -35,7 +35,6 @@ class UsageStatistics extends React.Component<Props, State> {
     return (
       <div className="statistic-team">
         <div className="statistic-team-header">
-          <IconButton icon="arrow-left" onClick={() => history.back()} />
           <h2>Usage Statistics</h2>
           <span>{teamname}</span>
         </div>
