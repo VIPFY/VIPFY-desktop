@@ -33,6 +33,7 @@ class UserSecurityRow extends React.Component<Props, State> {
 
   render() {
     const { user } = this.props;
+
     return (
       <React.Fragment>
         <tr>
