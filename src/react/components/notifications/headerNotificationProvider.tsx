@@ -18,10 +18,13 @@ class HeaderNotificationProvider extends Component<Props, State> {
 
   componentDidMount() {
     setHeaderNotification(async (message, options) => {
-      console.log("SETHEADERNOT", message, options);
       await this.addHeaderNotification(message, { noDuplicates: true, ...options });
     });
     setDismissHeaderNotification((key, redoable) => this.dismissHeaderNotification(key, redoable));
+  }
+
+  componentDidUpdate(nextProps, nextState) {
+    console.log("DIDUPDATE", this.props, nextProps, "|", this.state, nextState);
   }
 
   addHeaderNotification = async (
@@ -35,7 +38,7 @@ class HeaderNotificationProvider extends Component<Props, State> {
       message,
       ...options,
       time: new Date().getTime(),
-      open: false
+      open: true
     };
 
     let opennew = false;
@@ -82,20 +85,23 @@ class HeaderNotificationProvider extends Component<Props, State> {
     if (opennew) {
       if (this.state.notifications.length > 1) {
         if (!this.state.notifications[0].open) {
-          this.setState(({ notifications }) => {
-            notifications.map(n => {
-              n.open = false;
-              return n;
-            });
-            return { notifications };
-          });
-          setTimeout(
-            () =>
-              this.setState(({ notifications }) => {
-                notifications[0].open = true;
-                return { notifications };
-              }),
-            400
+          this.setState(
+            ({ notifications }) => {
+              notifications.map(n => {
+                n.open = false;
+                return n;
+              });
+              notifications[0].open = true;
+              return { notifications };
+            },
+            () => {
+              setTimeout(() => {
+                this.setState(({ notifications }) => {
+                  notifications[0].open = true;
+                  return { notifications: notifications };
+                });
+              }, 400);
+            }
           );
         }
       } else {
@@ -127,9 +133,10 @@ class HeaderNotificationProvider extends Component<Props, State> {
           notifications: remaining
         };
       } else {
+        const exited = notifications.find(n => n.key == key);
         return {
           notifications: remaining,
-          pastnotifications: [...pastnotifications, notifications.find(n => n.key == key)]
+          pastnotifications: [...pastnotifications, exited ? exited : null]
         };
       }
     });
