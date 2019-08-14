@@ -380,6 +380,11 @@ li {
 .newMainPosition{
     height: 100%
 }
+.newMainPositionFull{
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
 
 .pic-and-name {
   display: flex;
