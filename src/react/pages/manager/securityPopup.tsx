@@ -9,6 +9,9 @@ import Impersonate from "../../popups/universalPopups/Impersonate";
 import PasswordForce from "../../popups/universalPopups/PasswordReset";
 import PasswordUpdate from "../../popups/universalPopups/PasswordUpdate";
 import TwoFactorForce from "../../popups/universalPopups/TwoFactorForce";
+import UserName from "../../components/UserName";
+import { Query } from "react-apollo";
+import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/UserSecurityTable";
 
 interface Link {
   header: string;
@@ -29,6 +32,7 @@ interface State {
   showYubikey: boolean;
   showGoogleAuth: boolean;
   showPasswordForce: boolean;
+  showPasswordForce4All: boolean;
   showPasswordUpdate: boolean;
   showSudo: boolean;
   showForce2FA: boolean;
@@ -41,6 +45,7 @@ class SecurityPopup extends React.Component<Props, State> {
     showYubikey: false,
     showGoogleAuth: false,
     showPasswordForce: false,
+    showPasswordForce4All: false,
     showPasswordUpdate: false,
     showSudo: false,
     showForce2FA: false
@@ -78,6 +83,13 @@ class SecurityPopup extends React.Component<Props, State> {
       });
 
       links.push({
+        header: "Force Password Change for All",
+        text: "You can force every employee in your company to change their passwords",
+        state: "showPasswordForce4All",
+        button: "force all"
+      });
+
+      links.push({
         header: "Force Password Change",
         text: "You can force your employee to change his password if the current one is too weak",
         state: "showPasswordForce",
@@ -105,64 +117,80 @@ class SecurityPopup extends React.Component<Props, State> {
       <PopupBase
         styles={{ maxWidth: "656px" }}
         small={true}
+        buttonStyles={{ marginTop: "56px" }}
         close={this.props.closeFunction}
         closeable={true}>
         <section className="security-settings">
-          <h1>{this.state.show2FA ? "Two-Factor Authentication" : "Security Settings"}</h1>
-          {this.state.show2FA ? (
-            <ul>
-              <li style={{ cursor: "unset" }}>
-                <i className="fal fa-key start" />
-                <h3>Google Authenticator</h3>
-                <p className="settings-info">
-                  A mobile App that generates a dynamic 6 digit one time password
-                </p>
-                <p className="settings-message" />
-                <UniversalButton
-                  type="high"
-                  label="set it up"
-                  className="button-end"
-                  onClick={() => this.setState({ showGoogleAuth: true })}
-                />
-              </li>
+          <h1>Security Settings</h1>
+          <div className="sub-header">
+            Change the security settings of <UserName unitid={this.props.user.id} />
+          </div>
 
-              {/* <li style={{ cursor: "unset" }}>
-                <i className="fal fa-lock-alt start" />
-                <h3>Yubikey</h3>
-                <p className="settings-info">
-                  A hardware authentication device that emits one time passwords when tapped or
-                  touched
-                </p>
+          <ul>
+            {links.map(link => (
+              <li key={link.state} onClick={() => this.setState({ [link.state]: true })}>
+                <i className="fal fa-key start" />
+                <h3>{link.header}</h3>
+                <p className="settings-info">{link.text}</p>
                 <p className="settings-message" />
-                <UniversalButton
-                  type="high"
-                  label="set it up"
-                  className="button-end"
-                  onClick={() => this.setState({ showYubikey: true })}
-                />
-              </li> */}
-            </ul>
-          ) : (
-            <ul>
-              {links.map(link => (
-                <li key={link.state} onClick={() => this.setState({ [link.state]: true })}>
-                  <i className="fal fa-key start" />
-                  <h3>{link.header}</h3>
-                  <p className="settings-info">{link.text}</p>
-                  <p className="settings-message" />
-                  {link.button ? (
+                {link.button ? (
+                  <UniversalButton className="button-end" type="high" label={link.button} />
+                ) : (
+                  <i className="fal fa-pen end" />
+                )}
+              </li>
+            ))}
+          </ul>
+
+          {this.state.show2FA && (
+            <PopupBase
+              styles={{ maxWidth: "656px" }}
+              small={true}
+              buttonStyles={{ marginTop: "56px" }}
+              close={this.props.closeFunction}
+              closeable={true}>
+              <section>
+                <h1>Two-Factor Authentication</h1>
+                <ul>
+                  <li style={{ cursor: "unset" }}>
+                    <i className="fal fa-key start" />
+                    <h3 style={{ justifySelf: "start" }}>Google Authenticator</h3>
+                    <p style={{ textAlign: "start" }} className="settings-info">
+                      A mobile App that generates a dynamic 6 digit one time password
+                    </p>
+                    <p className="settings-message" />
                     <UniversalButton
-                      customStyles={{ paddingLeft: "16px", paddingRight: "16px" }}
-                      className="button-end"
                       type="high"
-                      label={link.button}
+                      label="set it up"
+                      className="button-end"
+                      onClick={() => this.setState({ showGoogleAuth: true })}
                     />
-                  ) : (
-                    <i className="fal fa-pen end" />
-                  )}
-                </li>
-              ))}
-            </ul>
+                  </li>
+
+                  {/* <li style={{ cursor: "unset" }}>
+                    <i className="fal fa-lock-alt start" />
+                    <h3>Yubikey</h3>
+                    <p className="settings-info">
+                      A hardware authentication device that emits one time passwords when tapped or
+                      touched
+                    </p>
+                    <p className="settings-message" />
+                    <UniversalButton
+                      type="high"
+                      label="set it up"
+                      className="button-end"
+                      onClick={() => this.setState({ showYubikey: true })}
+                    />
+                  </li> */}
+                </ul>
+
+                <UniversalButton
+                  type="low"
+                  label="back"
+                  onClick={() => this.setState({ show2FA: false })}
+                />
+              </section>
+            </PopupBase>
           )}
 
           {this.state.showPasswordReset && (
@@ -209,9 +237,31 @@ class SecurityPopup extends React.Component<Props, State> {
 
           {this.state.showPasswordForce && (
             <PasswordForce
-              unitid={this.props.user.id}
+              unitids={[this.props.user.id]}
               closeFunction={() => this.setState({ showPasswordForce: false })}
             />
+          )}
+
+          {this.state.showPasswordForce4All && (
+            <Query pollInterval={60 * 10 * 1000 + 7000} query={FETCH_USER_SECURITY_OVERVIEW}>
+              {({ data, loading, error }) => {
+                if (loading) {
+                  return <div>Loading</div>;
+                }
+
+                if (error) {
+                  return <div>Error fetching data</div>;
+                }
+
+                return (
+                  <PasswordForce
+                    bulk={true}
+                    unitids={data.fetchUserSecurityOverview.map(user => user.id)}
+                    closeFunction={() => this.setState({ showPasswordForce4All: false })}
+                  />
+                );
+              }}
+            </Query>
           )}
         </section>
 

@@ -1,9 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { times } from "lodash";
 import { Query, graphql } from "react-apollo";
 import { concatName } from "../../common/functions";
-import UniversalButton from "../universalButtons/universalButton";
 import UserSecurityRow from "./UserSecurityRow";
 
 interface Props {
@@ -48,77 +46,61 @@ export const FETCH_USER_SECURITY_OVERVIEW = gql`
   }
 `;
 
-class UserSecurityTable extends React.Component<Props> {
-  forceReset = async userids => {
-    try {
-      await this.props.forcePasswordChange({
-        variables: { userids },
-        refetchQueries: [{ query: FETCH_USER_SECURITY_OVERVIEW }]
-      });
-    } catch (err) {
-      console.log("Force reset not possible", err);
-    }
-  };
+const UserSecurityTable = (props: Props) => (
+  <Query
+    pollInterval={60 * 10 * 1000 + 7000}
+    query={FETCH_USER_SECURITY_OVERVIEW}
+    fetchPolicy="network-only">
+    {({ data, loading, error }) => {
+      if (loading) {
+        return <div>Loading</div>;
+      }
 
-  render() {
-    return (
-      <Query
-        pollInterval={60 * 10 * 1000 + 7000}
-        query={FETCH_USER_SECURITY_OVERVIEW}
-        fetchPolicy="network-only">
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <div>Loading</div>;
-          }
+      if (error || !data) {
+        return <div>Error fetching data</div>;
+      }
+      return (
+        <table className="security-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Last Active</th>
+              <th>PW Strength</th>
+              <th>Admin Rights</th>
+              <th>Two-Factor</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {data.fetchUserSecurityOverview
+              .filter(user =>
+                concatName(user.unitid)
+                  .toLocaleUpperCase()
+                  .includes(props.search.toUpperCase())
+              )
+              .sort((a, b) => {
+                const nameA = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                const nameB = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
 
-          if (error) {
-            return <div>Error fetching data</div>;
-          }
+                if (nameA < nameB) {
+                  return -1;
+                }
 
-          return (
-            <table className="security-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Last Active</th>
-                  <th>PW Strength</th>
-                  <th>Admin Rights</th>
-                  <th>Two-Factor</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {data.fetchUserSecurityOverview
-                  .filter(user =>
-                    concatName(user.unitid)
-                      .toLocaleUpperCase()
-                      .includes(this.props.search.toUpperCase())
-                  )
-                  .sort((a, b) => {
-                    const nameA = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
-                    const nameB = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                if (nameA > nameB) {
+                  return 1;
+                }
 
-                    if (nameA < nameB) {
-                      return -1;
-                    }
-
-                    if (nameA > nameB) {
-                      return 1;
-                    }
-
-                    // names must be equal
-                    return 0;
-                  })
-                  .map((user, key) => (
-                    <UserSecurityRow key={key} user={user} />
-                  ))}
-              </tbody>
-            </table>
-          );
-        }}
-      </Query>
-    );
-  }
-}
+                // names must be equal
+                return 0;
+              })
+              .map((user, key) => (
+                <UserSecurityRow {...props} key={key} user={user} />
+              ))}
+          </tbody>
+        </table>
+      );
+    }}
+  </Query>
+);
 
 export default graphql(FORCE_RESET, { name: "forcePasswordChange" })(UserSecurityTable);
