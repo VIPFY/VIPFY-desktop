@@ -23,10 +23,6 @@ class HeaderNotificationProvider extends Component<Props, State> {
     setDismissHeaderNotification((key, redoable) => this.dismissHeaderNotification(key, redoable));
   }
 
-  componentDidUpdate(nextProps, nextState) {
-    console.log("DIDUPDATE", this.props, nextProps, "|", this.state, nextState);
-  }
-
   addHeaderNotification = async (
     message,
     { key, noDuplicates = true, ...options }: { key?: String; noDuplicates?: Boolean } = {}
