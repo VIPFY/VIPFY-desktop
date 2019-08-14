@@ -54,18 +54,15 @@
       }
 
       .body {
-        height: 128px;
         padding: 32px 24px 40px;
         display: grid;
-        grid-template-rows: 1fr 1fr;
-        grid-template-columns: 1fr 1fr;
-        grid-column-gap: 32px;
+        grid-template-rows: 52px 52px;
+        grid-template-columns: 104px 144px;
+        grid-column-gap: 24px;
 
         .circle {
           grid-column: 1 / 2;
           grid-row: 1 / -1;
-          display: flex;
-          align-items: center;
         }
 
         .info {
@@ -76,7 +73,7 @@
           &-user {
             grid-column: 2 / 3;
             grid-row-start: span 1;
-            align-self: start;
+            align-self: center;
             display: flex;
 
             i {
@@ -116,16 +113,12 @@
       justify-content: flex-end;
       margin: 16px 16px 0 0;
 
-      i {
+      .fa-minus {
         margin: 0 12px;
       }
     
       .date-picker {
         width: 100px;
-
-        i {
-          margin: 0 1px;
-        }
       }
 
       .dropdown {

@@ -17,6 +17,7 @@ interface Props {
   addpersonal: any;
   heading?: string;
   createEmployee: Function;
+  isadmin?: boolean;
 }
 
 interface State {
@@ -95,28 +96,29 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
   render() {
     return (
       <React.Fragment>
-        <span>
-          <span className="bHeading">{this.props.heading || "Add Employee"}</span>
-        </span>
-        <EmployeeGerneralDataAdd
-          addpersonal={this.props.addpersonal}
-          setOuterState={s => this.setState(s)}
-        />
-        <div className="buttonsPopup">
-          <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />
-          <div className="buttonSeperator" />
-          <UniversalButton
-            label="Continue"
-            type="high"
-            disabled={
-              this.state.name == "" || this.state.wmail1 == "" || !this.state.wmail1.includes("@")
-            }
-            onClick={() =>
-              this.props.addpersonal.unitid
-                ? this.props.continue(this.state)
-                : this.setState({ confirm: true })
-            }
+        <h1>{this.props.heading || "Add Employee"}</h1>
+        <div className="deleteContent" style={{ overflowY: "scroll" }}>
+          <EmployeeGerneralDataAdd
+            addpersonal={this.props.addpersonal}
+            setOuterState={s => this.setState(s)}
+            isadmin={this.props.isadmin}
           />
+
+          <div className="buttonsPopup" style={{ justifyContent: "space-between" }}>
+            <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />
+            <UniversalButton
+              label="Continue"
+              type="high"
+              disabled={
+                this.state.name == "" || this.state.wmail1 == "" || !this.state.wmail1.includes("@")
+              }
+              onClick={() =>
+                this.props.addpersonal.unitid
+                  ? this.props.continue(this.state)
+                  : this.setState({ confirm: true })
+              }
+            />
+          </div>
         </div>
         {this.state.confirm && (
           <PopupBase small={true} close={() => this.setState({ confirm: false })}>

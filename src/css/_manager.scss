@@ -252,9 +252,26 @@
             justify-content: center;
             align-items: center;
             flex-flow: column;
-
+            
             &>span{
                 font-size: 13px;
+            }
+        }
+
+        &Team{
+            @extend .profilepicture;
+            margin-top: 0px;
+            margin-left: 0px;
+            width: 88px;
+            height: 88px;
+            text-align: center;
+            font-size: 44px;
+            line-height: 88px;
+            color: white;
+
+            .imagehover{
+                font-size: 16px;
+                line-height: normal;
             }
         }
 

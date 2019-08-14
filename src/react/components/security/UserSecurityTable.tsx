@@ -56,10 +56,9 @@ const UserSecurityTable = (props: Props) => (
         return <div>Loading</div>;
       }
 
-      if (error) {
+      if (error || !data) {
         return <div>Error fetching data</div>;
       }
-
       return (
         <table className="security-table">
           <thead>
@@ -68,7 +67,7 @@ const UserSecurityTable = (props: Props) => (
               <th>Last Active</th>
               <th>PW Strength</th>
               <th>Admin Rights</th>
-              <th>Two Factor Authentication</th>
+              <th>Two-Factor</th>
               <th />
             </tr>
           </thead>
@@ -79,8 +78,23 @@ const UserSecurityTable = (props: Props) => (
                   .toLocaleUpperCase()
                   .includes(props.search.toUpperCase())
               )
+              .sort((a, b) => {
+                const nameA = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                const nameB = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+
+                if (nameA < nameB) {
+                  return -1;
+                }
+
+                if (nameA > nameB) {
+                  return 1;
+                }
+
+                // names must be equal
+                return 0;
+              })
               .map((user, key) => (
-                <UserSecurityRow key={key} user={user} />
+                <UserSecurityRow {...props} key={key} user={user} />
               ))}
           </tbody>
         </table>

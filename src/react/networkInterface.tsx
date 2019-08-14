@@ -3,6 +3,7 @@ import { ApolloLink, split } from "apollo-link";
 import { WebSocketLink } from "apollo-link-ws";
 import { setContext } from "apollo-link-context";
 import { createUploadLink } from "apollo-upload-client";
+import { RetryLink } from "apollo-link-retry";
 import { onError } from "apollo-link-error";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
@@ -154,7 +155,7 @@ let handleUpgradeError = () => {
   return;
 };
 
-let addHeaderNotification = (message, key) => {
+let addHeaderNotification = (message, options) => {
   return;
 };
 
@@ -198,14 +199,26 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 
   if (networkError) {
-    addHeaderNotification("Network Problem", "network");
+    addHeaderNotification("Network Problem", {
+      type: "error",
+      key: "network"
+    });
     logger.warn(`[Network error]: ${networkError}`);
   }
 });
 
+const retryLink = new RetryLink({
+  attempts: {
+    max: 10
+  },
+  delay: {
+    initial: 1000
+  }
+});
+
 // Concatenate the created middle- and afterware together
-const httpLinkWithMiddleware = errorLink.concat(
-  afterwareLink.concat(middlewareLink.concat(httpLink))
+const httpLinkWithMiddleware = retryLink.concat(
+  errorLink.concat(afterwareLink.concat(middlewareLink.concat(httpLink)))
 );
 
 // Split the links, so that each can be used for the defined operation

@@ -49,7 +49,6 @@ class Notification extends React.Component<Props, State> {
   }
   handleClickOutside = e => {
     const domNode = ReactDOM.findDOMNode(this);
-    console.log("CLICK", e.target, this.state);
     if (!domNode || !domNode.contains(e.target)) {
       this.props.closeme();
     }

@@ -74,16 +74,17 @@ const PostLogin = (props: PostLoginProps) => (
           type: "impersonation",
           key: "impersonator",
           dismissButton: {
-            label: "Stop Impersonation",
-            dismissFunction: async () => {
-              localStorage.setItem("token", adminToken!);
-              localStorage.removeItem("impersonator-token");
+            label: "Stop Impersonation"
+          },
+          dismissFunction: async () => {
+            console.log("DEIMPERSONARE");
+            localStorage.setItem("token", adminToken!);
+            localStorage.removeItem("impersonator-token");
 
-              await props.history.push("/area/dashboard");
-              props.client.cache.reset(); // clear graphql cache
+            await props.history.push("/area/dashboard");
+            props.client.cache.reset(); // clear graphql cache
 
-              location.reload();
-            }
+            location.reload();
           }
         });
       }
@@ -106,16 +107,14 @@ const PostLogin = (props: PostLoginProps) => (
 
       if (data.me.needstwofa) {
         return (
-          <div style={{ display: "flex", flexFlow: "column", alignItems: "center" }}>
-            <h1>Please set up Two-Factor Authentication</h1>
-            <GoogleAuth
-              finishSetup={() => {
-                refetch();
-                clearProps.history.push("/area/dashboard");
-              }}
-              user={data.me}
-            />
-          </div>
+          <GoogleAuth
+            dontClose={true}
+            finishSetup={() => {
+              refetch();
+              clearProps.history.push("/area/dashboard");
+            }}
+            user={data.me}
+          />
         );
       }
 

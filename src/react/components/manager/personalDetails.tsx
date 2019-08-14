@@ -617,8 +617,14 @@ class PersonalDetails extends React.Component<Props, State> {
         {this.state.edit && (
           <Mutation mutation={UPDATE_DATA}>
             {updateEmployee => (
-              <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
-                <h2 className="boldHeading">Edit Personal Data of {concatName(querydata)}</h2>
+              <PopupBase
+                small={true}
+                buttonStyles={{ justifyContent: "space-between" }}
+                additionalclassName="formPopup">
+                <h1>Edit Personal Data</h1>
+                <h2>
+                  Edit {this.state.edit!.label} of {concatName(querydata)}
+                </h2>
                 <div>{this.printEditForm()}</div>
                 <UniversalButton
                   label="Cancel"

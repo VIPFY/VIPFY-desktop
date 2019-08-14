@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Route } from "react-router-dom";
-import { withRouter } from "react-router";
+import { withRouter, Switch } from "react-router";
 
 import { graphql, compose, Query, withApollo } from "react-apollo";
 
@@ -452,87 +452,91 @@ class Area extends React.Component<AreaProps, AreaState> {
               return <HistoryButtons viewID={this.state.viewID} />;
             }}
           />
-          <Route
-            exact
-            path="/area/support"
-            render={props => <SupportPage {...this.state} {...this.props} {...props} />}
-          />
+          <Switch>
+            <Route
+              exact
+              path="/area/support"
+              render={props => <SupportPage {...this.state} {...this.props} {...props} />}
+            />
 
-          {routes.map(({ path, component, admincomponent, admin, addprops }) => {
-            const RouteComponent = component;
-            const AdminComponent = admincomponent;
-            if (admin && this.props.company.unit.id != 14) {
-              return;
-            } else {
-              return (
-                <Route
-                  key={path}
-                  exact
-                  path={`/area/${path}`}
-                  render={props => (
-                    <div
-                      className={`${
-                        !this.props.location.pathname.includes("advisor") ? "full-working" : ""
-                      } ${chatOpen ? "chat-open" : ""} ${
-                        sidebarOpen && !props.location.pathname.includes("advisor")
-                          ? "sidebar-open"
-                          : ""
-                      }`}
-                      style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
-                      <ResizeAware>
-                        <RouteComponent
-                          setApp={this.setApp}
-                          toggleAdmin={this.toggleAdmin}
-                          adminOpen={this.state.adminOpen}
-                          moveTo={this.moveTo}
-                          {...addprops}
-                          {...this.props}
-                          {...props}
-                        />
-                      </ResizeAware>
-                    </div>
-                  )}
-                />
-              );
-            }
-          })}
-
-          <Route
-            exact
-            path="/area/domains/"
-            render={props => (
-              <div
-                className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                  sidebarOpen ? "sidebar-open" : ""
-                }`}>
-                <Domains setDomain={this.setDomain} {...this.props} {...props} />
-              </div>
-            )}
-          />
-          <Route
-            exact
-            path="/area/domains/:domain"
-            render={props => (
-              <div
-                className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                  sidebarOpen ? "sidebar-open" : ""
-                }`}>
-                <Domains setDomain={this.setDomain} {...this.props} {...props} />
-              </div>
-            )}
-          />
-
-          <Route
-            exact
-            path="/area/app/:licenceid"
-            render={props => {
-              if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
-                this.setApp(props.match.params.licenceid);
+            {routes.map(({ path, component, admincomponent, admin, addprops }) => {
+              const RouteComponent = component;
+              const AdminComponent = admincomponent;
+              if (admin && this.props.company.unit.id != 14) {
+                return;
+              } else {
+                return (
+                  <Route
+                    key={path}
+                    exact
+                    path={`/area/${path}`}
+                    render={props => (
+                      <div
+                        className={`${
+                          !this.props.location.pathname.includes("advisor") ? "full-working" : ""
+                        } ${chatOpen ? "chat-open" : ""} ${
+                          sidebarOpen && !props.location.pathname.includes("advisor")
+                            ? "sidebar-open"
+                            : ""
+                        }`}
+                        style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
+                        <ResizeAware>
+                          <RouteComponent
+                            setApp={this.setApp}
+                            toggleAdmin={this.toggleAdmin}
+                            adminOpen={this.state.adminOpen}
+                            moveTo={this.moveTo}
+                            {...addprops}
+                            {...this.props}
+                            {...props}
+                          />
+                        </ResizeAware>
+                      </div>
+                    )}
+                  />
+                );
               }
-              return "";
-            }}
-          />
-          {/*<Route
+            })}
+
+            <Route
+              exact
+              path="/area/domains/"
+              render={props => (
+                <div
+                  className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                    sidebarOpen ? "sidebar-open" : ""
+                  }`}>
+                  <Domains setDomain={this.setDomain} {...this.props} {...props} />
+                </div>
+              )}
+            />
+            <Route
+              exact
+              path="/area/domains/:domain"
+              render={props => (
+                <div
+                  className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                    sidebarOpen ? "sidebar-open" : ""
+                  }`}>
+                  <Domains setDomain={this.setDomain} {...this.props} {...props} />
+                </div>
+              )}
+            />
+
+            <Route
+              exact
+              path="/area/app/:licenceid"
+              render={props => {
+                if (
+                  this.state.licenceID != props.match.params.licenceid ||
+                  this.state.viewID == -1
+                ) {
+                  this.setApp(props.match.params.licenceid);
+                }
+                return "";
+              }}
+            />
+            {/*<Route
             exact
             path="/area/app/:licenceid/:url"
             render={props => {
@@ -547,6 +551,8 @@ class Area extends React.Component<AreaProps, AreaState> {
               return "";
             }}
           />*/}
+            <Route component={ErrorPage} />
+          </Switch>
 
           <ViewHandler
             showView={this.state.viewID}
