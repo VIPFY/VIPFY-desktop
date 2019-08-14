@@ -211,6 +211,7 @@ class LicenceRow extends React.Component<Props, State> {
                     options={options}
                     holder={this.props.holder}
                     scrollItem={this.row}
+                    header=""
                   />
                 );
               }}

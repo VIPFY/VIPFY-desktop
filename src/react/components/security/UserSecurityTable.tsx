@@ -83,7 +83,7 @@ class UserSecurityTable extends React.Component<Props> {
                   <th>Last Active</th>
                   <th>PW Strength</th>
                   <th>Admin Rights</th>
-                  <th>Two Factor Authentication</th>
+                  <th>Two-Factor</th>
                   <th />
                 </tr>
               </thead>
@@ -94,25 +94,24 @@ class UserSecurityTable extends React.Component<Props> {
                       .toLocaleUpperCase()
                       .includes(this.props.search.toUpperCase())
                   )
+                  .sort((a, b) => {
+                    const nameA = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                    const nameB = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+
+                    if (nameA < nameB) {
+                      return -1;
+                    }
+
+                    if (nameA > nameB) {
+                      return 1;
+                    }
+
+                    // names must be equal
+                    return 0;
+                  })
                   .map((user, key) => (
                     <UserSecurityRow key={key} user={user} />
                   ))}
-                <tr>
-                  {times(3, n => (
-                    <td key={n} />
-                  ))}
-                  <td colSpan={3}>
-                    {data.fetchUserSecurityOverview.length > 1 && (
-                      <UniversalButton
-                        type="low"
-                        label="Force all"
-                        onClick={() =>
-                          this.forceReset(data.fetchUserSecurityOverview.map(user => user.id))
-                        }
-                      />
-                    )}
-                  </td>
-                </tr>
               </tbody>
             </table>
           );

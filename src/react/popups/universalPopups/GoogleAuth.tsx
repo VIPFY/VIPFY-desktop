@@ -26,13 +26,14 @@ export const GENERATE_SECRET = gql`
 `;
 
 const VERIFY_TOKEN = gql`
-  mutation onVerifyToken($userid: ID!, $type: TWOFA_TYPE!, $code: String!, $codeId: ID!) {
-    verifyToken(userid: $userid, type: $type, code: $code, codeId: $codeId)
+  mutation onVerify2FA($userid: ID!, $type: TWOFA_TYPE!, $code: String!, $codeId: ID!) {
+    verify2FA(userid: $userid, type: $type, code: $code, codeId: $codeId)
   }
 `;
 
 interface Props {
   close?: Function;
+  dontClose?: boolean;
   finishSetup?: Function;
   verifyToken: Function;
   user: User;
@@ -105,8 +106,10 @@ class GoogleAuth extends React.Component<Props, State> {
     return (
       <PopupBase
         buttonStyles={{ justifyContent: "space-between" }}
-        close={this.props.close}
-        closeable={true}
+        close={this.props.dontClose ? undefined : this.props.close}
+        closeable={this.props.dontClose ? false : true}
+        noSidebar={this.props.dontClose ? true : false}
+        nooutsideclose={this.props.dontClose ? true : false}
         small={true}>
         <section className="auth-apps">
           <h1>Set up your Authenticator</h1>

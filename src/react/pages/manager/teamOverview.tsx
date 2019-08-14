@@ -440,31 +440,6 @@ class TeamOverview extends React.Component<Props, State> {
             )}
           </Mutation>
         )}
-        {this.state.deleting && (
-          <Mutation mutation={DELETE_TEAM}>
-            {deleteTeam => (
-              <PopupSelfSaving
-                savingmessage="Deleting team"
-                savedmessage="Team succesfully deleted"
-                saveFunction={async () =>
-                  await deleteTeam({
-                    variables: {
-                      teamid: this.state.deleting,
-                      keepLicences: this.state.keepLicences
-                    },
-                    refetchQueries: [{ query: fetchCompanyTeams }]
-                  })
-                }
-                closeFunction={() =>
-                  this.setState({
-                    deleting: null,
-                    keepLicences: []
-                  })
-                }
-              />
-            )}
-          </Mutation>
-        )}
       </div>
     );
   }

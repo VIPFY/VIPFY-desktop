@@ -164,13 +164,7 @@ class RegisterCompany extends React.Component<Props, State> {
                 height: "92px"
               }}>
               <UniversalCheckbox name="tos" liveValue={v => this.setState({ tos: v })}>
-                <div
-                  style={{
-                    position: "absolute",
-                    width: "194px",
-                    top: "1px",
-                    left: "27px"
-                  }}>
+                <div className="agreement-text">
                   By registering I agree to the
                   <div
                     className="fancy-link"
@@ -182,13 +176,7 @@ class RegisterCompany extends React.Component<Props, State> {
               </UniversalCheckbox>
 
               <UniversalCheckbox name="privacy" liveValue={v => this.setState({ privacy: v })}>
-                <div
-                  style={{
-                    position: "absolute",
-                    width: "210px",
-                    top: "1px",
-                    left: "27px"
-                  }}>
+                <div className="agreement-text">
                   By registering I agree to the
                   <div
                     className="fancy-link"
@@ -224,7 +212,8 @@ class RegisterCompany extends React.Component<Props, State> {
                 close={() => this.setState({ register: false, error: "" })}
                 small={true}
                 closeable={false}
-                nosidebar={true}>
+                fullMiddle={true}
+                noSidebar={true}>
                 {this.state.error != "" ? (
                   <React.Fragment>
                     <div>{this.state.error}</div>

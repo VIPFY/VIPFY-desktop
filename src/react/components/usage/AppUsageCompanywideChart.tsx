@@ -75,7 +75,7 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
 
             <DropDown
               handleChange={value => this.setState({ sortBy: value })}
-              defaultValue={{ label: "Sort By" }}
+              header="Sort By"
               options={["A-Z", "Most Used", "Least Used"]}
               option={this.state.sortBy}
             />

@@ -1,5 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
+import { Query } from "react-apollo";
+import gql from "graphql-tag";
 
 interface Props {
   notification: any;
@@ -10,6 +12,14 @@ interface Props {
 interface State {
   mounted: Boolean;
 }
+
+const PING_SERVER = gql`
+  query {
+    pingServer {
+      ok
+    }
+  }
+`;
 
 class HeaderNotificationItem extends Component<Props, State> {
   state = { mounted: false };
@@ -28,7 +38,7 @@ class HeaderNotificationItem extends Component<Props, State> {
     switch (type) {
       case "error":
         classes += " errorNotification";
-        icon = "times-circle";
+        icon = "engine-warning";
         break;
       case "warning":
         classes += " warningNotification";
@@ -53,6 +63,22 @@ class HeaderNotificationItem extends Component<Props, State> {
           }}>
           <i className={`fal fa-${icon}`} style={{ marginRight: "16px", fontSize: "24px" }} />
           <span style={{ lineHeight: "40px" }}>{message}</span>
+          {this.props.notification.key == "network" && (
+            <Query query={PING_SERVER} pollInterval={1 * 1000} fetchPolicy="network-only">
+              {({ loading, error, data }) => {
+                if (loading) {
+                  return "";
+                }
+                if (error) {
+                  return "";
+                }
+                if (data) {
+                  this.props.dismiss();
+                }
+                return "";
+              }}
+            </Query>
+          )}
         </div>
         {dismissButton && (
           <button

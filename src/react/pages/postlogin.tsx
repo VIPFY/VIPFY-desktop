@@ -89,8 +89,8 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                   localStorage.setItem("token", adminToken!);
                   localStorage.removeItem("impersonator-token");
 
-                  await props.history.push("/area/dashboard");
-                  props.client.cache.reset(); // clear graphql cache
+                  await this.props.history.push("/area/dashboard");
+                  this.props.client.cache.reset(); // clear graphql cache
 
                   location.reload();
                 }
@@ -101,7 +101,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           if (!data.me.company.setupfinished) {
             return (
               <div className="centralize backgroundLogo">
-                <DataNameForm moveTo={props.moveTo} />
+                <DataNameForm moveTo={this.props.moveTo} />
               </div>
             );
           }

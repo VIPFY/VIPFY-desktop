@@ -265,4 +265,13 @@ $modal-wh: 50%;
     display: flex;
     margin-bottom: 24px;
   }
+  .coll{
+    transition: height 300ms ease-in-out, margin-top 0ms ease-in-out 300ms;
+    overflow: hidden;
+  }
+  .chevron{
+    margin-right: 8px;
+    line-height: 24px;
+    transition: transform 300ms ease-in-out;
+  }
 }

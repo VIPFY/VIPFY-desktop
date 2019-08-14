@@ -76,6 +76,7 @@ const FETCH_UNIT_APPS = gql`
 
 interface State {
   showDeletion: null | number;
+  active: string;
 }
 
 interface Props {
@@ -101,7 +102,7 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 });
 
 class AppListInner extends React.Component<Props, State> {
-  state = { showDeletion: null };
+  state = { showDeletion: null, active: "" };
 
   render() {
     if (!this.props.data.fetchUnitApps || !this.props.data.fetchUnitAppsSimpleStats) {
@@ -165,7 +166,14 @@ class AppListInner extends React.Component<Props, State> {
         }
 
         return (
-          <tr key={key}>
+          <tr
+            key={key}
+            onClick={() =>
+              this.props.history.push({
+                pathname: `/area/usage/boughtplan/${boughtplan.id}`,
+                state: { name: alias || appName }
+              })
+            }>
             <td>
               <PrintServiceSquare
                 service={boughtplan}
@@ -225,7 +233,10 @@ class AppListInner extends React.Component<Props, State> {
               <IconButton
                 title="Delete"
                 className="editButtons"
-                onClick={() => this.setState({ showDeletion: key })}
+                onClick={e => {
+                  e.stopPropagation();
+                  this.setState({ showDeletion: key });
+                }}
                 icon="trash-alt"
               />
 
@@ -246,11 +257,12 @@ class AppListInner extends React.Component<Props, State> {
                   {(removeAccount, { loading, error }) => (
                     <PopupBase
                       small={true}
+                      styles={{ textAlign: "center" }}
+                      buttonStyles={{ justifyContent: "space-around" }}
                       close={() => this.setState({ showDeletion: null })}
                       closeable={false}>
-                      <div>{`Please confirm that you want to delete ${
-                        alias ? alias : appName
-                      }`}</div>
+                      <h1>Delete Service</h1>
+                      <div>{`Do you really want to delete ${alias ? alias : appName}?`}</div>
 
                       {error && <ErrorComp error={error} />}
 
@@ -302,7 +314,7 @@ export default class AppListOuter extends React.Component<{ company: any }, {}> 
 
           return (
             <Collapsible child={this.teamRef} title="Teams">
-              <div ref={this.teamRef} style={{ padding: "20px" }}>
+              <div ref={this.teamRef}>
                 <AppListInner {...this.props} data={data} />
               </div>
             </Collapsible>
