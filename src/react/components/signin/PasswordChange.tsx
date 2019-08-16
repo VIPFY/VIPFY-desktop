@@ -13,6 +13,8 @@ import { PW_MIN_LENGTH } from "../../common/constants";
 interface PasswordChangeProps {
   logMeOut: Function;
   client: ApolloClient<InMemoryCache>;
+  firstLogin?: boolean;
+  className?: string;
 }
 
 interface PasswordChangeState {
@@ -100,14 +102,18 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
   }
 
   render() {
+    const { firstLogin, className } = this.props;
+
     return (
-      <section className="welcome">
+      <section className={`welcome ${className ? className : ""}`}>
         <div className="welcome-holder">
           <img src={`${__dirname}/../../../images/forgot-password-new.png`} alt="Welcome" />
           <div className="welcome-text">
-            <h1>Please set your password</h1>
+            <h1>{firstLogin ? "Admin forces Password Reset" : "Please set your password"}</h1>
             <div>
-              Your initial password has been sent to your email. Please replace it to continue.{" "}
+              {firstLogin
+                ? "Your Admin forces you to reset your password."
+                : "Your initial password has been sent to your email. Please replace it to continue."}
             </div>
 
             <div className="password-fields">

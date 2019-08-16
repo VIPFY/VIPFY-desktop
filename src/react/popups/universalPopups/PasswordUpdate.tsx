@@ -48,17 +48,18 @@ class PasswordUpdate extends React.Component<Props, State> {
         {(updatePassword, { loading, error, data }) => (
           <PopupBase small={true} close={() => this.props.closeFunction()}>
             <div className="update-password">
+              <h1>Update Password of</h1>
               <h1>
-                Update Password of <UserName unitid={unitid} />
+                <UserName unitid={unitid} />
               </h1>
               {data ? (
                 <React.Fragment>
-                  <div>Updating Password was successful</div>
+                  <div className="sub-header">Updating Password was successful</div>
                   <UniversalButton onClick={this.props.closeFunction} type="high" label="ok" />
                 </React.Fragment>
               ) : (
                 <React.Fragment>
-                  <div>You can enter a new password for the user here</div>
+                  <div className="sub-header">You can enter a new password for the user here</div>
 
                   <ReactPasswordStrength
                     className="passwordStrength"
@@ -127,7 +128,6 @@ class PasswordUpdate extends React.Component<Props, State> {
                   onClick={() =>
                     updatePassword({ variables: { password: password.password, unitid } })
                   }
-                  type="high"
                   label="Update Password"
                 />
               </React.Fragment>

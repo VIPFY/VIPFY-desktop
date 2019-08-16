@@ -46,15 +46,15 @@ class ResetPassword extends React.Component<Props, State> {
       <Mutation mutation={UPDATE_PASSWORD}>
         {(updatePassword, { loading, error, data }) => (
           <PopupBase
-            buttonStyles={{ justifyContent: data ? "center" : "space-between" }}
+            buttonStyles={{ marginTop: 0, justifyContent: data ? "center" : "space-between" }}
             small={true}
             close={this.props.close}>
-            <div className="update-password">
+            <section className="update-password">
               <h1>Reset Password</h1>
               {loading ? (
                 <i className="fal fa-spinner fa-spin" />
               ) : data ? (
-                <div>Reset password was successful</div>
+                <div className="sub-header">Reset password was successful</div>
               ) : (
                 <React.Fragment>
                   <div className="instruction">
@@ -105,7 +105,7 @@ class ResetPassword extends React.Component<Props, State> {
                   </div>
                 </React.Fragment>
               )}
-            </div>
+            </section>
 
             <UniversalButton
               type={data ? "high" : "low"}
@@ -127,7 +127,7 @@ class ResetPassword extends React.Component<Props, State> {
                   })
                 }
                 type="high"
-                label="Save"
+                label="Confirm"
               />
             )}
           </PopupBase>

@@ -29,7 +29,7 @@ class Collapsible extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate(_, prevState) {
+  componentDidUpdate(_p, prevState) {
     if (prevState.show !== this.state.show) {
       const { current } = this.props.child;
       const sectionHeight = current.scrollHeight;

@@ -23,7 +23,7 @@ class SupportPage extends React.Component<Props> {
     if (this.props.sidebarOpen) {
       cssClass += " sidebar-open";
     }
-    let cssClassWeb = "newMainPosition";
+    let cssClassWeb = "newMainPositionFull";
     if (this.props.chatOpen) {
       cssClass += " chat-open";
     }
@@ -31,7 +31,7 @@ class SupportPage extends React.Component<Props> {
       cssClass += " sidebar-open";
     }
     return (
-      <div className={cssClass}>
+      <div className={cssClass} style={{ position: "relative" }}>
         <Query query={fetchSupportToken} fetchPolicy="network-only">
           {({ loading, error, data }) => {
             if (loading) {

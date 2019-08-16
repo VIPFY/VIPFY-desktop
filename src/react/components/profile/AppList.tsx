@@ -105,13 +105,13 @@ class AppList extends React.Component<Props, State> {
     const { licences } = this.props;
 
     if (licences.length == 0) {
-      return <div>No Apps for you yet</div>;
+      return null;
     }
 
     return (
       <Collapsible child={this.appListRef} title={this.props.header ? this.props.header : "Apps"}>
         <div ref={this.appListRef} className="dashboard-apps">
-          <div className="profile-app-holder">
+          <div className="dashboard-app-holder">
             {licences
               .filter(licence => {
                 if (this.props.search) {

@@ -115,7 +115,7 @@ class GoogleAuth extends React.Component<Props, State> {
           <h1>Set up your Authenticator</h1>
           {this.state.showInput ? (
             <React.Fragment>
-              <p>
+              <p className="sub-header">
                 Please enter your 6-digit authentication code from your Authenticator app. "VIPFY"
                 will appear below the code
               </p>
@@ -137,15 +137,15 @@ class GoogleAuth extends React.Component<Props, State> {
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <p>
+              <p className="sub-header">
                 Download one of the free Authenticator apps - like Google Authenticator -, click
                 add, and then scan this QR code to set up your account
               </p>
               <img
                 alt="The QR code to scan"
                 src={this.props.data.qrCode}
-                width={128}
-                height={128}
+                width={112}
+                height={111}
               />
             </React.Fragment>
           )}
