@@ -554,7 +554,21 @@ class Area extends React.Component<AreaProps, AreaState> {
               return "";
             }}
           />*/}
-            <Route component={ErrorPage} />
+            <Route
+              key={"ERRORELSE"}
+              render={props => (
+                <div
+                  className={`${
+                    !this.props.location.pathname.includes("advisor") ? "full-working" : ""
+                  } ${chatOpen ? "chat-open" : ""} ${
+                    sidebarOpen && !props.location.pathname.includes("advisor")
+                      ? "sidebar-open"
+                      : ""
+                  }`}>
+                  <ErrorPage />
+                </div>
+              )}
+            />
           </Switch>
 
           <ViewHandler

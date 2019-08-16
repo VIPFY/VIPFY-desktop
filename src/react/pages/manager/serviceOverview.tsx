@@ -185,6 +185,34 @@ class ServiceOverview extends React.Component<Props, State> {
     });
     return serviceArray;
   }
+
+  loading() {
+    const amountFakes = Math.random() * 10 + 1;
+    const fakeArray: JSX.Element[] = [];
+
+    for (let index = 0; index < amountFakes; index++) {
+      fakeArray.push(
+        <div className="tableRow">
+          <div className="tableMain">
+            <div className="tableColumnBig">
+              <PrintServiceSquare appidFunction={s => s.app} service={{}} fake={true} />
+              <span className="name" />
+            </div>
+            <ColumnTeams teams={[null]} teamidFunction={team => team.departmentid} fake={true} />
+            <ColumnEmployees
+              employees={[null]}
+              employeeidFunction={e => e}
+              checkFunction={e => true}
+              fake={true}
+            />
+          </div>
+          <div className="tableEnd" />
+        </div>
+      );
+    }
+    return fakeArray;
+  }
+
   render() {
     return (
       <div className="managerPage">
@@ -207,7 +235,46 @@ class ServiceOverview extends React.Component<Props, State> {
             {({ loading, error, data, refetch }) => {
               console.log(loading, error, data);
               if (loading) {
-                return "Loading...";
+                return (
+                  <div className="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div className="tableColumnBig">
+                          <h1>Name</h1>
+                        </div>
+                        <div className="tableColumnBig">
+                          <h1>Teams</h1>
+                        </div>
+                        <div className="tableColumnBig">
+                          <h1>Single Users</h1>
+                        </div>
+                      </div>
+                      <div className="tableEnd">
+                        <UniversalButton
+                          type="high"
+                          label="Add Team"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "92px"
+                          }}
+                          onClick={() =>
+                            this.setState({
+                              add: true,
+                              addStage: 1,
+                              addemployees: [],
+                              addteam: {},
+                              apps: []
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    {this.loading()}
+                  </div>
+                );
               }
               if (error) {
                 return `Error! ${error.message}`;
