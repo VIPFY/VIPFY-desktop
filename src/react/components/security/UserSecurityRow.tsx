@@ -106,7 +106,7 @@ class UserSecurityRow extends React.Component<Props, State> {
             </Mutation>
           </td>
 
-          <td>{user.twofactormethods.length > 0 ? "ON" : "OFF"}</td>
+          <td>{user.twofactormethods.length > 0 ? "ON " + user.twofactormethods.twofatype : "OFF"}</td>
 
           <td>
             <IconButton
