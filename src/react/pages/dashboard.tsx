@@ -83,6 +83,7 @@ class Dashboard extends React.Component<Props, State> {
                 return (
                   <AppList
                     header={list}
+                    allLicences={filterAndSort(this.props.licences.fetchLicences, "dashboard")}
                     search={this.state.search}
                     licences={filterAndSort(appLists[list], "dashboard")}
                     setApp={setApp}

@@ -25,6 +25,7 @@ interface Props {
   setApp?: Function;
   layout?: string[] | null;
   licences: Licence[];
+  allLicences: Licence[];
   search?: string;
   header?: string;
   updateLayout: Function;
@@ -57,10 +58,10 @@ class AppList extends React.Component<Props, State> {
   handleDrop = async (dropItem: number) => {
     const { dragItem } = this.state;
 
-    const dragged = this.props.licences.find(licence => licence.id == dragItem);
-    const dropped = this.props.licences.find(licence => licence.id == dropItem);
+    const dragged = this.props.allLicences.find(licence => licence.id == dragItem);
+    const dropped = this.props.allLicences.find(licence => licence.id == dropItem);
 
-    const newLicences = this.props.licences.map(licence => {
+    const newLicences = this.props.allLicences.map(licence => {
       if (licence.id == dragged!.id) {
         return { ...licence, dashboard: dropped!.dashboard };
       } else if (licence.id == dropped!.id) {
