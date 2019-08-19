@@ -67,6 +67,7 @@ const UserSecurityTable = (props: Props) => (
               <th>Last Active</th>
               <th>PW Strength</th>
               <th>Admin Rights</th>
+              <th>Ban User</th>
               <th>Two-Factor</th>
               <th />
             </tr>

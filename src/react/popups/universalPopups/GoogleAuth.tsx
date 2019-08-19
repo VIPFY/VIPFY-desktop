@@ -138,8 +138,8 @@ class GoogleAuth extends React.Component<Props, State> {
           ) : (
             <React.Fragment>
               <p className="sub-header">
-                Download one of the free Authenticator apps - like Google Authenticator -, click
-                add, and then scan this QR code to set up your account
+                Download one of the free Authenticator apps for your phone - like Google
+                Authenticator -, click add and then scan this QR code to set up your account
               </p>
               <img
                 alt="The QR code to scan"
