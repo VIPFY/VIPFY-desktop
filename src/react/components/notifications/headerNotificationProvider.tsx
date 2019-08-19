@@ -138,22 +138,22 @@ class HeaderNotificationProvider extends Component<Props, State> {
     });
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.children !== nextProps.children) {
-      return true;
-    }
-    if (this.state.notifications.length !== nextState.notifications.length) {
-      return true;
-    }
-    if (
-      this.state.notifications !== nextState.notifications &&
-      JSON.stringify(this.state.notifications) !== JSON.stringify(nextState.notifications)
-    ) {
-      return true;
-    }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   if (this.props.children !== nextProps.children) {
+  //     return true;
+  //   }
+  //   if (this.state.notifications.length !== nextState.notifications.length) {
+  //     return true;
+  //   }
+  //   if (
+  //     this.state.notifications !== nextState.notifications &&
+  //     JSON.stringify(this.state.notifications) !== JSON.stringify(nextState.notifications)
+  //   ) {
+  //     return true;
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
   functions = {
     addHeaderNotification: this.addHeaderNotification,

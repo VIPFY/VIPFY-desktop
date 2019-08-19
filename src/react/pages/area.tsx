@@ -184,6 +184,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidCatch(error, info) {
+    console.error(error, info);
     this.moveTo("error");
   }
 
