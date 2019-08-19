@@ -127,7 +127,7 @@ class AppList extends React.Component<Props, State> {
                 const bName = this.handleName(b).toUpperCase();
 
                 switch (this.state.sortBy) {
-                  case "A-Z": {
+                  case "Sorted by: A-Z": {
                     if (aName < bName) {
                       return -1;
                     } else if (aName > bName) {
@@ -137,7 +137,7 @@ class AppList extends React.Component<Props, State> {
                     }
                   }
 
-                  case "Z-A": {
+                  case "Sorted by: Z-A": {
                     if (bName < aName) {
                       return -1;
                     } else if (bName > aName) {
@@ -178,7 +178,7 @@ class AppList extends React.Component<Props, State> {
           <DropDown
             option={this.state.sortBy}
             header="Sort By"
-            handleChange={value => this.setState({ sortBy: value })}
+            handleChange={value => this.setState({ sortBy: "Sorted by: " + value })}
             // TODO: [VIP-449] Implement Statistics to sort by "Most Used", "Least Used"
             options={["A-Z", "Z-A"]}
           />

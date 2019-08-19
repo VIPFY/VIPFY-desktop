@@ -110,6 +110,7 @@ export type SidebarProps = {
 };
 
 interface State {
+  donotopen: boolean;
   searchstring: string;
   sortorientation: boolean;
   sortstring: string;
@@ -120,6 +121,7 @@ interface State {
 
 class Sidebar extends React.Component<SidebarProps, State> {
   state = {
+    donotopen: false,
     searchstring: "",
     sortorientation: true,
     sortstring: "Custom",
@@ -127,7 +129,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     contextMenu: false,
     notify: false
   };
-
+  
   //references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
@@ -218,6 +220,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         if (!subscriptionData.data || subscriptionData.error) {
           return prev;
         }
+        console.log(subscriptionData.data);
 
         this.setState({ notify: true });
         setTimeout(() => this.setState({ notify: false }), 5000);
@@ -236,7 +239,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
     document.removeEventListener("click", this.handleClickOutside, true);
   }
 
+  handleClickInside = e => {
+    this.setState({donotopen: false});
+  }
+
   handleClickOutside = e => {
+    this.handleClickInside(e);
     const domNode = ReactDOM.findDOMNode(this);
     if (
       (!domNode || !domNode.contains(e.target)) &&
@@ -246,8 +254,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
   };
 
-  toggleNotificationPopup = () => {
-    this.setState(prevState => ({ showNotification: !prevState.showNotification }));
+  toggleNotificationPopup = (e) => {
+    if (this.state.donotopen) {
+      this.setState({ donotopen: false});
+    } else {
+      this.setState(prevState => ({ showNotification: !prevState.showNotification }));
+    }
   };
 
   renderLink = ({ label, location, icon, show, highlight }: SidebarLinks, addRenderElement) => {
@@ -630,13 +642,15 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
             {this.state.showNotification && (
               <Notification
+                //sidebar={"1"}
+                moveTo={this.props.moveTo}
                 data={this.props.data}
                 refetch={this.props.refetch}
                 style={{
                   left: sidebarOpen ? "210px" : "50px",
                   zIndex: 1000
                 }}
-                closeme={() => this.setState({ showNotification: false })}
+                closeme={() => this.setState({ showNotification: false, donotopen: true })}
               />
             )}
 
