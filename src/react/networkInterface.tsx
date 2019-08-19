@@ -134,7 +134,7 @@ const afterwareLink = new ApolloLink((operation, forward) => {
 
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
 const wsLink = new WebSocketLink({
-  uri: `ws${secure}://${SERVER_NAME}:${SERVER_PORT}/subscriptions`,
+  uri: "wss://websockets.vipfy.store/subscriptions",
   options: {
     reconnect: true,
     connectionParams: () => ({
@@ -155,11 +155,11 @@ let handleUpgradeError = () => {
   return;
 };
 
-let addHeaderNotification = (message, options) => {
+let addHeaderNotification = (_message, _options) => {
   return;
 };
 
-let dismissHeaderNotification = (a, b) => {
+let dismissHeaderNotification = (_a, _b) => {
   return;
 };
 

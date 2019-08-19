@@ -36,7 +36,10 @@ export default (props: Props) => (
           props.closeFunction();
         }}>
         {(impersonate, { loading, error }) => (
-          <PopupBase small={true} close={props.closeFunction}>
+          <PopupBase
+            buttonStyles={{ justifyContent: "space-between" }}
+            small={true}
+            close={props.closeFunction}>
             <h1>Impersonate Account</h1>
             <div>
               Do you really want to impersonate <UserName unitid={props.unitid} />?
@@ -44,8 +47,9 @@ export default (props: Props) => (
 
             <ErrorComp error={error} className="error-field" />
 
-            <UniversalButton disabled={loading} closingPopup={true} label="no" />
+            <UniversalButton type="low" disabled={loading} closingPopup={true} label="no" />
             <UniversalButton
+              type="low"
               disabled={loading}
               onClick={() => impersonate({ variables: { unitid: props.unitid } })}
               label="Yes"
