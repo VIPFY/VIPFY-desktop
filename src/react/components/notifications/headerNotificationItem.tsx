@@ -29,7 +29,7 @@ class HeaderNotificationItem extends Component<Props, State> {
   }
 
   render() {
-    const { message, type, open, dismissButton, dismissFunction } = this.props.notification;
+    const { message, type, open, dismissButton } = this.props.notification;
 
     let classes = "headerNotification";
 
@@ -84,8 +84,10 @@ class HeaderNotificationItem extends Component<Props, State> {
           <button
             className="naked-button headerNotificationButton"
             onClick={() => {
-              if (dismissFunction) {
-                dismissFunction();
+              if (dismissButton) {
+                if (dismissButton.dismissFunction) {
+                  dismissButton.dismissFunction();
+                }
               }
 
               this.props.dismiss();

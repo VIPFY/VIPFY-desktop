@@ -106,7 +106,13 @@ class UserSecurityRow extends React.Component<Props, State> {
             </Mutation>
           </td>
 
-          <td>{user.twofactormethods.length > 0 ? "ON " + user.twofactormethods.twofatype : "OFF"}</td>
+          <td>
+            {user.twofactormethods.length > 0
+              ? user.twofactormethods.map((method, key) => (
+                  <span key={key}>{method.twofatype}</span>
+                ))
+              : "OFF"}
+          </td>
 
           <td align="right">
             <IconButton
