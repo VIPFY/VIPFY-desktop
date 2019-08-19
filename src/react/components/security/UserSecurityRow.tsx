@@ -10,6 +10,8 @@ import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquar
 import IconButton from "../../common/IconButton";
 import SecurityPopup from "../../pages/manager/securityPopup";
 import { SecurityUser } from "../../interfaces";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import UniversalButton from "../universalButtons/universalButton";
 
 const CHANGE_ADMIN_STATUS = gql`
   mutation onChangeAdminStatus($id: ID!, $bool: Boolean!) {
@@ -20,16 +22,42 @@ const CHANGE_ADMIN_STATUS = gql`
   }
 `;
 
+const BAN_EMPLOYEE = gql`
+  mutation unBanEmployee($userid: ID!) {
+    banEmployee(userid: $userid) {
+      ok
+    }
+  }
+`;
+
+const UNBAN_EMPLOYEE = gql`
+  mutation unBanEmployee($userid: ID!) {
+    unbanEmployee(userid: $userid) {
+      ok
+    }
+  }
+`;
+
 interface Props {
   user: SecurityUser;
 }
 
 interface State {
   showEdit: boolean;
+  showBan: boolean;
+  showAdminRights: boolean;
+  showAdminSuccess: boolean;
+  showBanSuccess: boolean;
 }
 
 class UserSecurityRow extends React.Component<Props, State> {
-  state = { showEdit: false };
+  state = {
+    showEdit: false,
+    showBan: false,
+    showAdminRights: false,
+    showAdminSuccess: false,
+    showBanSuccess: false
+  };
 
   render() {
     const { user } = this.props;
@@ -63,14 +91,7 @@ class UserSecurityRow extends React.Component<Props, State> {
           <td>
             <Mutation
               mutation={CHANGE_ADMIN_STATUS}
-              optimisticResponse={{
-                __typename: "Mutation",
-                changeAdminStatus: {
-                  __typename: "StatusResponse",
-                  id: user.id,
-                  status: !user.unitid.isadmin
-                }
-              }}
+              onCompleted={() => this.setState({ showAdminSuccess: true, showAdminRights: false })}
               update={(proxy, { data: { changeAdminStatus } }) => {
                 const data = proxy.readQuery({ query: FETCH_USER_SECURITY_OVERVIEW });
                 const fetchUserSecurityOverview = data.fetchUserSecurityOverview.map(u => {
@@ -91,19 +112,149 @@ class UserSecurityRow extends React.Component<Props, State> {
                   <label className="switch">
                     <input
                       disabled={loading}
-                      onChange={() =>
-                        mutate({ variables: { id: user.id, bool: !user.unitid.isadmin } })
-                      }
+                      onChange={() => this.setState({ showAdminRights: true })}
                       checked={data ? data.changeAdminStatus.status : user.unitid.isadmin}
                       type="checkbox"
                     />
                     <span className="slider" />
                   </label>
 
-                  {error && <span className="error">{filterError(error)}</span>}
+                  {this.state.showAdminRights && (
+                    <PopupBase
+                      buttonStyles={{ justifyContent: "space-between" }}
+                      close={() => this.setState({ showAdminRights: false })}
+                      dialog={true}>
+                      <div className="security-dialogue">
+                        <h1>{`${user.unitid.isadmin ? "Take" : "Give"} Admin Rights`}</h1>
+                        <p>
+                          Do you really want to {user.unitid.isadmin ? "take" : "give"}{" "}
+                          <UserName unitid={user.id} /> Admin Rights?
+                        </p>
+                      </div>
+                      {error && <span className="error">{filterError(error)}</span>}
+
+                      <UniversalButton
+                        type="low"
+                        label="no"
+                        onClick={() => this.setState({ showAdminRights: false })}
+                      />
+
+                      <UniversalButton
+                        type="low"
+                        label="yes"
+                        onClick={() =>
+                          mutate({ variables: { id: user.id, bool: !user.unitid.isadmin } })
+                        }
+                      />
+                    </PopupBase>
+                  )}
                 </React.Fragment>
               )}
             </Mutation>
+
+            {this.state.showAdminSuccess && (
+              <PopupBase
+                buttonStyles={{ justifyContent: "center" }}
+                closeable={false}
+                dialog={true}>
+                <div className="security-dialogue">
+                  <h1>{`${user.unitid.isadmin ? "Give" : "Take"} Admin Rights`}</h1>
+                  <p>
+                    {user.unitid.isadmin ? "Giving" : "Taking"} <UserName unitid={user.id} /> Admin
+                    Rights was successful
+                  </p>
+                </div>
+
+                <UniversalButton
+                  type="low"
+                  label="ok"
+                  onClick={() => this.setState({ showAdminSuccess: false })}
+                />
+              </PopupBase>
+            )}
+          </td>
+
+          <td>
+            <Mutation
+              onCompleted={() => this.setState({ showBan: false, showBanSuccess: true })}
+              mutation={user.unitid.companyban ? UNBAN_EMPLOYEE : BAN_EMPLOYEE}
+              update={proxy => {
+                const data = proxy.readQuery({ query: FETCH_USER_SECURITY_OVERVIEW });
+                const fetchUserSecurityOverview = data.fetchUserSecurityOverview.map(u => {
+                  if (u.id == user.id) {
+                    return { ...u, unitid: { ...u.unitid, companyban: !u.unitid.companyban } };
+                  } else {
+                    return u;
+                  }
+                });
+
+                proxy.writeQuery({
+                  query: FETCH_USER_SECURITY_OVERVIEW,
+                  data: { fetchUserSecurityOverview }
+                });
+              }}>
+              {(mutate, { loading, error }) => (
+                <React.Fragment>
+                  <label className="switch">
+                    <input
+                      disabled={loading}
+                      onChange={() => this.setState({ showBan: true })}
+                      checked={user.unitid.companyban ? user.unitid.companyban : false}
+                      type="checkbox"
+                    />
+                    <span className="slider" />
+                  </label>
+
+                  {this.state.showBan && (
+                    <PopupBase
+                      buttonStyles={{ justifyContent: "space-between" }}
+                      close={() => this.setState({ showBan: false })}
+                      dialog={true}>
+                      <div className="security-dialogue">
+                        <h1>{`${user.unitid.companyban ? "Unban" : "Ban"} Account`}</h1>
+                        <p>
+                          Do you really want to {user.unitid.companyban ? "un" : ""}ban{" "}
+                          <UserName unitid={user.id} />
+                        </p>
+                      </div>
+                      {error && <span className="error">{filterError(error)}</span>}
+
+                      <UniversalButton
+                        type="low"
+                        label="no"
+                        onClick={() => this.setState({ showBan: false })}
+                      />
+                      <UniversalButton
+                        type="low"
+                        label="yes"
+                        onClick={() => mutate({ variables: { userid: user.id } })}
+                      />
+                    </PopupBase>
+                  )}
+                </React.Fragment>
+              )}
+            </Mutation>
+
+            {this.state.showBanSuccess && (
+              <PopupBase
+                buttonStyles={{ justifyContent: "center" }}
+                closeable={false}
+                dialog={true}>
+                <div className="security-dialogue">
+                  <h1>{`${user.unitid.companyban ? "Ban" : "Unban"} Account`}</h1>
+                  <p>
+                    {user.unitid.companyban ? "Banning" : "Unbanning"} <UserName unitid={user.id} />{" "}
+                    was successful
+                  </p>
+                </div>
+
+                <UniversalButton
+                  type="low"
+                  label="ok"
+                  onClick={() => this.setState({ showBanSuccess: false })}
+                />
+              </PopupBase>
+            )}
           </td>
 
           <td>{user.twofactormethods.length > 0 ? "ON" : "OFF"}</td>
