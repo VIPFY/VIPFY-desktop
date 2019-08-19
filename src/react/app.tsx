@@ -224,6 +224,8 @@ class App extends React.Component<AppProps, AppState> {
               );
             }
 
+            const impersonateToken = localStorage.getItem("impersonator-token");
+
             const store = new Store();
             let machineuserarray: {
               email: string;
@@ -232,20 +234,22 @@ class App extends React.Component<AppProps, AppState> {
               profilepicture: string;
             }[] = [];
 
-            if (store.has("accounts")) {
-              machineuserarray = store.get("accounts");
-              const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
-              if (i != -1) {
-                machineuserarray.splice(i, 1);
+            if (!impersonateToken) {
+              if (store.has("accounts")) {
+                machineuserarray = store.get("accounts");
+                const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
+                if (i != -1) {
+                  machineuserarray.splice(i, 1);
+                }
               }
+              machineuserarray.push({
+                email: data.me.emails[0].email,
+                name: data.me.firstname,
+                fullname: `${data.me.firstname} ${data.me.lastname}`,
+                profilepicture: data.me.profilepicture
+              });
+              store.set("accounts", machineuserarray);
             }
-            machineuserarray.push({
-              email: data.me.emails[0].email,
-              name: data.me.firstname,
-              fullname: `${data.me.firstname} ${data.me.lastname}`,
-              profilepicture: data.me.profilepicture
-            });
-            store.set("accounts", machineuserarray);
 
             return (
               <HeaderNotificationContext.Consumer>
