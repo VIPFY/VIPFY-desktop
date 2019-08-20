@@ -4,6 +4,7 @@ import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError, filterAndSort } from "../common/functions";
 import UniversalSearchBox from "../components/universalSearchBox";
 import { Link } from "react-router-dom";
+import moment = require("moment");
 
 interface Props {
   firstname: string;
@@ -43,13 +44,14 @@ class Dashboard extends React.Component<Props, State> {
       "Pending Apps": [],
       "Temporary Apps": []
     };
-
     if (this.props.licences && this.props.licences.fetchLicences.length > 0) {
       this.props.licences.fetchLicences.forEach(licence => {
         if (licence.pending) {
           appLists["Pending Apps"].push(licence);
         } else if (licence.tags.length > 0) {
-          appLists["Temporary Apps"].push(licence);
+          if (licence.vacationstart && moment().isBefore(moment(licence.vacationend))) {
+            appLists["Temporary Apps"].push(licence);
+          }
         } else {
           appLists["External Apps"].push(licence);
         }
