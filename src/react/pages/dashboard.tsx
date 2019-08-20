@@ -62,7 +62,7 @@ class Dashboard extends React.Component<Props, State> {
           <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
-        {this.props.licences && this.props.licences.length < 1 ? (
+        {this.props.licences && this.props.licences.fetchLicences.length < 1 ? (
           <div className="no-apps">
             <div>This is your</div>
             <h1>DASHBOARD</h1>
