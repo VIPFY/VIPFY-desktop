@@ -129,7 +129,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     contextMenu: false,
     notify: false
   };
-  
+
   //references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
@@ -220,7 +220,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         if (!subscriptionData.data || subscriptionData.error) {
           return prev;
         }
-        console.log(subscriptionData.data);
 
         this.setState({ notify: true });
         setTimeout(() => this.setState({ notify: false }), 5000);
@@ -240,8 +239,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
   }
 
   handleClickInside = e => {
-    this.setState({donotopen: false});
-  }
+    this.setState({ donotopen: false });
+  };
 
   handleClickOutside = e => {
     this.handleClickInside(e);
@@ -254,9 +253,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
   };
 
-  toggleNotificationPopup = (e) => {
+  toggleNotificationPopup = e => {
     if (this.state.donotopen) {
-      this.setState({ donotopen: false});
+      this.setState({ donotopen: false });
     } else {
       this.setState(prevState => ({ showNotification: !prevState.showNotification }));
     }
@@ -607,7 +606,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 setInstance={this.props.setInstance}
                 sidebarOpen={sidebarOpen}
                 openInstances={this.props.openInstances}
-                licences={filteredLicences.filter(({ tags }) => tags.length > 0)}
+                licences={filteredLicences.filter(
+                  ({ vacationend, vacationstart, tags }) =>
+                    tags.length > 0 && vacationstart && moment().isBefore(moment(vacationend))
+                )}
                 viewID={this.props.viewID}
               />
             </li>

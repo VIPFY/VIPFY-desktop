@@ -240,7 +240,7 @@ class SidebarApps extends React.Component<Props, State> {
             onClick={this.toggleApps}
             className="naked-button itemHolder" /*sidebar-link-apps*/
             style={{ justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", position: "relative"}}>
+            <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
               <Tooltip
                 useHover={!sidebarOpen}
                 distance={7}
@@ -256,7 +256,7 @@ class SidebarApps extends React.Component<Props, State> {
               </span>
             </div>
 
-            <div style={{position: "absolute", left: "187px"}}>
+            <div style={{ position: "absolute", left: "187px" }}>
               <Tooltip
                 arrowSize={5}
                 distance={12}
