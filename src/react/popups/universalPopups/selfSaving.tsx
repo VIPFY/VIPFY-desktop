@@ -59,7 +59,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
     window.removeEventListener("keydown", this.listenKeyboard, true);
   }
 
-  componentWillReceiveProps = async props => {};
+  UNSAFE_componentWillReceiveProps = async props => {};
 
   close() {
     if (this.timeout) {

@@ -21,7 +21,7 @@ class PopupSaving extends React.Component<Props, State> {
     tolong: false
   };
 
-  componentWillReceiveProps = async props => {};
+  UNSAFE_componentWillReceiveProps = async props => {};
 
   close() {
     if (this.timeout) {

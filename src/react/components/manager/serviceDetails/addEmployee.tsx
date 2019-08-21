@@ -102,7 +102,7 @@ class AddEmployee extends React.Component<Props, State> {
     saving: false
   };
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     if (this.props.licences != props.licences) {
       this.setState({ addedLicences: [] });
     }

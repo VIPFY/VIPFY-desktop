@@ -91,6 +91,7 @@ class UserSecurityTable extends React.Component<Props, State> {
               <th onClick={() => this.handleSortClick("Last Active")}>Last Active</th>
               <th onClick={() => this.handleSortClick("PW Strength")}>PW Strength</th>
               <th onClick={() => this.handleSortClick("Admin Rights")}>Admin Rights</th>
+              <th onClick={() => this.handleSortClick("Ban User")}>Ban User</th>
               <th onClick={() => this.handleSortClick("Two-Factor")}>Two-Factor</th>
               <th />
             </tr>
@@ -105,6 +106,47 @@ class UserSecurityTable extends React.Component<Props, State> {
               .sort((a, b) => {
                 //sortselection
                 switch (this.state.sort) {
+                  case "Ban User":
+                    const bUserA = a.unitid.companyban; //bUser ^= BanUser 
+                    const bUserB = b.unitid.companyban;
+
+                    if (bUserA > bUserB) {
+                      if(this.state.sortforward) {
+                        return -1;
+                      } else {
+                        return 1;
+                      }
+                    }
+                    if (bUserA < bUserB) {
+                      if(this.state.sortforward) {
+                        return 1;
+                      } else {
+                        return -1;
+                      }
+                    }
+
+                    const nameAbUser = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                    const nameBbUser = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+    
+                    if (nameAbUser < nameBbUser) {
+                      if(this.state.sortforward) {
+                        return -1;
+                      } else {
+                        return 1;
+                      }
+                    }
+    
+                    if (nameAbUser > nameBbUser) {
+                      if(this.state.sortforward) {
+                        return 1;
+                      } else {
+                        return -1;
+                      }
+                    }
+    
+                    // names must be equal
+                    return 0;
+
                   case "Last Active":
                     const lActiveA = a.lastactive;
                     const lActiveB = b.lastactive;

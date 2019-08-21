@@ -19,6 +19,8 @@ const READ_ALL_NOTIFICATIONS = gql`
 `;
 
 interface Props {
+  moveTo: Function;
+  sidebar: Object;
   data: any;
   refetch: Function;
   readNotification: Function;
@@ -39,6 +41,13 @@ class Notification extends React.Component<Props, State> {
     error: "",
     hover: false
   };
+
+  handleClickOnNotification(id /* , link */) {
+    /* if(link) {
+      this.props.moveTo(link);
+    } */
+    this.markAsRead(id);
+  }
 
   componentDidMount() {
     document.addEventListener("click", this.handleClickOutside, true);
@@ -130,7 +139,7 @@ class Notification extends React.Component<Props, State> {
       return <ErrorComp error={this.state.error} />;
     }
 
-    return notifications.map(({ message, icon, sendtime, id }) => (
+    return notifications.map(({ message, icon, sendtime, id, link }) => (
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
         <p className="notificationText">{message}</p>

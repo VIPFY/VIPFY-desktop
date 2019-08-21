@@ -78,22 +78,13 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           addToLoggerContext("companyname", data.me.company.name);
 
           const adminToken = localStorage.getItem("impersonator-token");
-
           if (adminToken) {
             context.addHeaderNotification("You are impersonating another user", {
               type: "impersonation",
               key: "impersonator",
               dismissButton: {
                 label: "Stop Impersonation",
-                dismissFunction: async () => {
-                  localStorage.setItem("token", adminToken!);
-                  localStorage.removeItem("impersonator-token");
-
-                  await this.props.history.push("/area/dashboard");
-                  this.props.client.cache.reset(); // clear graphql cache
-
-                  location.reload();
-                }
+                dismissFunction: this.props.logMeOut
               }
             });
           }

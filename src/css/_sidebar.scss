@@ -80,7 +80,7 @@
 
   &-main {
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     
     &::-webkit-scrollbar-thumb {
       //background: $vipfy-primary-color;
@@ -89,6 +89,7 @@
 
     &::-webkit-scrollbar-track {
       //background: $vipfy-secondary-color;
+      //#253647ff
       background: rgba(255,255,255,0.5);
     }
     &::-webkit-scrollbar {
@@ -209,7 +210,7 @@
       margin-left: 8px;
       overflow: hidden;
     }
-
+  
     .show-more {
   //    transform: translateX(8px);
       text-align: left;
@@ -478,7 +479,7 @@
 
 .notificationPopup {
   position: fixed;
-  bottom: 115px;
+  bottom: 48px;
   left: 209px;
   border-radius: 4px;
   z-index: 1000;
@@ -492,6 +493,7 @@
   //animation: pop-in 150ms ease-in-out 0s forwards;
   transform-origin: left bottom;
   color: $vipfy-normaltext;
+  
 
   @keyframes pop-in {
     0% {

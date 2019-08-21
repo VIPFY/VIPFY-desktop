@@ -148,16 +148,23 @@ class App extends React.Component<AppProps, AppState> {
 
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
 
-  logMeOut = () => {
-    this.setState(INITIAL_STATE); // clear state
-    this.props.client.cache.reset(); // clear graphql cache
-    localStorage.removeItem("token");
-    localStorage.removeItem("impersonator-token");
-    resetLoggingContext();
+  logMeOut = async () => {
+    const impersonated = await localStorage.getItem("impersonator-token");
 
-    session.fromPartition("services").clearStorageData();
-    this.props.history.push("/");
-    location.reload();
+    if (impersonated) {
+      await localStorage.setItem("token", impersonated!);
+      await localStorage.removeItem("impersonator-token");
+    } else {
+      await localStorage.removeItem("token");
+    }
+
+    await this.props.client.cache.reset(); // clear graphql cache
+
+    await resetLoggingContext();
+    await session.fromPartition("services").clearStorageData();
+    await this.props.history.push("/");
+    await this.setState(INITIAL_STATE); // clear state
+    await location.reload();
   };
 
   logMeIn = async (email: string, password: string, refetch: Function) => {
@@ -209,20 +216,23 @@ class App extends React.Component<AppProps, AppState> {
               return <LoadingDiv text="Preparing Vipfy for you" />;
             }
 
-            if (error) {
+            if (error || !data || !data.me) {
               this.props.client.cache.reset(); // clear graphql cache
               this.redeemSetupToken(refetch);
+
               return (
                 <div className="centralize backgroundLogo">
                   <SignIn
                     login={(a, b) => this.logMeIn(a, b, refetch)}
                     moveTo={this.moveTo}
-                    error={error.networkError ? "network" : filterError(error)}
+                    error={error && error.networkError ? "network" : filterError(error)}
                     resetError={() => this.setState({ error: "" })}
                   />
                 </div>
               );
             }
+
+            const impersonateToken = localStorage.getItem("impersonator-token");
 
             const store = new Store();
             let machineuserarray: {
@@ -232,20 +242,22 @@ class App extends React.Component<AppProps, AppState> {
               profilepicture: string;
             }[] = [];
 
-            if (store.has("accounts")) {
-              machineuserarray = store.get("accounts");
-              const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
-              if (i != -1) {
-                machineuserarray.splice(i, 1);
+            if (!impersonateToken) {
+              if (store.has("accounts")) {
+                machineuserarray = store.get("accounts");
+                const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
+                if (i != -1) {
+                  machineuserarray.splice(i, 1);
+                }
               }
+              machineuserarray.push({
+                email: data.me.emails[0].email,
+                name: data.me.firstname,
+                fullname: `${data.me.firstname} ${data.me.lastname}`,
+                profilepicture: data.me.profilepicture
+              });
+              store.set("accounts", machineuserarray);
             }
-            machineuserarray.push({
-              email: data.me.emails[0].email,
-              name: data.me.firstname,
-              fullname: `${data.me.firstname} ${data.me.lastname}`,
-              profilepicture: data.me.profilepicture
-            });
-            store.set("accounts", machineuserarray);
 
             return (
               <HeaderNotificationContext.Consumer>

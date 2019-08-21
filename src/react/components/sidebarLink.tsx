@@ -130,10 +130,9 @@ class SidebarLink extends React.Component<Props, State> {
         <button
           type="button"
           onClick={
-            this.props.openInstances &&
+            this.props.openInstances && 
             (!this.props.openInstances[licence.id] ||
-              (this.props.openInstances[licence.id] &&
-                Object.keys(openInstances[licence.id]).length == 1))
+            (this.props.openInstances[licence.id] && Object.keys(openInstances[licence.id]).length == 1))
               ? () => {
                   setTeam(licence.id);
                 }

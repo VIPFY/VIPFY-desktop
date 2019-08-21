@@ -19,7 +19,7 @@ class SignUpInGeneral extends React.Component<Props, State> {
     field1: "",
     field2: ""
   };
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this.setState({ field1: "", field2: "" });
   }
 

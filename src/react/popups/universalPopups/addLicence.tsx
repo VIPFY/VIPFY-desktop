@@ -88,7 +88,7 @@ class PopupAddLicence extends React.Component<Props, State> {
     empty: ""
   };
 
-  componentWillReceiveProps = async props => {
+  UNSAFE_componentWillReceiveProps = async props => {
     await this.setState({
       subdomain: "",
       email: "",

@@ -4,6 +4,7 @@ import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError, filterAndSort } from "../common/functions";
 import UniversalSearchBox from "../components/universalSearchBox";
 import { Link } from "react-router-dom";
+import moment = require("moment");
 
 interface Props {
   firstname: string;
@@ -43,13 +44,14 @@ class Dashboard extends React.Component<Props, State> {
       "Pending Apps": [],
       "Temporary Apps": []
     };
-
     if (this.props.licences && this.props.licences.fetchLicences.length > 0) {
       this.props.licences.fetchLicences.forEach(licence => {
         if (licence.pending) {
           appLists["Pending Apps"].push(licence);
         } else if (licence.tags.length > 0) {
-          appLists["Temporary Apps"].push(licence);
+          if (licence.vacationstart && moment().isBefore(moment(licence.vacationend))) {
+            appLists["Temporary Apps"].push(licence);
+          }
         } else {
           appLists["External Apps"].push(licence);
         }
@@ -62,7 +64,7 @@ class Dashboard extends React.Component<Props, State> {
           <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
-        {this.props.licences && this.props.licences.length < 1 ? (
+        {this.props.licences && this.props.licences.fetchLicences.length < 1 ? (
           <div className="no-apps">
             <div>This is your</div>
             <h1>DASHBOARD</h1>
@@ -83,6 +85,7 @@ class Dashboard extends React.Component<Props, State> {
                 return (
                   <AppList
                     header={list}
+                    allLicences={filterAndSort(this.props.licences.fetchLicences, "dashboard")}
                     search={this.state.search}
                     licences={filterAndSort(appLists[list], "dashboard")}
                     setApp={setApp}

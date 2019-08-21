@@ -292,7 +292,7 @@ class ServiceOverview extends React.Component<Props, State> {
                       <div className="tableEnd">
                         <UniversalButton
                           type="high"
-                          label="Add Team"
+                          label="Add Service"
                           customStyles={{
                             fontSize: "12px",
                             lineHeight: "24px",
@@ -305,7 +305,7 @@ class ServiceOverview extends React.Component<Props, State> {
                               add: true,
                               addStage: 1,
                               addemployees: [],
-                              addteam: {},
+                              addservice: {},
                               apps: []
                             })
                           }

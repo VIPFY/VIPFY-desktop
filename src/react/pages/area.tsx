@@ -184,6 +184,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidCatch(error, info) {
+    console.error(error, info);
     this.moveTo("error");
   }
 
@@ -450,11 +451,7 @@ class Area extends React.Component<AreaProps, AreaState> {
               }
             }}
           />*/}
-          <Route
-            render={props => {
-              return <HistoryButtons viewID={this.state.viewID} />;
-            }}
-          />
+          <Route render={() => <HistoryButtons viewID={this.state.viewID} />} />
           <Switch>
             <Route
               exact
@@ -462,10 +459,9 @@ class Area extends React.Component<AreaProps, AreaState> {
               render={props => <SupportPage {...this.state} {...this.props} {...props} />}
             />
 
-            {routes.map(({ path, component, admincomponent, admin, addprops }) => {
+            {routes.map(({ path, component, admin, addprops }) => {
               const RouteComponent = component;
-              const AdminComponent = admincomponent;
-              if (admin && this.props.company.unit.id != 14) {
+              if (admin && !this.props.isadmin) {
                 return;
               } else {
                 return (

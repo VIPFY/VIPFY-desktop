@@ -249,6 +249,7 @@ class TeamOverview extends React.Component<Props, State> {
   }
 
   render() {
+    console.log("I AM HERE");
     return (
       <div className="managerPage">
         <div className="heading">
