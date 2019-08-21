@@ -38,7 +38,7 @@ class EmployeeGrid extends React.Component<Props, State> {
         return 0;
       });
 
-      employees = interemployees.filter(e => e.id);
+      employees = interemployees.filter(e => {return e.id && `${e.firstname} ${e.lastname}`.toUpperCase().includes(this.props.search.toUpperCase())});
 
       employees.forEach(employee => {
         employeesArray.push(
