@@ -97,7 +97,7 @@ class PopupSSO extends React.Component<Props, State> {
     return (
       <PopupBase
         key={this.state.randomkey}
-        nooutsideclose={this.props.nooutsideclose}
+        closeable={this.props.nooutsideclose}
         buttonStyles={{ justifyContent: "space-between" }}
         styles={{ maxWidth: "432px" }}
         close={() => this.props.cancel()}>
@@ -180,7 +180,7 @@ class PopupSSO extends React.Component<Props, State> {
               errorhint={this.state.error}
               errorEvaluation={!!this.state.error}
               livevalue={value => {
-                const updates = { url: value };
+                const updates = { url: value, error: "" };
 
                 if (value.startsWith("https://") || value.startsWith("http://")) {
                   updates.protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);

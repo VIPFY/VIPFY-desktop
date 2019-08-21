@@ -51,7 +51,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
     this.setState({ tolong: false, saved: false, error: null });
   }
 
-  componentWillReceiveProps = async props => {};
+  UNSAFE_componentWillReceiveProps = async props => {};
 
   close() {
     if (this.timeout) {
