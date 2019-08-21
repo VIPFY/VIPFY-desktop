@@ -39,7 +39,7 @@ class UniversalDropDownInput extends React.Component<Props, State> {
     code: this.props.startvalue || ""
   };
 
-  componentWillReceiveProps = props => {
+  UNSAFE_componentWillReceiveProps = props => {
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 

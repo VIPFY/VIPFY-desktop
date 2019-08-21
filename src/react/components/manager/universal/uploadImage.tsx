@@ -23,7 +23,7 @@ class UploadImage extends React.Component<Props, State> {
     picture: this.props.picture || null
   };
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (this.state.name != newProps.name && newProps.name != this.props.name) {
       this.setState({ name: newProps.name });
     }
