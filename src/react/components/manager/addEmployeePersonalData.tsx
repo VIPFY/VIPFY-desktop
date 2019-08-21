@@ -93,6 +93,45 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     error: null
   };
 
+  handleConfirm() {
+    if(this.state.confirm) {
+      this.setState({ saving: true, confirm: false });
+    }
+  }
+
+  handleCreate() {
+    if(this.props.addpersonal.unitid) {
+      this.props.continue(this.state)
+    } else {
+      this.setState({ confirm: true })
+    }
+  }
+
+  listenKeyboard = e => {
+    const { name, wmail1 } = this.state;
+    this.handleConfirm();
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.props.close();}
+    else if(!(e.target && e.target.id && (
+      ["name", "wmail1", "wmail2", "birthday", "hiredate", "pphone1", "pphone2", "position", "wphone1", "wphone2"].includes(e.target.id)))) {
+      return; //Check if one of the Textfields is focused
+    } else if (
+      (e.key === "Enter" || e.keyCode === 13) &&
+      name && wmail1 &&
+      e.srcElement.textContent != "Cancel"
+    ) {
+      this.handleCreate();
+    }
+  };
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -112,11 +151,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
               disabled={
                 this.state.name == "" || this.state.wmail1 == "" || !this.state.wmail1.includes("@")
               }
-              onClick={() =>
-                this.props.addpersonal.unitid
-                  ? this.props.continue(this.state)
-                  : this.setState({ confirm: true })
-              }
+              onClick={() => this.handleCreate()}
             />
           </div>
         </div>
@@ -127,7 +162,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
             <UniversalButton
               label="Confirm"
               type="high"
-              onClick={() => this.setState({ saving: true, confirm: false })}
+              onClick={() => this.handleConfirm()}
             />
           </PopupBase>
         )}

@@ -38,6 +38,37 @@ class AddTeamGeneralData extends React.Component<Props, State> {
     saving: false
   };
 
+  handleCreate(){
+    if(this.props.savingFunction){
+      this.setState({ saving: true });
+    } else {
+      this.props.continue!(this.state);
+    }
+  }
+
+  listenKeyboard = e => {
+    const { name } = this.state;
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.props.close();}
+    else if(!(e.target && e.target.id && (e.target.id === "name"))) {
+      return; //Check if one of the Textfields is focused
+    } else if (
+      (e.key === "Enter" || e.keyCode === 13) &&
+      name &&
+      e.srcElement.textContent != "Cancel"
+    ) {
+      this.handleCreate();
+    }
+  };
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+  }
+
   render() {
     const { picture, name } = this.state;
 
@@ -57,11 +88,7 @@ class AddTeamGeneralData extends React.Component<Props, State> {
             label="Create"
             type="high"
             disabled={this.state.name == ""}
-            onClick={() =>
-              this.props.savingFunction
-                ? this.setState({ saving: true })
-                : this.props.continue!(this.state)
-            }
+            onClick={() => this.handleCreate()}
           />
         </div>
         {this.state.saving && (

@@ -46,9 +46,10 @@ class PopupSSO extends React.Component<Props, State> {
 
   listenKeyboard = e => {
     const { email, password, url, name, error } = this.state;
-
     if (e.key === "Escape" || e.keyCode === 27) {
-      this.props.cancel();
+      this.props.cancel();}
+    else if(!(e.traget && e.target.id && (e.traget.id === "name" || e.traget.id === "url" || e.traget.id === "email" || e.traget.id === "password"))) {
+      return; //Check if one of the Textfields is focused
     } else if (
       (e.key === "Enter" || e.keyCode === 13) &&
       email &&
@@ -75,7 +76,7 @@ class PopupSSO extends React.Component<Props, State> {
   };
 
   handleSubmit = () => {
-    if (this.state.error) {
+    if(this.state.error) {
       return;
     }
 
