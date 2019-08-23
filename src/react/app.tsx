@@ -191,12 +191,11 @@ class App extends React.Component<AppProps, AppState> {
       const res = await this.props.signIn({ variables: { email, password } });
       const { token, twofactor, unitid } = res.data.signIn;
 
-      if (token && !twofactor) {
-        localStorage.setItem("token", token);
+      if (!twofactor) {
         //this.forceUpdate();
         //this.props.client.query({ query: me, fetchPolicy: "network-only", errorPolicy: "ignore" });
         refetch();
-      } else if (twofactor && unitid) {
+      } else if (token && twofactor) {
         localStorage.setItem("twoFAToken", token);
         this.setState({ twofactor, unitid });
       } else {
