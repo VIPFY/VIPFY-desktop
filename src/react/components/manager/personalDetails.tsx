@@ -191,7 +191,9 @@ class PersonalDetails extends React.Component<Props, State> {
       case "emails":
         if(this.state.idlistset != "emails") {
           this.setState({idlist: []});
-          this.state.idlist.push(`${this.state.edit.id}-${email.oldemail || email.email}`);
+          const idlist = this.state.idlist;
+          idlist.push(`${this.state.edit.id}-${email.oldemail || email.email}`);
+          this.setState({idlist: idlist});
           this.setState({idlistset: "emails"});
         }
         break;
@@ -208,7 +210,9 @@ class PersonalDetails extends React.Component<Props, State> {
             }
           });
           workphones.forEach((phone, index) => {
-            this.state.idlist.push(`${this.state.edit.id}-${phone.id}`);
+            const idlist = this.state.idlist;
+            idlist.push(`${this.state.edit.id}-${phone.id}`);
+            this.setState({idlist: idlist});
           });
           this.setState({idlistset: "workphones"});
         }
@@ -226,7 +230,9 @@ class PersonalDetails extends React.Component<Props, State> {
             }
           });
           privatephones.forEach((phone, index) => {
-            this.state.idlist.push(`${this.state.edit.id}-${phone.id}`);
+            const idlist = this.state.idlist;
+            idlist.push(`${this.state.edit.id}-${phone.id}`);
+            this.setState({idlist: idlist});
           });
           this.setState({idlistset: "privatephones"});
           }
@@ -236,7 +242,9 @@ class PersonalDetails extends React.Component<Props, State> {
       default:
         if(this.state.idlistset != "default") {
           this.setState({idlist: []});
+          const idlist = this.state.idlist;
           this.state.idlist.push(this.state.edit.id);
+          this.setState({idlist: idlist});
           this.setState({idlistset: "default"});
         }
         break;

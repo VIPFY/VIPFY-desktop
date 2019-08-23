@@ -379,6 +379,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
+      { path: "admin/weeble-integration", component: weeble, admin: true},
       { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },
