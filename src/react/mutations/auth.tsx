@@ -17,6 +17,12 @@ export const signInUser = gql`
   }
 `;
 
+export const SIGN_OUT = gql`
+  mutation {
+    signOut
+  }
+`;
+
 export const editDepartment = gql`
   mutation editDepartmentName($departmentid: ID!, $name: String!) {
     editDepartmentName(departmentid: $departmentid, name: $name) {

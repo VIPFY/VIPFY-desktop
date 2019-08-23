@@ -1,9 +1,9 @@
 import * as React from "react";
 import { withRouter } from "react-router";
-import { graphql, Query, withApollo } from "react-apollo";
+import { graphql, Query, withApollo, compose } from "react-apollo";
 import Store = require("electron-store");
 
-import { signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
+import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
 import { AppContext, refetchQueries } from "./common/functions";
 import { filterError } from "./common/functions";
@@ -14,9 +14,8 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
 import gql from "graphql-tag";
-import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
-import { logger, resetLoggingContext } from "../logger";
+import { resetLoggingContext } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
@@ -35,6 +34,7 @@ interface AppProps {
   setName: Function;
   signIn: any;
   signUp: any;
+  signOut: Function;
 }
 
 interface PopUp {
@@ -57,6 +57,7 @@ interface AppState {
   reshow: string | null;
   twofactor: string | null;
   unitid: string | null;
+  cookie: boolean;
 }
 
 const INITIAL_POPUP = {
@@ -78,7 +79,8 @@ const INITIAL_STATE = {
   sidebarloaded: false,
   reshow: null,
   twofactor: null,
-  unitid: null
+  unitid: null,
+  cookie: false
 };
 
 const tutorial = gql`
@@ -112,6 +114,17 @@ class App extends React.Component<AppProps, AppState> {
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
+    session.defaultSession.cookies.get({}, (error, cookies) => {
+      if (error) {
+        return;
+      }
+
+      Object.values(cookies).map((cookie: { name: string }) => {
+        if (cookie.name == "vipfy-session") {
+          this.setState({ cookie: true });
+        }
+      });
+    });
     this.props.history.push("/area");
     //this.redeemSetupToken();
   }
@@ -150,7 +163,6 @@ class App extends React.Component<AppProps, AppState> {
 
   logMeOut = async () => {
     const impersonated = await localStorage.getItem("impersonator-token");
-
     if (impersonated) {
       await localStorage.setItem("token", impersonated!);
       await localStorage.removeItem("impersonator-token");
@@ -158,8 +170,15 @@ class App extends React.Component<AppProps, AppState> {
       await localStorage.removeItem("token");
     }
 
-    await this.props.client.cache.reset(); // clear graphql cache
+    // Destroy all Sessions
+    try {
+      await this.props.signOut();
+    } catch (err) {
+      console.error(err);
+    }
 
+    // This function also destroys the session
+    await this.props.client.cache.reset(); // clear graphql cache
     await resetLoggingContext();
     await session.fromPartition("services").clearStorageData();
     await this.props.history.push("/");
@@ -169,14 +188,6 @@ class App extends React.Component<AppProps, AppState> {
 
   logMeIn = async (email: string, password: string, refetch: Function) => {
     try {
-      // Login will fail if there already is a token, which to be fair,
-      // should never be the case. But never say never...
-      const tokenExists = localStorage.getItem("token");
-
-      if (tokenExists) {
-        localStorage.removeItem("token");
-      }
-
       const res = await this.props.signIn({ variables: { email, password } });
       const { token, twofactor, unitid } = res.data.signIn;
 
@@ -208,7 +219,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   renderComponents = () => {
-    if (localStorage.getItem("token")) {
+    if (this.state.cookie) {
       return (
         <Query query={me} fetchPolicy="network-only">
           {({ data, loading, error, refetch }) => {
@@ -305,13 +316,9 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
-  sidebarloaded = () => {
-    this.setState({ sidebarloaded: true });
-  };
+  sidebarloaded = () => this.setState({ sidebarloaded: true });
 
-  setrenderElements = references => {
-    this.setState({ renderElements: references });
-  };
+  setrenderElements = references => this.setState({ renderElements: references });
 
   setreshowTutorial = section => {
     switch (section) {
@@ -395,6 +402,7 @@ class App extends React.Component<AppProps, AppState> {
   }
 }
 
-export default graphql(signInUser, {
-  name: "signIn"
-})(withApollo(withRouter(App)));
+export default compose(
+  graphql(signInUser, { name: "signIn" }),
+  graphql(SIGN_OUT, { name: "signOut" })
+)(withApollo(withRouter(App)));
