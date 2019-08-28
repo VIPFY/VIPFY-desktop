@@ -179,9 +179,10 @@ class App extends React.Component<AppProps, AppState> {
       try {
         await this.props.signOut();
       } catch (err) {
-        console.error(err);
+        console.error("LOG: logMeOut -> err", err);
       }
-      localStorage.removeItem("token");
+
+      await localStorage.removeItem("token");
       await this.props.client.cache.reset(); // clear graphql cache
       await resetLoggingContext();
       await session.fromPartition("services").clearStorageData();

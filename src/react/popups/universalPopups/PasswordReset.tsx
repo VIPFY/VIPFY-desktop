@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   FORCE_RESET,
   FETCH_USER_SECURITY_OVERVIEW
-} from "../../components/security/UserSecurityTable";
+} from "../../components/security/graphqlOperations";
 import PopupBase from "./popupBase";
 import { Mutation } from "react-apollo";
 import UserName from "../../components/UserName";
