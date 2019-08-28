@@ -8,7 +8,7 @@ import LoadingDiv from "../LoadingDiv";
 import { ErrorComp, filterAndSort } from "../../common/functions";
 import Collapsible from "../../common/Collapsible";
 import DropDown from "../../common/DropDown";
-import { UPDATE_LAYOUT } from "../../mutations/auth";
+import { SWITCH_APPS_LAYOUT } from "../../mutations/auth";
 
 const BULK_UPDATE_LAYOUT = gql`
   query onBulkUpdateLayout($layouts: [LayoutInput!]!) {
@@ -61,6 +61,10 @@ class AppList extends React.Component<Props, State> {
     const dragged = this.props.allLicences.find(licence => licence.id == dragItem);
     const dropped = this.props.allLicences.find(licence => licence.id == dropItem);
 
+    if (dropped!.id == dragged!.id) {
+      return;
+    }
+
     const newLicences = this.props.allLicences.map(licence => {
       if (licence.id == dragged!.id) {
         return { ...licence, dashboard: dropped!.dashboard };
@@ -72,25 +76,15 @@ class AppList extends React.Component<Props, State> {
     });
 
     try {
-      const update = cache => {
-        cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
-      };
-
-      const p1 = this.props.updateLayout({
+      await this.props.updateLayout({
         variables: {
-          layout: { id: dragged!.id.toString(), dashboard: parseInt(dropped!.dashboard) }
+          app1: { id: dragged!.id.toString(), dashboard: parseInt(dropped.dashboard) },
+          app2: { id: dropped!.id.toString(), dashboard: parseInt(dragged.dashboard) }
         },
-        update
+        update: cache => {
+          cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
+        }
       });
-
-      const p2 = this.props.updateLayout({
-        variables: {
-          layout: { id: dropped!.id.toString(), dashboard: parseInt(dragged!.dashboard) }
-        },
-        update
-      });
-
-      await Promise.all([p1, p2]);
     } catch (error) {
       console.error(error);
     }
@@ -124,39 +118,41 @@ class AppList extends React.Component<Props, State> {
                 }
               })
               .sort((a, b) => {
-                const aName = this.handleName(a).toUpperCase();
-                const bName = this.handleName(b).toUpperCase();
+                return a.dashboard - b.dashboard;
 
-                switch (this.state.sortBy) {
-                  case "Sorted by: A-Z": {
-                    if (aName < bName) {
-                      return -1;
-                    } else if (aName > bName) {
-                      return 1;
-                    } else {
-                      return 0;
-                    }
-                  }
+                // const aName = this.handleName(a).toUpperCase();
+                // const bName = this.handleName(b).toUpperCase();
 
-                  case "Sorted by: Z-A": {
-                    if (bName < aName) {
-                      return -1;
-                    } else if (bName > aName) {
-                      return 1;
-                    } else {
-                      return 0;
-                    }
-                  }
+                // switch (this.state.sortBy) {
+                //   case "Sorted by: A-Z": {
+                //     if (aName < bName) {
+                //       return -1;
+                //     } else if (aName > bName) {
+                //       return 1;
+                //     } else {
+                //       return 0;
+                //     }
+                //   }
 
-                  case "Most Used":
-                    return this.handleName(b).value - this.handleName(a).value;
+                //   case "Sorted by: Z-A": {
+                //     if (bName < aName) {
+                //       return -1;
+                //     } else if (bName > aName) {
+                //       return 1;
+                //     } else {
+                //       return 0;
+                //     }
+                //   }
 
-                  case "Least Used":
-                    return this.handleName(a).value - this.handleName(b).value;
+                //   case "Most Used":
+                //     return this.handleName(b).value - this.handleName(a).value;
 
-                  default:
-                    return null;
-                }
+                //   case "Least Used":
+                //     return this.handleName(a).value - this.handleName(b).value;
+
+                //   default:
+                //     return null;
+                // }
               })
               .map((licence, key) => {
                 return (
@@ -189,7 +185,7 @@ class AppList extends React.Component<Props, State> {
   }
 }
 
-const AppListEnhanced = graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppList);
+const AppListEnhanced = graphql(SWITCH_APPS_LAYOUT, { name: "updateLayout" })(AppList);
 
 export default (props: {
   setApp?: Function;

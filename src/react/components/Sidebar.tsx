@@ -218,6 +218,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
       document: NOTIFICATION_SUBSCRIPTION,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
+          console.log(
+            "LOG: Sidebar -> componentDidMount -> subscriptionData.error",
+            subscriptionData.error
+          );
           return prev;
         }
 
