@@ -218,3 +218,31 @@ export const AppIcon = ({ app }) => (
     <span className="app-name">{app.name}</span>
   </div>
 );
+
+export const ConsentText = () => (
+  <span>
+    This awesome App uses software to offer you an amazing experience, analyse your use of our App
+    and provide content from third parties. By using our App, you acknowledge that you have read and
+    understand our{" "}
+    <span
+      style={{ color: "#20BAA9" }}
+      className="fancy-link"
+      onClick={e => {
+        e.preventDefault();
+        require("electron").shell.openExternal("https://vipfy.store/privacy");
+      }}>
+      Privacy
+    </span>{" "}
+    and{" "}
+    <span
+      style={{ color: "#20BAA9" }}
+      className="fancy-link"
+      onClick={e => {
+        e.preventDefault();
+        require("electron").shell.openExternal("https://vipfy.store/tos");
+      }}>
+      Terms of Service
+    </span>{" "}
+    and that you consent to them.
+  </span>
+);
