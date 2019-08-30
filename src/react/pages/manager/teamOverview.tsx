@@ -249,7 +249,6 @@ class TeamOverview extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("I AM HERE");
     return (
       <div className="managerPage">
         <div className="heading">
@@ -436,6 +435,7 @@ class TeamOverview extends React.Component<Props, State> {
                 } else {
                   teams = interteams;
                 }
+                console.log(teams.length);
               }
               return (
                 <>
@@ -478,7 +478,7 @@ class TeamOverview extends React.Component<Props, State> {
                     {teams.length > 0 &&
                       teams.map(team => (
                         <div
-                          key={team.name}
+                          id={team.name}
                           className="tableRow"
                           onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
                           <div className="tableMain">
