@@ -66,6 +66,8 @@ interface State {
   edit: Object | null;
   editvalue: String | null;
   editvalueArray: Object[];
+  idlist: Array<string>;
+  idlistset: string;
 }
 
 const CREATE_EMAIL = gql`
@@ -169,8 +171,101 @@ class PersonalDetails extends React.Component<Props, State> {
     error: null,
     edit: null,
     editvalue: null,
-    editvalueArray: []
+    editvalueArray: [],
+    idlist: [""],
+    idlistset: ""
   };
+
+  async handleConfirm() {
+    this.setState({ updateing: true });
+    return;
+  }
+
+  close() {
+    this.setState({ edit: null, editvalue: null, editvalueArray: [] });
+  }
+
+  listenKeyboard = e => {
+    const { name, email } = this.state;
+    switch (this.state.edit.id) {
+      case "emails":
+        if (this.state.idlistset != "emails") {
+          this.setState({ idlist: [] });
+          const idlist = this.state.idlist;
+          idlist.push(`${this.state.edit.id}-${email.oldemail || email.email}`);
+          this.setState({ idlist: idlist });
+          this.setState({ idlistset: "emails" });
+        }
+        break;
+
+      case "workphones":
+        if (this.state.idlistset != "workphones") {
+          this.setState({ idlist: [] });
+          const workphones = this.props.querydata.workPhones.map((phone, index) => {
+            if (this.state.editvalueArray[index]) {
+              const update = this.state.editvalueArray[index];
+              return { ...phone, ...update };
+            } else {
+              return { ...phone };
+            }
+          });
+          const idlist = this.state.idlist;
+          workphones.forEach((phone, index) => {
+            idlist.push(`${this.state.edit.id}-${phone.id}`);
+          });
+          this.setState({ idlist: idlist });
+          this.setState({ idlistset: "workphones" });
+        }
+        break;
+
+      case "privatephones":
+        if (this.state.idlistset != "privatephones") {
+          this.setState({ idlist: [] });
+          const privatephones = this.props.querydata.privatePhones.map((phone, index) => {
+            if (this.state.editvalueArray[index]) {
+              const update = this.state.editvalueArray[index];
+              return { ...phone, ...update };
+            } else {
+              return { ...phone };
+            }
+          });
+          const idlist = this.state.idlist;
+          privatephones.forEach((phone, index) => {
+            idlist.push(`${this.state.edit.id}-${phone.id}`);
+          });
+          this.setState({ idlist: idlist });
+          this.setState({ idlistset: "privatephones" });
+        }
+
+        break;
+
+      default:
+        if (this.state.idlistset != "default") {
+          this.setState({ idlist: [] });
+          const idlist = this.state.idlist;
+          idlist.push(this.state.edit.id);
+          this.setState({ idlist: idlist });
+          this.setState({ idlistset: "default" });
+        }
+        break;
+    }
+    //console.log(e.target.id)
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.close();
+    } else if (!(e.target && e.target.id && this.state.idlist.includes(e.target.id))) {
+      return; //Check if one of the Textfields is focused
+    } else if ((e.key === "Enter" || e.keyCode === 13) && e.srcElement.textContent != "Cancel") {
+      this.handleConfirm();
+    }
+  };
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+  }
 
   printEditForm() {
     switch (this.state.edit.id) {
@@ -626,19 +721,8 @@ class PersonalDetails extends React.Component<Props, State> {
                   Edit {this.state.edit!.label} of {concatName(querydata)}
                 </h2>
                 <div>{this.printEditForm()}</div>
-                <UniversalButton
-                  label="Cancel"
-                  type="low"
-                  onClick={() => this.setState({ edit: null, editvalue: null, editvalueArray: [] })}
-                />
-                <UniversalButton
-                  label="Save"
-                  type="high"
-                  onClick={async () => {
-                    this.setState({ updateing: true });
-                    return;
-                  }}
-                />
+                <UniversalButton label="Cancel" type="low" onClick={() => this.close()} />
+                <UniversalButton label="Save" type="high" onClick={() => this.handleConfirm()} />
                 {this.state.updateing ? (
                   <PopupSelfSaving
                     heading={`Save ${this.state.edit.label} of ${concatName(querydata)}`}
