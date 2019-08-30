@@ -182,25 +182,25 @@ class PersonalDetails extends React.Component<Props, State> {
   }
 
   close() {
-    this.setState({ edit: null, editvalue: null, editvalueArray: [] })
+    this.setState({ edit: null, editvalue: null, editvalueArray: [] });
   }
 
   listenKeyboard = e => {
-    const { name, email,  } = this.state;
+    const { name, email } = this.state;
     switch (this.state.edit.id) {
       case "emails":
-        if(this.state.idlistset != "emails") {
-          this.setState({idlist: []});
+        if (this.state.idlistset != "emails") {
+          this.setState({ idlist: [] });
           const idlist = this.state.idlist;
           idlist.push(`${this.state.edit.id}-${email.oldemail || email.email}`);
-          this.setState({idlist: idlist});
-          this.setState({idlistset: "emails"});
+          this.setState({ idlist: idlist });
+          this.setState({ idlistset: "emails" });
         }
         break;
 
       case "workphones":
-        if(this.state.idlistset != "workphones") {
-          this.setState({idlist: []});
+        if (this.state.idlistset != "workphones") {
+          this.setState({ idlist: [] });
           const workphones = this.props.querydata.workPhones.map((phone, index) => {
             if (this.state.editvalueArray[index]) {
               const update = this.state.editvalueArray[index];
@@ -209,18 +209,18 @@ class PersonalDetails extends React.Component<Props, State> {
               return { ...phone };
             }
           });
+          const idlist = this.state.idlist;
           workphones.forEach((phone, index) => {
-            const idlist = this.state.idlist;
             idlist.push(`${this.state.edit.id}-${phone.id}`);
-            this.setState({idlist: idlist});
           });
-          this.setState({idlistset: "workphones"});
+          this.setState({ idlist: idlist });
+          this.setState({ idlistset: "workphones" });
         }
         break;
 
       case "privatephones":
-        if(this.state.idlistset != "privatephones") {
-          this.setState({idlist: []});
+        if (this.state.idlistset != "privatephones") {
+          this.setState({ idlist: [] });
           const privatephones = this.props.querydata.privatePhones.map((phone, index) => {
             if (this.state.editvalueArray[index]) {
               const update = this.state.editvalueArray[index];
@@ -229,35 +229,32 @@ class PersonalDetails extends React.Component<Props, State> {
               return { ...phone };
             }
           });
+          const idlist = this.state.idlist;
           privatephones.forEach((phone, index) => {
-            const idlist = this.state.idlist;
             idlist.push(`${this.state.edit.id}-${phone.id}`);
-            this.setState({idlist: idlist});
           });
-          this.setState({idlistset: "privatephones"});
-          }
-        
+          this.setState({ idlist: idlist });
+          this.setState({ idlistset: "privatephones" });
+        }
+
         break;
 
       default:
-        if(this.state.idlistset != "default") {
-          this.setState({idlist: []});
+        if (this.state.idlistset != "default") {
+          this.setState({ idlist: [] });
           const idlist = this.state.idlist;
-          this.state.idlist.push(this.state.edit.id);
-          this.setState({idlist: idlist});
-          this.setState({idlistset: "default"});
+          idlist.push(this.state.edit.id);
+          this.setState({ idlist: idlist });
+          this.setState({ idlistset: "default" });
         }
         break;
     }
     //console.log(e.target.id)
     if (e.key === "Escape" || e.keyCode === 27) {
-      this.close();}
-    else if(!(e.target && e.target.id && this.state.idlist.includes(e.target.id))) {
+      this.close();
+    } else if (!(e.target && e.target.id && this.state.idlist.includes(e.target.id))) {
       return; //Check if one of the Textfields is focused
-    } else if (
-      (e.key === "Enter" || e.keyCode === 13) &&
-      e.srcElement.textContent != "Cancel"
-    ) {
+    } else if ((e.key === "Enter" || e.keyCode === 13) && e.srcElement.textContent != "Cancel") {
       this.handleConfirm();
     }
   };
@@ -724,16 +721,8 @@ class PersonalDetails extends React.Component<Props, State> {
                   Edit {this.state.edit!.label} of {concatName(querydata)}
                 </h2>
                 <div>{this.printEditForm()}</div>
-                <UniversalButton
-                  label="Cancel"
-                  type="low"
-                  onClick={() => this.close()}
-                />
-                <UniversalButton
-                  label="Save"
-                  type="high"
-                  onClick={() => this.handleConfirm()}
-                />
+                <UniversalButton label="Cancel" type="low" onClick={() => this.close()} />
+                <UniversalButton label="Save" type="high" onClick={() => this.handleConfirm()} />
                 {this.state.updateing ? (
                   <PopupSelfSaving
                     heading={`Save ${this.state.edit.label} of ${concatName(querydata)}`}
