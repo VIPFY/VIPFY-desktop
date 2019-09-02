@@ -152,7 +152,9 @@ class SecurityPopup extends React.Component<Props, State> {
               <section>
                 <h1>Two-Factor Authentication</h1>
                 <ul>
-                  <li style={{ cursor: "unset" }}>
+                  <li
+                    onClick={() => this.setState({ showGoogleAuth: true })}
+                    style={{ cursor: "unset" }}>
                     <i className="fal fa-key start" />
                     <h3 style={{ justifySelf: "start" }}>Google Authenticator</h3>
                     <p style={{ textAlign: "start" }} className="settings-info">
