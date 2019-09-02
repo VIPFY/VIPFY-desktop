@@ -29,6 +29,12 @@ class PopupSelfSaving extends React.Component<Props, State> {
     error: null
   };
 
+  listenKeyboard = e => {
+    if (e.key === "Escape" || e.keyCode === 27 || e.key === "Enter" || e.keyCode === 13) {
+      this.close();
+    }
+  }
+
   componentDidMount = async () => {
     try {
       await this.props.saveFunction();
@@ -42,6 +48,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
       }
       console.error("ERROR", err);
     }
+    window.addEventListener("keydown", this.listenKeyboard, true);
   };
 
   componentWillUnmount() {
@@ -49,6 +56,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
       clearTimeout(this.timeout);
     }
     this.setState({ tolong: false, saved: false, error: null });
+    window.removeEventListener("keydown", this.listenKeyboard, true);
   }
 
   UNSAFE_componentWillReceiveProps = async props => {};

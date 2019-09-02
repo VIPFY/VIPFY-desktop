@@ -113,7 +113,10 @@ class AddEmployee extends React.Component<Props, State> {
     this.props.licences.forEach(l =>
       allelements.push({ ...l.unitid, dragable: false, id: l.id, licence: l })
     );
-    addedLicences.forEach(l => allelements.push({ ...l, dragable: true, id: `new-${l.id}` }));
+    console.log("triggered");
+    let addedFilteredLicences = addedLicences.filter(licence => {return `${licence.employee.firstname} ${licence.employee.lastname}`.toUpperCase().includes(this.state.search.toUpperCase())});
+    addedFilteredLicences = [];
+    addedFilteredLicences.forEach(l => allelements.push({ ...l, dragable: true, id: `new-${l.id}` }));
     return (
       <PrintCurrent
         elements={allelements}
@@ -121,7 +124,7 @@ class AddEmployee extends React.Component<Props, State> {
         onClick={e =>
           this.setState(prevState => {
             const remainingemployees = prevState.addedLicences.filter(l => `new-${l.id}` != e.id);
-            return { addedLicences: remainingemployees };
+            return {...prevState, addedLicences: remainingemployees };
           })
         }
         onDragStart={e => this.setState({ dragdelete: e })}
@@ -210,7 +213,7 @@ class AddEmployee extends React.Component<Props, State> {
                     <div
                       key={employee.id}
                       className="space"
-                      draggable={available}
+                      draggable={true}
                       onDragStart={() => this.setState({ drag: employee })}
                       onClick={() =>
                         available &&
