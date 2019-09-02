@@ -34,6 +34,7 @@ interface Props {
   updatePic: Function;
   client: ApolloClient<InMemoryCache>;
   profile?: Boolean;
+  isadmin?: Boolean;
 }
 
 interface State {
