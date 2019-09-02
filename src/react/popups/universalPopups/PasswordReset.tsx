@@ -38,17 +38,24 @@ export default (props: Props) => (
               </div>
             )}
             <ErrorComp onClick={props.closeFunction} error={error} className="error-field" />
-            <UniversalButton
-              onClick={props.closeFunction}
-              disabled={loading}
-              closingPopup={true}
-              label="no"
-            />
-            <UniversalButton
-              disabled={loading}
-              onClick={() => forceReset({ variables: { userids: [...props.unitids] } })}
-              label="Yes"
-            />
+
+            {/* Workaround as the Universal Popup does not like Fragments */}
+            <div style={{ display: "flex", flexFlow: "row", justifyContent: "space-between" }}>
+              <UniversalButton
+                type="low"
+                onClick={props.closeFunction}
+                disabled={loading}
+                closingPopup={true}
+                label="no"
+              />
+
+              <UniversalButton
+                type="low"
+                disabled={loading}
+                onClick={() => forceReset({ variables: { userids: [...props.unitids] } })}
+                label="Yes"
+              />
+            </div>
           </React.Fragment>
         )}
       </PopupBase>

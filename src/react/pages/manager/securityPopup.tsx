@@ -126,7 +126,7 @@ class SecurityPopup extends React.Component<Props, State> {
             Change the security settings of <UserName unitid={this.props.user.id} />
           </div>
 
-          <ul>
+          <ul className="security-settings-list">
             {links.map(link => (
               <li key={link.state} onClick={() => this.setState({ [link.state]: true })}>
                 <i className="fal fa-key start" />
@@ -146,28 +146,26 @@ class SecurityPopup extends React.Component<Props, State> {
             <PopupBase
               styles={{ maxWidth: "656px" }}
               small={true}
-              buttonStyles={{ marginTop: "56px" }}
-              close={this.props.closeFunction}
-              closeable={true}>
-              <section>
-                <h1>Two-Factor Authentication</h1>
-                <ul>
-                  <li style={{ cursor: "unset" }}>
-                    <i className="fal fa-key start" />
-                    <h3 style={{ justifySelf: "start" }}>Google Authenticator</h3>
-                    <p style={{ textAlign: "start" }} className="settings-info">
-                      A mobile App that generates a dynamic 6 digit one time password
-                    </p>
-                    <p className="settings-message" />
-                    <UniversalButton
-                      type="high"
-                      label="set it up"
-                      className="button-end"
-                      onClick={() => this.setState({ showGoogleAuth: true })}
-                    />
-                  </li>
+              buttonStyles={{ marginTop: "56px", justifyContent: "flex-end" }}
+              close={this.props.closeFunction}>
+              <h1>Two-Factor Authentication</h1>
+              <ul className="security-settings-list">
+                <li style={{ cursor: "unset" }}>
+                  <i className="fal fa-key start" />
+                  <h3 style={{ justifySelf: "start" }}>Google Authenticator</h3>
+                  <p style={{ textAlign: "start" }} className="settings-info">
+                    A mobile App that generates a dynamic 6 digit one time password
+                  </p>
+                  <p className="settings-message" />
+                  <UniversalButton
+                    type="high"
+                    label="set it up"
+                    className="button-end"
+                    onClick={() => this.setState({ showGoogleAuth: true })}
+                  />
+                </li>
 
-                  {/* <li style={{ cursor: "unset" }}>
+                {/* <li style={{ cursor: "unset" }}>
                     <i className="fal fa-lock-alt start" />
                     <h3>Yubikey</h3>
                     <p className="settings-info">
@@ -182,14 +180,13 @@ class SecurityPopup extends React.Component<Props, State> {
                       onClick={() => this.setState({ showYubikey: true })}
                     />
                   </li> */}
-                </ul>
+              </ul>
 
-                <UniversalButton
-                  type="low"
-                  label="back"
-                  onClick={() => this.setState({ show2FA: false })}
-                />
-              </section>
+              <UniversalButton
+                type="low"
+                label="back"
+                onClick={() => this.setState({ show2FA: false })}
+              />
             </PopupBase>
           )}
 
