@@ -231,7 +231,7 @@ export const ConsentText = () => (
         e.preventDefault();
         require("electron").shell.openExternal("https://vipfy.store/privacy");
       }}>
-      Privacy
+      Privacy Policy
     </span>{" "}
     and{" "}
     <span

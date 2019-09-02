@@ -67,7 +67,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
               "consentAPI",
               `This awesome App uses software to offer you an amazing experience, analyse your use of our App
             and provide content from third parties. By using our App, you acknowledge that you have read and
-            understand our Privacy and Terms of Service and that you consent to them.`
+            understand our Privacy Policies and Terms of Service and that you consent to them.`
             );
             window.smartlook("identify", data.me.id, {
               admin: data.me.isadmin,
