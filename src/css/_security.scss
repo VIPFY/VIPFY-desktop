@@ -136,11 +136,14 @@
       grid-column: 2 / 3;
       grid-row: 1 / 2;
       align-self: end;
+      justify-self: flex-start;
     }
 
     .settings-info {
       grid-column: 2 / 3;
       grid-row: 2 / 3;
+      justify-self: flex-start;
+      text-align: left;
     }
 
     .settings-message {

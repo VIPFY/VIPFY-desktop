@@ -39,7 +39,7 @@ export default (props: Props) => (
             )}
             <ErrorComp onClick={props.closeFunction} error={error} className="error-field" />
 
-            {/* Workaround as the Universal Popup does not like Fragments */}
+            {/* Workaround as the Universal Popup does not like Fragments  */}
             <div style={{ display: "flex", flexFlow: "row", justifyContent: "space-between" }}>
               <UniversalButton
                 type="low"
