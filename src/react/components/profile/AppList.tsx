@@ -112,70 +112,6 @@ class AppList extends React.Component<Props, State> {
     return (
       <Collapsible child={this.appListRef} title={this.props.header ? this.props.header : "Apps"}>
         <div ref={this.appListRef} className="dashboard-apps">
-          <div className="dashboard-app-holder">
-            {licences
-              .filter(licence => {
-                if (this.props.search) {
-                  const name = this.handleName(licence);
-
-                  return name.toUpperCase().includes(this.props.search.toUpperCase());
-                } else {
-                  return true;
-                }
-              })
-              .sort((a, b) => {
-                const aName = this.handleName(a).toUpperCase();
-                const bName = this.handleName(b).toUpperCase();
-
-                switch (this.state.sortBy) {
-                  case "Sorted by: A-Z": {
-                    if (aName < bName) {
-                      return -1;
-                    } else if (aName > bName) {
-                      return 1;
-                    } else {
-                      return 0;
-                    }
-                  }
-
-                  case "Sorted by: Z-A": {
-                    if (bName < aName) {
-                      return -1;
-                    } else if (bName > aName) {
-                      return 1;
-                    } else {
-                      return 0;
-                    }
-                  }
-
-                  case "Most Used":
-                    return this.handleName(b).value - this.handleName(a).value;
-
-                  case "Least Used":
-                    return this.handleName(a).value - this.handleName(b).value;
-
-                  default:
-                    return null;
-                }
-              })
-              .map((licence, key) => {
-                return (
-                  <AppTile
-                    key={key}
-                    position={key}
-                    preview={preview}
-                    setPreview={this.setPreview}
-                    dragItem={dragItem}
-                    dragStartFunction={this.dragStartFunction}
-                    dragEndFunction={this.dragEndFunction}
-                    handleDrop={this.handleDrop}
-                    licence={licence}
-                    setTeam={this.props.setApp}
-                  />
-                );
-              })}
-          </div>
-
           <DropDown
             option={this.state.sortBy}
             header="Sort By"
@@ -183,6 +119,68 @@ class AppList extends React.Component<Props, State> {
             // TODO: [VIP-449] Implement Statistics to sort by "Most Used", "Least Used"
             options={["A-Z", "Z-A"]}
           />
+
+          {licences
+            .filter(licence => {
+              if (this.props.search) {
+                const name = this.handleName(licence);
+
+                return name.toUpperCase().includes(this.props.search.toUpperCase());
+              } else {
+                return true;
+              }
+            })
+            .sort((a, b) => {
+              const aName = this.handleName(a).toUpperCase();
+              const bName = this.handleName(b).toUpperCase();
+
+              switch (this.state.sortBy) {
+                case "Sorted by: A-Z": {
+                  if (aName < bName) {
+                    return -1;
+                  } else if (aName > bName) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
+                }
+
+                case "Sorted by: Z-A": {
+                  if (bName < aName) {
+                    return -1;
+                  } else if (bName > aName) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
+                }
+
+                case "Most Used":
+                  return this.handleName(b).value - this.handleName(a).value;
+
+                case "Least Used":
+                  return this.handleName(a).value - this.handleName(b).value;
+
+                default:
+                  return null;
+              }
+            })
+            .map((licence, key) => {
+              return (
+                <AppTile
+                  key={key}
+                  position={key}
+                  preview={preview}
+                  setPreview={this.setPreview}
+                  dragItem={dragItem}
+                  dragStartFunction={this.dragStartFunction}
+                  dragEndFunction={this.dragEndFunction}
+                  handleDrop={this.handleDrop}
+                  licence={licence}
+                  setTeam={this.props.setApp}
+                />
+              );
+            })}
         </div>
       </Collapsible>
     );
