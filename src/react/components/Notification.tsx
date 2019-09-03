@@ -27,6 +27,7 @@ interface Props {
   readAll: Function;
   style?: Object;
   closeme: Function;
+  loading: Boolean;
 }
 
 interface State {
@@ -150,7 +151,7 @@ class Notification extends React.Component<Props, State> {
 
   render() {
     const { data } = this.props;
-    const dataLength = data.fetchNotifications.length;
+    const dataLength = data.fetchNotifications ? data.fetchNotifications.length : 0;
     const dataExists = dataLength > 0;
 
     return (

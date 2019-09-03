@@ -18,6 +18,7 @@ import { fetchCompanyService } from "../../queries/products";
 import ServiceGeneralData from "../../components/manager/serviceGeneralData";
 import ServiceTeamsSection from "../../components/manager/serviceTeamsSection";
 import EmptySection from "../../components/manager/serviceDetails/emptySection";
+import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -102,51 +103,12 @@ class ServiceDetails extends React.Component<Props, State> {
                   <div>
                     <form>
                       <label>
-                        <div
-                          title={service.name}
+                        <PrintServiceSquare
+                          appidFunction={s => s}
+                          service={service}
                           className="managerBigSquare"
-                          style={
-                            service.icon
-                              ? {
-                                  backgroundImage:
-                                    service.icon.indexOf("/") != -1
-                                      ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                                          service.icon
-                                        )})`
-                                      : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                          service.icon
-                                        )})`,
-                                  backgroundColor: "unset",
-                                  marginLeft: "16px",
-                                  marginTop: "16px"
-                                }
-                              : {
-                                  backgroundColor: service.color,
-                                  marginLeft: "16px",
-                                  marginTop: "16px"
-                                }
-                          }>
-                          {/*<div className="imagehover">
-                            <i className="fal fa-camera" />
-                            <span>Upload</span>
-                        </div>*/}
-                        </div>
-                        {/*
-                        <Dropzone
-                          disabled={this.state.loading}
-                          style={{
-                            width: "0px",
-                            height: "0px",
-                            opacity: 0,
-                            overflow: "hidden",
-                            position: "absolute",
-                            zIndex: -1
-                          }}
-                          accept="image/*"
-                          type="file"
-                          multiple={false}
-                          onDrop={([file]) => this.uploadPic(file)}
-                        />*/}
+                          additionalStyles={{ marginLeft: "16px", marginTop: "16px" }}
+                        />
                       </label>
                     </form>
                   </div>

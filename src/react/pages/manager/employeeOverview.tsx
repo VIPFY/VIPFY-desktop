@@ -121,9 +121,11 @@ class EmployeeOverview extends React.Component<Props, State> {
             <AddEmployeePersonalData
               continue={data => {
                 this.setState({ addpersonal: data, addStage: 2 });
+              }}
+              close={() => {
+                this.setState({ add: false });
                 refetch();
               }}
-              close={() => this.setState({ add: false })}
               addpersonal={this.state.addpersonal}
               isadmin={this.props.isadmin}
             />

@@ -528,14 +528,15 @@ class PersonalDetails extends React.Component<Props, State> {
                   edit: {
                     id: "name",
                     label: "Name",
-                    startvalue: concatName(querydata)
+                    startvalue: concatName(querydata),
+                    checking: true
                   }
                 })
               }>
               <h1>Name</h1>
               <h2>{concatName(querydata)}</h2>
               <div className="profileEditButton">
-                <i className="fal fa-pencil editbuttons" />
+                <i className="fal fa-pen editbuttons" />
               </div>
             </div>
             <div
@@ -559,7 +560,7 @@ class PersonalDetails extends React.Component<Props, State> {
                   : "Not set"}
               </h2>
               <div className="profileEditButton">
-                <i className="fal fa-pencil editbuttons" />
+                <i className="fal fa-pen editbuttons" />
               </div>
             </div>
             <div
@@ -591,7 +592,7 @@ class PersonalDetails extends React.Component<Props, State> {
                   querydata.privatePhones[1].number}
               </h2>
               <div className="profileEditButton">
-                <i className="fal fa-pencil editbuttons" />
+                <i className="fal fa-pen editbuttons" />
               </div>
             </div>
             <div className="tableColumnSmall">
@@ -635,7 +636,7 @@ class PersonalDetails extends React.Component<Props, State> {
                   : "Not set"}
               </h2>
               <div className="profileEditButton">
-                <i className="fal fa-pencil editbuttons" />
+                <i className="fal fa-pen editbuttons" />
               </div>
             </div>
             <div
@@ -652,7 +653,7 @@ class PersonalDetails extends React.Component<Props, State> {
               <h1>Position</h1>
               <h2>{querydata.position}</h2>
               <div className="profileEditButton">
-                <i className="fal fa-pencil editbuttons" />
+                <i className="fal fa-pen editbuttons" />
               </div>
             </div>
             <div
@@ -677,7 +678,7 @@ class PersonalDetails extends React.Component<Props, State> {
                 {querydata.emails && querydata.emails[1] && querydata.emails[1].email}
               </h2>
               <div className="profileEditButton">
-                <i className="fal fa-pencil editbuttons" />
+                <i className="fal fa-pen editbuttons" />
               </div>
             </div>
             <div
@@ -704,7 +705,7 @@ class PersonalDetails extends React.Component<Props, State> {
                 {querydata.workPhones && querydata.workPhones[1] && querydata.workPhones[1].number}
               </h2>
               <div className="profileEditButton">
-                <i className="fal fa-pencil editbuttons" />
+                <i className="fal fa-pen editbuttons" />
               </div>
             </div>
           </div>
@@ -722,7 +723,17 @@ class PersonalDetails extends React.Component<Props, State> {
                 </h2>
                 <div>{this.printEditForm()}</div>
                 <UniversalButton label="Cancel" type="low" onClick={() => this.close()} />
-                <UniversalButton label="Save" type="high" onClick={() => this.handleConfirm()} />
+                <UniversalButton
+                  label="Save"
+                  type="high"
+                  disabled={
+                    this.state.edit!.checking &&
+                    (!(this.state.editvalue != null && this.state.editvalue != "") ||
+                      (this.state.editvalueArray != null &&
+                        this.state.editvalueArray.some(v => v != null && v != "")))
+                  }
+                  onClick={() => this.handleConfirm()}
+                />
                 {this.state.updateing ? (
                   <PopupSelfSaving
                     heading={`Save ${this.state.edit.label} of ${concatName(querydata)}`}

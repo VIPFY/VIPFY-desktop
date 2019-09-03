@@ -19,6 +19,7 @@ interface Props {
   cancel: Function;
   add: Function;
   nooutsideclose?: Boolean;
+  inmanager?: Boolean;
 }
 
 interface State {
@@ -191,6 +192,12 @@ class PopupSSO extends React.Component<Props, State> {
               }}
             />
           </div>
+
+          {this.props.inmanager && (
+            <div style={{ gridColumn: "2 / -1" }}>
+              Please provide details of one of your accounts so we can check this service
+            </div>
+          )}
 
           <UniversalTextInput
             width="100%"
