@@ -27,6 +27,11 @@
             text-align: center;
             color: #253647;
         }
+        
+        &.impersonateNotification {
+          background-color: #1A82E2;
+        }
+
         &.open{
             height: 40px;
         }

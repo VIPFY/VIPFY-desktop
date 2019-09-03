@@ -218,10 +218,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
       document: NOTIFICATION_SUBSCRIPTION,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data || subscriptionData.error) {
-          console.log(
-            "LOG: Sidebar -> componentDidMount -> subscriptionData.error",
-            subscriptionData.error
-          );
           return prev;
         }
 
@@ -572,7 +568,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
       <AppContext.Consumer>
         {context => (
           <ul
-            className={`sidebar${sidebarOpen ? "" : "-small"}`}
+            className={`sidebar${sidebarOpen ? "" : "-small"} ${
+              this.props.impersonation ? "sidebar-impersonate" : ""
+            }`}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
             <li className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
               <Tooltip

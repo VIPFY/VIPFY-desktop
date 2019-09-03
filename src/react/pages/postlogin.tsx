@@ -1,4 +1,5 @@
 import * as React from "react";
+import { decode } from "jsonwebtoken";
 import { Query, withApollo } from "react-apollo";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
@@ -10,7 +11,8 @@ import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment = require("moment");
-import { filterError } from "../common/functions";
+import { filterError, concatName } from "../common/functions";
+import UserName from "../components/UserName";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -83,14 +85,19 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
           const adminToken = localStorage.getItem("impersonator-token");
           if (adminToken) {
-            context.addHeaderNotification("You are impersonating another user", {
-              type: "impersonation",
-              key: "impersonator",
-              dismissButton: {
-                label: "Stop Impersonation",
-                dismissFunction: this.props.logMeOut
+            context.addHeaderNotification(
+              `You are impersonating the User ${concatName(this.props)}`,
+              {
+                type: "impersonation",
+                key: "impersonator",
+                dismissButton: {
+                  label: "Stop Impersonation",
+                  dismissFunction: this.props.logMeOut
+                }
               }
-            });
+            );
+
+            clearProps.impersonation = true;
           }
 
           if (!data.me.company.setupfinished) {
