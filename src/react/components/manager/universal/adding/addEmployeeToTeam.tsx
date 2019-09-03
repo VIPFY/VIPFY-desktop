@@ -243,6 +243,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
               key={`${team.id}-${team.services[this.state.counter].planid.appid.id}`}
               nooutsideclose={true}
               app={team.services[this.state.counter].planid.appid}
+              boughtplanid={team.services[this.state.counter]}
               team={team}
               addStyles={{ marginTop: "288px" }}
               cancel={async () => {
@@ -348,7 +349,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                   })
                 );
 
-                if (this.state.setups) {
+                /* if (this.state.setups) {
                   this.state.setups.forEach(
                     s =>
                       s.setupfinished &&
@@ -367,7 +368,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                         })
                       )
                   );
-                }
+              } */
 
                 await Promise.all(promises);
                 this.props.savingFunction({ action: "success" });

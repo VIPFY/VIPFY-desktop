@@ -18,6 +18,7 @@ import { fetchCompanyService } from "../../queries/products";
 import ServiceGeneralData from "../../components/manager/serviceGeneralData";
 import ServiceTeamsSection from "../../components/manager/serviceTeamsSection";
 import EmptySection from "../../components/manager/serviceDetails/emptySection";
+import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -85,6 +86,7 @@ class ServiceDetails extends React.Component<Props, State> {
                     Service Manager
                   </span>
                   <h2>></h2>
+                  {console.log("THIS IS STRANGE", service)}
                   <h2>{service.name}</h2>
                 </h1>
 
@@ -102,7 +104,13 @@ class ServiceDetails extends React.Component<Props, State> {
                   <div>
                     <form>
                       <label>
-                        <div
+                        <PrintServiceSquare
+                          appidFunction={s => s}
+                          service={service}
+                          className="managerBigSquare"
+                          additionalStyles={{ marginLeft: "16px", marginTop: "16px" }}
+                        />
+                        {/*<div
                           title={service.name}
                           className="managerBigSquare"
                           style={
@@ -129,9 +137,9 @@ class ServiceDetails extends React.Component<Props, State> {
                           {/*<div className="imagehover">
                             <i className="fal fa-camera" />
                             <span>Upload</span>
-                        </div>*/}
+                        </div>*%/}
                         </div>
-                        {/*
+                        {/%*
                         <Dropzone
                           disabled={this.state.loading}
                           style={{

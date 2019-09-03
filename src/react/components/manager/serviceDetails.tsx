@@ -224,7 +224,7 @@ class ServiceDetails extends React.Component<Props, State> {
                     <div className="editOptions">
                       <i className="fal fa-external-link-alt editbuttons" />
                       <i
-                        className="fal fa-pencil editbuttons"
+                        className="fal fa-pen editbuttons"
                         onClick={e => {
                           e.stopPropagation();
                           this.setState({ edit: true });

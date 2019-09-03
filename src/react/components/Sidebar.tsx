@@ -24,6 +24,7 @@ const NOTIFICATION_SUBSCRIPTION = gql`
       message
       icon
       changed
+      link
     }
   }
 `;
@@ -442,16 +443,20 @@ class Sidebar extends React.Component<SidebarProps, State> {
       if (licence.sidebar === null) {
         licence.sidebar = maxValue + 1;
       }
+      console.log("LICENCE CHECK", licence);
       if (
         !(
           (!licence.disabled &&
+            !licence.pending &&
             !licence.boughtplanid.planid.appid.disabled &&
             (licence.endtime > moment.now() || licence.endtime == null) &&
             !licence.vacationstart) ||
-          (licence.vacationstart &&
-            licence.vacationstart <= moment.now() &&
-            ((licence.vacationend && licence.vacationend > moment.now()) ||
-              licence.vacationend == null))
+          (!licence.disabled &&
+            !licence.pending &&
+            (licence.vacationstart &&
+              licence.vacationstart <= moment.now() &&
+              ((licence.vacationend && licence.vacationend > moment.now()) ||
+                licence.vacationend == null)))
         )
       ) {
         return false;
@@ -629,8 +634,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                   <div className="naked-button sidebarButton">
                     <i className="far fa-bell" />
                     <span className="notification-amount">
-                      {this.props.loading ||
-                      (!this.props.data && !this.props.data.fetchNotifications)
+                      {this.props.loading || !this.props.data.fetchNotifications
                         ? 0
                         : this.props.data.fetchNotifications.length}
                     </span>
@@ -647,6 +651,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 //sidebar={"1"}
                 moveTo={this.props.moveTo}
                 data={this.props.data}
+                loading={this.props.loading}
                 refetch={this.props.refetch}
                 style={{
                   left: sidebarOpen ? "210px" : "50px",

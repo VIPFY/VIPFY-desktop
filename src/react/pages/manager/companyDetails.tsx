@@ -218,7 +218,7 @@ class CompanyDetails extends React.Component<Props, State> {
                               <h1>Company Name</h1>
                               <h2>{name}</h2>
                               <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
+                                <i className="fal fa-pen editbuttons" />
                               </div>
                             </div>
                             <div
@@ -247,7 +247,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                 </Query>
                               </h2>
                               <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
+                                <i className="fal fa-pen editbuttons" />
                               </div>
                             </div>
                             <div
@@ -265,7 +265,7 @@ class CompanyDetails extends React.Component<Props, State> {
                               <h1>VIPFY-Plan</h1>
                               <h2>Free Trial</h2>
                               {/*<div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
+                                <i className="fal fa-pen editbuttons" />
                             </div>*/}
                             </div>
                             <div
@@ -282,7 +282,7 @@ class CompanyDetails extends React.Component<Props, State> {
                               <h1>Promocode</h1>
                               <h2>{promocode}</h2>
                               <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
+                                <i className="fal fa-pen editbuttons" />
                               </div>
                             </div>
                           </div>
@@ -295,7 +295,7 @@ class CompanyDetails extends React.Component<Props, State> {
                               <h1>Employees</h1>
                               <h2>{employees}</h2>
                               <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
+                                <i className="fal fa-pen editbuttons" />
                               </div>
                             </div>
                             <div
@@ -328,7 +328,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                 </Query>
                               </h2>
                               <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
+                                <i className="fal fa-pen editbuttons" />
                               </div>
                             </div>
                             <div
@@ -337,7 +337,7 @@ class CompanyDetails extends React.Component<Props, State> {
                               <h1>VIPFY-Costs per month</h1>
                               <h2>Free</h2>
                               {/*<div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
+                                <i className="fal fa-pen editbuttons" />
                             </div>*/}
                             </div>
                             <div
@@ -356,7 +356,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                 {(legalinformation && legalinformation.vatId) || "No VAT yet"}
                               </h2>
                               <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
+                                <i className="fal fa-pen editbuttons" />
                               </div>
                             </div>
                           </div>

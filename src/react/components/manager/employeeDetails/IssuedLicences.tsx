@@ -111,10 +111,10 @@ class IssuedLicences extends React.Component<Props, State> {
             </div>
 
             <div className="tableEnd">
-              {this.props.isadmin && (
+              {/*this.props.isadmin && (
                 <UniversalButton
                   type="high"
-                  label="Issue new Licence"
+                  label="Manage "
                   customStyles={{
                     fontSize: "12px",
                     lineHeight: "24px",
@@ -124,7 +124,7 @@ class IssuedLicences extends React.Component<Props, State> {
                   }}
                   onClick={() => this.setState({ showCreation: true })}
                 />
-              )}
+                )*/}
             </div>
           </div>
 
