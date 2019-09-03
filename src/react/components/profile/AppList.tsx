@@ -8,7 +8,7 @@ import LoadingDiv from "../LoadingDiv";
 import { ErrorComp, filterAndSort } from "../../common/functions";
 import Collapsible from "../../common/Collapsible";
 import DropDown from "../../common/DropDown";
-import { UPDATE_LAYOUT } from "../../mutations/auth";
+import { SWITCH_APPS_LAYOUT } from "../../mutations/auth";
 
 const BULK_UPDATE_LAYOUT = gql`
   query onBulkUpdateLayout($layouts: [LayoutInput!]!) {
@@ -61,6 +61,10 @@ class AppList extends React.Component<Props, State> {
     const dragged = this.props.allLicences.find(licence => licence.id == dragItem);
     const dropped = this.props.allLicences.find(licence => licence.id == dropItem);
 
+    if (dropped!.id == dragged!.id) {
+      return;
+    }
+
     const newLicences = this.props.allLicences.map(licence => {
       if (licence.id == dragged!.id) {
         return { ...licence, dashboard: dropped!.dashboard };
@@ -72,25 +76,15 @@ class AppList extends React.Component<Props, State> {
     });
 
     try {
-      const update = cache => {
-        cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
-      };
-
-      const p1 = this.props.updateLayout({
+      await this.props.updateLayout({
         variables: {
-          layout: { id: dragged!.id.toString(), dashboard: parseInt(dropped!.dashboard) }
+          app1: { id: dragged!.id.toString(), dashboard: parseInt(dropped.dashboard) },
+          app2: { id: dropped!.id.toString(), dashboard: parseInt(dragged.dashboard) }
         },
-        update
+        update: cache => {
+          cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
+        }
       });
-
-      const p2 = this.props.updateLayout({
-        variables: {
-          layout: { id: dropped!.id.toString(), dashboard: parseInt(dragged!.dashboard) }
-        },
-        update
-      });
-
-      await Promise.all([p1, p2]);
     } catch (error) {
       console.error(error);
     }
@@ -187,7 +181,7 @@ class AppList extends React.Component<Props, State> {
   }
 }
 
-const AppListEnhanced = graphql(UPDATE_LAYOUT, { name: "updateLayout" })(AppList);
+const AppListEnhanced = graphql(SWITCH_APPS_LAYOUT, { name: "updateLayout" })(AppList);
 
 export default (props: {
   setApp?: Function;
