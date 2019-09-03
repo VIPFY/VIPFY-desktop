@@ -26,6 +26,8 @@ interface Props {
 
 interface State {
   search: string;
+  sort: string;
+  sortforward: boolean;
   add: Boolean;
   addStage: number;
   addpersonal: Object;
@@ -56,6 +58,8 @@ const DELETE_EMPLOYEE = gql`
 class EmployeeOverview extends React.Component<Props, State> {
   state = {
     search: "",
+    sort: "Name",
+    sortforward: true,
     add: false,
     addpersonal: {},
     addStage: 1,
@@ -65,6 +69,39 @@ class EmployeeOverview extends React.Component<Props, State> {
     deleting: null,
     willdeleting: null
   };
+
+  handleSortClick(sorted) {
+    //console.log("TEST")
+    //console.log("TEST1", sorted, this.state.sort, this.state.sortforward);
+
+    if(sorted != this.state.sort) {
+      this.setState({sortforward: true, sort: sorted});
+    } else {
+      this.setState(oldstate => {return {sortforward: !oldstate.sortforward}});
+    }
+  }
+
+  filterMotherfunction(employee) {
+    if(`${employee.firstname} ${employee.lastname}`.toUpperCase().includes(this.state.search.toUpperCase())) {//team.name.toUpperCase().includes(this.state.search.toUpperCase())
+      return true;
+    } else if(/* employee.teams.filter(team => this.filterTeams(team)).length > 0 */ false) {
+      return true;
+    } else if(/* employee.services.filter(service => this.filterServices(service)).length > 0 */ false) {
+      return true;
+    }
+    return false;
+  }
+
+  filterTeams(team) {
+    return (team.name.toUpperCase().includes(this.state.search.toUpperCase()));
+  }
+
+  filterServices(service) {
+    if (!service.app) {
+      return false;;
+    }
+    return (service.app.name.toUpperCase().includes(this.state.search.toUpperCase()));
+  }
 
   addUser(apps, addteams) {
     this.setState({ apps, addteams, saving: true, add: false });
@@ -221,16 +258,16 @@ class EmployeeOverview extends React.Component<Props, State> {
                   <div className="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig" style={{ width: "20%" }}>
+                        <div className="tableColumnBig" style={{ width: "20%" }} onClick={() => this.handleSortClick("Name")}>
                           <h1>Name</h1>
                         </div>
-                        <div className="tableColumnSmall" style={{ width: "5%" }}>
+                        <div className="tableColumnSmall" style={{ width: "5%" }} onClick={() => this.handleSortClick("Status")}>
                           <h1>Status</h1>
                         </div>
-                        <div className="tableColumnBig" style={{ width: "20%" }}>
+                        <div className="tableColumnBig" style={{ width: "20%" }} onClick={() => this.handleSortClick("Teams")}>
                           <h1>Teams</h1>
                         </div>
-                        <div className="tableColumnBig" style={{ width: "30%" }}>
+                        <div className="tableColumnBig" style={{ width: "30%" }}  onClick={() => this.handleSortClick("Services")}>
                           <h1>Services</h1>
                         </div>
                       </div>
@@ -269,19 +306,87 @@ class EmployeeOverview extends React.Component<Props, State> {
               let interemployees: any[] = [];
               if (data.fetchDepartmentsData && data.fetchDepartmentsData[0].children_data) {
                 interemployees = data.fetchDepartmentsData[0].children_data.filter(e => e && e.id);
+                let sortforward = this.state.sortforward;
+                
+                //Sortselection
+                switch (this.state.sort) {
+                  case "Name":
+                    interemployees.sort(function(a, b) {
+                      let nameA = `${a.firstname} ${a.lastname}`.toUpperCase();
+                      let nameB = `${b.firstname} ${b.lastname}`.toUpperCase();
+                      if (nameA < nameB) {
+                        if(sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
+                        };
+                      }
+                      if (nameA > nameB) {
+                        if(sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
+                        };
+                      }
+                      // namen müssen gleich sein
+                      return 0;
+                    });
+                    break;
+                  case "Status":
+                    interemployees.sort(function(a, b) {
+                      let onA = a.isonline;
+                      let onB = b.isonline;
+                      if(onA && !onB) {
+                        if(sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
+                        };
+                      }
+                      if (!onA && onB) {
+                        if(sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
+                        };
+                      }
+                      let nameA = `${a.firstname} ${a.lastname}`.toUpperCase();
+                      let nameB = `${b.firstname} ${b.lastname}`.toUpperCase();
+                      if (nameA < nameB) {
+                        if(sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
+                        };
+                      }
+                      if (nameA > nameB) {
+                        if(sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
+                        };
+                      }
+                      // namen müssen gleich sein
+                      return 0;
+                    });
+                    break;
+                  case "Teams":
+                    break;
+                  case "Services":
+                      /* interemployees.sort(function(a, b) {
+                        let servicesA = data.fetchUsersOwnLicences(a.id);
+                        let servicesB = data.fetchUsersOwnLicences(b.id);
+                        console.log("Check");
 
-                interemployees.sort(function(a, b) {
-                  let nameA = `${a.firstname} ${a.lastname}`.toUpperCase();
-                  let nameB = `${b.firstname} ${b.lastname}`.toUpperCase();
-                  if (nameA < nameB) {
-                    return -1;
-                  }
-                  if (nameA > nameB) {
-                    return 1;
-                  }
-                  // namen müssen gleich sein
-                  return 0;
-                });
+                        return 0;
+                      }); */
+                    break;
+                
+                  default:
+                    break;
+                }
+
+                
                 if (this.state.search != "") {
                   employees = interemployees.filter(employee => {
                     return `${employee.firstname} ${employee.lastname}`
@@ -297,16 +402,16 @@ class EmployeeOverview extends React.Component<Props, State> {
                   <div className="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig" style={{ width: "20%" }}>
+                        <div className="tableColumnBig" style={{ width: "20%" }} onClick={() => this.handleSortClick("Name")}>
                           <h1>Name</h1>
                         </div>
-                        <div className="tableColumnSmall" style={{ width: "5%" }}>
+                        <div className="tableColumnSmall" style={{ width: "5%" }} onClick={() => this.handleSortClick("Status")}>
                           <h1>Status</h1>
                         </div>
-                        <div className="tableColumnBig" style={{ width: "20%" }}>
+                        <div className="tableColumnBig" style={{ width: "20%" }} onClick={() => this.handleSortClick("Teams")}>
                           <h1>Teams</h1>
                         </div>
-                        <div className="tableColumnBig" style={{ width: "30%" }}>
+                        <div className="tableColumnBig" style={{ width: "30%" }} onClick={() => this.handleSortClick("Services")}>
                           <h1>Services</h1>
                         </div>
                       </div>

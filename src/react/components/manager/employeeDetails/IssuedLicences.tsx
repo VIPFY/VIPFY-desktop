@@ -372,16 +372,16 @@ class IssuedLicences extends React.Component<Props, State> {
               {(mutate, { loading, data, error }) => (
                 <PopupBase
                   buttonStyles={{ justifyContent: "space-between" }}
-                  fullmiddle={true}
+                  fullMiddle={true}
                   customStyles={{ maxWidth: "1152px" }}
                   close={() => {
                     this.setState({ showCreation: false });
                     this.props.closeTimeAway();
                   }}>
                   <span className="mutiplieHeading">
-                    <span style={{ fontWeight: "bold" }} className="mHeading">{`${
-                      this.props.firstName
-                    }'s Services`}</span>
+                    <span
+                      style={{ fontWeight: "bold" }}
+                      className="mHeading">{`${this.props.firstName}'s Services`}</span>
                   </span>
 
                   <div

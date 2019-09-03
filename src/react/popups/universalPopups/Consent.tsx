@@ -2,7 +2,7 @@ import * as React from "react";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import PopupBase from "./popupBase";
-import { consentText } from "../../common/constants";
+import { ConsentText } from "../../common/functions";
 import UniversalButton from "../../components/universalButtons/universalButton";
 
 const SET_CONSENT = gql`
@@ -22,7 +22,7 @@ export default (props: Props) => (
   <Mutation mutation={SET_CONSENT} onError={props.close} onCompleted={props.close}>
     {setConsent => (
       <PopupBase buttonStyles={{ justifyContent: "space-between" }} dialog={true}>
-        {consentText}
+        <ConsentText />
         <UniversalButton
           onClick={() => {
             setConsent({ variables: { consent: false } });

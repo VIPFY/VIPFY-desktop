@@ -229,6 +229,7 @@ class SelfSaving extends React.Component<Props, State> {
               <span>Just a moment.</span>
               <span>We are verifying the Implementation.</span>
             </h3>
+            <UniversalButton type="high" label="Cancel" onClick={() => this.close()} />
           </div>
         )}
       </PopupBase>

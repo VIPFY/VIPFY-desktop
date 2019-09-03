@@ -24,7 +24,12 @@ class ServiceGrid extends React.Component<Props, State> {
   printApps(apps) {
     let ownAppsArray: JSX.Element[] = [];
     let j = 0;
-    apps.forEach(app => {
+    let filteredApps = apps.filter(app => {
+      return app.boughtplanid.planid.appid.name
+        .toUpperCase()
+        .includes(this.props.search.toUpperCase());
+    });
+    filteredApps.forEach(app => {
       console.log("APP", app);
       if (!app.disabled && (app.endtime == null || app.endtime > now())) {
         ownAppsArray.push(

@@ -28,7 +28,36 @@ interface State {
 class FormPopup extends React.Component<Props, State> {
   state = { values: {}, save: false };
 
+
+  listenKeyboard = e => {
+    const fields = this.props.fields;
+    const idlist: Array<string> = [];
+    var idcheck = false;
+    if(fields) {
+      fields.forEach(field => {
+        idlist.push(field.id);
+      });
+    }else {
+      idcheck = true;
+    }
+    if(e.target && e.target.id && idlist.includes(e.target.id)) {
+      idcheck = true;
+    }
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.setState({ values: {} });
+      this.props.close();
+    } else if (idcheck && (e.key === "Enter" || e.keyCode === 13) && !(this.props.submitDisabled && this.props.submitDisabled(this.state.values))) {
+      this.setState({ save: true })
+    }
+  }
+
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
+  }
+
   componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
     this.setState({ values: {}, save: false });
   }
 

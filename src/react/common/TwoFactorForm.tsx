@@ -53,17 +53,20 @@ class TwoFactorForm extends React.Component<Props, State> {
     let value = e.target.value;
 
     if (value.match(/^[\d]+$/g)) {
-      if (value > 9 || (value.length > 1 && value.startsWith(0))) {
-        if (name < 6) {
-          this[parseInt(name) + 1].focus();
-          this.setState(prevState => ({
-            ...prevState,
-            [parseInt(name)]: value[0],
-            [parseInt(name) + 1]: value[1]
-          }));
-        }
-      } else {
+      if (value.length == 1) {
         this.setState(prevState => ({ ...prevState, [name]: value }));
+      } else {
+        this.setState(prevState => {
+          if (prevState[parseInt(name)] == value[0]) {
+            return { ...prevState, [parseInt(name)]: value[1] };
+          } else {
+            return { ...prevState, [parseInt(name)]: value[0] };
+          }
+        });
+      }
+
+      if (name < 6) {
+        this[parseInt(name) + 1].focus();
       }
     }
   };
@@ -83,6 +86,10 @@ class TwoFactorForm extends React.Component<Props, State> {
         value={this.state[item]}
         required={true}
         name={item}
+        type="number"
+        min="0"
+        max="9"
+        step="1"
         form="two-factor-form"
       />
     ));
@@ -90,7 +97,7 @@ class TwoFactorForm extends React.Component<Props, State> {
   render() {
     const first: number[] = [];
     const second: number[] = [];
-    const content = [];
+    const content: any[] = [];
 
     for (let i = 1; i <= this.props.fieldNumber; i++) {
       if (this.props.seperator && i >= this.props.seperator) {
