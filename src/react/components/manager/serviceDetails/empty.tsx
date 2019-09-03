@@ -157,7 +157,7 @@ class Empty extends React.Component<Props, State> {
                 small={true}
                 close={() => this.setState({ delete: false })}
                 closeable={false}>
-                <div>Do you remove this account from the system?</div>
+                <div>Do you want to remove this account from the system?</div>
                 <UniversalButton type="low" closingPopup={true} label="Cancel" />
                 <UniversalButton
                   type="low"
@@ -166,9 +166,7 @@ class Empty extends React.Component<Props, State> {
                     this.setState({ delete: false });
                     this.props.deleteFunction({
                       savingmessage: "The licence is currently being removed from the service",
-                      savedmessage: `The licence has been removed successfully. Please make sure you also delete it from your ${
-                        this.props.service.name
-                      }-subscription`,
+                      savedmessage: `The licence has been removed successfully. Please make sure you also delete it from your ${this.props.service.name}-subscription`,
                       maxtime: 5000,
                       closeFunction: () =>
                         this.setState({
