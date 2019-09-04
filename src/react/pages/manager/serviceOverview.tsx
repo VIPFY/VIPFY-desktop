@@ -113,7 +113,10 @@ class ServiceOverview extends React.Component<Props, State> {
           <PopupBase
             fullmiddle={true}
             customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}>
+            close={() => {
+              refetch();
+              this.setState({ add: false });
+            }}>
             <AddServiceGeneralData
               continue={data => this.setState({ addservice: data, addStage: 2 })}
               close={() => this.setState({ add: false })}
@@ -185,7 +188,10 @@ class ServiceOverview extends React.Component<Props, State> {
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
-      if (service.licences.find(l => l && (l.endtime == null || l.endtime > now()))) {
+      if (
+        service.licences.find(l => l && (l.endtime == null || l.endtime > now())) ||
+        (service.app.owner && service.app.owner.id)
+      ) {
         serviceArray.push(
           <div
             key={service.name}

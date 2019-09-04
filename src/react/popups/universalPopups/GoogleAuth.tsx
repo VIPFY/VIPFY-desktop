@@ -130,7 +130,6 @@ class GoogleAuth extends React.Component<Props, State> {
                   buttonStyles={{ position: "absolute", bottom: "25px", right: "44px" }}
                 />
               )}
-
               <span style={{ opacity: error ? 1 : 0 }} className="error-field">
                 {error}
               </span>

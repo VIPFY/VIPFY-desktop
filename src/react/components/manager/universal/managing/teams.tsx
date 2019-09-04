@@ -100,7 +100,11 @@ class ManageTeams extends React.Component<Props, State> {
               )}
 
               {this.state.addTeam && this.state.addTeam!.new && (
-                <PopupBase fullmiddle={true} close={() => this.setState({ addTeam: null })}>
+                <PopupBase
+                  fullmiddle={true}
+                  small={true}
+                  close={() => this.setState({ addTeam: null })}
+                  additionalclassName="formPopup">
                   <AddTeamGeneralData
                     close={() => this.setState({ addTeam: null })}
                     savingFunction={so => {

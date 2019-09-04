@@ -25,6 +25,7 @@ export const GIVE_TEMPORARY_ACCESS = gql`
           firstname
           middlename
           lastname
+          profilepicture
         }
       }
       errors

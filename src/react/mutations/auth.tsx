@@ -6,6 +6,12 @@ export const UPDATE_LAYOUT = gql`
   }
 `;
 
+export const SWITCH_APPS_LAYOUT = gql`
+  mutation onSwitchAppsLayout($app1: LayoutInput!, $app2: LayoutInput!) {
+    switchAppsLayout(app1: $app1, app2: $app2)
+  }
+`;
+
 export const signInUser = gql`
   mutation SignInUser($email: String!, $password: String!) {
     signIn(email: $email, password: $password) {

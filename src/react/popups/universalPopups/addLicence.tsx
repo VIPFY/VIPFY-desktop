@@ -32,6 +32,7 @@ interface Props {
   success?: Function;
   team?: Object;
   addStyles?: Object;
+  boughtplanid?: number;
 }
 
 interface State {
@@ -185,18 +186,23 @@ class PopupAddLicence extends React.Component<Props, State> {
         close={() => cancel()}
         submit={async values => {
           try {
-            let res = await this.props.addExternalBoughtPlan({
-              variables: {
-                appid: id,
-                alias: "",
-                price: 0,
-                loginurl: ""
-              }
-            });
+            let res;
+            if (!this.props.boughtplanid) {
+              res = await this.props.addExternalBoughtPlan({
+                variables: {
+                  appid: id,
+                  alias: "",
+                  price: 0,
+                  loginurl: ""
+                }
+              });
+            }
             await this.props.addLicence({
               variables: {
                 appid: id,
-                boughtplanid: res.data.addExternalBoughtPlan.id,
+                boughtplanid: this.props.boughtplanid
+                  ? this.props.boughtplanid.id
+                  : res.data.addExternalBoughtPlan.id,
                 username: values[`${employee && employee.id}-${id}-email`],
                 password: values[`${employee && employee.id}-${id}-password`],
                 loginurl: values[`${employee && employee.id}-${id}-subdomain`],

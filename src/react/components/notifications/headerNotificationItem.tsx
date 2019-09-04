@@ -40,10 +40,17 @@ class HeaderNotificationItem extends Component<Props, State> {
         classes += " errorNotification";
         icon = "engine-warning";
         break;
+
       case "warning":
         classes += " warningNotification";
         icon = "exclamation-triangle";
         break;
+
+      case "impersonation":
+        classes += " impersonateNotification";
+        icon = "user-secret";
+        break;
+
       default:
         icon = "info-circle";
     }
@@ -61,7 +68,10 @@ class HeaderNotificationItem extends Component<Props, State> {
             justifyContent: "center",
             alignItems: "center"
           }}>
-          <i className={`fal fa-${icon}`} style={{ marginRight: "16px", fontSize: "24px" }} />
+          <i
+            className={`fal fa-${icon}`}
+            style={{ marginRight: "16px", fontSize: type == "impersonation" ? "21px" : "24px" }}
+          />
           <span style={{ lineHeight: "40px" }}>{message}</span>
           {this.props.notification.key == "network" && (
             <Query query={PING_SERVER} pollInterval={1 * 1000} fetchPolicy="network-only">

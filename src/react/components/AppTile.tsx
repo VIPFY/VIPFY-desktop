@@ -4,6 +4,7 @@ import { Licence } from "../interfaces";
 import { Preview } from "./profile/AppList";
 import { UPDATE_LAYOUT } from "../mutations/auth";
 import { getBgImageApp } from "../common/images";
+import { fetchLicences } from "../queries/auth";
 
 interface Props {
   dragStartFunction: Function;
@@ -25,9 +26,9 @@ interface State {
 class AppTile extends React.Component<Props, State> {
   state = { entered: false };
 
-  /*async componentDidMount() {
+  async componentDidMount() {
     // Make sure that every License has an index
-    if (this.props.licence.dashboard === null) {
+    if (!this.props.licence.dashboard) {
       try {
         await this.props.updateLayout({
           variables: { layout: { id: this.props.licence.id, dashboard: this.props.position } },
@@ -51,7 +52,7 @@ class AppTile extends React.Component<Props, State> {
         console.log(error);
       }
     }
-  }*/
+  }
 
   render() {
     // prettier-ignore

@@ -2,6 +2,7 @@ import * as React from "react";
 import { Query } from "react-apollo";
 import { fetchApps } from "../../../../queries/products";
 import PrintServiceSquare from "../squares/printServiceSquare";
+import { now } from "moment";
 
 interface Props {
   search: string;
@@ -22,48 +23,52 @@ class ServiceGrid extends React.Component<Props, State> {
 
   printApps(apps) {
     let ownAppsArray: JSX.Element[] = [];
-    let filteredApps = apps.filter(app => {return app.boughtplanid.planid.appid.name.toUpperCase().includes(this.props.search.toUpperCase())})
+    let j = 0;
+    let filteredApps = apps.filter(app => {
+      return app.boughtplanid.planid.appid.name
+        .toUpperCase()
+        .includes(this.props.search.toUpperCase());
+    });
     filteredApps.forEach(app => {
       console.log("APP", app);
-      ownAppsArray.push(
-        <div
-          key={app.name}
-          draggable
-          className="space"
-          onClick={() => this.props.onChange({ action: "remove", content: app })}
-          onDragStart={() => this.setState({ dragdelete: app })}>
-          <PrintServiceSquare
-            service={app}
-            appidFunction={a => {
-              if (a.boughtplanid) {
-                return a.boughtplanid.planid.appid;
-              } else {
-                return a.planid.appid;
-              }
-            }}
-            className="image"
-          />
+      if (!app.disabled && (app.endtime == null || app.endtime > now())) {
+        ownAppsArray.push(
           <div
-            className="name"
-            title={
-              (app.boughtplanid && app.boughtplanid.planid.appid.name) || app.planid.appid.name
-            }>
-            {(app.boughtplanid && app.boughtplanid.planid.appid.name) || app.planid.appid.name}
+            key={app.name}
+            draggable
+            className="space"
+            onClick={() => this.props.onChange({ action: "remove", content: app })}
+            onDragStart={() => this.setState({ dragdelete: app })}>
+            <PrintServiceSquare
+              service={app}
+              appidFunction={a => {
+                if (a.boughtplanid) {
+                  return a.boughtplanid.planid.appid;
+                } else {
+                  return a.planid.appid;
+                }
+              }}
+              className="image"
+            />
+            <div
+              className="name"
+              title={
+                (app.boughtplanid && app.boughtplanid.planid.appid.name) || app.planid.appid.name
+              }>
+              {(app.boughtplanid && app.boughtplanid.planid.appid.name) || app.planid.appid.name}
+            </div>
+            <div className="imageHover">
+              <i className="fal fa-trash-alt" />
+              <span>Click to remove</span>
+            </div>
           </div>
-          <div className="imageHover">
-            <i className="fal fa-trash-alt" />
-            <span>Click to remove</span>
-          </div>
-        </div>
-      );
+        );
+        j++;
+      }
     });
 
     let i = 0;
-    while (
-      (this.props.services.length + i) % 4 != 0 ||
-      this.props.services.length + i < 12 ||
-      i == 0
-    ) {
+    while ((j + i) % 4 != 0 || j + i < 12 || i == 0) {
       ownAppsArray.push(
         <div className="space">
           <div className="fakeimage" />

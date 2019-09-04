@@ -111,10 +111,10 @@ class IssuedLicences extends React.Component<Props, State> {
             </div>
 
             <div className="tableEnd">
-              {this.props.isadmin && (
+              {/*this.props.isadmin && (
                 <UniversalButton
                   type="high"
-                  label="Issue new Licence"
+                  label="Manage "
                   customStyles={{
                     fontSize: "12px",
                     lineHeight: "24px",
@@ -124,7 +124,7 @@ class IssuedLicences extends React.Component<Props, State> {
                   }}
                   onClick={() => this.setState({ showCreation: true })}
                 />
-              )}
+                )*/}
             </div>
           </div>
 
@@ -245,7 +245,7 @@ class IssuedLicences extends React.Component<Props, State> {
                                 ) : (
                                   <i className="fal fa-user" title="Single Account" />
                                 )}
-                                {concatName(editLicence.unitid)}
+                                <span>{concatName(editLicence.unitid)}</span>
                               </span>
                             ),
                             value: id
@@ -261,13 +261,16 @@ class IssuedLicences extends React.Component<Props, State> {
                             <PopupBase
                               close={() => this.setState({ showEdit: null })}
                               closeable={true}>
-                              <LicenceRow
-                                objectId={key}
-                                hideCancel={true}
-                                addLicence={editLicenceData => this.setState({ editLicenceData })}
-                                licence={editLicence.licenceid}
-                                defaultValues={defaultValues}
-                              />
+                              <div ref={this.table} style={{ position: "relative" }}>
+                                <LicenceRow
+                                  objectId={key}
+                                  hideCancel={true}
+                                  addLicence={editLicenceData => this.setState({ editLicenceData })}
+                                  licence={editLicence.licenceid}
+                                  defaultValues={defaultValues}
+                                  holder={this.table}
+                                />
+                              </div>
 
                               {error && <ErrorComp error={error} />}
 
@@ -368,12 +371,15 @@ class IssuedLicences extends React.Component<Props, State> {
                   });
                 }
               }}
-              onCompleted={() => this.setState({ showCreation: false })}>
-              {(mutate, { loading, data, error }) => (
+              onCompleted={() => {
+                this.setState({ showCreation: false });
+                this.props.closeTimeAway();
+              }}>
+              {(mutate, { loading, data, error: mutationError }) => (
                 <PopupBase
                   buttonStyles={{ justifyContent: "space-between" }}
                   fullMiddle={true}
-                  customStyles={{ maxWidth: "1152px" }}
+                  styles={{ maxWidth: "1152px" }}
                   close={() => {
                     this.setState({ showCreation: false });
                     this.props.closeTimeAway();
@@ -431,7 +437,7 @@ class IssuedLicences extends React.Component<Props, State> {
                     </Query>
                   </div>
 
-                  {error && <div className="error">{filterError(error)}</div>}
+                  {mutationError && <div className="error">{filterError(mutationError)}</div>}
                   {data && data.errors && data.errors.length > 0 && (
                     <div className="error">
                       {`Sorry, something went wrong with the following Licences:

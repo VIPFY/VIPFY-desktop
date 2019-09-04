@@ -90,15 +90,26 @@ class AddServiceGeneralData extends React.Component<Props, State> {
                 }
                 delete values.logo;
 
-                this.setState({ ownSSO: { ...values }, showLoading: true });
+                this.setState({
+                  ownSSO: { manager: true, ...values },
+                  showLoading: true
+                });
               }}
+              inmanager={true}
             />
 
             {this.state.showLoading && (
               <SelfSaving
                 sso={this.state.ownSSO!}
+                userids={[]}
                 //  maxTime={7000}
-                closeFunction={() => this.setState({ showLoading: false, popupSSO: false })}
+                closeFunction={data => {
+                  this.setState({ showLoading: false, popupSSO: false });
+                  if (data != "error") {
+                    this.setState({ integrateService: { id: data } });
+                  }
+                }}
+                inmanager={true}
               />
             )}
           </React.Fragment>

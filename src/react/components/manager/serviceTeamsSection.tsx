@@ -56,42 +56,6 @@ class ServiceTeamsSection extends React.Component<Props, State> {
     savingObject: null
   };
 
-  printRemoveLicences(team) {
-    let RLicencesArray: JSX.Element[] = [];
-
-    team.services.forEach((service, int) => {
-      RLicencesArray.push(
-        <li key={int}>
-          <UniversalCheckbox
-            name={service.id}
-            startingvalue={true}
-            liveValue={v =>
-              v
-                ? this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences.splice(
-                      prevState.keepLicences.findIndex(l => l == service.id),
-                      1
-                    );
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-                : this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences;
-                    keepLicencesNew.push(service.id);
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-            }>
-            <span>Delete licence of {service.planid.appid.name}</span>
-          </UniversalCheckbox>
-        </li>
-      );
-    });
-    return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
-  }
-
   render() {
     let teamArray: JSX.Element[] = [];
     const interteams = this.props.teams;

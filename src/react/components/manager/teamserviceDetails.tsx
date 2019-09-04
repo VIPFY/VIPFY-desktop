@@ -139,15 +139,16 @@ class TeamServiceDetails extends React.Component<Props, State> {
               <DeletePopup
                 key="deleteLicence"
                 heading="Delete Licence"
-                subHeading={`If you delete licence access for ${team.name} to ${
-                  service.planid.appid.name
-                }, you remove access for the following team members`}
+                subHeading={`If you delete licence access for ${team.name} to ${service.planid.appid.name}, you remove access for the following team members`}
                 employees={this.props.team.employees}
                 services={[service]}
                 main="service"
-                close={() => this.setState({ delete: false })}
-                submit={values =>
-                  removeServiceFromTeam({
+                close={() => {
+                  console.log("CLOSE");
+                  this.setState({ delete: false });
+                }}
+                submit={async values => {
+                  await removeServiceFromTeam({
                     variables: {
                       teamid: team.unitid.id,
                       boughtplanid: service.id,
@@ -159,8 +160,9 @@ class TeamServiceDetails extends React.Component<Props, State> {
                         variables: { teamid: team.unitid.id }
                       }
                     ]
-                  })
-                }
+                  });
+                  this.setState({ delete: false });
+                }}
               />
             )}
           </div>
