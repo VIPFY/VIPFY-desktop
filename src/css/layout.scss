@@ -5642,6 +5642,11 @@ progress[value] {
     margin-right: 5px;
     object-fit: cover;
   }
+
+  span {
+    @include hide-overflowing-text;
+    max-width: 73px;
+  }
 }
 
 .popup-lic {

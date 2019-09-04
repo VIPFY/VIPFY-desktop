@@ -186,7 +186,7 @@ class LicenceRow extends React.Component<Props, State> {
                         ) : (
                           <i className="fal fa-user" title="Single Account" />
                         )}
-                        {concatName(employee)}
+                        <span>{concatName(employee)}</span>
                       </span>
                     ),
                     value: employee.id
