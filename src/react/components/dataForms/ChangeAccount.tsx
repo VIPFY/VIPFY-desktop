@@ -116,7 +116,7 @@ class ChangeAccount extends React.Component<Props, State> {
           <PopupBase
             small={true}
             close={() => this.setState({ confirm: false })}
-            nosidebar={true}
+            noSidebar={true}
             closeable={false}>
             <p>Do you really want to delete this account from this machine?</p>
             <UniversalButton type="low" closingPopup={true} label="Cancel" />

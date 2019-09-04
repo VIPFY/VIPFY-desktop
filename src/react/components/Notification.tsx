@@ -4,6 +4,7 @@ import { graphql, compose } from "react-apollo";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import { filterError, ErrorComp } from "../common/functions";
 import * as moment from "moment";
+import * as ReactDOM from "react-dom";
 
 const READ_NOTIFICATION = gql`
   mutation onReadNotification($id: ID!) {
@@ -18,10 +19,15 @@ const READ_ALL_NOTIFICATIONS = gql`
 `;
 
 interface Props {
+  moveTo: Function;
+  sidebar: Object;
   data: any;
   refetch: Function;
   readNotification: Function;
   readAll: Function;
+  style?: Object;
+  closeme: Function;
+  loading: Boolean;
 }
 
 interface State {
@@ -35,6 +41,27 @@ class Notification extends React.Component<Props, State> {
     loading: false,
     error: "",
     hover: false
+  };
+
+  handleClickOnNotification(id /* , link */) {
+    /* if(link) {
+      this.props.moveTo(link);
+    } */
+    this.markAsRead(id);
+  }
+
+  componentDidMount() {
+    document.addEventListener("click", this.handleClickOutside, true);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("click", this.handleClickOutside, true);
+  }
+  handleClickOutside = e => {
+    const domNode = ReactDOM.findDOMNode(this);
+    if (!domNode || !domNode.contains(e.target)) {
+      this.props.closeme();
+    }
   };
 
   fetchNotifications = async () => {
@@ -113,7 +140,7 @@ class Notification extends React.Component<Props, State> {
       return <ErrorComp error={this.state.error} />;
     }
 
-    return notifications.map(({ message, icon, sendtime, id }) => (
+    return notifications.map(({ message, icon, sendtime, id, link }) => (
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
         <p className="notificationText">{message}</p>
@@ -124,11 +151,11 @@ class Notification extends React.Component<Props, State> {
 
   render() {
     const { data } = this.props;
-    const dataLength = data.fetchNotifications.length;
+    const dataLength = data.fetchNotifications ? data.fetchNotifications.length : 0;
     const dataExists = dataLength > 0;
 
     return (
-      <div className="notificationPopup">
+      <div className="notificationPopup" style={this.props.style}>
         <div className="notificationPopupHeader">
           {`You have ${dataExists ? dataLength : "no"} new notification${
             dataLength == 1 ? "" : "s"

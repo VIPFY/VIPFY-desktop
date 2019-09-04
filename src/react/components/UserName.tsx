@@ -31,7 +31,7 @@ export default function UserName(props: {
   }
 
   return (
-    <Query pollInterval={60 * 10 * 1000 + 600} query={QUERY_USER} variables={{ userid: unitid }}>
+    <Query query={QUERY_USER} variables={{ userid: unitid }}>
       {({ loading, error, data }) => {
         if (loading) {
           return <span />;
@@ -42,6 +42,7 @@ export default function UserName(props: {
         }
 
         const userData = data.fetchPublicUser;
+        console.log("LOG: userData", userData);
         return (
           <span className={props.className} data-recording-sensitive>
             {short ? userData.firstname : `${userData.firstname} ${userData.lastname}`}

@@ -9,6 +9,7 @@ import IconButton from "../../common/IconButton";
 import LoadingDiv from "../LoadingDiv";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
+import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
 import Collapsible from "../../common/Collapsible";
 
 const REACTIVATE_PLAN = gql`
@@ -75,6 +76,7 @@ const FETCH_UNIT_APPS = gql`
 
 interface State {
   showDeletion: null | number;
+  active: string;
 }
 
 interface Props {
@@ -100,7 +102,7 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 });
 
 class AppListInner extends React.Component<Props, State> {
-  state = { showDeletion: null };
+  state = { showDeletion: null, active: "" };
 
   render() {
     if (!this.props.data.fetchUnitApps || !this.props.data.fetchUnitAppsSimpleStats) {
@@ -108,20 +110,14 @@ class AppListInner extends React.Component<Props, State> {
     }
 
     return (
-      <table style={{ width: "100%", textAlign: "left" }}>
+      <table className="details-table">
         <thead>
           <tr>
-            <th>App Name</th>
-            {/*<th>Plan Name</th>*/}
+            <th>App</th>
             <th>Team Name</th>
-            <th>
-              Licences
-              <br />
-              Used
-            </th>
-            <th>Time Spend this Month</th>
-            {/*<th>Price per Month</th>
-            <th>Runs Until</th>*/}
+            <th>Total Licences</th>
+            <th>Used Licences</th>
+            <th>Time Spent/Month</th>
             <th />
           </tr>
         </thead>
@@ -170,27 +166,26 @@ class AppListInner extends React.Component<Props, State> {
         }
 
         return (
-          <tr key={key}>
-            <td>{appName}</td>
-            {/*<td>{planName}</td>*/}
-            <td>{boughtplan.alias}</td>
+          <tr
+            key={key}
+            onClick={() =>
+              this.props.history.push({
+                pathname: `/area/usage/boughtplan/${boughtplan.id}`,
+                state: { name: alias || appName }
+              })
+            }>
             <td>
-              <sup>{licencesused}</sup>/<sub>{licencestotal}</sub>
-            </td>
-            <td>{totalDur}</td>
-            {/*<td>${boughtplan.totalprice}</td>
-              <td>{endSat}</td>*/}
-            <td className="naked-button-holder">
-              <IconButton
-                icon="tachometer-alt-slow"
-                title="show details"
-                onClick={() =>
-                  this.props.history.push({
-                    pathname: `/area/usage/boughtplan/${boughtplan.id}`,
-                    state: { name: alias || appName }
-                  })
-                }
+              <PrintServiceSquare
+                service={boughtplan}
+                appidFunction={boughtplan => boughtplan.planid.appid}
               />
+              <span>{appName}</span>
+            </td>
+            <td>{boughtplan.alias}</td>
+            <td>{licencestotal}</td>
+            <td>{licencesused}</td>
+            <td>{totalDur}</td>
+            <td align="right" className="naked-button-holder">
               {/* Not needed till the Launch of the Marketplace */}
               {/* <button
                   disabled={options && options.external}
@@ -237,8 +232,24 @@ class AppListInner extends React.Component<Props, State> {
                 </Mutation> */}
               <IconButton
                 title="Delete"
-                onClick={() => this.setState({ showDeletion: key })}
+                className="editButtons"
+                onClick={e => {
+                  e.stopPropagation();
+                  this.setState({ showDeletion: key });
+                }}
                 icon="trash-alt"
+              />
+
+              <IconButton
+                icon="external-link-alt"
+                title="show details"
+                className="editButtons"
+                onClick={() =>
+                  this.props.history.push({
+                    pathname: `/area/usage/boughtplan/${boughtplan.id}`,
+                    state: { name: alias || appName }
+                  })
+                }
               />
 
               {this.state.showDeletion == key && (
@@ -246,11 +257,12 @@ class AppListInner extends React.Component<Props, State> {
                   {(removeAccount, { loading, error }) => (
                     <PopupBase
                       small={true}
+                      styles={{ textAlign: "center" }}
+                      buttonStyles={{ justifyContent: "space-around" }}
                       close={() => this.setState({ showDeletion: null })}
                       closeable={false}>
-                      <div>{`Please confirm that you want to delete ${
-                        alias ? alias : appName
-                      }`}</div>
+                      <h1>Delete Service</h1>
+                      <div>{`Do you really want to delete ${alias ? alias : appName}?`}</div>
 
                       {error && <ErrorComp error={error} />}
 
@@ -302,7 +314,7 @@ export default class AppListOuter extends React.Component<{ company: any }, {}> 
 
           return (
             <Collapsible child={this.teamRef} title="Teams">
-              <div ref={this.teamRef} style={{ padding: "20px" }}>
+              <div ref={this.teamRef}>
                 <AppListInner {...this.props} data={data} />
               </div>
             </Collapsible>

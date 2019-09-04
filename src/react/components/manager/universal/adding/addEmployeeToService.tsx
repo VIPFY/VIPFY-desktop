@@ -75,12 +75,11 @@ class AddEmployeeToService extends React.Component<Props, State> {
           nooutsideclose={true}
           app={service}
           cancel={async () => close()}
-          add={async setup => {
-            await this.setState({
-              saving: true,
-              setup
-            });
-          }}
+          success={info =>
+            info && info.error
+              ? this.props.savingFunction({ action: "error", message: info.error })
+              : this.props.savingFunction({ action: "success" })
+          }
           employee={employee}
           employeename={employee.firstname} //TODO make it nice
         />
@@ -122,7 +121,7 @@ class AddEmployeeToService extends React.Component<Props, State> {
 
                 this.props.savingFunction({ action: "success" });
               } catch (error) {
-                console.log(error);
+                console.error(error);
                 this.props.savingFunction({ action: "error", message: error });
               }
             }}

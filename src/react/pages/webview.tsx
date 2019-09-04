@@ -12,6 +12,8 @@ import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
+import { randomPassword } from '../common/passwordgen';
+import HeaderNotificationContext from '../components/notifications/headerNotificationContext';
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -39,6 +41,7 @@ export type WebViewState = {
   error: string | null;
   loggedIn: boolean;
   errorshowed: boolean;
+  progress?: number;
 };
 
 export type WebViewProps = {
@@ -87,7 +90,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     appid: -1,
     error: null,
     loggedIn: false,
-    errorshowed: false
+    errorshowed: false,
+    progress: undefined
   };
 
   static getDerivedStateFromProps(
@@ -100,7 +104,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         ...prevState,
         previousLicenceId: prevState.licenceId,
         licenceId: nextProps.licenceID,
-        showLoadingScreen: true
+        showLoadingScreen: true,
+        progress: undefined
       };
     } else {
       return prevState;
@@ -214,7 +219,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       console.log("ACCEPT");
       this.switchApp();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -287,7 +292,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       unitId: licence.unit.id,
       options: licence.boughtPlan.plan.app.options,
       appid: licence.boughtPlan.plan.app.id,
-      key: licence.key
+      key: licence.key,
+      progress: undefined
     });
   }
 
@@ -526,7 +532,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         try {
           await this.props.logError({ variables: { data } });
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
         this.setState({
           error:
@@ -682,9 +688,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
 
     return (
-      <div className={cssClass} id={`webview-${this.props.viewID}`}>
+      <HeaderNotificationContext.Consumer>{
+        context => {
+          return (
+      <div className={cssClass} id={`webview-${this.props.viewID}`}
+      >
         {this.state.showLoadingScreen && (
-          <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} />
+          <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} progress={this.state.progress} />
         )}
         {this.state.options.universallogin ? (
           <UniversalLoginExecutor
@@ -693,14 +703,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             password={this.state.key.password}
             timeout={60000}
             takeScreenshot={false}
-            partition="services"
+            partition={`service-${this.state.licenceId}`}
             className={cssClassWeb}
             setResult={({ loggedin, emailEntered, passwordEntered }) => {
               if (loggedin && emailEntered && passwordEntered) {
                 this.hideLoadingScreen();
               }
             }}
-            speed={1}
+            progress={(progress) => this.setState({progress})}
+            speed={10}
+            style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}
           />
         ) : (
           <WebView
@@ -711,6 +723,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             src={this.state.currentUrl || this.state.setUrl}
             partition="services"
             onDidNavigate={e => this.onDidNavigate(e.target.src)}
+            style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}
             //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
             onDidFailLoad={(code, desc, url, isMain) => {
               if (isMain) {
@@ -734,6 +747,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           />
         )}
         {this.state.error ? (
+          //TODO VIP-411 Replace old Popup with new PopupBase
           <Popup
             popupHeader={"Uupps, sorry it seems that we can't log you in"}
             popupBody={ErrorPopup}
@@ -744,6 +758,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           ""
         )}
         {this.state.popup && (
+          //TODO VIP-411 Replace old Popup with new PopupBase
           <Popup
             popupHeader={this.state.popup.type}
             popupBody={AcceptLicence}
@@ -751,7 +766,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             onClose={this.closePopup}
           />
         )}
-      </div>
+      </div>)}
+      }</HeaderNotificationContext.Consumer>
     );
   }
 }

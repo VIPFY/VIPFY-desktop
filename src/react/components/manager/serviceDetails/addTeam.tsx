@@ -70,7 +70,7 @@ class AddTeam extends React.Component<Props, State> {
     saving: false
   };
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     if (this.props.teams != props.teams) {
       this.setState({ teams: [] });
     }

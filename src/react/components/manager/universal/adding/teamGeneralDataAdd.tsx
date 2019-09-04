@@ -7,6 +7,7 @@ interface Props {
   setOuterState: Function;
   picture: any;
   name: string;
+  isadmin?: boolean;
 }
 
 interface State {
@@ -28,20 +29,23 @@ class TeamGerneralDataAdd extends React.Component<Props, State> {
   render() {
     const { picture, name } = this.props;
     return (
-      <div className="gridNewEmployeePersonal">
+      <div style={{ display: "flex", alignItems: "flex-end" }}>
         <UploadImage
           picture={picture}
           onDrop={file => this.setBothStates({ picture: file })}
           name={name}
-          className={"profilepicture big"}
+          className="profilepictureTeam"
+          isadmin={this.props.isadmin}
+          mainClassName="profilepictureTeam"
         />
         <UniversalTextInput
-          label="Name (Required)"
+          label="Team name"
           id="name"
           livevalue={v => this.setBothStates({ name: v })}
           focus={true}
           startvalue={name}
-          required={true}
+          style={{ marginBottom: "0px", marginLeft: "32px", width: "264px" }}
+          width="264px"
         />
         {
           //TODO reimplement leader

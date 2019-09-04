@@ -1,4 +1,5 @@
 import * as React from "react";
+import gql from "graphql-tag";
 import { Mutation } from "react-apollo";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
@@ -7,7 +8,12 @@ import { SSO } from "../../interfaces";
 import { CREATE_OWN_APP } from "../../mutations/products";
 import LogoExtractor from "../../components/ssoconfig/LogoExtractor";
 import { fetchLicences } from "../../queries/auth";
-import { SSL_OP_SINGLE_DH_USE } from "constants";
+
+const FAILED_INTEGRATION = gql`
+  mutation onFailedIntegration($data: SSOResult!) {
+    failedIntegration(data: $data)
+  }
+`;
 
 interface Props {
   closeFunction: Function;
@@ -15,10 +21,11 @@ interface Props {
   sso: SSO;
   fullmiddle?: Boolean;
   userids?: number;
+  inmanager?: Boolean;
 }
 
 interface State {
-  tolong: Boolean;
+  tooLong: Boolean;
   saved: Boolean;
   progress: number;
   success: Boolean;
@@ -27,11 +34,23 @@ interface State {
   icon: File | null;
   color: string;
   receivedIcon: Boolean;
+  newid: number;
+}
+
+interface Result {
+  emailEntered: boolean;
+  emailEnteredEnd: boolean;
+  loggedin: boolean;
+  passwordEntered: boolean;
+  passwordEnteredEnd: boolean;
+  recaptcha: boolean;
+  tries: number;
+  unloaded: boolean;
 }
 
 class SelfSaving extends React.Component<Props, State> {
   state = {
-    tolong: false,
+    tooLong: false,
     saved: false,
     progress: 0,
     success: false,
@@ -39,14 +58,16 @@ class SelfSaving extends React.Component<Props, State> {
     ssoCheck: false,
     icon: null,
     color: "",
-    receivedIcon: false
+    receivedIcon: false,
+    newid: 0
   };
 
-  close() {
+  close(err = null) {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
-    this.props.closeFunction();
+
+    this.props.closeFunction(err);
   }
 
   fullPath = path => `${__dirname}/../../../images/sso_creation_${path}.png`;
@@ -79,7 +100,8 @@ class SelfSaving extends React.Component<Props, State> {
         sso.images = [iconFile, iconFile];
       }
 
-      await createOwnApp({ variables: { ssoData: sso, userids: this.props.userids } });
+      const res = await createOwnApp({ variables: { ssoData: sso, userids: this.props.userids } });
+      // this.setState({ newid: res.createOwnApp.id });
     }
   };
 
@@ -87,7 +109,7 @@ class SelfSaving extends React.Component<Props, State> {
     if (this.props.maxTime) {
       this.timeout = setTimeout(() => {
         if (!this.state.saved) {
-          this.setState({ tolong: true });
+          this.setState({ tooLong: true });
         }
       }, this.props.maxTime);
     }
@@ -96,7 +118,7 @@ class SelfSaving extends React.Component<Props, State> {
     console.log("SelfSaving", this.state, this.props);
     return (
       <PopupBase styles={{ maxWidth: "432px" }} nooutsideclose={true} fullmiddle={true}>
-        {this.state.tolong ? (
+        {this.state.tooLong ? (
           <>
             <div>
               This operation takes longer than expected. We will continue it in the background and
@@ -108,7 +130,7 @@ class SelfSaving extends React.Component<Props, State> {
           <div className="popup-sso">
             <img className="status-pic" src={this.fullPath("fail")} />
             <h3>{this.state.error}</h3>
-            <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
+            <UniversalButton type="high" label="Ok" onClick={() => this.close("error")} />
           </div>
         ) : this.state.success ? (
           <div className="popup-sso">
@@ -117,7 +139,7 @@ class SelfSaving extends React.Component<Props, State> {
               <span>Congratulations!</span>
               <span>Your Implementation was successful.</span>
             </h3>
-            <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
+            <UniversalButton type="high" label="Ok" onClick={() => this.close(this.state.newid)} />
           </div>
         ) : (
           <div className="popup-sso">
@@ -126,42 +148,61 @@ class SelfSaving extends React.Component<Props, State> {
 
             <Mutation
               mutation={CREATE_OWN_APP}
-              onCompleted={() => this.setState({ success: true })}
+              onCompleted={data => {
+                this.setState({ success: true, newid: data.createOwnApp.id });
+                console.log("COMPLETED ", data);
+              }}
               refetchQueries={[{ query: fetchLicences }]}
               onError={() => this.setState({ error: errorMessage })}>
               {(createOwnApp, { loading, data }) => (
                 <div className="hide-sso-webview" /*style={{ height: "400px", width: "400px" }}*/>
-                  <UniversalLoginExecutor
-                    loginUrl={this.props.sso.loginurl!}
-                    username={this.props.sso!.email!}
-                    password={this.props.sso.password!}
-                    partition={`self-sso-${this.props.sso.name}`}
-                    timeout={40000}
-                    takeScreenshot={false}
-                    setResult={async result => {
-                      console.log("RESULT", result);
-                      if (loading || data) {
-                        return;
-                      }
-                      console.log("RESULT", result);
+                  <Mutation
+                    mutation={FAILED_INTEGRATION}
+                    refetchQueries={[{ query: fetchLicences }]}>
+                    {failedIntegration => (
+                      <UniversalLoginExecutor
+                        loginUrl={this.props.sso.loginurl!}
+                        username={this.props.sso!.email!}
+                        password={this.props.sso.password!}
+                        partition={`self-sso-${this.props.sso.name}`}
+                        timeout={40000}
+                        takeScreenshot={false}
+                        setResult={async (result: Result) => {
+                          if (loading || data) {
+                            return;
+                          }
 
-                      if (result.loggedin && result.emailEntered && result.passwordEntered) {
-                        await this.setState({ ssoCheck: true });
+                          if (result.loggedin && result.emailEntered && result.passwordEntered) {
+                            await this.setState({ ssoCheck: true });
 
-                        if (this.state.receivedIcon) {
-                          await this.createOwnSSO(createOwnApp);
-                        }
-                      } else {
-                        // TODO: [VIP-257] Write logic to inform support
-                        this.setState({ error: errorMessage });
-                      }
-                    }}
-                    progress={progress => {
-                      if (progress < 1) {
-                        this.setState({ progress: progress * 100 });
-                      }
-                    }}
-                  />
+                            if (this.state.icon && this.state.color) {
+                              await this.createOwnSSO(createOwnApp);
+                            }
+                          } else {
+                            failedIntegration({
+                              variables: {
+                                data: {
+                                  ...this.props.sso,
+                                  recaptcha: result.recaptcha,
+                                  tries: result.tries,
+                                  unloaded: result.unloaded,
+                                  emailEntered: result.emailEntered,
+                                  passwordEntered: result.passwordEntered
+                                }
+                              }
+                            });
+
+                            this.setState({ error: errorMessage });
+                          }
+                        }}
+                        progress={progress => {
+                          if (progress < 1) {
+                            this.setState({ progress: progress * 100 });
+                          }
+                        }}
+                      />
+                    )}
+                  </Mutation>
 
                   {!this.state.receivedIcon && (
                     <LogoExtractor
@@ -188,6 +229,7 @@ class SelfSaving extends React.Component<Props, State> {
               <span>Just a moment.</span>
               <span>We are verifying the Implementation.</span>
             </h3>
+            <UniversalButton type="high" label="Cancel" onClick={() => this.close()} />
           </div>
         )}
       </PopupBase>

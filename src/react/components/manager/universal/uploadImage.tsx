@@ -8,6 +8,8 @@ interface Props {
   name: string;
   className: string;
   uploadError?: string | null;
+  isadmin?: Boolean;
+  mainClassName?: string;
 }
 
 interface State {
@@ -21,7 +23,7 @@ class UploadImage extends React.Component<Props, State> {
     picture: this.props.picture || null
   };
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (this.state.name != newProps.name && newProps.name != this.props.name) {
       this.setState({ name: newProps.name });
     }
@@ -38,7 +40,7 @@ class UploadImage extends React.Component<Props, State> {
   render() {
     const { picture, name } = this.state;
     return (
-      <form className="profilepicture">
+      <form className={`profilepicture ${this.props.mainClassName}`}>
         <label>
           <div
             className={this.props.className}
@@ -67,28 +69,35 @@ class UploadImage extends React.Component<Props, State> {
 
             {!(picture && picture.preview) && name && name.slice(0, 1)}
 
+            {!(picture && picture.preview) && !name && (
+              <i className="fal fa-pen" style={{ color: "#253647" }} />
+            )}
+
             {this.props.uploadError && <div className="uploadError">{this.props.uploadError}</div>}
 
-            <div className="imagehover">
-              <i className="fal fa-camera" />
-              <span style={{ lineHeight: "normal" }}>Upload</span>
-            </div>
+            {this.props.isadmin && (
+              <div className="imagehover">
+                <i className="fal fa-camera" />
+                <span style={{ lineHeight: "normal" }}>Upload</span>
+              </div>
+            )}
           </div>
-
-          <Dropzone
-            style={{
-              width: "0px",
-              height: "0px",
-              opacity: 0,
-              overflow: "hidden",
-              position: "absolute",
-              zIndex: -1
-            }}
-            accept="image/*"
-            type="file"
-            multiple={false}
-            onDrop={([file]) => this.setBothStates(file)}
-          />
+          {this.props.isadmin && (
+            <Dropzone
+              style={{
+                width: "0px",
+                height: "0px",
+                opacity: 0,
+                overflow: "hidden",
+                position: "absolute",
+                zIndex: -1
+              }}
+              accept="image/*"
+              type="file"
+              multiple={false}
+              onDrop={([file]) => this.setBothStates(file)}
+            />
+          )}
         </label>
       </form>
     );

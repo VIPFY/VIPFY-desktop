@@ -16,6 +16,8 @@ import PrintEmployeeSquare from "../../components/manager/universal/squares/prin
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 import ManageTeamEmployees from "../../components/manager/universal/managing/teamemployees";
 import ManageTeamServices from "../../components/manager/universal/managing/teamservices";
+import DeletePopup from "../../popups/universalPopups/deletePopup";
+import FormPopup from "../../popups/universalPopups/formPopup";
 
 interface Props {
   moveTo: Function;
@@ -23,6 +25,8 @@ interface Props {
 
 interface State {
   search: string;
+  sort: string;
+  sortforward: boolean;
   add: Boolean;
   addStage: number;
   addteam: Object;
@@ -32,6 +36,7 @@ interface State {
   deleting: number | null;
   willdeleting: number | null;
   keepLicences: { service: number; employee: number }[];
+  isadmin?: boolean;
 }
 
 const CREATE_TEAM = gql`
@@ -49,6 +54,8 @@ const DELETE_TEAM = gql`
 class TeamOverview extends React.Component<Props, State> {
   state = {
     search: "",
+    sort: "Name",
+    sortforward: true,
     add: false,
     addteam: {},
     addStage: 1,
@@ -59,6 +66,39 @@ class TeamOverview extends React.Component<Props, State> {
     willdeleting: null,
     keepLicences: []
   };
+
+  handleSortClick(sorted) {
+    //console.log("TEST")
+    //console.log("TEST1", sorted, this.state.sort, this.state.sortforward);
+
+    if(sorted != this.state.sort) {
+      this.setState({sortforward: true, sort: sorted});
+    } else {
+      this.setState(oldstate => {return {sortforward: !oldstate.sortforward}});
+    }
+  }
+
+  filterMotherfunction(team) {
+    if(team.name.toUpperCase().includes(this.state.search.toUpperCase())) {
+      return true;
+    } else if(team.employees.filter(employee => this.filterEmployee(employee)).length > 0) {
+      return true;
+    } else if(team.services.filter(service => this.filterServices(service)).length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  filterEmployee(employee) {
+    return (`${employee.firstname} ${employee.lastname}`.toUpperCase().includes(this.state.search.toUpperCase()));
+  }
+
+  filterServices(service) {
+    if (!service.app) {
+      return false;;
+    }
+    return (service.app.name.toUpperCase().includes(this.state.search.toUpperCase()));
+  }
 
   printRemoveLicences(team) {
     let RLicencesArray: JSX.Element[] = [];
@@ -104,7 +144,6 @@ class TeamOverview extends React.Component<Props, State> {
   }
 
   addService(apps) {
-    console.log(apps);
     this.setState({ apps, saving: true, add: false });
   }
 
@@ -113,26 +152,19 @@ class TeamOverview extends React.Component<Props, State> {
       case 1:
         return (
           <PopupBase
-            fullmiddle={true}
-            customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}>
+            small={true}
+            close={() => this.setState({ add: false })}
+            additionalclassName="formPopup">
             <AddTeamGeneralData
               savingFunction={data => this.setState({ addteam: data.content, addStage: 2 })}
               close={() => this.setState({ add: false })}
               addteam={this.state.addteam}
+              isadmin={this.props.isadmin}
             />
           </PopupBase>
         );
       case 2:
         return (
-          /* <AddTeamEmployeeData
-            continue={data => {
-              this.setState({ addemployees: data, addStage: 3 });
-            }}
-            close={() => this.setState({ addStage: 1 })}
-            teamname={this.state.addteam.name}
-            employees={this.state.addemployees}
-          /> */
           <ManageTeamEmployees
             team={this.state.addteam}
             close={() => this.setState({ add: false })}>
@@ -156,13 +188,6 @@ class TeamOverview extends React.Component<Props, State> {
         );
       case 3:
         return (
-          /*<AddTeamServices
-            continue={apps => this.addService(apps)}
-            close={() => this.setState({ addStage: 2 })}
-            employees={this.state.addemployees}
-            apps={this.state.apps}
-            teamname={this.state.addteam.name}
-          />*/
           <ManageTeamServices team={this.state.addteam} close={() => this.setState({ add: false })}>
             <div className="buttonsPopup">
               <UniversalButton
@@ -180,6 +205,49 @@ class TeamOverview extends React.Component<Props, State> {
         return <div />;
     }
   }
+
+  loading() {
+    const amountFakes = Math.random() * 10 + 1;
+    const fakeArray: JSX.Element[] = [];
+
+    for (let index = 0; index < amountFakes; index++) {
+      fakeArray.push(
+        <div className="tableRow">
+          <div className="tableMain">
+            <div className="tableColumnBig">
+              <PrintTeamSquare team={{}} fake={true} />
+              <span className="name" />
+            </div>
+            <ColumnEmployees
+              employees={[null]}
+              employeeidFunction={e => e}
+              checkFunction={e => true}
+              fake={true}
+            />
+            <ColumnServices
+              services={[null]}
+              checkFunction={element => !element.disabled && !element.planid.appid.disabled}
+              appidFunction={element => element.planid.appid}
+              fake={true}
+            />
+          </div>
+          <div className="tableEnd" />
+        </div>
+      );
+    }
+    return fakeArray;
+  }
+
+  getKeepLicences(values) {
+    const keepLicences = [];
+    Object.keys(values).forEach(s => {
+      values[s].forEach(i => {
+        keepLicences.push({ service: s.substring(2), employee: i });
+      });
+    });
+    return keepLicences;
+  }
+
   render() {
     return (
       <div className="managerPage">
@@ -201,7 +269,46 @@ class TeamOverview extends React.Component<Props, State> {
             fetchPolicy="cache-and-network">
             {({ loading, error, data, refetch }) => {
               if (loading) {
-                return "Loading...";
+                return (
+                  <div className="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Name")}>
+                          <h1>Name</h1>
+                        </div>
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Employees")}>
+                          <h1>Employees</h1>
+                        </div>
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Services")}>
+                          <h1>Services</h1>
+                        </div>
+                      </div>
+                      <div className="tableEnd">
+                        <UniversalButton
+                          type="high"
+                          label="Add Team"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "92px"
+                          }}
+                          onClick={() =>
+                            this.setState({
+                              add: true,
+                              addStage: 1,
+                              addemployees: [],
+                              addteam: {},
+                              apps: []
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    {this.loading()}
+                  </div>
+                );
               }
               if (error) {
                 return `Error! ${error.message}`;
@@ -212,38 +319,136 @@ class TeamOverview extends React.Component<Props, State> {
               let interteams: any[] = [];
               if (data && data.fetchCompanyTeams) {
                 interteams = data.fetchCompanyTeams;
-                interteams.sort(function(a, b) {
-                  let nameA = a.name.toUpperCase();
-                  let nameB = b.name.toUpperCase();
-                  if (nameA < nameB) {
-                    return -1;
-                  }
-                  if (nameA > nameB) {
-                    return 1;
-                  }
-                  // namen müssen gleich sein
-                  return 0;
-                });
+                let sortforward = this.state.sortforward;
+
+                //sortselection
+                switch (this.state.sort) {
+                  case "Name":
+                      interteams.sort(function(a, b) {
+                        let nameA = a.name.toUpperCase();
+                        let nameB = b.name.toUpperCase();
+                        if (nameA < nameB) {
+                          if(sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (nameA > nameB) {
+                          if(sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+                        // namen müssen gleich sein
+                        return 0;
+                      });
+                    break;
+                
+                  case "Employees":
+                    interteams.sort(function(a, b) {
+                      let memberCountA = a.employees.length;
+                      let memberCountB = b.employees.length;
+                      if(memberCountA > memberCountB) {
+                        if(sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
+                        }
+                      }
+                      if (memberCountA < memberCountB) {
+                        if(sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
+                        }
+                      }
+                      //if memberCount is equal sort by name instant
+                      let nameA = a.name.toUpperCase();
+                      let nameB = b.name.toUpperCase();
+                      if (nameA < nameB) {
+                        if(sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
+                        }
+                      }
+                      if (nameA > nameB) {
+                        if(sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
+                        }
+                      }
+                      //memberCount and name equal
+                      return 0;
+                    })
+                  
+                      break;
+                  case "Services":
+                      interteams.sort(function(a, b) {
+                        let serviceCountA = a.services.length;
+                        let serviceCountB = b.services.length;
+                        if(serviceCountA > serviceCountB) {
+                          if(sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (serviceCountA < serviceCountB) {
+                          if(sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+                        //if serviceCount is equal sort by name instant
+                        let nameA = a.name.toUpperCase();
+                        let nameB = b.name.toUpperCase();
+                        if (nameA < nameB) {
+                          if(sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (nameA > nameB) {
+                          if(sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+                        //serviceCount and name equal
+                        return 0;
+                      })
+                    
+                    break;
+
+                  default:
+                    break;
+                }
                 if (this.state.search != "") {
-                  teams = interteams.filter(team => {
-                    return team.name.toUpperCase().includes(this.state.search.toUpperCase());
-                  });
+                  teams = interteams.filter(team => this.filterMotherfunction(team));
                 } else {
                   teams = interteams;
                 }
+                console.log(teams.length);
               }
               return (
                 <>
                   <div className="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Name")}>
                           <h1>Name</h1>
                         </div>
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Employees")}>
                           <h1>Employees</h1>
                         </div>
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Services")}>
                           <h1>Services</h1>
                         </div>
                       </div>
@@ -273,7 +478,7 @@ class TeamOverview extends React.Component<Props, State> {
                     {teams.length > 0 &&
                       teams.map(team => (
                         <div
-                          key={team.name}
+                          id={team.name}
                           className="tableRow"
                           onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
                           <div className="tableMain">
@@ -345,48 +550,25 @@ class TeamOverview extends React.Component<Props, State> {
           </Mutation>
         )}
         {this.state.willdeleting && (
-          <PopupBase
-            fullmiddle={true}
-            dialog={true}
-            close={() => this.setState({ willdeleting: null })}
-            closeable={false}>
-            <p>Do you really want to delete the team?</p>
-            {this.printRemoveLicences(this.state.willdeleting)}
-            <UniversalButton type="low" closingPopup={true} label="Cancel" />
-            <UniversalButton
-              type="low"
-              label="Delete"
-              onClick={() => {
-                console.log("THISSTATE", this.state);
-                this.setState(prevState => {
-                  return {
-                    willdeleting: null,
-                    deleting: prevState.willdeleting!.unitid.id
-                  };
-                });
-              }}
-            />
-          </PopupBase>
-        )}
-        {this.state.deleting && (
           <Mutation mutation={DELETE_TEAM}>
             {deleteTeam => (
-              <PopupSelfSaving
-                savingmessage="Deleting team"
-                savedmessage="Team succesfully deleted"
-                saveFunction={async () =>
-                  await deleteTeam({
+              <DeletePopup
+                key="deleteTeam"
+                heading="Delete Team"
+                subHeading={`If you delete ${
+                  this.state.willdeleting!.name
+                }, you delete the following services of the following people`}
+                employees={this.state.willdeleting!.employees}
+                services={this.state.willdeleting!.services}
+                main="service"
+                close={() => this.setState({ willdeleting: null })}
+                submit={values =>
+                  deleteTeam({
                     variables: {
-                      teamid: this.state.deleting,
-                      keepLicences: this.state.keepLicences
+                      teamid: this.state.willdeleting!.unitid.id,
+                      keepLicences: this.getKeepLicences(values)
                     },
                     refetchQueries: [{ query: fetchCompanyTeams }]
-                  })
-                }
-                closeFunction={() =>
-                  this.setState({
-                    deleting: null,
-                    keepLicences: []
                   })
                 }
               />

@@ -6,6 +6,7 @@ interface Props {
   className?: string | null;
   size?: number;
   title?: string;
+  fake?: boolean;
 }
 
 interface State {}
@@ -14,6 +15,21 @@ class PrintTeamSquare extends React.Component<Props, State> {
   render() {
     const { team, title } = this.props;
     const size = this.props.size || 32;
+    if (this.props.fake) {
+      return (
+        <div
+          key={team.name}
+          title={title || team.name}
+          className={this.props.className || "managerSquare"}
+          style={{
+            color: "#253647",
+            backgroundColor: "#F2F2F2",
+            fontSize: "12px",
+            fontWeight: 400
+          }}
+        />
+      );
+    }
     return (
       <div
         key={team.name}

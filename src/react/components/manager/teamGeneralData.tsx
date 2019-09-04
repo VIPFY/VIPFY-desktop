@@ -8,6 +8,7 @@ import gql from "graphql-tag";
 import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 
 import { fetchTeam } from "../../queries/departments";
+import FormPopup from "../../popups/universalPopups/formPopup";
 
 const UPDATE_DATA = gql`
   mutation editDepartmentName($departmentid: ID!, $name: String!) {
@@ -49,20 +50,20 @@ class TeamGeneralData extends React.Component<Props, State> {
               <h2>{team.name}</h2>
             </div>
             <div className="tableColumnSmall">
-              <h1>{/*Team Leader*/}</h1>
-              <h2>
-                {/*team.internaldata && team.internaldata.leader
-                  ? team.internaldata.leader
-                : "Not set"*/}
-              </h2>
-            </div>
-            <div className="tableColumnSmall">
               <h1>Members in total</h1>
               <h2>{team.employeenumber}</h2>
             </div>
             <div className="tableColumnSmall">
               <h1>Teamservices in total</h1>
               <h2>{team.services ? team.services.length : 0}</h2>
+            </div>
+            <div className="tableColumnSmall">
+              <h1>{/*Team Leader*/}</h1>
+              <h2>
+                {/*team.internaldata && team.internaldata.leader
+                  ? team.internaldata.leader
+                : "Not set"*/}
+              </h2>
             </div>
           </div>
           <div className="tableEnd">
@@ -74,7 +75,30 @@ class TeamGeneralData extends React.Component<Props, State> {
         {this.state.editpopup ? (
           <Mutation mutation={UPDATE_DATA}>
             {editDepartmentName => (
-              <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
+              <FormPopup
+                key="editTeamGeneralData"
+                heading="Edit Teaminformation"
+                subHeading="Change name of team"
+                fields={[{ id: "name", options: { startvalue: team.name, label: "Teamname" } }]}
+                submitDisabled={values => values["name"] == "" || values["name"] == null}
+                submit={values =>
+                  editDepartmentName({
+                    variables: {
+                      departmentid: team.unitid.id,
+                      name: values.name
+                    },
+                    refetchQueries: [
+                      {
+                        query: fetchTeam,
+                        variables: { teamid: team.unitid.id }
+                      }
+                    ]
+                  })
+                }
+                close={() => this.setState({ editpopup: false })}
+              />
+
+              /* <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
                 <h2 className="boldHeading">Edit General Data of {team.name}</h2>
                 <div>
                   <UniversalTextInput
@@ -135,7 +159,7 @@ class TeamGeneralData extends React.Component<Props, State> {
                 ) : (
                   ""
                 )}
-              </PopupBase>
+              </PopupBase>*/
             )}
           </Mutation>
         ) : (

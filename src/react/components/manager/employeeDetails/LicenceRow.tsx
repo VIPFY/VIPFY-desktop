@@ -186,7 +186,7 @@ class LicenceRow extends React.Component<Props, State> {
                         ) : (
                           <i className="fal fa-user" title="Single Account" />
                         )}
-                        {concatName(employee)}
+                        <span>{concatName(employee)}</span>
                       </span>
                     ),
                     value: employee.id
@@ -211,6 +211,7 @@ class LicenceRow extends React.Component<Props, State> {
                     options={options}
                     holder={this.props.holder}
                     scrollItem={this.row}
+                    header=""
                   />
                 );
               }}

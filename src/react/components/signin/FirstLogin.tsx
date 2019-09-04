@@ -10,6 +10,7 @@ import CoolCheckbox from "../CoolCheckbox";
 interface FirstLoginProps {
   logMeOut: Function;
   client: ApolloClient<InMemoryCache>;
+  setFirstLogin: Function;
 }
 
 interface FirstLoginState {
@@ -34,7 +35,8 @@ class FirstLogin extends React.Component<FirstLoginProps, FirstLoginState> {
         await this.props.client.mutate({
           mutation: agreeTos
         });
-        await this.props.client.query({ query: me, fetchPolicy: "network-only" });
+
+        this.props.setFirstLogin();
       } catch (err) {
         this.setState({ error: err.message, loading: false });
       }

@@ -2,20 +2,12 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query, Mutation } from "react-apollo";
-import { fetchCompanyTeams } from "../../queries/departments";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
-import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
-import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
-import AddTeamServices from "../../components/manager/addTeamServices";
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { fetchCompanyServices } from "../../queries/products";
 import { now } from "moment";
 import AddServiceGeneralData from "../../components/manager/serviceDetails/addServiceGeneralData";
-import AddTeam from "../../components/manager/serviceDetails/addTeam";
-import AddEmployee from "../../components/manager/serviceDetails/addEmployee";
-import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 import ManageServiceTeams from "../../components/manager/universal/managing/serviceteams";
@@ -28,6 +20,8 @@ interface Props {
 
 interface State {
   search: string;
+  sort: string;
+  sortforward: boolean;
   add: Boolean;
   addStage: number;
   addservice: Object | null;
@@ -58,6 +52,8 @@ const DELETE_SERVICE = gql`
 class ServiceOverview extends React.Component<Props, State> {
   state = {
     search: "",
+    sort: "Name",
+    sortforward: true,
     add: false,
     addservice: null,
     addStage: 1,
@@ -70,6 +66,42 @@ class ServiceOverview extends React.Component<Props, State> {
     currentServices: []
   };
 
+  handleSortClick(sorted) {
+    if(sorted != this.state.sort) {
+      this.setState({sortforward: true, sort: sorted});
+    } else {
+      this.setState(oldstate => {return {sortforward: !oldstate.sortforward}});
+    }
+  }
+
+  filterMotherfunction(service) {
+    if(service.app.name.toUpperCase().includes(this.state.search.toUpperCase())) {
+      return true;
+    } else if(service.teams.filter(team => this.filterTeams(team)).length > 0){
+      return true;
+    } else if(service.licences.filter(l =>
+      l &&
+      ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
+      (l.options == null || l.options.teamlicence == null) && this.filterEmployee(l.unitid)).length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  filterEmployee(unitid) {
+    if(!unitid) {
+      return false;
+    }
+    return (`${unitid.firstname} ${unitid.lastname}`.toUpperCase().includes(this.state.search.toUpperCase()));
+  }
+
+  filterTeams(team) {
+    if (team && team.departmentid && team.departmentid.name) {
+      return team.departmentid.name.toUpperCase().includes(this.state.search.toUpperCase());
+    }
+    return false;
+  }
+
   addService(singles) {
     this.setState({ addemployees: singles, saving: true, add: false });
   }
@@ -81,7 +113,10 @@ class ServiceOverview extends React.Component<Props, State> {
           <PopupBase
             fullmiddle={true}
             customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}>
+            close={() => {
+              refetch();
+              this.setState({ add: false });
+            }}>
             <AddServiceGeneralData
               continue={data => this.setState({ addservice: data, addStage: 2 })}
               close={() => this.setState({ add: false })}
@@ -127,13 +162,6 @@ class ServiceOverview extends React.Component<Props, State> {
         );
       case 3:
         return (
-          /*<AddEmployee
-            continue={singles => this.addService(singles)}
-            close={() => this.setState({ addStage: 2 })}
-            addedLicences={this.state.addemployees}
-            licences={[]}
-            service={this.state.addservice}
-          />*/
           <ManageServiceEmployees
             service={this.state.addservice}
             close={() => {
@@ -160,7 +188,10 @@ class ServiceOverview extends React.Component<Props, State> {
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
-      if (service.licences.find(l => l.endtime == null || l.endtime > now())) {
+      if (
+        service.licences.find(l => l && (l.endtime == null || l.endtime > now())) ||
+        (service.app.owner && service.app.owner.id)
+      ) {
         serviceArray.push(
           <div
             key={service.name}
@@ -175,6 +206,7 @@ class ServiceOverview extends React.Component<Props, State> {
               <ColumnEmployees
                 employees={service.licences}
                 checkFunction={l =>
+                  l &&
                   ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
                   (l.options == null || l.options.teamlicence == null)
                 }
@@ -199,6 +231,34 @@ class ServiceOverview extends React.Component<Props, State> {
     });
     return serviceArray;
   }
+
+  loading() {
+    const amountFakes = Math.random() * 10 + 1;
+    const fakeArray: JSX.Element[] = [];
+
+    for (let index = 0; index < amountFakes; index++) {
+      fakeArray.push(
+        <div className="tableRow">
+          <div className="tableMain">
+            <div className="tableColumnBig">
+              <PrintServiceSquare appidFunction={s => s.app} service={{}} fake={true} />
+              <span className="name" />
+            </div>
+            <ColumnTeams teams={[null]} teamidFunction={team => team.departmentid} fake={true} />
+            <ColumnEmployees
+              employees={[null]}
+              employeeidFunction={e => e}
+              checkFunction={e => true}
+              fake={true}
+            />
+          </div>
+          <div className="tableEnd" />
+        </div>
+      );
+    }
+    return fakeArray;
+  }
+
   render() {
     return (
       <div className="managerPage">
@@ -221,7 +281,46 @@ class ServiceOverview extends React.Component<Props, State> {
             {({ loading, error, data, refetch }) => {
               console.log(loading, error, data);
               if (loading) {
-                return "Loading...";
+                return (
+                  <div className="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Name")}>
+                          <h1>Name</h1>
+                        </div>
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Teams")}>
+                          <h1>Teams</h1>
+                        </div>
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Single Users")}>
+                          <h1>Single Users</h1>
+                        </div>
+                      </div>
+                      <div className="tableEnd">
+                        <UniversalButton
+                          type="high"
+                          label="Add Service"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "92px"
+                          }}
+                          onClick={() =>
+                            this.setState({
+                              add: true,
+                              addStage: 1,
+                              addemployees: [],
+                              addservice: {},
+                              apps: []
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    {this.loading()}
+                  </div>
+                );
               }
               if (error) {
                 return `Error! ${error.message}`;
@@ -232,23 +331,130 @@ class ServiceOverview extends React.Component<Props, State> {
               let interservices: any[] = [];
               console.log("SM-DATA", data);
               if (data && data.fetchCompanyServices) {
-                interservices = data.fetchCompanyServices;
-                interservices.sort(function(a, b) {
-                  let nameA = a.app.name.toUpperCase();
-                  let nameB = b.app.name.toUpperCase();
-                  if (nameA < nameB) {
-                    return -1;
-                  }
-                  if (nameA > nameB) {
-                    return 1;
-                  }
-                  // namen müssen gleich sein
-                  return 0;
-                });
+                interservices = data.fetchCompanyServices;                
+                let sortforward = this.state.sortforward;
+
+                //sortselection
+                switch (this.state.sort) {
+                  case "Name":
+                      interservices.sort(function(a, b) {
+                        let nameA = a.app.name.toUpperCase();
+                        let nameB = b.app.name.toUpperCase();
+                        if (nameA < nameB) {
+                          if(sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (nameA > nameB) {
+                          if(sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+                        // namen müssen gleich sein
+                        return 0;
+                      });
+                    break;
+
+                  case "Teams":
+                      interservices.sort(function(a, b) {
+                        let teamsA = a.teams.length;
+                        let teamsB = b.teams.length;
+
+                        if(teamsA > teamsB) {
+                          if(sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (teamsA < teamsB) {
+                          if(sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+                        //if teamsCount is equal sort by name instant
+                        let nameA = a.app.name.toUpperCase();
+                        let nameB = b.app.name.toUpperCase();
+                        if (nameA < nameB) {
+                          if(sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (nameA > nameB) {
+                          if(sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+                        // namen müssen gleich sein
+                        return 0;
+                      });
+                      break;
+
+                  case "Single Users":
+                      interservices.sort(function(a, b) {
+                        let licencesA = a.licences.filter(l =>
+                          l &&
+                          ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
+                          (l.options == null || l.options.teamlicence == null))
+                          .length;
+                        let licencesB = b.licences.filter(l =>
+                          l &&
+                          ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
+                          (l.options == null || l.options.teamlicence == null))
+                          .length;
+
+                        if(licencesA > licencesB) {
+                          if(sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (licencesA < licencesB) {
+                          if(sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+                        //if licencesCount is equal sort by name instant
+                        let nameA = a.app.name.toUpperCase();
+                        let nameB = b.app.name.toUpperCase();
+                        if (nameA < nameB) {
+                          if(sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (nameA > nameB) {
+                          if(sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+                        // namen müssen gleich sein
+                        return 0;
+                      });
+                    
+                      break;
+                
+                  default:
+                    break;
+                }
                 if (this.state.search != "") {
-                  services = interservices.filter(service => {
-                    return service.app.name.toUpperCase().includes(this.state.search.toUpperCase());
-                  });
+                  services = interservices.filter(service => this.filterMotherfunction(service));
                 } else {
                   services = interservices;
                 }
@@ -258,13 +464,13 @@ class ServiceOverview extends React.Component<Props, State> {
                   <div className="table" key="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Name")}>
                           <h1>Name</h1>
                         </div>
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Teams")}>
                           <h1>Teams</h1>
                         </div>
-                        <div className="tableColumnBig">
+                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Single Users")}>
                           <h1>Single Users</h1>
                         </div>
                       </div>

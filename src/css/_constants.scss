@@ -184,6 +184,7 @@ $rccs-valid-font-size: 0.4rem;
 
 .collapsible {
   height: auto;
+  min-height: 80px;
   overflow: hidden !important;
   transition: all 0.3s ease-in-out !important;
 }
@@ -330,7 +331,6 @@ $rccs-valid-font-size: 0.4rem;
 .error-field {
   color: red;
   text-align: center;
-  margin: 10% 0;
   font-size: 1.3rem;
   transition: all 300ms ease-in-out;
 }
@@ -413,5 +413,103 @@ $rccs-valid-font-size: 0.4rem;
     font-size: 13px;
     line-height: 56px;
     margin-left: 8px;
+  }
+}
+
+.fancy-link {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: $vipfy-primary-color;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 300ms ease-in;
+  }
+
+  &:hover {
+    &::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+  }
+}
+
+.switch-equal {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 16px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .slider-equal {
+      background-color: #baeae5ff;
+    }
+
+    &:focus + .slider-equal {
+      box-shadow: 0 0 1px #baeae5ff;
+    }
+
+    &:checked + .slider-equal::before {
+      transform: translateX(26px);
+      background-color: $vipfy-primary-color;
+    }
+  }
+
+  .slider-equal {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #baeae5ff;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 34px;
+
+    &::before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+      background-color: $vipfy-primary-color;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+  }
+}
+
+.status-selected {
+  font-weight: bold;
+  transition: all 300ms ease-in-out;
+}
+
+.status-unselected {
+  color: #ccc !important;
+  transition: all 300ms ease-in-out;
+}
+
+.status-select {
+  margin-top: 22px;
+  
+  button {
+    &:first-child {
+      margin-right: 15px;
+    }
+
+    &:last-child {
+      margin-left: 15px;
+    }
   }
 }

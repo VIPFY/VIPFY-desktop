@@ -39,12 +39,22 @@ class UniversalDropDownInput extends React.Component<Props, State> {
     code: this.props.startvalue || ""
   };
 
-  componentWillReceiveProps = props => {
+  UNSAFE_componentWillReceiveProps = props => {
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 
   toggleInput = bool => {
-    this.setState({ inputFocus: bool });
+    // If only one result - take it.
+    const possibleValues = countries;
+    if (
+      possibleValues.filter(i => i.name.toLowerCase() == this.state.value.toLowerCase()).length == 1
+    ) {
+      this.selectResult(
+        possibleValues.filter(i => i.name.toLowerCase() == this.state.value.toLowerCase())[0]
+      );
+    } else {
+      this.setState({ inputFocus: bool });
+    }
     if (!bool && this.props.endvalue) {
       this.setState({ error: null });
       this.props.endvalue(this.state.value);

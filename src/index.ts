@@ -7,6 +7,11 @@ import { enableLiveReload } from "electron-compile";
 import path = require("path");
 import Store = require("electron-store");
 import * as is from "electron-is";
+import { logger } from "./logger";
+
+process.on("uncaughtException", error => {
+  logger.error(error);
+});
 
 const store = new Store();
 const key = getSetupKey();
@@ -40,6 +45,10 @@ if (!disableUpdater) {
       message: process.platform === "win32" ? releaseNotes : releaseName,
       detail: "A new version has been downloaded. Restart the application to apply the updates."
     };
+
+    autoUpdater.on("error", error => {
+      logger.error("Autoupdater error", error);
+    });
 
     dialog.showMessageBox(dialogOpts, response => {
       if (response === 0) {
@@ -123,35 +132,34 @@ function checkSetupKey(key) {
 }
 
 const createWindow = async () => {
-  try {
-    autoUpdater.checkForUpdates();
-    setInterval(function() {
-      try {
-        if (!disableUpdater) {
-          autoUpdater.checkForUpdates();
+  if (!disableUpdater) {
+    try {
+      autoUpdater.checkForUpdates();
+      setInterval(function() {
+        try {
+          if (!disableUpdater) {
+            autoUpdater.checkForUpdates();
+          }
+        } catch (err) {
+          logger.warn("autoupdate failed");
+          logger.warn(err);
         }
-      } catch (err) {
-        console.log("autoupdate failed");
-        console.log(err);
-      }
-    }, 1000 * 60 * 10);
-  } catch (err) {
-    disableUpdater = true;
-    console.error(err);
-    console.error("you can ignore that error if this is run from source");
-    console.log("reverting to devmode");
-    isDevMode = true;
+      }, 1000 * 60 * 10);
+    } catch (err) {
+      disableUpdater = true;
+      logger.error(err);
+    }
   }
 
   protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
-      console.error("Failed to register vipfy protocol");
+      logger.error("Failed to register vipfy protocol", error);
     }
   });
 
   session.fromPartition("services").protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
-      console.error("Failed to register vipfy protocol");
+      logger.error("Failed to register vipfy protocol", error);
     }
   });
 
@@ -170,6 +178,9 @@ const createWindow = async () => {
   });
 
   mainWindow.once("ready-to-show", () => {
+    mainWindow.webContents.on('did-fail-load', (event, code, desc, url, isMainFrame) => {
+      logger.warn(`failed loading; ${isMainFrame} ${code} ${url}`, event);
+    });
     mainWindow.webContents.setZoomFactor(1.0);
     mainWindow.show();
   });
@@ -184,6 +195,15 @@ const createWindow = async () => {
     mainWindow.webContents.openDevTools();
     enableLiveReload({ strategy: "react-hmr" });
   }
+
+  mainWindow.on("close", () => {
+    try {
+      mainWindow.webContents.session.clearStorageData();
+      session.fromPartition("services").clearStorageData();
+    } catch (err) {
+      logger.error(err);
+    }
+  });
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
@@ -200,7 +220,7 @@ const createWindow = async () => {
 app.on("ready", createWindow);
 
 // Quit when all windows are closed.
-app.on("window-all-closed", () => {
+app.on("window-all-closed", async () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {

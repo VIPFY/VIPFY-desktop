@@ -81,6 +81,10 @@ export function calculatepartsum(plan, useralready, usercount): number {
 }
 
 export const filterError = error => {
+  if (!error) {
+    return "";
+  }
+
   if (typeof error == "string") {
     return error;
   }
@@ -96,10 +100,29 @@ export const filterError = error => {
 
 export const AppContext = React.createContext();
 
-export const ErrorComp = ({ error }) => <div className="error-field">{filterError(error)}</div>;
+// TODO: [VIP-433] Better logic in case of an undefined error
+export const ErrorComp = props => (
+  <div style={{ opacity: props.error ? 1 : 0 }} className="error-field">
+    {props.error && filterError(props.error)}
+  </div>
+);
 
-export const concatName = ({ firstname, middlename, lastname }) =>
-  `${firstname} ${middlename ? middlename : ""} ${lastname}`;
+export const concatName = ({ firstname, middlename, lastname }) => {
+  let name = firstname;
+  if (!name) {
+    name = middlename;
+  } else if (middlename) {
+    name += " ";
+    name += middlename;
+  }
+  if (!name) {
+    name = lastname;
+  } else if (lastname) {
+    name += " ";
+    name += lastname;
+  }
+  return name;
+};
 
 export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Element[] => {
   let r: JSX.Element[] = [];
@@ -194,4 +217,32 @@ export const AppIcon = ({ app }) => (
     <PrintServiceSquare service={app} appidFunction={a => a} className="app-icon" />
     <span className="app-name">{app.name}</span>
   </div>
+);
+
+export const ConsentText = () => (
+  <span>
+    This awesome App uses software to offer you an amazing experience, analyse your use of our App
+    and provide content from third parties. By using our App, you acknowledge that you have read and
+    understand our{" "}
+    <span
+      style={{ color: "#20BAA9" }}
+      className="fancy-link"
+      onClick={e => {
+        e.preventDefault();
+        require("electron").shell.openExternal("https://vipfy.store/privacy");
+      }}>
+      Privacy Policy
+    </span>{" "}
+    and{" "}
+    <span
+      style={{ color: "#20BAA9" }}
+      className="fancy-link"
+      onClick={e => {
+        e.preventDefault();
+        require("electron").shell.openExternal("https://vipfy.store/tos");
+      }}>
+      Terms of Service
+    </span>{" "}
+    and that you consent to them.
+  </span>
 );

@@ -10,12 +10,12 @@ interface Props {
   autoclosingFunction?: Function;
   notimer?: boolean;
   dialog?: boolean;
-  fullmiddle?: boolean;
-  customStyles?: Object;
+  fullMiddle?: boolean;
   buttonStyles?: Object;
   nooutsideclose?: boolean;
-  nosidebar?: boolean;
+  noSidebar?: boolean;
   styles?: Object;
+  additionalclassName?: string;
 }
 
 interface State {
@@ -53,6 +53,10 @@ class PopupBase extends React.Component<Props, State> {
       setTimeout(() => this.props.autoclosingFunction() || null, this.props.autoclosing * 1000);
     }
   };
+
+  componentWillUnmount() {
+    this.setState({ isopen: false, autoclosing: false });
+  }
 
   componentDidMount() {
     setTimeout(() => this.open(true), 1);
@@ -136,14 +140,16 @@ class PopupBase extends React.Component<Props, State> {
           {popupFieldsArray}
         </div>
       );
-      popupElementArray.push(
-        <div
-          key="buttons"
-          className="buttonsPopup"
-          style={this.props.buttonStyles ? this.props.buttonStyles : {}}>
-          {popupButtonArray}
-        </div>
-      );
+      if (popupButtonArray.length > 0) {
+        popupElementArray.push(
+          <div
+            key="buttons"
+            className="buttonsPopup"
+            style={this.props.buttonStyles ? this.props.buttonStyles : {}}>
+            {popupButtonArray}
+          </div>
+        );
+      }
       return popupElementArray;
     }
     return children;
@@ -167,27 +173,21 @@ class PopupBase extends React.Component<Props, State> {
             style={this.state.isopen ? showBackground : hideBackground}
             onClick={e => {
               e.stopPropagation();
-              if (this.props.nooutsideclose) {
+              if (!this.props.nooutsideclose) {
                 this.close();
               }
             }}>
-            {/* {this.props.fullmiddle ? (
-              ""
-            ) : (
-               <div className="sideReplicaPopup" style={{ width: sidebarOpen ? "240px" : "48px" }} />
-            )} */}
-
+            <div
+              className="sideReplicaPopup"
+              style={{ width: sidebarOpen && !this.props.noSidebar ? "240px" : "48px" }}
+            />
             <div
               className="holderPopup"
-              style={
-                {
-                  //width: sidebarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
-                }
-              }
-              /*this.props.fullmiddle
-                  ? "100%"
-                  :*/
-            >
+              style={{
+                width:
+                  sidebarOpen && !this.props.noSidebar ? "calc(100% - 240px)" : "calc(100% - 48px)",
+                alignItems: this.props.fullMiddle ? "center" : "flex-start"
+              }}>
               <div
                 className="universalPopup"
                 style={Object.assign(
@@ -203,7 +203,12 @@ class PopupBase extends React.Component<Props, State> {
                     <i className="fal fa-times" />
                   </div>
                 )}
-                <div className="contentPopup">{this.renderChildren(this.props.children)}</div>
+                <div
+                  className={`contentPopup ${
+                    this.props.additionalclassName ? this.props.additionalclassName : ""
+                  }`}>
+                  {this.renderChildren(this.props.children)}
+                </div>
                 {this.props.autoclosing && !this.props.notimer && (
                   <div className="autoclose" style={autoclosing} />
                 )}

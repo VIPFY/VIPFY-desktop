@@ -41,7 +41,6 @@ class EmployeeSection extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("RERENDER EMPLOYEE");
     let employees: any[] = [];
     let interemployees: any[] = [];
     if (this.props.employees) {
@@ -126,13 +125,6 @@ class EmployeeSection extends React.Component<Props, State> {
           {employeeArray}
         </div>
         {this.state.add && (
-          /*<AddTeamEmployee
-            close={sO => {
-              this.setState({ add: false, savingObject: sO });
-            }}
-            team={this.props.team}
-          />*/
-
           <ManageTeamEmployees team={this.props.team} close={() => this.setState({ add: false })}>
             <div className="buttonsPopup">
               <UniversalButton

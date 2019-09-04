@@ -10,6 +10,7 @@ interface Props {
   touched?: boolean;
   holder?: any;
   scrollItem?: any;
+  header: string;
 }
 
 interface State {
@@ -83,7 +84,7 @@ class DropDown extends React.PureComponent<Props, State> {
   render() {
     const { show, touched } = this.state;
     let bodyClass = "body";
-
+    console.log(this.props.holder);
     // if (touched) {
     if (show) {
       bodyClass += " slide-down";
@@ -91,7 +92,6 @@ class DropDown extends React.PureComponent<Props, State> {
       bodyClass += " slide-up";
     }
     // }
-
     return (
       <div className="dropdown" ref={this.wrapper}>
         <button
@@ -104,7 +104,7 @@ class DropDown extends React.PureComponent<Props, State> {
               ? this.props.option.label
                 ? this.props.option.label
                 : this.props.option
-              : ""}
+              : this.props.header}
           </span>
           <i className="fal fa-angle-down big-angle" />
         </button>
@@ -119,7 +119,7 @@ class DropDown extends React.PureComponent<Props, State> {
               top:
                 this.calculateTop(this.wrapper.current) +
                 32 -
-                (this.props.holder.current.scrollTop || 0),
+                ((this.props.holder.current && this.props.holder.current.scrollTop) || 0),
               left: this.calculateLeft(this.wrapper.current)
             }
           }>
@@ -131,7 +131,7 @@ class DropDown extends React.PureComponent<Props, State> {
                 this.props.handleChange(option);
                 this.setState({ show: false });
               }}>
-              {option.label ? option.label : option}
+              <span>{option.label ? option.label : option}</span>
             </button>
           ))}
         </div>

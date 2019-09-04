@@ -5,6 +5,7 @@ import PopupAddLicence from "../../../../popups/universalPopups/addLicence";
 import PopupSelfSaving from "../../../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
+import PrintEmployeeSquare from "../squares/printEmployeeSquare";
 
 interface Props {
   close: Function;
@@ -18,6 +19,9 @@ interface State {
   saving: Boolean;
   counter: number;
   currentteam: any;
+  setups: any[];
+  addEmployee: boolean;
+  boughtplanid: number;
 }
 
 const ADD_TO_TEAM = gql`
@@ -25,89 +29,38 @@ const ADD_TO_TEAM = gql`
     addAppToTeam(serviceid: $serviceid, teamid: $teamid, employees: $employees)
   }
 `;
+
+const ADD_EXTERNAL_PLAN = gql`
+  mutation onAddExternalBoughtPlan($appid: ID!, $alias: String, $price: Float, $loginurl: String) {
+    addExternalBoughtPlan(appid: $appid, alias: $alias, price: $price, loginurl: $loginurl) {
+      id
+      alias
+    }
+  }
+`;
 class AddServiceToTeam extends React.Component<Props, State> {
   state = {
     saving: false,
     counter: 0,
-    currentteam: this.props.team
+    currentteam: this.props.team,
+    setups: [],
+    addEmployee: false,
+    boughtplanid: 0
   };
 
   componentWillUnmount() {
     this.setState({ saving: false, counter: 0, currentteam: null });
   }
 
-  printEmployeeAddSteps() {
-    const { team, service, close } = this.props;
-    if (team.employees.length == 0) {
-      return (
-        <div className="buttonsPopup">
-          <UniversalButton type="low" onClick={() => close()} label="Cancel" />
-          <div className="buttonSeperator" />
-          <UniversalButton
-            type="high"
-            onClick={() => this.setState({ saving: true })}
-            label="Confirm"
-          />
-        </div>
-      );
-    } else {
-      return (
-        <React.Fragment>
-          <ul className="checks">
-            {this.state.currentteam.employees &&
-              this.state.currentteam.employees.map(employee => {
-                return (
-                  <li key={employee.id} style={{ fontSize: "12px" }}>
-                    {employee.setupfinished ? (
-                      <i
-                        className="fal fa-check-circle"
-                        style={{ color: "#20BAA9", marginRight: "4px" }}
-                      />
-                    ) : (
-                      <i
-                        className="fal fa-times-circle"
-                        style={{ color: "#FF2700", marginRight: "4px" }}
-                      />
-                    )}
-                    Individual Teamlicence for <b>{`${employee.firstname} ${employee.lastname}`}</b>
-                    {employee.setupfinished
-                      ? " successfully configurated"
-                      : employee.setupfinished == null
-                      ? " not started"
-                      : " not configured"}
-                  </li>
-                );
-              })}
-            {/*this.props.team!.licences.map(licence => {
-              return (
-                <li key={licence.boughtplanid.planid.appid.name}>
-                  Teamlicence for <b>{licence.boughtplanid.planid.appid.name}</b> configured
-                </li>
-              );
-            })*/}
-          </ul>
-          <div className="buttonsPopup">
-            <UniversalButton type="low" onClick={() => close()} label="Cancel" />
-            <div className="buttonSeperator" />
-            <UniversalButton
-              type="high"
-              onClick={() => this.setState({ saving: true })}
-              label="Confirm"
-            />
-          </div>
-        </React.Fragment>
-      );
-    }
-  }
-
   render() {
+    console.log("STATE ADD SERVICE", this.state);
     const { team, close, service } = this.props;
-    console.log("AETT", this.props, this.state);
     return (
       <PopupBase
         buttonStyles={{ marginTop: "0px" }}
         fullmiddle={true}
         small={true}
+        additionalclassName="formPopup"
         close={() => close()}>
         <div>
           <h1 className="cleanup lightHeading">
@@ -115,73 +68,128 @@ class AddServiceToTeam extends React.Component<Props, State> {
           </h1>
         </div>
 
-        {this.printEmployeeAddSteps()}
-
-        {team.employees && team.employees.length > 0 && team.employees.length > this.state.counter && (
-          <PopupAddLicence
-            nooutsideclose={true}
-            app={service}
-            cancel={async () => {
-              await this.setState(prevState => {
-                let newcounter = prevState.counter + 1;
-                let currentemployee = Object.assign({}, team.employees[prevState.counter]);
-                currentemployee.setupfinished = false;
-                currentemployee.setup = {};
-                const currentteam = Object.assign({}, prevState.currentteam);
-                const currentteam2 = currentteam;
-                currentteam2.employees = currentteam2.employees.map(a =>
-                  a.id == currentemployee.id ? currentemployee : a
-                );
-                if (newcounter < team.employees.length) {
-                  return {
-                    ...prevState,
-                    counter: newcounter,
-                    currentteam
-                  };
-                } else {
-                  return {
-                    ...prevState,
-                    counter: newcounter,
-                    currentteam
-                  };
-                }
-              });
-            }}
-            add={async setup => {
-              await this.setState(prevState => {
-                let newcounter = prevState.counter + 1;
-                let currentemployee = Object.assign({}, team.employees[prevState.counter]);
-                currentemployee.setupfinished = true;
-                currentemployee.setup = setup;
-                const currentteam = Object.assign({}, prevState.currentteam);
-                console.log("CT", currentteam);
-                const currentteam2 = currentteam;
-                currentteam2.employees = currentteam2.employees.map(a =>
-                  a.id == currentemployee.id ? currentemployee : a
-                );
-                if (newcounter < team.employees.length) {
-                  return {
-                    ...prevState,
-                    counter: newcounter,
-                    currentteam
-                  };
-                } else {
-                  return {
-                    ...prevState,
-                    counter: newcounter,
-                    currentteam
-                  };
-                }
-              });
-            }}
-            employeename={`${this.props.team.employees[this.state.counter].firstname} ${
-              this.props.team.employees[this.state.counter].lastname
-            }`}
-            employee={this.props.team.employees[this.state.counter]}
-            maxstep={this.props.team.employees.length}
-            currentstep={this.state.counter}
-          />
+        {team.employees && team.employees.length > 0 && (
+          <div>
+            <h3>Includes {team.employees.length} Team-Employees</h3>
+            <div className="serviceIconHolderTeamAdd">
+              {team.employees.map((employee, index) => (
+                <PrintEmployeeSquare
+                  employee={employee}
+                  styles={{ position: "relative" }}
+                  overlayFunction={s =>
+                    this.state.addEmployee && this.state.setups[index] ? (
+                      this.state.setups[index].setupsuccess ? (
+                        <i
+                          className="fal fa-check-square"
+                          style={{
+                            color: "#37C8BA",
+                            fontSize: "32px",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            width: "32px",
+                            borderRadius: "4px",
+                            top: "0px",
+                            position: "absolute",
+                            left: "0px"
+                          }}
+                        />
+                      ) : (
+                        <i
+                          className="fal fa-times-square"
+                          style={{
+                            color: "#37C8BA",
+                            fontSize: "32px",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            width: "32px",
+                            borderRadius: "4px",
+                            top: "0px",
+                            position: "absolute",
+                            left: "0px"
+                          }}
+                        />
+                      )
+                    ) : (
+                      <i
+                        className="fal fa-question-square"
+                        style={{
+                          color: "#37C8BA",
+                          fontSize: "32px",
+                          backgroundColor: "rgba(0,0,0,0.5)",
+                          width: "32px",
+                          borderRadius: "4px",
+                          top: "0px",
+                          position: "absolute",
+                          left: "0px"
+                        }}
+                      />
+                    )
+                  }
+                />
+              ))}
+            </div>
+          </div>
         )}
+
+        <UniversalButton type="low" onClick={() => close()} label="Cancel" />
+        <UniversalButton
+          type="high"
+          onClick={() => this.setState({ saving: true })}
+          label="Confirm"
+        />
+
+        {this.state.addEmployee &&
+          team.employees &&
+          team.employees.length > 0 &&
+          team.employees.length > this.state.counter && (
+            <PopupAddLicence
+              nooutsideclose={true}
+              app={service}
+              addStyles={{ marginTop: "288px" }}
+              boughtplanid={{ id: this.state.boughtplanid }}
+              team={team}
+              cancel={async () => {
+                await this.setState(prevState => {
+                  let newcounter = prevState.counter + 1;
+                  const currentsetup = prevState.setups;
+                  currentsetup.push({ setupsuccess: false });
+
+                  return {
+                    ...prevState,
+                    counter: newcounter,
+                    setups: currentsetup
+                  };
+                });
+                if (this.state.counter == team.employees.length) {
+                  //Finished
+                  this.props.savingFunction({ action: "success" });
+                }
+              }}
+              success={err => {
+                if (err && err.error) {
+                  this.props.savingFunction({ action: "error", message: err });
+                } else {
+                  this.setState(prevState => {
+                    let newcounter = prevState.counter + 1;
+                    const currentsetup = prevState.setups;
+                    currentsetup.push({ setupsuccess: true });
+
+                    return {
+                      ...prevState,
+                      counter: newcounter,
+                      setups: currentsetup
+                    };
+                  });
+                }
+                if (this.state.counter == team.employees.length) {
+                  //Finished
+                  this.props.savingFunction({ action: "success" });
+                }
+              }}
+              employeename={`${this.props.team.employees[this.state.counter].firstname} ${this.props.team.employees[this.state.counter].lastname}`}
+              employee={this.props.team.employees[this.state.counter]}
+              maxstep={this.props.team.employees.length}
+              currentstep={this.state.counter}
+            />
+          )}
 
         {this.state.saving && (
           <PopupSelfSaving
@@ -189,25 +197,28 @@ class AddServiceToTeam extends React.Component<Props, State> {
             savingmessage={`Adding ${service.name} to team ${team.name}`}
             closeFunction={() => close()}
             saveFunction={async () => {
-              console.log("SAVE", this.props, this.state);
               try {
-                await this.props.addServiceToTeam({
+                const res = await this.props.addServiceToTeam({
                   variables: {
                     serviceid: service.id,
                     teamid: this.props.team.unitid.id,
-                    employees: this.state.currentteam.employees.map(employee => {
+                    employees: [] /*this.state.currentteam.employees.map(employee => {
                       return {
                         id: employee.id,
                         setup: employee.setup,
                         setupfinished: employee.setupfinished
                       };
-                    })
+                    })*/
                   }
                 });
-
-                await this.props.savingFunction({ action: "success" });
+                this.setState({
+                  addEmployee: true,
+                  saving: false,
+                  boughtplanid: res.data.addAppToTeam
+                });
+                //await this.props.savingFunction({ action: "success" });
               } catch (error) {
-                console.log(error);
+                console.error(error);
                 await this.props.savingFunction({ action: "error", message: error });
               }
             }}
@@ -218,4 +229,7 @@ class AddServiceToTeam extends React.Component<Props, State> {
     );
   }
 }
-export default compose(graphql(ADD_TO_TEAM, { name: "addServiceToTeam" }))(AddServiceToTeam);
+export default compose(
+  graphql(ADD_TO_TEAM, { name: "addServiceToTeam" }),
+  graphql(ADD_EXTERNAL_PLAN, { name: "addExternalBoughtPlan" })
+)(AddServiceToTeam);

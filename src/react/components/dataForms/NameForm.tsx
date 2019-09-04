@@ -71,7 +71,7 @@ class DataNameForm extends React.Component<Props, State> {
       await this.props.client.query({ query: me, fetchPolicy: "network-only" });
       this.props.moveTo("dashboard");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       this.setState({ error: "Could not set your name. Please try again." });
     }
   };
@@ -91,7 +91,7 @@ class DataNameForm extends React.Component<Props, State> {
           <div className="holder-right">
             <h1>Welcome to VIPFY</h1>
             <p style={{ display: "flex", flexFlow: "column", alignItems: "start" }}>
-              <span>Let's personalize your experience.</span> <br />
+              <span>Let's personalize your experience.</span>
               <span>First of all, what's your name?</span>
             </p>
 
@@ -180,7 +180,8 @@ class DataNameForm extends React.Component<Props, State> {
                 close={() => this.setState({ register: false, error: "" })}
                 small={true}
                 closeable={false}
-                nosidebar={true}>
+                fullMiddle={true}
+                noSidebar={true}>
                 {this.state.error != "" ? (
                   <React.Fragment>
                     <div>{this.state.error}</div>

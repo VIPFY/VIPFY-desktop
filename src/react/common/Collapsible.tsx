@@ -14,6 +14,8 @@ class Collapsible extends React.Component<Props, State> {
   state = { show: true };
 
   componentDidMount() {
+    window.addEventListener("resize", this.handleResize, true);
+
     if (this.props.child && this.props.child.current) {
       // Needed to correctly render the height
       setTimeout(() => this.setInitialHeight(), 800);

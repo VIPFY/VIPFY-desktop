@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import { getSourceSetApp, getImageUrlApp } from "../common/images";
 
 interface Props {
+  index: number;
   title: string;
   licenceid: number;
   active: boolean;
@@ -14,6 +15,7 @@ interface Props {
   handleDragOver: Function;
   handleDragEnd: Function;
   handleDragLeave: Function;
+  activeViewId: number;
 }
 
 interface State {
@@ -65,12 +67,60 @@ class Tab extends React.Component<Props, State> {
   };
 
   render() {
-    const { title, licenceid, active, viewID, setInstance } = this.props;
-
+    const { title, licenceid, active, viewID, setInstance, activeViewId, index } = this.props;
     return (
-      <Query query={FETCH_APP_ICON} variables={{ licenceid }}>
-        {({ data, loading, error }) => {
-          if (loading || error || !data) {
+      <>
+        {index > 0 && (!active && activeViewId != index) ? (
+          <span className="tabSeperator" style={{ backgroundColor: "#30475D" }} />
+        ) : (
+          <span className="tabSeperator" />
+        )}
+        <Query query={FETCH_APP_ICON} variables={{ licenceid }}>
+          {({ data, loading, error }) => {
+            if (loading || error || !data) {
+              return (
+                <li
+                  className={`titlebar-tab ${active ? "active" : ""}`}
+                  //draggable={true}
+                  // Workaround because clicking the middle button to close a tab caused the event to be
+                  // fired twice.
+                  /*onMouseEnter={e => {
+                    e.preventDefault();
+                    this.setState({ mouseOver: true });
+                  }}
+                  onMouseLeave={e => {
+                    e.preventDefault();
+                    this.setState({ mouseOver: false });
+                  }}
+                  onDragStart={() => this.props.handleDragStart(viewID)}
+                  onDragOver={e => {
+                    e.preventDefault();
+
+                    if (!active) {
+                      this.props.handleDragOver(viewID);
+                    }
+                  }}
+                  onDragLeave={() => {
+                    if (!active) {
+                      this.props.handleDragLeave();
+                    }
+                  }}
+                  onDragEnd={() => this.props.handleDragEnd()}
+                  onDrop={() => this.props.handleDragOver(viewID)}*/
+                  title={title}
+                  onClick={() => setInstance(viewID)}>
+                  <img src="./images/Vipfy-white.svg" />
+                  <div>{title}</div>
+                  <i onClick={this.handleClose} className="fal fa-times fa-1x" />
+                </li>
+              );
+            }
+
+            // prettier-ignore
+            const alias = data.fetchLicences[0].boughtplanid.alias;
+            const icon = data.fetchLicences[0].boughtplanid.planid.appid.icon;
+            const appname = data.fetchLicences[0].boughtplanid.planid.appid.name;
+
             return (
               <li
                 className={`titlebar-tab ${active ? "active" : ""}`}
@@ -102,56 +152,14 @@ class Tab extends React.Component<Props, State> {
                 onDrop={() => this.props.handleDragOver(viewID)}
                 title={title}
                 onClick={() => setInstance(viewID)}>
-                <img src="./images/Vipfy-white.svg" />
-                <div>{title}</div>
+                <img src={getImageUrlApp(icon, 25)} srcSet={getSourceSetApp(icon, 25)} />
+                <div>{alias ? alias : appname}</div>
                 <i onClick={this.handleClose} className="fal fa-times fa-1x" />
               </li>
             );
-          }
-
-          // prettier-ignore
-          const alias = data.fetchLicences[0].boughtplanid.alias;
-          const icon = data.fetchLicences[0].boughtplanid.planid.appid.icon;
-          const appname = data.fetchLicences[0].boughtplanid.planid.appid.name;
-
-          return (
-            <li
-              className={`titlebar-tab ${active ? "active" : ""}`}
-              draggable={true}
-              // Workaround because clicking the middle button to close a tab caused the event to be
-              // fired twice.
-              onMouseEnter={e => {
-                e.preventDefault();
-                this.setState({ mouseOver: true });
-              }}
-              onMouseLeave={e => {
-                e.preventDefault();
-                this.setState({ mouseOver: false });
-              }}
-              onDragStart={() => this.props.handleDragStart(viewID)}
-              onDragOver={e => {
-                e.preventDefault();
-
-                if (!active) {
-                  this.props.handleDragOver(viewID);
-                }
-              }}
-              onDragLeave={() => {
-                if (!active) {
-                  this.props.handleDragLeave();
-                }
-              }}
-              onDragEnd={() => this.props.handleDragEnd()}
-              onDrop={() => this.props.handleDragOver(viewID)}
-              title={title}
-              onClick={() => setInstance(viewID)}>
-              <img src={getImageUrlApp(icon, 25)} srcSet={getSourceSetApp(icon, 25)} />
-              <div>{alias ? alias : appname}</div>
-              <i onClick={this.handleClose} className="fal fa-times fa-1x" />
-            </li>
-          );
-        }}
-      </Query>
+          }}
+        </Query>
+      </>
     );
   }
 }

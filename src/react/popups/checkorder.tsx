@@ -627,6 +627,6 @@ class CheckOrder extends React.Component<Props, State> {
 }
 export default compose(
   graphql(distributeLicence, {
-    name: "distributeLicence"
+    name: "distributeLicence" //Change to distributeLicence10
   })
 )(CheckOrder);

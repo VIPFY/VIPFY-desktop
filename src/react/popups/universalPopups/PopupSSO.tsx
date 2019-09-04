@@ -19,6 +19,7 @@ interface Props {
   cancel: Function;
   add: Function;
   nooutsideclose?: Boolean;
+  inmanager?: Boolean;
 }
 
 interface State {
@@ -46,9 +47,10 @@ class PopupSSO extends React.Component<Props, State> {
 
   listenKeyboard = e => {
     const { email, password, url, name, error } = this.state;
-
     if (e.key === "Escape" || e.keyCode === 27) {
-      this.props.cancel();
+      this.props.cancel();}
+    else if(!(e.traget && e.target.id && (e.traget.id === "name" || e.traget.id === "url" || e.traget.id === "email" || e.traget.id === "password"))) {
+      return; //Check if one of the Textfields is focused
     } else if (
       (e.key === "Enter" || e.keyCode === 13) &&
       email &&
@@ -75,7 +77,7 @@ class PopupSSO extends React.Component<Props, State> {
   };
 
   handleSubmit = () => {
-    if (this.state.error) {
+    if(this.state.error) {
       return;
     }
 
@@ -97,7 +99,7 @@ class PopupSSO extends React.Component<Props, State> {
     return (
       <PopupBase
         key={this.state.randomkey}
-        nooutsideclose={this.props.nooutsideclose}
+        closeable={this.props.nooutsideclose}
         buttonStyles={{ justifyContent: "space-between" }}
         styles={{ maxWidth: "432px" }}
         close={() => this.props.cancel()}>
@@ -146,8 +148,8 @@ class PopupSSO extends React.Component<Props, State> {
             {this.state.protocol == "http://" && (
               <i
                 title={`Using http is a possible security risk, because the Website does not encrypt your data.
-
-Please be sure that you can trust this Website.`}
+                        
+                Please be sure that you can trust this Website.`}
                 className="fal fa-exclamation-circle tooltip-warning"
               />
             )}
@@ -180,7 +182,7 @@ Please be sure that you can trust this Website.`}
               errorhint={this.state.error}
               errorEvaluation={!!this.state.error}
               livevalue={value => {
-                const updates = { url: value };
+                const updates = { url: value, error: "" };
 
                 if (value.startsWith("https://") || value.startsWith("http://")) {
                   updates.protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
@@ -190,6 +192,12 @@ Please be sure that you can trust this Website.`}
               }}
             />
           </div>
+
+          {this.props.inmanager && (
+            <div style={{ gridColumn: "2 / -1" }}>
+              Please provide details of one of your accounts so we can check this service
+            </div>
+          )}
 
           <UniversalTextInput
             width="100%"
@@ -222,4 +230,5 @@ Please be sure that you can trust this Website.`}
     );
   }
 }
+
 export default PopupSSO;
