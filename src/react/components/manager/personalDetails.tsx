@@ -519,84 +519,84 @@ class PersonalDetails extends React.Component<Props, State> {
     const querydata = this.props.querydata;
     return (
       <React.Fragment>
-        <div className="tableRowShow" style={{ height: "80px", width: "100%" }}>
-          <div className="tableMain" style={{ width: "100%" }}>
-            <div
-              className="tableColumnSmall editable"
-              onClick={() =>
-                this.setState({
-                  edit: {
-                    id: "name",
-                    label: "Name",
-                    startvalue: concatName(querydata),
-                    checking: true
-                  }
-                })
-              }>
-              <h1>Name</h1>
-              <h2>{concatName(querydata)}</h2>
-              <div className="profileEditButton">
-                <i className="fal fa-pen editbuttons" />
-              </div>
+        <div className="tableColumnSmall content twoline">
+          <div
+            className="tableColumnSmallOne editable"
+            onClick={() =>
+              this.setState({
+                edit: {
+                  id: "name",
+                  label: "Name",
+                  startvalue: concatName(querydata),
+                  checking: true
+                }
+              })
+            }>
+            <h1>Name</h1>
+            <h2>{concatName(querydata)}</h2>
+            <div className="profileEditButton">
+              <i className="fal fa-pen editbuttons" />
             </div>
-            <div
-              className="tableColumnSmall editable"
-              onClick={() =>
-                this.setState({
-                  edit: {
-                    id: "birthday",
-                    label: "Birthday",
-                    startvalue: querydata.birthday
-                      ? moment(querydata.birthday - 0).format("YYYY-MM-DD")
-                      : " ",
-                    type: "date"
-                  }
-                })
-              }>
-              <h1>Birthday</h1>
-              <h2>
-                {querydata.birthday
-                  ? moment(querydata.birthday - 0).format("DD.MM.YYYY")
-                  : "Not set"}
-              </h2>
-              <div className="profileEditButton">
-                <i className="fal fa-pen editbuttons" />
-              </div>
+          </div>
+          <div
+            className="tableColumnSmallOne editable"
+            onClick={() =>
+              this.setState({
+                edit: {
+                  id: "birthday",
+                  label: "Birthday",
+                  startvalue: querydata.birthday
+                    ? moment(querydata.birthday - 0).format("YYYY-MM-DD")
+                    : " ",
+                  type: "date"
+                }
+              })
+            }>
+            <h1>Birthday</h1>
+            <h2>
+              {querydata.birthday ? moment(querydata.birthday - 0).format("DD.MM.YYYY") : "Not set"}
+            </h2>
+            <div className="profileEditButton">
+              <i className="fal fa-pen editbuttons" />
             </div>
-            <div
-              className="tableColumnSmall editable"
-              onClick={() =>
-                this.setState({
-                  edit: {
-                    id: "privatephones",
-                    label: "Privatephone",
-                    startvalue: querydata.privatePhones
-                  }
-                })
-              }>
-              <h1>
-                Private Phone{" "}
-                <span className="morehint">
-                  {querydata.privatePhones.length > 2 &&
-                    `+${querydata.privatePhones.length - 2} more`}
-                </span>
-              </h1>
-              <h2>
-                {querydata.privatePhones &&
-                  querydata.privatePhones[0] &&
-                  querydata.privatePhones[0].number}
-              </h2>
-              <h2 className="second">
-                {querydata.privatePhones &&
-                  querydata.privatePhones[1] &&
-                  querydata.privatePhones[1].number}
-              </h2>
-              <div className="profileEditButton">
-                <i className="fal fa-pen editbuttons" />
-              </div>
+          </div>
+        </div>
+        <div className="tableColumnSmall content twoline">
+          <div
+            className="tableColumnSmallOne editable"
+            onClick={() =>
+              this.setState({
+                edit: {
+                  id: "privatephones",
+                  label: "Privatephone",
+                  startvalue: querydata.privatePhones
+                }
+              })
+            }>
+            <h1>
+              Private Phone{" "}
+              <span className="morehint">
+                {querydata.privatePhones.length > 2 &&
+                  `+${querydata.privatePhones.length - 2} more`}
+              </span>
+            </h1>
+            <h2>
+              {querydata.privatePhones &&
+                querydata.privatePhones[0] &&
+                querydata.privatePhones[0].number}
+            </h2>
+            <h2 className="second">
+              {querydata.privatePhones &&
+                querydata.privatePhones[1] &&
+                querydata.privatePhones[1].number}
+            </h2>
+            <div className="profileEditButton">
+              <i className="fal fa-pen editbuttons" />
             </div>
-            <div className="tableColumnSmall">
-              {/*<h1>Address</h1>
+          </div>
+
+          <div className="tableColumnSmallOne">
+            {/*<h1>Address</h1>
               <h2>
                 {querydata.addresses[0] &&
                   querydata.addresses[0].address &&
@@ -610,103 +610,100 @@ class PersonalDetails extends React.Component<Props, State> {
                   querydata.addresses[0].address &&
                   querydata.addresses[0].address.city}
                 </h2>*/}
+          </div>
+        </div>
+        <div className="tableColumnSmall content twoline">
+          <div
+            className="tableColumnSmallOne editable"
+            onClick={() =>
+              this.setState({
+                edit: {
+                  id: "hiredate",
+                  label: "Hiredate",
+                  startvalue: querydata.hiredate
+                    ? moment(querydata.hiredate - 0).format("YYYY-MM-DD")
+                    : " ",
+                  type: "date"
+                }
+              })
+            }>
+            <h1>Hiredate</h1>
+            <h2>
+              {querydata.hiredate ? moment(querydata.hiredate - 0).format("DD.MM.YYYY") : "Not set"}
+            </h2>
+            <div className="profileEditButton">
+              <i className="fal fa-pen editbuttons" />
+            </div>
+          </div>
+          <div
+            className="tableColumnSmallOne editable"
+            onClick={() =>
+              this.setState({
+                edit: {
+                  id: "position",
+                  label: "Position",
+                  startvalue: querydata.position
+                }
+              })
+            }>
+            <h1>Position</h1>
+            <h2>{querydata.position}</h2>
+            <div className="profileEditButton">
+              <i className="fal fa-pen editbuttons" />
             </div>
           </div>
         </div>
-        <div className="tableRowShow" style={{ height: "80px", width: "100%" }}>
-          <div className="tableMain" style={{ width: "100%" }}>
-            <div
-              className="tableColumnSmall editable"
-              onClick={() =>
-                this.setState({
-                  edit: {
-                    id: "hiredate",
-                    label: "Hiredate",
-                    startvalue: querydata.hiredate
-                      ? moment(querydata.hiredate - 0).format("YYYY-MM-DD")
-                      : " ",
-                    type: "date"
-                  }
-                })
-              }>
-              <h1>Hiredate</h1>
-              <h2>
-                {querydata.hiredate
-                  ? moment(querydata.hiredate - 0).format("DD.MM.YYYY")
-                  : "Not set"}
-              </h2>
-              <div className="profileEditButton">
-                <i className="fal fa-pen editbuttons" />
-              </div>
+        <div className="tableColumnSmall content twoline">
+          <div
+            className="tableColumnSmallOne editable"
+            onClick={() =>
+              this.setState({
+                edit: {
+                  id: "emails",
+                  label: "Email",
+                  startvalue: querydata.emails
+                }
+              })
+            }>
+            <h1>
+              Workmail{" "}
+              <span className="morehint">
+                {querydata.emails.length > 2 && `+${querydata.emails.length - 2} more`}
+              </span>
+            </h1>
+            <h2>{querydata.emails && querydata.emails[0] && querydata.emails[0].email}</h2>
+            <h2 className="second">
+              {querydata.emails && querydata.emails[1] && querydata.emails[1].email}
+            </h2>
+            <div className="profileEditButton">
+              <i className="fal fa-pen editbuttons" />
             </div>
-            <div
-              className="tableColumnSmall editable"
-              onClick={() =>
-                this.setState({
-                  edit: {
-                    id: "position",
-                    label: "Position",
-                    startvalue: querydata.position
-                  }
-                })
-              }>
-              <h1>Position</h1>
-              <h2>{querydata.position}</h2>
-              <div className="profileEditButton">
-                <i className="fal fa-pen editbuttons" />
-              </div>
-            </div>
-            <div
-              className="tableColumnSmall editable"
-              onClick={() =>
-                this.setState({
-                  edit: {
-                    id: "emails",
-                    label: "Email",
-                    startvalue: querydata.emails
-                  }
-                })
-              }>
-              <h1>
-                Workmail{" "}
-                <span className="morehint">
-                  {querydata.emails.length > 2 && `+${querydata.emails.length - 2} more`}
-                </span>
-              </h1>
-              <h2>{querydata.emails && querydata.emails[0] && querydata.emails[0].email}</h2>
-              <h2 className="second">
-                {querydata.emails && querydata.emails[1] && querydata.emails[1].email}
-              </h2>
-              <div className="profileEditButton">
-                <i className="fal fa-pen editbuttons" />
-              </div>
-            </div>
-            <div
-              className="tableColumnSmall editable"
-              onClick={() =>
-                this.setState({
-                  edit: {
-                    id: "workphones",
-                    label: "Workphone",
-                    startvalue: querydata.workPhones
-                  }
-                })
-              }>
-              <h1>
-                Work Phone{" "}
-                <span className="morehint">
-                  {querydata.workPhones.length > 2 && `+${querydata.workPhones.length - 2} more`}
-                </span>
-              </h1>
-              <h2>
-                {querydata.workPhones && querydata.workPhones[0] && querydata.workPhones[0].number}
-              </h2>
-              <h2 className="second">
-                {querydata.workPhones && querydata.workPhones[1] && querydata.workPhones[1].number}
-              </h2>
-              <div className="profileEditButton">
-                <i className="fal fa-pen editbuttons" />
-              </div>
+          </div>
+          <div
+            className="tableColumnSmallOne editable"
+            onClick={() =>
+              this.setState({
+                edit: {
+                  id: "workphones",
+                  label: "Workphone",
+                  startvalue: querydata.workPhones
+                }
+              })
+            }>
+            <h1>
+              Work Phone{" "}
+              <span className="morehint">
+                {querydata.workPhones.length > 2 && `+${querydata.workPhones.length - 2} more`}
+              </span>
+            </h1>
+            <h2>
+              {querydata.workPhones && querydata.workPhones[0] && querydata.workPhones[0].number}
+            </h2>
+            <h2 className="second">
+              {querydata.workPhones && querydata.workPhones[1] && querydata.workPhones[1].number}
+            </h2>
+            <div className="profileEditButton">
+              <i className="fal fa-pen editbuttons" />
             </div>
           </div>
         </div>
