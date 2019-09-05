@@ -68,8 +68,6 @@ class BoughtplanView extends Component<Props, State> {
   };
 
   render() {
-    console.log("Teams", this.props, this.state);
-
     return (
       <div className="addEmployeeHolderP">
         <div className="field">

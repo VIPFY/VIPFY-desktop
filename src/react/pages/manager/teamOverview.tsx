@@ -68,9 +68,6 @@ class TeamOverview extends React.Component<Props, State> {
   };
 
   handleSortClick(sorted) {
-    //console.log("TEST")
-    //console.log("TEST1", sorted, this.state.sort, this.state.sortforward);
-
     if (sorted != this.state.sort) {
       this.setState({ sortforward: true, sort: sorted });
     } else {
@@ -445,7 +442,6 @@ class TeamOverview extends React.Component<Props, State> {
                 } else {
                   teams = interteams;
                 }
-                console.log(teams.length);
               }
               return (
                 <>

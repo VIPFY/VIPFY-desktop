@@ -115,7 +115,6 @@ class SelfSaving extends React.Component<Props, State> {
     }
 
     const errorMessage = "Sorry, this seems to take additional time. Our Support will take a look.";
-    console.log("SelfSaving", this.state, this.props);
     return (
       <PopupBase styles={{ maxWidth: "432px" }} nooutsideclose={true} fullmiddle={true}>
         {this.state.tooLong ? (
@@ -150,7 +149,6 @@ class SelfSaving extends React.Component<Props, State> {
               mutation={CREATE_OWN_APP}
               onCompleted={data => {
                 this.setState({ success: true, newid: data.createOwnApp.id });
-                console.log("COMPLETED ", data);
               }}
               refetchQueries={[{ query: fetchLicences }]}
               onError={() => this.setState({ error: errorMessage })}>
@@ -208,7 +206,6 @@ class SelfSaving extends React.Component<Props, State> {
                     <LogoExtractor
                       url={this.props.sso.loginurl!}
                       setResult={async (icon, color) => {
-                        console.log("FAVICON RESULT");
                         if (loading || data) {
                           return;
                         }

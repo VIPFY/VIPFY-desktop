@@ -31,7 +31,6 @@ class Integration extends React.Component<Props, State> {
 
   onIPCMessage = e => {
     this.webView = e.target;
-    console.log(e);
   };
 
   render() {

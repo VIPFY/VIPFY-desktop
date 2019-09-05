@@ -11,7 +11,6 @@ interface State {}
 
 class PrintCurrent extends React.Component<Props, State> {
   render() {
-    console.log("PRINT", this.props.elements);
     let elementArray: JSX.Element[] = [];
     this.props.elements.forEach(element => {
       elementArray.push(
@@ -35,9 +34,7 @@ class PrintCurrent extends React.Component<Props, State> {
                     }
                   : {
                       backgroundImage: encodeURI(
-                        `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                          element.profilepicture
-                        })`
+                        `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${element.profilepicture})`
                       )
                     }
                 : { backgroundColor: "#5D76FF" }
@@ -80,9 +77,7 @@ class PrintCurrent extends React.Component<Props, State> {
                     }
                   : {
                       backgroundImage: encodeURI(
-                        `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                          employee.profilepicture
-                        })`
+                        `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${employee.profilepicture})`
                       )
                     }
                 : { backgroundColor: "#5D76FF" }

@@ -83,16 +83,6 @@ class BoughtplanUsageChartInner extends React.Component<Props, State> {
       />
     );
   }
-
-  /*<FlexibleXYPlot stackBy="y" xType="ordinal">
-        <VerticalGridLines />
-        <HorizontalGridLines />
-        <DiscreteColorLegend orientation="horizontal" width={300} items={names} />
-        <XAxis tickLabelAngle={270} />
-        <YAxis tickFormat={v => `$${v}`} />
-        {bars}
-      </FlexibleXYPlot>*/
-
   BarSeries(props): { name: string; data: number[]; color: string }[] {
     let d = props.data.fetchUnitApps;
     let plans = d.map(boughtplan => ({
@@ -112,12 +102,10 @@ class BoughtplanUsageChartInner extends React.Component<Props, State> {
         (a.alias ? a.alias : `${a.appname} ${a.id}`) > (b.alias ? b.alias : `${b.appname} ${b.id}`)
       );
     });
-    //console.log("PLANS", plans);
     const timestart = moment()
       .startOf("month")
       .subtract(6, "months");
     const timeend = moment().endOf("month");
-    //console.log("times", timestart, timeend);
 
     return plans
       .map(plan => {
@@ -127,25 +115,17 @@ class BoughtplanUsageChartInner extends React.Component<Props, State> {
           color: plan.appcolor
         };
         for (let m = moment(timestart); m.isSameOrBefore(timeend); m.add(1, "month")) {
-          //console.log("Month", m, moment(plan.buytime), m.endOf("month"));
-          //console.log(m.endOf("month"));
           let mm = m;
           if (moment(plan.buytime - 0).isSameOrBefore(mm.endOf("month"))) {
-            //console.log(moment(plan.buytime).isAfter(m.startOf("month")), plan, m);
-            //console.log("BEFORE", moment(plan.buytime));
             if (moment(plan.buytime - 0).isAfter(mm.startOf("month"))) {
-              //console.log(-moment(plan.buytime).diff(m.endOf("month"), "days"), m.daysInMonth());
-              //console.log("AFTER", moment(plan.buytime));
               let price =
                 (-moment(plan.buytime - 0).diff(mm.endOf("month"), "days") / mm.daysInMonth()) *
                 plan.price;
               d.data.push(price);
             } else {
-              //console.log("ELSE", moment(plan.buytime));
               d.data.push(plan.price);
             }
           } else {
-            //console.log("ELSE1", moment(plan.buytime));
             d.data.push(0);
           }
         }
@@ -156,7 +136,6 @@ class BoughtplanUsageChartInner extends React.Component<Props, State> {
 }
 
 function BoughtplanUsageChart(props) {
-  //console.log("PROPS", props);
   return (
     <Query
       pollInterval={60 * 10 * 1000 + 700}

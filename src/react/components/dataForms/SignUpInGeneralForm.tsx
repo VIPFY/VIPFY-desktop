@@ -63,7 +63,6 @@ class SignUpInGeneral extends React.Component<Props, State> {
   };
 
   render() {
-    console.log(this.fields, this.props, this.state);
     return (
       <div className="dataGeneralForm">
         <div className="logo" />

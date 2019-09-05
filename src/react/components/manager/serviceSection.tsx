@@ -84,7 +84,6 @@ class ServiceSection extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("STATEMain", this.state.savingObject);
     let services: any[] = [];
     let interservices: any[] = [];
     if (this.props.team.services) {

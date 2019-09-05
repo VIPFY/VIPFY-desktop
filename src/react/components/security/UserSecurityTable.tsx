@@ -57,9 +57,6 @@ class UserSecurityTable extends React.Component<Props, State> {
   };
 
   handleSortClick(sorted) {
-    //console.log("TEST")
-    //console.log("TEST1", sorted, this.state.sort, this.state.sortforward);
-
     if (sorted != this.state.sort) {
       this.setState({ sortforward: true, sort: sorted });
     } else {
@@ -354,7 +351,6 @@ class UserSecurityTable extends React.Component<Props, State> {
                             return -1;
                           }
                         }
-                        console.log(a.twofactormethods);
 
                         const nameATwo_Factor = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
                         const nameBTwo_Factor = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase

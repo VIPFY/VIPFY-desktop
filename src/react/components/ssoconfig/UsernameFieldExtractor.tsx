@@ -32,7 +32,6 @@ class UsernameFieldExtractor extends React.PureComponent<Props, State> {
   }
 
   onIpcMessage(e) {
-    console.log("ipc", e);
     switch (e.channel) {
       case "emailobject":
         {

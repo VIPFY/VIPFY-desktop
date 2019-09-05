@@ -15,7 +15,6 @@ const FileUpload = ({ children, disableClick, mutate, groupid }) => {
             file: { name: file.name, type: file.type, size: file.size, path: file.path }
           }
         });
-        console.log(res);
       }}>
       {children}
     </Dropzone>

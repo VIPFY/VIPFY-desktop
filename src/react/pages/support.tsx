@@ -14,8 +14,6 @@ const fetchSupportToken = gql`
 `;
 class SupportPage extends React.Component<Props> {
   render() {
-    console.log("SUPP", this.props);
-
     let cssClass = "marginLeft";
     if (this.props.chatOpen) {
       cssClass += " chat-open";
@@ -45,35 +43,33 @@ class SupportPage extends React.Component<Props> {
                 </div>
               );
             }
-            console.log(data);
+
             //const requester = data.me.emails[0].email;
             //return <FreshdeskWidget url="https://vipfy.freshdesk.com" autofill={{ requester }} disable={["requester"]}/>;
-            console.log(data.fetchSupportToken);
+
             return (
               <WebView
                 id="support"
                 preload="./preload-launcher.js"
                 webpreferences="webSecurity=no"
                 className={cssClassWeb}
-                src={`https://vipfy.zendesk.com/access/jwt?jwt=${
-                  data.fetchSupportToken
-                }&return_to=https://vipfy.zendesk.com`}
+                src={`https://vipfy.zendesk.com/access/jwt?jwt=${data.fetchSupportToken}&return_to=https://vipfy.zendesk.com`}
                 partition="services"
-                onLoadCommit={e => console.log("LoadCommit", e)}
-                onNewWindow={e => console.log("NewWindow", e)}
-                onWillNavigate={e => console.log("WillNavigate", e)}
-                onDidStartLoading={e => console.log("DidStartLoading", e)}
-                onDidStartNavigation={e => console.log("DidStartNavigation", e)}
-                onDidFinishLoad={e => console.log("DidFinishLoad", e)}
-                onDidStopLoading={e => console.log("DidStopLoading", e)}
+                //onLoadCommit={e => console.log("LoadCommit", e)}
+                //onNewWindow={e => console.log("NewWindow", e)}
+                //onWillNavigate={e => console.log("WillNavigate", e)}
+                //onDidStartLoading={e => console.log("DidStartLoading", e)}
+                //onDidStartNavigation={e => console.log("DidStartNavigation", e)}
+                //onDidFinishLoad={e => console.log("DidFinishLoad", e)}
+                //onDidStopLoading={e => console.log("DidStopLoading", e)}
                 onDomReady={e => {
-                  console.log("DomReady", e);
+                  //console.log("DomReady", e);
                   //this.maybeHideLoadingScreen();
                   if (!e.target.isDevToolsOpened()) {
                     //e.target.openDevTools();
                   }
                 }}
-                onDialog={e => console.log("Dialog", e)}
+                //onDialog={e => console.log("Dialog", e)}
                 onIpcMessage={e =>
                   e.target.send("loginData", {
                     token: data.fetchSupportToken

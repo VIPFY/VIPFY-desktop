@@ -110,41 +110,6 @@ class AddEmpty extends React.Component<Props, State> {
           this.props.close();
         }}
         success={() => this.props.close()}
-        /*add={setup => {
-          this.props.close({
-            savedmessage: "Empty licence has been successfully added",
-            savingmessage: "Empty licence is currently added",
-            saveFunction: async () => {
-              let res = await this.props.addExternalBoughtPlan({
-                variables: {
-                  appid: this.props.service.id,
-                  alias: "",
-                  price: 0,
-                  loginurl: ""
-                }
-              });
-              await this.props.addExternalAccountLicence({
-                variables: {
-                  username: setup!.email,
-                  password: setup!.password,
-                  loginurl: setup!.subdomain,
-                  identifier: setup!.empty,
-                  price: 0,
-                  appid: this.props.service.id,
-                  boughtplanid: res.data.addExternalBoughtPlan.id,
-                  touser: null
-                },
-                refetchQueries: [
-                  {
-                    query: fetchCompanyService,
-                    variables: { serviceid: this.props.service.id }
-                  }
-                ]
-              });
-            }
-          });
-        }}*/
-        //success={() => console.log("DONE")}
         empty={true}
       />
     );

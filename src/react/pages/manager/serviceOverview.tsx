@@ -288,7 +288,6 @@ class ServiceOverview extends React.Component<Props, State> {
             query={fetchCompanyServices}
             fetchPolicy="cache-and-network">
             {({ loading, error, data, refetch }) => {
-              console.log(loading, error, data);
               if (loading) {
                 return (
                   <div className="table">
@@ -357,7 +356,6 @@ class ServiceOverview extends React.Component<Props, State> {
               //Sort teams
               let services: any[] = [];
               let interservices: any[] = [];
-              console.log("SM-DATA", data);
               if (data && data.fetchCompanyServices) {
                 interservices = data.fetchCompanyServices;
                 let sortforward = this.state.sortforward;
