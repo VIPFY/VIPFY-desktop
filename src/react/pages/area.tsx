@@ -459,6 +459,12 @@ class Area extends React.Component<AreaProps, AreaState> {
               render={props => <SupportPage {...this.state} {...this.props} {...props} />}
             />
 
+            <Route
+              exact
+              path="/area/support/fromError"
+              render={() => <SupportPage {...this.state} fromErrorPage={true} />}
+            />
+
             {routes.map(({ path, component, admin, addprops }) => {
               const RouteComponent = component;
               if (admin && !this.props.isadmin) {

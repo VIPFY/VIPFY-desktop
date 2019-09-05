@@ -1,12 +1,13 @@
 import * as React from "react";
 import UniversalButton from "../components/universalButtons/universalButton";
+import { withRouter } from "react-router";
 
 interface Props {
-  moveTo: Function;
+  history: any;
 }
 
 //this error page is shown to logged in users. For logged out users, see ../error.tsx
-export default (props: Props) => (
+const ErrorPage = (props: Props) => (
   <div id="outer-error-page" style={{ paddingTop: "10vh" }}>
     <h1>Sorry an error occurred!</h1>
     <img
@@ -27,7 +28,9 @@ export default (props: Props) => (
         fontWeight: "bold",
         padding: "7px 20px"
       }}
-      onClick={() => props.moveTo("support")}
+      onClick={() => props.history.push("support/fromError", { fromErrorPage: true })}
     />
   </div>
 );
+
+export default withRouter(ErrorPage);

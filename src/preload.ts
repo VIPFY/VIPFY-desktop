@@ -6,6 +6,7 @@ import { type } from "os";
   let ipcRenderer = require("electron").ipcRenderer;
   const hostname = window.location.hostname;
   function hostMatches(domain: string) {
+    console.log("LOG: hostMatches -> domain", domain)
     return new RegExp(domain).test(hostname);
   }
 

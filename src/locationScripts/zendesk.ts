@@ -1,17 +1,11 @@
 import { con, todoPath, hideByQuery, redirectLinks } from "./utils/util";
 
 module.exports = function() {
-  console.log("ZENDESK");
   window.addEventListener("DOMContentLoaded", onReady);
   window.addEventListener("load", onLoad);
 };
 
 function onLoad() {
-  console.log("Load");
-  //if (document.location.host === "www.teamwork.com") {
-  //  console.log("Beginning");
-  //  document.location = "https://vipfy.teamwork.com/launchpad/login/projects";
-  //}
   login();
 }
 
@@ -30,18 +24,11 @@ function modifyAll() {}
 function modifySettings() {}
 
 function login() {
-  console.log(
-    document.getElementById("login-form"),
-    document.getElementById("user_email"),
-    document.getElementById("user_password"),
-    document.querySelectorAll("input[type='submit']")[0]
-  );
   if (
     document.getElementById("user_email") &&
     document.getElementById("user_password") &&
     document.querySelectorAll("input[type='submit']")[0]
   ) {
-    console.log("filling in webex login form password");
     let ipcRenderer = require("electron").ipcRenderer;
     ipcRenderer.sendToHost("getLoginData", 7);
     ipcRenderer.once("loginData", (e, key) => {
