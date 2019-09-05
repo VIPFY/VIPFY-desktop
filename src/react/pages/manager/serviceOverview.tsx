@@ -67,32 +67,41 @@ class ServiceOverview extends React.Component<Props, State> {
   };
 
   handleSortClick(sorted) {
-    if(sorted != this.state.sort) {
-      this.setState({sortforward: true, sort: sorted});
+    if (sorted != this.state.sort) {
+      this.setState({ sortforward: true, sort: sorted });
     } else {
-      this.setState(oldstate => {return {sortforward: !oldstate.sortforward}});
+      this.setState(oldstate => {
+        return { sortforward: !oldstate.sortforward };
+      });
     }
   }
 
   filterMotherfunction(service) {
-    if(service.app.name.toUpperCase().includes(this.state.search.toUpperCase())) {
+    if (service.app.name.toUpperCase().includes(this.state.search.toUpperCase())) {
       return true;
-    } else if(service.teams.filter(team => this.filterTeams(team)).length > 0){
+    } else if (service.teams.filter(team => this.filterTeams(team)).length > 0) {
       return true;
-    } else if(service.licences.filter(l =>
-      l &&
-      ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-      (l.options == null || l.options.teamlicence == null) && this.filterEmployee(l.unitid)).length > 0) {
+    } else if (
+      service.licences.filter(
+        l =>
+          l &&
+          ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
+          (l.options == null || l.options.teamlicence == null) &&
+          this.filterEmployee(l.unitid)
+      ).length > 0
+    ) {
       return true;
     }
     return false;
   }
 
   filterEmployee(unitid) {
-    if(!unitid) {
+    if (!unitid) {
       return false;
     }
-    return (`${unitid.firstname} ${unitid.lastname}`.toUpperCase().includes(this.state.search.toUpperCase()));
+    return `${unitid.firstname} ${unitid.lastname}`
+      .toUpperCase()
+      .includes(this.state.search.toUpperCase());
   }
 
   filterTeams(team) {
@@ -285,13 +294,32 @@ class ServiceOverview extends React.Component<Props, State> {
                   <div className="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Name")}>
-                          <h1>Name</h1>
+                        <div
+                          className="tableColumnBig"
+                          onClick={() => this.handleSortClick("Name")}>
+                          <h1>
+                            Name
+                            {this.state.sort == "Name" ? (
+                              this.state.sortforward ? (
+                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                              ) : (
+                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                              )
+                            ) : (
+                              <i
+                                className="fas fa-sort"
+                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                            )}
+                          </h1>
                         </div>
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Teams")}>
+                        <div
+                          className="tableColumnBig" //onClick={() => this.handleSortClick("Teams")}
+                        >
                           <h1>Teams</h1>
                         </div>
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Single Users")}>
+                        <div
+                          className="tableColumnBig" //onClick={() => this.handleSortClick("Single Users")}
+                        >
                           <h1>Single Users</h1>
                         </div>
                       </div>
@@ -331,125 +359,127 @@ class ServiceOverview extends React.Component<Props, State> {
               let interservices: any[] = [];
               console.log("SM-DATA", data);
               if (data && data.fetchCompanyServices) {
-                interservices = data.fetchCompanyServices;                
+                interservices = data.fetchCompanyServices;
                 let sortforward = this.state.sortforward;
 
                 //sortselection
                 switch (this.state.sort) {
                   case "Name":
-                      interservices.sort(function(a, b) {
-                        let nameA = a.app.name.toUpperCase();
-                        let nameB = b.app.name.toUpperCase();
-                        if (nameA < nameB) {
-                          if(sortforward) {
-                            return -1;
-                          } else {
-                            return 1;
-                          }
+                    interservices.sort(function(a, b) {
+                      let nameA = a.app.name.toUpperCase();
+                      let nameB = b.app.name.toUpperCase();
+                      if (nameA < nameB) {
+                        if (sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
                         }
-                        if (nameA > nameB) {
-                          if(sortforward) {
-                            return 1;
-                          } else {
-                            return -1;
-                          }
+                      }
+                      if (nameA > nameB) {
+                        if (sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
                         }
-                        // namen müssen gleich sein
-                        return 0;
-                      });
+                      }
+                      // namen müssen gleich sein
+                      return 0;
+                    });
                     break;
 
                   case "Teams":
-                      interservices.sort(function(a, b) {
-                        let teamsA = a.teams.length;
-                        let teamsB = b.teams.length;
+                    interservices.sort(function(a, b) {
+                      let teamsA = a.teams.length;
+                      let teamsB = b.teams.length;
 
-                        if(teamsA > teamsB) {
-                          if(sortforward) {
-                            return -1;
-                          } else {
-                            return 1;
-                          }
+                      if (teamsA > teamsB) {
+                        if (sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
                         }
-                        if (teamsA < teamsB) {
-                          if(sortforward) {
-                            return 1;
-                          } else {
-                            return -1;
-                          }
+                      }
+                      if (teamsA < teamsB) {
+                        if (sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
                         }
-                        //if teamsCount is equal sort by name instant
-                        let nameA = a.app.name.toUpperCase();
-                        let nameB = b.app.name.toUpperCase();
-                        if (nameA < nameB) {
-                          if(sortforward) {
-                            return -1;
-                          } else {
-                            return 1;
-                          }
+                      }
+                      //if teamsCount is equal sort by name instant
+                      let nameA = a.app.name.toUpperCase();
+                      let nameB = b.app.name.toUpperCase();
+                      if (nameA < nameB) {
+                        if (sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
                         }
-                        if (nameA > nameB) {
-                          if(sortforward) {
-                            return 1;
-                          } else {
-                            return -1;
-                          }
+                      }
+                      if (nameA > nameB) {
+                        if (sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
                         }
-                        // namen müssen gleich sein
-                        return 0;
-                      });
-                      break;
+                      }
+                      // namen müssen gleich sein
+                      return 0;
+                    });
+                    break;
 
                   case "Single Users":
-                      interservices.sort(function(a, b) {
-                        let licencesA = a.licences.filter(l =>
+                    interservices.sort(function(a, b) {
+                      let licencesA = a.licences.filter(
+                        l =>
                           l &&
                           ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-                          (l.options == null || l.options.teamlicence == null))
-                          .length;
-                        let licencesB = b.licences.filter(l =>
+                          (l.options == null || l.options.teamlicence == null)
+                      ).length;
+                      let licencesB = b.licences.filter(
+                        l =>
                           l &&
                           ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-                          (l.options == null || l.options.teamlicence == null))
-                          .length;
+                          (l.options == null || l.options.teamlicence == null)
+                      ).length;
 
-                        if(licencesA > licencesB) {
-                          if(sortforward) {
-                            return -1;
-                          } else {
-                            return 1;
-                          }
+                      if (licencesA > licencesB) {
+                        if (sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
                         }
-                        if (licencesA < licencesB) {
-                          if(sortforward) {
-                            return 1;
-                          } else {
-                            return -1;
-                          }
+                      }
+                      if (licencesA < licencesB) {
+                        if (sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
                         }
-                        //if licencesCount is equal sort by name instant
-                        let nameA = a.app.name.toUpperCase();
-                        let nameB = b.app.name.toUpperCase();
-                        if (nameA < nameB) {
-                          if(sortforward) {
-                            return -1;
-                          } else {
-                            return 1;
-                          }
+                      }
+                      //if licencesCount is equal sort by name instant
+                      let nameA = a.app.name.toUpperCase();
+                      let nameB = b.app.name.toUpperCase();
+                      if (nameA < nameB) {
+                        if (sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
                         }
-                        if (nameA > nameB) {
-                          if(sortforward) {
-                            return 1;
-                          } else {
-                            return -1;
-                          }
+                      }
+                      if (nameA > nameB) {
+                        if (sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
                         }
-                        // namen müssen gleich sein
-                        return 0;
-                      });
-                    
-                      break;
-                
+                      }
+                      // namen müssen gleich sein
+                      return 0;
+                    });
+
+                    break;
+
                   default:
                     break;
                 }
@@ -464,13 +494,21 @@ class ServiceOverview extends React.Component<Props, State> {
                   <div className="table" key="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Name")}>
+                        <div
+                          className="tableColumnBig"
+                          onClick={() => this.handleSortClick("Name")}>
                           <h1>Name</h1>
                         </div>
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Teams")}>
+                        <div
+                          className="tableColumnBig"
+                          //onClick={() => this.handleSortClick("Teams")}
+                        >
                           <h1>Teams</h1>
                         </div>
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Single Users")}>
+                        <div
+                          className="tableColumnBig"
+                          //onClick={() => this.handleSortClick("Single Users")}
+                        >
                           <h1>Single Users</h1>
                         </div>
                       </div>
