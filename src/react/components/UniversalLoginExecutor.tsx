@@ -19,6 +19,7 @@ interface Props {
   speed?: number;
   className?: string;
   style?: Object | null;
+  interactionHappenedCallback?: () => void;
 }
 
 interface State {
@@ -86,7 +87,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     partition: "universalLogin",
     progress: () => null,
     takeScreenshot: true,
-    className: "universalLoginExecutor"
+    className: "universalLoginExecutor",
+    interactionHappenedCallback: () => null
   };
 
   loginState = {
@@ -348,6 +350,13 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     //e.target.openDevTools();
     this.webview = e.target;
     switch (e.channel) {
+      case "interactionHappened":
+        {
+          if (this.props.interactionHappenedCallback) {
+            this.props.interactionHappenedCallback();
+          }
+        }
+        break;
       case "unload":
         {
           this.loginState.unloaded = true;
