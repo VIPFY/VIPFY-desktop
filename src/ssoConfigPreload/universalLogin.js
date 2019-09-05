@@ -33,7 +33,6 @@ let speed = 1;
 
 ipcRenderer.once("loginData", async (e, key) => {
   if (stopped) return;
-  console.log("gotLoginData", key);
   emailEntered = key.emailEntered;
   passwordEntered = key.passwordEntered;
   speed = key.speed || 1;
@@ -75,7 +74,6 @@ ipcRenderer.once("loginData", async (e, key) => {
       didAnything = true;
     }
     button = findConfirmButton();
-    console.log("BUTTON", button);
     if (button) {
       await clickButton(button);
       didAnything = true;
@@ -86,7 +84,6 @@ ipcRenderer.once("loginData", async (e, key) => {
 
 function start() {
   //if (!document.body.id.includes("beacon")) {
-  console.log("starting universal login", document);
   ipcRenderer.sendToHost("loaded", null);
   ipcRenderer.sendToHost("getLoginData", null);
   //}
@@ -102,7 +99,6 @@ if (document.readyState === "complete") {
 
 async function fillFormField(target, content) {
   if (stopped) throw new Error("abort");
-  console.log("filling in", content, target, isHidden(target));
   target.focus();
   await sleep(250);
   target.focus();
@@ -169,7 +165,6 @@ function findForm(ignoreForm) {
   let forms = Array.from(document.querySelectorAll("form")).filter(
     filterDom(["sign.?in", "log.?in"], ["oauth", "facebook", "sign.?up", "forgot", "google"])
   );
-  console.log("forms", forms);
 
   if (forms.length == 0) {
     forms = Array.from(document.querySelectorAll("form"))
@@ -190,14 +185,12 @@ function findPassField() {
     .filter(filterDom(["pass", "pw"], ["repeat", "confirm", "forgot"]))
     .filter(e => !isHidden(e))
     .filter(e => !e.disabled);
-  console.log("pass", t);
   if (t.length == 0) {
     t = Array.from(findForm().querySelectorAll("input[type=password]"))
       .filter(filterDom([], ["repeat", "confirm", "forgot"]))
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("passB", t);
   return t[0];
 }
 
@@ -206,14 +199,12 @@ function findEmailField() {
     .filter(filterDom(["email", "user", "log.?in", "name"], ["pw", "pass"]))
     .filter(e => !isHidden(e))
     .filter(e => !e.disabled);
-  console.log("email", t);
   if (t.length == 0) {
     t = Array.from(findForm().querySelectorAll("input[type=email]"))
       .filter(filterDom([], ["pw", "pass"]))
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("emailB", t);
   return t[0];
 }
 
@@ -240,7 +231,6 @@ function findConfirmButton(ignoreForm) {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("button1", t);
   if (t.length == 0) {
     t = Array.from(
       findForm(ignoreForm).querySelectorAll(
@@ -256,7 +246,6 @@ function findConfirmButton(ignoreForm) {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("button2", t);
   if (t.length == 0) {
     t = Array.from(
       findForm().querySelectorAll(
@@ -287,8 +276,6 @@ function findConfirmButton(ignoreForm) {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-
-  console.log("button", t);
 
   if (t.length == 0 && !ignoreForm) return findConfirmButton(true);
 
@@ -326,7 +313,6 @@ function findCookieButton() {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("cookiebutton", t);
   return t[0];
 }
 
@@ -372,7 +358,6 @@ function filterDom(includesAny, excludesAll) {
       const attr = element.attributes.getNamedItem(attribute);
       if (attr === null) continue;
       const val = attr.value.toLowerCase();
-      //console.log("attr", attribute, val, includesAny);
       if (val.includesAnyRegExp(includesAny)) {
         return true;
       }

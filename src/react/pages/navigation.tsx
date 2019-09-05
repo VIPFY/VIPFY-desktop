@@ -145,10 +145,6 @@ class Navigation extends React.Component<Props, State> {
 
     const { user, admin } = decode(token);
 
-    if (admin) {
-      console.log("LOG: render -> user.admin", admin);
-    }
-
     return (
       <section
         className={`navigation ${admin ? "info-admin" : ""} ${chatOpen ? "chat-open" : ""}

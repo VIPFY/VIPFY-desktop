@@ -240,7 +240,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
   }
 
   handleClickInside = e => {
-    this.setState({ donotopen: false });
+    if (this.state.donotopen) {
+      this.setState({ donotopen: false });
+    }
   };
 
   handleClickOutside = e => {
@@ -443,7 +445,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
       if (licence.sidebar === null) {
         licence.sidebar = maxValue + 1;
       }
-      console.log("LICENCE CHECK", licence);
       if (
         !(
           (!licence.disabled &&

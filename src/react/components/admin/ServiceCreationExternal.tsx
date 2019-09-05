@@ -187,7 +187,7 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
         <br />
         {(this.state.running || this.state.result) && (
           <GenericInputForm
-            onClose={() => console.log("Thx Suckers")}
+            onClose={() => console.log("Close Creation External")}
             fields={fields}
             handleSubmit={d => this.handleSubmit(d)}
             successMessage="Creation successful"
@@ -322,15 +322,14 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
       optionsPartial.type = "" + optionsPartial.type;
 
       const iconFile = new File([iconDataArray], `${app.name}-icon.png`, { type: mime });
-      console.log("ICON", mime, encoding, iconDataEncoded, iconDataArray.length);
-      console.log("BUFFER", iconDataArray);
-      console.log("FILE", new File([iconDataArray], `${app.name}-icon.png`, { type: mime }));
+      //console.log("ICON", mime, encoding, iconDataEncoded, iconDataArray.length);
+      //console.log("BUFFER", iconDataArray);
+      //console.log("FILE", new File([iconDataArray], `${app.name}-icon.png`, { type: mime }));
       app.images = [iconFile, iconFile];
       app.color = color;
       app.external = true;
       app.loginurl = this.state.loginUrl;
       const options = { afterdomain, predomain, ...optionsPartial! };
-      console.log("app", app, options);
       const { data } = await this.props.createApp({ variables: { app, options } });
       console.log("UPLOAD RESULT", data);
     } catch (error) {

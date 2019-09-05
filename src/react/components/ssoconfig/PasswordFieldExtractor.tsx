@@ -33,13 +33,11 @@ class PassowrdFieldExtractor extends React.PureComponent<Props, State> {
   }
 
   onIpcMessage(e) {
-    console.log("ipc", e);
     switch (e.channel) {
       case "getLoginDetails":
         {
           const { username, usernameField, button1 } = this.props;
           e.target.send("loginData", { username, usernameField, button1 });
-          console.log("sending data", { username, usernameField, button1 }, e.target);
         }
         break;
       case "passwordobject":

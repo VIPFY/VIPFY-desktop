@@ -221,10 +221,10 @@ class Phones extends React.Component<Props, State> {
     return (
       <Collapsible child={this.tableRef} title="Phones">
         <div className="inside-padding" ref={this.tableRef}>
-            <Query
-              pollInterval={60 * 10 * 1000 + 1000}
-              query={FETCH_PHONES}
-              variables={this.state.variables}>
+          <Query
+            pollInterval={60 * 10 * 1000 + 1000}
+            query={FETCH_PHONES}
+            variables={this.state.variables}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching Phones..." />;
@@ -255,7 +255,6 @@ class Phones extends React.Component<Props, State> {
                               </td>
                             ))
                           : "";
-                      //console.log(phoneData);
                       return (
                         <tr className="phones-list" key={id}>
                           {this.state.edit != id ? (

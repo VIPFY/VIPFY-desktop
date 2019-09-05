@@ -68,36 +68,37 @@ class TeamOverview extends React.Component<Props, State> {
   };
 
   handleSortClick(sorted) {
-    //console.log("TEST")
-    //console.log("TEST1", sorted, this.state.sort, this.state.sortforward);
-
-    if(sorted != this.state.sort) {
-      this.setState({sortforward: true, sort: sorted});
+    if (sorted != this.state.sort) {
+      this.setState({ sortforward: true, sort: sorted });
     } else {
-      this.setState(oldstate => {return {sortforward: !oldstate.sortforward}});
+      this.setState(oldstate => {
+        return { sortforward: !oldstate.sortforward };
+      });
     }
   }
 
   filterMotherfunction(team) {
-    if(team.name.toUpperCase().includes(this.state.search.toUpperCase())) {
+    if (team.name.toUpperCase().includes(this.state.search.toUpperCase())) {
       return true;
-    } else if(team.employees.filter(employee => this.filterEmployee(employee)).length > 0) {
+    } else if (team.employees.filter(employee => this.filterEmployee(employee)).length > 0) {
       return true;
-    } else if(team.services.filter(service => this.filterServices(service)).length > 0) {
+    } else if (team.services.filter(service => this.filterServices(service)).length > 0) {
       return true;
     }
     return false;
   }
 
   filterEmployee(employee) {
-    return (`${employee.firstname} ${employee.lastname}`.toUpperCase().includes(this.state.search.toUpperCase()));
+    return `${employee.firstname} ${employee.lastname}`
+      .toUpperCase()
+      .includes(this.state.search.toUpperCase());
   }
 
   filterServices(service) {
     if (!service.app) {
-      return false;;
+      return false;
     }
-    return (service.app.name.toUpperCase().includes(this.state.search.toUpperCase()));
+    return service.app.name.toUpperCase().includes(this.state.search.toUpperCase());
   }
 
   printRemoveLicences(team) {
@@ -273,13 +274,19 @@ class TeamOverview extends React.Component<Props, State> {
                   <div className="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Name")}>
+                        <div
+                          className="tableColumnBig"
+                          onClick={() => this.handleSortClick("Name")}>
                           <h1>Name</h1>
                         </div>
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Employees")}>
+                        <div
+                          className="tableColumnBig" //onClick={() => this.handleSortClick("Employees")}
+                        >
                           <h1>Employees</h1>
                         </div>
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Services")}>
+                        <div
+                          className="tableColumnBig" //onClick={() => this.handleSortClick("Services")}
+                        >
                           <h1>Services</h1>
                         </div>
                       </div>
@@ -324,41 +331,41 @@ class TeamOverview extends React.Component<Props, State> {
                 //sortselection
                 switch (this.state.sort) {
                   case "Name":
-                      interteams.sort(function(a, b) {
-                        let nameA = a.name.toUpperCase();
-                        let nameB = b.name.toUpperCase();
-                        if (nameA < nameB) {
-                          if(sortforward) {
-                            return -1;
-                          } else {
-                            return 1;
-                          }
+                    interteams.sort(function(a, b) {
+                      let nameA = a.name.toUpperCase();
+                      let nameB = b.name.toUpperCase();
+                      if (nameA < nameB) {
+                        if (sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
                         }
-                        if (nameA > nameB) {
-                          if(sortforward) {
-                            return 1;
-                          } else {
-                            return -1;
-                          }
+                      }
+                      if (nameA > nameB) {
+                        if (sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
                         }
-                        // namen müssen gleich sein
-                        return 0;
-                      });
+                      }
+                      // namen müssen gleich sein
+                      return 0;
+                    });
                     break;
-                
+
                   case "Employees":
                     interteams.sort(function(a, b) {
                       let memberCountA = a.employees.length;
                       let memberCountB = b.employees.length;
-                      if(memberCountA > memberCountB) {
-                        if(sortforward) {
+                      if (memberCountA > memberCountB) {
+                        if (sortforward) {
                           return -1;
                         } else {
                           return 1;
                         }
                       }
                       if (memberCountA < memberCountB) {
-                        if(sortforward) {
+                        if (sortforward) {
                           return 1;
                         } else {
                           return -1;
@@ -368,14 +375,14 @@ class TeamOverview extends React.Component<Props, State> {
                       let nameA = a.name.toUpperCase();
                       let nameB = b.name.toUpperCase();
                       if (nameA < nameB) {
-                        if(sortforward) {
+                        if (sortforward) {
                           return -1;
                         } else {
                           return 1;
                         }
                       }
                       if (nameA > nameB) {
-                        if(sortforward) {
+                        if (sortforward) {
                           return 1;
                         } else {
                           return -1;
@@ -383,48 +390,48 @@ class TeamOverview extends React.Component<Props, State> {
                       }
                       //memberCount and name equal
                       return 0;
-                    })
-                  
-                      break;
+                    });
+
+                    break;
                   case "Services":
-                      interteams.sort(function(a, b) {
-                        let serviceCountA = a.services.length;
-                        let serviceCountB = b.services.length;
-                        if(serviceCountA > serviceCountB) {
-                          if(sortforward) {
-                            return -1;
-                          } else {
-                            return 1;
-                          }
+                    interteams.sort(function(a, b) {
+                      let serviceCountA = a.services.length;
+                      let serviceCountB = b.services.length;
+                      if (serviceCountA > serviceCountB) {
+                        if (sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
                         }
-                        if (serviceCountA < serviceCountB) {
-                          if(sortforward) {
-                            return 1;
-                          } else {
-                            return -1;
-                          }
+                      }
+                      if (serviceCountA < serviceCountB) {
+                        if (sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
                         }
-                        //if serviceCount is equal sort by name instant
-                        let nameA = a.name.toUpperCase();
-                        let nameB = b.name.toUpperCase();
-                        if (nameA < nameB) {
-                          if(sortforward) {
-                            return -1;
-                          } else {
-                            return 1;
-                          }
+                      }
+                      //if serviceCount is equal sort by name instant
+                      let nameA = a.name.toUpperCase();
+                      let nameB = b.name.toUpperCase();
+                      if (nameA < nameB) {
+                        if (sortforward) {
+                          return -1;
+                        } else {
+                          return 1;
                         }
-                        if (nameA > nameB) {
-                          if(sortforward) {
-                            return 1;
-                          } else {
-                            return -1;
-                          }
+                      }
+                      if (nameA > nameB) {
+                        if (sortforward) {
+                          return 1;
+                        } else {
+                          return -1;
                         }
-                        //serviceCount and name equal
-                        return 0;
-                      })
-                    
+                      }
+                      //serviceCount and name equal
+                      return 0;
+                    });
+
                     break;
 
                   default:
@@ -435,20 +442,38 @@ class TeamOverview extends React.Component<Props, State> {
                 } else {
                   teams = interteams;
                 }
-                console.log(teams.length);
               }
               return (
                 <>
                   <div className="table">
                     <div className="tableHeading">
                       <div className="tableMain">
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Name")}>
-                          <h1>Name</h1>
+                        <div
+                          className="tableColumnBig"
+                          onClick={() => this.handleSortClick("Name")}>
+                          <h1>
+                            Name
+                            {this.state.sort == "Name" ? (
+                              this.state.sortforward ? (
+                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                              ) : (
+                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                              )
+                            ) : (
+                              <i
+                                className="fas fa-sort"
+                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                            )}
+                          </h1>
                         </div>
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Employees")}>
+                        <div
+                          className="tableColumnBig" //onClick={() => this.handleSortClick("Employees")}
+                        >
                           <h1>Employees</h1>
                         </div>
-                        <div className="tableColumnBig" onClick={() => this.handleSortClick("Services")}>
+                        <div
+                          className="tableColumnBig" //onClick={() => this.handleSortClick("Services")}
+                        >
                           <h1>Services</h1>
                         </div>
                       </div>

@@ -67,8 +67,6 @@ class EmployeeDetails extends React.Component<Props, State> {
   render() {
     const employeeid = this.props.match.params.userid;
 
-    console.log(this.props);
-
     return (
       <Query
         pollInterval={60 * 10 * 1000 + 300}
@@ -83,8 +81,6 @@ class EmployeeDetails extends React.Component<Props, State> {
           }
           if (data && data.fetchSemiPublicUser) {
             const querydata = data.fetchSemiPublicUser;
-            console.log("SEMIPUBLIC", data.fetchSemiPublicUser);
-
             const privatePhones = [];
             const workPhones = [];
 

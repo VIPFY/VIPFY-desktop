@@ -151,7 +151,7 @@ const DUMMY_QUERY = gql`
 `;
 
 export const refetchQueries = async (client: ApolloClient<InMemoryCache>, queries: string[]) => {
-  console.log("refetching", queries);
+  //console.log("refetching", queries);
   // refetchQueries of the mutate functions can refetch observed queries by name,
   // using the variables used by the query observer
   // that's the easiest way to get this functionality

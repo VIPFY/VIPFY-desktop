@@ -167,7 +167,6 @@ class CompanyDetails extends React.Component<Props, State> {
           }
           if (data && data.fetchCompany) {
             const company = data.fetchCompany;
-            console.log("COMPANY", company);
 
             const { name, profilepicture, promocode, employees, legalinformation } = company;
 
@@ -250,7 +249,6 @@ class CompanyDetails extends React.Component<Props, State> {
                                   if (error) {
                                     return `Error! ${error.message}`;
                                   }
-                                  console.log("FETCH COMPANY", data.fetchCompanyServices);
                                   return (
                                     data &&
                                     data.fetchCompanyServices &&
@@ -281,7 +279,6 @@ class CompanyDetails extends React.Component<Props, State> {
                                   if (error) {
                                     return `Error! ${error.message}`;
                                   }
-                                  console.log("FETCH COMPANY", data.fetchCompanyServices);
                                   let sum = 0;
                                   if (data && data.fetchCompanyServices) {
                                     data.fetchCompanyServices.map(s => (sum += s.licences.length));

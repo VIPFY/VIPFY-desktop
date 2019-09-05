@@ -78,10 +78,7 @@ function getLoginDetails(askfordata) {
   ipcRenderer.send("TESTMESSAGE");
 
   ipcRenderer.sendToHost("getLoginDetails", askfordata);
-  console.log("GETD");
   ipcRenderer.once("loginDetails", (e, key) => {
-    console.log("ONCE");
-    console.log("LOGINDETAILS", key);
 
     key = normalizeKey(key);
 
@@ -111,16 +108,6 @@ function getLoginDetails(askfordata) {
     let button2Object = frame!.querySelector<HTMLInputElement>(key.button2object);
     let rememberObject = frame!.querySelector<HTMLInputElement>(key.rememberobject);
 
-    console.log(
-      "Objects",
-      hideObject,
-      errorObject,
-      waitUntil,
-      emailObject,
-      passwordObject,
-      buttonObject
-    );
-
     if (!key.hideobject) {
       hideObject = !passwordObject;
     }
@@ -139,7 +126,6 @@ function getLoginDetails(askfordata) {
 
     if (key.loggedIn) {
       ipcRenderer.sendToHost("hideLoading");
-      console.log("already loggedIn");
       return;
     }
 
@@ -151,7 +137,6 @@ function getLoginDetails(askfordata) {
     if (key.type) {
       if ((key.type == 1 || key.type == 2) && passwordObject) {
         askfordata++;
-        console.log("TYPE 1|2", key.type == 1, key.type == 2, passwordObject);
         ipcRenderer.sendToHost("showLoading");
         let username = key.key.username;
         let password = key.key.password;
@@ -162,19 +147,15 @@ function getLoginDetails(askfordata) {
         clickButton(buttonObject!);
         repeatpossible = false;
       } else if (key.type == 3 || key.type == 4 || key.type == 5) {
-        console.log("TYPE 3");
         //Two Steps
         ipcRenderer.sendToHost("showLoading");
         let username = key.key.username;
         let password = key.key.password;
 
-        console.log(emailObject && emailObject!.value == "" && !passwordObject);
-
         if (
           (emailObject && emailObject!.value == "" && !passwordObject && !hideObject) ||
           (key.type == 5 && !clicked && !hideObject)
         ) {
-          console.log("EMAIL AND NO PASSWORD");
           askfordata++;
           fillFormField(emailObject!, username);
 
@@ -185,7 +166,6 @@ function getLoginDetails(askfordata) {
           (passwordObject && passwordObject!.value == "" && !hideObject) ||
           (key.type == 5 && clicked && !hideObject)
         ) {
-          console.log("EMAIL AND PASSWORD");
           askfordata++;
           if (key.type == 3) {
             repeatpossible = false;
@@ -214,14 +194,6 @@ function getLoginDetails(askfordata) {
       }
 
       function hideLoading(r = 0) {
-        console.log(
-          "HIDING",
-          r,
-          hideObject,
-          errorObject,
-          key.hideobject,
-          hideObject
-        );
         if (!hideObject && !errorObject && r <= 50) {
           setTimeout(() => hideLoading(++r), 50);
         } else if (r > 75) {

@@ -125,7 +125,6 @@ class PopupPhone extends React.Component<Props, State> {
             id: this.props.oldvalues.id
           }
         });
-        console.log("RES", res);
         this.setState({ networking: false, networkerror: false });
       } catch (err) {
         this.setState({ networking: false, networkerror: true });

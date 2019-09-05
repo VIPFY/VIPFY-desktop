@@ -39,7 +39,6 @@ class TeamLicenceDelete extends React.Component<Props, State> {
   printRemoveService() {
     let RLicencesArray: JSX.Element[] = [];
     this.props.team.employees.forEach((employee, int) => {
-      console.log("Employee", employee, int, this.state, this.props);
       RLicencesArray.push(
         <li key={int}>
           <UniversalCheckbox
@@ -52,13 +51,6 @@ class TeamLicenceDelete extends React.Component<Props, State> {
                       prevState.keepLicences.findIndex(l => l == employee.id),
                       1
                     );
-                    console.log(
-                      "keepLicencesNewA",
-                      prevState.keepLicences,
-                      keepLicencesNew,
-                      v,
-                      employee
-                    );
                     return {
                       keepLicences: prevState.keepLicences
                     };
@@ -66,7 +58,6 @@ class TeamLicenceDelete extends React.Component<Props, State> {
                 : this.setState(prevState => {
                     const keepLicencesNew = prevState.keepLicences;
                     keepLicencesNew.push(employee.id);
-                    console.log("keepLicencesNewB", keepLicencesNew, v);
                     return {
                       keepLicences: keepLicencesNew
                     };
@@ -83,7 +74,6 @@ class TeamLicenceDelete extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("TLD", this.props);
     const { service, close, team } = this.props;
     return (
       <PopupBase
@@ -168,7 +158,6 @@ class TeamLicenceDelete extends React.Component<Props, State> {
           type="low"
           label="Delete"
           onClick={() => {
-            console.log("TESTING", this.state.keepLicences);
             this.setState({
               savingObject: {
                 savingmessage: "The service is currently being removed from the team",
