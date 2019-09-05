@@ -115,36 +115,6 @@ class PopupEmail extends React.Component<Props, State> {
 
     if (this.props.oldvalues) {
       try {
-        /*const res = await this.props.updateEmail({
-          variables: {
-            email: this.props.oldvalues.email,
-            emailData: { description: this.state.description }
-          },
-          update: proxy => {
-            const cachedData = proxy.readQuery({
-              query: FETCH_EMAILS,
-              variables: { company: true }
-            });
-
-            const updatedEmails = cachedData.fetchEmails.map(item => {
-              if (item.email == this.props.oldvalues!.email) {
-                return {
-                  ...item,
-                  emailData: { description: this.state.description }
-                };
-              }
-
-              return item;
-            });
-
-            proxy.writeQuery({
-              query: FETCH_EMAILS,
-              variables: { company: true },
-              data: { fetchEmails: updatedEmails }
-            });
-          }
-        });
-        console.log("RES", res);*/
         await this.props.updateEmail({
           variables: {
             email: this.props.oldvalues.email,

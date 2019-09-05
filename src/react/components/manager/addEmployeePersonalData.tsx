@@ -94,16 +94,16 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
   };
 
   handleConfirm() {
-    if(this.state.confirm) {
+    if (this.state.confirm) {
       this.setState({ saving: true, confirm: false });
     }
   }
 
   handleCreate() {
-    if(this.props.addpersonal.unitid) {
-      this.props.continue(this.state)
+    if (this.props.addpersonal.unitid) {
+      this.props.continue(this.state);
     } else {
-      this.setState({ confirm: true })
+      this.setState({ confirm: true });
     }
   }
 
@@ -111,13 +111,30 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     const { name, wmail1 } = this.state;
     this.handleConfirm();
     if (e.key === "Escape" || e.keyCode === 27) {
-      this.props.close();}
-    else if(!(e.target && e.target.id && (
-      ["name", "wmail1", "wmail2", "birthday", "hiredate", "pphone1", "pphone2", "position", "wphone1", "wphone2"].includes(e.target.id)))) {
+      this.props.close();
+    } else if (
+      !(
+        e.target &&
+        e.target.id &&
+        [
+          "name",
+          "wmail1",
+          "wmail2",
+          "birthday",
+          "hiredate",
+          "pphone1",
+          "pphone2",
+          "position",
+          "wphone1",
+          "wphone2"
+        ].includes(e.target.id)
+      )
+    ) {
       return; //Check if one of the Textfields is focused
     } else if (
       (e.key === "Enter" || e.keyCode === 13) &&
-      name && wmail1 &&
+      name &&
+      wmail1 &&
       e.srcElement.textContent != "Cancel"
     ) {
       this.handleCreate();
@@ -159,11 +176,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           <PopupBase small={true} close={() => this.setState({ confirm: false })}>
             Do you really want to create an Employee called {this.state.name}?
             <UniversalButton label="Cancel" type="low" closingPopup={true} />
-            <UniversalButton
-              label="Confirm"
-              type="high"
-              onClick={() => this.handleConfirm()}
-            />
+            <UniversalButton label="Confirm" type="high" onClick={() => this.handleConfirm()} />
           </PopupBase>
         )}
         {this.state.saving && (
@@ -217,7 +230,6 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                     birthday: birthday != "" ? birthday : null
                   }
                 });
-                console.log("SUCCESS", unitid);
                 this.setState({
                   success: true,
                   unitid: unitid.data.createEmployee09,

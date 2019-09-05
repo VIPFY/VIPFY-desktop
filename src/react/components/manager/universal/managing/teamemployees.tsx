@@ -40,7 +40,6 @@ class ManageTeamEmployees extends React.Component<Props, State> {
   };
 
   onChange(s, refetch) {
-    console.log("ON CHANGE", s);
     switch (s.action) {
       case "remove":
         this.setState({ deleteEmployee: s.content });
@@ -50,14 +49,13 @@ class ManageTeamEmployees extends React.Component<Props, State> {
         break;
 
       default:
-        console.log(s);
+        console.log("Change teamemployees", s);
         break;
     }
     //TODO SAVING STUFF
   }
 
   render() {
-    console.log("TMS", this.props, this.state);
     return (
       <Query
         pollInterval={60 * 10 * 1000 + 700}

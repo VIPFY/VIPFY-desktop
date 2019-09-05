@@ -30,7 +30,6 @@ class ServiceGrid extends React.Component<Props, State> {
         .includes(this.props.search.toUpperCase());
     });
     filteredApps.forEach(app => {
-      console.log("APP", app);
       if (!app.disabled && (app.endtime == null || app.endtime > now())) {
         ownAppsArray.push(
           <div
@@ -81,7 +80,6 @@ class ServiceGrid extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("SA", this.props, this.state);
     return (
       <div className="maingridAddEmployeeTeams">
         <div

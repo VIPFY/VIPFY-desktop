@@ -32,7 +32,6 @@ class ManageServiceEmployees extends React.Component<Props, State> {
   };
 
   onChange(s, refetch) {
-    console.log("ON CHANGE", s);
     switch (s.action) {
       case "remove":
         this.setState({ deleteEmployee: s.content });
@@ -42,14 +41,13 @@ class ManageServiceEmployees extends React.Component<Props, State> {
         break;
 
       default:
-        console.log(s);
+        console.log("Change ServiceEmployee", s);
         break;
     }
     //TODO SAVING STUFF
   }
 
   render() {
-    console.log("TMS", this.props, this.state);
     return (
       <Query
         pollInterval={60 * 10 * 1000 + 100}
@@ -105,7 +103,6 @@ class ManageServiceEmployees extends React.Component<Props, State> {
                   employee={this.state.deleteEmployee}
                   licence={this.state.deleteEmployee!.licence}
                   savingFunction={so => {
-                    console.log("SAVING");
                     refetch();
                     this.setState({ deleteEmployee: null });
                   }}

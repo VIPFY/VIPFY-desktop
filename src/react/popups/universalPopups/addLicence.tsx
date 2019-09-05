@@ -227,7 +227,6 @@ class PopupAddLicence extends React.Component<Props, State> {
               ]
             });
             if (success) {
-              console.log("SUCCESS");
               success();
             }
           } catch (err) {

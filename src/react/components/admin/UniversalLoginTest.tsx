@@ -39,7 +39,6 @@ class UniversalLoginTest extends React.Component<Props, State> {
 
   componentDidUpdate() {
     fs.writeFileSync("ssotest.json", JSON.stringify(this.state.sites));
-    console.log(this.state.backgroundRunners);
 
     if (this.state.backgroundRunners.length < 6) {
       for (let i = 0; i < this.state.sites.length; i++) {
@@ -187,7 +186,6 @@ class UniversalLoginTest extends React.Component<Props, State> {
             timeout={60000}
             partition="ssotest"
             setResult={(result, image) => {
-              console.log("SEND BACK RESULT", result);
               const ct = this.state.currentTest;
               this.setState(prev => {
                 let sites = [...prev.sites];
@@ -208,7 +206,6 @@ class UniversalLoginTest extends React.Component<Props, State> {
               timeout={60000}
               partition={`ssotest_${r}`}
               setResult={(result, image) => {
-                console.log("result", r, result);
                 this.setState(prev => {
                   let sites = [...prev.sites];
                   sites[r] = { ...sites[r], ...result, image };

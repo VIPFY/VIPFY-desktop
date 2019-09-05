@@ -91,7 +91,6 @@ class Manager extends React.PureComponent<Props, State> {
   }
 
   async setAppElement(e: Partial<SsoState>) {
-    console.log("setappelement", e, this.state);
     this.app = { ...this.app, ...e };
   }
 
@@ -139,7 +138,6 @@ class Manager extends React.PureComponent<Props, State> {
   }
 
   finishStage1(usernameField, passwordField, button1) {
-    console.log("finishStage1", usernameField, passwordField, button1);
     if (this.state.stage !== Stage.findUsername) {
       throw new Error("unexpected stage");
     }
@@ -163,7 +161,6 @@ class Manager extends React.PureComponent<Props, State> {
         button2object: undefined,
         waituntil: usernameField
       });
-      console.log("found Username and Password, initiating findError");
       this.setState({ stage: Stage.findError });
     } else {
       this.setAppElement({
@@ -171,13 +168,11 @@ class Manager extends React.PureComponent<Props, State> {
         buttonobject: undefined,
         button1object: button1
       });
-      console.log("assuming app is type 3");
       this.setState({ stage: Stage.type34 });
     }
   }
 
   finishStage3(passwordField, button2) {
-    console.log("finishStage3", passwordField, button2);
     if (this.state.stage !== Stage.type34) {
       throw new Error("unexpected stage");
     }

@@ -53,7 +53,6 @@ class AddServiceToTeam extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("STATE ADD SERVICE", this.state);
     const { team, close, service } = this.props;
     return (
       <PopupBase
@@ -202,13 +201,7 @@ class AddServiceToTeam extends React.Component<Props, State> {
                   variables: {
                     serviceid: service.id,
                     teamid: this.props.team.unitid.id,
-                    employees: [] /*this.state.currentteam.employees.map(employee => {
-                      return {
-                        id: employee.id,
-                        setup: employee.setup,
-                        setupfinished: employee.setupfinished
-                      };
-                    })*/
+                    employees: []
                   }
                 });
                 this.setState({

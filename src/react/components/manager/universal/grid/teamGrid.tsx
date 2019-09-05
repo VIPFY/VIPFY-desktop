@@ -21,7 +21,9 @@ class TeamGrid extends React.Component<Props, State> {
   };
 
   printMyTeams(teams) {
-    let filteredTeams = teams.filter(team => {return team.name.toUpperCase().includes(this.props.search.toUpperCase())});
+    let filteredTeams = teams.filter(team => {
+      return team.name.toUpperCase().includes(this.props.search.toUpperCase());
+    });
     let teamsArray: JSX.Element[] = [];
     if (filteredTeams.length > 0) {
       filteredTeams.sort(function(a, b) {
@@ -85,7 +87,6 @@ class TeamGrid extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("TG", this.props);
     return (
       <div className="maingridAddEmployeeTeams">
         <div

@@ -32,7 +32,6 @@ class ManageServiceTeams extends React.Component<Props, State> {
   };
 
   onChange(s, refetch) {
-    console.log("ON CHANGE", s);
     switch (s.action) {
       case "remove":
         this.setState({ deleteTeam: s.content });
@@ -42,14 +41,13 @@ class ManageServiceTeams extends React.Component<Props, State> {
         break;
 
       default:
-        console.log(s);
+        console.log("Change Service Team", s);
         break;
     }
     //TODO SAVING STUFF
   }
 
   render() {
-    console.log("AET", this.props, this.state);
     return (
       <Query
         pollInterval={60 * 10 * 1000 + 500}
@@ -62,7 +60,6 @@ class ManageServiceTeams extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error}`;
           }
-          console.log("data", data);
           return (
             <PopupBase
               fullmiddle={true}
@@ -104,7 +101,6 @@ class ManageServiceTeams extends React.Component<Props, State> {
                   team={this.state.deleteTeam}
                   service={this.state.deleteTeam!.service.boughtplanid}
                   savingFunction={so => {
-                    console.log("SAVING");
                     refetch();
                     this.setState({ deleteTeam: null });
                   }}

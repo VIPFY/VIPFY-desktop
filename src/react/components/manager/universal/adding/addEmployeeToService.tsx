@@ -68,7 +68,6 @@ class AddEmployeeToService extends React.Component<Props, State> {
 
   render() {
     const { service, close, employee } = this.props;
-    console.log("AETS", this.props, this.state);
     return (
       <>
         <PopupAddLicence
@@ -85,12 +84,8 @@ class AddEmployeeToService extends React.Component<Props, State> {
         />
         {this.state.saving && (
           <PopupSelfSaving
-            savedmessage={`Created licence of service ${service.name} for employee ${
-              employee.firstname
-            }`}
-            savingmessage={`Creating licence of service ${service.name} for employee ${
-              employee.firstname
-            }`}
+            savedmessage={`Created licence of service ${service.name} for employee ${employee.firstname}`}
+            savingmessage={`Creating licence of service ${service.name} for employee ${employee.firstname}`}
             closeFunction={() => close()}
             saveFunction={async () => {
               try {

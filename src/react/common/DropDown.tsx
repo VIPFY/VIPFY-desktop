@@ -84,7 +84,6 @@ class DropDown extends React.PureComponent<Props, State> {
   render() {
     const { show, touched } = this.state;
     let bodyClass = "body";
-    console.log(this.props.holder);
     // if (touched) {
     if (show) {
       bodyClass += " slide-down";

@@ -102,16 +102,6 @@ class PopupAddress extends React.Component<Props, State> {
     this.setState({ confirm: true, networking: true });
     if (this.props.oldvalues) {
       try {
-        console.log("UPDATE", {
-          address: {
-            street: this.state.street,
-            zip: this.state.zip,
-            city: this.state.city,
-            country: this.state.country,
-            description: this.state.description
-          },
-          id: this.props.oldvalues.id
-        });
         const res = await this.props.updateAddress({
           variables: {
             address: {
@@ -125,7 +115,6 @@ class PopupAddress extends React.Component<Props, State> {
             id: this.props.oldvalues.id
           }
         });
-        console.log("RES", res);
         this.setState({ networking: false, networkerror: false });
       } catch (err) {
         this.setState({ networking: false, networkerror: true });

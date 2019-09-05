@@ -144,7 +144,6 @@ class TeamServiceDetails extends React.Component<Props, State> {
                 services={[service]}
                 main="service"
                 close={() => {
-                  console.log("CLOSE");
                   this.setState({ delete: false });
                 }}
                 submit={async values => {

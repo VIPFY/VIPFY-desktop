@@ -71,9 +71,6 @@ class EmployeeOverview extends React.Component<Props, State> {
   };
 
   handleSortClick(sorted) {
-    //console.log("TEST")
-    //console.log("TEST1", sorted, this.state.sort, this.state.sortforward);
-
     if (sorted != this.state.sort) {
       this.setState({ sortforward: true, sort: sorted });
     } else {
@@ -89,7 +86,6 @@ class EmployeeOverview extends React.Component<Props, State> {
         .toUpperCase()
         .includes(this.state.search.toUpperCase())
     ) {
-      //team.name.toUpperCase().includes(this.state.search.toUpperCase())
       return true;
     } else if (/* employee.teams.filter(team => this.filterTeams(team)).length > 0 */ false) {
       return true;
@@ -117,7 +113,6 @@ class EmployeeOverview extends React.Component<Props, State> {
   }
 
   addProcess(refetch) {
-    console.log("ADD", this.props, this.state);
     switch (this.state.addStage) {
       case 1:
         return (

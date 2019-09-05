@@ -158,7 +158,6 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
 
   handleAddReview = async (stars, review) => {
     this.showLoading("We are adding your review. Thank you for your feedback.");
-    console.log("ADDREVIEW", stars, review);
     try {
       const res = await this.props.writeReview({
         variables: { stars, text: JSON.stringify(review), appid: this.props.match.params.appid },
@@ -166,8 +165,6 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
           { query: fetchReviews, variables: { appid: this.props.match.params.appid } }
         ]
       });
-
-      console.log(res);
       this.closePopup();
     } catch (err) {
       this.showError(err.message || "Something went really wrong :-(");
@@ -267,16 +264,13 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     let i = 0;
 
     if (reviewData) {
-      console.log("REVIEWS", reviewData);
       reviewData.forEach(review => {
         reviewDivs.push(
           <div key={`review-${i}`} className="detail-comment">
             <div className="rating">{this.showStars(review.stars)}</div>
             <span className="detail-comment-author">
               by{" "}
-              {`${review.reviewer.firstname} ${review.reviewer.middlename} ${
-                review.reviewer.lastname
-              }`}
+              {`${review.reviewer.firstname} ${review.reviewer.middlename} ${review.reviewer.lastname}`}
             </span>
             <p className="detail-comment-text">{review.reviewtext}</p>
             <span className="detail-comment-date">
@@ -330,9 +324,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
           <div className="rating">{this.showStars(review[index].stars)}</div>
           <span className="detail-comment-author">
             by{" "}
-            {`${review[index].reviewer.firstname} ${review[index].reviewer.middlename} ${
-              review[index].reviewer.lastname
-            }`}
+            {`${review[index].reviewer.firstname} ${review[index].reviewer.middlename} ${review[index].reviewer.lastname}`}
           </span>
           <span className="detail-comment-date">
             {review[index].reviewdate.split(" ")[1]} {review[index].reviewdate.split(" ")[2]}{" "}

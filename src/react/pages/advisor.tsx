@@ -113,20 +113,16 @@ class Advisor extends React.Component<Props, State> {
     this.setStatisticData(this.state.companystatistic);
     if (this.adminName) {
       if (this.adminName.value != "") {
-        console.log("SPLIT", this.adminName.value);
         let nameArray = [];
         nameArray = this.adminName.value.split(" ");
-        console.log("SPLITTED", nameArray);
         if (nameArray.length === 1) {
           this.setUserData({ lastname: nameArray[0] });
         } else if (nameArray.length === 2) {
           this.setUserData({ firstname: nameArray[0], lastname: nameArray[1] });
         } else {
-          console.log("NAME", nameArray);
           let middleArray = nameArray.slice(0);
           middleArray.pop();
           middleArray.shift();
-          console.log("MIDDLE", middleArray);
           this.setUserData({
             firstname: nameArray[0],
             middlename: middleArray.join(" "),
@@ -140,43 +136,32 @@ class Advisor extends React.Component<Props, State> {
 
   addCompanyName = async name => {
     try {
-      console.log("ADDCOMP1", this, name);
       const res = await this.props.cc({ variables: { name } });
-      console.log("RES", res);
       const { token } = res.data.createCompany;
       localStorage.setItem("token", token);
       return;
     } catch (err) {
-      console.log("ADDCOMP2", this);
-      console.log("addCompanyName", err);
       return;
     }
   };
 
   setStatisticData = async data => {
     try {
-      console.log("STATISTIC", this, data);
       const res = await this.props.uSD({ variables: { data } });
-      console.log("RES", res);
       const { ok } = res.data.updateStatisticData;
       return;
     } catch (err) {
-      console.log("ADDCOMP2", this);
-      console.log("addCompanyName", err);
       return;
     }
   };
 
   setUserData = async user => {
     try {
-      console.info("USERUPDATE", this, user);
       const res = await this.props.uU({ variables: { user } });
-      console.log("RES UP", res, this);
       const { ok } = res.data.updateUser;
       this.props.setName(user.firstname, user.lastname);
       return;
     } catch (err) {
-      console.log("userUpdateError", err);
       return;
     }
   };
@@ -185,20 +170,16 @@ class Advisor extends React.Component<Props, State> {
     if (this.state.advisorStage === 7) {
       this.setStatisticData(this.state.companystatistic);
       if (this.adminName.value != "") {
-        console.log("SPLIT", this.adminName.value);
         let nameArray = [];
         nameArray = this.adminName.value.split(" ");
-        console.log("SPLITTED", nameArray);
         if (nameArray.length === 1) {
           this.setUserData({ lastname: nameArray[0] });
         } else if (nameArray.length === 2) {
           this.setUserData({ firstname: nameArray[0], lastname: nameArray[1] });
         } else {
-          console.log("NAME", nameArray);
           let middleArray = nameArray.slice(0);
           middleArray.pop();
           middleArray.shift();
-          console.log("MIDDLE", middleArray);
           this.setUserData({
             firstname: nameArray[0],
             middlename: middleArray.join(" "),
@@ -209,7 +190,6 @@ class Advisor extends React.Component<Props, State> {
       //Namen auslesen und senden
       this.props.history.push("/area/dashboard");
     } else if (this.state.advisorStage === 1) {
-      console.log("ADDCOMP", this, this.companyNameInput);
       if (this.companyNameInput != "") {
         this.addCompanyName(this.companyNameInput.value);
       }
@@ -220,7 +200,6 @@ class Advisor extends React.Component<Props, State> {
   }
 
   chooseNumberEmployees(option) {
-    console.log("EMPLOY", option);
     this.setState({
       companystatistic: { ...this.state.companystatistic, companysize: option }
     });
@@ -256,7 +235,6 @@ class Advisor extends React.Component<Props, State> {
   }
 
   handleEnter(e) {
-    console.log("press",e.key)
     if (e.key === "Enter") {
       this.nextStep();
     }
@@ -443,20 +421,16 @@ class Advisor extends React.Component<Props, State> {
 
   setIndustry(e) {
     this.setState({ industry: e });
-    console.log("SETI", this.state);
   }
   setSubIndustry(e) {
     this.setState({ subindustry: e });
-    console.log("SETI", this.state);
   }
   setEducation(e) {
     this.setState({ education: e });
-    console.log("SETI", this.state);
   }
 
   setJobCategory(e) {
     this.setState({ jobCategory: e });
-    console.log("SETI", this.state);
   }
 
   showSubIndustry(industryid: String) {
@@ -630,12 +604,10 @@ class Advisor extends React.Component<Props, State> {
   }
 
   updateState = (key, value) => {
-    console.log("SUBMIT", key value);
     this.setState({key: value})
   };
 
   onEnter = async (fieldid) => {
-    console.log("ONENTER", fieldid)
     await this.setState({focus: fieldid})
   }
 
@@ -766,12 +738,10 @@ class Advisor extends React.Component<Props, State> {
   }
 
   changeTab(tabid){
-    console.log("CHANGE", tabid)
     this.setState({tabActive: tabid})
   }
 
   showCompanyFacts(value, state) {
-    //console.log("STAGE", this.state)
     return (
       <div className="optionsFormularBlock">
         <div style={{width: "100%"}}>
@@ -944,7 +914,6 @@ class Advisor extends React.Component<Props, State> {
   }
 
   saveFacts = async value => {
-    //console.log("SaveFacts", this);
 
     //Check if companyname is set
     if (!this.state.companyname) {
@@ -956,12 +925,9 @@ class Advisor extends React.Component<Props, State> {
       thisYearExpectedRevenue: this.state.thisYearExpectedRevenue, nextYearExpectedRevenue: this.state.nextYearExpectedRevenue,foundingYearOfCompany: this.state.foundingYearOfCompany
       expectedYearOfMarketEntry: this.state.expectedYearOfMarketEntry, numberOfEmployees: this.state.numberOfEmployees}
 
-      //console.log("STATDATA", statisticdata)
-
     try {
       const res = await this.props.cc({ variables:  {name: this.state.companyname}  });
       const {  token } = res.data.createCompany;
-      //console.log(res.data.createCompany);
       localStorage.setItem("token", token);
 
        await this.props.cA({ variables: {addressData: {country: this.state.addressCountry, state: this.state.addressState, city: this.state.addressCity, zip: this.state.addressZip, street: this.state.addressStreet, tags: ["main"]}, department: true}});
@@ -971,7 +937,6 @@ class Advisor extends React.Component<Props, State> {
 
       this.props.moveTo("/area/advisor/personfacts")
     } catch (err) {
-      //console.log("ERROR SAVE", err);
       return;
     }
   }
@@ -1304,14 +1269,11 @@ class Advisor extends React.Component<Props, State> {
     }
 
     user = {...user, statisticdata: {age: this.state.adminage, education: this.state.education, jobCategory: this.state.jobCategory, workexperience: this.state.workexperience}}
-
-    //console.log("USER", user)
     try {
       const res = this.props.uU({variables: {user}})
       this.props.setName(user.firstname, user.lastname)
       this.props.moveTo("/area/dashboard")
     } catch (err) {
-      //console.log("ERROR SAVE", err);
       return;
     }
   }
@@ -1321,7 +1283,6 @@ class Advisor extends React.Component<Props, State> {
       <AppContext.Consumer>
         {value => {
           console.error("Please refactor Query 'me' instead of using AppContext");
-          //console.log("ADVISOR", this.props, value);
           return (
             <div className="optionsHolder">
               <AdvisorSidebar

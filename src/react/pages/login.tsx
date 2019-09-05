@@ -501,7 +501,6 @@ class Login extends React.Component<Props, State> {
         break;
 
       case 2:
-        console.log("%c State", "color: red;", this.state);
         if (!(this.companyInput && this.companyInput.value)) {
           this.setState({
             errorbool: true,
@@ -565,7 +564,6 @@ class Login extends React.Component<Props, State> {
         this.setStep(4);
         break;
       case 4:
-        console.log(this.state);
         this.registerSave();
         break;
     }
@@ -813,7 +811,6 @@ class Login extends React.Component<Props, State> {
                     const value = e.target.value;
                     const name = e.target.name;
                     this.setField(e);
-                    console.log(`%c ${value}`, "background: BADA55, font-weight: bold;");
                     this.setState({
                       isEU: countries.filter(country => country.value == value)[0].isEU,
                       countryCode: value,

@@ -114,7 +114,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   sentResult = false;
 
   reset() {
-    console.log("RESET");
     session.fromPartition(this.props.partition).clearStorageData();
     this.loginState = {
       emailEntered: false,
@@ -130,7 +129,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       this.timeoutHandle = undefined;
     }
     if (this.props.timeout) {
-      console.log("RESET");
       this.timeoutHandle = setTimeout(() => this.sendResult(this.webview, 0), this.props.timeout);
     }
     this.progress = 0;
@@ -142,7 +140,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   componentDidMount() {
     this.reset();
     this.mounted++;
-    console.log("mounted", this.mounted);
     this.progressHandle = setInterval(this.progressCallback.bind(this), this.progressInterval);
 
     // session
@@ -177,7 +174,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     }
   }
   componentDidUpdate(prevProps: Props) {
-    console.log("DIDUPDATE");
     if (
       prevProps.loginUrl != this.props.loginUrl ||
       prevProps.speed != this.props.speed ||
@@ -206,14 +202,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   async isLoggedIn(w) {
     const l = ["signin", "login", "sign", "new", "anmelden"];
     const urlParts = ["pathname", "search", "hash", "hostname"];
-    console.log("isLoggedIn", this.props.loginUrl, w.src);
     const initial = new URL(this.props.loginUrl);
     const now = new URL(w.src);
 
     for (const p of urlParts) {
       for (const m of l) {
         if (initial[p].includes(m) && !now[p].includes(m)) {
-          console.log("logged in");
           return true;
         }
       }
@@ -228,7 +222,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
     // let returnvalue = false;
 
-    console.log("WEBCONTETNS");
     return await w
       .getWebContents()
       .executeJavaScript(
@@ -291,7 +284,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`
       )
       .then(e => {
-        console.log("RETURN", e);
         return e;
       });
     //console.log("RETURN ", returnvalue);
@@ -299,7 +291,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   sendResult(w, delay) {
-    console.log("Send RESTULT");
     if (delay != 0) {
       this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
     }
@@ -315,7 +306,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       setTimeout(
         () =>
           w.getWebContents().capturePage(async image => {
-            console.log("PLACE 254", this.state, this.loginState);
             const loggedin = await this.isLoggedIn(w);
             this.props.setResult(
               { loggedin, ...this.loginState },
@@ -325,7 +315,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         delay
       );
     } else {
-      console.log("PLACE 263");
       setTimeout(() => this.props.setResult({ loggedin: false, ...this.loginState }, ""), delay);
     }
   }
@@ -333,7 +322,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   async progressCallback() {
     this.progress += this.progressStep;
     this.progress = Math.min(1, this.progress);
-    console.log("PROCESS CALLBACK", this.progress);
     this.props.progress!(this.progress);
     if (
       this.loginState.emailEntered &&
@@ -357,7 +345,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   async onIpcMessage(e) {
-    console.log("ipc", e);
     //e.target.openDevTools();
     this.webview = e.target;
     switch (e.channel) {
@@ -380,7 +367,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         {
           const w = e.target;
           let text = "";
-          console.log("PROPS", this.props, e.args[0]);
           if (e.args[0] == "username") {
             text = this.props.username;
             this.loginState.emailEntered = true;
@@ -391,7 +377,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             throw new Error("unknown string");
           }
           for await (const c of text) {
-            console.log("INSIDE FOR", this.loginState);
             if (this.loginState.unloaded) {
               return;
             }
@@ -408,7 +393,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             await this.modifiedSleep(Math.random() * 30 + 200);
           }
           await this.modifiedSleep(500);
-          console.log("FORMFIELDFILLED");
           w.send("formFieldFilled");
           /*if (e.args[0] == "username") {
             //text = this.props.username;
@@ -421,7 +405,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           }*/
 
           if (this.loginState.emailEntered && this.loginState.passwordEntered) {
-            console.log("WAITED");
             this.sendResult(w, 30000);
           }
         }
@@ -429,7 +412,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       case "getLoginData":
         {
           if (await this.isLoggedIn(e.target)) {
-            console.log("Place 352");
             //this.sendResult(this.webview, 0);
             return; //we are done with login
           }

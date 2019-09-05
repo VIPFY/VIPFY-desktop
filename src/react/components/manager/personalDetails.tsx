@@ -249,7 +249,6 @@ class PersonalDetails extends React.Component<Props, State> {
         }
         break;
     }
-    //console.log(e.target.id)
     if (e.key === "Escape" || e.keyCode === 27) {
       this.close();
     } else if (!(e.target && e.target.id && this.state.idlist.includes(e.target.id))) {
