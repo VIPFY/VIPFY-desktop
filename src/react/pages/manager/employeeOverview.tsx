@@ -211,7 +211,7 @@ class EmployeeOverview extends React.Component<Props, State> {
               <PrintTeamSquare team={{}} fake={true} />
               <span className="name" />
             </div>
-            <div className="tableColumnSmall" style={{ width: "5%" }}>
+            <div className="tableColumnSmall" style={{ width: "10%" }}>
               <div
                 className="status"
                 style={{
@@ -271,35 +271,26 @@ class EmployeeOverview extends React.Component<Props, State> {
                           className="tableColumnBig"
                           style={{ width: "20%" }}
                           onClick={() => this.handleSortClick("Name")}>
-                          <h1>
-                            Name Sort
-                            {this.state.sort == "Name" ? (
-                              this.state.sortforward ? (
-                                <i className="fad fa-sort-down"></i>
-                              ) : (
-                                <i className="fad fa-sort-up"></i>
-                              )
-                            ) : (
-                              <i className="fas fa-sort"></i>
-                            )}
-                          </h1>
+                          <h1>Name</h1>
                         </div>
                         <div
                           className="tableColumnSmall"
-                          style={{ width: "5%" }}
+                          style={{ width: "10%" }}
                           onClick={() => this.handleSortClick("Status")}>
                           <h1>Status</h1>
                         </div>
                         <div
                           className="tableColumnBig"
                           style={{ width: "20%" }}
-                          onClick={() => this.handleSortClick("Teams")}>
+                          //onClick={() => this.handleSortClick("Teams")}
+                        >
                           <h1>Teams</h1>
                         </div>
                         <div
                           className="tableColumnBig"
                           style={{ width: "30%" }}
-                          onClick={() => this.handleSortClick("Services")}>
+                          //onClick={() => this.handleSortClick("Services")}
+                        >
                           <h1>Services</h1>
                         </div>
                       </div>
@@ -437,25 +428,77 @@ class EmployeeOverview extends React.Component<Props, State> {
                           className="tableColumnBig"
                           style={{ width: "20%" }}
                           onClick={() => this.handleSortClick("Name")}>
-                          <h1>Name</h1>
+                          <h1>
+                            Name
+                            {this.state.sort == "Name" ? (
+                              this.state.sortforward ? (
+                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                              ) : (
+                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                              )
+                            ) : (
+                              <i
+                                className="fas fa-sort"
+                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                            )}
+                          </h1>
                         </div>
                         <div
                           className="tableColumnSmall"
-                          style={{ width: "5%" }}
+                          style={{ width: "10%" }}
                           onClick={() => this.handleSortClick("Status")}>
-                          <h1>Status</h1>
+                          <h1>
+                            Status
+                            {this.state.sort == "Status" ? (
+                              this.state.sortforward ? (
+                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                              ) : (
+                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                              )
+                            ) : (
+                              <i
+                                className="fas fa-sort"
+                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                            )}
+                          </h1>
                         </div>
                         <div
                           className="tableColumnBig"
                           style={{ width: "20%" }}
                           onClick={() => this.handleSortClick("Teams")}>
-                          <h1>Teams</h1>
+                          <h1>
+                            Teams
+                            {/*this.state.sort == "Teams" ? (
+                              this.state.sortforward ? (
+                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                              ) : (
+                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                              )
+                            ) : (
+                              <i
+                                className="fas fa-sort"
+                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                            )*/}
+                          </h1>
                         </div>
                         <div
                           className="tableColumnBig"
                           style={{ width: "30%" }}
                           onClick={() => this.handleSortClick("Services")}>
-                          <h1>Services</h1>
+                          <h1>
+                            Services
+                            {/*this.state.sort == "Services" ? (
+                              this.state.sortforward ? (
+                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                              ) : (
+                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                              )
+                            ) : (
+                              <i
+                                className="fas fa-sort"
+                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                            )*/}
+                          </h1>
                         </div>
                       </div>
                       <div className="tableEnd">
@@ -514,7 +557,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 {employee.isonline ? "Online" : "Offline"}
                               </div>*/}
                             </div>
-                            <div className="tableColumnSmall" style={{ width: "5%" }}>
+                            <div className="tableColumnSmall" style={{ width: "10%" }}>
                               <div
                                 className="status"
                                 style={
