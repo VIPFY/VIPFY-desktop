@@ -431,9 +431,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
       case "interactionHappened":
         {
-          /*let interactions = this.state.interactions;
+          let interactions = this.state.interactions;
           interactions[this.state.planId] = new Date();
-          await this.setState({ interactions });*/
+          await this.setState({ interactions });
         }
         break;
       case "showLoading": {
@@ -713,6 +713,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             progress={(progress) => this.setState({progress})}
             speed={10}
             style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}
+            interactionHappenedCallback={() => {
+              let interactions = this.state.interactions;
+              interactions[this.state.planId] = new Date();
+              this.setState({ interactions });
+            }}
           />
         ) : (
           <WebView

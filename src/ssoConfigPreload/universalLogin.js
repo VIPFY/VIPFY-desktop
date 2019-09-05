@@ -26,6 +26,28 @@ const sleep = async ms => {
   return new Promise(resolve => setTimeout(resolve, ms / speed));
 };
 
+let interactionHappened = false;
+function didInteraction() {
+  interactionHappened = true;
+}
+function timer() {
+  if (!interactionHappened) {
+    return;
+  }
+  interactionHappened = false;
+  ipcRenderer.sendToHost("interactionHappened");
+}
+
+document.addEventListener("mousemove", didInteraction, true);
+document.addEventListener("touchmove", didInteraction, true);
+document.addEventListener("touchenter", didInteraction, true);
+document.addEventListener("pointermove", didInteraction, true);
+document.addEventListener("keydown", didInteraction, true);
+document.addEventListener("scroll", didInteraction, true);
+
+setInterval(() => timer(), 30000);
+setTimeout(() => timer(), 5000);
+
 let emailEntered = false;
 let passwordEntered = false;
 let stopped = false;
