@@ -28,7 +28,7 @@ const ErrorPage = (props: Props) => (
         fontWeight: "bold",
         padding: "7px 20px"
       }}
-      onClick={() => props.history.push("support/fromError", { fromErrorPage: true })}
+      onClick={() => props.history.push("support/fromError")}
     />
   </div>
 );
