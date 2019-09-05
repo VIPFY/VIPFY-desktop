@@ -40,13 +40,13 @@ interface State {
   unitid: number | null;
   parsedName: any;
   error: String | null;
+  picture: File | null;
 }
 
 const CREATE_EMPLOYEE = gql`
   mutation createEmployee09(
     $name: HumanName!
     $emails: [EmailInput!]!
-    $file: Upload
     $birthday: Date
     $hiredate: Date
     $address: AddressInput
@@ -54,11 +54,12 @@ const CREATE_EMPLOYEE = gql`
     $phones: [PhoneInput]
     $password: String!
     $needpasswordchange: Boolean
+    $picture: Upload
   ) {
     createEmployee09(
       name: $name
       emails: $emails
-      file: $file
+      file: $picture
       birthday: $birthday
       hiredate: $hiredate
       address: $address
@@ -90,7 +91,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     success: true,
     unitid: null,
     parsedName: null,
-    error: null
+    error: null,
+    picture: null
   };
 
   handleConfirm() {
@@ -130,7 +132,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
         ].includes(e.target.id)
       )
     ) {
-      return; //Check if one of the Textfields is focused
+      return; // Check if one of the Textfields is focused
     } else if (
       (e.key === "Enter" || e.keyCode === 13) &&
       name &&
