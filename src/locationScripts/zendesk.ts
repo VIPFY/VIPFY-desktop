@@ -1,7 +1,7 @@
 import { con, todoPath, hideByQuery, redirectLinks } from "./utils/util";
 
 module.exports = function() {
-  console.log("MATCH");
+  console.log("ZENDESK");
   window.addEventListener("DOMContentLoaded", onReady);
   window.addEventListener("load", onLoad);
 };

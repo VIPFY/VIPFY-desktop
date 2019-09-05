@@ -29,6 +29,7 @@ class Dashboard extends React.Component<Props, State> {
   state = { search: "" };
 
   render() {
+    throw new Error("ätsch");
     const setApp = (licence: number) => this.props.setApp(licence);
 
     if (this.props.licences.loading) {

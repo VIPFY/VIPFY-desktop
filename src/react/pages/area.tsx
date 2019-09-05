@@ -106,7 +106,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidMount = async () => {
-    require("electron").ipcRenderer.on("change-page", (event, page) => {
+    require("electron").ipcRenderer.on("change-page", (_event, page) => {
       this.props.history.push(page);
     });
 
