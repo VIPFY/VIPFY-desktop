@@ -6,6 +6,7 @@ import { ApolloClient } from "apollo-client";
 import { agreeTos } from "../../mutations/auth";
 import UniversalButton from "../universalButtons/universalButton";
 import CoolCheckbox from "../CoolCheckbox";
+import UniversalCheckbox from "../universalForms/universalCheckbox";
 
 interface FirstLoginProps {
   logMeOut: Function;
@@ -58,19 +59,17 @@ class FirstLogin extends React.Component<FirstLoginProps, FirstLoginState> {
             </div>
 
             <div className="checkboxes">
-              <CoolCheckbox
-                label="I agree to the Terms of Service of VIPFY."
-                value={this.state.tos}
+              <UniversalCheckbox
                 name="tos"
-                onChange={e => this.setState({ tos: e.target.checked })}
-              />
+                liveValue={e => this.setState({ tos: e.target.checked })}>
+                I agree to the Terms of Service of VIPFY.
+              </UniversalCheckbox>
 
-              <CoolCheckbox
-                label="I agree to the Privacy Agreement of VIPFY."
-                value={this.state.privacy}
+              <UniversalCheckbox
                 name="privacy"
-                onChange={e => this.setState({ privacy: e.target.checked })}
-              />
+                liveValue={e => this.setState({ privacy: e.target.checked })}>
+                I agree to the Privacy Agreement of VIPFY.
+              </UniversalCheckbox>
             </div>
 
             <UniversalButton

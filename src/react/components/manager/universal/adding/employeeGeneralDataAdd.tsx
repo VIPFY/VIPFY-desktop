@@ -101,7 +101,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
           <i
             className="far fa-chevron-down chevron"
             style={
-              this.state.showall ? { transform: "rotate(90deg)" } : { transform: "rotate(0deg)" }
+              this.state.showall ? { transform: "rotate(0deg)" } : { transform: "rotate(90deg)" }
             }
           />
         </button>
