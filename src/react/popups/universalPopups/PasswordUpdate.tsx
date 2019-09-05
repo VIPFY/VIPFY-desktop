@@ -46,7 +46,10 @@ class PasswordUpdate extends React.Component<Props, State> {
     return (
       <Mutation mutation={UPDATE_PASSWORD}>
         {(updatePassword, { loading, error, data }) => (
-          <PopupBase small={true} close={() => this.props.closeFunction()}>
+          <PopupBase
+            buttonStyles={{ justifyContent: "space-between" }}
+            small={true}
+            close={() => this.props.closeFunction()}>
             <div className="update-password">
               <h1>Update Password of</h1>
               <h1>
@@ -110,27 +113,33 @@ class PasswordUpdate extends React.Component<Props, State> {
               )}
             </div>
 
+            {/* The Popup doesn't like Fragments, so every Button needs it's
+                own check 
+            */}
+
             {!data && (
-              <React.Fragment>
-                <UniversalButton
-                  onClick={this.props.closeFunction}
-                  closingPopup={true}
-                  label="Cancel"
-                />
-                <UniversalButton
-                  disabled={
-                    !password ||
-                    !passwordRepeat ||
-                    password.score < 2 ||
-                    password.password != passwordRepeat.password ||
-                    loading
-                  }
-                  onClick={() =>
-                    updatePassword({ variables: { password: password.password, unitid } })
-                  }
-                  label="Update Password"
-                />
-              </React.Fragment>
+              <UniversalButton
+                type="low"
+                onClick={this.props.closeFunction}
+                closingPopup={true}
+                label="Cancel"
+              />
+            )}
+            {!data && (
+              <UniversalButton
+                type="low"
+                disabled={
+                  !password ||
+                  !passwordRepeat ||
+                  password.score < 2 ||
+                  password.password != passwordRepeat.password ||
+                  loading
+                }
+                onClick={() =>
+                  updatePassword({ variables: { password: password.password, unitid } })
+                }
+                label="Update Password"
+              />
             )}
           </PopupBase>
         )}
