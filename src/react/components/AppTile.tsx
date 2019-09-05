@@ -28,7 +28,7 @@ class AppTile extends React.Component<Props, State> {
 
   async componentDidMount() {
     // Make sure that every License has an index
-    if (!this.props.licence.dashboard) {
+    if (!this.props.licence.dashboard && this.props.licence.dashboard !== 0) {
       try {
         await this.props.updateLayout({
           variables: { layout: { id: this.props.licence.id, dashboard: this.props.position } },
@@ -38,14 +38,13 @@ class AppTile extends React.Component<Props, State> {
           },
           update: proxy => {
             const data = proxy.readQuery({ query: fetchLicences });
-
-            data.fetchLicences.forEach(licence => {
+            const newData = data.fetchLicences.map(licence => {
               if (licence.id == this.props.licence.id) {
                 licence.dashboard = this.props.position;
               }
-
-              proxy.writeQuery({ query: fetchLicences, data });
+              return licence;
             });
+            proxy.writeQuery({ query: fetchLicences, data: { fetchLicences: newData } });
           }
         });
       } catch (error) {
