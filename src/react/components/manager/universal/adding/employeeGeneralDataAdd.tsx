@@ -129,13 +129,15 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
             label="Birthday"
             id="birthday"
             livevalue={v => this.setBothStates({ birthday: v })}
-            startvalue={this.state.birthday}
+            startvalue={this.state.birthday || " "}
+            type="date"
           />
           <UniversalTextInput
             label="Hiredate"
             id="hiredate"
             livevalue={v => this.setBothStates({ hiredate: v })}
-            startvalue={this.state.hiredate}
+            startvalue={this.state.hiredate || " "}
+            type="date"
           />
           {/*<UniversalTextInput
           label="Street/Number"

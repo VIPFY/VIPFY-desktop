@@ -59,16 +59,18 @@ class FirstLogin extends React.Component<FirstLoginProps, FirstLoginState> {
             </div>
 
             <div className="checkboxes">
-              <UniversalCheckbox
-                name="tos"
-                liveValue={e => this.setState({ tos: e.target.checked })}>
-                I agree to the Terms of Service of VIPFY.
+              <UniversalCheckbox name="tos" liveValue={value => this.setState({ tos: value })}>
+                <span style={{ lineHeight: "18px" }}>
+                  I agree to the Terms of Service of VIPFY.
+                </span>
               </UniversalCheckbox>
-
+              <div style={{ height: "8px" }}></div>
               <UniversalCheckbox
                 name="privacy"
-                liveValue={e => this.setState({ privacy: e.target.checked })}>
-                I agree to the Privacy Agreement of VIPFY.
+                liveValue={value => this.setState({ privacy: value })}>
+                <span style={{ lineHeight: "18px" }}>
+                  I agree to the Privacy Agreement of VIPFY.
+                </span>
               </UniversalCheckbox>
             </div>
 
