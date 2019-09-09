@@ -128,7 +128,10 @@ class ServiceOverview extends React.Component<Props, State> {
             }}>
             <AddServiceGeneralData
               continue={data => this.setState({ addservice: data, addStage: 2 })}
-              close={() => this.setState({ add: false })}
+              close={() => {
+                refetch();
+                this.setState({ add: false });
+              }}
               addservice={this.state.addservice}
               currentServices={this.state.currentServices}
             />

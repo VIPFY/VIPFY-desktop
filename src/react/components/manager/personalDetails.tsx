@@ -602,23 +602,6 @@ class PersonalDetails extends React.Component<Props, State> {
               <i className="fal fa-pen editbuttons" />
             </div>
           </div>
-
-          <div className="tableColumnSmallOne">
-            {/*<h1>Address</h1>
-              <h2>
-                {querydata.addresses[0] &&
-                  querydata.addresses[0].address &&
-                  querydata.addresses[0].address.street}
-              </h2>
-              <h2 className="second">
-                {querydata.addresses[0] &&
-                  querydata.addresses[0].address &&
-                  querydata.addresses[0].address.zip}{" "}
-                {querydata.addresses[0] &&
-                  querydata.addresses[0].address &&
-                  querydata.addresses[0].address.city}
-                </h2>*/}
-          </div>
         </div>
         <div className="tableColumnSmall content twoline">
           <div
@@ -707,6 +690,22 @@ class PersonalDetails extends React.Component<Props, State> {
             <div className="profileEditButton">
               <i className="fal fa-pen editbuttons" />
             </div>
+          </div>
+          <div className="tableColumnSmallOne">
+            {/*<h1>Address</h1>
+              <h2>
+                {querydata.addresses[0] &&
+                  querydata.addresses[0].address &&
+                  querydata.addresses[0].address.street}
+              </h2>
+              <h2 className="second">
+                {querydata.addresses[0] &&
+                  querydata.addresses[0].address &&
+                  querydata.addresses[0].address.zip}{" "}
+                {querydata.addresses[0] &&
+                  querydata.addresses[0].address &&
+                  querydata.addresses[0].address.city}
+                </h2>*/}
           </div>
         </div>
         {this.state.edit && (
