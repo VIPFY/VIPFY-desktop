@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query, Mutation } from "react-apollo";
-import { fetchDepartmentsData, fetchUsersOwnLicences, fetchTeams } from "../../queries/departments";
+import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import AddEmployeeTeams from "../../components/manager/addEmployeeTeams";
@@ -228,7 +228,12 @@ class EmployeeOverview extends React.Component<Props, State> {
             <ColumnServices
               style={{ width: "30%" }}
               services={[null]}
-              checkFunction={element => !element.disabled && !element.planid.appid.disabled}
+              checkFunction={element =>
+                !element.disabled &&
+                !element.planid.appid.disabled &&
+                element.vacationstart <= now() &&
+                element.vacationend > now()
+              }
               appidFunction={element => element.planid.appid}
               fake={true}
             />
@@ -606,7 +611,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                             </Query>
                             <Query
                               pollInterval={60 * 10 * 1000 + 300}
-                              query={fetchUsersOwnLicences}
+                              query={fetchUserLicences}
                               variables={{ unitid: employee.id }}
                               fetchPolicy="network-only" //TODO make better
                             >
@@ -620,7 +625,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                                       checkFunction={element =>
                                         !element.disabled &&
                                         !element.boughtplanid.planid.appid.disabled &&
-                                        (element.endtime > now() || element.endtime == null)
+                                        element.vacationstart <= now() &&
+                                        element.vacationend > now()
                                       }
                                       appidFunction={element => element.boughtplanid.planid.appid}
                                       overlayFunction={service =>
@@ -646,7 +652,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                                     checkFunction={element =>
                                       !element.disabled &&
                                       !element.boughtplanid.planid.appid.disabled &&
-                                      (element.endtime > now() || element.endtime == null)
+                                      element.vacationstart <= now() &&
+                                      element.vacationend > now()
                                     }
                                     appidFunction={element => element.boughtplanid.planid.appid}
                                     overlayFunction={service =>
@@ -658,6 +665,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                       )
                                     }
                                     fake={false}
+                                    unitid={employee.id}
                                   />
                                 );
                               }}
