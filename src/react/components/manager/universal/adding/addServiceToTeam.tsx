@@ -204,11 +204,15 @@ class AddServiceToTeam extends React.Component<Props, State> {
                     employees: []
                   }
                 });
-                this.setState({
-                  addEmployee: true,
-                  saving: false,
-                  boughtplanid: res.data.addAppToTeam
-                });
+                if (!team.employees || team.employees.length == 0) {
+                  this.props.savingFunction({ action: "success" });
+                } else {
+                  this.setState({
+                    addEmployee: true,
+                    saving: false,
+                    boughtplanid: res.data.addAppToTeam
+                  });
+                }
                 //await this.props.savingFunction({ action: "success" });
               } catch (error) {
                 console.error(error);

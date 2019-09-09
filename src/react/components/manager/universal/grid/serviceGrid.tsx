@@ -25,6 +25,13 @@ class ServiceGrid extends React.Component<Props, State> {
     let ownAppsArray: JSX.Element[] = [];
     let j = 0;
     let filteredApps = apps.filter(app => {
+      if (app.boughtplanid) {
+        return app.boughtplanid.planid.appid.name
+          .toUpperCase()
+          .includes(this.props.search.toUpperCase());
+      } else {
+        return app.planid.appid.name.toUpperCase().includes(this.props.search.toUpperCase());
+      }
       return app.boughtplanid.planid.appid.name
         .toUpperCase()
         .includes(this.props.search.toUpperCase());
