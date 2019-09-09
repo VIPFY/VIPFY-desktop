@@ -44,6 +44,9 @@ class Dashboard extends React.Component<Props, State> {
       "Pending Apps": [],
       "Temporary Apps": []
     };
+
+    let allLicences = [];
+
     if (this.props.licences && this.props.licences.fetchLicences.length > 0) {
       this.props.licences.fetchLicences.forEach(licence => {
         if (licence.pending) {
@@ -56,6 +59,8 @@ class Dashboard extends React.Component<Props, State> {
           appLists["External Apps"].push(licence);
         }
       });
+
+      allLicences = filterAndSort(this.props.licences.fetchLicences, "dashboard");
     }
 
     return (
@@ -64,7 +69,7 @@ class Dashboard extends React.Component<Props, State> {
           <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
-        {this.props.licences && this.props.licences.fetchLicences.length < 1 ? (
+        {this.props.licences && allLicences.length < 1 ? (
           <div className="no-apps">
             <div>This is your</div>
             <h1>DASHBOARD</h1>
@@ -85,7 +90,7 @@ class Dashboard extends React.Component<Props, State> {
                 return (
                   <AppList
                     header={list}
-                    allLicences={filterAndSort(this.props.licences.fetchLicences, "dashboard")}
+                    allLicences={allLicences}
                     search={this.state.search}
                     licences={filterAndSort(appLists[list], "dashboard")}
                     setApp={setApp}
