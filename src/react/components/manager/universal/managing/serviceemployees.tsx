@@ -54,10 +54,12 @@ class ManageServiceEmployees extends React.Component<Props, State> {
         query={fetchCompanyService}
         variables={{ serviceid: this.props.service.id }}>
         {({ loading, error, data, refetch }) => {
+          console.log("TEST");
           if (loading) {
             return null;
           }
           if (error) {
+            console.log("ERROR 2", error);
             return `Error! ${error}`;
           }
           const singleemployees = [];
@@ -138,6 +140,7 @@ class ManageServiceEmployees extends React.Component<Props, State> {
                     data.fetchCompanyService ? data.fetchCompanyService.app : this.props.service
                   }
                   savingFunction={so => {
+                    console.log("SAVING", so);
                     refetch();
                     this.setState({ addEmployee: null });
                   }}

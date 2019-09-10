@@ -183,59 +183,77 @@ class PopupAddLicence extends React.Component<Props, State> {
               }
             }
           ])}
-        close={() => cancel()}
-        submit={async values => {
-          try {
-            let res;
-            if (!this.props.boughtplanid) {
-              res = await this.props.addExternalBoughtPlan({
-                variables: {
-                  appid: id,
-                  alias: "",
-                  price: 0,
-                  loginurl: ""
-                }
-              });
+        close={action => {
+          if (action == "error") {
+            if (success) {
+              success({ error: "Some Error" });
             }
-            await this.props.addLicence({
-              variables: {
-                appid: id,
-                boughtplanid: this.props.boughtplanid
-                  ? this.props.boughtplanid.id
-                  : res.data.addExternalBoughtPlan.id,
-                username: values[`${employee && employee.id}-${id}-email`],
-                password: values[`${employee && employee.id}-${id}-password`],
-                loginurl: values[`${employee && employee.id}-${id}-subdomain`],
-                touser: (employee && employee.id) || null,
-                options: team
-                  ? {
-                      teamlicence: team.unitid.id
-                    }
-                  : null,
-                identifier: empty ? values[`${id}-identifier`] : null
-              },
-              refetchQueries: [
-                empty
-                  ? {
-                      query: fetchCompanyService,
-                      variables: { serviceid: id }
-                    }
-                  : {
-                      query: fetchUserLicences,
-                      variables: { unitid: employee.id }
-                    }
-              ]
-            });
+          } else if (action == "sucess") {
             if (success) {
               success();
             }
-          } catch (err) {
-            console.log("ERROR", err);
-            if (success) {
-              success({ error: err });
-            }
+          } else {
+            cancel();
           }
         }}
+        submit={async values => {
+          // try {
+          let res;
+          if (!this.props.boughtplanid) {
+            res = await this.props.addExternalBoughtPlan({
+              variables: {
+                appid: id,
+                alias: "",
+                price: 0,
+                loginurl: ""
+              }
+            });
+          }
+          await this.props.addLicence({
+            variables: {
+              appid: id,
+              boughtplanid: this.props.boughtplanid
+                ? this.props.boughtplanid.id
+                : res.data.addExternalBoughtPlan.id,
+              username: values[`${employee && employee.id}-${id}-email`],
+              password: values[`${employee && employee.id}-${id}-password`],
+              loginurl: values[`${employee && employee.id}-${id}-subdomain`],
+              touser: (employee && employee.id) || null,
+              options: team
+                ? {
+                    teamlicence: team.unitid.id
+                  }
+                : null,
+              identifier: empty ? values[`${id}-identifier`] : null
+            },
+            refetchQueries: [
+              empty
+                ? {
+                    query: fetchCompanyService,
+                    variables: { serviceid: id }
+                  }
+                : {
+                    query: fetchUserLicences,
+                    variables: { unitid: employee.id }
+                  }
+            ]
+          });
+          //if (success) {
+          //  success();
+          //}
+          // } catch (err) {
+          //    console.log("ERROR TEST", err);
+          //    if (success) {
+          //      success({ error: err });
+          //    }
+          // }
+        }}
+        /*handleError={err => {
+          console.log("ERROR TEST", err);
+          if (success) {
+            success({ error: err });
+          }
+        }}*/
         explainImage={
           <div style={{ position: "relative", width: "88px", height: "112px" }}>
             <div
