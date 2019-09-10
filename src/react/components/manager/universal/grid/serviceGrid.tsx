@@ -119,8 +119,6 @@ class ServiceGrid extends React.Component<Props, State> {
               e.name.toUpperCase().includes(this.props.search.toUpperCase())
             );
 
-            console.log("apps", apps);
-
             apps.sort(function(a, b) {
               let nameA = a.name.toUpperCase(); // ignore upper and lowercase
               let nameB = b.name.toUpperCase(); // ignore upper and lowercase
