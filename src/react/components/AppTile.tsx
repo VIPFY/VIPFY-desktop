@@ -86,9 +86,9 @@ class AppTile extends React.Component<Props, State> {
           this.props.setPreview(clearPreview);
           this.props.dragEndFunction();
         }}
-        onDrop={() => {
+        onDrop={async e => {
           this.setState({ entered: false });
-          this.props.handleDrop(id);
+          await this.props.handleDrop(id);
           this.props.setPreview(clearPreview);
         }}>
         <div
@@ -97,7 +97,9 @@ class AppTile extends React.Component<Props, State> {
             backgroundImage: planid.appid.icon && getBgImageApp(planid.appid.icon, 160)
           }}
         />
-
+        <span>
+          {id}-{this.props.licence.dashboard}
+        </span>
         <div className="dashboard-app-name">
           {this.props.preview.name && dragItem == id ? this.props.preview.name : name}
         </div>

@@ -4,6 +4,7 @@ interface Props {
   title: string;
   child: { current: HTMLDivElement };
   className?: string;
+  noResize?: boolean;
 }
 
 interface State {
@@ -16,7 +17,7 @@ class Collapsible extends React.Component<Props, State> {
   componentDidMount() {
     window.addEventListener("resize", this.handleResize, true);
 
-    if (this.props.child && this.props.child.current) {
+    if (this.props.child && this.props.child.current && !this.props.noResize) {
       // Needed to correctly render the height
       setTimeout(() => this.setInitialHeight(), 800);
       setTimeout(() => this.setInitialHeight(), 2500);

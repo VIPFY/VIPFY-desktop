@@ -58,8 +58,8 @@ class AppList extends React.Component<Props, State> {
   handleDrop = async (dropItem: number) => {
     const { dragItem } = this.state;
 
-    const dragged = this.props.allLicences.find(licence => licence.id == dragItem);
-    const dropped = this.props.allLicences.find(licence => licence.id == dropItem);
+    const dragged = this.props.allLicences.find(licence => licence.id == parseInt(dragItem));
+    const dropped = this.props.allLicences.find(licence => licence.id == parseInt(dropItem));
 
     if (dropped!.id == dragged!.id) {
       return;
@@ -156,14 +156,14 @@ class AppList extends React.Component<Props, State> {
                   return this.handleName(a).value - this.handleName(b).value;
 
                 default:
-                  return null;
+                  return a.dashboard - b.dashboard;
               }
             })
             .map((licence, key) => {
               return (
                 <AppTile
                   key={key}
-                  position={key}
+                  position={key + 1}
                   preview={preview}
                   setPreview={this.setPreview}
                   dragItem={dragItem}

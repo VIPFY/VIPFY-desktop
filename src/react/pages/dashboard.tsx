@@ -5,6 +5,8 @@ import { ErrorComp, filterError, filterAndSort } from "../common/functions";
 import UniversalSearchBox from "../components/universalSearchBox";
 import { Link } from "react-router-dom";
 import moment = require("moment");
+import { times } from "lodash";
+import Collapsible from "../common/Collapsible";
 
 interface Props {
   firstname: string;
@@ -27,6 +29,8 @@ interface State {
 
 class Dashboard extends React.Component<Props, State> {
   state = { search: "" };
+
+  favouriteListRef = React.createRef<HTMLDivElement>();
 
   render() {
     const setApp = (licence: number) => this.props.setApp(licence);
@@ -85,6 +89,19 @@ class Dashboard extends React.Component<Props, State> {
           </div>
         ) : (
           <React.Fragment>
+            <Collapsible noResize={true} child={this.favouriteListRef} title="Favourite Apps">
+              <div ref={this.favouriteListRef} className="favourite-apps">
+                {times(8, () => (
+                  <div
+                    className="favourite"
+                    draggable={true}
+                    title="Drag and Drop your favourite App here">
+                    <i className="fal fa-plus" />
+                  </div>
+                ))}
+              </div>
+            </Collapsible>
+
             {Object.keys(appLists).map(list => {
               if (appLists[list].length > 0) {
                 return (
