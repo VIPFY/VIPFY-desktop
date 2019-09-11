@@ -176,6 +176,15 @@ export const layoutUpdate = (licences, dragItem, dropItem) => {
   return newLicences;
 };
 
+export const filterLicences = licences =>
+  licences.filter(licence => {
+    if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+      return false;
+    } else {
+      return true;
+    }
+  });
+
 /**
  * Filters and sorts licences
  * @param licences {Licence[]} An array of the users licences
@@ -184,33 +193,25 @@ export const layoutUpdate = (licences, dragItem, dropItem) => {
  * @returns The sorted Licence Array
  */
 export const filterAndSort = (licences, property) =>
-  licences
-    .filter(licence => {
-      if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
-        return false;
-      }
+  filterLicences(licences).sort((a, b) => {
+    if (a[property] === null) {
+      return 1;
+    }
 
-      return true;
-    })
-    .sort((a, b) => {
-      if (a[property] === null) {
-        return 1;
-      }
+    if (b[property] === null) {
+      return -1;
+    }
 
-      if (b[property] === null) {
-        return -1;
-      }
+    if (a[property] < b[property]) {
+      return -1;
+    }
 
-      if (a[property] < b[property]) {
-        return -1;
-      }
+    if (a[property] > b[property]) {
+      return 1;
+    }
 
-      if (a[property] > b[property]) {
-        return 1;
-      }
-
-      return 0;
-    });
+    return 0;
+  });
 
 export const AppIcon = ({ app }) => (
   <div className="app-icon-wrapper">
