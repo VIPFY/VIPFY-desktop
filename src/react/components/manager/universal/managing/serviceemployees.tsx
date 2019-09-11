@@ -58,6 +58,7 @@ class ManageServiceEmployees extends React.Component<Props, State> {
             return null;
           }
           if (error) {
+            console.log("ERROR", error);
             return `Error! ${error}`;
           }
           const singleemployees = [];

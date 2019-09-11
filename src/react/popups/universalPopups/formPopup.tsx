@@ -18,6 +18,7 @@ interface Props {
   cancelLabel?: string;
   confirmLabel?: string;
   addStyles?: Object;
+  handleError?: Function;
 }
 
 interface State {
@@ -28,29 +29,31 @@ interface State {
 class FormPopup extends React.Component<Props, State> {
   state = { values: {}, save: false };
 
-
   listenKeyboard = e => {
     const fields = this.props.fields;
     const idlist: Array<string> = [];
     var idcheck = false;
-    if(fields) {
+    if (fields) {
       fields.forEach(field => {
         idlist.push(field.id);
       });
-    }else {
+    } else {
       idcheck = true;
     }
-    if(e.target && e.target.id && idlist.includes(e.target.id)) {
+    if (e.target && e.target.id && idlist.includes(e.target.id)) {
       idcheck = true;
     }
     if (e.key === "Escape" || e.keyCode === 27) {
       this.setState({ values: {} });
       this.props.close();
-    } else if (idcheck && (e.key === "Enter" || e.keyCode === 13) && !(this.props.submitDisabled && this.props.submitDisabled(this.state.values))) {
-      this.setState({ save: true })
+    } else if (
+      idcheck &&
+      (e.key === "Enter" || e.keyCode === 13) &&
+      !(this.props.submitDisabled && this.props.submitDisabled(this.state.values))
+    ) {
+      this.setState({ save: true });
     }
-  }
-
+  };
 
   componentDidMount() {
     window.addEventListener("keydown", this.listenKeyboard, true);
@@ -109,7 +112,7 @@ class FormPopup extends React.Component<Props, State> {
           type="low"
           onClick={() => {
             this.setState({ values: {} });
-            close();
+            close("user");
           }}
           label={cancelLabel || "Cancel"}
         />
@@ -123,7 +126,8 @@ class FormPopup extends React.Component<Props, State> {
           <PopupSelfSaving
             saveFunction={async () => await submit(this.state.values)}
             heading={savingHeading || "Process Data"}
-            closeFunction={() => close()}
+            closeFunction={action => close(action)}
+            handleError={this.props.handleError}
           />
         )}
       </PopupBase>
