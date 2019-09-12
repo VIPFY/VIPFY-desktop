@@ -21,6 +21,7 @@ interface Props {
 interface State {
   isopen: boolean;
   autoclosing: boolean;
+  id: string;
 }
 
 const hidePopup = {
@@ -43,7 +44,12 @@ const showBackground = {
 class PopupBase extends React.Component<Props, State> {
   state = {
     isopen: false,
-    autoclosing: false
+    autoclosing: false,
+    id:
+      "popup-" +
+      Math.random()
+        .toString(36)
+        .substring(2, 15)
   };
 
   open = isopen => {
@@ -77,6 +83,18 @@ class PopupBase extends React.Component<Props, State> {
     this.close(null, true);
     if (this.props.closeall) {
       this.props.closeall();
+    }
+  }
+
+  componentDidUpdate(_prevProps, prevState) {
+    if (!prevState.isopen && this.state.isopen) {
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
+      let firstinput = document.querySelector("#" + this.state.id)!.querySelector("input,button");
+      if (firstinput) {
+        firstinput.focus();
+      }
     }
   }
 
@@ -176,7 +194,8 @@ class PopupBase extends React.Component<Props, State> {
               if (!this.props.nooutsideclose) {
                 this.close();
               }
-            }}>
+            }}
+            id={this.state.id}>
             <div
               className="sideReplicaPopup"
               style={{ width: sidebarOpen && !this.props.noSidebar ? "240px" : "48px" }}
