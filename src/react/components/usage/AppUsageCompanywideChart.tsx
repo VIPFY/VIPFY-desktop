@@ -112,64 +112,66 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
 
     return (
       <div style={{ maxHeight: "700px", overflowY: "scroll" }}>
-        <Chart
-          height={height}
-          type="bar"
-          series={series}
-          options={{
-            chart: {
-              background: "#ffffff",
-              toolbar: {
-                show: false
-              }
-            },
-            plotOptions: {
-              bar: {
-                barHeight: "100%",
-                distributed: true,
-                horizontal: true
-              }
-            },
-            dataLabels: { enabled: false },
-            colors: ["#20BAA9"],
-            stroke: {
-              width: 1,
-              colors: ["#e4e6e8"]
-            },
-            xaxis: {
-              // this is the axis pointing up
-              categories: labels,
-
-              // except when talking about labels, this is for the axis pointing right
-              labels: {
-                show: true,
-
-                // except this formatter, this formats labels from both x and y axis
-                formatter: x => {
-                  if (typeof x === "string") {
-                    return x;
+        {usage.length > 0 ? (
+          <Chart
+            height={height}
+            type="bar"
+            series={series}
+            options={{
+              chart: {
+                background: "#ffffff",
+                toolbar: {
+                  show: false
+                }
+              },
+              plotOptions: {
+                bar: {
+                  barHeight: "100%",
+                  distributed: true,
+                  horizontal: true
+                }
+              },
+              dataLabels: { enabled: false },
+              colors: ["#20BAA9"],
+              stroke: {
+                width: 1,
+                colors: ["#e4e6e8"]
+              },
+              xaxis: {
+                // this is the axis pointing up
+                categories: labels,
+                // except when talking about labels, this is for the axis pointing right
+                labels: {
+                  show: true,
+                  // except this formatter, this formats labels from both x and y axis
+                  formatter: x => {
+                    if (typeof x === "string") {
+                      return x;
+                    }
+                    return x.toFixed(0) + "%";
                   }
-                  return x.toFixed(0) + "%";
+                }
+              },
+              tooltip: {
+                theme: "light",
+                marker: {
+                  show: false
+                },
+                x: {
+                  show: false
+                },
+                y: {
+                  title: {
+                    formatter: () => null
+                  },
+                  formatter: x => `${x.toFixed(2)}%`
                 }
               }
-            },
-            tooltip: {
-              theme: "light",
-              marker: {
-                show: false
-              },
-              x: {
-                show: false
-              },
-              y: {
-                title: {
-                  formatter: () => null
-                },
-                formatter: x => `${x.toFixed(2)}%`
-              }
-            }
-          }}
-        />
+            }}
+          />
+        ) : (
+          <div />
+        )}
       </div>
     );
   };

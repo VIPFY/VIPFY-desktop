@@ -51,7 +51,7 @@ class UsageStatistics extends React.Component<Props, State> {
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
               }`}
             />
-            <span>Time spent in {teamname} this month</span>
+            <span>Time spent in {teamname}</span>
           </div>
           <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
             <BoughtplanUsagePerUser
