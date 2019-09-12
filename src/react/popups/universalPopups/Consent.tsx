@@ -38,8 +38,8 @@ export default (props: Props) => (
           onClick={() => {
             setConsent({ variables: { consent: true } });
 
-            window.smartlook("consentIP", consentText);
-            window.smartlook("consentAPI", consentText);
+            // window.smartlook("consentIP", consentText);
+            // window.smartlook("consentAPI", consentText);
           }}
           type="low"
           label="Accept"

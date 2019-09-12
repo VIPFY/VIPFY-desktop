@@ -728,7 +728,11 @@ class PersonalDetails extends React.Component<Props, State> {
                   type="high"
                   disabled={
                     this.state.edit!.checking &&
-                    (!(this.state.editvalue != null && this.state.editvalue != "") ||
+                    (!(
+                      this.state.editvalue != null &&
+                      this.state.editvalue != "" &&
+                      this.state.editvalue!.trim() != ""
+                    ) ||
                       (this.state.editvalueArray != null &&
                         this.state.editvalueArray.some(v => v != null && v != "")))
                   }

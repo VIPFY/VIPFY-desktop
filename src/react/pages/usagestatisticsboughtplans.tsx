@@ -10,6 +10,7 @@ interface Props {
   company: any;
   showPopup: Function;
   history: History;
+  moveTo: Function;
 }
 
 interface State {
@@ -33,16 +34,19 @@ class UsageStatistics extends React.Component<Props, State> {
     }
 
     return (
-      <div className="statistic-team">
-        <div className="statistic-team-header">
-          <h2>Usage Statistics</h2>
-          <span>{teamname}</span>
+      <div className="statistic-team managerPage">
+        <div className="heading" style={{ gridColumnStart: 1, gridColumnEnd: 3 }}>
+          <span className="h1">
+            <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("usage")}>
+              Usage Statistics
+            </span>
+            <span className="h2">{teamname}</span>
+          </span>
+          <UniversalSearchBox
+            getValue={value => this.setState({ searchString: value })}
+            placeholder="Search Usage Statistics"
+          />
         </div>
-
-        <UniversalSearchBox
-          getValue={value => this.setState({ searchString: value })}
-          placeholder="Search Usage Statistics"
-        />
 
         <div className="genericHolder">
           <div className="header" onClick={() => this.toggleShowBoughtplans()}>

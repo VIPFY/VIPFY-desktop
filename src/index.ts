@@ -31,9 +31,7 @@ const suffix =
 
 if (!disableUpdater) {
   autoUpdater.setFeedURL({
-    url: `${DOMAIN}/VIPFY/98c61756053f11b6429ce49805bd7553/${process.platform}/${
-      process.arch
-    }${suffix}`,
+    url: `${DOMAIN}/VIPFY/98c61756053f11b6429ce49805bd7553/${process.platform}/${process.arch}${suffix}`,
     serverType: "json"
   });
 
@@ -178,7 +176,7 @@ const createWindow = async () => {
   });
 
   mainWindow.once("ready-to-show", () => {
-    mainWindow.webContents.on('did-fail-load', (event, code, desc, url, isMainFrame) => {
+    mainWindow.webContents.on("did-fail-load", (event, code, desc, url, isMainFrame) => {
       logger.warn(`failed loading; ${isMainFrame} ${code} ${url}`, event);
     });
     mainWindow.webContents.setZoomFactor(1.0);

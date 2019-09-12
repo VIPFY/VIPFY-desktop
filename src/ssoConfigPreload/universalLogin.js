@@ -80,6 +80,7 @@ ipcRenderer.once("loginData", async (e, key) => {
     }
     email = findEmailField();
     if (email) {
+      await clickButton(email);
       await fillFormField(email, "username");
       emailEntered = true;
       didAnything = true;
@@ -91,6 +92,7 @@ ipcRenderer.once("loginData", async (e, key) => {
     }
     password = findPassField();
     if (password) {
+      await clickButton(password);
       await fillFormField(password, "password");
       passwordEntered = true;
       didAnything = true;
@@ -120,11 +122,12 @@ if (document.readyState === "complete") {
 }*/
 
 async function fillFormField(target, content) {
+  //console.log("FILL", target, content);
   if (stopped) throw new Error("abort");
-  target.focus();
-  await sleep(250);
-  target.focus();
-  await sleep(250);
+  //target.focus();
+  // await sleep(250);
+  // target.focus();
+  //  await sleep(250);
   const p = new Promise(resolve =>
     ipcRenderer.once("formFieldFilled", async (e, key) => {
       if (stopped) return;
@@ -227,6 +230,7 @@ function findEmailField() {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
+  console.log("EMIAL", t);
   return t[0];
 }
 
