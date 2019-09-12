@@ -39,6 +39,9 @@ export const fetchLicences = gql`
   query onFetchLicence {
     fetchLicences {
       id
+      unitid {
+        id
+      }
       starttime
       endtime
       disabled
