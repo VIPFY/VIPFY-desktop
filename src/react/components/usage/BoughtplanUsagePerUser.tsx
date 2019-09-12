@@ -6,6 +6,7 @@ import moment = require("moment");
 import DatePicker from "../../common/DatePicker";
 import DropDown from "../../common/DropDown";
 import { concatName } from "../../common/functions";
+import LoadingDiv from "../LoadingDiv";
 
 interface State {
   starttime: moment.Moment;
@@ -49,6 +50,7 @@ class BoughtplanUsagePerUser extends React.Component<Props, State> {
           />
 
           <DropDown
+            header=""
             handleChange={value => this.setState({ sortBy: value })}
             defaultValue={{ label: "Sort By" }}
             options={["A-Z", "Most Used", "Least Used"]}
@@ -88,7 +90,7 @@ class BoughtplanUsagePerUser extends React.Component<Props, State> {
           }}>
           {({ data, loading, error }) => {
             if (loading) {
-              return <div>Loading</div>;
+              return <LoadingDiv />;
             }
 
             if (error || !data) {
