@@ -157,7 +157,7 @@ class DataNameForm extends React.Component<Props, State> {
                       <UniversalButton
                         label="Continue"
                         type="high"
-                        disabled={this.state.name == ""}
+                        disabled={!this.state.name || this.state.name.trim() == ""}
                         onClick={() => this.continue()}
                       />
                     </div>

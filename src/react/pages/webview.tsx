@@ -111,10 +111,37 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
   }
 
+  /*shouldComponentUpdate(nextProps, nextState) {
+    //console.log("COMPARE PROPS", this.props, nextProps);
+    //console.log("COMPARE STATE", this.state, nextState);
+    const props = this.props;
+    Object.keys(this.props).forEach(function(key) {
+      if (props[key] == nextProps[key]) {
+        //console.log("Same", key, props[key]);
+      } else {
+        console.log("WEBVIEW DIFFERENT PROPS", key, props[key], nextProps[key]);
+      }
+    });
+    const state = this.state;
+    Object.keys(this.state).forEach(function(key) {
+      if (state[key] == nextState[key]) {
+        //console.log("Same", key, props[key]);
+      } else {
+        console.log("WEBVIEW DIFFERENT STATE", key, state[key], nextState[key]);
+      }
+    });
+    return true;
+  }*/
+
   componentDidMount() {
     let intervalId = setInterval(() => this.timer1m(), 60000);
     let intervalId2 = setInterval(() => this.sendTimeSpent(), 600000);
     this.setState({ intervalId, intervalId2 });
+    if (this.state.previousLicenceId !== this.state.licenceId) {
+      this.setState({
+        previousLicenceId: this.state.licenceId
+      });
+    }
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
     this.switchApp();
     setTimeout(async () => {
@@ -363,7 +390,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   async onIpcMessage(e): Promise<void> {
-
+    //console.log("IPCMessage", e.channel)
     switch (e.channel) {
       case "getLoginData":
         {
@@ -431,7 +458,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       }
 
       case "errorDetected": {
-        console.log("errorDetected");
+        console.log("errorDetected 434");
         // Create the error object
         /*const { logError, client, ...saveprops } = this.props;
         const data = {
@@ -656,7 +683,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.plain) {
       cssClass = "";
     }
-
+//console.log("OPEN SERVICE", this.state.setUrl , this.state.options.universallogin)
     return (
       <HeaderNotificationContext.Consumer>{
         context => {
@@ -681,7 +708,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
               }
             }}
             progress={(progress) => this.setState({progress})}
-            speed={10}
+            speed={this.state.options.loginspeed || 10}
             style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}
             interactionHappenedCallback={() => {
               let interactions = this.state.interactions;

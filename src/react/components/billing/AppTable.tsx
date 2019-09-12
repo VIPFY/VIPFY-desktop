@@ -230,7 +230,7 @@ class AppListInner extends React.Component<Props, State> {
                     />
                   )}
                 </Mutation> */}
-              <IconButton
+              {/*<IconButton
                 title="Delete"
                 className="editButtons"
                 onClick={e => {
@@ -238,7 +238,7 @@ class AppListInner extends React.Component<Props, State> {
                   this.setState({ showDeletion: key });
                 }}
                 icon="trash-alt"
-              />
+              />*/}
 
               <IconButton
                 icon="external-link-alt"
@@ -279,7 +279,7 @@ class AppListInner extends React.Component<Props, State> {
                         disabled={loading}
                         onClick={() =>
                           removeAccount({
-                            variables: { licenceid: id, time: moment().toISOString() }
+                            variables: { licenceid: boughtplan.id, time: moment().toISOString() }
                           })
                         }
                       />
