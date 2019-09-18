@@ -11,7 +11,11 @@ import PasswordUpdate from "../../popups/universalPopups/PasswordUpdate";
 import TwoFactorForce from "../../popups/universalPopups/TwoFactorForce";
 import UserName from "../../components/UserName";
 import { Query } from "react-apollo";
-import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/UserSecurityTable";
+import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/graphqlOperations";
+import LoadingDiv from "../../components/LoadingDiv";
+import { ErrorComp } from "../../common/functions";
+import { FETCH_SESSIONS } from "../../components/security/graphqlOperations";
+import Device from "../../popups/universalPopups/Device";
 
 interface Link {
   header: string;
@@ -36,6 +40,7 @@ interface State {
   showPasswordUpdate: boolean;
   showSudo: boolean;
   showForce2FA: boolean;
+  showSessions: boolean;
 }
 
 class SecurityPopup extends React.Component<Props, State> {
@@ -48,7 +53,8 @@ class SecurityPopup extends React.Component<Props, State> {
     showPasswordForce4All: false,
     showPasswordUpdate: false,
     showSudo: false,
-    showForce2FA: false
+    showForce2FA: false,
+    showSessions: false
   };
 
   backFunction = () => {
@@ -71,6 +77,11 @@ class SecurityPopup extends React.Component<Props, State> {
         header: "Two-Factor Authentication",
         text: "Google Authenticator is recommended",
         state: "show2FA"
+      },
+      {
+        header: "Current Devices",
+        text: "See with which devices you are currently logged into your account",
+        state: "showSessions"
       }
     ];
 
@@ -260,8 +271,49 @@ class SecurityPopup extends React.Component<Props, State> {
               }}
             </Query>
           )}
-        </section>
 
+          {this.state.showSessions && (
+            <PopupBase
+              styles={{ maxWidth: "656px" }}
+              small={true}
+              close={() => this.setState({ showSessions: false })}>
+              <h1>Current Devices</h1>
+              <div className="sub-header">See on which devices you are logged in</div>
+
+              <Query
+                query={FETCH_SESSIONS}
+                fetchPolicy="network-only"
+                variables={{ userid: this.props.user.id }}>
+                {({ data, loading, error }) => {
+                  if (loading) {
+                    return <LoadingDiv text="Fetching data..." />;
+                  }
+
+                  if (error || !data) {
+                    return <ErrorComp error={error} />;
+                  }
+
+                  if (data.fetchUsersSessions.length < 1) {
+                    return <div>The User has no active Sessions</div>;
+                  }
+
+                  return (
+                    <div className="devices">
+                      {data.fetchUsersSessions.map(session => (
+                        <Device key={session.id} session={session} userid={this.props.user.id} />
+                      ))}
+                    </div>
+                  );
+                }}
+              </Query>
+              <UniversalButton
+                type="low"
+                label="back"
+                onClick={() => this.setState({ showSessions: false })}
+              />
+            </PopupBase>
+          )}
+        </section>
         <UniversalButton type="low" label="back" onClick={this.backFunction} />
       </PopupBase>
     );

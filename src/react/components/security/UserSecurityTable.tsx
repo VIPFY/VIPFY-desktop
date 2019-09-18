@@ -1,8 +1,8 @@
 import * as React from "react";
-import gql from "graphql-tag";
 import { Query, graphql } from "react-apollo";
 import { concatName } from "../../common/functions";
 import UserSecurityRow from "./UserSecurityRow";
+import { FETCH_USER_SECURITY_OVERVIEW, FORCE_RESET } from "./graphqlOperations";
 
 interface Props {
   forcePasswordChange: Function;
@@ -14,42 +14,6 @@ interface State {
   sortforward: boolean;
 }
 
-export const FORCE_RESET = gql`
-  mutation forcePasswordChange($userids: [ID]!) {
-    forcePasswordChange(userids: $userids) {
-      ok
-    }
-  }
-`;
-
-export const FETCH_USER_SECURITY_OVERVIEW = gql`
-  query userSecurityOverview {
-    fetchUserSecurityOverview {
-      id
-      unitid {
-        firstname
-        lastname
-        isadmin
-        profilepicture
-        companyban
-      }
-      lastactive
-      needspasswordchange
-      passwordlength
-      passwordstrength
-      banned
-      suspended
-      createdate
-      twofactormethods {
-        twofaid
-        twofatype
-        twofacreated
-        twofalastused
-        twofacount
-      }
-    }
-  }
-`;
 class UserSecurityTable extends React.Component<Props, State> {
   state = {
     sort: "Name",
