@@ -163,7 +163,9 @@ class Dashboard extends React.Component<Props, State> {
       "Temporary Apps": []
     };
 
-    if (this.props.licences && this.props.licences.fetchLicences.length > 0) {
+    const licenceCheck = this.props.licences && this.props.licences.fetchLicences.length > 0;
+
+    if (licenceCheck) {
       this.props.licences.fetchLicences.forEach(licence => {
         if (licence.dashboard !== null) {
           favourites[licence.dashboard] = licence;
@@ -187,7 +189,7 @@ class Dashboard extends React.Component<Props, State> {
           <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
-        {this.props.licences && this.props.licences.length < 1 ? (
+        {!licenceCheck ? (
           <div className="no-apps">
             <div>This is your</div>
             <h1>DASHBOARD</h1>
