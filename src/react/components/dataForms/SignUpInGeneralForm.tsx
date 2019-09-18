@@ -19,7 +19,7 @@ class SignUpInGeneral extends React.Component<Props, State> {
     field1: "",
     field2: ""
   };
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this.setState({ field1: "", field2: "" });
   }
 
@@ -63,7 +63,6 @@ class SignUpInGeneral extends React.Component<Props, State> {
   };
 
   render() {
-    console.log(this.fields, this.props, this.state);
     return (
       <div className="dataGeneralForm">
         <div className="logo" />

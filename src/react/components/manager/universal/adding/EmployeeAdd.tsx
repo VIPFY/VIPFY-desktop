@@ -56,8 +56,6 @@ class EmployeeAdd extends React.Component<Props, State> {
 
       employees = interemployees.filter(e => e.id);
 
-      console.log("EMPs", employees, employeedata, this.props.addedEmployees);
-
       employees.forEach(employee => {
         const oldemployee = false || employeedata.find(t => t.id == employee.id);
         employeesArray.push(
@@ -101,7 +99,6 @@ class EmployeeAdd extends React.Component<Props, State> {
     }
     let j = 0;
     if (this.props.integrateEmployee) {
-      console.log("INTEGRATE EMP");
       const employee: {
         profilepicture: string;
         firstname: string;

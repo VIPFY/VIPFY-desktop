@@ -34,6 +34,7 @@ interface Props {
   updatePic: Function;
   client: ApolloClient<InMemoryCache>;
   profile?: Boolean;
+  isadmin?: Boolean;
 }
 
 interface State {
@@ -66,8 +67,6 @@ class EmployeeDetails extends React.Component<Props, State> {
   render() {
     const employeeid = this.props.match.params.userid;
 
-    console.log(this.props);
-
     return (
       <Query
         pollInterval={60 * 10 * 1000 + 300}
@@ -82,8 +81,6 @@ class EmployeeDetails extends React.Component<Props, State> {
           }
           if (data && data.fetchSemiPublicUser) {
             const querydata = data.fetchSemiPublicUser;
-            console.log("SEMIPUBLIC", data.fetchSemiPublicUser);
-
             const privatePhones = [];
             const workPhones = [];
 
@@ -121,67 +118,44 @@ class EmployeeDetails extends React.Component<Props, State> {
                   <div className="heading">
                     <h1>Personal Data</h1>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <UploadImage
-                        picture={
-                          querydata.profilepicture && {
-                            preview: getImageUrlUser(querydata.profilepicture, 96)
-                          }
-                        }
-                        name={`${querydata.firstname} ${querydata.lastname}`}
-                        onDrop={file => this.uploadPic(file)}
-                        className="managerBigSquare noBottomMargin"
-                        isadmin={this.props.isadmin}
-                      />
-                      <div
-                        className="status"
-                        style={{
-                          backgroundColor: querydata.isonline ? "#29CC94" : "#DB4D3F"
-                        }}>
-                        {querydata.isonline ? "Online" : "Offline"}
-                      </div>
-                    </div>
-                    <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
-                      <div
-                        className="table"
-                        style={{ display: "grid", gridTemplateColumns: "1fr 160px" }}>
+                  <div className="table">
+                    <div className="tableRow" style={{ height: "144px" }}>
+                      <div className="tableMain">
+                        <div className="tableColumnSmall content twoline">
+                          <UploadImage
+                            picture={
+                              querydata.profilepicture && {
+                                preview: getImageUrlUser(querydata.profilepicture, 96)
+                              }
+                            }
+                            name={`${querydata.firstname} ${querydata.lastname}`}
+                            onDrop={file => this.uploadPic(file)}
+                            className="managerBigSquare noBottomMargin"
+                            isadmin={this.props.isadmin}
+                            formstyles={{ width: "100%", maxWidth: "96px", margin: "0px" }}
+                          />
+                          <div
+                            className="status"
+                            style={{
+                              width: "100%",
+                              maxWidth: "96px",
+                              marginLeft: "0px",
+                              backgroundColor: querydata.isonline ? "#29CC94" : "#DB4D3F"
+                            }}>
+                            {querydata.isonline ? "Online" : "Offline"}
+                          </div>
+                        </div>
+
                         <PersonalDetails
                           querydata={querydata}
                           refetch={refetch}
                           isadmin={this.props.isadmin}
                         />
+                      </div>
+                      <div
+                        className="tableEnd"
+                        style={{ alignItems: "flex-start", marginLeft: "16px" }}>
                         <div className="personalEditButtons">
-                          {/*<UniversalButton
-                            label="Change Password"
-                            type="medium"
-                            customStyles={{
-                              width: "128px",
-                              fontSize: "12px",
-                              lineHeight: "24px",
-                              marginTop: "8px"
-                            }}
-                          />
-                          <UniversalButton
-                            label="Manage Time Away"
-                            type="medium"
-                            customStyles={{
-                              width: "128px",
-                              fontSize: "12px",
-                              lineHeight: "24px",
-                              marginTop: "8px"
-                            }}
-                          />
-                          <UniversalButton
-                            label="Used Devices"
-                            type="medium"
-                            customStyles={{
-                              width: "128px",
-                              fontSize: "12px",
-                              lineHeight: "24px",
-                              marginTop: "8px"
-                            }}
-                          />*/}
                           {this.props.isadmin && (
                             <UniversalButton
                               type="high"

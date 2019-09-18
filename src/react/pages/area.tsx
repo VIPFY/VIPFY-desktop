@@ -106,7 +106,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidMount = async () => {
-    require("electron").ipcRenderer.on("change-page", (event, page) => {
+    require("electron").ipcRenderer.on("change-page", (_event, page) => {
       this.props.history.push(page);
     });
 
@@ -457,6 +457,12 @@ class Area extends React.Component<AreaProps, AreaState> {
               exact
               path="/area/support"
               render={props => <SupportPage {...this.state} {...this.props} {...props} />}
+            />
+
+            <Route
+              exact
+              path="/area/support/fromError"
+              render={() => <SupportPage {...this.state} fromErrorPage={true} />}
             />
 
             {routes.map(({ path, component, admin, addprops }) => {

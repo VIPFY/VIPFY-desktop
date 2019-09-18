@@ -91,7 +91,6 @@ class ChangePlan extends React.Component<Props, State> {
       features[sKey].value = values[sKey];
       features[sKey].amount = amount[sKey];
     });
-    console.log(selectedPlan);
     // updatePlan({
     //   variables: {
     //     planid: this.props.boughtPlanId,
@@ -167,8 +166,6 @@ class ChangePlan extends React.Component<Props, State> {
               if (error || !data) {
                 return <ErrorComp error={error} />;
               }
-
-              console.log(data);
               return (
                 <div className="orderSelect">
                   <div className="OHeading">

@@ -10,9 +10,40 @@
   display: grid;
   grid-template-rows: 40px calc(100% - 128px) 48px 40px;
   width: 240px;
-  transition: all 600ms ease;
+  transition: width 600ms ease;
 
-  .itemHolder{
+  &-impersonate {
+    background-color: #EDEDED;
+    color: #1C2935ff;
+
+    .sidebar-apps > .sidebar-link:first-of-type > .naked-button {
+      background: #F5F5F5 0% 0% no-repeat padding-box !important;
+      box-shadow: 0 2px 2px #00000029 !important;
+      
+      input,
+      .fa-search {
+        color: #1C2935ff!important;
+      }
+
+      input::placeholder {
+        color: #7d8185!important;
+      }
+    }
+    
+    .sidebar-active  > .itemHolder {
+      background: #F5F5F5 0% 0% no-repeat padding-box !important;
+      box-shadow: 0 2px 2px #00000029 !important;
+    }
+
+    .itemHolder {
+      &:hover {
+        background: #F5F5F5 0% 0% no-repeat padding-box !important;
+        box-shadow: 0 2px 2px #00000029 !important;
+      } 
+    }
+  }
+
+  .itemHolder {
     display: flex;
     align-items: center;
     border-radius: 4px;
@@ -21,7 +52,7 @@
     overflow-x: hidden;
     overflow: visible;
 
-    &:hover{
+    &:hover {
       background: #30475dff;
       box-shadow: 0 2px 2px #00000029;
     }
@@ -48,6 +79,7 @@
    // transform: translate(-5px, -6px);
     width: 24px;
     height: 24px;
+    line-height: 24px;
   }
 
   .sidebar-link-caption-context {
@@ -128,7 +160,7 @@
     position: relative;
     //height: 28px;
    // transform: translateX(9px);
-    transition: all 600ms ease-in-out;
+    //transition: all 600ms ease-in-out;
 
     .highlight {
       z-index: -1;
@@ -204,7 +236,7 @@
     &-caption {
       white-space: nowrap;
   //    animation: caption-grow 600ms ease-in-out forwards;
-      transition: all 0.6s ease-in-out;
+     // transition: all 0.6s ease-in-out;
       font-size: 16px;
       font-weight: 300;
       margin-left: 8px;

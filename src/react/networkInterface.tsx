@@ -83,6 +83,16 @@ const cache = new InMemoryCache({
         } else {
           return null;
         }
+      case "Licence":
+        if (
+          object.id !== undefined &&
+          object.unitid !== undefined &&
+          (object.unitid && object.unitid.id !== undefined)
+        ) {
+          return `Licence:${object.id}:${object.unitid ? object.unitid.id : "null"}`;
+        } else {
+          return null;
+        }
       default:
         return defaultDataIdFromObject(object);
     }

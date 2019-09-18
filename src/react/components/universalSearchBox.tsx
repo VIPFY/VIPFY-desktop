@@ -69,9 +69,7 @@ class UniversalSearchBox extends React.Component<Props, State> {
     //await this.props.searchFunction(value);
   };
 
-  activeSearch = () => {
-    console.log("Searching");
-  };
+  activeSearch = () => {};
 
   toggleSearch = (b, e = null) => {
     if (b) {
@@ -174,7 +172,6 @@ class UniversalSearchBox extends React.Component<Props, State> {
               style={{ left: this.state.searching ? "0px" : "-315px" }}
               onContextMenu={e => {
                 e.preventDefault();
-                console.log("CONTEXT", this.state, this.props);
                 if (this.state.searching) {
                   this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
                 }

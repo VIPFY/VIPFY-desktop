@@ -29,7 +29,6 @@ class ManageTeams extends React.Component<Props, State> {
   };
 
   onChange(s, refetch) {
-    console.log("ON CHANGE", s);
     switch (s.action) {
       case "remove":
         this.setState({ deleteTeam: s.content });
@@ -39,7 +38,7 @@ class ManageTeams extends React.Component<Props, State> {
         break;
 
       default:
-        console.log(s);
+        console.log("CHANGE TEAM", s);
         break;
     }
     //TODO SAVING STUFF
@@ -100,7 +99,11 @@ class ManageTeams extends React.Component<Props, State> {
               )}
 
               {this.state.addTeam && this.state.addTeam!.new && (
-                <PopupBase fullmiddle={true} close={() => this.setState({ addTeam: null })}>
+                <PopupBase
+                  fullmiddle={true}
+                  small={true}
+                  close={() => this.setState({ addTeam: null })}
+                  additionalclassName="formPopup">
                   <AddTeamGeneralData
                     close={() => this.setState({ addTeam: null })}
                     savingFunction={so => {

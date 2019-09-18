@@ -84,7 +84,6 @@ class DropDown extends React.PureComponent<Props, State> {
   render() {
     const { show, touched } = this.state;
     let bodyClass = "body";
-
     // if (touched) {
     if (show) {
       bodyClass += " slide-down";
@@ -131,7 +130,7 @@ class DropDown extends React.PureComponent<Props, State> {
                 this.props.handleChange(option);
                 this.setState({ show: false });
               }}>
-              {option.label ? option.label : option}
+              <span>{option.label ? option.label : option}</span>
             </button>
           ))}
         </div>

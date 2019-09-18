@@ -23,6 +23,7 @@ interface State {
   wphone1: string;
   wphone2: string;
   showall: boolean;
+  picture: File | null;
 }
 
 class EmployeeGerneralDataAdd extends React.Component<Props, State> {
@@ -40,7 +41,8 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
     wmail2: (this.props.addpersonal && this.props.addpersonal.wmail2) || "",
     wphone1: (this.props.addpersonal && this.props.addpersonal.wphone1) || "",
     wphone2: (this.props.addpersonal && this.props.addpersonal.wphone2) || "",
-    showall: false
+    showall: false,
+    picture: null
   };
 
   setBothStates = s => {
@@ -53,7 +55,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
       <div>
         <div style={{ display: "flex", alignItems: "flex-end", marginBottom: "40px" }}>
           <UploadImage
-            onDrop={file => console.log("TODO PASCAL")}
+            onDrop={file => this.setBothStates({ picture: file })}
             picture={null}
             name={this.state.name}
             className="profilepictureTeam"
@@ -101,7 +103,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
           <i
             className="far fa-chevron-down chevron"
             style={
-              this.state.showall ? { transform: "rotate(90deg)" } : { transform: "rotate(0deg)" }
+              this.state.showall ? { transform: "rotate(0deg)" } : { transform: "rotate(90deg)" }
             }
           />
         </button>
@@ -127,13 +129,15 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
             label="Birthday"
             id="birthday"
             livevalue={v => this.setBothStates({ birthday: v })}
-            startvalue={this.state.birthday}
+            startvalue={this.state.birthday || " "}
+            type="date"
           />
           <UniversalTextInput
             label="Hiredate"
             id="hiredate"
             livevalue={v => this.setBothStates({ hiredate: v })}
-            startvalue={this.state.hiredate}
+            startvalue={this.state.hiredate || " "}
+            type="date"
           />
           {/*<UniversalTextInput
           label="Street/Number"

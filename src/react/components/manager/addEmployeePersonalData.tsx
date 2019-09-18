@@ -40,13 +40,13 @@ interface State {
   unitid: number | null;
   parsedName: any;
   error: String | null;
+  picture: File | null;
 }
 
 const CREATE_EMPLOYEE = gql`
   mutation createEmployee09(
     $name: HumanName!
     $emails: [EmailInput!]!
-    $file: Upload
     $birthday: Date
     $hiredate: Date
     $address: AddressInput
@@ -54,11 +54,12 @@ const CREATE_EMPLOYEE = gql`
     $phones: [PhoneInput]
     $password: String!
     $needpasswordchange: Boolean
+    $picture: Upload
   ) {
     createEmployee09(
       name: $name
       emails: $emails
-      file: $file
+      file: $picture
       birthday: $birthday
       hiredate: $hiredate
       address: $address
@@ -90,8 +91,65 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     success: true,
     unitid: null,
     parsedName: null,
-    error: null
+    error: null,
+    picture: null
   };
+
+  handleConfirm() {
+    if (this.state.confirm) {
+      this.setState({ saving: true, confirm: false });
+    }
+  }
+
+  handleCreate() {
+    if (this.props.addpersonal.unitid) {
+      this.props.continue(this.state);
+    } else {
+      this.setState({ confirm: true });
+    }
+  }
+
+  listenKeyboard = e => {
+    const { name, wmail1 } = this.state;
+    this.handleConfirm();
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.props.close();
+    } else if (
+      !(
+        e.target &&
+        e.target.id &&
+        [
+          "name",
+          "wmail1",
+          "wmail2",
+          "birthday",
+          "hiredate",
+          "pphone1",
+          "pphone2",
+          "position",
+          "wphone1",
+          "wphone2"
+        ].includes(e.target.id)
+      )
+    ) {
+      return; // Check if one of the Textfields is focused
+    } else if (
+      (e.key === "Enter" || e.keyCode === 13) &&
+      name &&
+      wmail1 &&
+      e.srcElement.textContent != "Cancel"
+    ) {
+      this.handleCreate();
+    }
+  };
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+  }
 
   render() {
     return (
@@ -112,11 +170,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
               disabled={
                 this.state.name == "" || this.state.wmail1 == "" || !this.state.wmail1.includes("@")
               }
-              onClick={() =>
-                this.props.addpersonal.unitid
-                  ? this.props.continue(this.state)
-                  : this.setState({ confirm: true })
-              }
+              onClick={() => this.handleCreate()}
             />
           </div>
         </div>
@@ -124,11 +178,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           <PopupBase small={true} close={() => this.setState({ confirm: false })}>
             Do you really want to create an Employee called {this.state.name}?
             <UniversalButton label="Cancel" type="low" closingPopup={true} />
-            <UniversalButton
-              label="Confirm"
-              type="high"
-              onClick={() => this.setState({ saving: true, confirm: false })}
-            />
+            <UniversalButton label="Confirm" type="high" onClick={() => this.handleConfirm()} />
           </PopupBase>
         )}
         {this.state.saving && (
@@ -182,7 +232,6 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                     birthday: birthday != "" ? birthday : null
                   }
                 });
-                console.log("SUCCESS", unitid);
                 this.setState({
                   success: true,
                   unitid: unitid.data.createEmployee09,

@@ -29,6 +29,12 @@ class PopupSelfSaving extends React.Component<Props, State> {
     error: null
   };
 
+  listenKeyboard = e => {
+    if (e.key === "Escape" || e.keyCode === 27 || e.key === "Enter" || e.keyCode === 13) {
+      this.close("user");
+    }
+  };
+
   componentDidMount = async () => {
     try {
       await this.props.saveFunction();
@@ -42,6 +48,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
       }
       console.error("ERROR", err);
     }
+    window.addEventListener("keydown", this.listenKeyboard, true);
   };
 
   componentWillUnmount() {
@@ -49,19 +56,19 @@ class PopupSelfSaving extends React.Component<Props, State> {
       clearTimeout(this.timeout);
     }
     this.setState({ tolong: false, saved: false, error: null });
+    window.removeEventListener("keydown", this.listenKeyboard, true);
   }
 
-  componentWillReceiveProps = async props => {};
+  UNSAFE_componentWillReceiveProps = async props => {};
 
-  close() {
+  close(action) {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
-    this.props.closeFunction();
+    this.props.closeFunction(action);
   }
 
   render() {
-    console.log("PROPS", this.props);
     if (this.props.maxtime) {
       this.timeout = setTimeout(() => {
         if (!this.state.saved && !this.state.error) {
@@ -80,7 +87,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
               This operation takes longer than expected. We will continue it in the background and
               inform you when it has finished.
             </div>
-            <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
+            <UniversalButton type="high" label="Ok" onClick={() => this.close("time")} />
           </>
         ) : this.state.error ? (
           <>
@@ -88,7 +95,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
               {this.props.errormessage ||
                 "There was an error. Please try again or contact support."}
             </div>
-            <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
+            <UniversalButton type="high" label="Ok" onClick={() => this.close("error")} />
           </>
         ) : this.state.saved ? (
           <div>
@@ -100,7 +107,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
               <UniversalButton
                 type="high"
                 label="Continue"
-                onClick={() => this.close()}
+                onClick={() => this.close("sucess")}
                 customStyles={{ marginTop: "16px" }}
               />
             </div>

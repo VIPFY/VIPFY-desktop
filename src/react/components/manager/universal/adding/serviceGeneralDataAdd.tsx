@@ -28,7 +28,7 @@ class ServiceGeneralDataAdd extends React.Component<Props, State> {
     drag: null
   };
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (newProps.search != this.props.search) {
       this.setState({ search: newProps.search });
     }

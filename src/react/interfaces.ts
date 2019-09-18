@@ -93,7 +93,6 @@ export interface Department {
   suspended: Boolean;
   profilepicture: string;
   employees: number;
-  employeedata: PublicUser[];
   manageemployees: Boolean;
   managelicences: Boolean;
   apps: JSON;

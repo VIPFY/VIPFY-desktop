@@ -10,6 +10,7 @@ interface Props {
   uploadError?: string | null;
   isadmin?: Boolean;
   mainClassName?: string;
+  formstyles?: Object;
 }
 
 interface State {
@@ -23,7 +24,7 @@ class UploadImage extends React.Component<Props, State> {
     picture: this.props.picture || null
   };
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (this.state.name != newProps.name && newProps.name != this.props.name) {
       this.setState({ name: newProps.name });
     }
@@ -40,11 +41,12 @@ class UploadImage extends React.Component<Props, State> {
   render() {
     const { picture, name } = this.state;
     return (
-      <form className={`profilepicture ${this.props.mainClassName}`}>
+      <form className={`profilepicture ${this.props.mainClassName}`} style={this.props.formstyles}>
         <label>
           <div
             className={this.props.className}
-            style={
+            style={Object.assign(
+              this.props.formstyles || {},
               picture && picture.preview
                 ? {
                     backgroundImage: `url(${encodeURI(picture.preview)})`,
@@ -57,7 +59,7 @@ class UploadImage extends React.Component<Props, State> {
                     backgroundColor: "#5D76FF"
                   }
                 : {}
-            }>
+            )}>
             {/*picture && picture.preview ? (
               <img
                 src={picture.preview}

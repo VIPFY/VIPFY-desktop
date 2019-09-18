@@ -78,7 +78,7 @@ class Conversation extends React.Component<Props, State> {
   };
 
   // Avoid the Scrollbar from going to the bottom when fetching new Messages
-  componentWillReceiveProps({ fetchDialog: newMessages }) {
+  UNSAFE_componentWillReceiveProps({ fetchDialog: newMessages }) {
     const { fetchDialog: oldMessages } = this.props;
 
     if (

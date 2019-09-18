@@ -7,13 +7,14 @@ interface Props {
   size?: number;
   hideTitle?: boolean;
   styles?: Object;
+  overlayFunction?: Function;
 }
 
 interface State {}
 
 class PrintEmployeeSquare extends React.Component<Props, State> {
   render() {
-    let { employee } = this.props;
+    let { employee, overlayFunction } = this.props;
     if (!employee) {
       // handle employee == null for renders without data (happens in login)
       employee = { firstname: "" };
@@ -34,6 +35,7 @@ class PrintEmployeeSquare extends React.Component<Props, State> {
             : { backgroundColor: employee.color || "#5d76ff" }
         )}>
         {employee.profilepicture ? "" : name.slice(0, 1)}
+        {overlayFunction && overlayFunction(employee)}
       </div>
     );
   }

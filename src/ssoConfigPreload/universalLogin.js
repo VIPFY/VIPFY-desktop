@@ -26,6 +26,28 @@ const sleep = async ms => {
   return new Promise(resolve => setTimeout(resolve, ms / speed));
 };
 
+let interactionHappened = false;
+function didInteraction() {
+  interactionHappened = true;
+}
+function timer() {
+  if (!interactionHappened) {
+    return;
+  }
+  interactionHappened = false;
+  ipcRenderer.sendToHost("interactionHappened");
+}
+
+document.addEventListener("mousemove", didInteraction, true);
+document.addEventListener("touchmove", didInteraction, true);
+document.addEventListener("touchenter", didInteraction, true);
+document.addEventListener("pointermove", didInteraction, true);
+document.addEventListener("keydown", didInteraction, true);
+document.addEventListener("scroll", didInteraction, true);
+
+setInterval(() => timer(), 30000);
+setTimeout(() => timer(), 5000);
+
 let emailEntered = false;
 let passwordEntered = false;
 let stopped = false;
@@ -33,7 +55,6 @@ let speed = 1;
 
 ipcRenderer.once("loginData", async (e, key) => {
   if (stopped) return;
-  console.log("gotLoginData", key);
   emailEntered = key.emailEntered;
   passwordEntered = key.passwordEntered;
   speed = key.speed || 1;
@@ -59,6 +80,7 @@ ipcRenderer.once("loginData", async (e, key) => {
     }
     email = findEmailField();
     if (email) {
+      await clickButton(email);
       await fillFormField(email, "username");
       emailEntered = true;
       didAnything = true;
@@ -70,12 +92,12 @@ ipcRenderer.once("loginData", async (e, key) => {
     }
     password = findPassField();
     if (password) {
+      await clickButton(password);
       await fillFormField(password, "password");
       passwordEntered = true;
       didAnything = true;
     }
     button = findConfirmButton();
-    console.log("BUTTON", button);
     if (button) {
       await clickButton(button);
       didAnything = true;
@@ -86,7 +108,6 @@ ipcRenderer.once("loginData", async (e, key) => {
 
 function start() {
   //if (!document.body.id.includes("beacon")) {
-  console.log("starting universal login", document);
   ipcRenderer.sendToHost("loaded", null);
   ipcRenderer.sendToHost("getLoginData", null);
   //}
@@ -101,12 +122,12 @@ if (document.readyState === "complete") {
 }*/
 
 async function fillFormField(target, content) {
+  //console.log("FILL", target, content);
   if (stopped) throw new Error("abort");
-  console.log("filling in", content, target, isHidden(target));
-  target.focus();
-  await sleep(250);
-  target.focus();
-  await sleep(250);
+  //target.focus();
+  // await sleep(250);
+  // target.focus();
+  //  await sleep(250);
   const p = new Promise(resolve =>
     ipcRenderer.once("formFieldFilled", async (e, key) => {
       if (stopped) return;
@@ -169,7 +190,6 @@ function findForm(ignoreForm) {
   let forms = Array.from(document.querySelectorAll("form")).filter(
     filterDom(["sign.?in", "log.?in"], ["oauth", "facebook", "sign.?up", "forgot", "google"])
   );
-  console.log("forms", forms);
 
   if (forms.length == 0) {
     forms = Array.from(document.querySelectorAll("form"))
@@ -190,14 +210,12 @@ function findPassField() {
     .filter(filterDom(["pass", "pw"], ["repeat", "confirm", "forgot"]))
     .filter(e => !isHidden(e))
     .filter(e => !e.disabled);
-  console.log("pass", t);
   if (t.length == 0) {
     t = Array.from(findForm().querySelectorAll("input[type=password]"))
       .filter(filterDom([], ["repeat", "confirm", "forgot"]))
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("passB", t);
   return t[0];
 }
 
@@ -206,14 +224,13 @@ function findEmailField() {
     .filter(filterDom(["email", "user", "log.?in", "name"], ["pw", "pass"]))
     .filter(e => !isHidden(e))
     .filter(e => !e.disabled);
-  console.log("email", t);
   if (t.length == 0) {
     t = Array.from(findForm().querySelectorAll("input[type=email]"))
       .filter(filterDom([], ["pw", "pass"]))
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("emailB", t);
+  console.log("EMIAL", t);
   return t[0];
 }
 
@@ -240,7 +257,6 @@ function findConfirmButton(ignoreForm) {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("button1", t);
   if (t.length == 0) {
     t = Array.from(
       findForm(ignoreForm).querySelectorAll(
@@ -256,7 +272,6 @@ function findConfirmButton(ignoreForm) {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("button2", t);
   if (t.length == 0) {
     t = Array.from(
       findForm().querySelectorAll(
@@ -287,8 +302,6 @@ function findConfirmButton(ignoreForm) {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-
-  console.log("button", t);
 
   if (t.length == 0 && !ignoreForm) return findConfirmButton(true);
 
@@ -326,7 +339,6 @@ function findCookieButton() {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("cookiebutton", t);
   return t[0];
 }
 
@@ -372,7 +384,6 @@ function filterDom(includesAny, excludesAll) {
       const attr = element.attributes.getNamedItem(attribute);
       if (attr === null) continue;
       const val = attr.value.toLowerCase();
-      //console.log("attr", attribute, val, includesAny);
       if (val.includesAnyRegExp(includesAny)) {
         return true;
       }

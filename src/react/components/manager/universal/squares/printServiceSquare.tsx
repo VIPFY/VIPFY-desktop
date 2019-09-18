@@ -49,7 +49,7 @@ class PrintServiceSquare extends React.Component<Props, State> {
         }>
         {!appidFunction(service) || appidFunction(service).icon
           ? ""
-          : appidFunction(service).name.slice(0, 1)}
+          : appidFunction(service).name && appidFunction(service).name.slice(0, 1)}
         {overlayFunction && overlayFunction(service)}
       </div>
     );

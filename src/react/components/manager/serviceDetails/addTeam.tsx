@@ -70,7 +70,7 @@ class AddTeam extends React.Component<Props, State> {
     saving: false
   };
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     if (this.props.teams != props.teams) {
       this.setState({ teams: [] });
     }
@@ -222,7 +222,6 @@ class AddTeam extends React.Component<Props, State> {
   }
 
   printEmployeeAddSteps() {
-    console.log("integrateTeam", this.state);
     if (this.state.integrateTeam.employees.length == 0) {
       return (
         <div className="buttonsPopup">
@@ -336,7 +335,6 @@ class AddTeam extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("STATE", this.state);
     return (
       <Mutation mutation={ADD_TO_TEAM}>
         {addAppToTeam => (
@@ -405,7 +403,6 @@ class AddTeam extends React.Component<Props, State> {
                       return 0;
                     });
                     //ausgrauen von Teams, in denen er schon drin ist  employeeTeams
-                    console.log("TEAMS", teams);
                     teams.forEach(teama => {
                       const team = Object.assign({}, teama);
                       const available = !(
@@ -635,9 +632,7 @@ class AddTeam extends React.Component<Props, State> {
                       }
                     });
                   }}
-                  employeename={`${
-                    this.state.integrateTeam.employees[this.state.counter].firstname
-                  } ${this.state.integrateTeam.employees[this.state.counter].lastname}`}
+                  employeename={`${this.state.integrateTeam.employees[this.state.counter].firstname} ${this.state.integrateTeam.employees[this.state.counter].lastname}`}
                   employee={this.state.integrateTeam.employees[this.state.counter]}
                   maxstep={this.state.integrateTeam.employees.length}
                   currentstep={this.state.counter}

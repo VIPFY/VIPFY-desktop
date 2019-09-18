@@ -167,7 +167,6 @@ class CompanyDetails extends React.Component<Props, State> {
           }
           if (data && data.fetchCompany) {
             const company = data.fetchCompany;
-            console.log("COMPANY", company);
 
             const { name, profilepicture, promocode, employees, legalinformation } = company;
 
@@ -184,75 +183,121 @@ class CompanyDetails extends React.Component<Props, State> {
                   <div className="heading">
                     <h1>General Data</h1>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <UploadImage
-                        picture={
-                          profilepicture && {
-                            preview: getImageUrlUser(profilepicture, 96)
-                          }
-                        }
-                        name={name}
-                        onDrop={file => this.uploadPic(file)}
-                        className="managerBigSquare noBottomMargin"
-                        isadmin={this.props.isadmin}
-                      />
-                    </div>
-                    <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
-                      <div
-                        className="table"
-                        style={{ display: "grid", gridTemplateColumns: "1fr 160px" }}>
-                        <div className="tableRowShow" style={{ height: "80px", width: "100%" }}>
-                          <div className="tableMain" style={{ width: "100%" }}>
-                            <div
-                              className="tableColumnSmall editable"
-                              onClick={() =>
-                                this.setState({
-                                  edit: {
-                                    id: "name",
-                                    label: "Company Name",
-                                    startvalue: name
+                  <div className="table">
+                    <div className="tableRow" style={{ height: "144px" }}>
+                      <div className="tableMain" style={{ width: "calc(100% - 16px)" }}>
+                        <div className="tableColumnSmall content">
+                          <UploadImage
+                            picture={
+                              profilepicture && {
+                                preview: getImageUrlUser(profilepicture, 96)
+                              }
+                            }
+                            name={name}
+                            onDrop={file => this.uploadPic(file)}
+                            className="managerBigSquare noBottomMargin"
+                            isadmin={this.props.isadmin}
+                            formstyles={{ marginLeft: "0px", marginTop: "0px" }}
+                          />
+                        </div>
+
+                        <div className="tableColumnSmall content twoline">
+                          <div
+                            className="tableColumnSmall editable"
+                            style={{ width: "100%" }}
+                            onClick={() =>
+                              this.setState({
+                                edit: {
+                                  id: "name",
+                                  label: "Company Name",
+                                  startvalue: name
+                                }
+                              })
+                            }>
+                            <h1>Company Name</h1>
+                            <h2>{name}</h2>
+                            <div className="profileEditButton">
+                              <i className="fal fa-pen editbuttons" />
+                            </div>
+                          </div>
+                          <div
+                            className="tableColumnSmall editable"
+                            style={{ width: "100%" }}
+                            onClick={() => this.props.moveTo("emanager")}>
+                            <h1>Employees</h1>
+                            <h2>{employees}</h2>
+                            <div className="profileEditButton">
+                              <i className="fal fa-pen editbuttons" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="tableColumnSmall content twoline">
+                          <div
+                            className="tableColumnSmall editable"
+                            style={{ width: "100%" }}
+                            onClick={() => this.props.moveTo("lmanager")}>
+                            <h1>Used Services</h1>
+                            <h2>
+                              <Query
+                                pollInterval={60 * 10 * 1000 + 900}
+                                query={fetchCompanyServices}
+                                fetchPolicy="cache-and-network">
+                                {({ loading, error, data, refetch }) => {
+                                  if (loading) {
+                                    return "Loading...";
                                   }
-                                })
-                              }>
-                              <h1>Company Name</h1>
-                              <h2>{name}</h2>
-                              <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
-                              </div>
+                                  if (error) {
+                                    return `Error! ${error.message}`;
+                                  }
+                                  return (
+                                    data &&
+                                    data.fetchCompanyServices &&
+                                    data.fetchCompanyServices.length
+                                  );
+                                }}
+                              </Query>
+                            </h2>
+                            <div className="profileEditButton">
+                              <i className="fal fa-pen editbuttons" />
                             </div>
-                            <div
-                              className="tableColumnSmall editable"
-                              onClick={() => this.props.moveTo("lmanager")}>
-                              <h1>Used Services</h1>
-                              <h2>
-                                <Query
-                                  pollInterval={60 * 10 * 1000 + 900}
-                                  query={fetchCompanyServices}
-                                  fetchPolicy="cache-and-network">
-                                  {({ loading, error, data, refetch }) => {
-                                    if (loading) {
-                                      return "Loading...";
-                                    }
-                                    if (error) {
-                                      return `Error! ${error.message}`;
-                                    }
-                                    console.log("FETCH COMPANY", data.fetchCompanyServices);
-                                    return (
-                                      data &&
-                                      data.fetchCompanyServices &&
-                                      data.fetchCompanyServices.length
-                                    );
-                                  }}
-                                </Query>
-                              </h2>
-                              <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
-                              </div>
+                          </div>
+
+                          <div
+                            className="tableColumnSmall editable"
+                            style={{ width: "100%" }}
+                            onClick={() => this.props.moveTo("lmanager")}>
+                            <h1>Integrated Accounts</h1>
+                            <h2>
+                              <Query
+                                pollInterval={60 * 10 * 1000 + 900}
+                                query={fetchCompanyServices}
+                                fetchPolicy="cache-and-network">
+                                {({ loading, error, data, refetch }) => {
+                                  if (loading) {
+                                    return "Loading...";
+                                  }
+                                  if (error) {
+                                    return `Error! ${error.message}`;
+                                  }
+                                  let sum = 0;
+                                  if (data && data.fetchCompanyServices) {
+                                    data.fetchCompanyServices.map(s => (sum += s.licences.length));
+                                    return sum;
+                                  } else {
+                                    return "No Data avaiable";
+                                  }
+                                }}
+                              </Query>
+                            </h2>
+                            <div className="profileEditButton">
+                              <i className="fal fa-pen editbuttons" />
                             </div>
-                            <div
-                              className="tableColumnSmall" //editable
-                              /*onClick={() =>
+                          </div>
+                        </div>
+                        <div className="tableColumnSmall content twoline">
+                          <div
+                            className="tableColumnSmall" //editable
+                            /*onClick={() =>
                                 this.setState({
                                   edit: {
                                     id: "privatephones",
@@ -260,185 +305,138 @@ class CompanyDetails extends React.Component<Props, State> {
                                     startvalue: querydata.privatePhones
                                   }
                                 })
-                              }*/
-                            >
-                              <h1>VIPFY-Plan</h1>
-                              <h2>Free Trial</h2>
-                              {/*<div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
+                              }*/ style={{
+                              width: "100%"
+                            }}>
+                            <h1>VIPFY-Plan</h1>
+                            <h2>Free Trial</h2>
+                            {/*<div className="profileEditButton">
+                                <i className="fal fa-pen editbuttons" />
                             </div>*/}
-                            </div>
-                            <div
-                              className="tableColumnSmall editable"
-                              onClick={() =>
-                                this.setState({
-                                  edit: {
-                                    id: "promocode",
-                                    label: "Promocode",
-                                    startvalue: promocode
-                                  }
-                                })
-                              }>
-                              <h1>Promocode</h1>
-                              <h2>{promocode}</h2>
-                              <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
-                              </div>
-                            </div>
+                          </div>
+
+                          <div
+                            className="tableColumnSmall"
+                            style={{ width: "100%" }} //editable
+                          >
+                            <h1>VIPFY-Costs per month</h1>
+                            <h2>Free</h2>
+                            {/*<div className="profileEditButton">
+                                <i className="fal fa-pen editbuttons" />
+                            </div>*/}
                           </div>
                         </div>
-                        <div className="tableRowShow" style={{ height: "80px", width: "100%" }}>
-                          <div className="tableMain" style={{ width: "100%" }}>
-                            <div
-                              className="tableColumnSmall editable"
-                              onClick={() => this.props.moveTo("emanager")}>
-                              <h1>Employees</h1>
-                              <h2>{employees}</h2>
-                              <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
-                              </div>
-                            </div>
-                            <div
-                              className="tableColumnSmall editable"
-                              onClick={() => this.props.moveTo("lmanager")}>
-                              <h1>Integrated Accounts</h1>
-                              <h2>
-                                <Query
-                                  pollInterval={60 * 10 * 1000 + 900}
-                                  query={fetchCompanyServices}
-                                  fetchPolicy="cache-and-network">
-                                  {({ loading, error, data, refetch }) => {
-                                    if (loading) {
-                                      return "Loading...";
-                                    }
-                                    if (error) {
-                                      return `Error! ${error.message}`;
-                                    }
-                                    console.log("FETCH COMPANY", data.fetchCompanyServices);
-                                    let sum = 0;
-                                    if (data && data.fetchCompanyServices) {
-                                      data.fetchCompanyServices.map(
-                                        s => (sum += s.licences.length)
-                                      );
-                                      return sum;
-                                    } else {
-                                      return "No Data avaiable";
-                                    }
-                                  }}
-                                </Query>
-                              </h2>
-                              <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
-                              </div>
-                            </div>
-                            <div
-                              className="tableColumnSmall" //editable
-                            >
-                              <h1>VIPFY-Costs per month</h1>
-                              <h2>Free</h2>
-                              {/*<div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
-                            </div>*/}
-                            </div>
-                            <div
-                              className="tableColumnSmall editable"
-                              onClick={() =>
-                                this.setState({
-                                  edit: {
-                                    id: "vatId",
-                                    label: "VAT-ID",
-                                    startvalue: legalinformation.vatId
-                                  }
-                                })
-                              }>
-                              <h1>VAT-ID</h1>
-                              <h2>
-                                {(legalinformation && legalinformation.vatId) || "No VAT yet"}
-                              </h2>
-                              <div className="profileEditButton">
-                                <i className="fal fa-pencil editbuttons" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {this.state.edit && (
-                          <PopupBase
-                            small={true}
-                            buttonStyles={{ justifyContent: "space-between" }}>
-                            <h2 className="boldHeading">Edit Company Data</h2>
-                            <div>
-                              {this.state.edit!.id == "promocode" && !promocode ? (
-                                <UniversalTextInput
-                                  id={this.state.edit!.id}
-                                  label={this.state.edit!.label}
-                                  livevalue={v => this.setState({ editvalue: v })}
-                                  startvalue={this.state.edit!.startvalue}
-                                  type={this.state.edit!.type}
-                                />
-                              ) : (
-                                <span>Please contact support to change this information</span>
-                              )}
-                            </div>
-                            <UniversalButton
-                              label="Cancel"
-                              type="low"
-                              onClick={() => this.setState({ edit: null, editvalue: null })}
-                            />
-                            {this.state.edit!.id == "promocode" && !promocode && (
-                              <UniversalButton
-                                label="Save"
-                                type="high"
-                                onClick={async () => {
-                                  this.setState({ updateing: true });
-                                  return;
-                                }}
-                              />
-                            )}
-
-                            {this.state.updateing && (
-                              <PopupSelfSaving
-                                heading={`Save ${this.state.edit.label}`}
-                                saveFunction={async () => {
-                                  switch (this.state.edit!.id) {
-                                    case "promocode":
-                                      await this.props.applyPromocode({
-                                        variables: { promocode: this.state.editvalue }
-                                      });
-                                      break;
-
-                                    default:
-                                      this.setState({ error: "Wrong update id" });
-                                      break;
-                                  }
-                                }}
-                                closeFunction={() =>
-                                  this.setState({ edit: null, updateing: false, editvalue: null })
+                        <div className="tableColumnSmall content twoline">
+                          <div
+                            className="tableColumnSmall editable"
+                            style={{ width: "100%" }}
+                            onClick={() =>
+                              this.setState({
+                                edit: {
+                                  id: "promocode",
+                                  label: "Promocode",
+                                  startvalue: promocode
                                 }
-                                savingmessage="Saving"
-                                savedmessage={`${this.state.edit.label} saved`}
-                              />
-                            )}
-                            {this.state.error ? (
-                              <PopupBase
-                                small={true}
-                                close={() => this.setState({ updateing: false })}>
-                                <span>
-                                  Something went wrong :( Please try again or contact support
-                                </span>
-                                <UniversalButton
-                                  type="high"
-                                  label="Ok"
-                                  onClick={() => this.setState({ error: null })}
-                                />
-                              </PopupBase>
-                            ) : (
-                              ""
-                            )}
-                          </PopupBase>
-                        )}
-                        <div className="personalEditButtons" />
+                              })
+                            }>
+                            <h1>Promocode</h1>
+                            <h2>{promocode}</h2>
+                            <div className="profileEditButton">
+                              <i className="fal fa-pen editbuttons" />
+                            </div>
+                          </div>
+
+                          <div
+                            className="tableColumnSmall editable"
+                            style={{ width: "100%" }}
+                            onClick={() =>
+                              this.setState({
+                                edit: {
+                                  id: "vatId",
+                                  label: "VAT-ID",
+                                  startvalue: legalinformation.vatId
+                                }
+                              })
+                            }>
+                            <h1>VAT-ID</h1>
+                            <h2>{(legalinformation && legalinformation.vatId) || "No VAT yet"}</h2>
+                            <div className="profileEditButton">
+                              <i className="fal fa-pen editbuttons" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    {this.state.edit && (
+                      <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
+                        <h2 className="boldHeading">Edit Company Data</h2>
+                        <div>
+                          {this.state.edit!.id == "promocode" && !promocode ? (
+                            <UniversalTextInput
+                              id={this.state.edit!.id}
+                              label={this.state.edit!.label}
+                              livevalue={v => this.setState({ editvalue: v })}
+                              startvalue={this.state.edit!.startvalue}
+                              type={this.state.edit!.type}
+                            />
+                          ) : (
+                            <span>Please contact support to change this information</span>
+                          )}
+                        </div>
+                        <UniversalButton
+                          label="Cancel"
+                          type="low"
+                          onClick={() => this.setState({ edit: null, editvalue: null })}
+                        />
+                        {this.state.edit!.id == "promocode" && !promocode && (
+                          <UniversalButton
+                            label="Save"
+                            type="high"
+                            onClick={async () => {
+                              this.setState({ updateing: true });
+                              return;
+                            }}
+                          />
+                        )}
+
+                        {this.state.updateing && (
+                          <PopupSelfSaving
+                            heading={`Save ${this.state.edit.label}`}
+                            saveFunction={async () => {
+                              switch (this.state.edit!.id) {
+                                case "promocode":
+                                  await this.props.applyPromocode({
+                                    variables: { promocode: this.state.editvalue }
+                                  });
+                                  break;
+
+                                default:
+                                  this.setState({ error: "Wrong update id" });
+                                  break;
+                              }
+                            }}
+                            closeFunction={() =>
+                              this.setState({ edit: null, updateing: false, editvalue: null })
+                            }
+                            savingmessage="Saving"
+                            savedmessage={`${this.state.edit.label} saved`}
+                          />
+                        )}
+                        {this.state.error ? (
+                          <PopupBase small={true} close={() => this.setState({ updateing: false })}>
+                            <span>Something went wrong :( Please try again or contact support</span>
+                            <UniversalButton
+                              type="high"
+                              label="Ok"
+                              onClick={() => this.setState({ error: null })}
+                            />
+                          </PopupBase>
+                        ) : (
+                          ""
+                        )}
+                      </PopupBase>
+                    )}
+                    <div className="personalEditButtons" />
                   </div>
                 </div>
               </div>

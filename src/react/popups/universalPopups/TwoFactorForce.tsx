@@ -20,7 +20,10 @@ interface Props {
 export default (props: Props) => (
   <Mutation mutation={FORCE_2FA}>
     {(force2FA, { loading, error, data }) => (
-      <PopupBase small={true} close={props.closeFunction}>
+      <PopupBase
+        buttonStyles={{ justifyContent: "space-around" }}
+        small={true}
+        close={props.closeFunction}>
         <h1>Force Two-Factor Authentication</h1>
         {data ? (
           <React.Fragment>
@@ -35,12 +38,14 @@ export default (props: Props) => (
             </div>
             <ErrorComp error={error} className="error-field" />
             <UniversalButton
+              type="low"
               onClick={props.closeFunction}
               disabled={loading}
               closingPopup={true}
               label="no"
             />
             <UniversalButton
+              type="low"
               disabled={loading || data}
               onClick={() => force2FA({ variables: { userid: props.unitid, type: "totp" } })}
               label="Yes"

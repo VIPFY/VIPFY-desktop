@@ -1,4 +1,5 @@
 import * as React from "react";
+import { decode } from "jsonwebtoken";
 import { Query, withApollo } from "react-apollo";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
@@ -6,12 +7,12 @@ import Area from "./area";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
-import { consentText } from "../common/constants";
 import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment = require("moment");
-import { filterError } from "../common/functions";
+import { filterError, concatName } from "../common/functions";
+import UserName from "../components/UserName";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -64,7 +65,12 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           }
 
           if (data.me && data.me.consent) {
-            window.smartlook("consentAPI", consentText);
+            window.smartlook(
+              "consentAPI",
+              `This awesome App uses software to offer you an amazing experience, analyse your use of our App
+            and provide content from third parties. By using our App, you acknowledge that you have read and
+            understand our Privacy Policies and Terms of Service and that you consent to them.`
+            );
             window.smartlook("identify", data.me.id, {
               admin: data.me.isadmin,
               language: data.me.language
@@ -79,14 +85,19 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
           const adminToken = localStorage.getItem("impersonator-token");
           if (adminToken) {
-            context.addHeaderNotification("You are impersonating another user", {
-              type: "impersonation",
-              key: "impersonator",
-              dismissButton: {
-                label: "Stop Impersonation",
-                dismissFunction: this.props.logMeOut
+            context.addHeaderNotification(
+              `You are impersonating the User ${concatName(this.props)}`,
+              {
+                type: "impersonation",
+                key: "impersonator",
+                dismissButton: {
+                  label: "Stop Impersonation",
+                  dismissFunction: this.props.logMeOut
+                }
               }
-            });
+            );
+
+            clearProps.impersonation = true;
           }
 
           if (!data.me.company.setupfinished) {

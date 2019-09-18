@@ -24,7 +24,7 @@ setTimeout(function() {
         return `#${t.id} ${t.tagName.toLowerCase()}[name='${t.name}']`;
       });
   }
-  console.log(t);
+  //console.log(t);
   if (t.length > 0) {
     ipcRenderer.sendToHost("", JSON.stringify(t));
   } else {

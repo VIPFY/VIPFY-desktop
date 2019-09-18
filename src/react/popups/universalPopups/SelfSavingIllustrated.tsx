@@ -21,6 +21,7 @@ interface Props {
   sso: SSO;
   fullmiddle?: Boolean;
   userids?: number;
+  inmanager?: Boolean;
 }
 
 interface State {
@@ -33,6 +34,7 @@ interface State {
   icon: File | null;
   color: string;
   receivedIcon: Boolean;
+  newid: number;
 }
 
 interface Result {
@@ -56,15 +58,16 @@ class SelfSaving extends React.Component<Props, State> {
     ssoCheck: false,
     icon: null,
     color: "",
-    receivedIcon: false
+    receivedIcon: false,
+    newid: 0
   };
 
-  close() {
+  close(err = null) {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
 
-    this.props.closeFunction();
+    this.props.closeFunction(err);
   }
 
   fullPath = path => `${__dirname}/../../../images/sso_creation_${path}.png`;
@@ -97,7 +100,8 @@ class SelfSaving extends React.Component<Props, State> {
         sso.images = [iconFile, iconFile];
       }
 
-      await createOwnApp({ variables: { ssoData: sso, userids: this.props.userids } });
+      const res = await createOwnApp({ variables: { ssoData: sso, userids: this.props.userids } });
+      // this.setState({ newid: res.createOwnApp.id });
     }
   };
 
@@ -111,7 +115,6 @@ class SelfSaving extends React.Component<Props, State> {
     }
 
     const errorMessage = "Sorry, this seems to take additional time. Our Support will take a look.";
-    console.log("SelfSaving", this.state, this.props);
     return (
       <PopupBase styles={{ maxWidth: "432px" }} nooutsideclose={true} fullmiddle={true}>
         {this.state.tooLong ? (
@@ -126,7 +129,7 @@ class SelfSaving extends React.Component<Props, State> {
           <div className="popup-sso">
             <img className="status-pic" src={this.fullPath("fail")} />
             <h3>{this.state.error}</h3>
-            <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
+            <UniversalButton type="high" label="Ok" onClick={() => this.close("error")} />
           </div>
         ) : this.state.success ? (
           <div className="popup-sso">
@@ -135,7 +138,7 @@ class SelfSaving extends React.Component<Props, State> {
               <span>Congratulations!</span>
               <span>Your Implementation was successful.</span>
             </h3>
-            <UniversalButton type="high" label="Ok" onClick={() => this.close()} />
+            <UniversalButton type="high" label="Ok" onClick={() => this.close(this.state.newid)} />
           </div>
         ) : (
           <div className="popup-sso">
@@ -144,7 +147,9 @@ class SelfSaving extends React.Component<Props, State> {
 
             <Mutation
               mutation={CREATE_OWN_APP}
-              onCompleted={() => this.setState({ success: true })}
+              onCompleted={data => {
+                this.setState({ success: true, newid: data.createOwnApp.id });
+              }}
               refetchQueries={[{ query: fetchLicences }]}
               onError={() => this.setState({ error: errorMessage })}>
               {(createOwnApp, { loading, data }) => (
@@ -201,7 +206,6 @@ class SelfSaving extends React.Component<Props, State> {
                     <LogoExtractor
                       url={this.props.sso.loginurl!}
                       setResult={async (icon, color) => {
-                        console.log("FAVICON RESULT");
                         if (loading || data) {
                           return;
                         }
@@ -222,6 +226,7 @@ class SelfSaving extends React.Component<Props, State> {
               <span>Just a moment.</span>
               <span>We are verifying the Implementation.</span>
             </h3>
+            <UniversalButton type="high" label="Cancel" onClick={() => this.close()} />
           </div>
         )}
       </PopupBase>

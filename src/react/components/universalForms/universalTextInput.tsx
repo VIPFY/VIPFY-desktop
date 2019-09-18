@@ -64,7 +64,7 @@ class UniversalTextInput extends React.Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps = props => {
+  UNSAFE_componentWillReceiveProps = props => {
     if (this.props.id != "" && this.props.id != props.id) {
       this.setState({ value: "", currentid: props.id });
     }

@@ -235,7 +235,6 @@ class CheckOrder extends React.Component<Props, State> {
   }
 
   accept = async (plan, planInputs, company, addresses) => {
-    console.log(plan, planInputs, company, addresses);
     if (this.state.agreement) {
       this.setState({ agreementError: false, errordc: null });
       let index = 0;
@@ -314,7 +313,6 @@ class CheckOrder extends React.Component<Props, State> {
             planInputsSending
           );
           this.setState({ buying: 2 });
-          console.log("OK");
         } catch (err) {
           console.log("ERR", err);
         }

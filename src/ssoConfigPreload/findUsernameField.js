@@ -11,7 +11,6 @@ Object.defineProperty(String.prototype, "includesAny", {
   }
 });
 
-console.log("starting find Username");
 ipcRenderer.sendToHost("loaded", null);
 
 let done = false;
@@ -55,7 +54,6 @@ setTimeout(function() {
 const queryStringBlacklist = ["_ngcontent", "_nghost"];
 
 function getQueryString(t) {
-  console.log("I am starting");
   if (t === null || t === undefined) return null;
   if (t.id) {
     return `[id="${t.id}"]`; // don't use #id because that fails with ids containing colons (:)
@@ -63,8 +61,6 @@ function getQueryString(t) {
     return `${t.tagName.toLowerCase()}[name="${t.name}"]`;
   } else if (t.tagName.toLowerCase() == "input" || t.tagName.toLowerCase() == "button") {
     let s = t.tagName.toLowerCase();
-    console.log("I am here");
-    console.log(t.attributes);
     if (t.attributes["type"]) {
       s += '[type="';
       s += t.attributes["type"].value ? t.attributes["type"].value : t.attributes["type"];
@@ -98,7 +94,6 @@ function findForm() {
   const forms = Array.from(document.querySelectorAll("form")).filter(
     filterDom(["signin", "sign-in", "log"], ["oauth", "facebook", "signup", "forgot", "google"])
   );
-  console.log("forms", forms);
 
   return forms.length == 1 ? forms[0] : document;
 }
@@ -114,7 +109,6 @@ function findEmailField() {
   const t = Array.from(findForm().querySelectorAll("input")).filter(
     filterDom(["email", "user", "login"], ["pw", "pass"])
   );
-  console.log("email", t);
   return t[0];
 }
 
@@ -168,17 +162,14 @@ function createQueryString(t, pro, contra) {
       s += `[${a}*='${p}']`;
       const q = document.querySelectorAll(s);
       if (q.length == 0 || !Array.from(q).includes(t)) {
-        console.log("reverting", s);
         s = s_old;
         continue;
       }
       if (q.length == 1) return s;
       if (q.length == l_old) {
-        console.log("useless", s);
         //s = s_old;
         //continue;
       }
-      console.log("adding", s);
     }
   }
   for (a of attributes) {
@@ -188,17 +179,14 @@ function createQueryString(t, pro, contra) {
       s += `:not([${a}*='${p}'])`;
       const q = document.querySelectorAll(s);
       if (q.length == 0 || !Array.from(q).includes(t)) {
-        console.log("reverting", s);
         s = s_old;
         continue;
       }
       if (q.length == 1) return s;
       if (q.length == l_old) {
-        console.log("useless", s);
         //s = s_old;
         //continue;
       }
-      console.log("adding", s);
     }
   }
   console.log("unsuccessful", s, document.querySelectorAll(s).length);
@@ -225,7 +213,6 @@ function filterDom(includesAny, excludesAll) {
       const attr = element.attributes.getNamedItem(attribute);
       if (attr === null) continue;
       const val = attr.value.toLowerCase();
-      //console.log("attr", attribute, val, includesAny);
       if (val.includesAny(includesAny)) {
         return true;
       }

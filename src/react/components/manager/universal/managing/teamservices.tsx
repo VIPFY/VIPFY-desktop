@@ -36,7 +36,6 @@ class ManageTeamServices extends React.Component<Props, State> {
   };
 
   onChange(s, refetch) {
-    console.log("ON CHANGE", s);
     switch (s.action) {
       case "remove":
         this.setState({ deleteService: s.content });
@@ -46,7 +45,7 @@ class ManageTeamServices extends React.Component<Props, State> {
         break;
 
       default:
-        console.log(s);
+        console.log("CHANGE Teamservice", s);
         break;
     }
     //TODO SAVING STUFF
@@ -100,7 +99,6 @@ class ManageTeamServices extends React.Component<Props, State> {
                   team={data.fetchTeam}
                   service={this.state.deleteService}
                   savingFunction={so => {
-                    console.log("SAVING");
                     refetch();
                     this.setState({ deleteService: null });
                   }}

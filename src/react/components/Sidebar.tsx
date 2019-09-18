@@ -24,6 +24,7 @@ const NOTIFICATION_SUBSCRIPTION = gql`
       message
       icon
       changed
+      link
     }
   }
 `;
@@ -239,7 +240,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
   }
 
   handleClickInside = e => {
-    this.setState({ donotopen: false });
+    if (this.state.donotopen) {
+      this.setState({ donotopen: false });
+    }
   };
 
   handleClickOutside = e => {
@@ -445,13 +448,16 @@ class Sidebar extends React.Component<SidebarProps, State> {
       if (
         !(
           (!licence.disabled &&
+            !licence.pending &&
             !licence.boughtplanid.planid.appid.disabled &&
             (licence.endtime > moment.now() || licence.endtime == null) &&
             !licence.vacationstart) ||
-          (licence.vacationstart &&
-            licence.vacationstart <= moment.now() &&
-            ((licence.vacationend && licence.vacationend > moment.now()) ||
-              licence.vacationend == null))
+          (!licence.disabled &&
+            !licence.pending &&
+            (licence.vacationstart &&
+              licence.vacationstart <= moment.now() &&
+              ((licence.vacationend && licence.vacationend > moment.now()) ||
+                licence.vacationend == null)))
         )
       ) {
         return false;
@@ -568,7 +574,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
       <AppContext.Consumer>
         {context => (
           <ul
-            className={`sidebar${sidebarOpen ? "" : "-small"}`}
+            className={`sidebar${sidebarOpen ? "" : "-small"} ${
+              this.props.impersonation ? "sidebar-impersonate" : ""
+            }`}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
             <li className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
               <Tooltip
@@ -629,8 +637,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                   <div className="naked-button sidebarButton">
                     <i className="far fa-bell" />
                     <span className="notification-amount">
-                      {this.props.loading ||
-                      (!this.props.data && !this.props.data.fetchNotifications)
+                      {this.props.loading || !this.props.data.fetchNotifications
                         ? 0
                         : this.props.data.fetchNotifications.length}
                     </span>
@@ -647,6 +654,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 //sidebar={"1"}
                 moveTo={this.props.moveTo}
                 data={this.props.data}
+                loading={this.props.loading}
                 refetch={this.props.refetch}
                 style={{
                   left: sidebarOpen ? "210px" : "50px",

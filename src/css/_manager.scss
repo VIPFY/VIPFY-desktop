@@ -156,10 +156,13 @@
                 }
                 h2 {
                     all: unset;
-                    display: block;
+                    /*display: block;*/
                     font-size: 13px;
                     line-height: 80px;
                     position: absolute;
+                    overflow: hidden;
+                    width: calc(100% - 16px);
+                    text-overflow: ellipsis;
 
                     &.second{
                         line-height: 40px;
@@ -183,6 +186,22 @@
                 line-height: 56px;
                 display: flex;
                 align-items: center;
+            }
+            .twoline{
+                height: 128px;
+                flex-flow: column;
+                padding-left: 0px;
+                overflow: unset;
+                margin-top: 8px;
+            }
+            .tableColumnSmallOne{
+                width: calc(100% - 16px);
+                height: 100%;
+                padding-left: 16px;
+                position: relative;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             .employeeOnline{
                 float: right;

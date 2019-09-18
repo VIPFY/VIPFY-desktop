@@ -1,4 +1,4 @@
-@import './fa_pro_all_5.8.2';
+@import './fa_pro_all_5.10.2';
 @import './constants.scss';
 @import './buttons.scss';
 @import './date-picker.scss';
@@ -5641,6 +5641,11 @@ progress[value] {
     height: 16px;
     margin-right: 5px;
     object-fit: cover;
+  }
+
+  span {
+    @include hide-overflowing-text;
+    max-width: 73px;
   }
 }
 

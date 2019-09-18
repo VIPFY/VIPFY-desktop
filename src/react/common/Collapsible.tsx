@@ -4,6 +4,7 @@ interface Props {
   title: string;
   child: { current: HTMLDivElement };
   className?: string;
+  noResize?: boolean;
 }
 
 interface State {
@@ -18,22 +19,18 @@ class Collapsible extends React.Component<Props, State> {
 
     if (this.props.child && this.props.child.current) {
       // Needed to correctly render the height
-      setTimeout(() => {
-        const sectionHeight = this.props.child.current.scrollHeight;
-        this.props.child.current.style.height = `${sectionHeight}px`;
-
-        if (!this.props.child.current.classList.contains("collapsible")) {
-          this.props.child.current.classList.add("collapsible");
-        }
-      }, 750);
+      setTimeout(() => this.setInitialHeight(), 800);
+      if (!this.props.noResize) {
+        setTimeout(() => this.setInitialHeight(), 2500);
+      }
     }
   }
 
-  componentDidUpdate(_p, prevState) {
+  componentDidUpdate(_prevProps, prevState) {
     if (prevState.show !== this.state.show) {
       const { current } = this.props.child;
       const sectionHeight = current.scrollHeight;
-      current.style.height = `${sectionHeight}px`;
+      current.style.height = `${sectionHeight + 20}px`;
 
       if (prevState.show) {
         current.style.height = "0px";
@@ -44,11 +41,20 @@ class Collapsible extends React.Component<Props, State> {
     }
   }
 
+  setInitialHeight = () => {
+    const sectionHeight = this.props.child.current.scrollHeight;
+    this.props.child.current.style.height = `${sectionHeight}px`;
+
+    if (!this.props.child.current.classList.contains("collapsible")) {
+      this.props.child.current.classList.add("collapsible");
+    }
+  };
+
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize, true);
   }
 
-  handleResize = () => {
+  handleResize = (): void => {
     if (this.state.show) {
       this.props.child.current.style.height = "unset";
     }

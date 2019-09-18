@@ -138,7 +138,6 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
 
   render() {
     const { team, close, employee } = this.props;
-    console.log("AETT", this.props, this.state);
     return (
       <PopupBase
         buttonStyles={{ marginTop: "0px" }}
@@ -243,6 +242,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
               key={`${team.id}-${team.services[this.state.counter].planid.appid.id}`}
               nooutsideclose={true}
               app={team.services[this.state.counter].planid.appid}
+              boughtplanid={team.services[this.state.counter]}
               team={team}
               addStyles={{ marginTop: "288px" }}
               cancel={async () => {
@@ -287,53 +287,6 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
             />
           )}
 
-        {/*<div>
-          <h1 className="cleanup lightHeading">
-            Add {employee.fullname} to team {team.name}
-          </h1>
-        </div>*/}
-
-        {/*this.printTeamAddSteps()*/}
-
-        {/*team.services && team.services.length > 0 && team.services.length > this.state.counter && (
-          <PopupAddLicence
-            nooutsideclose={true}
-            app={team.services[this.state.counter].planid.appid}
-            cancel={async () => {
-              await this.setState(prevState => {
-                let newcounter = prevState.counter + 1;
-                const currentsetup = prevState.setups;
-                currentsetup.push({ setupfinished: true, setup: {}, id: this.props.employee.id });
-
-                return {
-                  ...prevState,
-                  counter: newcounter,
-                  setups: currentsetup
-                };
-              });
-            }}
-            add={async setup => {
-              await this.setState(prevState => {
-                let newcounter = prevState.counter + 1;
-                setup.id = team.services[this.state.counter].id;
-                setup.employeeid = this.props.employee.id;
-                const currentsetup = prevState.setups;
-                currentsetup.push({ setupfinished: true, setup, id: this.props.employee.id });
-
-                return {
-                  ...prevState,
-                  counter: newcounter,
-                  setups: currentsetup
-                };
-              });
-            }}
-            employee={employee}
-            employeename={employee.firstname} //TODO make it nice
-            maxstep={team.services.length}
-            currentstep={this.state.counter}
-          />
-          )*/}
-
         {this.state.saving && (
           <PopupSelfSaving
             savedmessage={`${employee.firstname} added to team ${team.name}`}
@@ -347,27 +300,6 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
                     variables: { employeeid: employee.id, teamid: this.props.team.unitid.id }
                   })
                 );
-
-                if (this.state.setups) {
-                  this.state.setups.forEach(
-                    s =>
-                      s.setupfinished &&
-                      promises.push(
-                        this.props.addLicence({
-                          variables: {
-                            boughtplanid: s.setup.id,
-                            username: s.setup.email,
-                            password: s.setup.password,
-                            loginurl: s.setup.subdomain,
-                            touser: s.setup.employeeid,
-                            options: {
-                              teamlicence: this.props.team.unitid.id
-                            }
-                          }
-                        })
-                      )
-                  );
-                }
 
                 await Promise.all(promises);
                 this.props.savingFunction({ action: "success" });

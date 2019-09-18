@@ -40,27 +40,6 @@ class UniversalButton extends React.Component<Props, State> {
 
   printChildren(children) {
     if (children && !Array.isArray(children)) {
-      /*
-
-      Not needed for the moment 
-
-
-      console.log("CHILDREN BUTTON", children);
-      if (children.type && children.type.name == "ConfirmationPopup") {
-        if (this.state.confirmpopup) {
-          return (
-            <PopupBase
-              closeable={false}
-              close={() => this.setState({ confirmpopup: false })}
-              small={true}>
-              {children.props.children}
-              <UniversalButton label="Ok" closingAllPopups={true} type="high" />
-            </PopupBase>
-          );
-        }
-      } else {
-        //childrenArray.push(element);
-      }*/
       return "";
     } else {
       return "";

@@ -151,7 +151,7 @@ const DUMMY_QUERY = gql`
 `;
 
 export const refetchQueries = async (client: ApolloClient<InMemoryCache>, queries: string[]) => {
-  console.log("refetching", queries);
+  //console.log("refetching", queries);
   // refetchQueries of the mutate functions can refetch observed queries by name,
   // using the variables used by the query observer
   // that's the easiest way to get this functionality
@@ -176,6 +176,15 @@ export const layoutUpdate = (licences, dragItem, dropItem) => {
   return newLicences;
 };
 
+export const filterLicences = licences =>
+  licences.filter(licence => {
+    if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
+      return false;
+    } else {
+      return true;
+    }
+  });
+
 /**
  * Filters and sorts licences
  * @param licences {Licence[]} An array of the users licences
@@ -184,37 +193,57 @@ export const layoutUpdate = (licences, dragItem, dropItem) => {
  * @returns The sorted Licence Array
  */
 export const filterAndSort = (licences, property) =>
-  licences
-    .filter(licence => {
-      if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
-        return false;
-      }
+  filterLicences(licences).sort((a, b) => {
+    if (a[property] === null) {
+      return 1;
+    }
 
-      return true;
-    })
-    .sort((a, b) => {
-      if (a[property] === null) {
-        return 1;
-      }
+    if (b[property] === null) {
+      return -1;
+    }
 
-      if (b[property] === null) {
-        return -1;
-      }
+    if (a[property] < b[property]) {
+      return -1;
+    }
 
-      if (a[property] < b[property]) {
-        return -1;
-      }
+    if (a[property] > b[property]) {
+      return 1;
+    }
 
-      if (a[property] > b[property]) {
-        return 1;
-      }
-
-      return 0;
-    });
+    return 0;
+  });
 
 export const AppIcon = ({ app }) => (
   <div className="app-icon-wrapper">
     <PrintServiceSquare service={app} appidFunction={a => a} className="app-icon" />
     <span className="app-name">{app.name}</span>
   </div>
+);
+
+export const ConsentText = () => (
+  <span>
+    This awesome App uses software to offer you an amazing experience, analyse your use of our App
+    and provide content from third parties. By using our App, you acknowledge that you have read and
+    understand our{" "}
+    <span
+      style={{ color: "#20BAA9" }}
+      className="fancy-link"
+      onClick={e => {
+        e.preventDefault();
+        require("electron").shell.openExternal("https://vipfy.store/privacy");
+      }}>
+      Privacy Policy
+    </span>{" "}
+    and{" "}
+    <span
+      style={{ color: "#20BAA9" }}
+      className="fancy-link"
+      onClick={e => {
+        e.preventDefault();
+        require("electron").shell.openExternal("https://vipfy.store/tos");
+      }}>
+      Terms of Service
+    </span>{" "}
+    and that you consent to them.
+  </span>
 );

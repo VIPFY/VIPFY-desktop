@@ -102,7 +102,7 @@ class AddEmployee extends React.Component<Props, State> {
     saving: false
   };
 
-  componentWillReceiveProps(props) {
+  UNSAFE_componentWillReceiveProps(props) {
     if (this.props.licences != props.licences) {
       this.setState({ addedLicences: [] });
     }
@@ -113,7 +113,15 @@ class AddEmployee extends React.Component<Props, State> {
     this.props.licences.forEach(l =>
       allelements.push({ ...l.unitid, dragable: false, id: l.id, licence: l })
     );
-    addedLicences.forEach(l => allelements.push({ ...l, dragable: true, id: `new-${l.id}` }));
+    let addedFilteredLicences = addedLicences.filter(licence => {
+      return `${licence.employee.firstname} ${licence.employee.lastname}`
+        .toUpperCase()
+        .includes(this.state.search.toUpperCase());
+    });
+    addedFilteredLicences = [];
+    addedFilteredLicences.forEach(l =>
+      allelements.push({ ...l, dragable: true, id: `new-${l.id}` })
+    );
     return (
       <PrintCurrent
         elements={allelements}
@@ -121,7 +129,7 @@ class AddEmployee extends React.Component<Props, State> {
         onClick={e =>
           this.setState(prevState => {
             const remainingemployees = prevState.addedLicences.filter(l => `new-${l.id}` != e.id);
-            return { addedLicences: remainingemployees };
+            return { ...prevState, addedLicences: remainingemployees };
           })
         }
         onDragStart={e => this.setState({ dragdelete: e })}
@@ -145,13 +153,6 @@ class AddEmployee extends React.Component<Props, State> {
             placeholder="Search available services"
             getValue={v => this.setState({ search: v })}
           />
-          {/*<EmployeeAdd
-            team={{ employees: [], name: this.props.teamname }} //TODO Add Teampicture
-            search={this.state.search}
-            setOuterState={s => this.setState(s)}
-            addedEmployees={this.state.addedEmployees}
-            integrateEmployee={this.state.integrateEmployee}
-          />*/}
           <div className="maingridAddEmployeeTeams">
             <div
               className="addgrid-holder"
@@ -210,7 +211,7 @@ class AddEmployee extends React.Component<Props, State> {
                     <div
                       key={employee.id}
                       className="space"
-                      draggable={available}
+                      draggable={true}
                       onDragStart={() => this.setState({ drag: employee })}
                       onClick={() =>
                         available &&
@@ -235,9 +236,7 @@ class AddEmployee extends React.Component<Props, State> {
                                 }
                               : {
                                   backgroundImage: encodeURI(
-                                    `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                      employee.profilepicture
-                                    })`
+                                    `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${employee.profilepicture})`
                                   )
                                 }
                             : { backgroundColor: "#5D76FF" }
@@ -279,20 +278,7 @@ class AddEmployee extends React.Component<Props, State> {
                     onDragOver={e => {
                       e.preventDefault();
                     }}>
-                    <div className="addgrid">
-                      {/*<div
-                                  className="space"
-                                  draggable
-                                  onDragStart={() => this.setState({ drag: { new: true } })}>
-                                  <div
-                                    className="image"
-                                    style={{ backgroundColor: "#F5F5F5", color: "#20BAA9" }}>
-                                    <i className="fal fa-plus" />
-                                  </div>
-                                  <div className="name">Add Teams</div>
-                                </div>*/}
-                      {employeeArray}
-                    </div>
+                    <div className="addgrid">{employeeArray}</div>
                   </div>
                 );
               }}

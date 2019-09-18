@@ -103,6 +103,8 @@ export const fetchUsersOwnLicences = gql`
       endtime
       starttime
       options
+      vacationend
+      vacationstart
       boughtplanid {
         id
         alias
