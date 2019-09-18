@@ -157,7 +157,7 @@ class AddServiceToTeam extends React.Component<Props, State> {
                     setups: currentsetup
                   };
                 });
-                if (this.state.counter == team.employees.length) {
+                if (this.state.counter + 1 == team.employees.length) {
                   //Finished
                   this.props.savingFunction({ action: "success" });
                 }
@@ -178,7 +178,7 @@ class AddServiceToTeam extends React.Component<Props, State> {
                     };
                   });
                 }
-                if (this.state.counter == team.employees.length) {
+                if (this.state.counter + 1 == team.employees.length) {
                   //Finished
                   this.props.savingFunction({ action: "success" });
                 }
