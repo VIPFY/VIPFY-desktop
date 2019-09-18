@@ -124,7 +124,7 @@ class Dashboard extends React.Component<Props, State> {
         licence => licence.id == this.state.dragItem
       );
 
-      if (dragged.dashboard) {
+      if (dragged.dashboard !== null) {
         favourites[dragged.dashboard] = null;
         await this.props.updateLayout({
           variables: { layout: { id: this.state.dragItem, dashboard: null } },
@@ -154,11 +154,11 @@ class Dashboard extends React.Component<Props, State> {
     }
 
     const appLists: {
-      "External Apps": Licence[];
+      "My Apps": Licence[];
       "Pending Apps": Licence[];
       "Temporary Apps": Licence[];
     } = {
-      "External Apps": [],
+      "My Apps": [],
       "Pending Apps": [],
       "Temporary Apps": []
     };
@@ -178,7 +178,7 @@ class Dashboard extends React.Component<Props, State> {
             appLists["Temporary Apps"].push(licence);
           }
         } else {
-          appLists["External Apps"].push(licence);
+          appLists["My Apps"].push(licence);
         }
       });
     }
