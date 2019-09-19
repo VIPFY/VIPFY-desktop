@@ -62,10 +62,10 @@ class SecurityPopup extends React.Component<Props, State> {
   render() {
     const links: Link[] = [
       {
-        header: "Reset Password",
-        text:
-          "Protect your account using a strong and unique login password that you don’t use for anything else",
-        state: "showPasswordReset"
+        header: "Update Password",
+        text: "You can update the current password here",
+        state: "showPasswordUpdate",
+        button: "update"
       },
       {
         header: "Two-Factor Authentication",
@@ -94,13 +94,6 @@ class SecurityPopup extends React.Component<Props, State> {
         text: "You can force your employee to change his password if the current one is too weak",
         state: "showPasswordForce",
         button: "force"
-      });
-
-      links.push({
-        header: "Update Password",
-        text: "You can update your employees password here",
-        state: "showPasswordUpdate",
-        button: "update"
       });
 
       links.push({
