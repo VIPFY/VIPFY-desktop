@@ -5,9 +5,7 @@ import { Query, Mutation } from "react-apollo";
 import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
-import AddEmployeeTeams from "../../components/manager/addEmployeeTeams";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import AddEmployeeServices from "../../components/manager/addEmployeeServices";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import { randomPassword } from "../../common/passwordgen";
@@ -18,6 +16,7 @@ import PrintEmployeeSquare from "../../components/manager/universal/squares/prin
 import ManageTeams from "../../components/manager/universal/managing/teams";
 import ManageServices from "../../components/manager/universal/managing/services";
 import DeletePopup from "../../popups/universalPopups/deletePopup";
+import { AppContext } from "../../common/functions";
 
 interface Props {
   moveTo: Function;
@@ -116,24 +115,29 @@ class EmployeeOverview extends React.Component<Props, State> {
     switch (this.state.addStage) {
       case 1:
         return (
-          <PopupBase
-            //fullmiddle={true}
-            small={true}
-            //customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}
-            additionalclassName="formPopup deletePopup">
-            <AddEmployeePersonalData
-              continue={data => {
-                this.setState({ addpersonal: data, addStage: 2 });
-              }}
-              close={() => {
-                this.setState({ add: false });
-                refetch();
-              }}
-              addpersonal={this.state.addpersonal}
-              isadmin={this.props.isadmin}
-            />
-          </PopupBase>
+          <AppContext.Consumer>
+            {context => (
+              <PopupBase
+                //fullmiddle={true}
+                small={true}
+                //customStyles={{ maxWidth: "1152px" }}
+                close={() => this.setState({ add: false })}
+                additionalclassName="formPopup deletePopup"
+                ref={el => context.addRenderElement({ key: "addEmpPopup", element: el })}>
+                <AddEmployeePersonalData
+                  continue={data => {
+                    this.setState({ addpersonal: data, addStage: 2 });
+                  }}
+                  close={() => {
+                    this.setState({ add: false });
+                    refetch();
+                  }}
+                  addpersonal={this.state.addpersonal}
+                  isadmin={this.props.isadmin}
+                />
+              </PopupBase>
+            )}
+          </AppContext.Consumer>
         );
       case 2:
         return (
@@ -295,25 +299,30 @@ class EmployeeOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        <UniversalButton
-                          type="high"
-                          label="Add Employee"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "92px"
-                          }}
-                          onClick={() =>
-                            this.setState({
-                              add: true,
-                              addStage: 1,
-                              addpersonal: {},
-                              apps: []
-                            })
-                          }
-                        />
+                        <AppContext.Consumer>
+                          {context => (
+                            <UniversalButton
+                              type="high"
+                              label="Add Employee"
+                              customStyles={{
+                                fontSize: "12px",
+                                lineHeight: "24px",
+                                fontWeight: "700",
+                                marginRight: "16px",
+                                width: "92px"
+                              }}
+                              onClick={() =>
+                                this.setState({
+                                  add: true,
+                                  addStage: 1,
+                                  addpersonal: {},
+                                  apps: []
+                                })
+                              }
+                              ref={el => context.addRenderElement({ key: "addEmp", element: el })}
+                            />
+                          )}
+                        </AppContext.Consumer>
                       </div>
                     </div>
                     {this.loading()}
@@ -502,25 +511,30 @@ class EmployeeOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        <UniversalButton
-                          type="high"
-                          label="Add Employee"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "92px"
-                          }}
-                          onClick={() =>
-                            this.setState({
-                              add: true,
-                              addStage: 1,
-                              addpersonal: {},
-                              apps: []
-                            })
-                          }
-                        />
+                        <AppContext.Consumer>
+                          {context => (
+                            <UniversalButton
+                              type="high"
+                              label="Add Employee"
+                              customStyles={{
+                                fontSize: "12px",
+                                lineHeight: "24px",
+                                fontWeight: "700",
+                                marginRight: "16px",
+                                width: "92px"
+                              }}
+                              onClick={() =>
+                                this.setState({
+                                  add: true,
+                                  addStage: 1,
+                                  addpersonal: {},
+                                  apps: []
+                                })
+                              }
+                              ref={el => context.addRenderElement({ key: "addEmp", element: el })}
+                            />
+                          )}
+                        </AppContext.Consumer>
                       </div>
                     </div>
                     {employees.length > 0 &&

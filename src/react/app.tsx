@@ -289,6 +289,7 @@ class App extends React.Component<AppProps, AppState> {
                       employees={data.me.company.employees}
                       profilepicture={data.me.profilepicture}
                       context={context}
+                      highlightReferences={this.references}
                     />
                   );
                 }}
@@ -340,6 +341,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   addRenderElement = reference => {
+    const oldreferences = [...this.references];
     let index = this.references.findIndex(e => e.key == reference.key);
     if (index !== -1) {
       this.references.splice(index, 1);
@@ -347,6 +349,9 @@ class App extends React.Component<AppProps, AppState> {
 
     if (!this.references.find(e => e.key === reference.key)) {
       this.references.push(reference);
+    }
+    if (oldreferences.length != this.references.length) {
+      this.forceUpdate();
     }
   };
 
@@ -361,7 +366,8 @@ class App extends React.Component<AppProps, AppState> {
           renderTutorial: e => this.renderTutorial(e),
           setrenderElements: e => this.setrenderElements(e),
           addRenderElement: e => this.addRenderElement(e),
-          setreshowTutorial: this.setreshowTutorial
+          setreshowTutorial: this.setreshowTutorial,
+          references: this.references
         }}
         className="full-size">
         <HeaderNotificationProvider>

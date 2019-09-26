@@ -9,7 +9,7 @@ import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import { randomPassword } from "../../common/passwordgen";
-import { filterError } from "../../common/functions";
+import { filterError, AppContext } from "../../common/functions";
 
 interface Props {
   close: Function;
@@ -164,14 +164,21 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
 
           <div className="buttonsPopup" style={{ justifyContent: "space-between" }}>
             <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />
-            <UniversalButton
-              label="Continue"
-              type="high"
-              disabled={
-                this.state.name == "" || this.state.wmail1 == "" || !this.state.wmail1.includes("@")
-              }
-              onClick={() => this.handleCreate()}
-            />
+            <AppContext.Consumer>
+              {context => (
+                <UniversalButton
+                  label="Continue"
+                  type="high"
+                  disabled={
+                    this.state.name == "" ||
+                    this.state.wmail1 == "" ||
+                    !this.state.wmail1.includes("@")
+                  }
+                  onClick={() => this.handleCreate()}
+                  ref={el => context.addRenderElement({ key: "continueAdd", element: el })}
+                />
+              )}
+            </AppContext.Consumer>
           </div>
         </div>
         {this.state.confirm && (

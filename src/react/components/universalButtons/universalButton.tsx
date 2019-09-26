@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface Props {
   label: string;
+  innerRef: any;
   type?: string; //high | low
   disabled?: Boolean;
   onClick?: Function;
@@ -61,7 +62,8 @@ class UniversalButton extends React.Component<Props, State> {
               this.props.disabled ? "disabled" : "useable"
             }`}
             tabIndex={-1}
-            style={this.props.customStyles ? this.props.customStyles : {}}>
+            style={this.props.customStyles ? this.props.customStyles : {}}
+            ref={this.props.innerRef}>
             {this.props.label}
           </div>
         </button>
@@ -70,4 +72,4 @@ class UniversalButton extends React.Component<Props, State> {
     );
   }
 }
-export default UniversalButton;
+export default React.forwardRef((props, ref) => <UniversalButton innerRef={ref} {...props} />);

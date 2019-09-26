@@ -16,6 +16,7 @@ interface Props {
   noSidebar?: boolean;
   styles?: Object;
   additionalclassName?: string;
+  innerRef: any;
 }
 
 interface State {
@@ -216,7 +217,8 @@ class PopupBase extends React.Component<Props, State> {
                   this.props.dialog ? { maxWidth: "25rem" } : "",
                   this.props.styles ? this.props.styles : ""
                 )}
-                onClick={e => e.stopPropagation()}>
+                onClick={e => e.stopPropagation()}
+                ref={this.props.innerRef}>
                 {this.props.close && !(this.props.closeable == false) && (
                   <div className="closePopup" onClick={() => this.close()}>
                     <i className="fal fa-times" />
@@ -239,4 +241,4 @@ class PopupBase extends React.Component<Props, State> {
     );
   }
 }
-export default PopupBase;
+export default React.forwardRef((props, ref) => <PopupBase innerRef={ref} {...props} />);

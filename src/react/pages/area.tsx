@@ -52,6 +52,7 @@ import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
+import TutorialBase from "../tutorials/tutorialBase";
 
 interface AreaProps {
   history: any[];
@@ -595,6 +596,9 @@ class Area extends React.Component<AreaProps, AreaState> {
 
           {this.props.needspasswordchange && (
             <ForcedPasswordChange email={this.props.emails[0].email} />
+          )}
+          {this.props.tutorialprogress && this.props.highlightReferences && (
+            <TutorialBase {...this.props} />
           )}
         </SideBarContext.Provider>
       </div>
