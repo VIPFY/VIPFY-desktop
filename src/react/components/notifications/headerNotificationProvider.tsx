@@ -3,6 +3,9 @@ import { Component } from "react";
 import HeaderNotificationContext from "./headerNotificationContext";
 import HeaderNotificationItem from "./headerNotificationItem";
 import { setHeaderNotification, setDismissHeaderNotification } from "./../../networkInterface";
+import { version } from "pjson";
+import { satisfies } from "semver";
+import { now } from "moment";
 
 interface Props {}
 interface State {
@@ -22,6 +25,27 @@ class HeaderNotificationProvider extends Component<Props, State> {
     });
     setDismissHeaderNotification((key, redoable) => this.dismissHeaderNotification(key, redoable));
   }
+
+  componentWillMount = async () => {
+    try {
+      let response = await fetch("https://vipfy.store/maintenance.json");
+      let responseJson = await response.json();
+
+      for (let i = 0; i < responseJson.length; i++) {
+        const element = responseJson[i];
+        if (
+          (element.version && !satisfies(version, element.version, { includePrerelease: true })) ||
+          (element.timefrom != null && element.timefrom > now()) ||
+          (element.timetill != null && element.timetill <= now())
+        ) {
+          continue;
+        }
+        this.addHeaderNotification(element.message, { ...element });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   addHeaderNotification = async (
     message,
@@ -49,15 +73,17 @@ class HeaderNotificationProvider extends Component<Props, State> {
 
       function getOrderNum(type) {
         switch (type) {
-          case "impersonation":
+          case "servermessage":
             return 0;
-          case "error":
+          case "impersonation":
             return 1;
-          case "warning":
+          case "error":
             return 2;
+          case "warning":
+            return 3;
 
           default:
-            return 3;
+            return 4;
         }
       }
 
