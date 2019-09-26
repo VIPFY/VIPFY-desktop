@@ -19,6 +19,7 @@ import { resetLoggingContext } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
+import { hashPassword } from "./common/crypto";
 import { remote } from "electron";
 const { session } = remote;
 import "../css/layout.scss";
@@ -44,6 +45,7 @@ interface AppProps {
   signUp: any;
   signOut: Function;
   endImpersonation: Function;
+  location: any;
 }
 
 interface PopUp {
@@ -120,7 +122,9 @@ class App extends React.Component<AppProps, AppState> {
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
-    this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
+    this.props.upgradeErrorHandlerSetter(() =>
+      this.props.history.push("/upgrade-error")
+    );
     // session.defaultSession.cookies.get({}, (error, cookies) => {
     //   if (error) {
     //     return;
@@ -166,7 +170,9 @@ class App extends React.Component<AppProps, AppState> {
     const impersonated = await localStorage.getItem("impersonator-token");
     if (impersonated) {
       try {
-        const res = await this.props.endImpersonation({ variables: { token: impersonated } });
+        const res = await this.props.endImpersonation({
+          variables: { token: impersonated }
+        });
         await localStorage.setItem("token", res.endImpersonation);
       } catch (err) {
         localStorage.removeItem("token");
@@ -197,7 +203,15 @@ class App extends React.Component<AppProps, AppState> {
 
   logMeIn = async (email: string, password: string) => {
     try {
-      const res = await this.props.signIn({ variables: { email, password } });
+      const { loginkey, encryptionkey1 } = await hashPassword(
+        this.props.client,
+        email,
+        password
+      );
+
+      const res = await this.props.signIn({
+        variables: { email, password: loginkey }
+      });
       const { token, twofactor, unitid } = res.data.signIn;
 
       if (!twofactor) {
@@ -243,7 +257,11 @@ class App extends React.Component<AppProps, AppState> {
                   <SignIn
                     login={(a, b) => this.logMeIn(a, b)}
                     moveTo={this.moveTo}
-                    error={error && error.networkError ? "network" : filterError(error)}
+                    error={
+                      error && error.networkError
+                        ? "network"
+                        : filterError(error)
+                    }
                     resetError={() => this.setState({ error: "" })}
                   />
                 </div>
@@ -263,7 +281,9 @@ class App extends React.Component<AppProps, AppState> {
             if (!impersonateToken) {
               if (store.has("accounts")) {
                 machineuserarray = store.get("accounts");
-                const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
+                const i = machineuserarray.findIndex(
+                  u => u.email == data.me.emails[0].email
+                );
                 if (i != -1) {
                   machineuserarray.splice(i, 1);
                 }
@@ -325,7 +345,8 @@ class App extends React.Component<AppProps, AppState> {
 
   sidebarloaded = () => this.setState({ sidebarloaded: true });
 
-  setrenderElements = references => this.setState({ renderElements: references });
+  setrenderElements = references =>
+    this.setState({ renderElements: references });
 
   setreshowTutorial = section => {
     switch (section) {
@@ -365,7 +386,8 @@ class App extends React.Component<AppProps, AppState> {
           addRenderElement: e => this.addRenderElement(e),
           setreshowTutorial: this.setreshowTutorial
         }}
-        className="full-size">
+        className="full-size"
+      >
         <HeaderNotificationProvider>
           {this.renderComponents()}
           {/*sidebarloaded &&
