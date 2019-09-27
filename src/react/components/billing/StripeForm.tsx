@@ -25,7 +25,7 @@ const FETCH_BILLING_DATA = gql`
       tags
     }
 
-    fetchEmailList {
+    fetchEmails {
       email
       description
     }
@@ -55,8 +55,6 @@ class StripeForm extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    console.log(stripeToken);
-
     if (window.Stripe) {
       this.setState({
         stripe: window.Stripe(stripeToken)
