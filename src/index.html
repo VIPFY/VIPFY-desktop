@@ -48,33 +48,9 @@
   </header>
 
   <div id="App"></div>
-
-  <script type="text/tsx">
-    const pjson = require("pjson");
-    const config = require("./configurationManager.ts");
-    //install context menu
-    window.addEventListener("DOMContentLoaded", () => {
-      //webview
-      require("electron-context-menu")({
-        showInspectElement: false,
-        showCopyImageAddress: true,
-        showSaveImageAs: true,
-        window: document.getElementById("webview")
-      });
-      //normal windows
-      require("electron-context-menu")({
-        showInspectElement: config.allowDevTools
-      });
-
-     document.getElementById("versionnumber").innerHTML += pjson.version;
-    });
-
-    require('./windowcontrols.js')
-  </script>
   <script src="./react/u2f-api.js"></script>
 
   <script>window.exports = module.exports</script>
-  <script type="text/tsx">require("./react/index.tsx")</script>
 </body>
 
 </html>

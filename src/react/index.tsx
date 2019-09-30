@@ -24,6 +24,10 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { sleep } from "./common/functions";
 const { session } = require("electron").remote;
 
+const pjson = require("pjson");
+const config = require("./configurationManager.ts");
+require("./windowcontrols.js");
+
 interface IndexProps {
   client: ApolloClient<InMemoryCache>;
 }
@@ -99,5 +103,22 @@ class Application extends React.Component<IndexProps> {
     );
   };
 }
+
+//install context menu
+window.addEventListener("DOMContentLoaded", () => {
+  //webview
+  require("electron-context-menu")({
+    showInspectElement: false,
+    showCopyImageAddress: true,
+    showSaveImageAs: true,
+    window: document.getElementById("webview")
+  });
+  //normal windows
+  require("electron-context-menu")({
+    showInspectElement: config.allowDevTools
+  });
+
+  document!.getElementById("versionnumber")!.innerHTML += pjson.version;
+});
 
 ReactDOM.render(<Application />, document.getElementById("App"));

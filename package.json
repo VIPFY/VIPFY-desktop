@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.10.0-dev",
+  "version": "0.11.0-dev",
   "description": "The desktop client for vipfy.com",
   "main": "src/index.ts",
   "scripts": {
@@ -72,7 +72,21 @@
       ],
       "plugins": [
         [
-          "@electron-forge/plugin-compile",
+          "@electron-forge/plugin-webpack",
+          {
+            "mainConfig": "./webpack.main.config.js",
+            "renderer": {
+              "config": "./webpack.renderer.config.js",
+              "entryPoints": [
+                {
+                  "html": "./src/index.html",
+                  "js": "./src/react/index.tsx",
+                  "name": "main_window"
+                }
+              ]
+            }
+          },
+          "@electron-forge/plugin-auto-unpack-natives",
           {}
         ]
       ],
@@ -113,7 +127,6 @@
     "dotenv": "^5.0.1",
     "draft-js": "^0.10.5",
     "draftjs-to-html": "0.8.3",
-    "electron-compile": "^6.4.4",
     "electron-context-menu": "^0.11.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-is": "^3.0.0",
@@ -158,21 +171,26 @@
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@electron-forge/cli": "6.0.0-beta.32",
-    "@electron-forge/maker-deb": "6.0.0-beta.32",
-    "@electron-forge/maker-dmg": "6.0.0-beta.32",
-    "@electron-forge/maker-rpm": "6.0.0-beta.32",
-    "@electron-forge/maker-squirrel": "6.0.0-beta.32",
-    "@electron-forge/maker-zip": "6.0.0-beta.32",
-    "@electron-forge/plugin-auto-unpack-natives": "^6.0.0-beta.32",
-    "@electron-forge/plugin-compile": "6.0.0-beta.32",
-    "@electron-forge/publisher-nucleus": "6.0.0-beta.32",
+    "@electron-forge/cli": "6.0.0-beta.45",
+    "@electron-forge/maker-deb": "6.0.0-beta.45",
+    "@electron-forge/maker-dmg": "6.0.0-beta.45",
+    "@electron-forge/maker-rpm": "6.0.0-beta.45",
+    "@electron-forge/maker-squirrel": "6.0.0-beta.45",
+    "@electron-forge/maker-zip": "6.0.0-beta.45",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.0.0-beta.45",
+    "@electron-forge/plugin-webpack": "6.0.0-beta.45",
+    "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@electron-forge/publisher-nucleus": "6.0.0-beta.45",
+    "css-loader": "^3.0.0",
+    "electron": "6.0.10",
+    "fork-ts-checker-webpack-plugin": "^1.5.0",
+    "node-loader": "^0.6.0",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^6.1.2",
+    "typescript": "^3.6.3",
     "@types/react-dropzone": "^4.2.2",
-    "electron-prebuilt-compile": "4.0.0",
     "npm-run-all": "^4.1.5",
-    "nucleus-uploader": "^2.0.0",
     "tslint": "^5.12.1",
-    "typescript": "~3.3.1",
     "typescript-eslint-parser": "^22.0.0"
   }
 }
