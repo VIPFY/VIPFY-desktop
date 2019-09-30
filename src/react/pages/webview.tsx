@@ -42,6 +42,8 @@ export type WebViewState = {
   loggedIn: boolean;
   errorshowed: boolean;
   progress?: number;
+  loginspeed: number;
+  errorScreen: boolean;
 };
 
 export type WebViewProps = {
@@ -91,7 +93,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     error: null,
     loggedIn: false,
     errorshowed: false,
-    progress: undefined
+    progress: undefined,
+    loginspeed: 10,
+    errorScreen: false
   };
 
   static getDerivedStateFromProps(
@@ -111,15 +115,17 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
   }
 
-  /*shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps, nextState) {
     //console.log("COMPARE PROPS", this.props, nextProps);
     //console.log("COMPARE STATE", this.state, nextState);
     const props = this.props;
+    let update = false
     Object.keys(this.props).forEach(function(key) {
       if (props[key] == nextProps[key]) {
         //console.log("Same", key, props[key]);
       } else {
-        console.log("WEBVIEW DIFFERENT PROPS", key, props[key], nextProps[key]);
+        //console.log("WEBVIEW DIFFERENT PROPS", key, props[key], nextProps[key]);
+        update = true
       }
     });
     const state = this.state;
@@ -127,11 +133,12 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       if (state[key] == nextState[key]) {
         //console.log("Same", key, props[key]);
       } else {
-        console.log("WEBVIEW DIFFERENT STATE", key, state[key], nextState[key]);
+        //console.log("WEBVIEW DIFFERENT STATE", key, state[key], nextState[key]);
+        update = true
       }
     });
-    return true;
-  }*/
+    return update;
+  }
 
   componentDidMount() {
     let intervalId = setInterval(() => this.timer1m(), 60000);
@@ -256,6 +263,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           agreed
           disabled
           key
+          options
           boughtPlan: boughtplanid {
             id,
             plan: planid {
@@ -307,10 +315,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (licence.key && licence.key.loginurl) {
       loginurl = licence.key.loginurl;
     }
+    let optionsobject = Object.assign({}, licence.boughtPlan.plan.app.options)
+    Object.assign(optionsobject, licence.options)
     this.setState({
       setUrl: loginurl,
       unitId: licence.unit.id,
-      options: licence.boughtPlan.plan.app.options,
+      options: optionsobject,
+      loginspeed: optionsobject.loginspeed || 10,
       appid: licence.boughtPlan.plan.app.id,
       key: licence.key,
       progress: undefined
@@ -343,6 +354,10 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   hideLoadingScreen(): void {
     this.setState({ showLoadingScreen: false });
+  }
+
+  showErrorScreen(): void {
+    this.setState({ errorScreen: true });
   }
 
   showLoadingScreen(): void {
@@ -527,7 +542,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         break;
       }
       case "falseLogin": {
-        console.log("falseLogin");
+        //console.log("falseLogin");
         const { logError, client, ...saveprops } = this.props;
         const data = {
           error: "falseLogin",
@@ -683,18 +698,21 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.plain) {
       cssClass = "";
     }
-//console.log("OPEN SERVICE", this.state.setUrl , this.state.options.universallogin)
+    //console.log("OPEN SERVICE", this.state.setUrl , this.state)
     return (
       <HeaderNotificationContext.Consumer>{
         context => {
           return (
       <div className={cssClass} id={`webview-${this.props.viewID}`}
       >
+        {this.state.errorScreen && (<div className="errorScreen" style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}>Now something went really wrong :(</div>)}
         {this.state.showLoadingScreen && (
           <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} progress={this.state.progress} />
         )}
+        {/*console.log("KEY EXECUTOR", `${this.state.setUrl}-${this.state.loginspeed}`)*/}
         {this.state.options.universallogin ? (
           <UniversalLoginExecutor
+            key={`${this.state.setUrl}-${this.state.loginspeed}`}
             loginUrl={this.state.setUrl}
             username={this.state.key.email || this.state.key.username}
             password={this.state.key.password}
@@ -702,13 +720,23 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             takeScreenshot={false}
             partition={`service-${this.state.licenceId}`}
             className={cssClassWeb}
-            setResult={({ loggedin, emailEntered, passwordEntered }) => {
+            setResult={({ loggedin, errorin, emailEntered, passwordEntered }) => {
+              //console.log("SETRESULT", loggedin, errorin)
               if (loggedin && emailEntered && passwordEntered) {
                 this.hideLoadingScreen();
               }
+              if (errorin) {
+                if (this.state.loginspeed == 1) {
+                  this.showErrorScreen()
+                  console.log("REAL PROBLEM!", this.state.setUrl)
+                } else {
+                  console.log("SET LOGINSPEED TO 1", this.state.setUrl, this.state.loginspeed)
+                  this.setState({loginspeed: 1})
+                }
+              }
             }}
             progress={(progress) => this.setState({progress})}
-            speed={this.state.options.loginspeed || 10}
+            speed={this.state.loginspeed || 10}
             style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}
             interactionHappenedCallback={() => {
               let interactions = this.state.interactions;
@@ -731,7 +759,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
               if (isMain) {
                 //this.hideLoadingScreen();
               }
-              console.log(`failed loading ${url}: ${code} ${desc}`);
+              //console.log(`failed loading ${url}: ${code} ${desc}`);
             }}
             onLoadCommit={e => this.onLoadCommit(e)}
             onNewWindow={e => this.onNewWindow(e)}

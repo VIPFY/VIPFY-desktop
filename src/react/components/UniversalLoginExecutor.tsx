@@ -12,7 +12,12 @@ interface Props {
   partition?: string;
   takeScreenshot?: boolean;
   setResult: (
-    result: { loggedin: boolean; emailEntered: boolean; passwordEntered: boolean },
+    result: {
+      loggedin: boolean;
+      errorin: boolean;
+      emailEntered: boolean;
+      passwordEntered: boolean;
+    },
     image: string
   ) => void;
   progress?: (progress: number) => void;
@@ -115,6 +120,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   progressStep = 0;
   sentResult = false;
 
+  timeout = true;
+
   reset() {
     session.fromPartition(this.props.partition).clearStorageData();
     this.loginState = {
@@ -175,6 +182,49 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       this.progressHandle = undefined;
     }
   }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const props = this.props;
+    let update = false;
+    Object.keys(this.props).forEach(function(key) {
+      if (props[key] == nextProps[key] || typeof props[key] == "function") {
+        //console.log("Same", key, props[key]);
+      } else {
+        //console.log("WEBVIEW DIFFERENT PROPS", key, props[key], nextProps[key]);
+        if (
+          (Array.isArray(props[key]) && props[key].length == nextProps[key].length) ||
+          (props[key].fetchNotifications &&
+            props[key].fetchNotifications.length == nextProps[key].fetchNotifications.length)
+        ) {
+          //console.log("CHECKING");
+          const array = Array.isArray(props[key]) ? props[key] : props[key].fetchNotifications;
+          const arraycheck = Array.isArray(props[key])
+            ? nextProps[key]
+            : nextProps[key].fetchNotifications;
+          array.forEach(element => {
+            if (!arraycheck.find(e => e.id == element.id)) {
+              //console.log("DIFFERENT", element);
+              update = true;
+            }
+          });
+        } else {
+          //console.log("SET TRUE", key);
+          update = true;
+        }
+      }
+    });
+    const state = this.state;
+    Object.keys(this.state).forEach(function(key) {
+      if (state[key] == nextState[key] || typeof state[key] == "function") {
+        //console.log("Same", key, props[key]);
+      } else {
+        //console.log("WEBVIEW DIFFERENT STATE", key, state[key], nextState[key]);
+        update = true;
+      }
+    });
+    return update;
+  }
+
   componentDidUpdate(prevProps: Props) {
     if (
       prevProps.loginUrl != this.props.loginUrl ||
@@ -182,6 +232,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       prevProps.username != this.props.username ||
       prevProps.password != this.props.password
     ) {
+      //console.log("RESET");
       this.reset();
     }
   }
@@ -189,6 +240,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   render() {
     return (
       <WebView
+        key={`${this.props.loginUrl}-${this.props.speed}`}
         preload="./ssoConfigPreload/universalLogin.js"
         webpreferences="webSecurity=no"
         src={this.props.loginUrl}
@@ -208,11 +260,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     const now = new URL(w.src);
 
     for (const p of urlParts) {
-      for (const m of l) {
-        if (initial[p].includes(m) && !now[p].includes(m)) {
-          return true;
-        }
+      //for (const m of l) {
+      if (initial[p].includesAny(l) && !now[p].includesAny(l)) {
+        //console.log("URL TRUE", initial[p]);
+        return true;
       }
+      //}
     }
 
     //Check if logout button present
@@ -223,11 +276,11 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     );*/
 
     // let returnvalue = false;
-
-    return await w
-      .getWebContents()
-      .executeJavaScript(
-        `
+    if (w && w.getWebContents()) {
+      return await w
+        .getWebContents()
+        .executeJavaScript(
+          `
         (function() {
           let attributes = [
             "name",
@@ -283,11 +336,87 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           return Array.from(document.querySelectorAll("*")).filter(filterDom(["multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editAccountSetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn"],[])).length > 0
         })();
         `
-        //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`
-      )
-      .then(e => {
-        return e;
-      });
+          //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`
+        )
+        .then(e => {
+          return e;
+        });
+    } else {
+      return false;
+    }
+    //console.log("RETURN ", returnvalue);
+    //return returnvalue;
+  }
+
+  async isErrorIn(w) {
+    if (w && w.getWebContents()) {
+      return await w
+        .getWebContents()
+        .executeJavaScript(
+          `
+        (function() {
+          let attributes = [
+            "name",
+            "id",
+            "aria-label",
+            "aria-roledescription",
+            "placeholder",
+            "ng-model",
+            "data-ng-model",
+            "data-callback",
+            "data-name",
+            "class",
+            "value",
+            "alt",
+            "data-testid",
+            "data-test-id",
+            "href",
+            "data-event-click-target"
+          ];
+          
+          let filterDom = (includesAny, excludesAll) => {
+            includesAny = includesAny.map(i => new RegExp(i));
+            excludesAll = excludesAll.map(i => new RegExp(i));
+            return function(element) {
+              if (!element.hasAttributes()) {
+                return false;
+              }
+              if (element.scrollHeight == 0 || element.scrollWidth == 0) {
+                return false; //don't select elements that aren't visible
+              }
+              for (const attribute of attributes) {
+                const attr = element.attributes.getNamedItem(attribute);
+                if (attr == null) continue;
+                const val = attr.value.toLowerCase();
+                if (val.includesAnyRegExp(excludesAll)) {
+                  return false;
+                }
+              }
+              for (const attribute of attributes) {
+                const attr = element.attributes.getNamedItem(attribute);
+                if (attr === null) continue;
+                const val = attr.value.toLowerCase();
+                //console.log("attr", attribute, val, includesAny);
+                if (val.includesAnyRegExp(includesAny)) {
+                  return true;
+                }
+              }
+              if (includesAny.length == 0) return true;
+              return false;
+            };
+          }
+          
+          return Array.from(document.querySelectorAll("*:not(:empty)")).filter(filterDom(["error"],[])).length > 0
+        })();
+        `
+          //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`
+        )
+        .then(e => {
+          return e;
+        });
+    } else {
+      return false;
+    }
     //console.log("RETURN ", returnvalue);
     //return returnvalue;
   }
@@ -304,20 +433,28 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       this.timeoutHandle = undefined;
     }
     this.sentResult = true;
-    if (w) {
+    if (w && w.getWebContents()) {
       setTimeout(
         () =>
           w.getWebContents().capturePage(async image => {
             const loggedin = await this.isLoggedIn(w);
+            let errorin = false;
+            if (!loggedin) {
+              errorin = await this.isErrorIn(w);
+            }
+            //console.log("sentResult", loggedin, errorin, this.loginState);
             this.props.setResult(
-              { loggedin, ...this.loginState },
+              { loggedin, errorin, ...this.loginState },
               this.props.takeScreenshot ? image.toDataURL({ scaleFactor: 0.5 }) : ""
             );
           }),
         delay
       );
     } else {
-      setTimeout(() => this.props.setResult({ loggedin: false, ...this.loginState }, ""), delay);
+      setTimeout(
+        () => this.props.setResult({ loggedin: false, errorin: false, ...this.loginState }, ""),
+        delay
+      );
     }
   }
 
@@ -325,6 +462,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     this.progress += this.progressStep;
     this.progress = Math.min(1, this.progress);
     this.props.progress!(this.progress);
+    this.timeout = true;
     if (
       this.loginState.emailEntered &&
       this.loginState.passwordEntered &&
@@ -333,11 +471,32 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     ) {
       this.progress = 1;
       this.sendResult(this.webview, 0);
+      //console.log("FINISHED");
+      this.timeout = false;
     }
+    if (
+      this.loginState.emailEntered &&
+      this.loginState.passwordEntered &&
+      this.webview &&
+      (await this.isErrorIn(this.webview))
+    ) {
+      await sleep(100);
+      if (await this.isErrorIn(this.webview)) {
+        console.log("ERROR", await this.isErrorIn(this.webview), this.props.loginUrl);
+        this.progress = 1;
+        this.sendResult(this.webview, 0);
+        this.timeout = false;
+      }
+    }
+
     if (this.progress == 1) {
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
+        if (this.timeout) {
+          //console.log("TIMEOUT");
+          this.props.setResult({ loggedin: false, errorin: true, ...this.loginState }, "");
+        }
       }
     }
   }

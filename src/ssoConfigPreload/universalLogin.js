@@ -230,7 +230,7 @@ function findEmailField() {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("EMIAL", t);
+  console.log("EMAIL", t);
   return t[0];
 }
 
