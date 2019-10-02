@@ -74,6 +74,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
         <td>{this.displayBool(site.recaptcha, this.state.currentTest == i)}</td>
         <td>{this.displayBool(site.emailEntered, this.state.currentTest == i)}</td>
         <td>{this.displayBool(site.passwordEntered, this.state.currentTest == i)}</td>
+        <td>{this.displayBool(site.errorin, this.state.currentTest == i)}</td>
         <td>{site.speed && site.speed.toFixed(1)}</td>
         <td>
           <Tooltip
@@ -132,6 +133,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
   }
 
   render() {
+    console.log("CT", this.state.sites);
     const currentTest =
       this.state.currentTest === null ? null : this.state.sites[this.state.currentTest];
     return (
@@ -160,6 +162,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
               <th>Recaptcha</th>
               <th>Email</th>
               <th>Password</th>
+              <th>Wrong Email / Password</th>
               <th>Speed</th>
               <th />
             </tr>
@@ -171,6 +174,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
               <td>{this.renderProportion("recaptcha")}</td>
               <td>{this.renderProportion("emailEntered")}</td>
               <td>{this.renderProportion("passwordEntered")}</td>
+              <td>{this.renderProportion("errorin")}</td>
               <td>{average(this.state.sites.map(s => s.speed).filter(s => !!s)).toFixed(1)}</td>
               <td />
               <td />
@@ -178,7 +182,8 @@ class UniversalLoginTest extends React.Component<Props, State> {
             {this.renderTable()}
           </tbody>
         </table>
-        {currentTest !== null && (
+
+        {currentTest && currentTest !== null && (
           <UniversalLoginExecutorWrapper
             loginUrl={currentTest.url}
             username={currentTest.email}
@@ -186,6 +191,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
             timeout={60000}
             partition="ssotest"
             setResult={(result, image) => {
+              console.log("RESULT", result);
               const ct = this.state.currentTest;
               this.setState(prev => {
                 let sites = [...prev.sites];
@@ -206,6 +212,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
               timeout={60000}
               partition={`ssotest_${r}`}
               setResult={(result, image) => {
+                console.log("RESULT Background", result);
                 this.setState(prev => {
                   let sites = [...prev.sites];
                   sites[r] = { ...sites[r], ...result, image };

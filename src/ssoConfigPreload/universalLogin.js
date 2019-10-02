@@ -54,12 +54,14 @@ let stopped = false;
 let speed = 1;
 
 ipcRenderer.once("loginData", async (e, key) => {
+  console.log("LOGIN DATA WEBSEITE", stopped, emailEntered, passwordEntered);
   if (stopped) return;
   emailEntered = key.emailEntered;
   passwordEntered = key.passwordEntered;
   speed = key.speed || 1;
   let didAnything = false;
   while (!emailEntered || !passwordEntered || stopped) {
+    console.log("LOGIN DATA", !emailEntered, !passwordEntered, stopped);
     await sleep(100);
     let totaltime = 100;
     let email = findEmailField();
@@ -67,6 +69,7 @@ ipcRenderer.once("loginData", async (e, key) => {
     let button = findConfirmButton();
     let cookiebutton = findCookieButton();
     let recaptcha;
+    didAnything = false;
     while (totaltime < 5000) {
       if (email || emailEntered || cookiebutton) break;
       await sleep(300);
@@ -79,30 +82,48 @@ ipcRenderer.once("loginData", async (e, key) => {
       await clickButton(cookiebutton);
     }
     email = findEmailField();
-    if (email) {
+    console.log("EMAIL FOUND", email, !emailEntered);
+    if (email && !emailEntered) {
       await clickButton(email);
+      console.log("FILL EMAIL");
       await fillFormField(email, "username");
+      console.log("did Email", email);
       emailEntered = true;
       didAnything = true;
     }
     await sleep(100);
     recaptcha = findForm().querySelector('iframe[src*="/recaptcha/"]');
-    if (recaptcha) {
+    console.log("FIND recaptcha", findForm(), recaptcha);
+    if (recaptcha && (recaptcha.scrollHeight != 0 || recaptcha.scrollWidth != 0)) {
       ipcRenderer.sendToHost("recaptcha", null);
     }
     password = findPassField();
-    if (password) {
+    if (password && !passwordEntered) {
       await clickButton(password);
       await fillFormField(password, "password");
       passwordEntered = true;
+      console.log("did Password");
       didAnything = true;
     }
     button = findConfirmButton();
-    if (button) {
+    console.log("Button Check", button, didAnything);
+    if (button && didAnything) {
       await clickButton(button);
+      console.log("did Button");
       didAnything = true;
     }
     await sleep(4000);
+  }
+  if (emailEntered && passwordEntered && !stopped) {
+    recaptcha = findForm().querySelector('iframe[src*="/recaptcha/"]');
+    console.log("FIND recaptcha 2", findForm(), recaptcha);
+    if (recaptcha && (recaptcha.scrollHeight != 0 || recaptcha.scrollWidth != 0)) {
+      ipcRenderer.sendToHost("recaptcha", null);
+    } else {
+      // Special Case for Wrike
+      console.log("SPEZIAL");
+      clickButton(document.querySelector("[wrike-button-v2][data-application='login-remember']"));
+    }
   }
 });
 

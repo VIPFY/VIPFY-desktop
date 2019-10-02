@@ -21,6 +21,12 @@ const LOG_SSO_ERROR = gql`
   }
 `;
 
+const UPDATE_LICENCE_SPEED = gql`
+mutation updateLicenceSpeed($licenceid: ID!, $speed: Int!, $working: Boolean!) {
+  updateLicenceSpeed(licenceid: $licenceid, speed: $speed, working: $working)
+}
+`;
+
 export type WebViewState = {
   setUrl: string;
   currentUrl: string;
@@ -44,6 +50,7 @@ export type WebViewState = {
   progress?: number;
   loginspeed: number;
   errorScreen: boolean;
+  oldspeed: number;
 };
 
 export type WebViewProps = {
@@ -55,6 +62,7 @@ export type WebViewProps = {
   setViewTitle: Function;
   viewID: number;
   logError: Function;
+  updateLicenceSpeed: Function;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -94,8 +102,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     loggedIn: false,
     errorshowed: false,
     progress: undefined,
-    loginspeed: 10,
-    errorScreen: false
+    loginspeed: 1,
+    errorScreen: false,
+    oldspeed: undefined
   };
 
   static getDerivedStateFromProps(
@@ -321,9 +330,14 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       setUrl: loginurl,
       unitId: licence.unit.id,
       options: optionsobject,
-      loginspeed: optionsobject.loginspeed || 10,
+      loginspeed: optionsobject.loginspeed ?
+        (optionsobject.loginspeed + 1) < optionsobject.loginfailed ?
+          (optionsobject.loginspeed + 1) :
+          optionsobject.loginspeed
+        : 100,
       appid: licence.boughtPlan.plan.app.id,
       key: licence.key,
+      oldspeed: undefined,
       progress: undefined
     });
   }
@@ -706,13 +720,14 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       <div className={cssClass} id={`webview-${this.props.viewID}`}
       >
         {this.state.errorScreen && (<div className="errorScreen" style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}>Now something went really wrong :(</div>)}
-        {this.state.showLoadingScreen && (
+        {/*this.state.showLoadingScreen && (
           <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} progress={this.state.progress} />
-        )}
+        )*/}
         {/*console.log("KEY EXECUTOR", `${this.state.setUrl}-${this.state.loginspeed}`)*/}
         {this.state.options.universallogin ? (
           <UniversalLoginExecutor
             key={`${this.state.setUrl}-${this.state.loginspeed}`}
+            //keylog={`${this.state.setUrl}-${this.state.loginspeed}`}
             loginUrl={this.state.setUrl}
             username={this.state.key.email || this.state.key.username}
             password={this.state.key.password}
@@ -720,18 +735,28 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             takeScreenshot={false}
             partition={`service-${this.state.licenceId}`}
             className={cssClassWeb}
-            setResult={({ loggedin, errorin, emailEntered, passwordEntered }) => {
-              //console.log("SETRESULT", loggedin, errorin)
+            setResult={async ({ loggedin, errorin, emailEntered, passwordEntered }) => {
+              console.log("SETRESULT", loggedin, errorin)
               if (loggedin && emailEntered && passwordEntered) {
                 this.hideLoadingScreen();
+                /*await this.props.updateLicenceSpeed({ variables: { licenceid: this.props.licenceID,
+                  speed: this.state.loginspeed,
+                  working: true } });*/
               }
               if (errorin) {
                 if (this.state.loginspeed == 1) {
                   this.showErrorScreen()
+                  /*await this.props.updateLicenceSpeed({ variables: { licenceid: this.props.licenceID,
+                    speed: this.state.loginspeed,
+                    oldspeed: this.state.oldspeed,
+                    working: false } });*/
                   console.log("REAL PROBLEM!", this.state.setUrl)
                 } else {
                   console.log("SET LOGINSPEED TO 1", this.state.setUrl, this.state.loginspeed)
-                  this.setState({loginspeed: 1})
+                  /*await this.props.updateLicenceSpeed({ variables: { licenceid: this.props.licenceID,
+                    speed: this.state.loginspeed,
+                    working: false } });*/
+                  this.setState(s => {return {loginspeed: 1, oldspeed: s.loginspeed}})
                 }
               }
             }}
@@ -804,5 +829,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
 export default compose(
   withApollo,
-  graphql(LOG_SSO_ERROR, { name: "logError" })
+  graphql(LOG_SSO_ERROR, { name: "logError" }),
+  graphql(UPDATE_LICENCE_SPEED, {name: "updateLicenceSpeed"})
 )(Webview);
