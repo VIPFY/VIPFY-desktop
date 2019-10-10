@@ -50,14 +50,16 @@ setTimeout(() => timer(), 5000);
 
 let emailEntered = false;
 let passwordEntered = false;
+let domainEntered = false;
 let stopped = false;
 let speed = 1;
 
 ipcRenderer.once("loginData", async (e, key) => {
-  console.log("LOGIN DATA WEBSEITE", stopped, emailEntered, passwordEntered);
+  console.log("LOGIN DATA WEBSEITE", stopped, emailEntered, passwordEntered, key);
   if (stopped) return;
   emailEntered = key.emailEntered;
   passwordEntered = key.passwordEntered;
+  domainEntered = key.domainEntered;
   speed = key.speed || 1;
   let didAnything = false;
   while (!emailEntered || !passwordEntered || stopped) {
@@ -81,6 +83,20 @@ ipcRenderer.once("loginData", async (e, key) => {
     if (cookiebutton) {
       await clickButton(cookiebutton);
     }
+    if (key.domainNeeded) {
+      domain = findDomainField();
+      console.log("Domain FOUND", domain, !domainEntered);
+      if (domain && !domainEntered) {
+        console.log("DOMAIN CLICK");
+        await clickButton(domain);
+        console.log("FILL Domain");
+        await fillFormField(domain, "domain");
+        console.log("did Domain", domain);
+        domainEntered = true;
+        didAnything = true;
+      }
+    }
+    await sleep(100);
     email = findEmailField();
     console.log("EMAIL FOUND", email, !emailEntered);
     if (email && !emailEntered) {
@@ -127,10 +143,12 @@ ipcRenderer.once("loginData", async (e, key) => {
   }
 });
 
-function start() {
+async function start() {
   //if (!document.body.id.includes("beacon")) {
+  console.log("START TEST", location.href);
   ipcRenderer.sendToHost("loaded", null);
   ipcRenderer.sendToHost("getLoginData", null);
+  console.log("START TEST END", location.href);
   //}
 }
 
@@ -185,18 +203,39 @@ function isEqualOrChild(child, parent) {
 
 function getMidPoint(e) {
   var rect = e.getBoundingClientRect();
-  return { x: rect.x + rect.width / 10, y: rect.y + rect.height / 2 }; // bias to the left
+  const style = window.getComputedStyle(e);
+  return {
+    x:
+      rect.x +
+      parseInt(style.paddingLeft) +
+      (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
+    y:
+      rect.y +
+      parseInt(style.paddingTop) +
+      (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
+  }; // bias to the left
 }
 
 function clickButton(targetNode) {
-  triggerMouseEvent(targetNode, "mouseover");
+  var rect = getMidPoint(targetNode);
+
+  if (stopped) throw new Error("abort");
+  const p = new Promise(resolve =>
+    ipcRenderer.once("clicked", async (e, key) => {
+      if (stopped) return;
+      resolve();
+    })
+  );
+  ipcRenderer.sendToHost("click", rect.x, rect.y);
+  return p;
+  /* triggerMouseEvent(targetNode, "mouseover");
   setTimeout(() => {
     triggerMouseEvent(targetNode, "mousedown");
     setTimeout(() => {
       triggerMouseEvent(targetNode, "mouseup");
       triggerMouseEvent(targetNode, "click");
     }, 77);
-  }, 146);
+  }, 146);*/
 }
 
 function triggerMouseEvent(node, eventType) {
@@ -228,7 +267,7 @@ function findForm(ignoreForm) {
 
 function findPassField() {
   let t = Array.from(findForm().querySelectorAll("input[type=password]"))
-    .filter(filterDom(["pass", "pw"], ["repeat", "confirm", "forgot"]))
+    .filter(filterDom(["pass", "pw"], ["repeat", "confirm", "forgot", "button"]))
     .filter(e => !isHidden(e))
     .filter(e => !e.disabled);
   if (t.length == 0) {
@@ -242,7 +281,9 @@ function findPassField() {
 
 function findEmailField() {
   let t = Array.from(findForm().querySelectorAll("input"))
-    .filter(filterDom(["email", "user", "log.?in", "name"], ["pw", "pass"]))
+    .filter(
+      filterDom(["email", "user", "log.?in", "name"], ["pw", "pass", "accountname", "button"])
+    )
     .filter(e => !isHidden(e))
     .filter(e => !e.disabled);
   if (t.length == 0) {
@@ -255,11 +296,25 @@ function findEmailField() {
   return t[0];
 }
 
+function findDomainField() {
+  let t = Array.from(findForm().querySelectorAll("input"))
+    .filter(filterDom(["account", "domain"], ["pw", "pass", "email"]))
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
+  console.log("DOMAIN", t);
+  return t[0];
+}
+
 function findConfirmButton(ignoreForm) {
   var t = [];
   if (findForm() != document) {
     t = Array.from(findForm().querySelectorAll("[type='submit']"))
-      .filter(filterDom([], ["oauth", "google", "facebook", "forgot", "newsletter"]))
+      .filter(
+        filterDom(
+          [],
+          ["oauth", "google", "facebook", "forgot", "newsletter", "sign.?up", "free.?trial"]
+        )
+      )
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
@@ -272,7 +327,16 @@ function findConfirmButton(ignoreForm) {
       .filter(
         filterDom(
           ["sign.?in", "log.?in", "submit", "next", "cont(?![a-hj-z])"],
-          ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "linkedin",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial"
+          ]
         )
       )
       .filter(e => !isHidden(e))
@@ -287,7 +351,27 @@ function findConfirmButton(ignoreForm) {
       .filter(
         filterDom(
           ["agree", "proceed", "accept"],
-          ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "linkedin",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial"
+          ]
+        )
+      )
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
+  }
+  if (t.length == 0) {
+    t = Array.from(findForm().querySelectorAll("[type='submit']"))
+      .filter(
+        filterDom(
+          [],
+          ["oauth", "google", "facebook", "forgot", "newsletter", "sign.?up", "free.?trial"]
         )
       )
       .filter(e => !isHidden(e))
@@ -302,7 +386,16 @@ function findConfirmButton(ignoreForm) {
       .filter(
         filterDom(
           [],
-          ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "linkedin",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial"
+          ]
         )
       )
       .filter(e => !isHidden(e))
@@ -317,7 +410,16 @@ function findConfirmButton(ignoreForm) {
       .filter(
         filterDom(
           [],
-          ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "linkedin",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial"
+          ]
         )
       )
       .filter(e => !isHidden(e))
