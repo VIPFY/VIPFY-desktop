@@ -109,7 +109,6 @@
     "apollo-link-retry": "^2.2.14",
     "apollo-link-ws": "^1.0.14",
     "apollo-upload-client": "^9.1.0",
-    "axios": "^0.18.1",
     "dotenv": "^5.0.1",
     "draft-js": "^0.10.5",
     "draftjs-to-html": "0.8.3",
