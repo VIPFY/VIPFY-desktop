@@ -1,5 +1,5 @@
 import * as React from "react";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
 
 interface Props {
   url: string;

@@ -4,7 +4,7 @@
  for word in $(cat wordlist5a.txt); do echo "\"$word\"," >> wordlist5.json; done
 */
 // wordlist is licenced BSD/MIT-Like
-import randomNumber = require("random-number-csprng");
+import randomNumber from "random-number-csprng";
 
 let wordlist: string[] | null = null;
 
@@ -15,7 +15,7 @@ function capitalizeFirstLetter(s: string) {
 export async function randomWord() {
   // lazy loading to improve loadtime
   if (wordlist === null) {
-    wordlist = require("./wordlist5a.json");
+    wordlist = import("./wordlist5a.json").then(({ default: wList }) => wList);
   }
   return wordlist![await randomNumber(0, wordlist!.length - 1)];
 }

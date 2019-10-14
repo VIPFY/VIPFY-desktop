@@ -1,6 +1,7 @@
 import * as React from "react";
 import UniversalButton from "../components/universalButtons/universalButton";
 import { withRouter } from "react-router";
+import errorPic from "../../images/sso_creation_fail.png";
 
 interface Props {
   history: any;
@@ -11,7 +12,7 @@ const ErrorPage = (props: Props) => (
   <div id="outer-error-page" style={{ paddingTop: "10vh" }}>
     <h1>Sorry an error occurred!</h1>
     <img
-      src="./images/sso_creation_fail.png"
+      src={errorPic}
       style={{ marginTop: "5vh", marginBottom: "5vh", height: "40vh", width: "auto" }}
     />
     <p>

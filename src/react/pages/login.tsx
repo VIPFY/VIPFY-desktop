@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { graphql, compose } from "react-apollo";
+import { shell } from "electron";
 import gql from "graphql-tag";
 import { updateUser } from "../mutations/auth";
 import { emailRegex, countries, industries, subIndustries } from "../common/constants";
@@ -209,14 +210,12 @@ class Login extends React.Component<Props, State> {
 
   openExternal = (e, url) => {
     e.preventDefault();
-    require("electron").shell.openExternal(url);
+    shell.openExternal(url);
   };
 
   handleClickOutside = () => {
     this.setState({ possibleAddresses: [] });
   };
-
-  cheat() {}
 
   searchCompany = async e => {
     const company = e.target.value;

@@ -2,8 +2,9 @@ import * as React from "react";
 
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
+import { shell } from "electron";
 import { AppContext } from "../common/functions";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
 import CreditCard from "../components/billing/CreditCard";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
@@ -51,7 +52,7 @@ class CheckOrder extends React.Component<Props, State> {
   }
 
   openExternal(url) {
-    require("electron").shell.openExternal(url);
+    shell.openExternal(url);
   }
 
   changeOption(index, value, plan) {

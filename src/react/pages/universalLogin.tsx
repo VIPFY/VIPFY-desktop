@@ -1,10 +1,10 @@
 import * as React from "react";
 import { graphql, Query, withApollo } from "react-apollo";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
 import { sleep } from "../common/functions";
 
-const { session } = require("electron").remote;
-
+import { remote } from "electron";
+const { session } = remote;
 interface Props {
   company: any;
   showPopup: Function;

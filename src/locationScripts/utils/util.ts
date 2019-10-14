@@ -1,5 +1,4 @@
-const path = require("path");
-const electron = require("electron");
+import electron from "electron";
 export const con = electron.remote.getGlobal("console");
 const app = electron.remote.app;
 export const appPath = app.getAppPath();

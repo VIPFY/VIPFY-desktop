@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Dropzone from "react-dropzone";
 import { times } from "lodash";
+import { shell } from "electron";
 import { InputProps } from "../interfaces";
 
 interface State {
@@ -202,7 +203,7 @@ class InputField extends React.Component<InputProps, State> {
                 <span
                   className="lawlink"
                   onClick={() => {
-                    require("electron").shell.openExternal(this.props.lawLink);
+                    shell.openExternal(this.props.lawLink);
                   }}>
                   Terms of Service
                 </span>
@@ -210,7 +211,7 @@ class InputField extends React.Component<InputProps, State> {
                 <span
                   className="lawlink"
                   onClick={() => {
-                    require("electron").shell.openExternal(this.props.placeholderprivacyLink);
+                    shell.openExternal(this.props.placeholderprivacyLink);
                   }}>
                   Privacy
                 </span>

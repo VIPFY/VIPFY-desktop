@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";

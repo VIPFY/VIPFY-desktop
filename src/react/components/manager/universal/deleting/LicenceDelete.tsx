@@ -8,7 +8,7 @@ import PopupSelfSaving from "../../../../popups/universalPopups/selfSaving";
 import { fetchLicences } from "../../../../queries/auth";
 import { me } from "../../../../queries/auth";
 import { fetchUserLicences } from "../../../../queries/departments";
-import moment = require("moment");
+import moment from "moment";
 import { REMOVE_EXTERNAL_ACCOUNT } from "../../../../mutations/products";
 
 interface Props {

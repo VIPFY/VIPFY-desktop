@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Route } from "react-router-dom";
 import { withRouter, Switch } from "react-router";
-
+import { ipcRenderer } from "electron";
 import { graphql, compose, Query, withApollo } from "react-apollo";
 
 import Advisor from "./advisor";
@@ -106,7 +106,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidMount = async () => {
-    require("electron").ipcRenderer.on("change-page", (_event, page) => {
+    ipcRenderer.on("change-page", (_event, page) => {
       this.props.history.push(page);
     });
 

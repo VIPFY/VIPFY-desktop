@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import Chart from "react-apexcharts";
 import ResizeAware from "react-resize-aware";
 
-import moment = require("moment");
+import moment from "moment";
 
 interface State {}
 

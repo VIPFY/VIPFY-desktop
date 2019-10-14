@@ -1,4 +1,4 @@
-const ipcRenderer = require("electron").ipcRenderer;
+import { ipcRenderer } from "electron";
 
 window.addEventListener("load", onLoad);
 

@@ -10,7 +10,7 @@ import DataNameForm from "../components/dataForms/NameForm";
 import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
-import moment = require("moment");
+import moment from "moment";
 import { filterError, concatName } from "../common/functions";
 import UserName from "../components/UserName";
 

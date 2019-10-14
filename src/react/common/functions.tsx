@@ -2,7 +2,9 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import moment = require("moment");
+import { shell } from "electron";
+
+import moment from "moment";
 import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
 
 export function showStars(stars, maxStars = 5) {
@@ -230,7 +232,7 @@ export const ConsentText = () => (
       className="fancy-link"
       onClick={e => {
         e.preventDefault();
-        require("electron").shell.openExternal("https://vipfy.store/privacy");
+        shell.openExternal("https://vipfy.store/privacy");
       }}>
       Privacy Policy
     </span>{" "}
@@ -240,7 +242,7 @@ export const ConsentText = () => (
       className="fancy-link"
       onClick={e => {
         e.preventDefault();
-        require("electron").shell.openExternal("https://vipfy.store/tos");
+        shell.openExternal("https://vipfy.store/tos");
       }}>
       Terms of Service
     </span>{" "}

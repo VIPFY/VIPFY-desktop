@@ -5,7 +5,7 @@ import UniversalButton from "../../universalButtons/universalButton";
 import { fetchCompanyService } from "../../../queries/products";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
-import moment = require("moment");
+import moment from "moment";
 import PrintTeamSquare from "../universal/squares/printTeamSquare";
 
 interface Props {

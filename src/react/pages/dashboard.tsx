@@ -1,6 +1,6 @@
 import * as React from "react";
 import { graphql, compose } from "react-apollo";
-import moment = require("moment");
+import moment from "moment";
 import { times } from "lodash";
 import AppList from "../components/profile/AppList";
 import LoadingDiv from "../components/LoadingDiv";

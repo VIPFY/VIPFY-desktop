@@ -4,6 +4,7 @@ import { times } from "lodash";
 import { filterError } from "../common/functions";
 import LoadingDiv from "../components/LoadingDiv";
 import { debounce } from "lodash";
+import { shell } from "electron";
 
 interface Fields {
   name: string;
@@ -340,7 +341,7 @@ class GenericInputForm extends React.Component<Props, State> {
                       <span
                         className="lawlink"
                         onClick={() => {
-                          require("electron").shell.openExternal(lawLink);
+                          shell.openExternal(lawLink);
                         }}>
                         Terms of Service
                       </span>
@@ -348,7 +349,7 @@ class GenericInputForm extends React.Component<Props, State> {
                       <span
                         className="lawlink"
                         onClick={() => {
-                          require("electron").shell.openExternal(privacyLink);
+                          shell.openExternal(privacyLink);
                         }}>
                         Privacy
                       </span>

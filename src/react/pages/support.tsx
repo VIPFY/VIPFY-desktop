@@ -2,7 +2,7 @@ import * as React from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import LoadingDiv from "../components/LoadingDiv";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
 
 interface Props {
   chatOpen: boolean;

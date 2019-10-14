@@ -1,10 +1,10 @@
-require("dotenv").config();
+//require("dotenv").config();
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { ApolloProvider } from "react-apollo";
-import fs = require("fs");
+import u2f from "./u2f-api.js";
 
 declare module "*.scss" {
   const content: any;
@@ -16,17 +16,18 @@ import client, { setLogoutFunction, setUpgradeErrorHandler } from "./networkInte
 import PasswordReset from "./components/signin/PasswordReset";
 import OuterErrorBoundary from "./error";
 import * as is from "electron-is";
-import { remote } from "electron";
 import UpgradeError from "./upgradeerror";
+import fs from "fs";
 
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { sleep } from "./common/functions";
-const { session } = require("electron").remote;
+import { remote } from "electron";
+const { session } = remote;
 
-const pjson = require("pjson");
-const config = require("./configurationManager.ts");
-require("./windowcontrols.js");
+import pjson from "pjson";
+import config from "../../configurationManager.ts";
+import windowControls from "../../windowcontrols.js";
 
 interface IndexProps {
   client: ApolloClient<InMemoryCache>;
@@ -53,12 +54,13 @@ class Application extends React.Component<IndexProps> {
     }
     // inline styles to make them available to smartlook
     const style = document.createElement("style");
-    fs.readFile(__dirname + "/../css/layout.css", "utf8", (err, contents) => {
-      style.innerHTML = contents;
-      document.head!.appendChild(style);
-      // use setTimeout to allow some time for layouting
-      window.setTimeout(() => this.forceUpdate(), 0);
-    });
+    // fs.readFile(__dirname + "/../css/layout.css", "utf8", (err, contents) => {
+    //   console.log("LOG: Application -> componentDidMount -> err", err);
+    //   style.innerHTML = contents;
+    //   document.head!.appendChild(style);
+    //   // use setTimeout to allow some time for layouting
+    //   window.setTimeout(() => this.forceUpdate(), 0);
+    // });
 
     if (is.macOS()) {
       document.body.classList.add("mac");
@@ -105,20 +107,20 @@ class Application extends React.Component<IndexProps> {
 }
 
 //install context menu
-window.addEventListener("DOMContentLoaded", () => {
-  //webview
-  require("electron-context-menu")({
-    showInspectElement: false,
-    showCopyImageAddress: true,
-    showSaveImageAs: true,
-    window: document.getElementById("webview")
-  });
-  //normal windows
-  require("electron-context-menu")({
-    showInspectElement: config.allowDevTools
-  });
+// window.addEventListener("DOMContentLoaded", () => {
+//   //webview
+//   require("electron-context-menu")({
+//     showInspectElement: false,
+//     showCopyImageAddress: true,
+//     showSaveImageAs: true,
+//     window: document.getElementById("webview")
+//   });
+//   //normal windows
+//   require("electron-context-menu")({
+//     showInspectElement: config.allowDevTools
+//   });
 
-  document!.getElementById("versionnumber")!.innerHTML += pjson.version;
-});
+//   document!.getElementById("versionnumber")!.innerHTML += pjson.version;
+// });
 
 ReactDOM.render(<Application />, document.getElementById("App"));
