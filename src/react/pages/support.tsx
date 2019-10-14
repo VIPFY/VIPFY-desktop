@@ -3,6 +3,7 @@ import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import LoadingDiv from "../components/LoadingDiv";
 import WebView from "react-electron-web-view";
+import { getPreloadScriptPath } from "../common/functions";
 
 interface Props {
   chatOpen: boolean;
@@ -44,7 +45,7 @@ export default (props: Props) => {
           return (
             <WebView
               id="support"
-              preload="./preload-launcher.js"
+              preload={getPreloadScriptPath("preload.js")}
               webpreferences="webSecurity=no"
               className="newMainPositionFull"
               src={`https://vipfy.zendesk.com/access/jwt?jwt=${

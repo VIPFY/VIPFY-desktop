@@ -1,5 +1,6 @@
 import * as React from "react";
 import WebView from "react-electron-web-view";
+import { getPreloadScriptPath } from "../../common/functions";
 
 interface Props {
   url: string;
@@ -38,7 +39,7 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
   render() {
     return (
       <WebView
-        preload="./ssoConfigPreload/findErrorField.js"
+        preload={getPreloadScriptPath("findErrorField.js")}
         webpreferences="webSecurity=no"
         src={this.props.url || ""}
         partition="ssoconfig"

@@ -1,5 +1,6 @@
 import * as React from "react";
 import WebView from "react-electron-web-view";
+import { getPreloadScriptPath } from "../../common/functions";
 
 interface Props {
   url: string;
@@ -22,7 +23,7 @@ class PassowrdFieldExtractor extends React.PureComponent<Props, State> {
   render() {
     return (
       <WebView
-        preload="./ssoConfigPreload/findPasswordField.js"
+        preload={getPreloadScriptPath("findPasswordField.js")}
         webpreferences="webSecurity=no"
         src={this.props.url || ""}
         partition="ssoconfig"

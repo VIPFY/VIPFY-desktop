@@ -3,9 +3,17 @@ import gql from "graphql-tag";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { shell } from "electron";
+import path from "path";
 
 import moment from "moment";
 import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
+
+export function getPreloadScriptPath(script: string): string {
+  return (
+    "file://" +
+    path.join(ASSET_RELOCATOR_BASE_DIR, "../ssoConfigPreload/", script).replace(/\\/g, "/")
+  );
+}
 
 export function showStars(stars, maxStars = 5) {
   const starsArray: JSX.Element[] = [];

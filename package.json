@@ -78,10 +78,7 @@
                 {
                   "html": "./src/index.html",
                   "js": "./src/react/index.tsx",
-                  "name": "main_window",
-                  "preload": {
-                    "js": "./src/ssoConfigPreload/universalLogin.js"
-                  }
+                  "name": "main_window"
                 }
               ]
             }
@@ -184,6 +181,7 @@
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
     "@types/react-dropzone": "^4.2.2",
     "babel-loader": "^8.0.6",
+    "copy-webpack-plugin": "^5.0.4",
     "css-loader": "^3.0.0",
     "electron": "^6.0.12",
     "file-loader": "^4.2.0",
@@ -197,6 +195,7 @@
     "ts-loader": "^6.1.2",
     "tslint": "^5.12.1",
     "typescript": "^3.6.3",
-    "typescript-eslint-parser": "^22.0.0"
+    "typescript-eslint-parser": "^22.0.0",
+    "webpack-bundle-analyzer": "^3.5.2"
   }
 }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import WebView from "react-electron-web-view";
-import { sleep } from "../common/functions";
+import { sleep, getPreloadScriptPath } from "../common/functions";
 
 import { remote } from "electron";
 const { session } = remote;
@@ -189,7 +189,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   render() {
     return (
       <WebView
-        preload={MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY}
+        preload={getPreloadScriptPath("universalLogin.js")}
         webpreferences="webSecurity=no"
         src={this.props.loginUrl}
         partition={this.props.partition}

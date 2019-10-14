@@ -1,5 +1,7 @@
 const rules = require("./webpack.rules");
 const plugins = require("./webpack.plugins");
+const CopyPlugin = require("copy-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 rules.push({
   test: /\.s[ac]ss$/i,
@@ -38,6 +40,9 @@ rules.push({
     }
   ]
 });
+
+plugins.push(new CopyPlugin([{ from: "src/ssoConfigPreload/", to: "ssoConfigPreload/" }]));
+plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
   // Put your normal webpack config below here

@@ -4,6 +4,7 @@ import WebView from "react-electron-web-view";
 import gql from "graphql-tag";
 
 import * as TestData from "../../../ssoTestData.json";
+import { getPreloadScriptPath } from "../common/functions";
 
 interface Props {
   company: any;
@@ -75,7 +76,7 @@ class SsoTester extends React.PureComponent<Props, State> {
               Select Confirm Button
             </button>
             <WebView
-              preload="./findForm.js"
+              preload={getPreloadScriptPath("findForm.js")}
               webpreferences="webSecurity=no"
               src={this.state.loginurl}
               partition="ssoconfig"

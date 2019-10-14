@@ -15,7 +15,7 @@ function capitalizeFirstLetter(s: string) {
 export async function randomWord() {
   // lazy loading to improve loadtime
   if (wordlist === null) {
-    wordlist = import("./wordlist5a.json").then(({ default: wList }) => wList);
+    wordlist = await import("./wordlist5a.json").then(({ default: wList }) => wList);
   }
   return wordlist![await randomNumber(0, wordlist!.length - 1)];
 }

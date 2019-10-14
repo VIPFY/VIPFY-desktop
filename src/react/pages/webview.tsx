@@ -15,6 +15,7 @@ import ErrorPopup from "../popups/errorPopup";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
 import { randomPassword } from "../common/passwordgen";
 import HeaderNotificationContext from "../components/notifications/headerNotificationContext";
+import { getPreloadScriptPath } from "../common/functions";
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -711,7 +712,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
               ) : (
                 <WebView
                   id={`webview-${this.props.viewID}`}
-                  preload={MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY}
+                  preload={getPreloadScriptPath("preload.js")}
                   webpreferences="webSecurity=no"
                   className={cssClassWeb}
                   src={this.state.currentUrl || this.state.setUrl}
