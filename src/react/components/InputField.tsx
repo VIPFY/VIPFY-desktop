@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import { times } from "lodash";
 import { shell } from "electron";
 import { InputProps } from "../interfaces";
