@@ -1,7 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { graphql, compose, Query, withApollo } from "react-apollo";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 
 import LoadingDiv from "../../components/LoadingDiv";
 import Duration from "../../common/duration";

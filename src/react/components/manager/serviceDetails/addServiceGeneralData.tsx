@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalButton from "../../universalButtons/universalButton";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import UniversalSearchBox from "../../universalSearchBox";
 import { Query } from "react-apollo";
 import { fetchApps } from "../../../queries/products";

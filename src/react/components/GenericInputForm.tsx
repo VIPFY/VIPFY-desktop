@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as Dropzone from "react-dropzone";
 import { filterError, debounce } from "../common/functions";
+import Dropzone from "react-dropzone";
 import LoadingDiv from "../components/LoadingDiv";
 import { shell } from "electron";
 
