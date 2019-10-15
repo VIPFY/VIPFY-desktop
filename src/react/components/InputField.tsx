@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as Dropzone from "react-dropzone";
-import { times } from "lodash";
 import { shell } from "electron";
 import { InputProps } from "../interfaces";
 
@@ -173,7 +172,7 @@ class InputField extends React.Component<InputProps, State> {
       case "stars": {
         return (
           <div className="stars-holder">
-            {times(5, i => (
+            {[...Array(5).keys()].map(i => (
               <i
                 key={i}
                 className={`fa${

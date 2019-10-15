@@ -1,5 +1,5 @@
-const path = require("path");
-const { Application } = require("spectron");
+import path from "path";
+import { Application } from "spectron";
 
 module.exports = {
   initialiseSpectron: () => {

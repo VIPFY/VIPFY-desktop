@@ -1,5 +1,5 @@
-const type = require("os").type;
-const ipcRenderer = require("electron").ipcRenderer;
+import { type } from "os";
+import { ipcRenderer } from "electron";
 
 const hostname = window.location.hostname;
 
