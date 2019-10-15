@@ -1,6 +1,7 @@
 import { ipcRenderer } from "electron";
 import ICO from "icojs";
 import { PNG } from "pngjs";
+import palette from "get-rgba-palette";
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
@@ -258,7 +259,6 @@ function finishIcon() {
   }
 }
 
-var palette = require("get-rgba-palette");
 function findDominantColor(datastring) {
   var img = new Image();
   img.onload = function() {

@@ -1,9 +1,7 @@
 import * as React from "react";
+import { filterError, debounce } from "../common/functions";
 import Dropzone from "react-dropzone";
-import { times } from "lodash";
-import { filterError } from "../common/functions";
 import LoadingDiv from "../components/LoadingDiv";
-import { debounce } from "lodash";
 import { shell } from "electron";
 
 interface Fields {
@@ -303,7 +301,7 @@ class GenericInputForm extends React.Component<Props, State> {
             case "stars": {
               return (
                 <div className="stars-holder">
-                  {times(5, i => (
+                  {[...Array(5).keys()].map(i => (
                     <i
                       key={i}
                       className={`fa${

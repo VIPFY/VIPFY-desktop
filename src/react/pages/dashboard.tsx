@@ -1,7 +1,6 @@
 import * as React from "react";
 import { graphql, compose } from "react-apollo";
 import moment from "moment";
-import { times } from "lodash";
 import AppList from "../components/profile/AppList";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError, filterLicences } from "../common/functions";
@@ -13,7 +12,7 @@ import { UPDATE_LAYOUT, SWITCH_APPS_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
 
 const favourites: { [key: number]: Licence | null } = {};
-times(8, n => (favourites[n] = null));
+[...Array(8).keys()].map(n => (favourites[n] = null));
 
 interface Props {
   id: string;

@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Query, Mutation, Subscription } from "react-apollo";
+import { Query } from "react-apollo";
 import gql from "graphql-tag";
-import { union } from "lodash";
 
 import FileUpload from "./FileUpload";
 import Message from "./Message";
@@ -124,11 +123,9 @@ class Conversation extends React.Component<Props, State> {
             cursor: fetchMoreResult.fetchDialog[fetchMoreResult.fetchDialog.length - 1].sendtime
           }));
 
-          console.log(fetchMoreResult.fetchDialog);
-
           return {
             ...previousResult,
-            fetchDialog: union(previousResult.fetchDialog, fetchMoreResult.fetchDialog)
+            fetchDialog: { ...previousResult.fetchDialog, ...fetchMoreResult.fetchDialog }
           };
         }
       });
