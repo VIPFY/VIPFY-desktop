@@ -167,7 +167,7 @@ class Dashboard extends React.Component<Props, State> {
 
     if (licenceCheck) {
       this.props.licences.fetchLicences.forEach(licence => {
-        if (licence.dashboard !== null) {
+        if (licence.dashboard !== null && licence.dashboard <= 8) {
           favourites[licence.dashboard] = licence;
         }
 
