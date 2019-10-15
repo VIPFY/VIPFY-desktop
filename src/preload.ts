@@ -1,39 +1,37 @@
 import { type } from "os";
+import { ipcRenderer } from "electron";
 
-{
-  // tslint:disable:no-var-requires
-  const con = require("electron").remote.getGlobal("console");
-  let ipcRenderer = require("electron").ipcRenderer;
-  const hostname = window.location.hostname;
-  function hostMatches(domain: string) {
-    return new RegExp(domain).test(hostname);
+const hostname = window.location.hostname;
+
+function hostMatches(domain: string) {
+  return new RegExp(domain).test(hostname);
+}
+
+let interactionHappened = false;
+function didInteraction() {
+  interactionHappened = true;
+}
+function timer() {
+  if (!interactionHappened) {
+    return;
   }
+  interactionHappened = false;
+  ipcRenderer.sendToHost("interactionHappened");
+}
 
-  let interactionHappened = false;
-  function didInteraction() {
-    interactionHappened = true;
-  }
-  function timer() {
-    if (!interactionHappened) {
-      return;
-    }
-    interactionHappened = false;
-    ipcRenderer.sendToHost("interactionHappened");
-  }
+document.addEventListener("mousemove", didInteraction, true);
+document.addEventListener("touchmove", didInteraction, true);
+document.addEventListener("touchenter", didInteraction, true);
+document.addEventListener("pointermove", didInteraction, true);
+document.addEventListener("keydown", didInteraction, true);
+document.addEventListener("scroll", didInteraction, true);
 
-  document.addEventListener("mousemove", didInteraction, true);
-  document.addEventListener("touchmove", didInteraction, true);
-  document.addEventListener("touchenter", didInteraction, true);
-  document.addEventListener("pointermove", didInteraction, true);
-  document.addEventListener("keydown", didInteraction, true);
-  document.addEventListener("scroll", didInteraction, true);
+window.addEventListener("load", function() {
+  getLoginDetails(0);
+});
 
-  window.addEventListener("load", function() {
-    getLoginDetails(0);
-  });
-
-  setInterval(() => timer(), 30000);
-  setTimeout(() => timer(), 5000);
+setInterval(() => timer(), 30000);
+setTimeout(() => timer(), 5000);
 
 function normalizeKey(key) {
   if (key.emailtype ? key.emailtype == 2 : key.type == 2) {
@@ -72,20 +70,18 @@ function normalizeKey(key) {
 function getLoginDetails(askfordata) {
   let repeatpossible = true;
   let clicked = false;
-  let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("startLoginIn");
   ipcRenderer.send("TESTMESSAGE");
 
   ipcRenderer.sendToHost("getLoginDetails", askfordata);
   ipcRenderer.once("loginDetails", (e, key) => {
-
     key = normalizeKey(key);
 
     let frame: HTMLDocument;
     if (key.loginiframe && document.querySelector<HTMLIFrameElement>(key.loginiframe)) {
-       frame = document.querySelector<HTMLIFrameElement>(key.loginiframe)!.contentWindow!.document
+      frame = document.querySelector<HTMLIFrameElement>(key.loginiframe)!.contentWindow!.document;
     } else {
-       frame = document
+      frame = document;
     }
 
     let hideObject = !!(
@@ -199,10 +195,9 @@ function getLoginDetails(askfordata) {
           ipcRenderer.sendToHost("errorDetected");
           return;
         } else if (errorObject) {
-            ipcRenderer.sendToHost("falseLogin");
+          ipcRenderer.sendToHost("falseLogin");
           return;
         } else {
-          let ipcRenderer = require("electron").ipcRenderer;
           ipcRenderer.sendToHost("loggedIn");
           ipcRenderer.sendToHost("hideLoading");
         }

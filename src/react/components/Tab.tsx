@@ -2,6 +2,7 @@ import * as React from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { getSourceSetApp, getImageUrlApp } from "../common/images";
+import vipfyLogo from "../../images/Vipfy-white.svg";
 
 interface Props {
   index: number;
@@ -109,7 +110,7 @@ class Tab extends React.Component<Props, State> {
                   onDrop={() => this.props.handleDragOver(viewID)}*/
                   title={title}
                   onClick={() => setInstance(viewID)}>
-                  <img src="./images/Vipfy-white.svg" />
+                  <img src={vipfyLogo} />
                   <div>{title}</div>
                   <i onClick={this.handleClose} className="fal fa-times fa-1x" />
                 </li>

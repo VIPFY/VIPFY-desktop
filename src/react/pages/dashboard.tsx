@@ -1,7 +1,6 @@
 import * as React from "react";
 import { graphql, compose } from "react-apollo";
-import moment = require("moment");
-import { times } from "lodash";
+import moment from "moment";
 import AppList from "../components/profile/AppList";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError, filterLicences } from "../common/functions";
@@ -11,9 +10,10 @@ import Collapsible from "../common/Collapsible";
 import AppTile from "../components/AppTile";
 import { UPDATE_LAYOUT, SWITCH_APPS_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
+import dashboardPic from "../../images/dashboard.png";
 
 const favourites: { [key: number]: Licence | null } = {};
-times(8, n => (favourites[n] = null));
+[...Array(8).keys()].map(n => (favourites[n] = null));
 
 interface Props {
   id: string;
@@ -196,7 +196,7 @@ class Dashboard extends React.Component<Props, State> {
             <div>
               It's a central point of information about your connected services and licenses.
             </div>
-            <img src={`${__dirname}/../../images/dashboard.png`} alt="Cool pic of a dashboard" />
+            <img src={dashboardPic} alt="Cool pic of a dashboard" />
             <div>You haven't integrated any services yet.</div>
             <div>
               Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your

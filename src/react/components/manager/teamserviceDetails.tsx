@@ -5,7 +5,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import { fetchTeam } from "../../queries/departments";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
-import moment = require("moment");
+import moment from "moment";
 import { concatName } from "../../common/functions";
 import DeletePopup from "../../popups/universalPopups/deletePopup";
 

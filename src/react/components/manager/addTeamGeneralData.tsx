@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import TeamGerneralDataAdd from "./universal/adding/teamGeneralDataAdd";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
@@ -38,8 +38,8 @@ class AddTeamGeneralData extends React.Component<Props, State> {
     saving: false
   };
 
-  handleCreate(){
-    if(this.props.savingFunction){
+  handleCreate() {
+    if (this.props.savingFunction) {
       this.setState({ saving: true });
     } else {
       this.props.continue!(this.state);
@@ -49,8 +49,8 @@ class AddTeamGeneralData extends React.Component<Props, State> {
   listenKeyboard = e => {
     const { name } = this.state;
     if (e.key === "Escape" || e.keyCode === 27) {
-      this.props.close();}
-    else if(!(e.target && e.target.id && (e.target.id === "name"))) {
+      this.props.close();
+    } else if (!(e.target && e.target.id && e.target.id === "name")) {
       return; //Check if one of the Textfields is focused
     } else if (
       (e.key === "Enter" || e.keyCode === 13) &&

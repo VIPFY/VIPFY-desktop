@@ -9,7 +9,7 @@ import gql from "graphql-tag";
 import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import moment = require("moment");
+import moment from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";

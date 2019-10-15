@@ -2,7 +2,7 @@ import * as React from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import Chart from "react-apexcharts";
-import moment = require("moment");
+import moment from "moment";
 import DatePicker from "../../common/DatePicker";
 import DropDown from "../../common/DropDown";
 import { concatName } from "../../common/functions";

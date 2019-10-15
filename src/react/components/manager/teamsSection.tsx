@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query, Mutation } from "react-apollo";
 import { fetchTeams, fetchUserLicences, fetchUsersOwnLicences } from "../../queries/departments";
-import moment = require("moment");
+import moment from "moment";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import AddEmployeeToTeam from "./addEmployeeToTeam";

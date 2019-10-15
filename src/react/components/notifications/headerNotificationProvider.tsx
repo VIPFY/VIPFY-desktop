@@ -1,9 +1,8 @@
 import * as React from "react";
-import { Component } from "react";
 import HeaderNotificationContext from "./headerNotificationContext";
 import HeaderNotificationItem from "./headerNotificationItem";
-import { setHeaderNotification, setDismissHeaderNotification } from "./../../networkInterface";
-import { version } from "pjson";
+import { setHeaderNotification, setDismissHeaderNotification } from "../../networkInterface";
+import { version } from "../../../../package.json";
 import { satisfies } from "semver";
 import { now } from "moment";
 
@@ -13,7 +12,7 @@ interface State {
   pastnotifications: Object[];
 }
 
-class HeaderNotificationProvider extends Component<Props, State> {
+class HeaderNotificationProvider extends React.Component<Props, State> {
   state = {
     notifications: [],
     pastnotifications: []

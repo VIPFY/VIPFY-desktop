@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Component } from "react";
+import { shell } from "electron";
 
-class AcceptLicence extends Component {
+class AcceptLicence extends React.Component {
   state = { agreementError: false, agreement: false };
 
   openExternal(url) {
-    require("electron").shell.openExternal(url);
+    shell.openExternal(url);
   }
 
   accept() {

@@ -9,6 +9,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
 import { ADD_PROMOCODE } from "../../mutations/auth";
+import welcomeBack from "../../../images/welcome_back.png";
 
 interface Props {
   setupFinished: Function;
@@ -83,10 +84,7 @@ class DataNameForm extends React.Component<Props, State> {
       <div className="dataGeneralForm">
         <div className="holder">
           <div className="logo" />
-          <img
-            src={`${__dirname}/../../../images/welcome_back.png`}
-            className="illustration-login"
-          />
+          <img src={welcomeBack} className="illustration-login" />
 
           <div className="holder-right">
             <h1>Welcome to VIPFY</h1>

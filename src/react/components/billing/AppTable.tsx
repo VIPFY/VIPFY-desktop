@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Mutation, Query } from "react-apollo";
 import gql from "graphql-tag";
-import humanizeDuration = require("humanize-duration");
-import moment = require("moment");
+import humanizeDuration from "humanize-duration";
+import moment from "moment";
 import { ErrorComp } from "../../common/functions";
 import { REMOVE_EXTERNAL_ACCOUNT } from "../../mutations/products";
 import IconButton from "../../common/IconButton";

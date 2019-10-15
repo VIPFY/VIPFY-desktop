@@ -1,7 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
-
+import { shell } from "electron";
 import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "../queries/products";
 import { fetchLicences } from "../queries/auth";
 import { buyPlan } from "../mutations/products";
@@ -245,7 +245,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     return starsArray;
   }
 
-  openExternal = url => require("electron").shell.openExternal(url);
+  openExternal = url => shell.openExternal(url);
 
   showfulldesc(bool) {
     if (bool && this.state.showDescriptionFull) {
