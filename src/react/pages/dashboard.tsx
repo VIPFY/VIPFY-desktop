@@ -10,6 +10,7 @@ import Collapsible from "../common/Collapsible";
 import AppTile from "../components/AppTile";
 import { UPDATE_LAYOUT, SWITCH_APPS_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
+import dashboardPic from "../../images/dashboard.png";
 
 const favourites: { [key: number]: Licence | null } = {};
 [...Array(8).keys()].map(n => (favourites[n] = null));
@@ -195,7 +196,7 @@ class Dashboard extends React.Component<Props, State> {
             <div>
               It's a central point of information about your connected services and licenses.
             </div>
-            <img src={`${__dirname}/../../images/dashboard.png`} alt="Cool pic of a dashboard" />
+            <img src={dashboardPic} alt="Cool pic of a dashboard" />
             <div>You haven't integrated any services yet.</div>
             <div>
               Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your

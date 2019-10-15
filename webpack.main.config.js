@@ -8,6 +8,9 @@ module.exports = {
   module: {
     rules: require("./webpack.rules")
   },
+  devServer: {
+    hot: true
+  },
   plugins: require("./webpack.plugins"),
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx"]
