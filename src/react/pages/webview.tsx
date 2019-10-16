@@ -704,10 +704,24 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         {context => {
           return (
             <div className={cssClass} id={`webview-${this.props.viewID}`}>
-              {/*this.state.errorScreen && (<div className="errorScreen" style={context.isActive ? {height: "calc(100vh - 32px - 40px)"}:{height: "calc(100vh - 32px)"}}>Now something went really wrong :(</div>)}
-        {this.state.showLoadingScreen && (
-          <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} progress={this.state.progress} />
-        )*/}
+              {/*this.state.errorScreen && (
+                <div
+                  className="errorScreen"
+                  style={
+                    context.isActive
+                      ? { height: "calc(100vh - 32px - 40px)" }
+                      : { height: "calc(100vh - 32px)" }
+                  }>
+                  Now something went really wrong :(
+                </div>
+              )}
+              {this.state.showLoadingScreen && (
+                <LoadingDiv
+                  text={this.state.inspirationalText}
+                  legalText={this.state.legalText}
+                  progress={this.state.progress}
+                />
+              )*/}
               {/*console.log("KEY EXECUTOR", `${this.state.setUrl}-${this.state.loginspeed}`)*/}
               {this.state.options.universallogin ? (
                 <UniversalLoginExecutor
@@ -721,6 +735,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   takeScreenshot={false}
                   partition={`service-${this.state.licenceId}`}
                   className={cssClassWeb}
+                  showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
                   setResult={async ({ loggedin, errorin, emailEntered, passwordEntered }) => {
                     console.log("SETRESULT", loggedin, errorin, emailEntered, passwordEntered);
                     if (loggedin && emailEntered && passwordEntered) {
@@ -765,6 +780,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                     interactions[this.state.planId] = new Date();
                     this.setState({ interactions });
                   }}
+                  execute={this.state.options.execute}
                 />
               ) : (
                 <WebView

@@ -3,6 +3,8 @@ let ipcRenderer = require("electron").ipcRenderer;
 var iframeList = [];
 let stopped = false;
 let cookiefound = false;
+let recaptchaConfirmOnce = false;
+let checkRecaptcha = false;
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
@@ -59,28 +61,32 @@ function createObjFromDom(elem) {
 }
 
 function giveIframeEvents(iframe, list, events) {
-  //console.log("iframe", iframe)
+  console.log("iframe", iframe, list, events);
   if (list) {
     iframeList.push(iframe);
   }
   if (events) {
-    iframe.contentWindow.document.addEventListener("click", findTarget, true);
-    iframe.contentWindow.document.addEventListener("keyup", findTarget, true);
-    iframe.contentWindow.document.addEventListener("input", findTarget, true);
-    iframe.contentWindow.document.addEventListener("paste", findTarget, true);
-    //console.log("LOAD FIRST", iframe)
-    iframe.contentWindow.addEventListener("load", e => {
-      //console.log("LOAD", e)
-      e.target.addEventListener("keyup", findTarget, true);
-      e.target.addEventListener("input", findTarget, true);
-      e.target.addEventListener("click", findTarget, true);
-      e.target.addEventListener("paste", findTarget, true);
+    console.log("IDocument", iframe.contentWindow.document);
+    iframe.contentWindow.document.addEventListener("click", e => findTarget(e, iframe), true);
+    iframe.contentWindow.document.addEventListener("keyup", e => findTarget(e, iframe), true);
+    iframe.contentWindow.document.addEventListener("input", e => findTarget(e, iframe), true);
+    iframe.contentWindow.document.addEventListener("paste", e => findTarget(e, iframe), true);
+    console.log("LOAD FIRST", iframe);
+    iframe.addEventListener("load", e => {
+      console.log("LOAD", e, iframe);
+      iframe.contentWindow.document.addEventListener("keyup", e => findTarget(e, iframe), true);
+      iframe.contentWindow.document.addEventListener("input", e => findTarget(e, iframe), true);
+      iframe.contentWindow.document.addEventListener("click", e => findTarget(e, iframe), true);
+      iframe.contentWindow.document.addEventListener("paste", e => findTarget(e, iframe), true);
     });
+    /* iframe.contentWindow.document.addEventListener("DOMSubtreeModified", e => {
+      console.log(e.target, e.target.contentWindow.document);
+    });*/
   }
   var observer = new MutationObserver(callback2);
   observer.observe(iframe, config);
-  //iframe.contentWindow.document.addEventListener("DOMSubtreeModified", (e) => {
-  /* if (e.target.tagName=="IFRAME"){
+  /*iframe.contentWindow.document.addEventListener("DOMSubtreeModified", (e) => {
+   if (e.target.tagName=="IFRAME"){
         console.log("IFRAME ALL", e);
         e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
         e.target.contentWindow.document.addEventListener("input", findTarget,true);
@@ -88,6 +94,7 @@ function giveIframeEvents(iframe, list, events) {
         e.target.contentWindow.document.addEventListener("paste", findTarget,true);
         findAllIframes(e.target.contentWindow.document);
     }
+  })
     */
 }
 
@@ -202,7 +209,19 @@ window.addEventListener("load", () => {
 var observer = new MutationObserver(callback1);
 observer.observe(document, config);
 
-function findTarget(event) {
+const attributesSelector = [
+  "name",
+  "ng-model",
+  "data-ng-model",
+  "data-callback",
+  "data-name",
+  "data-testid",
+  "data-event-click-target",
+  "data-ng-click"
+];
+
+function findTarget(event, iframe) {
+  console.log("findTarget", event, event.target, iframe);
   /* if(event.type == "click") {
         console.log("Event", event)
     } */
@@ -212,16 +231,139 @@ function findTarget(event) {
   var rect = event.target.getBoundingClientRect();
   const style = window.getComputedStyle(event.target);
   console.log("RECT/STYLE", rect, style);
+
+  var obj = createObjFromDom(element1);
+  if (iframe) {
+    console.log(createObjFromDom(iframe));
+  }
+
+  var els = [];
+  var a = event.target;
+  while (a) {
+    els.unshift(a);
+    a = a.parentNode;
+  }
+  if (iframe) {
+    a = iframe;
+    while (a) {
+      els.unshift(a);
+      a = a.parentNode;
+    }
+  }
+
+  var doc = iframe ? iframe.contentWindow.document : document;
+  var iselector;
+  var selector = "#" + obj.attr.id;
+  var t = Array.from(doc.querySelectorAll(selector));
+
+  if (t.length != 1) {
+    //Either no id or multiple with same
+    selector = element1.tagName;
+    console.log(obj.attr);
+    for (key of Object.keys(obj.attr)) {
+      if (["name", "type"].includes(key)) {
+        selector += "[" + key + "='" + obj.attr[key] + "']";
+      }
+    }
+    console.log("Selector", selector);
+    t = Array.from(doc.querySelectorAll(selector));
+
+    if (t.length != 1) {
+      console.log("Need Parents");
+      var parent = els.pop();
+      var pobj;
+      var pt;
+      var pselector;
+      while (parent) {
+        pobj = createObjFromDom(parent);
+        pt = Array.from(doc.querySelectorAll("#" + pobj.attr.id));
+        if (pt.length == 1) {
+          selector = "#" + pobj.attr.id + " > " + selector;
+          break;
+        }
+        pselector = parent.tagName;
+        for (key of Object.keys(pobj.attr)) {
+          if (["name", "type"].includes(key)) {
+            pselector += "[" + key + "='" + pobj.attr[key] + "']";
+          }
+        }
+        pt = Array.from(doc.querySelectorAll(pselector));
+        if (pt.length == 1) {
+          selector = pselector + " > " + selector;
+          break;
+        }
+        parent = els.pop();
+      }
+    }
+  }
+
+  if (iframe) {
+    console.log("IFRAME ADD");
+    var iobj = createObjFromDom(iframe);
+    var ia = iframe;
+    var iels = [];
+    while (ia) {
+      iels.unshift(ia);
+      ia = ia.parentNode;
+    }
+    var i = Array.from(document.querySelectorAll("#" + iobj.attr.id));
+
+    if (i.length != 1) {
+      //Either no id or multiple with same
+      iselector = iframe.tagName;
+      console.log(iobj.attr);
+      for (key of Object.keys(iobj.attr)) {
+        if (["name", "type"].includes(key)) {
+          iselector += "[" + key + "='" + iobj.attr[key] + "']";
+        }
+      }
+      console.log("ISelector", iselector);
+      i = Array.from(document.querySelectorAll(iselector));
+
+      if (i.length != 1) {
+        console.log("Need Parents");
+        var iparent = iels.pop();
+        var ipobj;
+        var ipt;
+        var ipselector;
+        while (iparent) {
+          ipobj = createObjFromDom(iparent);
+          ipt = Array.from(document.querySelectorAll("#" + ipobj.attr.id));
+          if (ipt.length == 1) {
+            iselector = "#" + ipobj.attr.id + " > " + iselector;
+            break;
+          }
+          ipselector = iparent.tagName;
+          for (key of Object.keys(ipobj.attr)) {
+            if (["name", "type"].includes(key)) {
+              ipselector += "[" + key + "='" + ipobj.attr[key] + "']";
+            }
+          }
+          ipt = Array.from(document.querySelectorAll(ipselector));
+          if (ipt.length == 1) {
+            iselector = ipselector + " > " + iselector;
+            break;
+          }
+          iparent = iels.pop();
+        }
+      }
+    }
+  }
+
+  console.log("Parents", els);
+
   ipcRenderer.sendToHost(
     "sendEvent",
     event.target.tagName,
     event.target.type,
     event.target.value,
     createObjFromDom(element1),
-    document.querySelectorAll("INPUT"),
+    "ID-Elements " + Array.from(document.querySelectorAll(iselector)).length,
+    //document.querySelectorAll("INPUT"),
     event.type,
-    event.which,
-    { x: rect.x, y: rect.y }
+    selector,
+    { x: rect.x, y: rect.y },
+    iselector
   );
   ipcRenderer.sendToHost(
     "sendClick",
@@ -246,7 +388,7 @@ async function onIpcMessage(e) {
 function findCookieButton() {
   var t = Array.from(
     document.querySelectorAll(
-      "[class~=cc-compliance] > [class~=cc-dismiss], [class~='consent'] > a[class~='call']"
+      "[class~=cc-compliance] > [class~=cc-dismiss], [class~='consent'] > a[class~='call'], [ba-click='{{allow()}}']"
     )
   )
     .filter(e => !isHidden(e))
@@ -282,7 +424,8 @@ async function start() {
   console.log("TEST");
   await sleep(300);
   totaltime = 0;
-  while (!stopped) {
+  stopped = true;
+  while (!stopped && !checkRecaptcha && totaltime < 5000) {
     if (!cookiefound) {
       let cookiebutton = findCookieButton();
       console.log("FIND", cookiebutton);
@@ -298,20 +441,42 @@ async function start() {
         );
         cookiefound = true;
       }
+
+      let recaptcha = findRecaptcha();
+
+      if (recaptcha) {
+        await recaptchaClick(recaptcha);
+
+        checkRecaptcha = true;
+
+        if (!recaptchaConfirmOnce) {
+          setInterval(verifyRecaptcha, 200);
+        }
+      } else {
+        ipcRenderer.sendToHost("recaptchaSuccess");
+      }
     }
     console.log("TEST2");
     await sleep(100);
     totaltime += 100;
   }
+
+  /*await execute([
+    { operation: "waitandfill", args: { selector: "#customerUrl", fillkey: "domain" } },
+    { operation: "click", args: { selector: "#support-login" } },
+    { operation: "waitandfill", args: { selector: "#user_email", fillkey: "username" } },
+    { operation: "waitandfill", args: { selector: "#user_password", fillkey: "password" } },
+    { operation: "click", args: { selector: "input[type='submit'][name='commit']" } }
+  ]);*/
 }
 
 function clickButton(targetNode) {
   var rect = getMidPoint(targetNode, 0.5, 0.5);
 
-  if (stopped) throw new Error("abort");
+  //if (stopped) throw new Error("abort");
   const p = new Promise(resolve =>
     ipcRenderer.once("clicked", async (e, key) => {
-      if (stopped) return;
+      //if (stopped) return;
       resolve();
     })
   );
@@ -408,4 +573,118 @@ function isEqualOrChild(child, parent) {
   return false;
 }
 
+function verifyRecaptcha() {
+  if (!recaptchaConfirmOnce) {
+    try {
+      if (grecaptcha.getResponse().length !== 0) {
+        alert("Recaptcha verified");
+        recaptchaConfirmOnce = true;
+        console.log("VERIFY RECAP");
+        ipcRenderer.sendToHost("recaptchaSuccess");
+      }
+    } catch (error) {
+      console.error("Recaptcha ERROR:", error);
+      if (String(error).includes("No reCAPTCHA clients exist")) {
+        console.log("No Recaptcha");
+        recaptchaConfirmOnce = true;
+        ipcRenderer.sendToHost("recaptchaSuccess");
+      }
+    }
+  }
+}
+
+function findRecaptcha() {
+  let t = document.querySelector('iframe[src*="/recaptcha/"]');
+  console.log("button", t);
+  if (t == null) {
+    /*let f = fetchFieldProps(appname);
+    let recaptchaTag = f[0].fields.recaptcha;
+    if (recaptchaTag) {
+      let t = document.querySelector(recaptchaTag.tag_props);
+      console.log("recaptcha", t);
+      return t;
+    } else {
+      return false;
+    }*/
+    return false;
+  }
+  return t;
+}
+
+async function recaptchaClick(recap) {
+  console.log("LET CLICK", recap);
+  if (!checkRecaptcha) {
+    recap.scrollIntoView();
+    recap.focus();
+    checkRecaptcha = true;
+    let pos = recap.getBoundingClientRect();
+    ipcRenderer.sendToHost("recaptcha", pos.left, pos.width, pos.top, pos.height);
+  }
+}
+
 start();
+
+//Script based login functions
+
+async function execute(operations) {
+  let doc;
+  for ({ operation, args } of operations) {
+    console.log("EXECUTE", operation, args);
+    doc = document;
+    switch (operation) {
+      case "sleep":
+        let randomrange = args.randomrange || args.seconds / 5;
+        await sleep(Math.max(0, args.seconds + Math.random() * randomrange - randomrange / 2));
+        break;
+      case "waitfor":
+        doc = args.document || document;
+        console.log("waitfor", doc.querySelector(args.selector));
+        while (!doc.querySelector(args.selector)) {
+          await sleep(95 + Math.random() * 10);
+        }
+        break;
+      case "click":
+        doc = args.document || document;
+        console.log("CLICK", doc.querySelector(args.selector));
+        await clickButton(doc.querySelector(args.selector));
+        break;
+      case "fill":
+        doc = args.document || document;
+        await fillFormField(doc.querySelector(args.selector), args.fillkey);
+        break;
+      case "solverecaptcha":
+        doc = args.document || document;
+        await recaptchaClick(doc.querySelector(args.selector));
+        if (!recaptchaConfirmOnce) {
+          setInterval(verifyRecaptcha, 100);
+        }
+        break;
+      case "recaptcha":
+        await execute([{ operation: "waitfor", args }, { operation: "solverecaptcha", args }]);
+      case "waitandfill":
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "click", args },
+          { operation: "fill", args }
+        ]);
+    }
+  }
+  return;
+}
+
+async function fillFormField(target, content) {
+  //console.log("FILL", target, content);
+  //if (stopped) throw new Error("abort");
+  //target.focus();
+  // await sleep(250);
+  // target.focus();
+  //  await sleep(250);
+  const p = new Promise(resolve =>
+    ipcRenderer.once("formFieldFilled", async (e, key) => {
+      //if (stopped) return;
+      resolve();
+    })
+  );
+  ipcRenderer.sendToHost("fillFormField", content);
+  return p;
+}

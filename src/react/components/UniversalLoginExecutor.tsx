@@ -26,6 +26,8 @@ interface Props {
   className?: string;
   style?: Object | null;
   interactionHappenedCallback?: () => void;
+  showLoadingScreen?: Function;
+  execute?: Object[];
 }
 
 interface State {
@@ -107,7 +109,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     recaptcha: false,
     emailEnteredEnd: false,
     passwordEnteredEnd: false,
-    domainEnteredEnd: false
+    domainEnteredEnd: false,
+    step: 0
   };
 
   mounted = 0;
@@ -142,7 +145,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       recaptcha: false,
       emailEnteredEnd: false,
       passwordEnteredEnd: false,
-      domainEnteredEnd: false
+      domainEnteredEnd: false,
+      step: 0
     };
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
@@ -399,7 +403,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               return false;
             };
           }
-          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in"],[]));
+          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar"],[]));
           console.log("LOGIN", loginarray)
           return loginarray.length > 0
         })();
@@ -674,12 +678,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           this.loginState.unloaded = false;
         }
         break;
-      case "recaptcha":
+      /*case "recaptcha":
         {
           console.log("recaptcha FOUND");
           this.loginState.recaptcha = true;
         }
-        break;
+        break;*/
       case "fillFormField":
         {
           const w = e.target;
@@ -743,8 +747,52 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             return;
           }
           await sleep(50);
-          console.log("SEND LOGIN DATA");
-          e.target.send("loginData", { ...this.loginState, speed: this.props.speed });
+          console.log("SEND LOGIN DATA", this.loginState);
+          e.target.send("loginData", {
+            ...this.loginState,
+            speed: this.props.speed,
+            execute: this.props.execute
+          });
+        }
+        break;
+
+      case "recaptcha":
+        {
+          let w = e.target;
+          let left = e.args[0] + 13;
+          let width = e.args[1] - 276;
+          let top = e.args[2] + 22;
+          let height = e.args[3] - 50;
+          let x = Math.floor(Math.random() * width + left);
+          let y = Math.floor(Math.random() * height + top);
+          console.log("Recap", x, y);
+          w.sendInputEvent({ type: "mouseMove", x: x, y: y });
+          this.modifiedSleep(Math.random() * 30 + 200);
+          w.sendInputEvent({ type: "mouseDown", x: x, y: y, button: "left", clickCount: 1 });
+          this.modifiedSleep(Math.random() * 30 + 50);
+          w.sendInputEvent({ type: "mouseUp", x: x, y: y, button: "left", clickCount: 1 });
+          this.modifiedSleep(Math.random() * 30 + 100);
+          //this.signupState.recaptcha = true;
+          // focusAndClick(e);
+          await this.modifiedSleep(500);
+          if (this.props.showLoadingScreen) {
+            this.props.showLoadingScreen(false);
+          }
+        }
+        break;
+
+      case "recaptchaSuccess":
+        {
+          console.log("Recaptcha success");
+          //this.setState({ showPopup: true, e });
+          if (this.props.showLoadingScreen) {
+            this.props.showLoadingScreen(true);
+          }
+        }
+        break;
+      case "executeStep":
+        {
+          this.loginState.step += 1;
         }
         break;
     }

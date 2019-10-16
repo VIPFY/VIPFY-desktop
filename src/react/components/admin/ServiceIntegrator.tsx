@@ -19,6 +19,7 @@ interface State {
   urlBevorChange: string;
   cantrack: boolean /* 
   currenturl: string|null */;
+  executionPlan: Object[];
 }
 
 class ServiceIntegrator extends React.Component<Props, State> {
@@ -28,6 +29,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     password: "2018Vipfy",
     url: "",
     urlBevorChange: "",
+    executionPlan: [],
     cantrack: false /* 
     currenturl: null */
   };
@@ -213,6 +215,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
     this.shallSearch = true;
   }
 
+  printExecutionPlan() {
+    console.log(JSON.stringify(this.state.executionPlan));
+    this.setState({ executionPlan: [] });
+  }
+
   async onIpcMessage(e): Promise<void> {
     //console.log("onIpcMessage", e, e.senderId);
 
@@ -230,6 +237,37 @@ class ServiceIntegrator extends React.Component<Props, State> {
           e.args[7],
           e.args[8]
         );
+
+        //generate Execution Plan
+        this.setState(oldstate => {
+          let plan = oldstate.executionPlan;
+          if (
+            plan.length == 0 ||
+            !(
+              plan[plan.length - 1].args.selector == e.args[6] &&
+              plan[plan.length - 1].args.document == e.args[8]
+            )
+          ) {
+            console.log("LC", e.args[0].toLowerCase());
+            switch (e.args[0].toLowerCase()) {
+              case "input":
+                plan.push({
+                  operation: "waitandfill",
+                  args: { selector: e.args[6], document: e.args[8] }
+                });
+                break;
+              default:
+                plan.push({
+                  operation: "click",
+                  args: { selector: e.args[6], document: e.args[8] }
+                });
+                break;
+            }
+            console.log("executionplan", plan);
+            return { ...oldstate, executionPlan: plan };
+          }
+          return oldstate;
+        });
 
         /* this.state[this.state.trackwhat].push(e.args[3]);
           this.state[this.state.trackwhat + "what"].push(e.args[5]); */
@@ -325,7 +363,55 @@ class ServiceIntegrator extends React.Component<Props, State> {
           w.send("clicked");
         }
         break;
+      case "recaptcha":
+        {
+          let w = e.target;
+          let left = e.args[0] + 13;
+          let width = e.args[1] - 276;
+          let top = e.args[2] + 22;
+          let height = e.args[3] - 50;
+          let x = Math.floor(Math.random() * width + left);
+          let y = Math.floor(Math.random() * height + top);
+          console.log("Recap", x, y);
+          w.sendInputEvent({ type: "mouseMove", x: x, y: y });
+          sleep(Math.random() * 30 + 200);
+          w.sendInputEvent({ type: "mouseDown", x: x, y: y, button: "left", clickCount: 1 });
+          sleep(Math.random() * 30 + 50);
+          w.sendInputEvent({ type: "mouseUp", x: x, y: y, button: "left", clickCount: 1 });
+          sleep(Math.random() * 30 + 100);
+          //this.signupState.recaptcha = true;
+          // focusAndClick(e);
+          await sleep(500);
+        }
+        break;
 
+      case "recaptchaSuccess":
+        {
+          console.log("Recaptcha success");
+          //this.setState({ showPopup: true, e });
+        }
+        break;
+
+      case "fillFormField":
+        {
+          const w = e.target;
+          console.log("fillForm", e.args[0]);
+          let text = e.args[0] || "";
+
+          for await (const c of text) {
+            const shift = c.toLowerCase() != c;
+            const modifiers = shift ? ["shift"] : [];
+            w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
+            w.sendInputEvent({ type: "char", modifiers, keyCode: c });
+            await sleep(Math.random() * 20 + 50);
+            w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
+            //this.progress += 0.2 / text.length;
+            await sleep(Math.random() * 30 + 200);
+          }
+          await sleep(500);
+          w.send("formFieldFilled");
+        }
+        break;
       default:
         console.log("No case applied", e.channel);
         break;
@@ -406,24 +492,29 @@ class ServiceIntegrator extends React.Component<Props, State> {
         />
         <span style={{ height: "48px", width: "100%" }}>
           <button
-            style={{ height: "48px", width: "25%" }}
+            style={{ height: "48px", width: "20%" }}
             onClick={() => this.props.functionupper()}>
             NukeButton
           </button>
           <button
-            style={{ height: "48px", width: "25%" }}
+            style={{ height: "48px", width: "20%" }}
             onClick={() => this.finishSiteTracking()}>
             finishSiteTracking
           </button>
           <button
-            style={{ height: "48px", width: "25%" }}
+            style={{ height: "48px", width: "20%" }}
             onClick={() => this.finishLoginTracking()}>
             finishLoginTracking
           </button>
           <button
-            style={{ height: "48px", width: "25%" }}
+            style={{ height: "48px", width: "20%" }}
             onClick={() => this.finishLogoutTracking()}>
             finishLogoutTracking
+          </button>
+          <button
+            style={{ height: "48px", width: "20%" }}
+            onClick={() => this.printExecutionPlan()}>
+            printExecutionPlan
           </button>
         </span>
       </div>
