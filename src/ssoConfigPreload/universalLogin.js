@@ -1,4 +1,4 @@
-import { ipcRenderer } from "electron";
+const { ipcRenderer } = require("electron");
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
