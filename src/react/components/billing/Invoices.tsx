@@ -28,26 +28,26 @@ class Invoices extends React.Component<Props, State> {
     showmonth: ""
   };
 
-  downloadPdf = async pdfLink => {
-    const pathArray = pdfLink.split("/");
-    const fileName = pathArray[pathArray.length - 2];
-    const pdfPath = path.join(os.tmpdir(), fileName);
-    const res = await axios({
-      method: "GET",
-      url: pdfLink,
-      responseType: "stream"
-    });
+  // downloadPdf = async pdfLink => {
+  //   const pathArray = pdfLink.split("/");
+  //   const fileName = pathArray[pathArray.length - 2];
+  //   const pdfPath = path.join(os.tmpdir(), fileName);
+  //   const res = await axios({
+  //     method: "GET",
+  //     url: pdfLink,
+  //     responseType: "stream"
+  //   });
 
-    res.data.pipe(fs.createWriteStream(pdfPath));
+  //   res.data.pipe(fs.createWriteStream(pdfPath));
 
-    await new Promise((resolve, reject) => {
-      res.data.on("end", () => resolve());
+  //   await new Promise((resolve, reject) => {
+  //     res.data.on("end", () => resolve());
 
-      res.data.on("error", () => reject());
-    });
+  //     res.data.on("error", () => reject());
+  //   });
 
-    shell.openExternal(pdfPath);
-  };
+  //   shell.openExternal(pdfPath);
+  // };
 
   toggleInvoice = invoice => {
     if (invoice != this.state.show) {

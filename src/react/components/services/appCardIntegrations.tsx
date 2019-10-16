@@ -1,4 +1,5 @@
 import * as React from "react";
+import { clipboard } from "electron";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
@@ -127,7 +128,6 @@ class AppCardIntegrations extends React.Component<Props, State> {
   };
 
   render() {
-    const { clipboard } = require("electron");
     const { id, logo, name, teaserdescription, needssubdomain, options } = this.props;
     return (
       <div className="appIntegration" key={id}>

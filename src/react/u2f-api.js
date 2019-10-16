@@ -434,7 +434,7 @@ u2f.WrappedAuthenticatorPort_.prototype.onRequestUpdate_ = function(callback, me
   var errorCode = messageObject["errorCode"];
   var responseObject = null;
   if (messageObject.hasOwnProperty("data")) {
-    responseObject = /** @type {Object} */ (JSON.parse(messageObject["data"]));
+    responseObject = /** @type {Object} */ JSON.parse(messageObject["data"]);
   }
 
   callback({ data: responseObject });
@@ -565,10 +565,7 @@ u2f.getPortSingleton_ = function(callback) {
     if (u2f.waitingForPort_.length == 0) {
       u2f.getMessagePort(function(port) {
         u2f.port_ = port;
-        u2f.port_.addEventListener(
-          "message",
-          /** @type {function(Event)} */ (u2f.responseHandler_)
-        );
+        u2f.port_.addEventListener("message", /** @type {function(Event)} */ u2f.responseHandler_);
 
         // Careful, here be async callbacks. Maybe.
         while (u2f.waitingForPort_.length) u2f.waitingForPort_.shift()(u2f.port_);

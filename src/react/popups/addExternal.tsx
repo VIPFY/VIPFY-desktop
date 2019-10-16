@@ -1,5 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
+import { clipboard } from "electron";
+
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError } from "../common/functions";
 import { randomPassword } from "../common/passwordgen";
@@ -81,7 +83,6 @@ class ShowEmployee extends React.Component<Props, State> {
   };
 
   render() {
-    const { clipboard } = require("electron");
     const { options, appid, showloading } = this.props;
     const { username, password, pw1, pw2, pw3, subdomain, showPlanFields } = this.state;
 
@@ -99,9 +100,7 @@ class ShowEmployee extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <h3>
-          {`Some simple steps to integrate your existing account for ${
-            this.props.appname
-          } into Vipfy`}
+          {`Some simple steps to integrate your existing account for ${this.props.appname} into Vipfy`}
         </h3>
         <div className="genericHolder">
           <div className="header" onClick={() => this.toggleField("showpwchange")}>

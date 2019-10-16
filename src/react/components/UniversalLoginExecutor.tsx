@@ -1,9 +1,9 @@
 import * as React from "react";
-import WebView = require("react-electron-web-view");
-import { sleep } from "../common/functions";
+import WebView from "react-electron-web-view";
+import { sleep, getPreloadScriptPath } from "../common/functions";
 
-const { session } = require("electron").remote;
-
+import { remote } from "electron";
+const { session } = remote;
 interface Props {
   loginUrl: string;
   username: string;
@@ -283,7 +283,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     return (
       <WebView
         key={`${this.props.loginUrl}-${this.props.speed}`}
-        preload="./ssoConfigPreload/universalLogin.js"
+        preload={getPreloadScriptPath("universalLogin.js")}
         webpreferences="webSecurity=no"
         src={this.state.currentUrl || this.props.loginUrl}
         partition={this.props.partition}

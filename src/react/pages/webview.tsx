@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import WebView = require("react-electron-web-view");
-const { shell, remote } = require("electron");
+import { parse } from "url";
+import WebView from "react-electron-web-view";
+import { shell, remote } from "electron";
 const { session } = remote;
 import { withApollo, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
@@ -14,6 +15,7 @@ import ErrorPopup from "../popups/errorPopup";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
 import { randomPassword } from "../common/passwordgen";
 import HeaderNotificationContext from "../components/notifications/headerNotificationContext";
+import { getPreloadScriptPath } from "../common/functions";
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -407,7 +409,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   onNewWindow(e): void {
     //if webview tries to open new window, open it in default browser
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
-    const protocol = require("url").parse(e.url).protocol;
+    const protocol = parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
       //  shell.openExternal(e.url);
 
@@ -785,7 +787,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
               ) : (
                 <WebView
                   id={`webview-${this.props.viewID}`}
-                  preload="./preload-launcher.js"
+                  preload={getPreloadScriptPath("preload.js")}
                   webpreferences="webSecurity=no"
                   className={cssClassWeb}
                   src={this.state.currentUrl || this.state.setUrl}

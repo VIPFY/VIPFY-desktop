@@ -3,9 +3,8 @@ import installExtension, {
   REACT_DEVELOPER_TOOLS,
   APOLLO_DEVELOPER_TOOLS
 } from "electron-devtools-installer";
-import { enableLiveReload } from "electron-compile";
-import path = require("path");
-import Store = require("electron-store");
+import path from "path";
+import Store from "electron-store";
 import * as is from "electron-is";
 import { logger } from "./logger";
 
@@ -66,7 +65,7 @@ let isDevMode = !!process.execPath.match(/[\\/]electron/);
 
 const vipfyHandler = (request, callback) => {
   const url = request.url.substr(8);
-  //callback({path: path.normalize(`${__dirname}/${url}`)})
+  // callback({path: path.normalize(`${__dirname}/${url}`)})
 
   if (url.startsWith("todo")) {
     callback({ path: path.normalize(`${app.getAppPath()}/src/todo.html`) });
@@ -172,7 +171,13 @@ const createWindow = async () => {
     titleBarStyle: "hiddenInset",
     fullscreenable: true,
     backgroundColor: "#253647",
-    frame: false
+    frame: false,
+    webPreferences: {
+      nodeIntegration: true,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      webSecurity: false,
+      webviewTag: true
+    }
   });
 
   mainWindow.once("ready-to-show", () => {
@@ -184,14 +189,14 @@ const createWindow = async () => {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  // mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
   if (isDevMode) {
     await installExtension(REACT_DEVELOPER_TOOLS);
     await installExtension(APOLLO_DEVELOPER_TOOLS);
     mainWindow.webContents.openDevTools();
-    enableLiveReload({ strategy: "react-hmr" });
   }
 
   mainWindow.on("close", () => {

@@ -1,5 +1,6 @@
 import * as React from "react";
 import UniversalButton from "./components/universalButtons/universalButton";
+import errorPic from "../images/sso_creation_fail.png";
 
 interface Props {
   children: any;
@@ -33,7 +34,7 @@ class OuterErrorBoundary extends React.Component<Props, State> {
           <div id="outer-error-page">
             <h1>Sorry an error occurred!</h1>
             <img
-              src="images/sso_creation_fail.png"
+              src={errorPic}
               width={621}
               height={390}
               style={{ marginTop: "80px", marginBottom: "74px" }}

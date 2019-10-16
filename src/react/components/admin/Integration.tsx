@@ -1,6 +1,6 @@
 import * as React from "react";
-import WebView = require("react-electron-web-view");
-import { concatName } from "../../common/functions";
+import WebView from "react-electron-web-view";
+import { concatName, getPreloadScriptPath } from "../../common/functions";
 import UniversalButton from "../universalButtons/universalButton";
 import { User } from "../../interfaces";
 
@@ -69,7 +69,7 @@ class Integration extends React.Component<Props, State> {
           <tr>
             <td colSpan={9}>
               <WebView
-                preload="./ssoConfigPreload/universalLogin.js"
+                preload={getPreloadScriptPath("preload.js")}
                 webpreferences="webSecurity=no"
                 src={data.loginurl}
                 useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"

@@ -206,6 +206,14 @@
     .passwordStrength {
       margin-bottom: 40px;
     }
+
+    .not-show-bar {
+      margin-bottom: 40px;
+
+      .ReactPasswordStrength-strength-bar {
+        display: none;
+      }
+    }
   }
 
   .contentPopup {

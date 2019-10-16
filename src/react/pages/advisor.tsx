@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import { AppContext } from "../common/functions";
 import GenericInputField from "../components/GenericInputField";
 import AdvisorSidebar from "../components/AdvisorSidebar";
-import { updateUser } from "../mutations/auth"
+import { updateUser } from "../mutations/auth";
 
 const CreateCompany = gql`
   mutation createCompany($name: String!) {
@@ -24,11 +24,11 @@ const updateStatisticData = gql`
 `;
 
 const createAddress = gql`
-mutation createAddress($addressData: AddressInput!, $department: Boolean) {
-  createAddress(addressData: $addressData, department: $department) {
-    ok
+  mutation createAddress($addressData: AddressInput!, $department: Boolean) {
+    createAddress(addressData: $addressData, department: $department) {
+      ok
+    }
   }
-}
 `;
 
 interface Props {
@@ -99,13 +99,13 @@ class Advisor extends React.Component<Props, State> {
 
   componentDidMount() {
     if (this.props.match.params) {
-    switch (this.props.match.params.typeid) {
-    case "personfacts":
-      this.setState({advisorStage: 2})
-    break;
-    default:
-    this.setState({advisorStage: 1})
-    }
+      switch (this.props.match.params.typeid) {
+        case "personfacts":
+          this.setState({ advisorStage: 2 });
+          break;
+        default:
+          this.setState({ advisorStage: 1 });
+      }
     }
   }
 
@@ -604,169 +604,187 @@ class Advisor extends React.Component<Props, State> {
   }
 
   updateState = (key, value) => {
-    this.setState({key: value})
+    this.setState({ key: value });
   };
 
-  onEnter = async (fieldid) => {
-    await this.setState({focus: fieldid})
-  }
+  onEnter = async fieldid => {
+    await this.setState({ focus: fieldid });
+  };
 
-  showRevenue(tabActive){
-    switch(tabActive){
+  showRevenue(tabActive) {
+    switch (tabActive) {
       case 1:
-      return(<div className="inputBox">
-      <span className="inputBoxTitle">Revenue</span>
-      <GenericInputField
-        fieldClass="inputBoxField"
-        divClass="inputBoxHolder"
-        placeholder="This year"
-        onBlur={(value) => this.setState({"thisYearRevenue": value})}
-        inputType="currency"
-        symbol="$"
-        symbolClass="inputBoxSymbol"
-        focus={this.state.focus === 8}
-        onEnter={()=>this.onEnter(9)}
-        onClick={()=>this.onEnter(8)}
-        />
-        <GenericInputField
-        fieldClass="inputBoxField"
-        divClass="inputBoxHolder"
-        placeholder="Last year"
-        onBlur={(value) => this.setState({"lastYearRevenue": value})}
-        inputType="currency"
-        symbol="$"
-        symbolClass="inputBoxSymbol"
-        focus={this.state.focus === 9}
-        onEnter={()=>this.onEnter(10)}
-        onClick={()=>this.onEnter(9)}
-        />
-    </div>)
-      case 2:
-      return(
-    <div className="inputBox">
-          <span className="inputBoxTitle">Expected Revenue</span>
-          <GenericInputField
-            fieldClass="inputBoxField"
-            divClass="inputBoxHolder"
-            placeholder="This year"
-            onBlur={(value) => this.setState({"thisYearExpectedRevenue": value})}
-            inputType="currency"
-            symbol="$"
-            symbolClass="inputBoxSymbol"
-            focus={this.state.focus === 8}
-            onEnter={()=>this.onEnter(9)}
-            onClick={()=>this.onEnter(8)}
+        return (
+          <div className="inputBox">
+            <span className="inputBoxTitle">Revenue</span>
+            <GenericInputField
+              fieldClass="inputBoxField"
+              divClass="inputBoxHolder"
+              placeholder="This year"
+              onBlur={value => this.setState({ thisYearRevenue: value })}
+              inputType="currency"
+              symbol="$"
+              symbolClass="inputBoxSymbol"
+              focus={this.state.focus === 8}
+              onEnter={() => this.onEnter(9)}
+              onClick={() => this.onEnter(8)}
             />
             <GenericInputField
-            fieldClass="inputBoxField"
-            divClass="inputBoxHolder"
-            placeholder="Next year"
-            onBlur={(value) => this.setState({"nextYearExpectedRevenue": value})}
-            inputType="currency"
-            symbol="$"
-            symbolClass="inputBoxSymbol"
-            focus={this.state.focus === 9}
-            onEnter={()=>this.onEnter(10)}
-            onClick={()=>this.onEnter(9)}
+              fieldClass="inputBoxField"
+              divClass="inputBoxHolder"
+              placeholder="Last year"
+              onBlur={value => this.setState({ lastYearRevenue: value })}
+              inputType="currency"
+              symbol="$"
+              symbolClass="inputBoxSymbol"
+              focus={this.state.focus === 9}
+              onEnter={() => this.onEnter(10)}
+              onClick={() => this.onEnter(9)}
             />
-        </div>
-       )
-        case 3:
-        return(<div className="inputBox">
-        <span className="inputBoxTitle">Expected Revenue in first year of selling</span>
-        <GenericInputField
-          fieldClass="inputBoxField"
-          divClass="inputBoxHolder"
-          placeholder="This year"
-          onBlur={(value) => this.setState({"firstYearExpectedRevenue": value})}
-          inputType="currency"
-          symbol="$"
-          symbolClass="inputBoxSymbol"
-          focus={this.state.focus === 9}
-          onEnter={()=>this.onEnter(10)}
-          onClick={()=>this.onEnter(9)}
-          />
-          </div>)
+          </div>
+        );
+      case 2:
+        return (
+          <div className="inputBox">
+            <span className="inputBoxTitle">Expected Revenue</span>
+            <GenericInputField
+              fieldClass="inputBoxField"
+              divClass="inputBoxHolder"
+              placeholder="This year"
+              onBlur={value => this.setState({ thisYearExpectedRevenue: value })}
+              inputType="currency"
+              symbol="$"
+              symbolClass="inputBoxSymbol"
+              focus={this.state.focus === 8}
+              onEnter={() => this.onEnter(9)}
+              onClick={() => this.onEnter(8)}
+            />
+            <GenericInputField
+              fieldClass="inputBoxField"
+              divClass="inputBoxHolder"
+              placeholder="Next year"
+              onBlur={value => this.setState({ nextYearExpectedRevenue: value })}
+              inputType="currency"
+              symbol="$"
+              symbolClass="inputBoxSymbol"
+              focus={this.state.focus === 9}
+              onEnter={() => this.onEnter(10)}
+              onClick={() => this.onEnter(9)}
+            />
+          </div>
+        );
+      case 3:
+        return (
+          <div className="inputBox">
+            <span className="inputBoxTitle">Expected Revenue in first year of selling</span>
+            <GenericInputField
+              fieldClass="inputBoxField"
+              divClass="inputBoxHolder"
+              placeholder="This year"
+              onBlur={value => this.setState({ firstYearExpectedRevenue: value })}
+              inputType="currency"
+              symbol="$"
+              symbolClass="inputBoxSymbol"
+              focus={this.state.focus === 9}
+              onEnter={() => this.onEnter(10)}
+              onClick={() => this.onEnter(9)}
+            />
+          </div>
+        );
     }
   }
 
-  showStart(tabActive){
-    switch (tabActive){
-      case 1: return(
-        <div className="inputBox">
+  showStart(tabActive) {
+    switch (tabActive) {
+      case 1:
+        return (
+          <div className="inputBox">
             <span className="inputBoxTitle">Founding year of company</span>
-              <GenericInputField
+            <GenericInputField
               fieldClass="inputBoxField"
               divClass="inputBoxHolder"
               placeholder="2018"
-              onBlur={(value) => this.setState({"foundingYearOfCompany": value})}
+              onBlur={value => this.setState({ foundingYearOfCompany: value })}
               inputType="number"
               focus={this.state.focus === 10}
-              onEnter={()=>this.onEnter(11)}
-              onClick={()=>this.onEnter(10)}
-              />
-          </div>)
-      case 2: return(
-        <div className="inputBox">
+              onEnter={() => this.onEnter(11)}
+              onClick={() => this.onEnter(10)}
+            />
+          </div>
+        );
+      case 2:
+        return (
+          <div className="inputBox">
             <span className="inputBoxTitle">Founding year of company</span>
-              <GenericInputField
+            <GenericInputField
               fieldClass="inputBoxField"
               divClass="inputBoxHolder"
               placeholder="2018"
-              onBlur={(value) => this.setState({"foundingYearOfCompany": value})}
+              onBlur={value => this.setState({ foundingYearOfCompany: value })}
               inputType="number"
               focus={this.state.focus === 10}
-              onEnter={()=>this.onEnter(11)}
-              onClick={()=>this.onEnter(10)}
-              />
-          </div>)
-      case 3: return(
-        <div className="inputBox">
+              onEnter={() => this.onEnter(11)}
+              onClick={() => this.onEnter(10)}
+            />
+          </div>
+        );
+      case 3:
+        return (
+          <div className="inputBox">
             <span className="inputBoxTitle">Expected year of market entry</span>
-              <GenericInputField
+            <GenericInputField
               fieldClass="inputBoxField"
               divClass="inputBoxHolder"
               placeholder="2019"
-              onBlur={(value) => this.setState({"expectedYearOfMarketEntry": value})}
+              onBlur={value => this.setState({ expectedYearOfMarketEntry: value })}
               inputType="number"
               focus={this.state.focus === 10}
-              onEnter={()=>this.onEnter(11)}
-              onClick={()=>this.onEnter(10)}
-              />
-          </div>)
+              onEnter={() => this.onEnter(11)}
+              onClick={() => this.onEnter(10)}
+            />
+          </div>
+        );
     }
   }
 
-  changeTab(tabid){
-    this.setState({tabActive: tabid})
+  changeTab(tabid) {
+    this.setState({ tabActive: tabid });
   }
 
   showCompanyFacts(value, state) {
     return (
       <div className="optionsFormularBlock">
-        <div style={{width: "100%"}}>
+        <div style={{ width: "100%" }}>
           <div className="inputBox">
             <span className="inputBoxTitle">Company Name</span>
-            {state.tabActive===1?<GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="Example Inc"
-            onBlur={(value) => this.setState({"companyname": value})}
-            focus={this.state.focus===0}
-            onEnter={()=>this.onEnter(2)}
-            onClick={()=>this.onEnter(0)}
-            tabIndex="0"
-            />: <GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="Example Inc"
-            onBlur={(value) => this.setState({"companyname": value})}
-            focus={this.state.focus===0}
-            onEnter={()=>this.onEnter(1)}
-            onClick={()=>this.onEnter(0)}
-            tabIndex="0"
-            />}
-            {this.state.noCompanyName ? <span className="inputBoxAdvisorError">Please insert a company name.</span> : ""}
+            {state.tabActive === 1 ? (
+              <GenericInputField
+                fieldClass="inputBoxField"
+                divClass=""
+                placeholder="Example Inc"
+                onBlur={value => this.setState({ companyname: value })}
+                focus={this.state.focus === 0}
+                onEnter={() => this.onEnter(2)}
+                onClick={() => this.onEnter(0)}
+                tabIndex="0"
+              />
+            ) : (
+              <GenericInputField
+                fieldClass="inputBoxField"
+                divClass=""
+                placeholder="Example Inc"
+                onBlur={value => this.setState({ companyname: value })}
+                focus={this.state.focus === 0}
+                onEnter={() => this.onEnter(1)}
+                onClick={() => this.onEnter(0)}
+                tabIndex="0"
+              />
+            )}
+            {this.state.noCompanyName ? (
+              <span className="inputBoxAdvisorError">Please insert a company name.</span>
+            ) : (
+              ""
+            )}
           </div>
           <div className="inputBox">
             <span className="inputBoxTitle">Industry</span>
@@ -803,108 +821,121 @@ class Advisor extends React.Component<Props, State> {
           </div>
           {this.showSubIndustry(this.state.industry)}
           <div className="tabBox">
-            <div className={this.state.tabActive===1?"tab tabActive": "tab"} onClick={() => this.changeTab(1)}>Existing Company</div>
-            <div className={this.state.tabActive===2?"tab tabActive": "tab"} onClick={() => this.changeTab(2)}>Implementation phase</div>
-            <div className={this.state.tabActive===3?"tab tabActive": "tab"} onClick={() => this.changeTab(3)}>Idea phase</div>
+            <div
+              className={this.state.tabActive === 1 ? "tab tabActive" : "tab"}
+              onClick={() => this.changeTab(1)}>
+              Existing Company
+            </div>
+            <div
+              className={this.state.tabActive === 2 ? "tab tabActive" : "tab"}
+              onClick={() => this.changeTab(2)}>
+              Implementation phase
+            </div>
+            <div
+              className={this.state.tabActive === 3 ? "tab tabActive" : "tab"}
+              onClick={() => this.changeTab(3)}>
+              Idea phase
+            </div>
           </div>
           <div>
-        <div className="inputBox">
-          <span className="inputBoxTitle">Address</span>
-          {state.tabActive===1?<input
-            className="inputBoxField"
-            placeholder=""
-            value={state.companyname || "Please add company name above"}
-            disabled
-            style={{ backgroundColor: "white" }}
-          />:
-          <GenericInputField
-            tabIndex="1"
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="First Line"
-            onBlur={(value) => this.setState({"addressFirstLine": value})}
-            focus={this.state.focus===1}
-            onEnter={()=>this.onEnter(2)}
-            onClick={()=>this.onEnter(1)}
-            />}
-          <GenericInputField
-          tabIndex="2"
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="Second Line"
-            onBlur={(value) => this.setState({"addressSecondLine": value})}
-            focus={this.state.focus===2}
-            onEnter={()=>this.onEnter(3)}
-            onClick={()=>this.onEnter(2)}
-            />
-            <GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="Street"
-            onBlur={(value) => this.setState({"addressStreet": value})}
-            focus={this.state.focus===3}
-            onEnter={()=>this.onEnter(4)}
-            onClick={()=>this.onEnter(3)}
-            />
-            <GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="City"
-            onBlur={(value) => this.setState({"addressCity": value})}
-            focus={this.state.focus===4}
-            onEnter={()=>this.onEnter(5)}
-            onClick={()=>this.onEnter(4)}
-            />
-            <GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="Zip"
-            onBlur={(value) => this.setState({"addressZip": value})}
-            focus={this.state.focus===5}
-            onEnter={()=>this.onEnter(6)}
-            onClick={()=>this.onEnter(5)}
-            />
-            <GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="State"
-            onBlur={(value) => this.setState({"addressState": value})}
-            focus={this.state.focus===6}
-            onEnter={()=>this.onEnter(7)}
-            onClick={()=>this.onEnter(6)}
-            />
-            <GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="Country"
-            default="US"
-            noteditable={true}
-            onBlur={(value) => this.setState({"addressCountry": value})}
-            focus={this.state.focus===7}
-            onEnter={()=>this.onEnter(8)}
-            onClick={()=>this.onEnter(7)}
-            />
-        </div>
-        {this.showRevenue(this.state.tabActive)}
-        {this.showStart(this.state.tabActive)}
-        <div className="inputBox">
-          <span className="inputBoxTitle">Number of Employees</span>
-          <GenericInputField
-            fieldClass="inputBoxField"
-            divClass="inputBoxHolder"
-            placeholder="Number of Employees"
-            onBlur={(value) => this.setState({"numberOfEmployees": value})}
-            inputType="number"
-            focus={this.state.focus === 11}
-            onClick={()=>this.onEnter(11)}
-            onEnter={() => this.saveFacts(value)}
-            />
-        </div>
-      </div>
+            <div className="inputBox">
+              <span className="inputBoxTitle">Address</span>
+              {state.tabActive === 1 ? (
+                <input
+                  className="inputBoxField"
+                  placeholder=""
+                  value={state.companyname || "Please add company name above"}
+                  disabled
+                  style={{ backgroundColor: "white" }}
+                />
+              ) : (
+                <GenericInputField
+                  tabIndex="1"
+                  fieldClass="inputBoxField"
+                  divClass=""
+                  placeholder="First Line"
+                  onBlur={value => this.setState({ addressFirstLine: value })}
+                  focus={this.state.focus === 1}
+                  onEnter={() => this.onEnter(2)}
+                  onClick={() => this.onEnter(1)}
+                />
+              )}
+              <GenericInputField
+                tabIndex="2"
+                fieldClass="inputBoxField"
+                divClass=""
+                placeholder="Second Line"
+                onBlur={value => this.setState({ addressSecondLine: value })}
+                focus={this.state.focus === 2}
+                onEnter={() => this.onEnter(3)}
+                onClick={() => this.onEnter(2)}
+              />
+              <GenericInputField
+                fieldClass="inputBoxField"
+                divClass=""
+                placeholder="Street"
+                onBlur={value => this.setState({ addressStreet: value })}
+                focus={this.state.focus === 3}
+                onEnter={() => this.onEnter(4)}
+                onClick={() => this.onEnter(3)}
+              />
+              <GenericInputField
+                fieldClass="inputBoxField"
+                divClass=""
+                placeholder="City"
+                onBlur={value => this.setState({ addressCity: value })}
+                focus={this.state.focus === 4}
+                onEnter={() => this.onEnter(5)}
+                onClick={() => this.onEnter(4)}
+              />
+              <GenericInputField
+                fieldClass="inputBoxField"
+                divClass=""
+                placeholder="Zip"
+                onBlur={value => this.setState({ addressZip: value })}
+                focus={this.state.focus === 5}
+                onEnter={() => this.onEnter(6)}
+                onClick={() => this.onEnter(5)}
+              />
+              <GenericInputField
+                fieldClass="inputBoxField"
+                divClass=""
+                placeholder="State"
+                onBlur={value => this.setState({ addressState: value })}
+                focus={this.state.focus === 6}
+                onEnter={() => this.onEnter(7)}
+                onClick={() => this.onEnter(6)}
+              />
+              <GenericInputField
+                fieldClass="inputBoxField"
+                divClass=""
+                placeholder="Country"
+                default="US"
+                noteditable={true}
+                onBlur={value => this.setState({ addressCountry: value })}
+                focus={this.state.focus === 7}
+                onEnter={() => this.onEnter(8)}
+                onClick={() => this.onEnter(7)}
+              />
+            </div>
+            {this.showRevenue(this.state.tabActive)}
+            {this.showStart(this.state.tabActive)}
+            <div className="inputBox">
+              <span className="inputBoxTitle">Number of Employees</span>
+              <GenericInputField
+                fieldClass="inputBoxField"
+                divClass="inputBoxHolder"
+                placeholder="Number of Employees"
+                onBlur={value => this.setState({ numberOfEmployees: value })}
+                inputType="number"
+                focus={this.state.focus === 11}
+                onClick={() => this.onEnter(11)}
+                onEnter={() => this.saveFacts(value)}
+              />
+            </div>
+          </div>
           <div className="advisorBottomPageButtonsHolder">
-            <button
-              className="advisorBottomPageButtonNext"
-              onClick={() => this.saveFacts(value)}>
+            <button className="advisorBottomPageButtonNext" onClick={() => this.saveFacts(value)}>
               Save and go to the next and last page
             </button>
           </div>
@@ -914,97 +945,117 @@ class Advisor extends React.Component<Props, State> {
   }
 
   saveFacts = async value => {
-
     //Check if companyname is set
     if (!this.state.companyname) {
-      this.setState({noCompanyName: true})
-      return
+      this.setState({ noCompanyName: true });
+      return;
     }
     const statisticdata = {
-      industry: this.state.industry, subindustry: this.state.subindustry, thisYearRevenue: this.state.thisYearRevenue, lastYearRevenue: this.state.lastYearRevenue,
-      thisYearExpectedRevenue: this.state.thisYearExpectedRevenue, nextYearExpectedRevenue: this.state.nextYearExpectedRevenue,foundingYearOfCompany: this.state.foundingYearOfCompany
-      expectedYearOfMarketEntry: this.state.expectedYearOfMarketEntry, numberOfEmployees: this.state.numberOfEmployees}
+      industry: this.state.industry,
+      subindustry: this.state.subindustry,
+      thisYearRevenue: this.state.thisYearRevenue,
+      lastYearRevenue: this.state.lastYearRevenue,
+      thisYearExpectedRevenue: this.state.thisYearExpectedRevenue,
+      nextYearExpectedRevenue: this.state.nextYearExpectedRevenue,
+      foundingYearOfCompany: this.state.foundingYearOfCompany,
+      expectedYearOfMarketEntry: this.state.expectedYearOfMarketEntry,
+      numberOfEmployees: this.state.numberOfEmployees
+    };
 
     try {
-      const res = await this.props.cc({ variables:  {name: this.state.companyname}  });
-      const {  token } = res.data.createCompany;
+      const res = await this.props.cc({ variables: { name: this.state.companyname } });
+      const { token } = res.data.createCompany;
       localStorage.setItem("token", token);
 
-       await this.props.cA({ variables: {addressData: {country: this.state.addressCountry, state: this.state.addressState, city: this.state.addressCity, zip: this.state.addressZip, street: this.state.addressStreet, tags: ["main"]}, department: true}});
+      await this.props.cA({
+        variables: {
+          addressData: {
+            country: this.state.addressCountry,
+            state: this.state.addressState,
+            city: this.state.addressCity,
+            zip: this.state.addressZip,
+            street: this.state.addressStreet,
+            tags: ["main"]
+          },
+          department: true
+        }
+      });
+      await this.props.uSD({ variables: { data: { ...statisticdata } } });
 
-       await this.props.uSD({ variables: {data: {...statisticdata} }});
-
-
-      this.props.moveTo("/area/advisor/personfacts")
+      this.props.moveTo("/area/advisor/personfacts");
     } catch (err) {
       return;
     }
-  }
+  };
 
   showExplainBlock(stage) {
-    switch(stage) {
+    switch (stage) {
       case 1:
-    return (
-      <div className="optionsExplainBlock">
-        <div className="optionsExplainTextHolder">
-          <i className="far fa-building optionsExplainIconHolder" />
-          <span className="optionsExplainHeading">Tell us a bit about your Company</span>
-          <p>
-            We use this information to set up your VIPFY-Account, find the best fitting services for
-            you and provide general data to the service Providers. Most informationen is not mandatory but they will give you an better experience on VIPFY.
-          </p>
-        </div>
-      </div>
-    );
-    case 2:
-    return (
-      <div className="optionsExplainBlock">
-        <div className="optionsExplainTextHolder">
-          <i className="far fa-user optionsExplainIconHolder" />
-          <span className="optionsExplainHeading">Tell us a bit about yourself</span>
-          <p>
-            We use this information to set up your VIPFY-Account, find the best fitting services for
-            you and provide general data to the service Providers. Most informationen is not mandatory but they will give you an better experience on VIPFY.
-          </p>
-        </div>
-      </div>
-    );
-  }
-  }
-
-  editPart(state, value){
-    switch(state.advisorStage){
-      case 1: return(this.showCompanyFacts(value, state))
-      case 2: return(this.showYourFacts(value, state))
+        return (
+          <div className="optionsExplainBlock">
+            <div className="optionsExplainTextHolder">
+              <i className="far fa-building optionsExplainIconHolder" />
+              <span className="optionsExplainHeading">Tell us a bit about your Company</span>
+              <p>
+                We use this information to set up your VIPFY-Account, find the best fitting services
+                for you and provide general data to the service Providers. Most informationen is not
+                mandatory but they will give you an better experience on VIPFY.
+              </p>
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="optionsExplainBlock">
+            <div className="optionsExplainTextHolder">
+              <i className="far fa-user optionsExplainIconHolder" />
+              <span className="optionsExplainHeading">Tell us a bit about yourself</span>
+              <p>
+                We use this information to set up your VIPFY-Account, find the best fitting services
+                for you and provide general data to the service Providers. Most informationen is not
+                mandatory but they will give you an better experience on VIPFY.
+              </p>
+            </div>
+          </div>
+        );
     }
   }
 
-  showYourFacts(value, state){
+  editPart(state, value) {
+    switch (state.advisorStage) {
+      case 1:
+        return this.showCompanyFacts(value, state);
+      case 2:
+        return this.showYourFacts(value, state);
+    }
+  }
+
+  showYourFacts(value, state) {
     return (
       <div className="optionsFormularBlock">
-        <div style={{width: "100%"}}>
+        <div style={{ width: "100%" }}>
           <div className="inputBox">
-          <span className="inputBoxTitle">Your Name</span>
+            <span className="inputBoxTitle">Your Name</span>
             <GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="Your Name"
-            onBlur={(value) => this.setState({"adminname": value})}
-            focus={this.state.focus===0}
-            onEnter={()=>this.onEnter(1)}
-            onClick={()=>this.onEnter(0)}
+              fieldClass="inputBoxField"
+              divClass=""
+              placeholder="Your Name"
+              onBlur={value => this.setState({ adminname: value })}
+              focus={this.state.focus === 0}
+              onEnter={() => this.onEnter(1)}
+              onClick={() => this.onEnter(0)}
             />
           </div>
           <div className="inputBox">
-          <span className="inputBoxTitle">Your Age</span>
+            <span className="inputBoxTitle">Your Age</span>
             <GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="Your Age"
-            onBlur={(value) => this.setState({"adminage": value})}
-            focus={this.state.focus===1}
-            onEnter={()=>this.onEnter(2)}
-            onClick={()=>this.onEnter(1)}
+              fieldClass="inputBoxField"
+              divClass=""
+              placeholder="Your Age"
+              onBlur={value => this.setState({ adminage: value })}
+              focus={this.state.focus === 1}
+              onEnter={() => this.onEnter(2)}
+              onClick={() => this.onEnter(1)}
             />
           </div>
           <div className="inputBox">
@@ -1016,28 +1067,16 @@ class Advisor extends React.Component<Props, State> {
               <option value="" disabled hidden>
                 Please choose your highest Education
               </option>
-              <option value="highschool">
-              Highschool or equivalent
-              </option>
-              <option value="college">
-              College or equivalent
-              </option>
-              <option value="associate‎">
-              Associate or equivalent
-              </option>
-              <option value="bachelor">
-              Bachelor or equivalent
-              </option>
-              <option value="master">
-              Master or equivalent
-              </option>
-              <option value="phd">
-              PHD or other doctoral degree or equivalent
-              </option>
-              </select>
-              </div>
+              <option value="highschool">Highschool or equivalent</option>
+              <option value="college">College or equivalent</option>
+              <option value="associate‎">Associate or equivalent</option>
+              <option value="bachelor">Bachelor or equivalent</option>
+              <option value="master">Master or equivalent</option>
+              <option value="phd">PHD or other doctoral degree or equivalent</option>
+            </select>
+          </div>
 
-              <div className="inputBox">
+          <div className="inputBox">
             <span className="inputBoxTitle">Job Category</span>
             <select
               placeholder="Select Job Category"
@@ -1046,187 +1085,75 @@ class Advisor extends React.Component<Props, State> {
               <option value="" disabled hidden>
                 Please choose your Job Category
               </option>
-              <option value="accounting">
-              Accounting
-              </option>
-              <option value="adminClerical">
-              Admin & Clerical
-              </option>
-              <option value="automotive">
-              Automotive
-              </option>
-              <option value="banking">
-              Banking
-              </option>
-              <option value="biotech">
-              Biotech
-              </option>
-              <option value="broadcastJournalism">
-              Broadcast - Journalism
-              </option>
-              <option value="businessDevelopment">
-              Business Development
-              </option>
-              <option value="construction">
-              Construction
-              </option>
-              <option value="consultant">
-              Consultant
-              </option>
-              <option value="customerService">
-              Customer Service
-              </option>
-              <option value="design">
-              Design
-              </option>
-              <option value="distributionShipping">
-              Distribution - Shipping
-              </option>
-              <option value="educationTeaching">
-              Education - Teaching
-              </option>
-              <option value="engineering">
-              Engineering
-              </option>
-              <option value="entryLevelNewGrad">
-              Entry Level - New Grad
-              </option>
-              <option value="executive">
-              Executive
-              </option>
-              <option value="facilities">
-              Facilities
-              </option>
-              <option value="finance">
-              Finance
-              </option>
-              <option value="franchise">
-              Franchise
-              </option>
-              <option value="generalBusiness">
-              General Business
-              </option>
-              <option value="generalLabor">
-              General Labor
-              </option>
-              <option value="government">
-              Government
-              </option>
-              <option value="grocery">
-              Grocery
-              </option>
-              <option value="healthCare">
-              Health Care
-              </option>
-              <option value="hotelHospitality">
-              Hotel - Hospitality
-              </option>
-              <option value="humanResources">
-              Human Resources
-              </option>
-              <option value="informationTechnology">
-              Information Technology
-              </option>
-              <option value="installationMaintRepair">
-              Installation - Maint - Repair
-              </option>
-              <option value="insurance">
-              Insurance
-              </option>
-              <option value="inventory">
-              Inventory
-              </option>
-              <option value="legal">
-              Legal
-              </option>
-              <option value="legalAdmin">
-              Legal Admin
-              </option>
-              <option value="management">
-              Management
-              </option>
-              <option value="manufacturing">
-              Manufacturing
-              </option>
-              <option value="marketing">
-              Marketing
-              </option>
-              <option value="mediaJournalismNewspaper">
-              Media - Journalism - Newspaper
-              </option>
-              <option value="nonprofitSocialServices">
-              Nonprofit - Social Services
-              </option>
-              <option value="nurse">
-              Nurse
-              </option>
-              <option value="other">
-              Other
-              </option>
-              <option value="pharmaceutical">
-              Pharmaceutical
-              </option>
-              <option value="professionalServices">
-              Professional Services
-              </option>
-              <option value="purchasingProcurement">
-              Purchasing - Procurement
-              </option>
-              <option value="qAQualityControl">
-              QA - Quality Control
-              </option>
-              <option value="realEstate">
-              Real Estate
-              </option>
-              <option value="research">
-              Research
-              </option>
-              <option value="restaurantFoodService">
-              Restaurant - Food Service
-              </option>
-              <option value="retail">
-              Retail
-              </option>
-              <option value="sales">
-              Sales
-              </option>
-              <option value="science">
-              Science
-              </option>
-              <option value="skilledLaborTrades">
-              Skilled Labor - Trades
-              </option>
-              <option value="strategyPlanning">
-              Strategy - Planning
-              </option>
-              <option value="supplyChain">
-              Supply Chain
-              </option>
-              <option value="telecommunications">
-              Telecommunications
-              </option>
-              <option value="training">
-              Training
-              </option>
-              <option value="transportation">
-              Transportation
-              </option>
-              <option value="warehouse">
-              Warehouse
-              </option>
-              </select>
-              </div>
+              <option value="accounting">Accounting</option>
+              <option value="adminClerical">Admin & Clerical</option>
+              <option value="automotive">Automotive</option>
+              <option value="banking">Banking</option>
+              <option value="biotech">Biotech</option>
+              <option value="broadcastJournalism">Broadcast - Journalism</option>
+              <option value="businessDevelopment">Business Development</option>
+              <option value="construction">Construction</option>
+              <option value="consultant">Consultant</option>
+              <option value="customerService">Customer Service</option>
+              <option value="design">Design</option>
+              <option value="distributionShipping">Distribution - Shipping</option>
+              <option value="educationTeaching">Education - Teaching</option>
+              <option value="engineering">Engineering</option>
+              <option value="entryLevelNewGrad">Entry Level - New Grad</option>
+              <option value="executive">Executive</option>
+              <option value="facilities">Facilities</option>
+              <option value="finance">Finance</option>
+              <option value="franchise">Franchise</option>
+              <option value="generalBusiness">General Business</option>
+              <option value="generalLabor">General Labor</option>
+              <option value="government">Government</option>
+              <option value="grocery">Grocery</option>
+              <option value="healthCare">Health Care</option>
+              <option value="hotelHospitality">Hotel - Hospitality</option>
+              <option value="humanResources">Human Resources</option>
+              <option value="informationTechnology">Information Technology</option>
+              <option value="installationMaintRepair">Installation - Maint - Repair</option>
+              <option value="insurance">Insurance</option>
+              <option value="inventory">Inventory</option>
+              <option value="legal">Legal</option>
+              <option value="legalAdmin">Legal Admin</option>
+              <option value="management">Management</option>
+              <option value="manufacturing">Manufacturing</option>
+              <option value="marketing">Marketing</option>
+              <option value="mediaJournalismNewspaper">Media - Journalism - Newspaper</option>
+              <option value="nonprofitSocialServices">Nonprofit - Social Services</option>
+              <option value="nurse">Nurse</option>
+              <option value="other">Other</option>
+              <option value="pharmaceutical">Pharmaceutical</option>
+              <option value="professionalServices">Professional Services</option>
+              <option value="purchasingProcurement">Purchasing - Procurement</option>
+              <option value="qAQualityControl">QA - Quality Control</option>
+              <option value="realEstate">Real Estate</option>
+              <option value="research">Research</option>
+              <option value="restaurantFoodService">Restaurant - Food Service</option>
+              <option value="retail">Retail</option>
+              <option value="sales">Sales</option>
+              <option value="science">Science</option>
+              <option value="skilledLaborTrades">Skilled Labor - Trades</option>
+              <option value="strategyPlanning">Strategy - Planning</option>
+              <option value="supplyChain">Supply Chain</option>
+              <option value="telecommunications">Telecommunications</option>
+              <option value="training">Training</option>
+              <option value="transportation">Transportation</option>
+              <option value="warehouse">Warehouse</option>
+            </select>
+          </div>
 
-              <div className="inputBox">
-          <span className="inputBoxTitle">Your workexperience in this job</span>
+          <div className="inputBox">
+            <span className="inputBoxTitle">Your workexperience in this job</span>
             <GenericInputField
-            fieldClass="inputBoxField"
-            divClass=""
-            placeholder="Your workexperience in this job"
-            onBlur={(value) => this.setState({"workexperience": value})}
-            focus={this.state.focus===2}
-            onEnter={() => this.saveUserFacts(value)}
-            onClick={()=>this.onEnter(2)}
+              fieldClass="inputBoxField"
+              divClass=""
+              placeholder="Your workexperience in this job"
+              onBlur={value => this.setState({ workexperience: value })}
+              focus={this.state.focus === 2}
+              onEnter={() => this.saveUserFacts(value)}
+              onClick={() => this.onEnter(2)}
             />
           </div>
           <div className="advisorBottomPageButtonsHolder">
@@ -1242,12 +1169,13 @@ class Advisor extends React.Component<Props, State> {
             </button>
           </div>
         </div>
-      </div>)
+      </div>
+    );
   }
 
-  saveUserFacts = async (value) => {
+  saveUserFacts = async value => {
     let user = {};
-      if (this.state.adminname) {
+    if (this.state.adminname) {
       if (this.state.adminname != "") {
         let nameArray = [];
         nameArray = this.state.adminname.split(" ");
@@ -1268,15 +1196,23 @@ class Advisor extends React.Component<Props, State> {
       }
     }
 
-    user = {...user, statisticdata: {age: this.state.adminage, education: this.state.education, jobCategory: this.state.jobCategory, workexperience: this.state.workexperience}}
+    user = {
+      ...user,
+      statisticdata: {
+        age: this.state.adminage,
+        education: this.state.education,
+        jobCategory: this.state.jobCategory,
+        workexperience: this.state.workexperience
+      }
+    };
     try {
-      const res = this.props.uU({variables: {user}})
-      this.props.setName(user.firstname, user.lastname)
-      this.props.moveTo("/area/dashboard")
+      const res = this.props.uU({ variables: { user } });
+      this.props.setName(user.firstname, user.lastname);
+      this.props.moveTo("/area/dashboard");
     } catch (err) {
       return;
     }
-  }
+  };
 
   render() {
     return (
@@ -1285,10 +1221,7 @@ class Advisor extends React.Component<Props, State> {
           console.error("Please refactor Query 'me' instead of using AppContext");
           return (
             <div className="optionsHolder">
-              <AdvisorSidebar
-              moveTo = {this.props.moveTo}
-              stage = {this.state.advisorStage}
-              />
+              <AdvisorSidebar moveTo={this.props.moveTo} stage={this.state.advisorStage} />
               {this.editPart(this.state, value)}
               {/*this.showCompanyFacts(value, this.state)*/}
               {this.showExplainBlock(this.state.advisorStage)}

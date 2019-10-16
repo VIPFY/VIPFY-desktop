@@ -2,11 +2,12 @@ import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
-const { shell } = require("electron");
+import { shell } from "electron";
 import { graphql } from "react-apollo";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import { emailRegex } from "../../common/constants";
+import welcomeBack from "../../../images/welcome_back.png";
 
 const SIGNUP = gql`
   mutation onSignUp(
@@ -93,10 +94,7 @@ class RegisterCompany extends React.Component<Props, State> {
       <div className="dataGeneralForm">
         <div className="holder">
           <div className="logo" />
-          <img
-            src={`${__dirname}/../../../images/welcome_back.png`}
-            className="illustration-login"
-          />
+          <img src={welcomeBack} className="illustration-login" />
 
           <div className="holder-right">
             <h1>Register a Company</h1>

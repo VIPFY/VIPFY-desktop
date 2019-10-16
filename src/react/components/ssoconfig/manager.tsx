@@ -3,7 +3,7 @@ import LogoExtractor from "./LogoExtractor";
 import UsernameFieldExtractor from "./UsernameFieldExtractor";
 import ErrorFieldExtractor from "./ErrorFieldExtractor";
 import PassowrdFieldExtractor from "./PasswordFieldExtractor";
-const { remote } = require("electron");
+import { remote } from "electron";
 const { session } = remote;
 
 type Selector = string;

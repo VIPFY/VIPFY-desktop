@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import PopupBase from "./popupBase";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import Tooltip from "react-tooltip-lite";
 
 const UPDATE_PIC = gql`
