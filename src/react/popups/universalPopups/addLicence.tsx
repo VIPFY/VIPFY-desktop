@@ -42,6 +42,7 @@ interface State {
   integrateApp: any;
   randomkey: string;
   empty: string;
+  newid: number;
 }
 
 const ADD_LICENCE_TO_USER = gql`
@@ -86,7 +87,8 @@ class PopupAddLicence extends React.Component<Props, State> {
     password: "",
     integrateApp: {},
     randomkey: "",
-    empty: ""
+    empty: "",
+    newid: -1
   };
 
   UNSAFE_componentWillReceiveProps = async props => {
@@ -190,7 +192,7 @@ class PopupAddLicence extends React.Component<Props, State> {
             }
           } else if (action == "sucess") {
             if (success) {
-              success();
+              success({ licenceid: this.state.newid });
             }
           } else {
             cancel();
@@ -209,7 +211,8 @@ class PopupAddLicence extends React.Component<Props, State> {
               }
             });
           }
-          await this.props.addLicence({
+          //console.log("ADDLICENCE");
+          res = await this.props.addLicence({
             variables: {
               appid: id,
               boughtplanid: this.props.boughtplanid
@@ -238,6 +241,8 @@ class PopupAddLicence extends React.Component<Props, State> {
                   }
             ]
           });
+          this.setState({ newid: res.data.addExternalAccountLicence });
+          //console.log("res", res);
           //if (success) {
           //  success();
           //}

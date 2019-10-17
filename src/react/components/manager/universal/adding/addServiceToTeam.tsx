@@ -4,8 +4,9 @@ import UniversalButton from "../../../../components/universalButtons/universalBu
 import PopupAddLicence from "../../../../popups/universalPopups/addLicence";
 import PopupSelfSaving from "../../../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { compose, graphql, Mutation } from "react-apollo";
 import PrintEmployeeSquare from "../squares/printEmployeeSquare";
+import FormPopup from "../../../../popups/universalPopups/formPopup";
 
 interface Props {
   close: Function;
@@ -22,6 +23,8 @@ interface State {
   setups: any[];
   addEmployee: boolean;
   boughtplanid: number;
+  confirmed: Boolean;
+  edit: Object | null;
 }
 
 const ADD_TO_TEAM = gql`
@@ -38,6 +41,22 @@ const ADD_EXTERNAL_PLAN = gql`
     }
   }
 `;
+
+const UPDATE_CREDENTIALS = gql`
+  mutation onUpdateCredentials(
+    $licenceid: ID!
+    $username: String
+    $password: String
+    $loginurl: String
+  ) {
+    updateCredentials(
+      licenceid: $licenceid
+      username: $username
+      password: $password
+      loginurl: $loginurl
+    )
+  }
+`;
 class AddServiceToTeam extends React.Component<Props, State> {
   state = {
     saving: false,
@@ -45,8 +64,126 @@ class AddServiceToTeam extends React.Component<Props, State> {
     currentteam: this.props.team,
     setups: [],
     addEmployee: false,
-    boughtplanid: 0
+    boughtplanid: 0,
+    confirmed: false,
+    edit: null
   };
+
+  editOrAdd() {
+    const { team, close, service } = this.props;
+    let editlicence = this.state.setups.find(s => s.employeeid == this.state.edit!.id);
+    if (editlicence && editlicence.licenceid) {
+      return (
+        <Mutation mutation={UPDATE_CREDENTIALS}>
+          {updateCredentials => (
+            <FormPopup
+              key={`${this.state.edit!.firstname}-${this.state.edit!.lastname}-${service.name}`}
+              heading="Edit Licence"
+              subHeading={`Edit licence from ${this.state.edit!.firstname} ${
+                this.state.edit!.lastname
+              } of ${service.name}`}
+              close={() => this.setState({ edit: null })}
+              submit={async values => {
+                await updateCredentials({
+                  variables: {
+                    licenceid: editlicence.licenceid,
+                    username: values[`${this.state.edit!.id}-${service.id}-email`],
+                    password: values[`${this.state.edit!.id}-${service.id}-password`],
+                    loginurl:
+                      values[`${this.state.edit!.id}-${service.id}-subdomain`] &&
+                      values[`${this.state.edit!.id}-${service.id}-subdomain`] != ""
+                        ? `${service.options.predomain}${
+                            values[`${this.state.edit!.id}-${service.id}-subdomain`]
+                          }${service.options.afterdomain}`
+                        : null
+                  }
+                });
+              }}
+              submitDisabled={values =>
+                !values ||
+                (service.needssubdomain &&
+                  (!values[`${this.state.edit!.id}-${service.id}-subdomain`] ||
+                    values[`${this.state.edit!.id}-${service.id}-subdomain`] == "")) ||
+                !values[`${this.state.edit!.id}-${service.id}-email`] ||
+                values[`${this.state.edit!.id}-${service.id}-email`] == "" ||
+                !values[`${this.state.edit!.id}-${service.id}-password`] ||
+                values[`${this.state.edit!.id}-${service.id}-password`] == ""
+              }
+              nooutsideclose={true}
+              fields={(service.needssubdomain
+                ? [
+                    {
+                      id: `${this.state.edit!.id}-${service.id}-subdomain`,
+                      options: {
+                        label: "Subdomain",
+                        children: (
+                          <span className="small">
+                            Please insert your subdomain.
+                            <br />
+                            {service.options.predomain}YOUR SUBDOMAIN
+                            {service.options.afterdomain}
+                          </span>
+                        )
+                      }
+                    }
+                  ]
+                : []
+              ).concat([
+                {
+                  id: `${this.state.edit!.id}-${service.id}-email`,
+                  options: {
+                    label: `Username for your ${service.name}-Account`
+                  }
+                },
+                {
+                  id: `${this.state.edit!.id}-${service.id}-password`,
+                  options: {
+                    label: `Password for your ${service.name}-Account`,
+                    type: "password"
+                  }
+                }
+              ])}
+            />
+          )}
+        </Mutation>
+      );
+    } else {
+      return (
+        <PopupAddLicence
+          nooutsideclose={true}
+          app={service}
+          addStyles={{ marginTop: "288px" }}
+          boughtplanid={{ id: this.state.boughtplanid }}
+          team={team}
+          cancel={() => this.setState({ edit: null })}
+          success={data => {
+            if (data && data.error) {
+              console.log("ERROR", data);
+              this.setState({ edit: null });
+            } else {
+              this.setState(prevState => {
+                const currentsetup = prevState.setups;
+                const setupIndex = currentsetup.findIndex(s => s.employeeid == this.state.edit!.id);
+                currentsetup[setupIndex] = {
+                  setupsuccess: true,
+                  licenceid: data.licenceid,
+                  employeeid: this.state.edit!.id
+                };
+
+                return {
+                  ...prevState,
+                  setups: currentsetup,
+                  edit: null
+                };
+              });
+            }
+          }}
+          employeename={`${this.state.edit!.firstname} ${this.state.edit!.lastname}`}
+          employee={this.state.edit!}
+        />
+      );
+    }
+  }
 
   componentWillUnmount() {
     this.setState({ saving: false, counter: 0, currentteam: null });
@@ -54,9 +191,13 @@ class AddServiceToTeam extends React.Component<Props, State> {
 
   render() {
     const { team, close, service } = this.props;
+    //console.log("STATE", this.state, this.props);
     return (
       <PopupBase
-        buttonStyles={{ marginTop: "0px" }}
+        buttonStyles={{
+          marginTop: "0px",
+          justifyContent: this.state.confirmed ? "flex-end" : "space-between"
+        }}
         fullmiddle={true}
         small={true}
         additionalclassName="formPopup"
@@ -75,6 +216,7 @@ class AddServiceToTeam extends React.Component<Props, State> {
                 <PrintEmployeeSquare
                   employee={employee}
                   styles={{ position: "relative" }}
+                  onClick={() => this.state.confirmed && this.setState({ edit: employee })}
                   overlayFunction={s =>
                     this.state.addEmployee && this.state.setups[index] ? (
                       this.state.setups[index].setupsuccess ? (
@@ -128,13 +270,20 @@ class AddServiceToTeam extends React.Component<Props, State> {
           </div>
         )}
 
-        <UniversalButton type="low" onClick={() => close()} label="Cancel" />
+        {!this.state.confirmed && (
+          <UniversalButton type="low" onClick={() => close()} label="Cancel" />
+        )}
         <UniversalButton
           type="high"
-          onClick={() => this.setState({ saving: true })}
-          label="Confirm"
+          onClick={() => {
+            if (this.state.confirmed) {
+              this.props.savingFunction({ action: "success" });
+            } else {
+              this.setState({ saving: true, confirmed: true });
+            }
+          }}
+          label={this.state.confirmed ? "Close" : "Confirm"}
         />
-
         {this.state.addEmployee &&
           team.employees &&
           team.employees.length > 0 &&
@@ -142,14 +291,17 @@ class AddServiceToTeam extends React.Component<Props, State> {
             <PopupAddLicence
               nooutsideclose={true}
               app={service}
-              addStyles={{ marginTop: "288px" }}
+              //addStyles={{ marginTop: "288px" }}
               boughtplanid={{ id: this.state.boughtplanid }}
               team={team}
               cancel={async () => {
                 await this.setState(prevState => {
                   let newcounter = prevState.counter + 1;
                   const currentsetup = prevState.setups;
-                  currentsetup.push({ setupsuccess: false });
+                  currentsetup.push({
+                    setupsuccess: false,
+                    employeeid: this.props.team.employees[this.state.counter].id
+                  });
 
                   return {
                     ...prevState,
@@ -157,19 +309,25 @@ class AddServiceToTeam extends React.Component<Props, State> {
                     setups: currentsetup
                   };
                 });
-                if (this.state.counter + 1 == team.employees.length) {
-                  //Finished
-                  this.props.savingFunction({ action: "success" });
-                }
+                //if (this.state.counter == team.employees.length) {
+                //Finished
+                //console.log("STOP");
+                //this.props.savingFunction({ action: "success" });
+                // }
               }}
-              success={err => {
-                if (err && err.error) {
-                  this.props.savingFunction({ action: "error", message: err });
+              success={data => {
+                if (data && data.error) {
+                  //console.log("ERROR", data);
+                  this.props.savingFunction({ action: "error", message: data });
                 } else {
                   this.setState(prevState => {
                     let newcounter = prevState.counter + 1;
                     const currentsetup = prevState.setups;
-                    currentsetup.push({ setupsuccess: true });
+                    currentsetup.push({
+                      setupsuccess: true,
+                      licenceid: data.licenceid,
+                      employeeid: this.props.team.employees[this.state.counter].id
+                    });
 
                     return {
                       ...prevState,
@@ -178,10 +336,11 @@ class AddServiceToTeam extends React.Component<Props, State> {
                     };
                   });
                 }
-                if (this.state.counter + 1 == team.employees.length) {
-                  //Finished
-                  this.props.savingFunction({ action: "success" });
-                }
+                //if (this.state.counter == team.employees.length) {
+                //Finished
+                //console.log("FINISHED");
+                //this.props.savingFunction({ action: "success" });
+                // }
               }}
               employeename={`${this.props.team.employees[this.state.counter].firstname} ${this.props.team.employees[this.state.counter].lastname}`}
               employee={this.props.team.employees[this.state.counter]}
@@ -194,7 +353,10 @@ class AddServiceToTeam extends React.Component<Props, State> {
           <PopupSelfSaving
             savedmessage={`${service.name} added to team ${team.name}`}
             savingmessage={`Adding ${service.name} to team ${team.name}`}
-            closeFunction={() => close()}
+            closeFunction={() => {
+              //console.log("CLOSE");
+              close();
+            }}
             saveFunction={async () => {
               try {
                 const res = await this.props.addServiceToTeam({
@@ -222,6 +384,8 @@ class AddServiceToTeam extends React.Component<Props, State> {
             maxtime={5000}
           />
         )}
+
+        {this.state.edit && this.editOrAdd()}
       </PopupBase>
     );
   }
