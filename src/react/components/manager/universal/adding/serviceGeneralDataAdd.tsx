@@ -189,7 +189,10 @@ class ServiceGeneralDataAdd extends React.Component<Props, State> {
                 }}>
                 <div
                   className="addgrid"
-                  style={{ gridTemplateColumns: "136px 136px 136px 136px 136px" }}>
+                  style={{
+                    gridTemplateColumns:
+                      /*"136px 136px 136px 136px 136px"*/ "repeat(auto-fit, minmax(136px, 1fr))"
+                  }}>
                   <div
                     className="space"
                     style={{ width: "136px", height: "200px" }}

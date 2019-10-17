@@ -10,10 +10,14 @@ $border-length: 10px;
 
   .favourite-apps {
     display: grid;
-    grid-template-columns: repeat(auto-fit, 128px);
-    grid-column-gap: 56px;
-    grid-row-gap: 20px;
+    //grid-template-columns: repeat(auto-fit, 128px);
+    //grid-column-gap: 56px;
+    //grid-row-gap: 20px;
     padding: 26px 32px;
+
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    grid-column-gap: 24px;
+    grid-row-gap: 16px;
 
     .favourite {
       background-color: rgb(245, 245, 245);
@@ -82,10 +86,14 @@ $border-length: 10px;
   &-apps {
     padding: 56px 32px 26px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, 8rem);
-    grid-column-gap: 56px;
-    grid-row-gap: 32px;
+    //grid-template-columns: repeat(auto-fit, 8rem);
+    //grid-column-gap: 56px;
+    //grid-row-gap: 32px;
     position: relative;
+
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    grid-column-gap: 24px;
+    grid-row-gap: 16px;
     
     .dropdown {
       position: absolute;
@@ -100,6 +108,7 @@ $border-length: 10px;
     text-align: center;
     animation: fadeIn 300ms ease-out normal backwards;
     transition: all 300ms ease-in-out;
+    margin: auto;
 
     @for $x from 1 through 40 {
       &:nth-child(#{$x}) {
