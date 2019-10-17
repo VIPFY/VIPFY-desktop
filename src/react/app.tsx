@@ -116,7 +116,7 @@ const tutorial = gql`
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
 
-  references: { key; element }[] = [];
+  references: { key; element; listener?; action? }[] = [];
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
@@ -345,16 +345,34 @@ class App extends React.Component<AppProps, AppState> {
   addRenderElement = reference => {
     const oldreferences = [...this.references];
     let index = this.references.findIndex(e => e.key == reference.key);
+    let oldref;
     if (index !== -1) {
-      this.references.splice(index, 1);
+      oldref = this.references.splice(index, 1);
     }
 
     if (!this.references.find(e => e.key === reference.key)) {
+      if (oldref && oldref.listener && oldref.action) {
+        console.log("oldref", oldref.listener);
+        reference.element.addEventListener(oldref.listener, oldref.action);
+      }
       this.references.push(reference);
     }
     if (oldreferences.length != this.references.length) {
       this.forceUpdate();
     }
+  };
+
+  addRenderAction = ({ key, listener, action }) => {
+    let index = this.references.findIndex(e => e.key == key);
+    if (index !== -1 && this.references[index].listener != listener) {
+      const oldref = this.references.splice(index, 1);
+      if (oldref.element) {
+        const newref = { key: oldref.key, element: oldref.element, listener, action };
+        console.log("TEST", newref);
+        this.references.push(newref);
+      }
+    }
+    console.log("ADDRENDERACTION", key, listener, action, this.references);
   };
 
   render() {
@@ -368,6 +386,7 @@ class App extends React.Component<AppProps, AppState> {
           renderTutorial: e => this.renderTutorial(e),
           setrenderElements: e => this.setrenderElements(e),
           addRenderElement: e => this.addRenderElement(e),
+          addRenderAction: e => this.addRenderAction(e),
           setreshowTutorial: this.setreshowTutorial,
           references: this.references
         }}

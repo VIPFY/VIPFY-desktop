@@ -1,6 +1,7 @@
 import * as React from "react";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
+import { AppContext } from "../../common/functions";
 
 interface Props {
   savingmessage?: string;
@@ -104,12 +105,17 @@ class PopupSelfSaving extends React.Component<Props, State> {
               <div style={{ marginTop: "32px", fontSize: "16px" }}>
                 {this.props.savedmessage || "Saved"}
               </div>
-              <UniversalButton
-                type="high"
-                label="Continue"
-                onClick={() => this.close("sucess")}
-                customStyles={{ marginTop: "16px" }}
-              />
+              <AppContext.Consumer>
+                {context => (
+                  <UniversalButton
+                    type="high"
+                    label="Continue"
+                    onClick={() => this.close("sucess")}
+                    customStyles={{ marginTop: "16px" }}
+                    ref={el => context.addRenderElement({ key: "saved", element: el })}
+                  />
+                )}
+              </AppContext.Consumer>
             </div>
           </div>
         ) : (

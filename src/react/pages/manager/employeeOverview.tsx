@@ -141,57 +141,70 @@ class EmployeeOverview extends React.Component<Props, State> {
         );
       case 2:
         return (
-          <ManageTeams
-            employee={{
-              ...this.state.addpersonal,
-              firstname: this.state.addpersonal.name,
-              id: this.state.addpersonal.unitid
-            }} //TODO CHANGE employeename
-            close={() => {
-              this.setState({ add: false });
-              refetch();
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
+          <AppContext.Consumer>
+            {context => (
+              <ManageTeams
+                employee={{
+                  ...this.state.addpersonal,
+                  firstname: this.state.addpersonal.name,
+                  id: this.state.addpersonal.unitid
+                }} //TODO CHANGE employeename
+                close={() => {
                   this.setState({ add: false });
                   refetch();
                 }}
-              />
-              <div className="buttonSeperator" />
-              <UniversalButton
-                label="Manage Services"
-                type="high"
-                onClick={() => this.setState({ addStage: 3 })}
-              />
-            </div>
-          </ManageTeams>
+                ref={el => context.addRenderElement({ key: "manageTeamsPopup", element: el })}>
+                <div className="buttonsPopup">
+                  <UniversalButton
+                    label="Close"
+                    type="low"
+                    onClick={() => {
+                      this.setState({ add: false });
+                      refetch();
+                    }}
+                    ref={el => context.addRenderElement({ key: "close", element: el })}
+                  />
+                  <div className="buttonSeperator" />
+                  <UniversalButton
+                    label="Manage Services"
+                    type="high"
+                    onClick={() => this.setState({ addStage: 3 })}
+                    ref={el => context.addRenderElement({ key: "manageServicesNext", element: el })}
+                  />
+                </div>
+              </ManageTeams>
+            )}
+          </AppContext.Consumer>
         );
       case 3:
         return (
-          <ManageServices
-            employee={{
-              ...this.state.addpersonal,
-              firstname: this.state.addpersonal.name,
-              id: this.state.addpersonal.unitid
-            }} //TODO CHANGE employeename
-            close={() => {
-              this.setState({ add: false });
-              refetch();
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
+          <AppContext.Consumer>
+            {context => (
+              <ManageServices
+                employee={{
+                  ...this.state.addpersonal,
+                  firstname: this.state.addpersonal.name,
+                  id: this.state.addpersonal.unitid
+                }} //TODO CHANGE employeename
+                close={() => {
                   this.setState({ add: false });
                   refetch();
                 }}
-              />
-            </div>
-          </ManageServices>
+                ref={el => context.addRenderElement({ key: "manageServicePopup", element: el })}>
+                <div className="buttonsPopup">
+                  <UniversalButton
+                    label="Close"
+                    type="low"
+                    onClick={() => {
+                      this.setState({ add: false });
+                      refetch();
+                    }}
+                    ref={el => context.addRenderElement({ key: "close2", element: el })}
+                  />
+                </div>
+              </ManageServices>
+            )}
+          </AppContext.Consumer>
         );
       default:
         return <div />;
