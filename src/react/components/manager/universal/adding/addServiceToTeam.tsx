@@ -291,7 +291,7 @@ class AddServiceToTeam extends React.Component<Props, State> {
             <PopupAddLicence
               nooutsideclose={true}
               app={service}
-              addStyles={{ marginTop: "288px" }}
+              //addStyles={{ marginTop: "288px" }}
               boughtplanid={{ id: this.state.boughtplanid }}
               team={team}
               cancel={async () => {

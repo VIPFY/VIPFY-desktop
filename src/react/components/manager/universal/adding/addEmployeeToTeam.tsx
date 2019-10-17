@@ -244,7 +244,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
               app={team.services[this.state.counter].planid.appid}
               boughtplanid={team.services[this.state.counter]}
               team={team}
-              addStyles={{ marginTop: "288px" }}
+              //addStyles={{ marginTop: "288px" }}
               cancel={async () => {
                 await this.setState(prevState => {
                   let newcounter = prevState.counter + 1;
