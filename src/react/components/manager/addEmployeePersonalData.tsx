@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import EmployeeGerneralDataAdd from "./universal/adding/employeeGeneralDataAdd";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";

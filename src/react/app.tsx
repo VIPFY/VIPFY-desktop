@@ -2,7 +2,7 @@ import * as React from "react";
 import { withRouter } from "react-router";
 import { graphql, Query, withApollo, compose } from "react-apollo";
 import gql from "graphql-tag";
-import Store = require("electron-store");
+import Store from "electron-store";
 
 import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
@@ -19,7 +19,9 @@ import { resetLoggingContext } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
-const { session } = require("electron").remote;
+import { remote } from "electron";
+const { session } = remote;
+import "../css/layout.scss";
 
 const END_IMPERSONATION = gql`
   mutation onEndImpersonation($token: String!) {

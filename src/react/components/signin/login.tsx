@@ -1,8 +1,9 @@
 import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
-import Store = require("electron-store");
+import Store from "electron-store";
 import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
+import welcomeBack from "../../../images/welcome_back.png";
 
 interface Props {
   type: string;
@@ -55,10 +56,7 @@ class Login extends React.Component<Props, State> {
       <div className="dataGeneralForm">
         <div className="holder">
           <div className="logo" />
-          <img
-            src={`${__dirname}/../../../images/welcome_back.png`}
-            className="illustration-login"
-          />
+          <img src={welcomeBack} className="illustration-login" />
 
           <div className="holder-right">
             <h1>{`Welcome ${user ? `back, ${user.name}` : ""}`}</h1>

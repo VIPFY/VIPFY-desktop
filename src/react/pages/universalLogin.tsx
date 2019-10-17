@@ -1,10 +1,10 @@
 import * as React from "react";
 import { graphql, Query, withApollo } from "react-apollo";
-import WebView = require("react-electron-web-view");
-import { sleep } from "../common/functions";
+import WebView from "react-electron-web-view";
+import { sleep, getPreloadScriptPath } from "../common/functions";
 
-const { session } = require("electron").remote;
-
+import { remote } from "electron";
+const { session } = remote;
 interface Props {
   company: any;
   showPopup: Function;
@@ -128,7 +128,7 @@ class UniversalLogin extends React.PureComponent<Props, State> {
             {this.state.running && (
               <div>
                 <WebView
-                  preload="./ssoConfigPreload/universalLogin.js"
+                  preload={getPreloadScriptPath("universalLogin.js")}
                   webpreferences="webSecurity=no"
                   src={this.state.loginUrl}
                   partition="ssoconfig"

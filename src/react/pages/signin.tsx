@@ -4,7 +4,7 @@ import PWReset from "../components/signin/pwreset";
 import ChangeAccount from "../components/dataForms/ChangeAccount";
 import AddMachineUser from "../components/signin/addMachineUser";
 
-import Store = require("electron-store");
+import Store from "electron-store";
 import RegisterCompany from "../components/signin/companyRegister";
 
 interface Props {

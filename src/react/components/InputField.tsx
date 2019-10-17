@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as Dropzone from "react-dropzone";
-import { times } from "lodash";
+import Dropzone from "react-dropzone";
+import { shell } from "electron";
 import { InputProps } from "../interfaces";
 
 interface State {
@@ -172,7 +172,7 @@ class InputField extends React.Component<InputProps, State> {
       case "stars": {
         return (
           <div className="stars-holder">
-            {times(5, i => (
+            {[...Array(5).keys()].map(i => (
               <i
                 key={i}
                 className={`fa${
@@ -202,7 +202,7 @@ class InputField extends React.Component<InputProps, State> {
                 <span
                   className="lawlink"
                   onClick={() => {
-                    require("electron").shell.openExternal(this.props.lawLink);
+                    shell.openExternal(this.props.lawLink);
                   }}>
                   Terms of Service
                 </span>
@@ -210,7 +210,7 @@ class InputField extends React.Component<InputProps, State> {
                 <span
                   className="lawlink"
                   onClick={() => {
-                    require("electron").shell.openExternal(this.props.placeholderprivacyLink);
+                    shell.openExternal(this.props.placeholderprivacyLink);
                   }}>
                   Privacy
                 </span>

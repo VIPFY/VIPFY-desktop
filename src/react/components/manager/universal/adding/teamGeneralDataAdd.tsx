@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import UploadImage from "../uploadImage";
 
 interface Props {

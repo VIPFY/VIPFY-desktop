@@ -1,6 +1,8 @@
 import * as React from "react";
 import Tooltip from "react-tooltip-lite";
 import { graphql } from "react-apollo";
+import { clipboard } from "electron";
+
 import { UPDATE_LAYOUT } from "../mutations/auth";
 
 import SidebarLink from "./sidebarLink";
@@ -196,7 +198,6 @@ class SidebarApps extends React.Component<Props, State> {
   render() {
     const { sidebarOpen, licences, openInstances, icon } = this.props;
     const { showApps, showMoreApps } = this.state;
-    const { clipboard } = require("electron");
 
     if (licences.length < 1) {
       return null;

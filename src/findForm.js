@@ -1,4 +1,4 @@
-let ipcRenderer = require("electron").ipcRenderer;
+import { ipcRenderer } from "electron";
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
@@ -24,7 +24,7 @@ setTimeout(function() {
         return `#${t.id} ${t.tagName.toLowerCase()}[name='${t.name}']`;
       });
   }
-  //console.log(t);
+
   if (t.length > 0) {
     ipcRenderer.sendToHost("", JSON.stringify(t));
   } else {

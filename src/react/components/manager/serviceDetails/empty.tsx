@@ -5,7 +5,7 @@ import UniversalButton from "../../universalButtons/universalButton";
 import { FETCH_EMPLOYEES } from "../../../queries/departments";
 import { Mutation, Query, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
-import moment = require("moment");
+import moment from "moment";
 import { fetchCompanyService } from "../../../queries/products";
 import UniversalSearchBox from "../../universalSearchBox";
 

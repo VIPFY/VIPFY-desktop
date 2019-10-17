@@ -1,4 +1,5 @@
-const ipcRenderer = require("electron").ipcRenderer;
+import { ipcRenderer } from "electron";
+import { hash } from "object-hash";
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
@@ -175,7 +176,6 @@ ipcRenderer.on("loginData", async (e, key) => {
 });
 
 const skipArgs = ["placeholder", "alt", "title", "aria-label"]; // don't use attributes likely to get translated
-const hash = require("object-hash");
 function createObjFromDom(elem) {
   if (elem == null) return null;
   if (elem.nodeType !== 1) {

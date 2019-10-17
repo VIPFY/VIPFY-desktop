@@ -13,13 +13,13 @@ if (config.isDevelopment || config.allowDevTools) {
 
 configure({
   appenders: {
-    file: {
-      type: "file",
-      filename: "debug.log",
-      maxLogSize: 10 * 1024 * 1024,
-      backups: 3,
-      keepFileExt: true
-    },
+    // file: {
+    //   type: "file",
+    //   filename: "debug.log",
+    //   maxLogSize: 10 * 1024 * 1024,
+    //   backups: 3,
+    //   keepFileExt: true
+    // },
     console: { type: "console", layout: { type: "messagePassThrough" } },
     stdout: { type: "stdout", layout: { type: "coloured" } },
     logstash: { type: "@log4js-node/logstash-http", url: "https://clientlogs.vipfy.store/_bulk" },
@@ -42,12 +42,12 @@ export const resetLoggingContext = () => {
 };
 
 const consoleLogger = getLogger("vipfy.console");
-console.trace = consoleLogger.trace.bind(consoleLogger);
-console.debug = consoleLogger.debug.bind(consoleLogger);
-console.log = consoleLogger.debug.bind(consoleLogger);
-console.info = consoleLogger.info.bind(consoleLogger);
-console.warn = consoleLogger.warn.bind(consoleLogger);
-console.error = consoleLogger.error.bind(consoleLogger);
+// console.trace = consoleLogger.trace.bind(consoleLogger);
+// console.debug = consoleLogger.debug.bind(consoleLogger);
+// console.log = consoleLogger.debug.bind(consoleLogger);
+// console.info = consoleLogger.info.bind(consoleLogger);
+// console.warn = consoleLogger.warn.bind(consoleLogger);
+// console.error = consoleLogger.error.bind(consoleLogger);
 
 export const addToLoggerContext = (key: string, value: any) => {
   consoleLogger.addContext(key, value);

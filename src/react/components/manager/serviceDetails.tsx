@@ -2,7 +2,7 @@ import * as React from "react";
 import { Query, Mutation, compose, graphql } from "react-apollo";
 import { fetchUserLicences } from "../../queries/departments";
 import gql from "graphql-tag";
-import moment = require("moment");
+import moment from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
 import { fetchLicences, me } from "../../queries/auth";

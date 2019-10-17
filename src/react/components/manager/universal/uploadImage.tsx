@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 
 interface Props {
   onDrop: Function;
@@ -68,7 +68,6 @@ class UploadImage extends React.Component<Props, State> {
             ) : (
               name && name.slice(0, 1)
             )*/}
-
             {!(picture && picture.preview) && name && name.slice(0, 1)}
 
             {!(picture && picture.preview) && !name && (

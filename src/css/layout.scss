@@ -49,7 +49,7 @@
 
 @font-face {
   font-family: "Segoe MDL2";
-  src: url(./webfonts/SegMDL2.ttf) format("truetype");
+  src: url("../webfonts/SegMDL2.ttf") format("truetype");
 }
 
 a {
@@ -141,7 +141,7 @@ li {
 
 .login-holder {
   /*background-color: rgba(255, 255, 255, 0.7);*/
-  background-image: url('./images/vipfy-logo_hell.png');
+  background-image: url('../images/vipfy-logo_hell.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -393,7 +393,7 @@ li {
 }
 
 #loading-screen {
-  background-image: url('./images/Ladeanimation_Vipfy_transparent.gif');
+  background-image: url('../images/Ladeanimation_Vipfy_transparent.gif');
    background-position: center calc(50% - 3rem);
   background-size: 5rem;
   background-repeat: no-repeat;
@@ -413,7 +413,7 @@ li {
     height: 5rem;
 }
 .loadingLogo{
-    background-image: url(./images/Vipfy_Logo_008.svg);
+    background-image: url(../images/Vipfy_Logo_008.svg);
     background-repeat: no-repeat;
     background-position: center center;
     height: 5rem;
@@ -449,7 +449,7 @@ li {
     .logo{
         height: 5rem;
         width: 5rem;
-        background-image: url(./images/Vipfy_Logo_008.svg);
+        background-image: url(../images/Vipfy_Logo_008.svg);
         background-repeat: no-repeat;
         background-position: center center;
         background-color: #117f91;
@@ -4252,7 +4252,7 @@ progress[value] {
         }
 
         .logo{
-            background-image: url(./images/Vipfy_Logo_Links_Weiss_HG_Dunkel.svg);
+            background-image: url(../images/Vipfy_Logo_Links_Weiss_HG_Dunkel.svg);
             background-position: center;
             background-repeat: no-repeat;
             background-size: contain;
