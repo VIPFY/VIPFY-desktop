@@ -122,9 +122,7 @@ class App extends React.Component<AppProps, AppState> {
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
-    this.props.upgradeErrorHandlerSetter(() =>
-      this.props.history.push("/upgrade-error")
-    );
+    this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
     // session.defaultSession.cookies.get({}, (error, cookies) => {
     //   if (error) {
     //     return;
@@ -203,22 +201,33 @@ class App extends React.Component<AppProps, AppState> {
 
   logMeIn = async (email: string, password: string) => {
     try {
-      const { loginkey, encryptionkey1 } = await hashPassword(
-        this.props.client,
-        email,
-        password
-      );
-
-      const res = await this.props.signIn({
-        variables: { email, password: loginkey }
-      });
-      const { token, twofactor, unitid } = res.data.signIn;
+      let loginkey: Buffer | null = null;
+      let encryptionkey1: Buffer | null = null;
+      let token = null;
+      let twofactor = null;
+      let unitid = null;
+      try {
+        ({ loginkey, encryptionkey1 } = await hashPassword(this.props.client, email, password));
+        const res = await this.props.signIn({
+          variables: { email, passkey: loginkey.toString("hex") }
+        });
+        ({ token, twofactor, unitid } = res.data.signIn);
+      } catch (err) {
+        // fallback for accounts without passkey
+        // this should eventually be removed
+        const res = await this.props.signIn({
+          variables: { email, password }
+        });
+        ({ token, twofactor, unitid } = res.data.signIn);
+      }
 
       if (!twofactor) {
         localStorage.setItem("token", token);
+        localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
         this.forceUpdate();
       } else if (token && twofactor) {
         localStorage.setItem("twoFAToken", token);
+        localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
         this.setState({ twofactor, unitid });
       } else {
         throw new Error("Something went wrong!");
@@ -257,11 +266,7 @@ class App extends React.Component<AppProps, AppState> {
                   <SignIn
                     login={(a, b) => this.logMeIn(a, b)}
                     moveTo={this.moveTo}
-                    error={
-                      error && error.networkError
-                        ? "network"
-                        : filterError(error)
-                    }
+                    error={error && error.networkError ? "network" : filterError(error)}
                     resetError={() => this.setState({ error: "" })}
                   />
                 </div>
@@ -281,9 +286,7 @@ class App extends React.Component<AppProps, AppState> {
             if (!impersonateToken) {
               if (store.has("accounts")) {
                 machineuserarray = store.get("accounts");
-                const i = machineuserarray.findIndex(
-                  u => u.email == data.me.emails[0].email
-                );
+                const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
                 if (i != -1) {
                   machineuserarray.splice(i, 1);
                 }
@@ -345,8 +348,7 @@ class App extends React.Component<AppProps, AppState> {
 
   sidebarloaded = () => this.setState({ sidebarloaded: true });
 
-  setrenderElements = references =>
-    this.setState({ renderElements: references });
+  setrenderElements = references => this.setState({ renderElements: references });
 
   setreshowTutorial = section => {
     switch (section) {
@@ -386,8 +388,7 @@ class App extends React.Component<AppProps, AppState> {
           addRenderElement: e => this.addRenderElement(e),
           setreshowTutorial: this.setreshowTutorial
         }}
-        className="full-size"
-      >
+        className="full-size">
         <HeaderNotificationProvider>
           {this.renderComponents()}
           {/*sidebarloaded &&

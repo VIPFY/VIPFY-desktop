@@ -286,3 +286,16 @@ export const debounce = (func: Function, wait: number, immediate?: boolean) => {
     }
   };
 };
+
+export function getMyUnitId(client: any): string {
+  return client.readQuery({
+    // read from cache
+    query: gql`
+      {
+        me {
+          id
+        }
+      }
+    `
+  }).me.id;
+}

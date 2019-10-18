@@ -8,7 +8,7 @@ rules.push({
   use: [
     { loader: "style-loader" },
     { loader: "css-loader" },
-    { loader: "resolve-url-loader" },
+    { loader: "resolve-url-loader", options: { removeCR: true } },
     { loader: "sass-loader" }
   ]
 });
@@ -53,6 +53,6 @@ module.exports = {
   node: { global: true },
   plugins,
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".scss"]
+    extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".scss", ".node", ".json"]
   }
 };

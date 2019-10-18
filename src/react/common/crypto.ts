@@ -1,5 +1,7 @@
-import * as sodium from "sodium-native";
 import gql from "graphql-tag";
+import { SodiumPlus } from "sodium-plus";
+import { Buffer } from "buffer";
+let sodium;
 
 export async function hashPassword(
   client: any,
@@ -21,20 +23,22 @@ export async function hashPassword(
     fetchPolicy: "network-only"
   });
   console.log(pwParams);
-  return hashPasswordWithParams(password, pwParams.data.fetchPwParams);
+  return await hashPasswordWithParams(password, pwParams.data.fetchPwParams);
 }
 
 export async function hashPasswordWithParams(
   password: string,
   params: any
 ): Promise<{ loginkey: Buffer; encryptionkey1: Buffer }> {
+  if (!sodium) sodium = await SodiumPlus.auto();
+
   // check inputs. opslimit and memlimit are at least
-  // sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE and
-  // sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE. Maximum
+  // sodium.CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE and
+  // sodium.CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE. Maximum
   // values are beyond MEM/OPSLIMIT_SENSITIVE, but still
   // somewhat reasonable
   const salt = Buffer.from(params.salt, "hex");
-  if (salt.length !== sodium.crypto_pwhash_SALTBYTES) {
+  if (salt.length !== sodium.CRYPTO_PWHASH_SALTBYTES) {
     console.log("salt", salt, salt.length);
     throw new Error("Invalid salt length");
   }
@@ -56,32 +60,92 @@ export async function hashPasswordWithParams(
   // hash password using Argon2 (NaCl's default). This prevents
   // dictionary attacks and stretches the password
   const pw = Buffer.from(password);
-  const masterkey = sodium.sodium_malloc(sodium.crypto_kdf_KEYBYTES); //256 bits
-  sodium.crypto_pwhash(
-    masterkey,
+  //const masterkey = Buffer.alloc(sodium.CRYPTO_KDF_KEYBYTES); //256 bits
+  const masterkey = await sodium.crypto_pwhash(
+    32,
     pw,
     salt,
     ops,
     mem,
-    sodium.crypto_pwhash_ALG_ARGON2ID13,
-    sodium.crypto_pwhash_SALTBYTES
+    sodium.CRYPTO_PWHASH_ALG_ARGON2ID13
   );
-  sodium.sodium_memzero(pw);
+  pw.fill(0);
 
   //from the hashed passoword create a number of subkeys for various uses
   // the context is used to avoid accidentially reusing subkey ids
-  const context = Buffer.from("VIPFYlog");
-  if (context.length !== sodium.crypto_kdf_CONTEXTBYTES) {
+  const context = "VIPFYlog";
+  if (context.length !== sodium.CRYPTO_KDF_CONTEXTBYTES) {
     console.error("wrong kdf context length");
     throw new Error("internal login error");
   }
 
-  const loginkey = sodium.sodium_malloc(64);
-  const encryptionkey1 = sodium.sodium_malloc(64);
-  sodium.crypto_kdf_derive_from_key(loginkey, 1, context, masterkey);
-  sodium.crypto_kdf_derive_from_key(encryptionkey1, 2, context, masterkey);
+  // const loginkey = Buffer.alloc(64);
+  // const encryptionkey1 = Buffer.alloc(64);
+  const loginkey = await sodium.crypto_kdf_derive_from_key(64, 1, context, masterkey);
+  const encryptionkey1 = await sodium.crypto_kdf_derive_from_key(64, 2, context, masterkey);
 
-  return { loginkey, encryptionkey1 };
+  return { loginkey: loginkey.getBuffer(), encryptionkey1: encryptionkey1.getBuffer() };
+}
+
+const paddingBlockLength = 128; // so far median licence length is 94, 99th percentile is 242
+export async function encryptLicence(
+  licence: string | Buffer | any,
+  publicKey: Buffer
+): Promise<Buffer> {
+  if (!sodium) sodium = await SodiumPlus.auto();
+
+  if (typeof licence !== "string" && !Buffer.isBuffer(licence)) {
+    licence = JSON.stringify(licence);
+  }
+
+  // pad licence to avoid leaking size of username+password
+  let licenceBuf = Buffer.from(licence);
+  let paddedLicence = sodium.sodium_pad(licenceBuf, paddingBlockLength);
+
+  // actually encrypt it
+  let encryptedLicence = await sodium.crypto_box_seal(paddedLicence, publicKey);
+  licenceBuf.fill(0);
+  return encryptedLicence;
+}
+
+export async function decryptLicence(
+  encryptedLicence: Buffer,
+  publicKey: Buffer,
+  privateKey: Buffer
+): Promise<Buffer> {
+  if (!sodium) sodium = await SodiumPlus.auto();
+
+  const decrypted = await sodium.crypto_box_seal_open(encryptedLicence, publicKey, privateKey);
+  const result = sodium.sodium_unpad(decrypted, paddingBlockLength);
+  decrypted.fill(0);
+  return result;
+}
+
+export async function generateNewKeypair(): Promise<{ publicKey: Buffer; privateKey: Buffer }> {
+  if (!sodium) sodium = await SodiumPlus.auto();
+
+  const keypair = await sodium.crypto_box_keypair();
+  const publicKey = (await sodium.crypto_box_publickey(keypair)).getBuffer();
+  const privateKey = (await sodium.crypto_box_secretkey(keypair)).getBuffer();
+  return { publicKey, privateKey };
+}
+
+export async function encryptPrivateKey(privateKey: Buffer, passKey: Buffer): Promise<Buffer> {
+  if (!sodium) sodium = await SodiumPlus.auto();
+
+  const nonce = await sodium.randombytes_buf(24);
+  const result = await sodium.crypto_secretbox(privateKey, nonce, passKey);
+  return Buffer.concat([nonce, result]);
+}
+
+export async function decryptPrivateKey(encrypted: Buffer, passKey: Buffer): Promise<Buffer> {
+  if (!sodium) sodium = await SodiumPlus.auto();
+
+  // nonce is prepended, get it out
+  const nonce = encrypted.subarray(0, 24);
+  const ciphertext = encrypted.subarray(24);
+  const message = await sodium.crypto_secretbox_open(ciphertext, nonce, passKey);
+  return message;
 }
 
 function isPowerOfTwo(v) {
