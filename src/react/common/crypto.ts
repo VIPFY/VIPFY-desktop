@@ -1,6 +1,11 @@
 import gql from "graphql-tag";
 import { SodiumPlus } from "sodium-plus";
+import CryptographyKey from "sodium-plus/lib/cryptography-key";
 import { Buffer } from "buffer";
+import Ed25519PublicKey from "sodium-plus/lib/keytypes/ed25519pk";
+import Ed25519SecretKey from "sodium-plus/lib/keytypes/ed25519sk";
+import X25519PublicKey from "sodium-plus/lib/keytypes/x25519pk";
+import X25519SecretKey from "sodium-plus/lib/keytypes/x25519sk";
 let sodium;
 
 export async function hashPassword(
@@ -82,7 +87,7 @@ export async function hashPasswordWithParams(
   // const loginkey = Buffer.alloc(64);
   // const encryptionkey1 = Buffer.alloc(64);
   const loginkey = await sodium.crypto_kdf_derive_from_key(64, 1, context, masterkey);
-  const encryptionkey1 = await sodium.crypto_kdf_derive_from_key(64, 2, context, masterkey);
+  const encryptionkey1 = await sodium.crypto_kdf_derive_from_key(32, 2, context, masterkey);
 
   return { loginkey: loginkey.getBuffer(), encryptionkey1: encryptionkey1.getBuffer() };
 }
@@ -100,10 +105,13 @@ export async function encryptLicence(
 
   // pad licence to avoid leaking size of username+password
   let licenceBuf = Buffer.from(licence);
-  let paddedLicence = sodium.sodium_pad(licenceBuf, paddingBlockLength);
+  let paddedLicence = await sodium.sodium_pad(licenceBuf, paddingBlockLength);
 
   // actually encrypt it
-  let encryptedLicence = await sodium.crypto_box_seal(paddedLicence, publicKey);
+  let encryptedLicence = await sodium.crypto_box_seal(
+    paddedLicence,
+    new X25519PublicKey(publicKey)
+  );
   licenceBuf.fill(0);
   return encryptedLicence;
 }
@@ -115,8 +123,12 @@ export async function decryptLicence(
 ): Promise<Buffer> {
   if (!sodium) sodium = await SodiumPlus.auto();
 
-  const decrypted = await sodium.crypto_box_seal_open(encryptedLicence, publicKey, privateKey);
-  const result = sodium.sodium_unpad(decrypted, paddingBlockLength);
+  const decrypted = await sodium.crypto_box_seal_open(
+    encryptedLicence,
+    new X25519PublicKey(publicKey),
+    new X25519SecretKey(privateKey)
+  );
+  const result = await sodium.sodium_unpad(decrypted, paddingBlockLength);
   decrypted.fill(0);
   return result;
 }
@@ -134,7 +146,7 @@ export async function encryptPrivateKey(privateKey: Buffer, passKey: Buffer): Pr
   if (!sodium) sodium = await SodiumPlus.auto();
 
   const nonce = await sodium.randombytes_buf(24);
-  const result = await sodium.crypto_secretbox(privateKey, nonce, passKey);
+  const result = await sodium.crypto_secretbox(privateKey, nonce, new CryptographyKey(passKey));
   return Buffer.concat([nonce, result]);
 }
 
@@ -144,7 +156,11 @@ export async function decryptPrivateKey(encrypted: Buffer, passKey: Buffer): Pro
   // nonce is prepended, get it out
   const nonce = encrypted.subarray(0, 24);
   const ciphertext = encrypted.subarray(24);
-  const message = await sodium.crypto_secretbox_open(ciphertext, nonce, passKey);
+  const message = await sodium.crypto_secretbox_open(
+    ciphertext,
+    nonce,
+    new CryptographyKey(passKey)
+  );
   return message;
 }
 
