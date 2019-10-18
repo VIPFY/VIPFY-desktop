@@ -98,6 +98,10 @@ class UniversalTextInput extends React.Component<Props, State> {
       value = this.props.modifyValue(value);
     }
 
+    if (this.props.type == "date" && value == "") {
+      value = " ";
+    }
+
     this.setState({ value, notypeing: false });
     this.timeout = setTimeout(() => this.setState({ notypeing: true }), 400);
   }
