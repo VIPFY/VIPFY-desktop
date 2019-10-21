@@ -1,10 +1,13 @@
 import * as React from "react";
 import * as fs from "fs";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
 import { DH_NOT_SUITABLE_GENERATOR } from "constants";
 import { url } from "inspector";
 const { shell, remote } = require("electron");
-import { sleep } from "../../common/functions";
+import { sleep, getPreloadScriptPath } from "../../common/functions";
+import UniversalTextInput from "../universalForms/universalTextInput";
+import UniversalDropDownInput from "../universalForms/universalDropdownInput";
+import ClickElement from "./clickElement";
 const { session } = remote;
 
 interface Props {
@@ -20,6 +23,7 @@ interface State {
   cantrack: boolean /* 
   currenturl: string|null */;
   executionPlan: Object[];
+  searchurl: string;
 }
 
 class ServiceIntegrator extends React.Component<Props, State> {
@@ -30,6 +34,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     url: "",
     urlBevorChange: "",
     executionPlan: [],
+    searchurl: "",
     cantrack: false /* 
     currenturl: null */
   };
@@ -141,23 +146,23 @@ class ServiceIntegrator extends React.Component<Props, State> {
     clearTimeout(this.timeoutSave);
     if (
       /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm.test(
-        this.savevalue
+        this.state.searchurl
       ) ||
-      this.savevalue.startsWith("localhost")
+      this.state.searchurl.startsWith("localhost")
     ) {
-      var searchvalue = this.savevalue;
+      var searchvalue = this.state.searchurl;
       if (
-        !this.savevalue.startsWith("http://") &&
-        !this.savevalue.startsWith(
+        !this.state.searchurl.startsWith("http://") &&
+        !this.state.searchurl.startsWith(
           "https://"
-        ) /*  && !this.savevalue.startsWith("localhost") && this.savevalue != "127.0.0.1" */
+        ) /*  && !this.state.searchurl.startsWith("localhost") && this.state.searchurl != "127.0.0.1" */
       ) {
         console.log("searchdinger", this.searchattampts);
         if (this.searchattampts == 0) {
-          searchvalue = "https://" + this.savevalue;
+          searchvalue = "https://" + this.state.searchurl;
           this.searchattampts = 1;
         } else if (this.searchattampts == 1) {
-          searchvalue = "http://" + this.savevalue;
+          searchvalue = "http://" + this.state.searchurl;
           this.searchattampts = 2;
         } else if (this.searchattampts == 2) {
           this.searchattampts = 3;
@@ -209,7 +214,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     console.log("search on google triggered");
     if (this.shallSearch) {
       this.setState({
-        url: "https://www.google.com/search?q=" + encodeURIComponent(this.savevalue)
+        url: "https://www.google.com/search?q=" + encodeURIComponent(this.state.searchurl)
       });
     }
     this.shallSearch = true;
@@ -423,46 +428,97 @@ class ServiceIntegrator extends React.Component<Props, State> {
       session.fromPartition("followLogin").clearStorageData();
     }
     return (
-      <div onClick={e => console.log("Clicked", e.screenX, e.pageX, e.clientX)}>
-        <span>
-          <input
-            type="text"
-            onChange={e => {
-              this.savevalue = e.target.value;
-            }}
-            onKeyDown={e => {
-              if (e.which == 13) {
+      <div>
+        <div
+          style={{
+            float: "left",
+            width: "200px",
+            height: "calc(100vh - 72px)",
+            backgroundColor: "#30475D"
+          }}>
+          <div>
+            <h4 style={{ color: "white" }}>Please enter the Login-Url</h4>
+            <UniversalTextInput
+              id="url"
+              livevalue={v => this.setState({ searchurl: v })}
+              style={{ color: "white", borderColor: "white" }}
+              width="100%"
+              onEnter={() => {
                 this.searchattampts = 0;
                 this.trySiteLoading();
-              }
-            }}></input>
-          <button
-            onClick={() => {
-              /* console.log("savevalue", this.savevalue); */ this.searchattampts = 0;
-              this.trySiteLoading();
-            }}>
-            Go!
-          </button>
-        </span>
-        <WebView
-          id="LoginFinder"
-          preload="./ssoConfigPreload/integrationTracker.js"
-          webpreferences="webSecurity=no"
-          className="newMainPosition"
-          src={/* this.state.currenturl ||  */ this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
-          partition="followLogin"
-          style={{ width: "100%", height: "calc(100vh - 80px - 48px)" }}
-          onIpcMessage={e => this.onIpcMessage(e)}
-          onNewWindow={e => {
-            this.handleNewWindow(e);
-            /* this.setState({url: e.url}) */
-          }}
-          onClose={e => this.handleClosing(e)}
-          onDidNavigateInPage={e => this.handleSiteChange(e)}
-          onDidNavigate={e => this.handleSiteChange(e)}
-          /* onDidFinishLoad={e => this.didFinishLoad(e)} */
-          onDidFailLoad={e => this.didFailLoad(e)}
-          /*onDidNavigate={e => this.onDidNavigate(e.target.src)}
+              }}></UniversalTextInput>
+            <button
+              onClick={() => {
+                this.searchattampts = 0;
+                this.trySiteLoading();
+              }}>
+              Go!
+            </button>
+          </div>
+          {/*<span>
+            <input
+              type="text"
+              onChange={e => {
+                this.savevalue = e.target.value;
+              }}
+              onKeyDown={e => {
+                if (e.which == 13) {
+                  this.searchattampts = 0;
+                  this.trySiteLoading();
+                }
+              }}></input>
+            <button
+              onClick={() => {
+                /* console.log("savevalue", this.savevalue); *&/ this.searchattampts = 0;
+                this.trySiteLoading();
+              }}>
+              Go!
+            </button>
+            </span>*/}
+          <ClickElement />
+          {this.state.executionPlan.map((o, k) => (
+            <div style={{ border: "1px solid red", marginTop: "10px" }}>
+              <select id={`operation-${k}`} style={{ width: "100%", color: "white" }}>
+                <option value="waitandfill">Fill Input Field</option>
+                <option value="click">Click</option>
+                <option value="wait">Wait</option>
+                <option value="other">Other</option>
+              </select>
+              <select id={`fillkey-${k}`} style={{ width: "100%", color: "white" }}>
+                <option>Username/Email</option>
+                <option>Password</option>
+                <option>Domain</option>
+                <option>Other</option>
+              </select>
+              <button>DELETE</button>
+            </div>
+          ))}
+        </div>
+        <div
+          style={{
+            float: "left",
+            height: "calc(100vh - 72px)",
+            width: "calc(100% - 200px)"
+          }}>
+          <WebView
+            id="LoginFinder"
+            preload={getPreloadScriptPath("integrationTracker.js")}
+            webpreferences="webSecurity=no"
+            className="newMainPosition"
+            src={/* this.state.currenturl ||  */ this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
+            partition="followLogin"
+            style={{ width: "100%", height: "100%" }}
+            onIpcMessage={e => this.onIpcMessage(e)}
+            onNewWindow={e => {
+              this.handleNewWindow(e);
+              /* this.setState({url: e.url}) */
+            }}
+            onClose={e => this.handleClosing(e)}
+            onDidNavigateInPage={e => this.handleSiteChange(e)}
+            onDidNavigate={e => this.handleSiteChange(e)}
+            /* onDidFinishLoad={e => this.didFinishLoad(e)} */
+            onDidFailLoad={e => this.didFailLoad(e)}
+            /*onDidNavigate={e => this.onDidNavigate(e.target.src)}
           //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
           onDidFailLoad={(code, desc, url, isMain) => {
             if (isMain) {
@@ -489,8 +545,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
           //onConsoleMessage={e => console.log("LOGCONSOLE", e.message)}
           onDidNavigateInPage={e => this.onDidNavigateInPage(e.target.src)}
         */
-        />
-        <span style={{ height: "48px", width: "100%" }}>
+          />
+        </div>
+        {/*<span style={{ height: "48px", width: "100%" }}>
           <button
             style={{ height: "48px", width: "20%" }}
             onClick={() => this.props.functionupper()}>
@@ -516,7 +573,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             onClick={() => this.printExecutionPlan()}>
             printExecutionPlan
           </button>
-        </span>
+        </span>*/}
       </div>
     );
   }

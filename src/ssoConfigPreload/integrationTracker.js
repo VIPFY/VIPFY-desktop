@@ -302,11 +302,12 @@ function findTarget(event, iframe) {
     var iobj = createObjFromDom(iframe);
     var ia = iframe;
     var iels = [];
+    iselector = "#" + iobj.attr.id;
     while (ia) {
       iels.unshift(ia);
       ia = ia.parentNode;
     }
-    var i = Array.from(document.querySelectorAll("#" + iobj.attr.id));
+    var i = Array.from(document.querySelectorAll(iselector));
 
     if (i.length != 1) {
       //Either no id or multiple with same

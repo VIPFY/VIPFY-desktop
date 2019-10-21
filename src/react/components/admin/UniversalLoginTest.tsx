@@ -40,7 +40,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
   componentDidUpdate() {
     fs.writeFileSync("ssotest.json", JSON.stringify(this.state.sites));
 
-    if (this.state.backgroundRunners.length < 6) {
+    if (this.state.backgroundRunners.length < 3) {
       for (let i = 0; i < this.state.sites.length; i++) {
         if (
           this.canTryLogin(this.state.sites[i]) &&

@@ -503,7 +503,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               return false;
             };
           }
-          let errorarray = Array.from(document.querySelectorAll("*:not(:empty), .fa")).filter(filterDom(["error", "no-mail-icon", "danger"],["wrapper", "reset", "signup"]))
+          let errorarray = Array.from(document.querySelectorAll("*:not(:empty), .fa")).filter(filterDom(["error", "no-mail-icon", "danger", "validation-error"],["wrapper", "reset", "signup"]))
           console.log(errorarray)
           return errorarray.length > 0
         })();
@@ -647,6 +647,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       case "click":
         {
           let w = e.target;
+          console.log("CLICK", { x: e.args[0], y: e.args[1] });
           w.sendInputEvent({ type: "mouseMove", x: e.args[0], y: e.args[1] });
           await this.modifiedSleep(Math.random() * 30 + 200);
           w.sendInputEvent({

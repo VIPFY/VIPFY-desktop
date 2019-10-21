@@ -227,23 +227,33 @@ function isEqualOrChild(child, parent) {
   return false;
 }
 
-function getMidPoint(e) {
+function getMidPoint(e, doc) {
   var rect = e.getBoundingClientRect();
   const style = window.getComputedStyle(e);
+  var dx = 0;
+  var dy = 0;
+  if (doc) {
+    var iframe = document.querySelector(args.document);
+    var drect = iframe.getBoundingClientRect();
+    dx = drect.x;
+    dy = drect.y;
+  }
   return {
     x:
+      dx +
       rect.x +
       parseInt(style.paddingLeft) +
       (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
     y:
+      dy +
       rect.y +
       parseInt(style.paddingTop) +
       (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
   }; // bias to the left
 }
 
-function clickButton(targetNode) {
-  var rect = getMidPoint(targetNode);
+function clickButton(targetNode, doc) {
+  var rect = getMidPoint(targetNode, doc);
 
   if (stopped) throw new Error("abort");
   const p = new Promise(resolve =>
@@ -631,23 +641,20 @@ async function execute(operations, mainexecute = false) {
         await sleep(Math.max(0, args.seconds + Math.random() * randomrange - randomrange / 2));
         break;
       case "waitfor":
-        console.log("waitfor", doc.querySelector(args.selector));
-        while (!doc.querySelector(args.selector)) {
-          console.log(
-            "Still waiting",
-            doc.querySelector(args.selector),
-            doc,
-            document.querySelector(args.document).contentWindow.document
-          );
-          doc = args.document
-            ? document.querySelector(args.document).contentWindow.document
-            : document;
-          await sleep(95 + Math.random() * 10);
-        }
+        const p = new Promise(async resolve => {
+          while (!doc.querySelector(args.selector)) {
+            doc = args.document
+              ? document.querySelector(args.document).contentWindow.document
+              : document;
+            await sleep(95 + Math.random() * 10);
+          }
+          resolve();
+        });
+        await p;
         break;
       case "click":
         console.log("CLICK", doc.querySelector(args.selector));
-        await clickButton(doc.querySelector(args.selector));
+        await clickButton(doc.querySelector(args.selector), args.document);
         break;
       case "fill":
         console.log("fill", doc.querySelector(args.selector), args.fillkey);
