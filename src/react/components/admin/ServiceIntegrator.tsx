@@ -15,6 +15,8 @@ interface Props {
 }
 
 interface State {
+  divList: JSX.Element[];
+  isClicked: boolean;
   trackwhat: string;
   username: string;
   password: string;
@@ -28,6 +30,8 @@ interface State {
 
 class ServiceIntegrator extends React.Component<Props, State> {
   state = {
+    divList: [],
+    isClicked: false,
     trackwhat: "siteTrain",
     username: "fabrice.schoenebergerTEST@gmail.com",
     password: "2018Vipfy",
@@ -225,10 +229,49 @@ class ServiceIntegrator extends React.Component<Props, State> {
     this.setState({ executionPlan: [] });
   }
 
+  tickDiv(args) {
+    const width = args[0];
+    const height = args[1];
+    const left = args[2];
+    const top = args[3];
+
+    var divTop = 20 + top + height / 2 + "px";
+    var divLeft = left + width + "px";
+    console.log("hier", divTop, divLeft);
+
+    this.setState(oldstate => {
+      oldstate.divList.push(
+        <div
+          key={this.state.divList.length}
+          style={{
+            position: "absolute",
+            height: "5px",
+            width: "5px",
+            top: divTop,
+            left: divLeft,
+            background: "grey",
+            zIndex: 2
+          }}>
+          H
+        </div>
+      );
+      return oldstate;
+    });
+  }
+
   async onIpcMessage(e): Promise<void> {
     //console.log("onIpcMessage", e, e.senderId);
 
     switch (e.channel) {
+      /* case "sendMessage":
+        console.log(e.channel); //, e.args[0], e.args[1], e.args[2], e.args[3], e.args[4],
+        let i = 0;
+        while (e.args[i] != null) {
+          console.log(e.args[i]);
+          i++;
+        }
+        break; */
+
       case "sendEvent":
         console.log(
           "sendEvent\n",
@@ -337,6 +380,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
       case "sendClick":
         break;
 
+      case "gotClicked":
+        this.setState({ isClicked: true });
+        this.tickDiv(e.args);
+        break;
+
       case "reset":
         let w = e.target;
         console.log("RESET TRACKER");
@@ -424,6 +472,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   render() {
+    console.log(this.state);
     if (this.state.url === this.startUrl) {
       session.fromPartition("followLogin").clearStorageData();
     }
@@ -500,6 +549,20 @@ class ServiceIntegrator extends React.Component<Props, State> {
             height: "calc(100vh - 72px)",
             width: "calc(100% - 200px)"
           }}>
+          {this.state.isClicked && (
+            <div
+              style={{
+                position: "absolute",
+                top: "20px",
+                left: "0px",
+                width: "100%",
+                height: "calc(100vh - 80px - 48px",
+                opacity: 0.2,
+                background: "hotpink",
+                zIndex: 1
+              }}></div>
+          )}
+          {this.state.divList.map(e => e)}
           <WebView
             id="LoginFinder"
             preload={getPreloadScriptPath("integrationTracker.js")}

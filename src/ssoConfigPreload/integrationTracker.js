@@ -6,6 +6,8 @@ let cookiefound = false;
 let recaptchaConfirmOnce = false;
 let checkRecaptcha = false;
 
+const asktypes = ["input", "textbox"];
+
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
     for (const search of searches) {
@@ -377,6 +379,23 @@ function findTarget(event, iframe) {
       event.target.clientTop
     ]
   ); //clientLeft clientTop
+  ipcRenderer.sendToHost(
+    "sendMessage",
+    event.target.tagName,
+    event.target.type,
+    event.type,
+    asktypes.includes(event.target.tagName.toLowerCase()),
+    event.type == "click"
+  );
+  if (asktypes.includes(event.target.tagName.toLowerCase()) && event.type == "click") {
+    ipcRenderer.sendToHost(
+      "gotClicked",
+      event.target.clientWidth,
+      event.target.clientHeight,
+      rect.x,
+      rect.y
+    );
+  }
 }
 
 async function onIpcMessage(e) {
