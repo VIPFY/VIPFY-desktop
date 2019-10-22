@@ -19,6 +19,7 @@ import { resetLoggingContext } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
+import { hashPassword } from "./common/crypto";
 import { remote } from "electron";
 const { session } = remote;
 import "../css/layout.scss";
@@ -44,6 +45,7 @@ interface AppProps {
   signUp: any;
   signOut: Function;
   endImpersonation: Function;
+  location: any;
 }
 
 interface PopUp {
@@ -166,7 +168,9 @@ class App extends React.Component<AppProps, AppState> {
     const impersonated = await localStorage.getItem("impersonator-token");
     if (impersonated) {
       try {
-        const res = await this.props.endImpersonation({ variables: { token: impersonated } });
+        const res = await this.props.endImpersonation({
+          variables: { token: impersonated }
+        });
         await localStorage.setItem("token", res.endImpersonation);
       } catch (err) {
         localStorage.removeItem("token");
@@ -197,14 +201,33 @@ class App extends React.Component<AppProps, AppState> {
 
   logMeIn = async (email: string, password: string) => {
     try {
-      const res = await this.props.signIn({ variables: { email, password } });
-      const { token, twofactor, unitid } = res.data.signIn;
+      let loginkey: Buffer | null = null;
+      let encryptionkey1: Buffer | null = null;
+      let token = null;
+      let twofactor = null;
+      let unitid = null;
+      try {
+        ({ loginkey, encryptionkey1 } = await hashPassword(this.props.client, email, password));
+        const res = await this.props.signIn({
+          variables: { email, passkey: loginkey.toString("hex") }
+        });
+        ({ token, twofactor, unitid } = res.data.signIn);
+      } catch (err) {
+        // fallback for accounts without passkey
+        // this should eventually be removed
+        const res = await this.props.signIn({
+          variables: { email, password }
+        });
+        ({ token, twofactor, unitid } = res.data.signIn);
+      }
 
       if (!twofactor) {
         localStorage.setItem("token", token);
+        localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
         this.forceUpdate();
       } else if (token && twofactor) {
         localStorage.setItem("twoFAToken", token);
+        localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
         this.setState({ twofactor, unitid });
       } else {
         throw new Error("Something went wrong!");
