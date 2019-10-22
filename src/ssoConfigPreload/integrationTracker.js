@@ -62,6 +62,21 @@ function createObjFromDom(elem) {
   return o;
 }
 
+ipcRenderer.on("givePosition", async (e, args1, args2, args3) => {
+  console.log("Hulalala");
+  const ding = document.querySelector(args1);
+  const rect = ding.getBoundingClientRect();
+  ipcRenderer.sendToHost(
+    "givePosition",
+    ding.clientWidth,
+    ding.clientHeight,
+    rect.x,
+    rect.y,
+    args2,
+    args3
+  );
+});
+
 function giveIframeEvents(iframe, list, events) {
   console.log("iframe", iframe, list, events);
   if (list) {
@@ -454,7 +469,7 @@ async function start() {
         await clickButton(cookiebutton);
         ipcRenderer.sendToHost("reset");
         await new Promise(resolve =>
-          ipcRenderer.once("done", async (e, key) => {
+          ipcRenderer.once("done", async (e, args) => {
             if (stopped) return;
             resolve();
           })

@@ -121,7 +121,7 @@ class UniversalDropdown extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("DROPDOWN");
+    //console.log("DROPDOWN");
     return (
       <>
         <div style={this.props.labelstyle || {}}>{this.props.label}</div>

@@ -8,6 +8,7 @@ import { sleep, getPreloadScriptPath } from "../../common/functions";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 import ClickElement from "./clickElement";
+import { element } from "prop-types";
 const { session } = remote;
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
 }
 
 interface State {
+  sendTarget: any; //die Webview
   divList: JSX.Element[];
   isClicked: boolean;
   trackwhat: string;
@@ -30,6 +32,7 @@ interface State {
 
 class ServiceIntegrator extends React.Component<Props, State> {
   state = {
+    sendTarget: null,
     divList: [],
     isClicked: false,
     trackwhat: "siteTrain",
@@ -229,34 +232,199 @@ class ServiceIntegrator extends React.Component<Props, State> {
     this.setState({ executionPlan: [] });
   }
 
-  tickDiv(args) {
-    const width = args[0];
-    const height = args[1];
-    const left = args[2];
-    const top = args[3];
-
-    var divTop = 20 + top + height / 2 + "px";
-    var divLeft = left + width + "px";
-    console.log("hier", divTop, divLeft);
-
+  cancelSelection(number) {
     this.setState(oldstate => {
-      oldstate.divList.push(
-        <div
-          key={this.state.divList.length}
-          style={{
-            position: "absolute",
-            height: "5px",
-            width: "5px",
-            top: divTop,
-            left: divLeft,
-            background: "grey",
-            zIndex: 2
-          }}>
-          H
-        </div>
-      );
+      oldstate.executionPlan.splice(number, 1);
       return oldstate;
     });
+    this.setState(oldstate => {
+      if (
+        /* oldstate.divList.findIndex(element => {
+          return element.id == number + 1000;
+        }) != -1 */ true
+      ) {
+        oldstate.divList.splice(
+          oldstate.divList.findIndex(element => {
+            return element.id == number + 1000;
+          })
+        );
+      }
+    });
+    for (let i = 0; i < 4; i++) {
+      this.setState(oldstate => {
+        if (
+          oldstate.divList.findIndex(element => {
+            return element.id == number;
+          }) != -1
+        ) {
+          oldstate.divList.splice(
+            oldstate.divList.findIndex(element => {
+              return element.id == number;
+            }),
+            1
+          );
+        }
+        return oldstate;
+      });
+    }
+  }
+
+  makeCoverdiv(args) {
+    const width = args[0];
+    const height = args[1];
+    const left = args[2] + 442;
+    const top = args[3] + 74;
+
+    const div = (
+      <div
+        onClick={() => this.cancelSelection(args[4])}
+        onMouseEnter={() => {
+          document.getElementById(args[4] + 10000).style.color = "white";
+        }}
+        onMouseLeave={() => {
+          document.getElementById(args[4] + 10000).style.color = "black";
+        }}
+        id={args[4] + 1000}
+        key={Math.random()}
+        style={{
+          position: "absolute",
+          height: height,
+          width: width,
+          top: top,
+          left: left,
+          background: "red",
+          zIndex: 2,
+          opacity: 0.5
+        }}>
+        <a
+          id={args[4] + 10000}
+          style={{
+            width: width,
+            height: height,
+            display: "table-cell",
+            verticalAlign: "middle",
+            color: "black",
+            textAlign: "center"
+          }}>
+          Cancel Selection
+        </a>
+      </div>
+    );
+
+    this.setState(oldstate => {
+      oldstate.divList.push(div);
+
+      return oldstate;
+    });
+  }
+
+  tickDiv(args) {
+    if (
+      this.state.divList.findIndex(element => {
+        return element.props.id == args[4];
+      }) != -1
+    ) {
+      return;
+    }
+
+    const width = args[0];
+    const height = args[1];
+    const left = args[2] + 442;
+    const top = args[3] + 74;
+
+    var ausgrauDivs = [
+      <div //erste
+        key={Math.random()}
+        id={args[4]}
+        style={{
+          position: "absolute",
+          height: args[3],
+          width: "100%",
+          top: 74,
+          left: 442,
+          background: "grey",
+          zIndex: 2,
+          opacity: 0.5
+        }}></div>,
+      <div //zweite
+        key={Math.random()}
+        id={args[4]}
+        style={{
+          position: "absolute",
+          height: 926 - args[3] - 40,
+          width: "100%",
+          top: height + top,
+          left: 442,
+          background: "grey",
+          zIndex: 2,
+          opacity: 0.5
+        }}></div>,
+      <div //dritte
+        key={Math.random()}
+        id={args[4]}
+        style={{
+          position: "absolute",
+          height: height,
+          width: left - 442,
+          top: top,
+          left: 442,
+          background: "grey",
+          zIndex: 2,
+          opacity: 0.5
+        }}></div>,
+      <div //vierte
+        key={Math.random()}
+        id={args[4]}
+        style={{
+          position: "absolute",
+          height: height,
+          width: 1365 - left,
+          top: top,
+          left: left + width,
+          background: "grey",
+          zIndex: 2,
+          opacity: 0.5
+        }}></div>
+    ];
+
+    /*     var divTop = top
+    var divLeft = left + width + "px"; */
+    //console.log("hier", divTop, divLeft);
+
+    this.setState(oldstate => {
+      ausgrauDivs.forEach(div => {
+        oldstate.divList.push(div);
+      });
+
+      return oldstate;
+    });
+  }
+
+  zeigeElement(onOff, k) {
+    if (onOff) {
+      //console.log(this.state.executionPlan[k].args.selector);
+      this.state.sendTarget!.send("givePosition", this.state.executionPlan[k].args.selector, k, 0);
+      this.setState(oldstate => {
+        oldstate.divList.splice(
+          oldstate.divList.findIndex(element => {
+            return element.id == k + 1000;
+          })
+        );
+      });
+    } else {
+      this.state.sendTarget!.send("givePosition", this.state.executionPlan[k].args.selector, k, 1);
+      for (let i = 0; i < 4; i++) {
+        this.setState(oldstate => {
+          oldstate.divList.splice(
+            oldstate.divList.findIndex(element => {
+              return element.id == k;
+            }),
+            1
+          );
+          return oldstate;
+        });
+      }
+    }
   }
 
   async onIpcMessage(e): Promise<void> {
@@ -273,6 +441,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break; */
 
       case "sendEvent":
+        if (this.state.sendTarget == null) {
+          this.setState({ sendTarget: e.target });
+        }
         console.log(
           "sendEvent\n",
           /* this.state.url, e.args[7], */ e.args[0],
@@ -311,7 +482,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 });
                 break;
             }
-            console.log("executionplan", plan);
+            console.log("executionplan", plan[plan.length - 1]);
+            e.target.send("givePosition", plan[plan.length - 1].args.selector, plan.length - 1, 1); //noch k zufügen
+
             return { ...oldstate, executionPlan: plan };
           }
           return oldstate;
@@ -380,9 +553,21 @@ class ServiceIntegrator extends React.Component<Props, State> {
       case "sendClick":
         break;
 
-      case "gotClicked":
-        this.setState({ isClicked: true });
-        this.tickDiv(e.args);
+      case "givePosition":
+        //console.log("triggert", e.args[4]);
+        switch (e.args[5]) {
+          case 0:
+            this.tickDiv([e.args[0], e.args[1], e.args[2], e.args[3], e.args[4]]);
+            break;
+
+          case 1:
+            this.makeCoverdiv([e.args[0], e.args[1], e.args[2], e.args[3], e.args[4]]);
+            break;
+
+          default:
+            break;
+        }
+
         break;
 
       case "reset":
@@ -490,7 +675,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             <UniversalTextInput
               id="url"
               livevalue={v => this.setState({ searchurl: v })}
-              style={{ color: "white", borderColor: "white" }}
+              style={{ color: "black", borderColor: "white" }}
               width="100%"
               onEnter={() => {
                 this.searchattampts = 0;
@@ -526,14 +711,17 @@ class ServiceIntegrator extends React.Component<Props, State> {
             </span>*/}
           <ClickElement />
           {this.state.executionPlan.map((o, k) => (
-            <div style={{ border: "1px solid red", marginTop: "10px" }}>
-              <select id={`operation-${k}`} style={{ width: "100%", color: "white" }}>
+            <div
+              onMouseEnter={() => this.zeigeElement(true, k)}
+              onMouseLeave={() => this.zeigeElement(false, k)}
+              style={{ border: "1px solid red", marginTop: "10px" }}>
+              <select id={`operation-${k}`} style={{ width: "100%", color: "black" }}>
                 <option value="waitandfill">Fill Input Field</option>
                 <option value="click">Click</option>
                 <option value="wait">Wait</option>
                 <option value="other">Other</option>
               </select>
-              <select id={`fillkey-${k}`} style={{ width: "100%", color: "white" }}>
+              <select id={`fillkey-${k}`} style={{ width: "100%", color: "black" }}>
                 <option>Username/Email</option>
                 <option>Password</option>
                 <option>Domain</option>
