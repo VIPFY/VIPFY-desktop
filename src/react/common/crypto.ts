@@ -1,12 +1,7 @@
 import gql from "graphql-tag";
-import { SodiumPlus } from "sodium-plus";
-import CryptographyKey from "sodium-plus/lib/cryptography-key";
+import { SodiumPlus, CryptographyKey, X25519PublicKey, X25519SecretKey } from "sodium-plus";
 import { Buffer } from "buffer";
-import Ed25519PublicKey from "sodium-plus/lib/keytypes/ed25519pk";
-import Ed25519SecretKey from "sodium-plus/lib/keytypes/ed25519sk";
-import X25519PublicKey from "sodium-plus/lib/keytypes/x25519pk";
-import X25519SecretKey from "sodium-plus/lib/keytypes/x25519sk";
-let sodium;
+let sodium: SodiumPlus;
 
 export async function hashPassword(
   client: any,
@@ -35,7 +30,9 @@ export async function hashPasswordWithParams(
   password: string,
   params: any
 ): Promise<{ loginkey: Buffer; encryptionkey1: Buffer }> {
-  if (!sodium) sodium = await SodiumPlus.auto();
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
 
   // check inputs. opslimit and memlimit are at least
   // sodium.CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE and
@@ -97,7 +94,9 @@ export async function encryptLicence(
   licence: string | Buffer | any,
   publicKey: Buffer
 ): Promise<Buffer> {
-  if (!sodium) sodium = await SodiumPlus.auto();
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
 
   if (typeof licence !== "string" && !Buffer.isBuffer(licence)) {
     licence = JSON.stringify(licence);
@@ -121,7 +120,9 @@ export async function decryptLicence(
   publicKey: Buffer,
   privateKey: Buffer
 ): Promise<Buffer> {
-  if (!sodium) sodium = await SodiumPlus.auto();
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
 
   const decrypted = await sodium.crypto_box_seal_open(
     encryptedLicence,
@@ -134,7 +135,9 @@ export async function decryptLicence(
 }
 
 export async function generateNewKeypair(): Promise<{ publicKey: Buffer; privateKey: Buffer }> {
-  if (!sodium) sodium = await SodiumPlus.auto();
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
 
   const keypair = await sodium.crypto_box_keypair();
   const publicKey = (await sodium.crypto_box_publickey(keypair)).getBuffer();
@@ -143,7 +146,9 @@ export async function generateNewKeypair(): Promise<{ publicKey: Buffer; private
 }
 
 export async function encryptPrivateKey(privateKey: Buffer, passKey: Buffer): Promise<Buffer> {
-  if (!sodium) sodium = await SodiumPlus.auto();
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
 
   const nonce = await sodium.randombytes_buf(24);
   const result = await sodium.crypto_secretbox(privateKey, nonce, new CryptographyKey(passKey));
@@ -151,7 +156,9 @@ export async function encryptPrivateKey(privateKey: Buffer, passKey: Buffer): Pr
 }
 
 export async function decryptPrivateKey(encrypted: Buffer, passKey: Buffer): Promise<Buffer> {
-  if (!sodium) sodium = await SodiumPlus.auto();
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
 
   // nonce is prepended, get it out
   const nonce = encrypted.subarray(0, 24);

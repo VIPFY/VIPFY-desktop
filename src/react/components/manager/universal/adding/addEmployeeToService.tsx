@@ -1,9 +1,7 @@
 import * as React from "react";
 import PopupAddLicence from "../../../../popups/universalPopups/addLicence";
-import PopupSelfSaving from "../../../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import { compose, graphql } from "react-apollo";
-import { fetchUserLicences } from "../../../../queries/departments";
 
 interface Props {
   close: Function;
@@ -18,32 +16,6 @@ interface State {
   counter: number;
   setup: any;
 }
-
-const ADD_LICENCE_TO_USER = gql`
-  mutation addExternalAccountLicence(
-    $username: String!
-    $password: String!
-    $appid: ID
-    $boughtplanid: ID!
-    $price: Float
-    $loginurl: String
-    $touser: ID
-    $identifier: String
-    $options: JSON
-  ) {
-    addExternalAccountLicence(
-      touser: $touser
-      boughtplanid: $boughtplanid
-      price: $price
-      appid: $appid
-      loginurl: $loginurl
-      password: $password
-      username: $username
-      identifier: $identifier
-      options: $options
-    )
-  }
-`;
 
 const ADD_EXTERNAL_PLAN = gql`
   mutation onAddExternalBoughtPlan($appid: ID!, $alias: String, $price: Float, $loginurl: String) {
@@ -82,7 +54,6 @@ class AddEmployeeToService extends React.Component<Props, State> {
     );
   }
 }
-export default compose(
-  graphql(ADD_LICENCE_TO_USER, { name: "addLicence" }),
-  graphql(ADD_EXTERNAL_PLAN, { name: "addExternalBoughtPlan" })
-)(AddEmployeeToService);
+export default compose(graphql(ADD_EXTERNAL_PLAN, { name: "addExternalBoughtPlan" }))(
+  AddEmployeeToService
+);

@@ -16,6 +16,7 @@ import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
 import { randomPassword } from "../common/passwordgen";
 import HeaderNotificationContext from "../components/notifications/headerNotificationContext";
 import { getPreloadScriptPath } from "../common/functions";
+import { encryptLicence, decryptLicence } from "../common/crypto";
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -44,6 +45,7 @@ export type WebViewState = {
   loggedIn: boolean;
   errorshowed: boolean;
   progress?: number;
+  key: any;
 };
 
 export type WebViewProps = {
@@ -93,7 +95,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     error: null,
     loggedIn: false,
     errorshowed: false,
-    progress: undefined
+    progress: undefined,
+    key: null
   };
 
   static getDerivedStateFromProps(
@@ -249,6 +252,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   private async switchApp(): Promise<void> {
     const timeSpent: number[] = [];
     timeSpent[this.state.licenceId] = 0;
+    console.log(this.state.licenceId);
     this.sendTimeSpent(timeSpent);
     let result = await this.props.client.query({
       query: gql`
@@ -305,16 +309,88 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         });
       });
     }*/
+
+    let key = licence.key;
+    if (licence.key && licence.key.encrypted) {
+      key = null;
+      const { id, isadmin } = this.props.client.readQuery({
+        // read from cache
+        query: gql`
+          {
+            me {
+              id
+              isadmin
+            }
+          }
+        `
+      }).me;
+
+      const candidates = licence.key.encrypted.filter(
+        e => e.belongsto == id || (isadmin && e.belongsto == "admin")
+      );
+      console.log("candidates", candidates);
+      for (const candidate of candidates) {
+        console.log("trying candidate", candidate);
+        try {
+          const d = await this.props.client.query({
+            query: gql`
+              query onFetchKey($id: ID!) {
+                fetchKey(id: $id) {
+                  id
+                  publickey
+                  privatekey
+                  privatekeyDecrypted @client
+                }
+              }
+            `,
+            variables: { id: candidate.key }
+          });
+          console.log(
+            await this.props.client.query({
+              query: gql`
+                query onFetchKey($id: ID!) {
+                  fetchKey(id: $id) {
+                    id
+                    privatekeyDecrypted @client
+                  }
+                }
+              `,
+              variables: { id: candidate.key }
+            })
+          );
+          if (d.error) {
+            console.error(d.error);
+            throw new Error("can't fetch key");
+          }
+          console.log(d);
+          key = JSON.parse(
+            (await decryptLicence(
+              Buffer.from(candidate.data, "base64"),
+              Buffer.from(d.data.fetchKey.publickey, "hex"),
+              Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
+            )).toString("utf8")
+          );
+          console.log("key", key);
+          break; // success
+        } catch (error) {
+          console.error("failed decrypting, trying next candidate", candidate, error);
+        }
+      }
+      if (!key) {
+        console.error("failed decrypting, exhausted all candidates", licence);
+        // TODO: add UI here
+      }
+    }
     let loginurl = licence.boughtPlan.plan.app.loginurl;
-    if (licence.key && licence.key.loginurl) {
-      loginurl = licence.key.loginurl;
+    if (key && key.loginurl) {
+      loginurl = key.loginurl;
     }
     this.setState({
       setUrl: loginurl,
       unitId: licence.unit.id,
       options: licence.boughtPlan.plan.app.options,
       appid: licence.boughtPlan.plan.app.id,
-      key: licence.key,
+      key,
       progress: undefined
     });
   }
@@ -396,18 +472,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     switch (e.channel) {
       case "getLoginData":
         {
-          let app = e.args[0];
-          let result = await this.props.client.query({
-            query: gql`
-          {
-            fetchLicences(licenceid: ${this.state.licenceId}) {
-              key
-            }
-          }
-          `
-          });
-
-          let { key } = result.data.fetchLicences[0];
+          let { key } = this.state;
           if (key === null) {
             window.alert("invalid licence");
           }
@@ -601,17 +666,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           });
           this.hideLoadingScreen();
         }
-        let result = await this.props.client.query({
-          query: gql`
-        {
-          fetchLicences(licenceid: ${this.state.licenceId}) {
-            key
-          }
-        }
-        `
-        });
 
-        let { key } = result.data.fetchLicences[0];
+        let { key } = this.state;
         if (key === null) {
           window.alert("invalid licence");
         }

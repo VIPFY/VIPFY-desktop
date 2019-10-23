@@ -6,9 +6,10 @@ import UniversalButton from "../universalButtons/universalButton";
 import { randomPassword } from "../../common/passwordgen";
 
 import gql from "graphql-tag";
-import { graphql, compose } from "react-apollo";
+import { graphql, compose, withApollo } from "react-apollo";
 import { me, fetchLicences } from "../../queries/auth";
 import { getBgImageApp } from "../../common/images";
+import { createEncryptedLicenceKeyObject } from "../../common/licences";
 
 interface Props {
   id: number;
@@ -36,24 +37,20 @@ interface State {
 
 const ADD_EXTERNAL_ACCOUNT = gql`
   mutation onAddExternalLicence(
-    $username: String!
-    $password: String!
-    $loginurl: String
+    $key: JSON!
     $price: Float
     $appid: ID!
     $boughtplanid: ID!
     $touser: ID
   ) {
-    addExternalLicence(
-      username: $username
-      password: $password
-      loginurl: $loginurl
+    addEncryptedExternalLicence(
+      key: $key
       price: $price
       appid: $appid
       boughtplanid: $boughtplanid
       touser: $touser
     ) {
-      ok
+      id
     }
   }
 `;
@@ -104,14 +101,23 @@ class AppCardIntegrations extends React.Component<Props, State> {
 
       const id = newPlan.data.addExternalBoughtPlan.id;
 
-      await this.props.addExternalApp({
-        variables: {
+      const key = await createEncryptedLicenceKeyObject(
+        {
           username: this.state.email,
           password: this.state.password,
           loginurl:
             this.state.subdomain != ""
               ? `${this.props.options.predomain}${this.state.subdomain}${this.props.options.afterdomain}`
               : null,
+          external: true
+        },
+        null,
+        this.props.client
+      );
+
+      await this.props.addExternalApp({
+        variables: {
+          key,
           price: null,
           appid: this.props.id,
           boughtplanid: id,
@@ -269,5 +275,6 @@ class AppCardIntegrations extends React.Component<Props, State> {
 }
 export default compose(
   graphql(ADD_EXTERNAL_ACCOUNT, { name: "addExternalApp" }),
-  graphql(ADD_EXTERNAL_PLAN, { name: "addExternalPlan" })
+  graphql(ADD_EXTERNAL_PLAN, { name: "addExternalPlan" }),
+  withApollo
 )(AppCardIntegrations);

@@ -1,15 +1,13 @@
 import * as React from "react";
-import PopupBase from "./popupBase";
-import UniversalTextInput from "../../components/universalForms/universalTextInput";
-import UniversalButton from "../../components/universalButtons/universalButton";
 import { randomPassword } from "../../common/passwordgen";
 import { getBgImageApp, getBgImageUser } from "../../common/images";
 import FormPopup from "./formPopup";
-import { compose, graphql } from "react-apollo";
+import { compose, graphql, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { fetchUserLicences } from "../../queries/departments";
 import { fetchCompanyService } from "../../queries/products";
 import { concatName } from "../../common/functions";
+import { createEncryptedLicenceKeyObject } from "../../common/licences";
 
 interface Props {
   app: {
@@ -33,6 +31,7 @@ interface Props {
   team?: Object;
   addStyles?: Object;
   boughtplanid?: number;
+  client: any;
 }
 
 interface State {
@@ -47,27 +46,25 @@ interface State {
 
 const ADD_LICENCE_TO_USER = gql`
   mutation addExternalAccountLicence(
-    $username: String!
-    $password: String!
     $appid: ID
     $boughtplanid: ID!
     $price: Float
-    $loginurl: String
+    $key: JSON!
     $touser: ID
     $identifier: String
     $options: JSON
   ) {
-    addExternalAccountLicence(
+    addEncryptedExternalAccountLicence(
       touser: $touser
       boughtplanid: $boughtplanid
       price: $price
       appid: $appid
-      loginurl: $loginurl
-      password: $password
-      username: $username
+      key: $key
       identifier: $identifier
       options: $options
-    )
+    ) {
+      id
+    }
   }
 `;
 
@@ -211,16 +208,23 @@ class PopupAddLicence extends React.Component<Props, State> {
               }
             });
           }
-          //console.log("ADDLICENCE");
+          const key = await createEncryptedLicenceKeyObject(
+            {
+              username: values[`${employee && employee.id}-${id}-email`],
+              password: values[`${employee && employee.id}-${id}-password`],
+              loginurl: values[`${employee && employee.id}-${id}-subdomain`],
+              external: true
+            },
+            (employee && employee.id) || null,
+            this.props.client
+          );
           res = await this.props.addLicence({
             variables: {
+              key,
               appid: id,
               boughtplanid: this.props.boughtplanid
                 ? this.props.boughtplanid.id
                 : res.data.addExternalBoughtPlan.id,
-              username: values[`${employee && employee.id}-${id}-email`],
-              password: values[`${employee && employee.id}-${id}-password`],
-              loginurl: values[`${employee && employee.id}-${id}-subdomain`],
               touser: (employee && employee.id) || null,
               options: team
                 ? {
@@ -241,7 +245,7 @@ class PopupAddLicence extends React.Component<Props, State> {
                   }
             ]
           });
-          this.setState({ newid: res.data.addExternalAccountLicence });
+          this.setState({ newid: res.data.addEncryptedExternalAccountLicence.id });
           //console.log("res", res);
           //if (success) {
           //  success();
@@ -323,5 +327,6 @@ class PopupAddLicence extends React.Component<Props, State> {
 }
 export default compose(
   graphql(ADD_LICENCE_TO_USER, { name: "addLicence" }),
-  graphql(ADD_EXTERNAL_PLAN, { name: "addExternalBoughtPlan" })
+  graphql(ADD_EXTERNAL_PLAN, { name: "addExternalBoughtPlan" }),
+  withApollo
 )(PopupAddLicence);

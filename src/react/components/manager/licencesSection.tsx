@@ -16,7 +16,6 @@ interface Props {
   employeeid: number;
   employeename: string;
   addExternalBoughtPlan: Function;
-  addExternalLicence: Function;
   moveTo: Function;
   employee: any;
   isadmin: Boolean;
@@ -67,30 +66,6 @@ interface State {
     saveFunction: Function;
   } | null;
 }
-
-const ADD_EXTERNAL_ACCOUNT = gql`
-  mutation onAddExternalLicence(
-    $username: String!
-    $password: String!
-    $loginurl: String
-    $price: Float
-    $appid: ID!
-    $boughtplanid: ID!
-    $touser: ID
-  ) {
-    addExternalLicence(
-      username: $username
-      password: $password
-      loginurl: $loginurl
-      price: $price
-      appid: $appid
-      boughtplanid: $boughtplanid
-      touser: $touser
-    ) {
-      ok
-    }
-  }
-`;
 
 const ADD_EXTERNAL_PLAN = gql`
   mutation onAddExternalBoughtPlan($appid: ID!, $alias: String, $price: Float, $loginurl: String) {
@@ -256,9 +231,6 @@ class LicencesSection extends React.Component<Props, State> {
   }
 }
 export default compose(
-  graphql(ADD_EXTERNAL_ACCOUNT, {
-    name: "addExternalLicence"
-  }),
   graphql(ADD_EXTERNAL_PLAN, {
     name: "addExternalBoughtPlan"
   })
