@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose, Mutation } from "react-apollo";
+import { graphql, compose, Mutation, withApollo } from "react-apollo";
 
 import { fetchApps } from "../queries/products";
 import LoadingDiv from "../components/LoadingDiv";
@@ -12,6 +12,7 @@ import PopupSSO from "../popups/universalPopups/PopupSSO";
 import AppCardIntegrations from "../components/services/appCardIntegrations";
 import SelfSaving from "../popups/universalPopups/SelfSavingIllustrated";
 import { SSO } from "../interfaces";
+import { createEncryptedLicenceKeyObject } from "../common/licences";
 
 interface Props {
   history: any;
@@ -36,24 +37,20 @@ export type AppPageState = {
 
 const ADD_EXTERNAL_ACCOUNT = gql`
   mutation onAddExternalLicence(
-    $username: String!
-    $password: String!
-    $loginurl: String
+    $key: JSON!
     $price: Float
     $appid: ID!
     $boughtplanid: ID!
     $touser: ID
   ) {
-    addExternalLicence(
-      username: $username
-      password: $password
-      loginurl: $loginurl
+    addEncryptedExternalLicence(
+      key: $key
       price: $price
       appid: $appid
       boughtplanid: $boughtplanid
       touser: $touser
     ) {
-      ok
+      id
     }
   }
 `;
@@ -166,8 +163,19 @@ class Integrations extends React.Component<Props, AppPageState> {
         id = newPlan.data.addExternalBoughtPlan.id;
       }
 
+      const key = await createEncryptedLicenceKeyObject(
+        {
+          username: data.email,
+          password: data.password,
+          loginurl,
+          external: true
+        },
+        data.touser,
+        this.props.client
+      );
+
       await this.props.addExternalApp({
-        variables: { ...data, loginurl, boughtplanid: id },
+        variables: { ...data, loginurl, boughtplanid: id, key },
         refetchQueries: [{ query: me }, { query: fetchLicences }]
       });
 
@@ -330,5 +338,6 @@ export default compose(
   graphql(ADD_EXTERNAL_PLAN, { name: "addExternalPlan" }),
   graphql(fetchApps, {
     name: "products"
-  })
+  }),
+  withApollo
 )(Integrations);

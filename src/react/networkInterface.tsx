@@ -8,6 +8,7 @@ import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
 import { logger } from "../logger";
+import { typeDefs, resolvers } from "./localGraphQL";
 
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
@@ -216,5 +217,7 @@ const link = split(
 // Create a client to use Apollo for communication with GraphQL
 export default new ApolloClient({
   link,
-  cache
+  cache,
+  typeDefs,
+  resolvers
 });

@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalButton from "../../../components/universalButtons/universalButton";
-import { graphql, compose, Query } from "react-apollo";
+import { graphql, compose, Query, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import UniversalSearchBox from "../../universalSearchBox";
@@ -9,7 +9,7 @@ import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
 import PrintCurrent from "../universal/printCurrent";
 import { fetchCompanyService } from "../../../queries/products";
 import { FETCH_EMPLOYEES } from "../../../queries/departments";
-import EmployeeAdd from "../universal/adding/EmployeeAdd";
+import { createEncryptedLicenceKeyObject } from "../../../common/licences";
 
 interface Props {
   service: any;
@@ -19,6 +19,7 @@ interface Props {
   continue?: Function;
   addExternalBoughtPlan: Function;
   addExternalLicence: Function;
+  client: any;
 }
 
 interface State {
@@ -56,24 +57,20 @@ interface State {
 
 const ADD_EXTERNAL_ACCOUNT = gql`
   mutation onAddExternalLicence(
-    $username: String!
-    $password: String!
-    $loginurl: String
+    key: JSON!
     $price: Float
     $appid: ID!
     $boughtplanid: ID!
     $touser: ID
   ) {
-    addExternalLicence(
-      username: $username
-      password: $password
-      loginurl: $loginurl
+    addEncryptedExternalLicence(
+      key: $key
       price: $price
       appid: $appid
       boughtplanid: $boughtplanid
       touser: $touser
     ) {
-      ok
+      id
     }
   }
 `;
@@ -320,11 +317,19 @@ class AddEmployee extends React.Component<Props, State> {
                       loginurl: ""
                     }
                   });
-                  await this.props.addExternalLicence({
-                    variables: {
+                  const key = await createEncryptedLicenceKeyObject(
+                    {
                       username: licence.setup.email,
                       password: licence.setup.password,
                       loginurl: licence.setup.subdomain,
+                      external: true
+                    },
+                    licence.id,
+                    this.props.client
+                  );
+                  await this.props.addExternalLicence({
+                    variables: {
+                      key,
                       price: 0,
                       appid: this.props.service.id,
                       boughtplanid: res.data.addExternalBoughtPlan.id,
@@ -371,5 +376,6 @@ export default compose(
   }),
   graphql(ADD_EXTERNAL_PLAN, {
     name: "addExternalBoughtPlan"
-  })
+  }),
+  withApollo
 )(AddEmployee);
