@@ -222,9 +222,8 @@ export const AppIcon = ({ app }) => (
 
 export const ConsentText = () => (
   <span>
-    This awesome App uses software to offer you an amazing experience, analyse your use of our App
-    and provide content from third parties. By using our App, you acknowledge that you have read and
-    understand our{" "}
+    This App uses software to analyse your use in order to continously improve it's functionality
+    and to provide content from third parties. This is outlined in our{" "}
     <span
       style={{ color: "#20BAA9" }}
       className="fancy-link"
@@ -243,7 +242,7 @@ export const ConsentText = () => (
         require("electron").shell.openExternal("https://vipfy.store/tos");
       }}>
       Terms of Service
-    </span>{" "}
-    and that you consent to them.
+    </span>
+    .
   </span>
 );
