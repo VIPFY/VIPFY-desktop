@@ -309,12 +309,31 @@ class PersonalDetails extends React.Component<Props, State> {
                   })
                 }
                 startvalue={email.email}
-                deleteFunction={() => {
-                  this.setState(({ editvalueArray }) => {
-                    editvalueArray[index] = { emaildeleted: true, oldemail: email.email };
-                    return { editvalueArray };
-                  });
-                }}
+                deleteFunction={
+                  (this.state.editvalueArray.length == 0 &&
+                    this.props.querydata.emails.length > 1) ||
+                  (this.state.editvalueArray.length > 0 &&
+                    this.state.editvalueArray.length -
+                      this.state.editvalueArray.reduce((a, e) => {
+                        if (
+                          e &&
+                          (e.emaildeleted == true ||
+                            (e.email == null || (e.email && !e.email.includes("@"))))
+                        ) {
+                          return a + 1;
+                        } else {
+                          return a;
+                        }
+                      }, 0) >
+                      1)
+                    ? () => {
+                        this.setState(({ editvalueArray }) => {
+                          editvalueArray[index] = { emaildeleted: true, oldemail: email.email };
+                          return { editvalueArray };
+                        });
+                      }
+                    : undefined
+                }
                 style={email.emaildeleted && { display: "none" }}
                 disabled={email.disabled}
               />

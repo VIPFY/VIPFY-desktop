@@ -8,6 +8,7 @@ interface Props {
   hideTitle?: boolean;
   styles?: Object;
   overlayFunction?: Function;
+  onClick?: Function;
 }
 
 interface State {}
@@ -33,7 +34,12 @@ class PrintEmployeeSquare extends React.Component<Props, State> {
                 backgroundColor: "unset"
               }
             : { backgroundColor: employee.color || "#5d76ff" }
-        )}>
+        )}
+        onClick={() => {
+          if (this.props.onClick) {
+            this.props.onClick();
+          }
+        }}>
         {employee.profilepicture ? "" : name.slice(0, 1)}
         {overlayFunction && overlayFunction(employee)}
       </div>

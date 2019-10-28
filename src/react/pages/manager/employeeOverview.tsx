@@ -121,6 +121,7 @@ class EmployeeOverview extends React.Component<Props, State> {
             small={true}
             //customStyles={{ maxWidth: "1152px" }}
             close={() => this.setState({ add: false })}
+            nooutsideclose={true}
             additionalclassName="formPopup deletePopup">
             <AddEmployeePersonalData
               continue={data => {
