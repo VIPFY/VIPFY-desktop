@@ -244,14 +244,16 @@ class EmployeeDetails extends React.Component<Props, State> {
                     </div>
                   </div>
                 </div>
+
+                <TeamsSection
+                  employeeid={employeeid}
+                  employeename={`${querydata.firstname} ${querydata.lastname}`}
+                  moveTo={this.props.moveTo}
+                  isadmin={this.props.isadmin}
+                />
+
                 {this.props.isadmin && (
-                  <>
-                    <TeamsSection
-                      employeeid={employeeid}
-                      employeename={`${querydata.firstname} ${querydata.lastname}`}
-                      moveTo={this.props.moveTo}
-                      isadmin={this.props.isadmin}
-                    />
+                  <React.Fragment>
                     <LicencesSection
                       employeeid={employeeid}
                       employeename={`${querydata.firstname} ${querydata.lastname}`}
@@ -271,8 +273,9 @@ class EmployeeDetails extends React.Component<Props, State> {
                       closeTimeAway={() => this.setState({ showTimeAway: false })}
                       isadmin={this.props.isadmin}
                     />
-                  </>
+                  </React.Fragment>
                 )}
+
                 {this.state.changepicture && (
                   <PopupSelfSaving
                     savingmessage="Saving Profileimage"
