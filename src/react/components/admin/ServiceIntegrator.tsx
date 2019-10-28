@@ -709,24 +709,12 @@ class ServiceIntegrator extends React.Component<Props, State> {
               Go!
             </button>
             </span>*/}
-          <ClickElement />
           {this.state.executionPlan.map((o, k) => (
             <div
               onMouseEnter={() => this.zeigeElement(true, k)}
               onMouseLeave={() => this.zeigeElement(false, k)}
               style={{ border: "1px solid red", marginTop: "10px" }}>
-              <select id={`operation-${k}`} style={{ width: "100%", color: "black" }}>
-                <option value="waitandfill">Fill Input Field</option>
-                <option value="click">Click</option>
-                <option value="wait">Wait</option>
-                <option value="other">Other</option>
-              </select>
-              <select id={`fillkey-${k}`} style={{ width: "100%", color: "black" }}>
-                <option>Username/Email</option>
-                <option>Password</option>
-                <option>Domain</option>
-                <option>Other</option>
-              </select>
+              <ClickElement id={`ce-${k}`} startvalue={o.operation} />
               <button>DELETE</button>
             </div>
           ))}

@@ -93,10 +93,15 @@ class UniversalDropdown extends React.Component<Props, State> {
     }
   };
 
-  changeValue(e) {
-    e.preventDefault();
+  changeValue(e, reset = false) {
+    let value;
     clearTimeout(this.timeout);
-    let value = e.target.value;
+    if (reset) {
+      value = e;
+    } else {
+      e.preventDefault();
+      value = e.target.value;
+    }
 
     if (this.props.livevalue) {
       this.props.livevalue(value);
@@ -110,7 +115,13 @@ class UniversalDropdown extends React.Component<Props, State> {
       value = " ";
     }
 
-    this.setState({ value, notypeing: false });
+    this.setState(oldstate => {
+      return {
+        value,
+        notypeing: false,
+        other: !reset && (oldstate.other || value == "other")
+      };
+    });
     this.timeout = setTimeout(() => this.setState({ notypeing: true }), 400);
   }
 
@@ -121,7 +132,6 @@ class UniversalDropdown extends React.Component<Props, State> {
   };
 
   render() {
-    //console.log("DROPDOWN");
     return (
       <>
         <div style={this.props.labelstyle || {}}>{this.props.label}</div>
@@ -162,7 +172,9 @@ class UniversalDropdown extends React.Component<Props, State> {
               }}
               onKeyUp={e => this.handleKeyUp(e)}
               className={
-                this.props.type != "date" ? "cleanup universalTextInput" : "universalTextInput"
+                this.props.type != "date"
+                  ? "cleanup universalTextInput dropdownInput"
+                  : "universalTextInput dropdownInput"
               }
               style={{
                 ...(this.props.type == "date"
@@ -192,10 +204,11 @@ class UniversalDropdown extends React.Component<Props, State> {
               className="selectDropdown"
               id={this.props.id}
               style={this.props.dropdownStyles || {}}
-              onChange={e =>
-                this.setState({ value: e.target.value, other: e.target.value == "other" })
-              }
+              onChange={e => this.changeValue(e)}
               value={this.state.value}>
+              <option value="" style={this.props.dropdownOptionStyles || {}}>
+                Select Operation
+              </option>
               {this.props.options!.map(o => (
                 <option value={o.value} style={this.props.dropdownOptionStyles || {}}>
                   {o.label}
@@ -208,22 +221,18 @@ class UniversalDropdown extends React.Component<Props, State> {
               )}
             </select>
           )}
-          {this.props.errorEvaluation && this.state.notypeing ? (
+          {this.props.errorEvaluation && this.state.notypeing && (
             <div className="errorhint" style={{ opacity: this.state.errorfaded ? 1 : 0 }}>
               {this.props.errorhint}
             </div>
-          ) : (
-            ""
           )}
-          {this.props.children ? (
+          {this.props.children && (
             <button className="cleanup inputInsideButton" tabIndex={-1}>
               <i className="fal fa-info" />
               <div className="explainLayer">
                 <div className="explainLayerInner">{this.props.children}</div>
               </div>
             </button>
-          ) : (
-            ""
           )}
           {this.props.type == "password" ? (
             this.state.eyeopen ? (
@@ -244,11 +253,11 @@ class UniversalDropdown extends React.Component<Props, State> {
           ) : (
             ""
           )}
-          {this.state.value == "other" && (
+          {this.state.other && (
             <button
               className="cleanup inputInsideButton"
               tabIndex={-1}
-              onClick={() => this.setState({ value: "", other: false })}
+              onClick={() => this.changeValue("", true)}
               style={this.props.trashstyle || { color: "#253647" }}>
               <i className="fal fa-trash-alt" />
             </button>
