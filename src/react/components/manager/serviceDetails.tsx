@@ -181,7 +181,8 @@ class ServiceDetails extends React.Component<Props, State> {
                         if (error) {
                           return <div>Error fetching data</div>;
                         }
-                        if (data) {
+                        if (data && Object.keys(data).length > 0) {
+                          console.log("LOG: ServiceDetails -> render -> data", data);
                           const percent = data.fetchBoughtplanUsagePerUser.find(
                             e => e.unit.id == this.props.employeeid
                           )
@@ -244,9 +245,7 @@ class ServiceDetails extends React.Component<Props, State> {
                   <FormPopup
                     key={`${this.props.employeename}-${e.boughtplanid.planid.appid.name}`}
                     heading="Edit Licence"
-                    subHeading={`Edit licence from ${this.props.employeename} of ${
-                      e.boughtplanid.planid.appid.name
-                    }`}
+                    subHeading={`Edit licence from ${this.props.employeename} of ${e.boughtplanid.planid.appid.name}`}
                     close={() => this.setState({ edit: false })}
                     submit={async values => {
                       await updateCredentials({
@@ -262,20 +261,14 @@ class ServiceDetails extends React.Component<Props, State> {
                             ],
                           loginurl:
                             values[
-                              `${this.props.employee.id}-${
-                                e.boughtplanid.planid.appid.id
-                              }-subdomain`
+                              `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-subdomain`
                             ] &&
                             values[
-                              `${this.props.employee.id}-${
-                                e.boughtplanid.planid.appid.id
-                              }-subdomain`
+                              `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-subdomain`
                             ] != ""
                               ? `${e.boughtplanid.planid.appid.options.predomain}${
                                   values[
-                                    `${this.props.employee.id}-${
-                                      e.boughtplanid.planid.appid.id
-                                    }-subdomain`
+                                    `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-subdomain`
                                   ]
                                 }${e.boughtplanid.planid.appid.options.afterdomain}`
                               : null
@@ -313,9 +306,7 @@ class ServiceDetails extends React.Component<Props, State> {
                     fields={(e.boughtplanid.planid.appid.needssubdomain
                       ? [
                           {
-                            id: `${this.props.employee.id}-${
-                              e.boughtplanid.planid.appid.id
-                            }-subdomain`,
+                            id: `${this.props.employee.id}-${e.boughtplanid.planid.appid.id}-subdomain`,
                             options: {
                               label: "Subdomain",
                               children: (
@@ -417,9 +408,7 @@ class ServiceDetails extends React.Component<Props, State> {
                           this.props.deleteFunction({
                             savingmessage:
                               "Ok, we remove the access and remove the account from our system",
-                            savedmessage: `The account is successfully removed. Please delete the account in your ${
-                              e.boughtplanid.planid.appid.name
-                            }-subscription!`,
+                            savedmessage: `The account is successfully removed. Please delete the account in your ${e.boughtplanid.planid.appid.name}-subscription!`,
                             maxtime: 5000,
                             closeFunction: () =>
                               this.setState({
@@ -454,9 +443,7 @@ class ServiceDetails extends React.Component<Props, State> {
                               this.props.removeLicence({
                                 variables: {
                                   licenceid: e.id,
-                                  oldname: `${this.props.employee.firstname} ${
-                                    this.props.employee.lastname
-                                  }`
+                                  oldname: `${this.props.employee.firstname} ${this.props.employee.lastname}`
                                 },
                                 refetchQueries: [
                                   { query: fetchLicences },
