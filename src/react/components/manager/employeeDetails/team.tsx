@@ -77,6 +77,7 @@ class Team extends React.Component<Props, State> {
 
   render() {
     const { employee, team } = this.props;
+
     return (
       <Mutation mutation={REMOVE_EMPLOYEE_FROM_TEAM} key={team.name}>
         {removeFromTeam => (
@@ -191,14 +192,10 @@ class Team extends React.Component<Props, State> {
                         backgroundImage: employee.profilepicture
                           ? employee.profilepicture.indexOf("/") != -1
                             ? encodeURI(
-                                `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${
-                                  employee.profilepicture
-                                })`
+                                `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${employee.profilepicture})`
                               )
                             : encodeURI(
-                                `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                  employee.profilepicture
-                                })`
+                                `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${employee.profilepicture})`
                               )
                           : ""
                       }}>

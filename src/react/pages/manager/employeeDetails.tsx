@@ -35,6 +35,7 @@ interface Props {
   client: ApolloClient<InMemoryCache>;
   profile?: Boolean;
   isadmin?: Boolean;
+  id: number;
 }
 
 interface State {
@@ -76,9 +77,11 @@ class EmployeeDetails extends React.Component<Props, State> {
           if (loading) {
             return "Loading...";
           }
+
           if (error) {
             return `Error! ${error.message}`;
           }
+
           if (data && (data.fetchSemiPublicUser || data.me)) {
             const querydata = data.fetchSemiPublicUser || data.me;
             const privatePhones = [];
@@ -248,7 +251,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                 <TeamsSection
                   employeeid={employeeid}
                   employeename={`${querydata.firstname} ${querydata.lastname}`}
-                  moveTo={this.props.moveTo}
+                  moveTo={employeeid == this.props.id ? () => {} : this.props.moveTo}
                   isadmin={this.props.isadmin}
                 />
 

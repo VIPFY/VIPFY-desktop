@@ -1,17 +1,10 @@
 require("dotenv").config();
 
 let config = {
-  // backendHost: "api.vipfy.store",
-  backendHost: "localhost",
-  // backendPort: 443,
-  backendPort: 4000,
-
-  // backendSSL: true,
-  backendSSL: false,
-
-  // isDevelopment: false,
-  isDevelopment: true,
-
+  backendHost: "api.vipfy.store",
+  backendPort: 443,
+  backendSSL: true,
+  isDevelopment: false,
   stripeToken: process.env.stripeToken,
 
   showProfile: true,
