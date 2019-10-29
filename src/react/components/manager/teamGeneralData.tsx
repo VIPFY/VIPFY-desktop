@@ -77,7 +77,7 @@ class TeamGeneralData extends React.Component<Props, State> {
             {editDepartmentName => (
               <FormPopup
                 key="editTeamGeneralData"
-                heading="Edit Teaminformation"
+                heading="Edit Team Information"
                 subHeading="Change name of team"
                 fields={[{ id: "name", options: { startvalue: team.name, label: "Teamname" } }]}
                 submitDisabled={values => values["name"] == "" || values["name"] == null}

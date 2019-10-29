@@ -79,6 +79,7 @@ class UniversalSearchBox extends React.Component<Props, State> {
         e!.preventDefault();
       }
     } else {
+      this.input.blur();
       if (
         !this.props.noautomaticclosing &&
         (this.props.automaticclosing || this.state.value == "")

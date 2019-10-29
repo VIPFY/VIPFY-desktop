@@ -499,6 +499,17 @@ class ServiceOverview extends React.Component<Props, State> {
                           className="tableColumnBig"
                           onClick={() => this.handleSortClick("Name")}>
                           <h1>Name</h1>
+                          {this.state.sort == "Name" ? (
+                            this.state.sortforward ? (
+                              <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                            ) : (
+                              <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                            )
+                          ) : (
+                            <i
+                              className="fas fa-sort"
+                              style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                          )}
                         </div>
                         <div
                           className="tableColumnBig"

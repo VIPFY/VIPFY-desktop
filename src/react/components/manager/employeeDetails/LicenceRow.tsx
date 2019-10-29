@@ -145,7 +145,10 @@ class LicenceRow extends React.Component<Props, State> {
           </div>
 
           <div className="tableColumnSmall" style={{ display: "flex", alignItems: "center" }}>
-            <Query pollInterval={60 * 100 * 1000} query={FETCH_EMPLOYEES}>
+            <Query
+              pollInterval={60 * 100 * 1000}
+              query={FETCH_EMPLOYEES}
+              fetchPolicy="network-only">
               {({ data, loading, error }) => {
                 if (loading) {
                   return <LoadingDiv text="Fetching data..." />;

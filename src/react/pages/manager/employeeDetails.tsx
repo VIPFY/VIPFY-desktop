@@ -115,7 +115,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                     )}
                   </span>
 
-                  <UniversalSearchBox />
+                  {/*<UniversalSearchBox />*/}
                 </div>
                 <div className="section">
                   <div className="heading">

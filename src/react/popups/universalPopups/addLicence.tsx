@@ -198,6 +198,13 @@ class PopupAddLicence extends React.Component<Props, State> {
             cancel();
           }
         }}
+        submitDisabled={values =>
+          !(
+            values[`${employee && employee.id}-${id}-email`] &&
+            values[`${employee && employee.id}-${id}-password`] &&
+            (!needssubdomain || values[`${employee && employee.id}-${id}-subdomain`])
+          )
+        }
         submit={async values => {
           // try {
           let res;
@@ -220,7 +227,9 @@ class PopupAddLicence extends React.Component<Props, State> {
                 : res.data.addExternalBoughtPlan.id,
               username: values[`${employee && employee.id}-${id}-email`],
               password: values[`${employee && employee.id}-${id}-password`],
-              loginurl: values[`${employee && employee.id}-${id}-subdomain`],
+              loginurl: `${options.predomain}${
+                values[`${employee && employee.id}-${id}-subdomain`]
+              }${options.afterdomain}`,
               touser: (employee && employee.id) || null,
               options: team
                 ? {

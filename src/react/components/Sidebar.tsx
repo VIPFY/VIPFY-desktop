@@ -580,7 +580,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
               <Tooltip
                 distance={18}
                 arrowSize={5}
-                content={`${sidebarOpen ? "Hide" : "Open"} Sidebar`}
+                content={
+                  <div style={{ width: "75px" }}>{sidebarOpen ? "Hide" : "Open"} Sidebar</div>
+                }
                 direction="right">
                 <button
                   className="naked-button sidebarButton"
@@ -699,6 +701,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 history={this.props.history}
                 id={this.props.id}
                 logMeOut={this.props.logMeOut}
+                goTo={location => {
+                  this.goTo(location);
+                  this.setState({ contextMenu: false });
+                }}
               />
             )}
           </ul>
