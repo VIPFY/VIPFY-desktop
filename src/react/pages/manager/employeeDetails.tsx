@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
-import { graphql, compose, Query, withApollo } from "react-apollo";
+import { graphql, Query, withApollo } from "react-apollo";
 import { QUERY_SEMIPUBLICUSER, QUERY_ME } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
@@ -10,7 +10,6 @@ import { QUERY_USER } from "../../queries/user";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
-import { me } from "../../queries/auth";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import TemporaryLicences from "../../components/manager/employeeDetails/TemporaryLicences";
 import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicences";
@@ -76,11 +75,14 @@ class EmployeeDetails extends React.Component<Props, State> {
           if (loading) {
             return "Loading...";
           }
+
           if (error) {
             return `Error! ${error.message}`;
           }
+
           if (data && (data.fetchSemiPublicUser || data.me)) {
             const querydata = data.fetchSemiPublicUser || data.me;
+            console.log("LOG: EmployeeDetails -> render -> querydata", querydata);
             const privatePhones = [];
             const workPhones = [];
 
@@ -145,7 +147,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                             {querydata.isonline ? "Online" : "Offline"}
                           </div>
                         </div>
-
+                        {console.log("LOG: EmployeeDetails -> render -> querydata", querydata)}{" "}
                         <PersonalDetails
                           querydata={querydata}
                           refetch={refetch}
@@ -311,4 +313,4 @@ class EmployeeDetails extends React.Component<Props, State> {
     );
   }
 }
-export default compose(graphql(UPDATE_PIC, { name: "updatePic" }))(withApollo(EmployeeDetails));
+export default graphql(UPDATE_PIC, { name: "updatePic" })(withApollo(EmployeeDetails));
