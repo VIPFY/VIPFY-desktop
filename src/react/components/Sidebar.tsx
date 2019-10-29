@@ -159,10 +159,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
   async refetchCategories(categories, client) {
     await sleep(2000);
     for (const category of categories) {
-      const options = {
-        errorPolicy: "ignore",
-        fetchPolicy: "network-only"
-      };
+      const options = { errorPolicy: "ignore", fetchPolicy: "network-only" };
+
       switch (category) {
         case "ownLicences":
           await client.query({
@@ -648,7 +646,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 </span>
               </button>
             </li>
-
+            {console.log(this.props.data)}
             {this.state.showNotification && (
               <Notification
                 //sidebar={"1"}
@@ -656,10 +654,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 data={this.props.data}
                 loading={this.props.loading}
                 refetch={this.props.refetch}
-                style={{
-                  left: sidebarOpen ? "210px" : "50px",
-                  zIndex: 1000
-                }}
+                style={{ left: sidebarOpen ? "210px" : "50px", zIndex: 1000 }}
                 closeme={() => this.setState({ showNotification: false, donotopen: true })}
               />
             )}
