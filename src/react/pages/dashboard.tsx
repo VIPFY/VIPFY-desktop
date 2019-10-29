@@ -248,7 +248,14 @@ class Dashboard extends React.Component<Props, State> {
                   // Needed so that the element is allowed to accept drops
                   onDragOver={e => e.preventDefault()}
                   className={`delete-favourite ${
-                    this.state.showDeletion && Object.values(favourites).some(item => item)
+                    this.state.showDeletion &&
+                    Object.values(favourites).some(item => {
+                      if (!item) {
+                        return false;
+                      } else {
+                        return item.id == this.state.dragItem;
+                      }
+                    })
                       ? "show"
                       : ""
                   }`}>
