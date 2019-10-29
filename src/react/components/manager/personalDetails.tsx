@@ -7,7 +7,7 @@ import { Mutation, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import { sleep, concatName } from "../../common/functions";
+import { concatName } from "../../common/functions";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
