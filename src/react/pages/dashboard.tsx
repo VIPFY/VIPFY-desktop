@@ -261,6 +261,7 @@ class Dashboard extends React.Component<Props, State> {
               if (appLists[list].length > 0) {
                 return (
                   <AppList
+                    key={list}
                     header={list}
                     dragStartFunction={this.dragStartFunction}
                     dragEndFunction={this.dragEndFunction}
