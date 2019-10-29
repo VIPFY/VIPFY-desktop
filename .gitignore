@@ -8,3 +8,4 @@ src/**/*.css
 src/react/components/admin/sitesfilled.tsx
 ssotest.json
 debug.log
+.webpack

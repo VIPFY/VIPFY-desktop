@@ -99,6 +99,8 @@ class DropDown extends React.PureComponent<Props, State> {
           <span>
             {this.props.defaultValue && !touched
               ? this.props.defaultValue.label
+                ? this.props.defaultValue.label
+                : this.props.defaultValue
               : touched && this.props.option
               ? this.props.option.label
                 ? this.props.option.label
