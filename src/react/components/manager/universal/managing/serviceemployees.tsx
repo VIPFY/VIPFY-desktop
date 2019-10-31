@@ -114,6 +114,8 @@ class ManageServiceEmployees extends React.Component<Props, State> {
                 <PopupBase
                   fullmiddle={true}
                   nooutsideclose={true}
+                  small={true}
+                  additionalclassName="formPopup deletePopup"
                   close={() => this.setState({ addEmployee: null })}>
                   <AddEmployeePersonalData
                     continue={data => {
