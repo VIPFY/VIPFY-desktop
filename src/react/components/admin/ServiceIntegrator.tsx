@@ -800,20 +800,19 @@ class ServiceIntegrator extends React.Component<Props, State> {
               Go!
             </button>
             </span>*/}
-          <ClickElement />
           {this.state.executionPlan.map((o, k) => (
             <div
               id={o.args.id + "side"}
               onMouseEnter={() => this.zeigeElement(true, o.args.id)}
               onMouseLeave={() => this.zeigeElement(false, o.args.id)}
               style={{ border: "1px solid red", marginTop: "10px" }}>
-              <select
+              {/*<select
                 onChange={e => this.updateSelection(o.args.id, "operation", e.target.value)}
                 id={`operation-${k}`}
                 style={{ width: "100%", color: "black" }}>
                 <option value="waitandfill">Fill Input Field</option>
                 <option value="click">Click</option>
-                {/* <option value="wait">Wait</option> */}
+                {/&* <option value="wait">Wait</option> *&/}
                 <option value="other">Other</option>
               </select>
               <select
@@ -841,6 +840,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 <option value="domain">Domain</option>
                 <option value="other">Other</option>
               </select>
+              <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>*/}
+              <ClickElement id={`ce-${k}`} startvalue={o.operation} />
               <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
             </div>
           ))}
