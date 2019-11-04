@@ -28,6 +28,7 @@ interface State {
   currenturl: string|null */;
   executionPlan: Object[];
   searchurl: string;
+  selectlist: any;
 }
 
 class ServiceIntegrator extends React.Component<Props, State> {
@@ -42,8 +43,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
     urlBevorChange: "",
     executionPlan: [],
     searchurl: "",
-    cantrack: false /* 
-    currenturl: null */
+    cantrack: false,
+    selectlist: []
   };
 
   siteUrllist: (string | null)[] = []; //where does it happen
@@ -232,44 +233,75 @@ class ServiceIntegrator extends React.Component<Props, State> {
     this.setState({ executionPlan: [] });
   }
 
-  cancelSelection(number) {
-    this.setState(oldstate => {
-      oldstate.executionPlan.splice(number, 1);
-      return oldstate;
-    });
-    this.setState(oldstate => {
-      if (
-        /* oldstate.divList.findIndex(element => {
-          return element.id == number + 1000;
-        }) != -1 */ true
-      ) {
+  async cancelSelection(id) {
+    /* console.log(
+      this.state.executionPlan.findIndex(element => {
+        return element.args.id == id;
+      })
+    ); */
+    if (
+      this.state.executionPlan.findIndex(element => {
+        return element.args.id == id;
+      }) != -1
+    ) {
+      this.state.sendTarget!.send(
+        "delockItem",
+        this.state.executionPlan[
+          this.state.executionPlan.findIndex(element => {
+            return element.args.id == id;
+          })
+        ].args.selector
+      );
+      this.setState(oldstate => {
+        oldstate.executionPlan.splice(
+          oldstate.executionPlan.findIndex(element => {
+            return element.args.id == id;
+          }),
+          1
+        );
+        return oldstate;
+      });
+    }
+    /* await this.setState({ divList: [] });
+    console.log(this.state.executionPlan, this.state.divList);
+    for (let i = 0; i < this.state.executionPlan.length; i++) {
+      this.state.sendTarget!.send("givePosition", this.state.executionPlan[i].args.selector, i, 1);
+    } */
+    if (
+      this.state.divList.findIndex(element => {
+        return element.props.id == id + "b";
+      }) != -1
+    ) {
+      this.setState(oldstate => {
         oldstate.divList.splice(
           oldstate.divList.findIndex(element => {
-            return element.id == number + 1000;
-          })
+            return element.props.id == id + "b";
+          }),
+          1
         );
-      }
-    });
-    for (let i = 0; i < 4; i++) {
-      this.setState(oldstate => {
-        if (
-          oldstate.divList.findIndex(element => {
-            return element.id == number;
-          }) != -1
-        ) {
+      });
+    }
+    if (
+      this.state.divList.findIndex(element => {
+        return element.props.id == id;
+      }) != -1
+    ) {
+      for (let i = 0; i < 4; i++) {
+        this.setState(oldstate => {
           oldstate.divList.splice(
             oldstate.divList.findIndex(element => {
-              return element.id == number;
+              return element.props.id == id;
             }),
             1
           );
-        }
-        return oldstate;
-      });
+          return oldstate;
+        });
+      }
     }
   }
 
   makeCoverdiv(args) {
+    //console.log("Hello1", document.getElementById(args[4] + "side"));
     const width = args[0];
     const height = args[1];
     const left = args[2] + 442;
@@ -279,12 +311,14 @@ class ServiceIntegrator extends React.Component<Props, State> {
       <div
         onClick={() => this.cancelSelection(args[4])}
         onMouseEnter={() => {
-          document.getElementById(args[4] + 10000).style.color = "white";
+          document.getElementById(args[4] + "a").style.color = "white";
+          document.getElementById(args[4] + "side").style.border = "1px solid blue";
         }}
         onMouseLeave={() => {
-          document.getElementById(args[4] + 10000).style.color = "black";
+          document.getElementById(args[4] + "a").style.color = "black";
+          document.getElementById(args[4] + "side").style.border = "1px solid red";
         }}
-        id={args[4] + 1000}
+        id={args[4] + "b"}
         key={Math.random()}
         style={{
           position: "absolute",
@@ -297,7 +331,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
           opacity: 0.5
         }}>
         <a
-          id={args[4] + 10000}
+          id={args[4] + "a"}
           style={{
             width: width,
             height: height,
@@ -400,24 +434,43 @@ class ServiceIntegrator extends React.Component<Props, State> {
     });
   }
 
-  zeigeElement(onOff, k) {
+  zeigeElement(onOff, id) {
+    //console.log(onOff, id, this.state.executionPlan);
     if (onOff) {
-      //console.log(this.state.executionPlan[k].args.selector);
-      this.state.sendTarget!.send("givePosition", this.state.executionPlan[k].args.selector, k, 0);
+      this.state.sendTarget!.send(
+        "givePosition",
+        this.state.executionPlan[
+          this.state.executionPlan.findIndex(element => {
+            return element.args.id == id;
+          })
+        ].args.selector,
+        id,
+        0
+      );
       this.setState(oldstate => {
         oldstate.divList.splice(
           oldstate.divList.findIndex(element => {
-            return element.id == k + 1000;
-          })
+            return element.props.id == id + "b";
+          }),
+          1
         );
       });
     } else {
-      this.state.sendTarget!.send("givePosition", this.state.executionPlan[k].args.selector, k, 1);
+      this.state.sendTarget!.send(
+        "givePosition",
+        this.state.executionPlan[
+          this.state.executionPlan.findIndex(element => {
+            return element.args.id == id;
+          })
+        ].args.selector,
+        id,
+        1
+      );
       for (let i = 0; i < 4; i++) {
         this.setState(oldstate => {
           oldstate.divList.splice(
             oldstate.divList.findIndex(element => {
-              return element.id == k;
+              return element.props.id == id;
             }),
             1
           );
@@ -427,18 +480,36 @@ class ServiceIntegrator extends React.Component<Props, State> {
     }
   }
 
+  updateSelection(id, changeling, value) {
+    this.setState(oldstate => {
+      let plan = oldstate.executionPlan;
+      if (
+        plan.findIndex(element => {
+          return element.args.id == id;
+        }) != -1
+      ) {
+        plan[
+          plan.findIndex(element => {
+            return element.args.id == id;
+          })
+        ][changeling] = value;
+      }
+      return { ...oldstate, executionPlan: plan };
+    });
+  }
+
   async onIpcMessage(e): Promise<void> {
     //console.log("onIpcMessage", e, e.senderId);
 
     switch (e.channel) {
-      /* case "sendMessage":
+      case "sendMessage":
         console.log(e.channel); //, e.args[0], e.args[1], e.args[2], e.args[3], e.args[4],
         let i = 0;
         while (e.args[i] != null) {
           console.log(e.args[i]);
           i++;
         }
-        break; */
+        break;
 
       case "sendEvent":
         if (this.state.sendTarget == null) {
@@ -460,6 +531,14 @@ class ServiceIntegrator extends React.Component<Props, State> {
         //generate Execution Plan
         this.setState(oldstate => {
           let plan = oldstate.executionPlan;
+          let id = Math.round(Math.random() * 1000000);
+          while (
+            plan.findIndex(element => {
+              element.args.id == id;
+            }) != -1
+          ) {
+            id = Math.round(Math.random() * 1000000);
+          }
           if (
             plan.length == 0 ||
             !(
@@ -472,18 +551,29 @@ class ServiceIntegrator extends React.Component<Props, State> {
               case "input":
                 plan.push({
                   operation: "waitandfill",
-                  args: { selector: e.args[6], document: e.args[8] }
+                  fillkey: "usernameEmail",
+                  args: { selector: e.args[6], document: e.args[8], id: id }
                 });
                 break;
               default:
                 plan.push({
                   operation: "click",
-                  args: { selector: e.args[6], document: e.args[8] }
+                  fillkey: "",
+                  args: { selector: e.args[6], document: e.args[8], id: id }
                 });
                 break;
             }
-            console.log("executionplan", plan[plan.length - 1]);
-            e.target.send("givePosition", plan[plan.length - 1].args.selector, plan.length - 1, 1); //noch k zufügen
+            console.log("executionplan", plan);
+            e.target.send("givePosition", plan[plan.length - 1].args.selector, id, 1);
+
+            let selectlist = oldstate.selectlist;
+            selectlist.push({
+              id: id,
+              selector: e.args[6],
+              document: e.args[8],
+              operation: "waitandfill",
+              fillkey: "usernameEmail"
+            });
 
             return { ...oldstate, executionPlan: plan };
           }
@@ -657,7 +747,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   render() {
-    console.log(this.state);
+    //console.log(this.state);
     if (this.state.url === this.startUrl) {
       session.fromPartition("followLogin").clearStorageData();
     }
@@ -673,6 +763,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
           <div>
             <h4 style={{ color: "white" }}>Please enter the Login-Url</h4>
             <UniversalTextInput
+              /* autofocus="true" */
               id="url"
               livevalue={v => this.setState({ searchurl: v })}
               style={{ color: "black", borderColor: "white" }}
@@ -712,24 +803,52 @@ class ServiceIntegrator extends React.Component<Props, State> {
           <ClickElement />
           {this.state.executionPlan.map((o, k) => (
             <div
-              onMouseEnter={() => this.zeigeElement(true, k)}
-              onMouseLeave={() => this.zeigeElement(false, k)}
+              id={o.args.id + "side"}
+              onMouseEnter={() => this.zeigeElement(true, o.args.id)}
+              onMouseLeave={() => this.zeigeElement(false, o.args.id)}
               style={{ border: "1px solid red", marginTop: "10px" }}>
-              <select id={`operation-${k}`} style={{ width: "100%", color: "black" }}>
+              <select
+                onChange={e => this.updateSelection(o.args.id, "operation", e.target.value)}
+                id={`operation-${k}`}
+                style={{ width: "100%", color: "black" }}>
                 <option value="waitandfill">Fill Input Field</option>
                 <option value="click">Click</option>
-                <option value="wait">Wait</option>
+                {/* <option value="wait">Wait</option> */}
                 <option value="other">Other</option>
               </select>
-              <select id={`fillkey-${k}`} style={{ width: "100%", color: "black" }}>
-                <option>Username/Email</option>
-                <option>Password</option>
-                <option>Domain</option>
-                <option>Other</option>
+              <select
+                onChange={e => this.updateSelection(o.args.id, "fillkey", e.target.value)}
+                id={`fillkey-${k}`}
+                style={{
+                  width: "100%",
+                  color: "black",
+                  visibility: function() {
+                    if (
+                      arguments.callee.caller.state.executionPlan[
+                        this.state.executionPlan.findIndex(element => {
+                          return element.args.id == o.args.id;
+                        })
+                      ].operation == "waitandfill"
+                    ) {
+                      return "visible";
+                    } else {
+                      return "collapsed";
+                    }
+                  }
+                }}>
+                <option value="usernameEmail">Username/Email</option>
+                <option value="password">Password</option>
+                <option value="domain">Domain</option>
+                <option value="other">Other</option>
               </select>
-              <button>DELETE</button>
+              <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
             </div>
           ))}
+          <div style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
+            Every thing selected?
+            <button style={{ width: "100px" }}>Then try to go to a next step</button>
+            <button style={{ width: "100px" }}>or finish the login process</button>
+          </div>
         </div>
         <div
           style={{

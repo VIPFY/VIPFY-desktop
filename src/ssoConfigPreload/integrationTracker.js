@@ -6,7 +6,60 @@ let cookiefound = false;
 let recaptchaConfirmOnce = false;
 let checkRecaptcha = false;
 
+var listeners = [];
+
 const asktypes = ["input", "textbox"];
+
+(function() {
+  Element.prototype._addEventListener = Element.prototype.addEventListener;
+  Element.prototype.addEventListener = function(a, b, c) {
+    if (c == undefined) c = false;
+    this._addEventListener(a, b, c);
+    if (!this.eventListenerList) this.eventListenerList = {};
+    if (!this.eventListenerList[a]) this.eventListenerList[a] = [];
+    //this.removeEventListener(a,b,c); // TODO - handle duplicates..
+    this.eventListenerList[a].push({ listener: b, useCapture: c });
+  };
+
+  Element.prototype.getEventListeners = function(a) {
+    if (!this.eventListenerList) this.eventListenerList = {};
+    if (a == undefined) return this.eventListenerList;
+    return this.eventListenerList[a];
+  };
+  Element.prototype.clearEventListeners = function(a) {
+    if (!this.eventListenerList) this.eventListenerList = {};
+    if (a == undefined) {
+      for (var x in this.getEventListeners()) this.clearEventListeners(x);
+      return;
+    }
+    var el = this.getEventListeners(a);
+    if (el == undefined) return;
+    for (var i = el.length - 1; i >= 0; --i) {
+      var ev = el[i];
+      this.removeEventListener(a, ev.listener, ev.useCapture);
+    }
+  };
+
+  Element.prototype._removeEventListener = Element.prototype.removeEventListener;
+  Element.prototype.removeEventListener = function(a, b, c) {
+    if (c == undefined) c = false;
+    this._removeEventListener(a, b, c);
+    if (!this.eventListenerList) this.eventListenerList = {};
+    if (!this.eventListenerList[a]) this.eventListenerList[a] = [];
+
+    // Find the event in the list
+    for (var i = 0; i < this.eventListenerList[a].length; i++) {
+      if (
+        (this.eventListenerList[a][i].listener == b, this.eventListenerList[a][i].useCapture == c)
+      ) {
+        // Hmm..
+        this.eventListenerList[a].splice(i, 1);
+        break;
+      }
+    }
+    if (this.eventListenerList[a].length == 0) delete this.eventListenerList[a];
+  };
+})();
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
@@ -62,8 +115,22 @@ function createObjFromDom(elem) {
   return o;
 }
 
+ipcRenderer.on("delockItem", async (e, args1) => {
+  const ding = document.querySelector(args1);
+  ding.disabled = false;
+  const listeners1 =
+    listeners[
+      listeners.findIndex(element => {
+        return element[0] == ding;
+      })
+    ][1];
+  Object.keys(listeners1).forEach(key => {
+    listeners1[key].forEach(i => ding.addEventListener(key, i));
+  });
+  console.log("Events Regiven");
+});
+
 ipcRenderer.on("givePosition", async (e, args1, args2, args3) => {
-  console.log("Hulalala");
   const ding = document.querySelector(args1);
   const rect = ding.getBoundingClientRect();
   ipcRenderer.sendToHost(
@@ -367,7 +434,20 @@ function findTarget(event, iframe) {
       }
     }
   }
-
+  const button = event.target;
+  const wereans = onClick(event);
+  if (wereans[0]) {
+    const button = wereans[1];
+    const listenersers = button.getEventListeners();
+    //ipcRenderer.sendToHost("sendMessage", button, listeners);
+    listeners.push([event.target, listenersers]); //
+    button.clearEventListeners();
+    button.addEventListener("click", e => {
+      e.preventDefault();
+      return false;
+    });
+    console.log("Events Cleared");
+  }
   console.log("Parents", els);
 
   ipcRenderer.sendToHost(
@@ -411,6 +491,46 @@ function findTarget(event, iframe) {
       rect.y
     );
   }
+  event.target.disabled = true;
+}
+
+function elemIsButton(t) {
+  if (!t) {
+    return false;
+  }
+  if (t.tagName == "BUTTON" || t.tagName == "INPUT" || t.tagName == "A") {
+    return true;
+  }
+
+  if (
+    hasEventHandler(t, "click") ||
+    hasEventHandler(t, "mousedown") ||
+    hasEventHandler(t, "dragstart")
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function onClick(e) {
+  let t = e.target;
+  let isButton = true;
+  while (t && !elemIsButton(t) && t.parentElement != null) {
+    t = t.parentElement;
+  }
+  if (!t || t.parentElement == null) {
+    t = e.target;
+    isButton = false;
+  }
+  return [isButton, t];
+}
+
+function hasEventHandler(t, e) {
+  return (
+    t["on" + e] ||
+    t.getAttribute("on" + e) ||
+    (t.getEventListeners(e) && t.getEventListeners(e).length > 0)
+  );
 }
 
 async function onIpcMessage(e) {
