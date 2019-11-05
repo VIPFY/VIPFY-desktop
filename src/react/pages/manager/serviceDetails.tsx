@@ -81,13 +81,12 @@ class ServiceDetails extends React.Component<Props, State> {
           return (
             <div className="managerPage">
               <div className="heading">
-                <h1>
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("lmanager")}>
+                <span className="h1">
+                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("emanager")}>
                     Service Manager
                   </span>
-                  <h2>></h2>
-                  <h2>{service.name}</h2>
-                </h1>
+                  <span className="h2">{service.name}</span>
+                </span>
 
                 <UniversalSearchBox
                   getValue={v => {

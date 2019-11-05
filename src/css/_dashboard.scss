@@ -86,6 +86,9 @@ $border-length: 10px;
   &-apps {
     padding: 56px 32px 26px;
     display: grid;
+    //grid-template-columns: repeat(auto-fit, 8rem);
+    //grid-column-gap: 56px;
+    //grid-row-gap: 32px;
     grid-template-columns: repeat(auto-fit, 8rem);
     grid-template-rows: 170px;
     grid-column-gap: 56px;

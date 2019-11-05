@@ -47,3 +47,40 @@ export const QUERY_SEMIPUBLICUSER = gql`
     }
   }
 `;
+
+export const QUERY_ME = gql`
+  query me {
+    me {
+      id
+      firstname
+      middlename
+      lastname
+      profilepicture
+      emails {
+        email
+      }
+      phones {
+        id
+        number
+        tags
+      }
+      addresses {
+        id
+        country
+        address
+        tags
+      }
+      position
+      hiredate
+      birthday
+      isadmin
+      isonline
+      lastactive
+      passwordlength
+      passwordstrength
+      twofa
+      deleted
+      companyban
+    }
+  }
+`;

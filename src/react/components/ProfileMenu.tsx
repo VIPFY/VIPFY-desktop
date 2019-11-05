@@ -7,6 +7,7 @@ interface Props {
   history: any;
   id: number;
   logMeOut: Function;
+  goTo: Function;
 }
 
 interface State {}
@@ -40,8 +41,7 @@ class ProfileMenu extends React.Component<Props, State> {
         <button
           className="naked-button"
           onClick={() => {
-            history.push("/area/company");
-            this.setState({ contextMenu: false });
+            this.props.goTo("company");
           }}>
           <span>Company Settings</span>
           <i className="fal fa-external-link-alt" />
@@ -49,8 +49,7 @@ class ProfileMenu extends React.Component<Props, State> {
         <button
           className="naked-button"
           onClick={() => {
-            history.push(`/area/profile/${id}`);
-            this.setState({ contextMenu: false });
+            this.props.goTo(`profile/${id}`);
           }}>
           <span>Profile</span>
           <i className="fal fa-external-link-alt" />

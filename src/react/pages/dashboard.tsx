@@ -246,7 +246,7 @@ class Dashboard extends React.Component<Props, State> {
                           id: key,
                           boughtplanid: {
                             planid: { appid: { icon: "" } },
-                            alias: "Drag'n Drop a Licence"
+                            alias: "Drag'n'Drop a Licence"
                           }
                         }}
                       />

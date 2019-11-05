@@ -134,8 +134,8 @@
     transition: all 600ms ease;
   
     &-turn {
-      @extend .sidebar-nav-icon;
-      transform: scale(-1, 1);
+      //@extend .sidebar-nav-icon;
+      //transform: scale(-1, 1);
     }
   }
 

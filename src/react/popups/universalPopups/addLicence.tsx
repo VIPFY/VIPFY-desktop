@@ -195,6 +195,13 @@ class PopupAddLicence extends React.Component<Props, State> {
             cancel();
           }
         }}
+        submitDisabled={values =>
+          !(
+            values[`${employee && employee.id}-${id}-email`] &&
+            values[`${employee && employee.id}-${id}-password`] &&
+            (!needssubdomain || values[`${employee && employee.id}-${id}-subdomain`])
+          )
+        }
         submit={async values => {
           // try {
           let res;

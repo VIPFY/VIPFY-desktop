@@ -466,7 +466,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                         <div
                           className="tableColumnBig"
                           style={{ width: "20%" }}
-                          onClick={() => this.handleSortClick("Teams")}>
+                          //onClick={() => this.handleSortClick("Teams")}
+                        >
                           <h1>
                             Teams
                             {/*this.state.sort == "Teams" ? (
@@ -485,7 +486,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                         <div
                           className="tableColumnBig"
                           style={{ width: "30%" }}
-                          onClick={() => this.handleSortClick("Services")}>
+                          //onClick={() => this.handleSortClick("Services")}
+                        >
                           <h1>
                             Services
                             {/*this.state.sort == "Services" ? (
@@ -675,13 +677,15 @@ class EmployeeOverview extends React.Component<Props, State> {
                           <div className="tableEnd">
                             <div className="editOptions">
                               <i className="fal fa-external-link-alt editbuttons" />
-                              <i
-                                className="fal fa-trash-alt editbuttons"
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  this.setState({ willdeleting: employee.id });
-                                }}
-                              />
+                              {this.props.id != employee.id && (
+                                <i
+                                  className="fal fa-trash-alt editbuttons"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    this.setState({ willdeleting: employee.id });
+                                  }}
+                                />
+                              )}
                             </div>
                           </div>
                         </div>
