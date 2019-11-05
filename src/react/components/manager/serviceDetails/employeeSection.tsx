@@ -112,20 +112,22 @@ class EmployeeSection extends React.Component<Props, State> {
               </div>
             </div>
             <div className="tableEnd">
-              <UniversalButton
-                type="high"
-                label="Add Employee"
-                customStyles={{
-                  fontSize: "12px",
-                  lineHeight: "24px",
-                  fontWeight: "700",
-                  marginRight: "16px",
-                  width: "92px"
-                }}
-                onClick={() => {
-                  this.setState({ add: true });
-                }}
-              />
+              {!this.props.service.disabled && (
+                <UniversalButton
+                  type="high"
+                  label="Add Employee"
+                  customStyles={{
+                    fontSize: "12px",
+                    lineHeight: "24px",
+                    fontWeight: "700",
+                    marginRight: "16px",
+                    width: "92px"
+                  }}
+                  onClick={() => {
+                    this.setState({ add: true });
+                  }}
+                />
+              )}
             </div>
           </div>
           {employeeArray}

@@ -139,6 +139,7 @@ export const fetchCompanyServices = gql`
         owner {
           id
         }
+        disabled
       }
       licences {
         id
@@ -190,6 +191,7 @@ export const fetchCompanyService = gql`
         owner {
           id
         }
+        disabled
       }
       licences {
         id

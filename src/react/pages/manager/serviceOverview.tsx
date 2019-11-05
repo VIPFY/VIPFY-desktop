@@ -225,6 +225,11 @@ class ServiceOverview extends React.Component<Props, State> {
                 employeeidFunction={e => e.unitid}
               />
             </div>
+            <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
+              {service.app.disabled && (
+                <i className="fad fa-exclamation-triangle warningColor" title="App is disabled"></i>
+              )}
+            </div>
             <div className="tableEnd">
               <div className="editOptions">
                 <i className="fal fa-external-link-alt editbuttons" />
@@ -513,6 +518,7 @@ class ServiceOverview extends React.Component<Props, State> {
                           <h1>Single Users</h1>
                         </div>
                       </div>
+                      <div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>
                       <div className="tableEnd">
                         <UniversalButton
                           type="high"
