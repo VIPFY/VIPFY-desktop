@@ -133,9 +133,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                           }
                         : {
                             backgroundImage: encodeURI(
-                              `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${
-                                employee.profilepicture
-                              })`
+                              `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${employee.profilepicture})`
                             )
                           }
                       : {}
@@ -181,7 +179,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                 services={this.props.team.services}
                 main="employee"
                 close={() => this.setState({ delete: false })}
-                submit={values =>
+                submit={values => {
                   removeFromTeam({
                     variables: {
                       teamid: this.props.team.unitid.id,
@@ -194,8 +192,9 @@ class EmployeeDetails extends React.Component<Props, State> {
                         variables: { teamid: this.props.team.unitid.id }
                       }
                     ]
-                  })
-                }
+                  });
+                  this.setState({ delete: false });
+                }}
               />
             )}
           </div>
