@@ -7,6 +7,7 @@ import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import DeletePopup from "../../popups/universalPopups/deletePopup";
 import { concatName } from "../../common/functions";
+import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
 
 interface Props {
   employee: any;
@@ -119,27 +120,7 @@ class EmployeeDetails extends React.Component<Props, State> {
           <div className="tableRow" onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
             <div className="tableMain">
               <div className="tableColumnSmall">
-                <div
-                  className="managerSquare"
-                  style={
-                    employee.profilepicture
-                      ? employee.profilepicture.indexOf("/") != -1
-                        ? {
-                            backgroundImage: encodeURI(
-                              `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                employee.profilepicture
-                              )})`
-                            )
-                          }
-                        : {
-                            backgroundImage: encodeURI(
-                              `url(https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/${employee.profilepicture})`
-                            )
-                          }
-                      : {}
-                  }>
-                  {employee.profilepicture ? "" : employee.firstname.slice(0, 1)}
-                </div>
+                <PrintEmployeeSquare employee={employee} />
                 <span className="name">
                   {employee.firstname} {employee.lastname}
                 </span>
