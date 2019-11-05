@@ -30,17 +30,34 @@ export default (props: Props) => {
     return null;
   }
 
-  return (
-    <Collapsible child={appListRef} title={props.header ? props.header : "Apps"}>
-      <div ref={appListRef} className="dashboard-apps">
-        <DropDown
-          option={sortBy}
-          defaultValue="Oldest"
-          handleChange={value => setSortBy(value.length < 4 ? `Sorted by: ${value}` : value)}
-          // TODO: [VIP-449] Implement Statistics to sort by "Most Used", "Least Used"
-          options={["A-Z", "Z-A", "Newest", "Oldest"]}
-        />
+  let anyapp = false;
 
+  return (
+    /*<Collapsible child={appListRef} title={props.header ? props.header : "Apps"}>
+    <div ref={appListRef} className="dashboard-apps">*/
+
+    <div className="section">
+      <div className="heading">
+        <h1>{props.header ? props.header : "Apps"}</h1>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span style={{ fontSize: "12px" }}>Sort by</span>
+          <DropDown
+            option={sortBy}
+            defaultValue="Oldest First"
+            handleChange={value => setSortBy(value.length < 4 ? `Sorted by: ${value}` : value)}
+            // TODO: [VIP-449] Implement Statistics to sort by "Most Used", "Least Used"
+            options={["A-Z", "Z-A", "Newest First", "Oldest First"]}
+          />
+        </div>
+      </div>
+      <div
+        /*ref={this.favouriteListRef} className="favourite-apps"*/ className="appGrid"
+        style={{
+          gridColumnGap:
+            24 +
+            ((props.width - 64 - 64 + 24) % (128 + 24)) /
+              (Math.floor((props.width - 64 - 64 + 24) / (128 + 24)) - 1)
+        }}>
         {props.licences
           .filter(licence => {
             if (props.search) {
@@ -77,11 +94,11 @@ export default (props: Props) => {
                 }
               }
 
-              case "Oldest":
-                return defaultValue;
+              case "Oldest First":
+                return defaultValue ? 1 : -1;
 
-              case "Newest":
-                return a.starttime - b.starttime < 0;
+              case "Newest First":
+                return a.starttime - b.starttime < 0 ? 1 : -1;
 
               case "Most Used":
                 return handleName(b).value - handleName(a).value;
@@ -94,6 +111,7 @@ export default (props: Props) => {
             }
           })
           .map((licence, key) => {
+            anyapp = true;
             return (
               <AppTile
                 key={key}
@@ -105,7 +123,14 @@ export default (props: Props) => {
               />
             );
           })}
+        {!anyapp &&
+          (props.search ? (
+            <div style={{ width: "450px" }}>Sorry, there are no apps matching your search</div>
+          ) : (
+            <div style={{ width: "450px" }}>Sorry, no apps here</div>
+          ))}
       </div>
-    </Collapsible>
+      {/*</Collapsible>*/}
+    </div>
   );
 };
