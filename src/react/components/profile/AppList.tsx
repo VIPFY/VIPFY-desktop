@@ -43,8 +43,8 @@ export default (props: Props) => {
           <span style={{ fontSize: "12px" }}>Sort by</span>
           <DropDown
             option={sortBy}
-            defaultValue="Oldest First"
-            handleChange={value => setSortBy(value.length < 4 ? `Sorted by: ${value}` : value)}
+            defaultValue="A-Z"
+            handleChange={value => setSortBy(value)}
             // TODO: [VIP-449] Implement Statistics to sort by "Most Used", "Least Used"
             options={["A-Z", "Z-A", "Newest First", "Oldest First"]}
           />
@@ -74,7 +74,7 @@ export default (props: Props) => {
             const defaultValue = a.starttime - b.starttime > 0;
 
             switch (sortBy) {
-              case "Sorted by: A-Z": {
+              case "A-Z": {
                 if (aName < bName) {
                   return -1;
                 } else if (aName > bName) {
@@ -84,7 +84,7 @@ export default (props: Props) => {
                 }
               }
 
-              case "Sorted by: Z-A": {
+              case "Z-A": {
                 if (bName < aName) {
                   return -1;
                 } else if (bName > aName) {
@@ -107,7 +107,13 @@ export default (props: Props) => {
                 return handleName(a).value - handleName(b).value;
 
               default:
-                return defaultValue;
+                if (aName < bName) {
+                  return -1;
+                } else if (aName > bName) {
+                  return 1;
+                } else {
+                  return 0;
+                }
             }
           })
           .map((licence, key) => {
