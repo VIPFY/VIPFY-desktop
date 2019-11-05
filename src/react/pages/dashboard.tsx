@@ -184,7 +184,7 @@ class Dashboard extends React.Component<Props, State> {
     }
 
     return (
-      <div className="dashboard">
+      <div className="managerPage dashboard">
         <div className="heading">
           <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
@@ -205,8 +205,19 @@ class Dashboard extends React.Component<Props, State> {
           </div>
         ) : (
           <React.Fragment>
-            <Collapsible noResize={true} child={this.favouriteListRef} title="Favourite Apps">
-              <div ref={this.favouriteListRef} className="favourite-apps">
+            {/*<Collapsible noResize={true} child={this.favouriteListRef} title="Favourite Apps">*/}
+            <div className="section">
+              <div className="heading">
+                <h1>Favourite Apps</h1>
+              </div>
+              <div
+                /*ref={this.favouriteListRef} className="favourite-apps"*/ className="appGrid"
+                style={{
+                  gridColumnGap:
+                    24 +
+                    ((this.props.width - 64 - 64 + 24) % (128 + 24)) /
+                      (Math.floor((this.props.width - 64 - 64 + 24) / (128 + 24)) - 1)
+                }}>
                 {Object.values(favourites).map((favourite, key) => {
                   if (favourite !== null) {
                     return (
@@ -262,7 +273,8 @@ class Dashboard extends React.Component<Props, State> {
                   <i className="fal fa-trash-alt fa-7x" />
                 </div>
               </div>
-            </Collapsible>
+              {/*</Collapsible>*/}
+            </div>
 
             {Object.keys(appLists).map(list => {
               if (appLists[list].length > 0) {
@@ -275,6 +287,7 @@ class Dashboard extends React.Component<Props, State> {
                     search={this.state.search}
                     licences={filterLicences(appLists[list])}
                     setApp={this.setApp}
+                    width={this.props.width}
                   />
                 );
               } else {

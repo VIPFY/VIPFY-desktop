@@ -2,11 +2,11 @@ $border-length: 10px;
 
 .dashboard {
   @extend .managerPage;
-  display: flex;
+  /*display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
-  padding: 24px 48px 0;
+  padding: 24px 48px 0;*/
 
   .favourite-apps {
     display: grid;
