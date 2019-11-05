@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import moment = require("moment");
+import moment from "moment";
 import DropDown from "../../../common/DropDown";
 import { Licence, Option } from "../../../interfaces";
 import DatePicker from "../../../common/DatePicker";

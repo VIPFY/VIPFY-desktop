@@ -15,6 +15,7 @@ import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
+import { FETCH_EMPLOYEES } from "../queries/departments";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -165,6 +166,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
         case "ownLicences":
           await client.query({
             query: fetchLicences,
+            ...options
+          });
+          break;
+
+        case "employees":
+          await client.query({
+            query: FETCH_EMPLOYEES,
             ...options
           });
           break;

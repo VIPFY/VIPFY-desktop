@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import { withRouter } from "react-router";
 import { Mutation, withApollo } from "react-apollo";
 import { showStars, filterError } from "../../common/functions";
-import { FETCH_USER_SECURITY_OVERVIEW } from "./UserSecurityTable";
+import { FETCH_USER_SECURITY_OVERVIEW } from "./graphqlOperations";
 import UserName from "../UserName";
 import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
 import IconButton from "../../common/IconButton";

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { clipboard } from "electron";
 
 interface Props {
   id: string;
@@ -112,7 +113,6 @@ class UniversalTextInput extends React.Component<Props, State> {
   };
 
   render() {
-    const { clipboard } = require("electron");
     return (
       <div
         className={`universalLabelInput ${this.props.disabled ? "disabled" : ""} ${

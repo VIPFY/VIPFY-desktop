@@ -1,39 +1,36 @@
-import { type } from "os";
+const { ipcRenderer } = require("electron");
 
-{
-  // tslint:disable:no-var-requires
-  const con = require("electron").remote.getGlobal("console");
-  let ipcRenderer = require("electron").ipcRenderer;
-  const hostname = window.location.hostname;
-  function hostMatches(domain: string) {
-    return new RegExp(domain).test(hostname);
+const hostname = window.location.hostname;
+
+function hostMatches(domain) {
+  return new RegExp(domain).test(hostname);
+}
+
+let interactionHappened = false;
+function didInteraction() {
+  interactionHappened = true;
+}
+function timer() {
+  if (!interactionHappened) {
+    return;
   }
+  interactionHappened = false;
+  ipcRenderer.sendToHost("interactionHappened");
+}
 
-  let interactionHappened = false;
-  function didInteraction() {
-    interactionHappened = true;
-  }
-  function timer() {
-    if (!interactionHappened) {
-      return;
-    }
-    interactionHappened = false;
-    ipcRenderer.sendToHost("interactionHappened");
-  }
+document.addEventListener("mousemove", didInteraction, true);
+document.addEventListener("touchmove", didInteraction, true);
+document.addEventListener("touchenter", didInteraction, true);
+document.addEventListener("pointermove", didInteraction, true);
+document.addEventListener("keydown", didInteraction, true);
+document.addEventListener("scroll", didInteraction, true);
 
-  document.addEventListener("mousemove", didInteraction, true);
-  document.addEventListener("touchmove", didInteraction, true);
-  document.addEventListener("touchenter", didInteraction, true);
-  document.addEventListener("pointermove", didInteraction, true);
-  document.addEventListener("keydown", didInteraction, true);
-  document.addEventListener("scroll", didInteraction, true);
+window.addEventListener("load", function() {
+  getLoginDetails(0);
+});
 
-  window.addEventListener("load", function() {
-    getLoginDetails(0);
-  });
-
-  setInterval(() => timer(), 30000);
-  setTimeout(() => timer(), 5000);
+setInterval(() => timer(), 30000);
+setTimeout(() => timer(), 5000);
 
 function normalizeKey(key) {
   if (key.emailtype ? key.emailtype == 2 : key.type == 2) {
@@ -72,40 +69,35 @@ function normalizeKey(key) {
 function getLoginDetails(askfordata) {
   let repeatpossible = true;
   let clicked = false;
-  let ipcRenderer = require("electron").ipcRenderer;
   ipcRenderer.sendToHost("startLoginIn");
   ipcRenderer.send("TESTMESSAGE");
 
   ipcRenderer.sendToHost("getLoginDetails", askfordata);
   ipcRenderer.once("loginDetails", (e, key) => {
-
     key = normalizeKey(key);
 
-    let frame: HTMLDocument;
-    if (key.loginiframe && document.querySelector<HTMLIFrameElement>(key.loginiframe)) {
-       frame = document.querySelector<HTMLIFrameElement>(key.loginiframe)!.contentWindow!.document
+    let frame;
+    if (key.loginiframe && document.querySelector(key.loginiframe)) {
+      frame = document.querySelector(key.loginiframe).contentWindow.document;
     } else {
-       frame = document
+      frame = document;
     }
 
     let hideObject = !!(
-      document!.querySelector<HTMLInputElement>(key.hideobject) ||
-      document!.getElementById(key.hideobject)
+      document.querySelector(key.hideobject) || document.getElementById(key.hideobject)
     );
-    let errorObject =
-      frame!.querySelector<HTMLInputElement>(key.errorobject) ||
-      frame!.getElementById(key.errorobject);
+    let errorObject = frame.querySelector(key.errorobject) || frame.getElementById(key.errorobject);
     let waitUntil =
-      frame!.querySelector<HTMLInputElement>(key.waituntil) ||
-      frame!.getElementById(key.waituntil) ||
-      frame!.querySelector<HTMLInputElement>(key.emailobject);
+      frame.querySelector(key.waituntil) ||
+      frame.getElementById(key.waituntil) ||
+      frame.querySelector(key.emailobject);
 
-    let emailObject = frame!.querySelector<HTMLInputElement>(key.emailobject);
-    let passwordObject = frame!.querySelector<HTMLInputElement>(key.passwordobject);
-    let buttonObject = frame!.querySelector<HTMLInputElement>(key.buttonobject);
-    let button1Object = frame!.querySelector<HTMLInputElement>(key.button1object);
-    let button2Object = frame!.querySelector<HTMLInputElement>(key.button2object);
-    let rememberObject = frame!.querySelector<HTMLInputElement>(key.rememberobject);
+    let emailObject = frame.querySelector(key.emailobject);
+    let passwordObject = frame.querySelector(key.passwordobject);
+    let buttonObject = frame.querySelector(key.buttonobject);
+    let button1Object = frame.querySelector(key.button1object);
+    let button2Object = frame.querySelector(key.button2object);
+    let rememberObject = frame.querySelector(key.rememberobject);
 
     if (!key.hideobject) {
       hideObject = !passwordObject;
@@ -140,10 +132,10 @@ function getLoginDetails(askfordata) {
         let username = key.key.username;
         let password = key.key.password;
 
-        fillFormField(emailObject!, username);
-        fillFormField(passwordObject!, password);
+        fillFormField(emailObject, username);
+        fillFormField(passwordObject, password);
 
-        clickButton(buttonObject!);
+        clickButton(buttonObject);
         repeatpossible = false;
       } else if (key.type == 3 || key.type == 4 || key.type == 5) {
         //Two Steps
@@ -152,28 +144,28 @@ function getLoginDetails(askfordata) {
         let password = key.key.password;
 
         if (
-          (emailObject && emailObject!.value == "" && !passwordObject && !hideObject) ||
+          (emailObject && emailObject.value == "" && !passwordObject && !hideObject) ||
           (key.type == 5 && !clicked && !hideObject)
         ) {
           askfordata++;
-          fillFormField(emailObject!, username);
+          fillFormField(emailObject, username);
 
-          clickButton(button1Object!);
+          clickButton(button1Object);
         }
 
         if (
-          (passwordObject && passwordObject!.value == "" && !hideObject) ||
+          (passwordObject && passwordObject.value == "" && !hideObject) ||
           (key.type == 5 && clicked && !hideObject)
         ) {
           askfordata++;
           if (key.type == 3) {
             repeatpossible = false;
           }
-          fillFormField(passwordObject!, password);
-          clickButton(button2Object!);
+          fillFormField(passwordObject, password);
+          clickButton(button2Object);
         }
         if (key.type == 4 && rememberObject) {
-          clickButton(rememberObject!);
+          clickButton(rememberObject);
           repeatpossible = false;
         }
       }
@@ -199,10 +191,9 @@ function getLoginDetails(askfordata) {
           ipcRenderer.sendToHost("errorDetected");
           return;
         } else if (errorObject) {
-            ipcRenderer.sendToHost("falseLogin");
+          ipcRenderer.sendToHost("falseLogin");
           return;
         } else {
-          let ipcRenderer = require("electron").ipcRenderer;
           ipcRenderer.sendToHost("loggedIn");
           ipcRenderer.sendToHost("hideLoading");
         }
@@ -213,7 +204,7 @@ function getLoginDetails(askfordata) {
   });
 }
 
-function clickButton(targetNode: HTMLElement): void {
+function clickButton(targetNode) {
   triggerMouseEvent(targetNode, "mouseover");
   setTimeout(() => {
     triggerMouseEvent(targetNode, "mousedown");
@@ -224,13 +215,13 @@ function clickButton(targetNode: HTMLElement): void {
   }, 146);
 }
 
-function triggerMouseEvent(node: HTMLElement, eventType: string): void {
+function triggerMouseEvent(node, eventType) {
   let clickEvent = document.createEvent("MouseEvents");
   clickEvent.initEvent(eventType, true, true);
   node.dispatchEvent(clickEvent);
 }
 
-function fillFormField(target: HTMLInputElement, value: string) {
+function fillFormField(target, value) {
   target.dispatchEvent(new Event("focus", { bubbles: true, cancelable: true }));
   target.value = value;
 

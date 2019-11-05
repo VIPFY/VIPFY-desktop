@@ -71,7 +71,13 @@ class DeletePopup extends React.Component<Props, State> {
                   })
             }>
             <span>
-              Remove all from {mainitem.planid ? mainitem.planid.appid.name : concatName(mainitem)}
+              Remove{" "}
+              {!this.state.values[`m-${mainitem.id}`]
+                ? "all"
+                : subArray.every(l => this.state.values[`m-${mainitem.id}`].find(s => s == l.id))
+                ? "no"
+                : "some"}{" "}
+              from {mainitem.planid ? mainitem.planid.appid.name : concatName(mainitem)}
             </span>
           </UniversalCheckbox>
         </li>

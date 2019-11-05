@@ -29,13 +29,19 @@ export const SWITCH_APPS_LAYOUT = gql`
 `;
 
 export const signInUser = gql`
-  mutation SignInUser($email: String!, $password: String!) {
-    signIn(email: $email, password: $password) {
+  mutation SignInUser($email: String!, $password: String, $passkey: String) {
+    signIn(email: $email, password: $password, passkey: $passkey) {
       ok
       token
       twofactor
       unitid
     }
+  }
+`;
+
+export const SIGN_OUT = gql`
+  mutation {
+    signOut
   }
 `;
 

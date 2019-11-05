@@ -1,7 +1,6 @@
 import { ApolloClient } from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
 import { WebSocketLink } from "apollo-link-ws";
-import { setContext } from "apollo-link-context";
 import { createUploadLink } from "apollo-upload-client";
 import { RetryLink } from "apollo-link-retry";
 import { onError } from "apollo-link-error";
@@ -9,6 +8,7 @@ import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
 import { logger } from "../logger";
+import { typeDefs, resolvers } from "./localGraphQL";
 
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
@@ -107,7 +107,7 @@ const cache = new InMemoryCache({
 });
 const httpLink = createUploadLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
-  credentials: "same-origin"
+  credentials: "include"
 });
 // const httpLink = new BatchHttpLink({
 //   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
@@ -116,27 +116,8 @@ const httpLink = createUploadLink({
 //   batchMax: 100
 // });
 
-// Pass the tokens to the server to authenticate the user
-const middlewareLink = setContext(() => ({
-  headers: {
-    "x-token": localStorage.getItem("token"),
-    "i-token": localStorage.getItem("impersonator-token")
-  }
-}));
-
-// Refresh the tokens after the user makes a request
 const afterwareLink = new ApolloLink((operation, forward) => {
-  return forward(operation).map(response => {
-    const {
-      response: { headers }
-    } = operation.getContext();
-    if (headers) {
-      const token = headers.get("x-token");
-
-      if (token) {
-        localStorage.setItem("token", token);
-      }
-    }
+  return forward!(operation).map(response => {
     dismissHeaderNotification("network", true);
     return response;
   });
@@ -153,14 +134,11 @@ const wsLink = new WebSocketLink({
   }
 });
 
-// We pass our logout function here to catch malfunctioning tokens and log the
-// User out in case
+// We pass our logout function here to log the User out in case of Auth Errors
 let logout = () => {
   return;
 };
 
-// We pass our logout function here to catch malfunctioning tokens and log the
-// User out in case
 let handleUpgradeError = () => {
   return;
 };
@@ -218,18 +196,12 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const retryLink = new RetryLink({
-  attempts: {
-    max: 10
-  },
-  delay: {
-    initial: 1000
-  }
+  attempts: { max: 10 },
+  delay: { initial: 1000 }
 });
 
-// Concatenate the created middle- and afterware together
-const httpLinkWithMiddleware = retryLink.concat(
-  errorLink.concat(afterwareLink.concat(middlewareLink.concat(httpLink)))
-);
+// Concatenate the created links together
+const httpLinkWithMiddleware = retryLink.concat(errorLink.concat(afterwareLink.concat(httpLink)));
 
 // Split the links, so that each can be used for the defined operation
 const link = split(
@@ -245,5 +217,7 @@ const link = split(
 // Create a client to use Apollo for communication with GraphQL
 export default new ApolloClient({
   link,
-  cache
+  cache,
+  typeDefs,
+  resolvers
 });

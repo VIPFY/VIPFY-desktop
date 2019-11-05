@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment = require("moment");
+import moment from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";

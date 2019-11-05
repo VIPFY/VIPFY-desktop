@@ -2,11 +2,11 @@ $border-length: 10px;
 
 .dashboard {
   @extend .managerPage;
-  display: flex;
+  /*display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
-  padding: 24px 48px 0;
+  padding: 24px 48px 0;*/
 
   .favourite-apps {
     display: grid;
@@ -89,6 +89,10 @@ $border-length: 10px;
     //grid-template-columns: repeat(auto-fit, 8rem);
     //grid-column-gap: 56px;
     //grid-row-gap: 32px;
+    grid-template-columns: repeat(auto-fit, 8rem);
+    grid-template-rows: 170px;
+    grid-column-gap: 56px;
+    grid-row-gap: 32px;
     position: relative;
 
     grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));

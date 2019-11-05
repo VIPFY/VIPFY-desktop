@@ -1,9 +1,9 @@
 import * as React from "react";
-import WebView = require("react-electron-web-view");
-import { sleep } from "../common/functions";
+import WebView from "react-electron-web-view";
+import { sleep, getPreloadScriptPath } from "../common/functions";
 
-const { session } = require("electron").remote;
-
+import { remote } from "electron";
+const { session } = remote;
 interface Props {
   loginUrl: string;
   username: string;
@@ -189,7 +189,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   render() {
     return (
       <WebView
-        preload="./ssoConfigPreload/universalLogin.js"
+        preload={getPreloadScriptPath("universalLogin.js")}
         webpreferences="webSecurity=no"
         src={this.props.loginUrl}
         partition={this.props.partition}
@@ -214,15 +214,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         }
       }
     }
-
-    //Check if logout button present
-
-    /*w.getWebContents().executeJavaScript(
-      `ipcRenderer = ipcRenderer || require("electron").ipcRenderer;
-      document.querySelectorAll("#team_menu_user_details").length > 0 && ipcRenderer.sendToHost("loggedInObject", null);`
-    );*/
-
-    // let returnvalue = false;
 
     return await w
       .getWebContents()

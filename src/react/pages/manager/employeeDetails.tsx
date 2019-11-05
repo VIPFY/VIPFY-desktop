@@ -17,7 +17,7 @@ import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
-import moment = require("moment");
+import moment from "moment";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -252,6 +252,13 @@ class EmployeeDetails extends React.Component<Props, State> {
                   employeeid={employeeid}
                   employeename={`${querydata.firstname} ${querydata.lastname}`}
                   moveTo={employeeid == this.props.id ? () => {} : this.props.moveTo}
+                  isadmin={this.props.isadmin}
+                />
+                <LicencesSection
+                  employeeid={employeeid}
+                  employeename={`${querydata.firstname} ${querydata.lastname}`}
+                  moveTo={this.props.moveTo}
+                  employee={querydata}
                   isadmin={this.props.isadmin}
                 />
 

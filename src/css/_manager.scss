@@ -232,6 +232,12 @@
                 }
             }
         }
+        .appGrid{
+            padding: 26px 32px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, 128px);
+            grid-row-gap: 16px;
+        }
     }
     .profilepicture{
         border-radius: 4px;

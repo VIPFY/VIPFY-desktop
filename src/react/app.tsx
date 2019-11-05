@@ -1,9 +1,10 @@
 import * as React from "react";
 import { withRouter } from "react-router";
-import { graphql, Query, withApollo } from "react-apollo";
-import Store = require("electron-store");
+import { graphql, Query, withApollo, compose } from "react-apollo";
+import gql from "graphql-tag";
+import Store from "electron-store";
 
-import { signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
+import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
 import { AppContext, refetchQueries } from "./common/functions";
 import { filterError } from "./common/functions";
@@ -13,14 +14,21 @@ import LoadingDiv from "./components/LoadingDiv";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
-import gql from "graphql-tag";
-import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
-import { logger, resetLoggingContext } from "../logger";
+import { resetLoggingContext } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
-const { session } = require("electron").remote;
+import { hashPassword } from "./common/crypto";
+import { remote } from "electron";
+const { session } = remote;
+import "../css/layout.scss";
+
+const END_IMPERSONATION = gql`
+  mutation onEndImpersonation($token: String!) {
+    endImpersonation(token: $token)
+  }
+`;
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -35,6 +43,9 @@ interface AppProps {
   setName: Function;
   signIn: any;
   signUp: any;
+  signOut: Function;
+  endImpersonation: Function;
+  location: any;
 }
 
 interface PopUp {
@@ -112,6 +123,11 @@ class App extends React.Component<AppProps, AppState> {
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
+    // session.defaultSession.cookies.get({}, (error, cookies) => {
+    //   if (error) {
+    //     return;
+    //   }
+    // });
     this.props.history.push("/area");
     //this.redeemSetupToken();
   }
@@ -150,43 +166,68 @@ class App extends React.Component<AppProps, AppState> {
 
   logMeOut = async () => {
     const impersonated = await localStorage.getItem("impersonator-token");
-
     if (impersonated) {
-      await localStorage.setItem("token", impersonated!);
+      try {
+        const res = await this.props.endImpersonation({
+          variables: { token: impersonated }
+        });
+        await localStorage.setItem("token", res.endImpersonation);
+      } catch (err) {
+        localStorage.removeItem("token");
+        console.error("LOG: logMeOut -> err", err);
+      }
       await localStorage.removeItem("impersonator-token");
+
+      await this.props.history.push("/area/dashboard");
+      await this.props.client.cache.reset(); // clear graphql cache
     } else {
+      // Destroy all Sessions
+      try {
+        await this.props.signOut();
+      } catch (err) {
+        console.error("LOG: logMeOut -> err", err);
+      }
+
       await localStorage.removeItem("token");
+      await this.props.client.cache.reset(); // clear graphql cache
+      await resetLoggingContext();
+      await session.fromPartition("services").clearStorageData();
+      await this.props.history.push("/");
     }
 
-    await this.props.client.cache.reset(); // clear graphql cache
-
-    await resetLoggingContext();
-    await session.fromPartition("services").clearStorageData();
-    await this.props.history.push("/");
     await this.setState(INITIAL_STATE); // clear state
     await location.reload();
   };
 
-  logMeIn = async (email: string, password: string, refetch: Function) => {
+  logMeIn = async (email: string, password: string) => {
     try {
-      // Login will fail if there already is a token, which to be fair,
-      // should never be the case. But never say never...
-      const tokenExists = localStorage.getItem("token");
-
-      if (tokenExists) {
-        localStorage.removeItem("token");
+      let loginkey: Buffer | null = null;
+      let encryptionkey1: Buffer | null = null;
+      let token = null;
+      let twofactor = null;
+      let unitid = null;
+      try {
+        ({ loginkey, encryptionkey1 } = await hashPassword(this.props.client, email, password));
+        const res = await this.props.signIn({
+          variables: { email, passkey: loginkey.toString("hex") }
+        });
+        ({ token, twofactor, unitid } = res.data.signIn);
+      } catch (err) {
+        // fallback for accounts without passkey
+        // this should eventually be removed
+        const res = await this.props.signIn({
+          variables: { email, password }
+        });
+        ({ token, twofactor, unitid } = res.data.signIn);
       }
 
-      const res = await this.props.signIn({ variables: { email, password } });
-      const { token, twofactor, unitid } = res.data.signIn;
-
-      if (token && !twofactor) {
+      if (!twofactor) {
         localStorage.setItem("token", token);
-        //this.forceUpdate();
-        //this.props.client.query({ query: me, fetchPolicy: "network-only", errorPolicy: "ignore" });
-        refetch();
-      } else if (twofactor && unitid) {
+        localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
+        this.forceUpdate();
+      } else if (token && twofactor) {
         localStorage.setItem("twoFAToken", token);
+        localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
         this.setState({ twofactor, unitid });
       } else {
         throw new Error("Something went wrong!");
@@ -223,7 +264,7 @@ class App extends React.Component<AppProps, AppState> {
               return (
                 <div className="centralize backgroundLogo">
                   <SignIn
-                    login={(a, b) => this.logMeIn(a, b, refetch)}
+                    login={(a, b) => this.logMeIn(a, b)}
                     moveTo={this.moveTo}
                     error={error && error.networkError ? "network" : filterError(error)}
                     resetError={() => this.setState({ error: "" })}
@@ -286,7 +327,7 @@ class App extends React.Component<AppProps, AppState> {
         <TwoFactor
           moveTo={this.moveTo}
           twoFactor={this.state.twofactor}
-          unitid={this.state.unitid}
+          unitid={this.state.unitid!}
         />
       );
     } else {
@@ -305,13 +346,9 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
-  sidebarloaded = () => {
-    this.setState({ sidebarloaded: true });
-  };
+  sidebarloaded = () => this.setState({ sidebarloaded: true });
 
-  setrenderElements = references => {
-    this.setState({ renderElements: references });
-  };
+  setrenderElements = references => this.setState({ renderElements: references });
 
   setreshowTutorial = section => {
     switch (section) {
@@ -339,7 +376,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    const { placeid, popup, page, sidebarloaded } = this.state;
+    const { placeid, popup } = this.state;
 
     return (
       <AppContext.Provider
@@ -395,6 +432,8 @@ class App extends React.Component<AppProps, AppState> {
   }
 }
 
-export default graphql(signInUser, {
-  name: "signIn"
-})(withApollo(withRouter(App)));
+export default compose(
+  graphql(END_IMPERSONATION, { name: "endImpersonation" }),
+  graphql(signInUser, { name: "signIn" }),
+  graphql(SIGN_OUT, { name: "signOut" })
+)(withApollo(withRouter(App)));

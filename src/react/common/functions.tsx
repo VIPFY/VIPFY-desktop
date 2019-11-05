@@ -2,8 +2,18 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import moment = require("moment");
+import { shell } from "electron";
+import path from "path";
+
+import moment from "moment";
 import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
+
+export function getPreloadScriptPath(script: string): string {
+  return (
+    "file://" +
+    path.join(ASSET_RELOCATOR_BASE_DIR, "../ssoConfigPreload/", script).replace(/\\/g, "/")
+  );
+}
 
 export function showStars(stars, maxStars = 5) {
   const starsArray: JSX.Element[] = [];
@@ -229,7 +239,7 @@ export const ConsentText = () => (
       className="fancy-link"
       onClick={e => {
         e.preventDefault();
-        require("electron").shell.openExternal("https://vipfy.store/privacy");
+        shell.openExternal("https://vipfy.store/privacy");
       }}>
       Privacy Policy
     </span>{" "}
@@ -239,10 +249,52 @@ export const ConsentText = () => (
       className="fancy-link"
       onClick={e => {
         e.preventDefault();
-        require("electron").shell.openExternal("https://vipfy.store/tos");
+        shell.openExternal("https://vipfy.store/tos");
       }}>
       Terms of Service
     </span>
     .
   </span>
 );
+
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+export const debounce = (func: Function, wait: number, immediate?: boolean) => {
+  let timeout;
+
+  return () => {
+    let context = this,
+      args = arguments;
+
+    let later = () => {
+      timeout = null;
+
+      if (!immediate) {
+        func.apply(context, args);
+      }
+    };
+
+    let callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+
+    if (callNow) {
+      func.apply(context, args);
+    }
+  };
+};
+
+export function getMyUnitId(client: any): string {
+  return client.readQuery({
+    // read from cache
+    query: gql`
+      {
+        me {
+          id
+        }
+      }
+    `
+  }).me.id;
+}

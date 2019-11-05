@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";

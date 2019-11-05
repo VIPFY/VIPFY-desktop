@@ -9,7 +9,7 @@ import { SecurityContext } from "../../pages/security";
 
 const IMPERSONATE = gql`
   mutation onImpersonate($unitid: ID!) {
-    impersonate(unitid: $unitid)
+    impersonate(userid: $unitid)
   }
 `;
 

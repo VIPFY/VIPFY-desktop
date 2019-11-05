@@ -2,7 +2,7 @@ import * as React from "react";
 import { Query, Mutation, compose, graphql } from "react-apollo";
 import { fetchUserLicences } from "../../queries/departments";
 import gql from "graphql-tag";
-import moment = require("moment");
+import moment from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
 import { fetchLicences, me } from "../../queries/auth";
@@ -219,6 +219,13 @@ class ServiceDetails extends React.Component<Props, State> {
                       }}
                     </Query>
                   </div>
+                </div>
+                <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
+                  {e.pending && (
+                    <i
+                      className="fad fa-exclamation-triangle warningColor"
+                      title="Integration pending"></i>
+                  )}
                 </div>
                 <div className="tableEnd">
                   {this.props.isadmin && (
