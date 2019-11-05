@@ -1,13 +1,13 @@
 require("dotenv").config();
 
 let config = {
-  backendHost: "api.vipfy.store",
-  backendPort: 443,
-
-  backendSSL: true,
-
-  isDevelopment: false,
-
+  backendHost: process.env.SERVER_NAME || "api.vipfy.store",
+  backendPort: process.env.SERVER_PORT || 443,
+  backendSSL:
+    process.env.SERVER_SSL !== "0" &&
+    process.env.SERVER_SSL !== "false" &&
+    process.env.SERVER_SSL !== "FALSE",
+  isDevelopment: !!process.env.DEVELOPMENT,
   stripeToken: process.env.stripeToken,
 
   showProfile: true,
@@ -17,11 +17,11 @@ let config = {
   showDomains: false,
   showMarketplace: false,
   showAppAdmin: false,
-  showAdmin: false,
+  showAdmin: true,
   showSsoConfig: false,
   showUniversalLoginDebug: false,
 
-  allowDevTools: false
+  allowDevTools: true
 };
 
 if (!config.stripeToken) {
