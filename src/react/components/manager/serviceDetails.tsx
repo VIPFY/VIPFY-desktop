@@ -220,6 +220,13 @@ class ServiceDetails extends React.Component<Props, State> {
                     </Query>
                   </div>
                 </div>
+                <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
+                  {e.pending && (
+                    <i
+                      className="fad fa-exclamation-triangle warningColor"
+                      title="Integration pending"></i>
+                  )}
+                </div>
                 <div className="tableEnd">
                   {this.props.isadmin && (
                     <div className="editOptions">

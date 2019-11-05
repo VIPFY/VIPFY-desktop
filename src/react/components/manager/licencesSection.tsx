@@ -176,6 +176,7 @@ class LicencesSection extends React.Component<Props, State> {
                         <h1>min/Month</h1>
                       </div>
                     </div>
+                    <div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>
                     <div className="tableEnd">
                       {this.props.isadmin && (
                         <UniversalButton
