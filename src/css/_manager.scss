@@ -793,3 +793,9 @@
 //  background: #F6F6F6;
   @extend .animated-background;
 }
+
+.warningColor{
+    --fa-secondary-opacity: 1.0;
+    --fa-primary-color: #253647;
+    --fa-secondary-color: #FFC15D;
+}

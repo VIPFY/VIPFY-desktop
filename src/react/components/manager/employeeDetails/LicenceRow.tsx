@@ -18,6 +18,7 @@ interface Props {
   user?: number;
   scrollTop?: number;
   holder?: any;
+  checkSanity?: Function;
 }
 
 interface State {
@@ -44,12 +45,19 @@ class LicenceRow extends React.Component<Props, State> {
     await this.setState({ [name]: value });
 
     const { starttime, endtime, user } = this.state;
+    const { checkSanity } = this.props;
 
     if (starttime && endtime) {
       if (moment(endtime).isBefore(moment(starttime))) {
         this.setState({ sanityCheck: false });
+        if (checkSanity) {
+          checkSanity(false);
+        }
       } else {
         this.setState({ sanityCheck: true });
+        if (checkSanity) {
+          checkSanity(true);
+        }
 
         if (user) {
           this.props.addLicence(
