@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import moment = require("moment");
+import moment from "moment";
 import DropDown from "../../../common/DropDown";
 import { Licence, Option } from "../../../interfaces";
 import DatePicker from "../../../common/DatePicker";
@@ -18,6 +18,7 @@ interface Props {
   user?: number;
   scrollTop?: number;
   holder?: any;
+  checkSanity?: Function;
 }
 
 interface State {
@@ -44,12 +45,19 @@ class LicenceRow extends React.Component<Props, State> {
     await this.setState({ [name]: value });
 
     const { starttime, endtime, user } = this.state;
+    const { checkSanity } = this.props;
 
     if (starttime && endtime) {
       if (moment(endtime).isBefore(moment(starttime))) {
         this.setState({ sanityCheck: false });
+        if (checkSanity) {
+          checkSanity(false);
+        }
       } else {
         this.setState({ sanityCheck: true });
+        if (checkSanity) {
+          checkSanity(true);
+        }
 
         if (user) {
           this.props.addLicence(
@@ -145,7 +153,10 @@ class LicenceRow extends React.Component<Props, State> {
           </div>
 
           <div className="tableColumnSmall" style={{ display: "flex", alignItems: "center" }}>
-            <Query pollInterval={60 * 100 * 1000} query={FETCH_EMPLOYEES}>
+            <Query
+              pollInterval={60 * 100 * 1000}
+              query={FETCH_EMPLOYEES}
+              fetchPolicy="network-only">
               {({ data, loading, error }) => {
                 if (loading) {
                   return <LoadingDiv text="Fetching data..." />;

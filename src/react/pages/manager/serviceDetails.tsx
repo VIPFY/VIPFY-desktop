@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
@@ -81,13 +81,12 @@ class ServiceDetails extends React.Component<Props, State> {
           return (
             <div className="managerPage">
               <div className="heading">
-                <h1>
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("lmanager")}>
+                <span className="h1">
+                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("emanager")}>
                     Service Manager
                   </span>
-                  <h2>></h2>
-                  <h2>{service.name}</h2>
-                </h1>
+                  <span className="h2">{service.name}</span>
+                </span>
 
                 <UniversalSearchBox
                   getValue={v => {

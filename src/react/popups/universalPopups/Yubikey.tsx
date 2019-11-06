@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { GENERATE_SECRET } from "./GoogleAuth";
 import { User } from "../../interfaces";
 import LoadingDiv from "../../components/LoadingDiv";
-import { ErrorComp } from "../../common/functions";
+import { ErrorComp, getPreloadScriptPath } from "../../common/functions";
 
 interface Props {
   close: Function;
@@ -66,7 +66,7 @@ class Yubikey extends React.Component<Props, State> {
                 />
 
                 <WebView
-                  preload="./locationScripts/yubikey-preload.js"
+                  preload={getPreloadScriptPath("yubikey-preload.js")}
                   src="https://vipfy.store"
                   partition="yubikey"
                   className="invisibleWebview"

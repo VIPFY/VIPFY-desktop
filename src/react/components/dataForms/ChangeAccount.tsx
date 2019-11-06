@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import Store = require("electron-store");
+import Store from "electron-store";
 import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
 
 interface Props {

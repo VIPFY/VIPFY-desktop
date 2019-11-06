@@ -1,7 +1,7 @@
 import * as React from "react";
 import { shell } from "electron";
 import UniversalButton from "./components/universalButtons/universalButton";
-
+import ssoCreation from "../images/sso_creation_fail.png";
 /**
  * Show an error page to a logged out user
  */
@@ -23,7 +23,7 @@ class UpgradeError extends React.Component<Props, State> {
         <div id="outer-error-page">
           <h1>Sorry an error occurred!</h1>
           <img
-            src="images/sso_creation_fail.png"
+            src={ssoCreation}
             width={621}
             height={390}
             style={{ marginTop: "80px", marginBottom: "74px" }}

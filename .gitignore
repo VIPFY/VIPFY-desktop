@@ -1,5 +1,6 @@
 node_modules
 package-lock.json
+.webpack
 out
 .cache
 src/**/*.css
@@ -7,3 +8,4 @@ src/**/*.css
 src/react/components/admin/sitesfilled.tsx
 ssotest.json
 debug.log
+.webpack

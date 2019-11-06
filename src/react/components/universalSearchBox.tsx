@@ -1,4 +1,5 @@
 import * as React from "react";
+import { clipboard } from "electron";
 
 interface Props {
   placeholder?: string;
@@ -79,6 +80,7 @@ class UniversalSearchBox extends React.Component<Props, State> {
         e!.preventDefault();
       }
     } else {
+      this.input.blur();
       if (
         !this.props.noautomaticclosing &&
         (this.props.automaticclosing || this.state.value == "")
@@ -157,7 +159,6 @@ class UniversalSearchBox extends React.Component<Props, State> {
   };
 
   render() {
-    const { clipboard } = require("electron");
     return (
       <div
         className="genericSearchHolder"

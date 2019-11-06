@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment = require("moment");
+import moment from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
@@ -7,7 +7,7 @@ import { Mutation, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import { sleep, concatName } from "../../common/functions";
+import { concatName } from "../../common/functions";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
@@ -92,8 +92,8 @@ const UPDATE_EMAIL = gql`
 `;
 
 const DELETE_EMAIL = gql`
-  mutation onDeleteEmail($email: String!, $company: Boolean, $userid: ID) {
-    deleteEmail(email: $email, forCompany: $company, userid: $userid) {
+  mutation onDeleteEmail($email: String!, $userid: ID) {
+    deleteEmail(email: $email, userid: $userid) {
       ok
     }
   }
@@ -191,10 +191,10 @@ class PersonalDetails extends React.Component<Props, State> {
       switch (this.state.edit.id) {
         case "emails":
           if (this.state.idlistset != "emails") {
-            this.setState({ idlist: [] });
-            const idlist = this.state.idlist;
-            idlist.push(`${this.state.edit.id}-${email.oldemail || email.email}`);
-            this.setState({ idlist: idlist });
+            //this.setState({ idlist: [] });
+            //const idlist = [];
+            //idlist.push(`${this.state.edit.id}-${email.oldemail || email.email}`);
+            //this.setState({ idlist: idlist });
             this.setState({ idlistset: "emails" });
           }
           break;
@@ -273,7 +273,12 @@ class PersonalDetails extends React.Component<Props, State> {
       case "emails":
         const emailforms: JSX.Element[] = [];
         let newemail = false;
-        if (Math.max(this.props.querydata.emails.length, this.state.editvalueArray.length) > 0) {
+        if (
+          Math.max(
+            this.props.querydata.emails.filter(e => e != null).length,
+            this.state.editvalueArray.length
+          ) > 0
+        ) {
           const emails = this.props.querydata.emails.map((email, index) => {
             if (this.state.editvalueArray[index]) {
               return this.state.editvalueArray[index];
@@ -309,12 +314,31 @@ class PersonalDetails extends React.Component<Props, State> {
                   })
                 }
                 startvalue={email.email}
-                deleteFunction={() => {
-                  this.setState(({ editvalueArray }) => {
-                    editvalueArray[index] = { emaildeleted: true, oldemail: email.email };
-                    return { editvalueArray };
-                  });
-                }}
+                deleteFunction={
+                  (this.state.editvalueArray.length == 0 &&
+                    this.props.querydata.emails.length > 1) ||
+                  (this.state.editvalueArray.length > 0 &&
+                    this.state.editvalueArray.length -
+                      this.state.editvalueArray.reduce((a, e) => {
+                        if (
+                          e &&
+                          (e.emaildeleted == true ||
+                            (e.email == null || (e.email && !e.email.includes("@"))))
+                        ) {
+                          return a + 1;
+                        } else {
+                          return a;
+                        }
+                      }, 0) >
+                      1)
+                    ? () => {
+                        this.setState(({ editvalueArray }) => {
+                          editvalueArray[index] = { emaildeleted: true, oldemail: email.email };
+                          return { editvalueArray };
+                        });
+                      }
+                    : undefined
+                }
                 style={email.emaildeleted && { display: "none" }}
                 disabled={email.disabled}
               />
@@ -347,7 +371,10 @@ class PersonalDetails extends React.Component<Props, State> {
         const phoneforms: JSX.Element[] = [];
         let newphone = false;
         if (
-          Math.max(this.props.querydata.workPhones.length, this.state.editvalueArray.length) > 0
+          Math.max(
+            this.props.querydata.workPhones.filter(e => e != null).length,
+            this.state.editvalueArray.length
+          ) > 0
         ) {
           const phones = this.props.querydata.workPhones.map((phone, index) => {
             if (this.state.editvalueArray[index]) {
@@ -426,7 +453,10 @@ class PersonalDetails extends React.Component<Props, State> {
         const privatephoneforms: JSX.Element[] = [];
         let privatenewphone = false;
         if (
-          Math.max(this.props.querydata.privatePhones.length, this.state.editvalueArray.length) > 0
+          Math.max(
+            this.props.querydata.privatePhones.filter(e => e != null).length,
+            this.state.editvalueArray.length
+          ) > 0
         ) {
           const phones = this.props.querydata.privatePhones.map((phone, index) => {
             if (this.state.editvalueArray[index]) {
@@ -569,7 +599,11 @@ class PersonalDetails extends React.Component<Props, State> {
                   startvalue: querydata.birthday
                     ? moment(querydata.birthday - 0).format("YYYY-MM-DD")
                     : " ",
-                  type: "date"
+                  type: "date",
+                  checking: true,
+                  editvalue: querydata.birthday
+                    ? moment(querydata.birthday - 0).format("YYYY-MM-DD")
+                    : " "
                 }
               })
             }>
@@ -592,7 +626,11 @@ class PersonalDetails extends React.Component<Props, State> {
                   startvalue: querydata.hiredate
                     ? moment(querydata.hiredate - 0).format("YYYY-MM-DD")
                     : " ",
-                  type: "date"
+                  type: "date",
+                  checking: true,
+                  editvalue: querydata.hiredate
+                    ? moment(querydata.hiredate - 0).format("YYYY-MM-DD")
+                    : " "
                 }
               })
             }>
@@ -734,7 +772,13 @@ class PersonalDetails extends React.Component<Props, State> {
                       this.state.editvalue!.trim() != ""
                     ) ||
                       (this.state.editvalueArray != null &&
-                        this.state.editvalueArray.some(v => v != null && v != "")))
+                        this.state.editvalueArray.some(v => v != null && v != ""))) &&
+                    !(
+                      (this.state.editvalue == null || this.state.editvalue == "") &&
+                      (this.state.edit!.startvalue != null ||
+                        this.state.edit!.startvalue != "" ||
+                        this.state.edit!.startvalue!.trim() != "")
+                    )
                   }
                   onClick={() => this.handleConfirm()}
                 />

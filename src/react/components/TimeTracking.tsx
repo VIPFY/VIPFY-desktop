@@ -2,7 +2,7 @@ import * as React from "react";
 import * as History from "history";
 import * as Moment from "moment";
 import { withRouter, RouteComponentProps } from "react-router";
-import moment = require("moment");
+import moment from "moment";
 
 const TimeTrackerContext = React.createContext({ tracker: null } as ContextValue);
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import moment = require("moment");
+import moment from "moment";
 import UniversalButton from "../components/universalButtons/universalButton";
 
 interface Props {

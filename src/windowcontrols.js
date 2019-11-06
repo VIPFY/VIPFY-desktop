@@ -1,4 +1,4 @@
-const remote = require("electron").remote;
+import { remote } from "electron";
 
 (function handleWindowControls() {
   // When document has loaded, initialise

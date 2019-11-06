@@ -13,7 +13,6 @@ interface Props {
 interface State {
   error: string;
   showBoughtplans: Boolean;
-
   loginUrl: string;
   username: string;
   password: string;
@@ -209,7 +208,10 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
           </div>
         )}
         {this.state.result && (
-          <button type="button" onClick={() => this.setState({ submit: true })} style={{marginLeft: "35em"}}>
+          <button
+            type="button"
+            onClick={() => this.setState({ submit: true })}
+            style={{ marginLeft: "35em" }}>
             Submit
           </button>
         )}
@@ -276,23 +278,24 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
     const res: JSX.Element[] = [];
     for (const color of this.state.result!.colors) {
       res.push(
-        <div key={`k${color}`} style={{paddingLeft: "1em"}}>
+        <div key={`k${color}`} style={{ paddingLeft: "1em" }}>
           <a
             onClick={() =>
               this.setState(prev => ({
-                result: { ...prev.result, color };
+                result: { ...prev.result, color }
               }))
-            }
-          ><div
-          style={{
-            height: "1.2em",
-            width: "4em",
-            backgroundColor: color,
-            display: "inline-block"
-          }}>
-          &nbsp;
-        </div>
-        {color} (click to set)</a>
+            }>
+            <div
+              style={{
+                height: "1.2em",
+                width: "4em",
+                backgroundColor: color,
+                display: "inline-block"
+              }}>
+              &nbsp;
+            </div>
+            {color} (click to set)
+          </a>
         </div>
       );
     }

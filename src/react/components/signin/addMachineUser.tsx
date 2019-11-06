@@ -2,8 +2,9 @@ import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 
-import Store = require("electron-store");
+import Store from "electron-store";
 import { emailRegex } from "../../common/constants";
+import loginPic from "../../../images/login_new_user.png";
 
 interface Props {
   continueFunction: Function;
@@ -25,10 +26,7 @@ class AddMachineUser extends React.Component<Props, State> {
       <div className="dataGeneralForm">
         <div className="holder">
           <div className="logo" />
-          <img
-            src={`${__dirname}/../../../images/login_new_user.png`}
-            className="illustration-login"
-          />
+          <img src={loginPic} className="illustration-login" />
 
           <div className="holder-right">
             <h1>Login to VIPFY</h1>

@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query, Mutation } from "react-apollo";
 import { fetchTeams, fetchUserLicences, fetchUsersOwnLicences } from "../../queries/departments";
-import moment = require("moment");
+import moment from "moment";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import AddEmployeeToTeam from "./addEmployeeToTeam";
@@ -116,20 +116,22 @@ class ServiceTeamsSection extends React.Component<Props, State> {
               </div>
             </div>
             <div className="tableEnd">
-              <UniversalButton
-                type="high"
-                label="Add Team"
-                customStyles={{
-                  fontSize: "12px",
-                  lineHeight: "24px",
-                  fontWeight: "700",
-                  marginRight: "16px",
-                  width: "92px"
-                }}
-                onClick={() => {
-                  this.setState({ add: true });
-                }}
-              />
+              {!this.props.service.disabled && (
+                <UniversalButton
+                  type="high"
+                  label="Add Team"
+                  customStyles={{
+                    fontSize: "12px",
+                    lineHeight: "24px",
+                    fontWeight: "700",
+                    marginRight: "16px",
+                    width: "92px"
+                  }}
+                  onClick={() => {
+                    this.setState({ add: true });
+                  }}
+                />
+              )}
             </div>
           </div>
           {teamArray}

@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
-import { graphql, compose, Query, withApollo } from "react-apollo";
-import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
+import { graphql, Query, withApollo } from "react-apollo";
+import { QUERY_SEMIPUBLICUSER, QUERY_ME } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
 import TeamsSection from "../../components/manager/teamsSection";
@@ -10,7 +10,6 @@ import { QUERY_USER } from "../../queries/user";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
-import { me } from "../../queries/auth";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import TemporaryLicences from "../../components/manager/employeeDetails/TemporaryLicences";
 import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicences";
@@ -18,7 +17,7 @@ import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
-import moment = require("moment");
+import moment from "moment";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -35,6 +34,7 @@ interface Props {
   client: ApolloClient<InMemoryCache>;
   profile?: Boolean;
   isadmin?: Boolean;
+  id: number;
 }
 
 interface State {
@@ -70,17 +70,20 @@ class EmployeeDetails extends React.Component<Props, State> {
     return (
       <Query
         pollInterval={60 * 10 * 1000 + 300}
-        query={QUERY_SEMIPUBLICUSER}
-        variables={{ unitid: employeeid }}>
+        query={this.props.profile ? QUERY_ME : QUERY_SEMIPUBLICUSER}
+        variables={this.props.profile ? {} : { unitid: employeeid }}>
         {({ loading, error, data, refetch }) => {
           if (loading) {
             return "Loading...";
           }
+
           if (error) {
             return `Error! ${error.message}`;
           }
-          if (data && data.fetchSemiPublicUser) {
-            const querydata = data.fetchSemiPublicUser;
+
+          if (data && (data.fetchSemiPublicUser || data.me)) {
+            const querydata = data.fetchSemiPublicUser || data.me;
+            console.log("LOG: EmployeeDetails -> render -> querydata", querydata);
             const privatePhones = [];
             const workPhones = [];
 
@@ -112,7 +115,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                     )}
                   </span>
 
-                  <UniversalSearchBox />
+                  {/*<UniversalSearchBox />*/}
                 </div>
                 <div className="section">
                   <div className="heading">
@@ -145,7 +148,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                             {querydata.isonline ? "Online" : "Offline"}
                           </div>
                         </div>
-
+                        {console.log("LOG: EmployeeDetails -> render -> querydata", querydata)}{" "}
                         <PersonalDetails
                           querydata={querydata}
                           refetch={refetch}
@@ -199,20 +202,18 @@ class EmployeeDetails extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        {this.props.isadmin && (
-                          <UniversalButton
-                            type="high"
-                            label="Manage Security"
-                            customStyles={{
-                              fontSize: "12px",
-                              lineHeight: "24px",
-                              fontWeight: "700",
-                              marginRight: "16px",
-                              width: "120px"
-                            }}
-                            onClick={() => this.setState({ showSecurityPopup: true })}
-                          />
-                        )}
+                        <UniversalButton
+                          type="high"
+                          label="Manage Security"
+                          customStyles={{
+                            fontSize: "12px",
+                            lineHeight: "24px",
+                            fontWeight: "700",
+                            marginRight: "16px",
+                            width: "120px"
+                          }}
+                          onClick={() => this.setState({ showSecurityPopup: true })}
+                        />
                       </div>
                     </div>
                     <div className="tableRow">
@@ -246,42 +247,49 @@ class EmployeeDetails extends React.Component<Props, State> {
                     </div>
                   </div>
                 </div>
+
                 <TeamsSection
                   employeeid={employeeid}
                   employeename={`${querydata.firstname} ${querydata.lastname}`}
-                  moveTo={this.props.moveTo}
-                  isadmin={this.props.isadmin}
-                />
-                <LicencesSection
-                  employeeid={employeeid}
-                  employeename={`${querydata.firstname} ${querydata.lastname}`}
-                  moveTo={this.props.moveTo}
-                  employee={querydata}
+                  moveTo={employeeid == this.props.id ? () => {} : this.props.moveTo}
                   isadmin={this.props.isadmin}
                 />
 
-                <TemporaryLicences
-                  firstName={querydata.firstname}
-                  unitid={employeeid}
-                  isadmin={this.props.isadmin}
-                />
-                <IssuedLicences
-                  unitid={employeeid}
-                  firstName={querydata.firstname}
-                  showTimeAway={this.state.showTimeAway}
-                  closeTimeAway={() => this.setState({ showTimeAway: false })}
-                  isadmin={this.props.isadmin}
-                />
+                {this.props.isadmin && (
+                  <React.Fragment>
+                    <LicencesSection
+                      employeeid={employeeid}
+                      employeename={`${querydata.firstname} ${querydata.lastname}`}
+                      moveTo={this.props.moveTo}
+                      employee={querydata}
+                      isadmin={this.props.isadmin}
+                    />
+                    <TemporaryLicences
+                      firstName={querydata.firstname}
+                      unitid={employeeid}
+                      isadmin={this.props.isadmin}
+                    />
+                    <IssuedLicences
+                      unitid={employeeid}
+                      firstName={querydata.firstname}
+                      showTimeAway={this.state.showTimeAway}
+                      closeTimeAway={() => this.setState({ showTimeAway: false })}
+                      isadmin={this.props.isadmin}
+                    />
+                  </React.Fragment>
+                )}
+
                 {this.state.changepicture && (
                   <PopupSelfSaving
                     savingmessage="Saving Profileimage"
                     savedmessage="Profileimage successfully saved"
                     saveFunction={async () => {
                       await this.props.updatePic({
-                        variables: { file: this.state.changepicture },
-                        refetchQueries: ["me"]
+                        variables: {
+                          file: this.state.changepicture,
+                          unitid: this.props.match.params.userid
+                        }
                       });
-                      this.props.client.query({ query: me, fetchPolicy: "network-only" });
                       this.props.client.query({
                         query: QUERY_USER,
                         variables: { userid: this.props.match.params.userid },
@@ -306,4 +314,4 @@ class EmployeeDetails extends React.Component<Props, State> {
     );
   }
 }
-export default compose(graphql(UPDATE_PIC, { name: "updatePic" }))(withApollo(EmployeeDetails));
+export default graphql(UPDATE_PIC, { name: "updatePic" })(withApollo(EmployeeDetails));

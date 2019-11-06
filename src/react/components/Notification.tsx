@@ -153,6 +153,16 @@ class Notification extends React.Component<Props, State> {
     const { data } = this.props;
     const dataLength = data.fetchNotifications ? data.fetchNotifications.length : 0;
     const dataExists = dataLength > 0;
+    const refetchButton = (
+      <button
+        className="naked-button"
+        type="button"
+        onClick={this.fetchNotifications}
+        onMouseEnter={this.toggleHover}
+        onMouseLeave={this.toggleHover}>
+        <i className={`fas fa-sync ${this.state.hover ? "fa-spin" : ""}`} />
+      </button>
+    );
 
     return (
       <div className="notificationPopup" style={this.props.style}>
@@ -160,24 +170,18 @@ class Notification extends React.Component<Props, State> {
           {`You have ${dataExists ? dataLength : "no"} new notification${
             dataLength == 1 ? "" : "s"
           }`}
+          {!dataExists && refetchButton}
         </div>
 
         <div className="notificationPopupScroller">
-          {dataExists ? this.renderNotifications(data.fetchNotifications) : ""}
+          {dataExists && this.renderNotifications(data.fetchNotifications)}
         </div>
 
-        {dataExists ? (
+        {dataExists && (
           <React.Fragment>
             <div className="notificationPopupFooter">
               <span>Synchronize: </span>
-              <button
-                className="naked-button"
-                type="button"
-                onClick={this.fetchNotifications}
-                onMouseEnter={this.toggleHover}
-                onMouseLeave={this.toggleHover}>
-                <i className={`fas fa-sync ${this.state.hover ? "fa-spin" : ""}`} />
-              </button>
+              {refetchButton}
             </div>
             <div className="notificationPopupFooter">
               <span>Discard:</span>
@@ -186,8 +190,6 @@ class Notification extends React.Component<Props, State> {
               </button>
             </div>
           </React.Fragment>
-        ) : (
-          ""
         )}
       </div>
     );

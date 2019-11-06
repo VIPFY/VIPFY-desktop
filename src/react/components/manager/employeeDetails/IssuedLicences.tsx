@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment = require("moment");
+import moment from "moment";
 import gql from "graphql-tag";
 import { Mutation, Query } from "react-apollo";
 import UniversalButton from "../../universalButtons/universalButton";
@@ -67,6 +67,7 @@ interface State {
   tempLicences: { [key: string]: TempLicence };
   editLicenceData: TempLicence | {};
   scrollTop: number;
+  sanity: boolean;
 }
 
 class IssuedLicences extends React.Component<Props, State> {
@@ -76,7 +77,8 @@ class IssuedLicences extends React.Component<Props, State> {
     showDeletion: false,
     tempLicences: {},
     editLicenceData: {},
-    scrollTop: 0
+    scrollTop: 0,
+    sanity: false
   };
 
   table = React.createRef();
@@ -269,6 +271,7 @@ class IssuedLicences extends React.Component<Props, State> {
                                   licence={editLicence.licenceid}
                                   defaultValues={defaultValues}
                                   holder={this.table}
+                                  checkSanity={s => this.setState({ sanity: s })}
                                 />
                               </div>
 
@@ -283,6 +286,7 @@ class IssuedLicences extends React.Component<Props, State> {
                               <UniversalButton
                                 type="low"
                                 label="Confirm"
+                                disabled={!this.state.sanity}
                                 onClick={() => {
                                   mutate({
                                     variables: {

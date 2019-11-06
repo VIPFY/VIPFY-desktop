@@ -15,7 +15,6 @@ interface Props {
   team: any;
   savingFunction: Function;
   addToTeam: Function;
-  addLicence: Function;
 }
 
 interface State {
@@ -32,31 +31,6 @@ const ADD_EMPLOYEE_TO_TEAM = gql`
   }
 `;
 
-const ADD_LICENCE_TO_USER = gql`
-  mutation addExternalAccountLicence(
-    $username: String!
-    $password: String!
-    $appid: ID
-    $boughtplanid: ID!
-    $price: Float
-    $loginurl: String
-    $touser: ID
-    $identifier: String
-    $options: JSON
-  ) {
-    addExternalAccountLicence(
-      touser: $touser
-      boughtplanid: $boughtplanid
-      price: $price
-      appid: $appid
-      loginurl: $loginurl
-      password: $password
-      username: $username
-      identifier: $identifier
-      options: $options
-    )
-  }
-`;
 class AddEmployeeToTeam extends React.Component<Props, State> {
   state = {
     saving: false,
@@ -244,7 +218,7 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
               app={team.services[this.state.counter].planid.appid}
               boughtplanid={team.services[this.state.counter]}
               team={team}
-              addStyles={{ marginTop: "288px" }}
+              //addStyles={{ marginTop: "288px" }}
               cancel={async () => {
                 await this.setState(prevState => {
                   let newcounter = prevState.counter + 1;
@@ -315,7 +289,4 @@ class AddEmployeeToTeam extends React.Component<Props, State> {
     );
   }
 }
-export default compose(
-  graphql(ADD_EMPLOYEE_TO_TEAM, { name: "addToTeam" }),
-  graphql(ADD_LICENCE_TO_USER, { name: "addLicence" })
-)(AddEmployeeToTeam);
+export default compose(graphql(ADD_EMPLOYEE_TO_TEAM, { name: "addToTeam" }))(AddEmployeeToTeam);

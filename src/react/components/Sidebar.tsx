@@ -15,6 +15,7 @@ import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
+import { FETCH_EMPLOYEES } from "../queries/departments";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -159,14 +160,19 @@ class Sidebar extends React.Component<SidebarProps, State> {
   async refetchCategories(categories, client) {
     await sleep(2000);
     for (const category of categories) {
-      const options = {
-        errorPolicy: "ignore",
-        fetchPolicy: "network-only"
-      };
+      const options = { errorPolicy: "ignore", fetchPolicy: "network-only" };
+
       switch (category) {
         case "ownLicences":
           await client.query({
             query: fetchLicences,
+            ...options
+          });
+          break;
+
+        case "employees":
+          await client.query({
+            query: FETCH_EMPLOYEES,
             ...options
           });
           break;
@@ -582,7 +588,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
               <Tooltip
                 distance={18}
                 arrowSize={5}
-                content={`${sidebarOpen ? "Hide" : "Open"} Sidebar`}
+                content={
+                  <div style={{ width: "75px" }}>{sidebarOpen ? "Hide" : "Open"} Sidebar</div>
+                }
                 direction="right">
                 <button
                   className="naked-button sidebarButton"
@@ -648,7 +656,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 </span>
               </button>
             </li>
-
+            {console.log(this.props.data)}
             {this.state.showNotification && (
               <Notification
                 //sidebar={"1"}
@@ -656,10 +664,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 data={this.props.data}
                 loading={this.props.loading}
                 refetch={this.props.refetch}
-                style={{
-                  left: sidebarOpen ? "210px" : "50px",
-                  zIndex: 1000
-                }}
+                style={{ left: sidebarOpen ? "210px" : "50px", zIndex: 1000 }}
                 closeme={() => this.setState({ showNotification: false, donotopen: true })}
               />
             )}
@@ -704,6 +709,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 history={this.props.history}
                 id={this.props.id}
                 logMeOut={this.props.logMeOut}
+                goTo={location => {
+                  this.goTo(location);
+                  this.setState({ contextMenu: false });
+                }}
               />
             )}
           </ul>

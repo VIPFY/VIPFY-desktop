@@ -225,6 +225,11 @@ class ServiceOverview extends React.Component<Props, State> {
                 employeeidFunction={e => e.unitid}
               />
             </div>
+            <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
+              {service.app.disabled && (
+                <i className="fad fa-exclamation-triangle warningColor" title="App is disabled"></i>
+              )}
+            </div>
             <div className="tableEnd">
               <div className="editOptions">
                 <i className="fal fa-external-link-alt editbuttons" />
@@ -499,6 +504,17 @@ class ServiceOverview extends React.Component<Props, State> {
                           className="tableColumnBig"
                           onClick={() => this.handleSortClick("Name")}>
                           <h1>Name</h1>
+                          {this.state.sort == "Name" ? (
+                            this.state.sortforward ? (
+                              <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                            ) : (
+                              <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                            )
+                          ) : (
+                            <i
+                              className="fas fa-sort"
+                              style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                          )}
                         </div>
                         <div
                           className="tableColumnBig"
@@ -513,6 +529,7 @@ class ServiceOverview extends React.Component<Props, State> {
                           <h1>Single Users</h1>
                         </div>
                       </div>
+                      <div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>
                       <div className="tableEnd">
                         <UniversalButton
                           type="high"

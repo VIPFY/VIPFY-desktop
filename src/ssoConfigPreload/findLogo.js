@@ -1,4 +1,7 @@
-let ipcRenderer = require("electron").ipcRenderer;
+import { ipcRenderer } from "electron";
+import ICO from "icojs";
+import { PNG } from "pngjs";
+import palette from "get-rgba-palette";
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
@@ -164,8 +167,6 @@ function svg_to_png_data(target) {
 
 var iconsLeft = 0;
 var icons = [];
-const ICO = require("icojs");
-const PNG = require("pngjs").PNG;
 
 function findIcon() {
   const possibleIcons = Array.from(document.querySelectorAll("link[rel*='icon']")).map(function(t) {
@@ -258,7 +259,6 @@ function finishIcon() {
   }
 }
 
-var palette = require("get-rgba-palette");
 function findDominantColor(datastring) {
   var img = new Image();
   img.onload = function() {

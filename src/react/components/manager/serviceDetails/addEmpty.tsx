@@ -1,13 +1,7 @@
 import * as React from "react";
-import UniversalButton from "../../../components/universalButtons/universalButton";
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
-import PopupBase from "../../../popups/universalPopups/popupBase";
-import UniversalSearchBox from "../../universalSearchBox";
 import PopupAddLicence from "../../../popups/universalPopups/addLicence";
-import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
-import PrintCurrent from "../universal/printCurrent";
-import { fetchCompanyService } from "../../../queries/products";
 
 interface Props {
   service: any;
@@ -15,7 +9,6 @@ interface Props {
   close: Function;
   continue?: Function;
   addExternalBoughtPlan: Function;
-  addExternalAccountLicence: Function;
 }
 
 interface State {
@@ -50,30 +43,6 @@ interface State {
   error: string | null;
   saving: Boolean;
 }
-
-const ADD_EXTERNAL_ACCOUNT = gql`
-  mutation onAddExternalAccountLicence(
-    $username: String!
-    $password: String!
-    $loginurl: String
-    $price: Float
-    $appid: ID!
-    $boughtplanid: ID!
-    $touser: ID
-    $identifier: String
-  ) {
-    addExternalAccountLicence(
-      username: $username
-      password: $password
-      loginurl: $loginurl
-      price: $price
-      appid: $appid
-      boughtplanid: $boughtplanid
-      touser: $touser
-      identifier: $identifier
-    )
-  }
-`;
 
 const ADD_EXTERNAL_PLAN = gql`
   mutation onAddExternalBoughtPlan($appid: ID!, $alias: String, $price: Float, $loginurl: String) {
@@ -116,9 +85,6 @@ class AddEmpty extends React.Component<Props, State> {
   }
 }
 export default compose(
-  graphql(ADD_EXTERNAL_ACCOUNT, {
-    name: "addExternalAccountLicence"
-  }),
   graphql(ADD_EXTERNAL_PLAN, {
     name: "addExternalBoughtPlan"
   })
