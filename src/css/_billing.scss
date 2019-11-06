@@ -1,14 +1,46 @@
 $plan-background: #ccc;
 
 #billing-page {
-  /*display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(750px, 1fr));
-  grid-gap: 1.2rem;
-  grid-auto-flow: dense;
-  margin: 2rem;*/
   display: flex;
   flex-flow: column;
   padding: 48px;
+}
+
+.email-table {
+  position: relative;
+
+  .floating-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    margin-right: 16px;
+
+    div {
+      font-size: 12px;
+      line-height: 24px;
+      font-weight: 700;
+    }
+  }
+
+  .email-list {
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    form {
+      margin: 10px 0;
+      max-height: 200px;
+      overflow-x: auto;
+
+      .generic-checkbox-holder {
+        margin-top: 10px;
+
+        .checkboxSquare,.checkboxSquareActive {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
 }
 
 .payment-data-holder {

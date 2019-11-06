@@ -5,6 +5,7 @@ interface Props {
   child: { current: HTMLDivElement };
   className?: string;
   noResize?: boolean;
+  info?: string;
 }
 
 interface State {
@@ -67,7 +68,10 @@ class Collapsible extends React.Component<Props, State> {
 
     return (
       <section className={`genericHolder ${this.props.className}`}>
-        <div className="header" onClick={this.toggle}>
+        <div
+          className="header"
+          title={this.props.info ? this.props.info : ""}
+          onClick={this.toggle}>
           <i className={`button-hide fas fa-angle-left rotate-${show ? "left" : "down"}`} />
           <span>{this.props.title}</span>
         </div>

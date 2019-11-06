@@ -48,13 +48,12 @@ class Billing extends React.Component<Props, State> {
   render() {
     return (
       <div id="billing-page">
-        <Collapsible child={this.emailRef} title="Billing Emails">
+        <Collapsible
+          child={this.emailRef}
+          title="Billing Emails"
+          info="Invoices will be sent to these Email addresses">
           <div ref={this.emailRef}>
-            <EmailList
-              tag="billing"
-              header="Invoices will be sent to these Email addresses"
-              showPopup={this.props.showPopup}
-            />
+            <EmailList tag="billing" showPopup={this.props.showPopup} />
           </div>
         </Collapsible>
 
