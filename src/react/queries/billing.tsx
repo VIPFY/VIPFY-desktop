@@ -16,7 +16,7 @@ export const fetchBills = gql`
   }
 `;
 
-export const fetchCards = gql`
+export const FETCH_CARDS = gql`
   {
     fetchPaymentData {
       id

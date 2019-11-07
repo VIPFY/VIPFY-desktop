@@ -4,7 +4,7 @@ import { CardElement, injectStripe } from "react-stripe-elements";
 import { Mutation } from "react-apollo";
 
 import LoadingDiv from "../../components/LoadingDiv";
-import { fetchCards } from "../../queries/billing";
+import { FETCH_CARDS } from "../../queries/billing";
 import { filterError, ErrorComp } from "../../common/functions";
 import { addressFields } from "../../common/constants";
 import { FETCH_ADDRESSES } from "../../queries/contact";
@@ -55,7 +55,7 @@ class StripeBody extends React.Component<Props, State> {
     submitting: false,
     showFields: false,
     success: "",
-    refetchQueries: [{ query: fetchCards }]
+    refetchQueries: [{ query: FETCH_CARDS }]
   };
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
@@ -274,9 +274,7 @@ class StripeBody extends React.Component<Props, State> {
 
                       <label
                         className={`billing-input ${this.state.showFields ? "disabled" : ""}`}
-                        htmlFor={`address-radio-${key}`}>{`${address.address.street} ${
-                        address.address.zip
-                      } ${address.address.city} ${address.country}`}</label>
+                        htmlFor={`address-radio-${key}`}>{`${address.address.street} ${address.address.zip} ${address.address.city} ${address.country}`}</label>
                       <input
                         defaultChecked={key == 0 ? true : false}
                         name="address"

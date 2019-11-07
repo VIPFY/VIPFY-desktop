@@ -28,7 +28,7 @@ interface Props {
   tag: string;
 }
 
-export default React.forwardRef((props: Props, ref) => {
+export default (props: Props) => {
   const [showAddTag, setAddTag] = React.useState(false);
   const [showRemoveTag, setRemoveTag] = React.useState(false);
   const [tags, setTags] = React.useState([]);
@@ -51,7 +51,7 @@ export default React.forwardRef((props: Props, ref) => {
         const billingEmailCheck = fetchEmailList.length < 2 && props.tag == "billing";
 
         return (
-          <div ref={ref} className="inside-padding email-table-holder">
+          <div className="billing-table-holder">
             <table>
               <thead>
                 <tr>
@@ -117,7 +117,7 @@ export default React.forwardRef((props: Props, ref) => {
                   cache.writeQuery({ query: FETCH_EMAILS, data: { fetchEmails } });
                 }}>
                 {(createEmailTag, { loading, error: e2 }) => (
-                  <PopupBase small={true}>
+                  <PopupBase close={() => setAddTag(false)} small={true}>
                     <section className="email-list">
                       <h1>Add Billing Email</h1>
                       <div>Please select Emails which should be used for billing</div>
@@ -197,7 +197,7 @@ export default React.forwardRef((props: Props, ref) => {
                   setRemoveTag(false);
                 }}>
                 {removeEmailTag => (
-                  <PopupBase small={true}>
+                  <PopupBase close={() => setRemoveTag(false)} small={true}>
                     <section className="email-list">
                       <h1>Remove Billing Email</h1>
                       <div>Please confirm removal of billing email {tags[0]}</div>
@@ -231,4 +231,4 @@ export default React.forwardRef((props: Props, ref) => {
       }}
     </Query>
   );
-});
+};

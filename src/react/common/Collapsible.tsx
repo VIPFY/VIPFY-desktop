@@ -26,15 +26,15 @@ export default class Collapsible extends React.Component<Props, State> {
     }
   }
 
-  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
-
   render() {
     const { show } = this.state;
-    const { info } = this.props;
 
     return (
       <section className={`collapsible ${this.props.className}`}>
-        <div className="header" title={info ? info : ""} onClick={this.toggle}>
+        <div
+          className="header"
+          title={this.props.info ? this.props.info : ""}
+          onClick={(): void => this.setState(prevState => ({ show: !prevState.show }))}>
           <i className={`button-hide fas fa-angle-left rotate-${show ? "left" : "down"}`} />
           <span>{this.props.title}</span>
         </div>

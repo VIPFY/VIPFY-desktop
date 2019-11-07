@@ -4,17 +4,19 @@ $plan-background: #ccc;
   display: flex;
   flex-flow: column;
   padding: 48px;
-}
 
-.email-table-holder {
-  position: relative;
-  padding: 0;
+  .credit-cards {
+    position: relative;
+
+    .floating-button {
+      right: -10px;
+    }
+  }
 
   .floating-button {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    margin-right: 16px;
+    top: 10px;
+    right: 10px;
 
     div {
       font-size: 12px;
@@ -22,6 +24,32 @@ $plan-background: #ccc;
       font-weight: 700;
     }
   }
+
+  .subsidiary-cards {
+    position: relative;
+    margin-top: 20px;
+    display: flex;
+    flex-flow: column;
+
+    .naked-button {
+      width: fit-content;
+      align-self: center;
+    }
+  }
+
+  .contentPopup {
+    h1 {
+      font-size: 24px;
+      display: block;
+      text-align: center;
+      padding-bottom: 24px;
+    }
+  }
+}
+
+.billing-table-holder {
+  position: relative;
+  padding: 0;
 
   th,
   td {
@@ -55,11 +83,6 @@ $plan-background: #ccc;
   }
 
   .email-list {
-    h1 {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-
     form {
       margin: 10px 0;
       max-height: 200px;
