@@ -6,7 +6,6 @@ import Dropzone from "react-dropzone";
 import LoadingDiv from "../../components/LoadingDiv";
 import Duration from "../../common/duration";
 
-import { CHANGE_PASSWORD } from "../../mutations/auth";
 import { AppContext, concatName, filterError } from "../../common/functions";
 import { me } from "../../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -18,6 +17,7 @@ import Consent from "../../popups/universalPopups/Consent";
 import { getImageUrlUser } from "../../common/images";
 import UploadImage from "../manager/universal/uploadImage";
 import Collapsible from "../../common/Collapsible";
+import { updatePassword } from "../../common/passwords";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
@@ -79,9 +79,9 @@ class PersonalData extends React.Component<Props, State> {
   uploadPassword = async values => {
     this.setState({ pwconfirm: true, networking: true });
     try {
-      const res = await this.props.changePassword({ variables: { ...values } });
+      const res = await updatePassword(this.props.client, values.pw, values.newPw);
 
-      await localStorage.setItem("token", res.data.changePassword.token);
+      //await localStorage.setItem("token", res.data.changePassword.token);
       this.setState({ networking: false, errorupdate: false });
       return true;
     } catch (err) {
@@ -345,7 +345,4 @@ class PersonalData extends React.Component<Props, State> {
   }
 }
 
-export default compose(
-  graphql(CHANGE_PASSWORD, { name: "changePassword" }),
-  graphql(UPDATE_PIC, { name: "updatePic" })
-)(withApollo(PersonalData));
+export default compose(graphql(UPDATE_PIC, { name: "updatePic" }))(withApollo(PersonalData));
