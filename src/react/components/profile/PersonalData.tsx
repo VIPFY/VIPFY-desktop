@@ -61,8 +61,6 @@ class PersonalData extends React.Component<Props, State> {
     consentPopup: false
   };
 
-  profileRef = React.createRef<HTMLDivElement>();
-
   uploadPic = async (picture: File) => {
     try {
       await this.setState({ loading: true });
@@ -124,11 +122,8 @@ class PersonalData extends React.Component<Props, State> {
                 ];
 
                 return (
-                  <Collapsible child={this.profileRef} title="Personal Data">
-                    <div
-                      className="inside-profile managerPage"
-                      style={{ padding: "0" }}
-                      ref={this.profileRef}>
+                  <Collapsible title="Personal Data">
+                    <div className="inside-profile managerPage" style={{ padding: "0" }}>
                       <div className="pic-holder" style={{ margin: 0, marginBottom: "16px" }}>
                         <UploadImage
                           picture={{ preview: getImageUrlUser(profilepicture, 96) }}

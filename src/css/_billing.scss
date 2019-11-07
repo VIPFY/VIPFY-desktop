@@ -6,24 +6,57 @@ $plan-background: #ccc;
   padding: 48px;
 }
 
-.email-table {
+.email-table-holder {
   position: relative;
+  padding: 0;
 
   .floating-button {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 5px;
+    right: 5px;
     margin-right: 16px;
 
     div {
       font-size: 12px;
-      line-height: 24px;
+      line-height: 22px;
       font-weight: 700;
+    }
+  }
+
+  th,
+  td {
+    padding: 10px;
+  }
+  
+  thead {
+    .spacer {
+      height: 10px;
+    }
+  }
+  
+  tbody {
+    tr {
+      height: 56px;
+
+      &:hover {
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
+      }
+
+      &:hover i {
+        opacity: 1;
+      }
+
+      i {
+        opacity: 0;
+        line-height: 1rem;
+        font-size: 1rem;
+      }
     }
   }
 
   .email-list {
     h1 {
+      font-size: 20px;
       margin-bottom: 10px;
     }
 

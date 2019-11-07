@@ -38,23 +38,11 @@ class Billing extends React.Component<Props, State> {
     showInvoice: 0
   };
 
-  emailRef = React.createRef<HTMLTextAreaElement>();
-  costRef = React.createRef<HTMLTextAreaElement>();
-  cardRef = React.createRef<HTMLTextAreaElement>();
-  historyRef = React.createRef<HTMLTextAreaElement>();
-  boughtAppsRef = React.createRef<HTMLTextAreaElement>();
-  invoiceRef = React.createRef<HTMLTextAreaElement>();
-
   render() {
     return (
-      <div id="billing-page">
-        <Collapsible
-          child={this.emailRef}
-          title="Billing Emails"
-          info="Invoices will be sent to these Email addresses">
-          <div ref={this.emailRef}>
-            <EmailList tag="billing" showPopup={this.props.showPopup} />
-          </div>
+      <section id="billing-page">
+        <Collapsible title="Billing Emails" info="Invoices will be sent to these Email addresses">
+          <EmailList tag="billing" />
         </Collapsible>
 
         <Query query={fetchCards}>
@@ -81,9 +69,8 @@ class Billing extends React.Component<Props, State> {
             }
 
             return (
-              <Collapsible title="Credit Cards" child={this.cardRef}>
-                <div ref={this.cardRef}>
-                  {/* {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
+              <Collapsible title="Credit Cards">
+                {/* {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
             {normalizedCards && normalizedCards.length > 1 && (
               <div className="credit-card-change-button">
                 <button
@@ -99,46 +86,41 @@ class Billing extends React.Component<Props, State> {
                 </button>
               </div>
             )} */}
-                  <div className="credit-card-change-button">
-                    <button
-                      className="payment-data-change-button"
-                      onClick={() =>
-                        this.props.showPopup({
-                          header: "Add another Card",
-                          body: StripeForm,
-                          props: {
-                            departmentid: this.props.company.unit.id,
-                            hasCard: mainCard ? true : false
-                          }
-                        })
-                      }>
-                      Add Credit Card
-                    </button>
-                  </div>
+                <div className="credit-card-change-button">
+                  <button
+                    className="payment-data-change-button"
+                    onClick={() =>
+                      this.props.showPopup({
+                        header: "Add another Card",
+                        body: StripeForm,
+                        props: {
+                          departmentid: this.props.company.unit.id,
+                          hasCard: mainCard ? true : false
+                        }
+                      })
+                    }>
+                    Add Credit Card
+                  </button>
                 </div>
               </Collapsible>
             );
           }}
         </Query>
 
-        <Collapsible title="Cost Distribution" child={this.costRef}>
-          <div ref={this.costRef}>
-            <div className="nextPaymentChart">{/* <BillingPie {...this.props} /> */}</div>
-          </div>
+        <Collapsible title="Cost Distribution">
+          <div className="nextPaymentChart">{/* <BillingPie {...this.props} /> */}</div>
         </Collapsible>
 
         <Addresses label="Billing Addresses" company={this.props.company.unit.id} tag="billing" />
 
-        <Collapsible title="Billing History" child={this.historyRef}>
-          <div ref={this.historyRef}>{/* <BillingHistoryChart {...this.props} /> */}</div>
+        <Collapsible title="Billing History">
+          {/* <BillingHistoryChart {...this.props} /> */}
         </Collapsible>
 
         <AppTable {...this.props} />
 
-        <Collapsible title="Invoices" child={this.invoiceRef}>
-          <div ref={this.invoiceRef}>{/* <Invoices /> */}</div>
-        </Collapsible>
-      </div>
+        <Collapsible title="Invoices">{/* <Invoices /> */}</Collapsible>
+      </section>
     );
   }
 }

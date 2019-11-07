@@ -187,8 +187,8 @@ class Addresses extends React.Component<Props, State> {
     return (
       <AppContext.Consumer>
         {({ showPopup }) => (
-          <Collapsible title={this.props.label || "Addresses"} child={this.addressesRef}>
-            <div ref={this.addressesRef} className="inside-padding">
+          <Collapsible title={this.props.label || "Addresses"}>
+            <div className="inside-padding">
               <Query
                 pollInterval={60 * 10 * 1000 + 100}
                 query={FETCH_ADDRESSES}
