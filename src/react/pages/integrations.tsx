@@ -184,6 +184,7 @@ class Integrations extends React.Component<Props, AppPageState> {
 
       return true;
     } catch (error) {
+      console.log(error);
       this.setState({ showLoading: false });
       throw error;
     }
