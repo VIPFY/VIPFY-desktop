@@ -34,7 +34,7 @@ export default (props: Props) => {
         <i className="fa fa-caret-right fa-3x" onClick={() => switchCard(showCard + 1)} />
       </div>
 
-      <div className="credit-card-information">Please select a new default card</div>
+      <div className="credit-card-information">Please select the new default card</div>
     </div>
   );
 };

@@ -30,10 +30,30 @@ $plan-background: #ccc;
     margin-top: 20px;
     display: flex;
     flex-flow: column;
+    min-height: 50px;
+    
+    .card-wrapper {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
 
-    .naked-button {
-      width: fit-content;
-      align-self: center;
+      &:hover .delete-cc {
+        opacity: 1;
+      }
+    }
+
+    .delete-cc {
+      @extend .naked-button;
+      position: absolute;
+      top: 70px;
+      right: 1px;
+      font-size: 1.1rem;
+      opacity: 0;
+
+      &:hover {
+        background: #f5f5f5;
+      }
     }
   }
 
@@ -43,6 +63,28 @@ $plan-background: #ccc;
       display: block;
       text-align: center;
       padding-bottom: 24px;
+    }
+  }
+
+  #stripe-form {
+    padding: 0;
+    display: flex;
+    flex-flow: column;
+
+    .generic-button-holder {
+      position: initial;
+      margin-top: 30px;
+      display: flex;
+      justify-content: flex-end;
+
+      .cancel-button {
+        margin-right: 10px;
+      }
+    }
+
+    #loading-screen {
+      margin-top: 30px;
+      height: 100px;
     }
   }
 }

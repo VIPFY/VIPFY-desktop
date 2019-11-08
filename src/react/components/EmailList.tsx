@@ -68,13 +68,14 @@ export default (props: Props) => {
                     <tr key={email}>
                       <td>{email}</td>
                       <td>{description}</td>
-                      <td className="naked-button-holder">
+                      <td align="right" className="naked-button-holder">
                         <button
                           title={
                             billingEmailCheck
                               ? "You need at least one email for billing"
                               : `Remove ${email}`
                           }
+                          style={{ marginRight: "1rem" }}
                           disabled={billingEmailCheck}
                           type="button"
                           className="naked-button"
