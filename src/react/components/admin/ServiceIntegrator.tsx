@@ -29,6 +29,7 @@ interface State {
   executionPlan: Object[];
   searchurl: string;
   selectlist: any;
+  site: number;
 }
 
 class ServiceIntegrator extends React.Component<Props, State> {
@@ -44,7 +45,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
     executionPlan: [],
     searchurl: "",
     cantrack: false,
-    selectlist: []
+    selectlist: [],
+    site: 1
   };
 
   siteUrllist: (string | null)[] = []; //where does it happen
@@ -551,15 +553,17 @@ class ServiceIntegrator extends React.Component<Props, State> {
               case "input":
                 plan.push({
                   operation: "waitandfill",
-                  fillkey: "usernameEmail",
-                  args: { selector: e.args[6], document: e.args[8], id: id }
+                  site: this.state.site,
+                  value: "",
+                  args: { selector: e.args[6], document: e.args[8], id: id, fillkey: "username" }
                 });
                 break;
               default:
                 plan.push({
                   operation: "click",
-                  fillkey: "",
-                  args: { selector: e.args[6], document: e.args[8], id: id }
+                  site: this.state.site,
+                  value: "",
+                  args: { fillkey: "", selector: e.args[6], document: e.args[8], id: id }
                 });
                 break;
             }
@@ -724,7 +728,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
         {
           const w = e.target;
           console.log("fillForm", e.args[0]);
-          let text = e.args[0] || "";
+          let text = this.state.executionPlan.find(element => {
+            element.args.fillkey = e.args[0];
+          })!.value;
 
           for await (const c of text) {
             const shift = c.toLowerCase() != c;
@@ -747,7 +753,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   render() {
-    //console.log(this.state);
+    console.log(this.state.executionPlan);
     if (this.state.url === this.startUrl) {
       session.fromPartition("followLogin").clearStorageData();
     }
@@ -841,7 +847,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 <option value="other">Other</option>
               </select>
               <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>*/}
-              <ClickElement id={`ce-${k}`} startvalue={o.operation} />
+              <ClickElement
+                id={`ce-${k}`}
+                startvalue={o.operation}
+                onChange={(operation, value) => this.updateSelection(o.args.id, operation, value)}
+              />
               <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
             </div>
           ))}

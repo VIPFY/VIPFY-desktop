@@ -115,6 +115,8 @@ function createObjFromDom(elem) {
   return o;
 }
 
+ipcRenderer.once("execute", (e, args1) => execute(args1, true));
+
 ipcRenderer.on("delockItem", async (e, args1) => {
   const ding = document.querySelector(args1);
   ding.disabled = false;
@@ -827,7 +829,7 @@ async function execute(operations) {
   return;
 }
 
-async function fillFormField(target, content) {
+async function fillFormField(target, fillkey) {
   //console.log("FILL", target, content);
   //if (stopped) throw new Error("abort");
   //target.focus();
@@ -840,6 +842,111 @@ async function fillFormField(target, content) {
       resolve();
     })
   );
-  ipcRenderer.sendToHost("fillFormField", content);
+  ipcRenderer.sendToHost("fillFormField", fillkey);
   return p;
+}
+
+async function execute(operations, mainexecute = false) {
+  let doc;
+  for ({ operation, args = {} } of operations) {
+    console.log("EXECUTE", operation, args);
+    if (mainexecute) {
+      ipcRenderer.sendToHost("executeStep");
+    }
+    doc = args.document ? document.querySelector(args.document).contentWindow.document : document;
+    switch (operation) {
+      case "sleep":
+        let randomrange = args.randomrange || args.seconds / 5;
+        await sleep(Math.max(0, args.seconds + Math.random() * randomrange - randomrange / 2));
+        break;
+      case "waitfor":
+        const p = new Promise(async resolve => {
+          while (!doc.querySelector(args.selector)) {
+            doc = args.document
+              ? document.querySelector(args.document).contentWindow.document
+              : document;
+            await sleep(95 + Math.random() * 10);
+          }
+          resolve();
+        });
+        await p;
+        break;
+      case "click":
+        console.log("CLICK", doc.querySelector(args.selector));
+        await clickButton(doc.querySelector(args.selector), args.document);
+        break;
+      case "fill":
+        console.log("fill", doc.querySelector(args.selector), args.fillkey);
+        await fillFormField(doc.querySelector(args.selector), args.fillkey);
+        break;
+      case "solverecaptcha":
+        console.log("solverecaptcha", doc.querySelector(args.selector));
+        await recaptchaClick(doc.querySelector(args.selector));
+        if (!recaptchaConfirmOnce) {
+          setInterval(verifyRecaptcha, 100);
+        }
+        break;
+      case "recaptcha":
+        await execute([{ operation: "waitfor", args }, { operation: "solverecaptcha", args }]);
+        break;
+      case "waitandfill":
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "click", args },
+          { operation: "fill", args }
+        ]);
+        break;
+      case "cookie":
+        let cookiebutton = null;
+
+        let totaltime = 0;
+        console.log("EXECUTE COOKIE");
+        while (totaltime < 5000) {
+          console.log(doc.querySelector(args.selector), cookiebutton);
+          if (args.selector ? doc.querySelector(args.selector) : cookiebutton) {
+            //Wait for animations
+            let oldposx,
+              oldposy,
+              oldposx2,
+              oldposy2 = undefined;
+            let newposx,
+              newposy,
+              newposx2,
+              newposy2 = undefined;
+            let rect;
+            let waittime = 0;
+            while (
+              (!(
+                oldposx == newposx &&
+                oldposy == newposy &&
+                oldposx2 == newposx2 &&
+                oldposy2 == newposy2
+              ) ||
+                oldposx == undefined) &&
+              waittime < 5000
+            ) {
+              oldposx = newposx;
+              oldposy = newposy;
+              oldposx2 = newposx2;
+              oldposy2 = newposy2;
+              rect = doc.querySelector(args.selector).getBoundingClientRect();
+              newposx = rect.left;
+              newposy = rect.top;
+              newposx2 = rect.right;
+              newposy2 = rect.bottom;
+              await sleep(100);
+              waittime += 100;
+            }
+
+            await clickButton(args.selector ? doc.querySelector(args.selector) : cookiebutton);
+            break;
+          }
+          await sleep(300);
+          totaltime += 300;
+          cookiebutton = await findCookieButton();
+        }
+        break;
+    }
+  }
+  return;
 }

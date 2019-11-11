@@ -4,6 +4,7 @@ import UniversalDropdown from "../universalForms/universalDropdown";
 interface Props {
   startvalue: string;
   id: string;
+  onChange: Function;
 }
 
 interface State {
@@ -37,6 +38,7 @@ class ClickElement extends React.Component<Props, State> {
           labelstyle={{ color: "white" }}
           livevalue={e => {
             this.setState({ operation: e });
+            this.props.onChange("operation", e);
           }}
           startvalue={this.state.operation}></UniversalDropdown>
         {this.state.operation == "waitandfill" && (
@@ -58,7 +60,10 @@ class ClickElement extends React.Component<Props, State> {
               style={{ color: "white" }}
               trashstyle={{ color: "white" }}
               labelstyle={{ color: "white" }}
-              livevalue={e => this.setState({ dataConnection: e })}></UniversalDropdown>
+              livevalue={e => {
+                this.setState({ dataConnection: e });
+                this.props.onChange("fillkey", e);
+              }}></UniversalDropdown>
           </>
         )}
       </div>
