@@ -31,7 +31,6 @@ interface Props {
 }
 
 interface State {
-  showPasswordReset: boolean;
   show2FA: boolean;
   showYubikey: boolean;
   showGoogleAuth: boolean;
@@ -45,7 +44,6 @@ interface State {
 
 class SecurityPopup extends React.Component<Props, State> {
   state = {
-    showPasswordReset: false,
     show2FA: false,
     showYubikey: false,
     showGoogleAuth: false,
@@ -192,13 +190,6 @@ class SecurityPopup extends React.Component<Props, State> {
                 onClick={() => this.setState({ show2FA: false })}
               />
             </PopupBase>
-          )}
-
-          {this.state.showPasswordReset && (
-            <ResetPassword
-              user={this.props.user}
-              close={() => this.setState({ showPasswordReset: false })}
-            />
           )}
 
           {/* {this.state.showYubikey && (
