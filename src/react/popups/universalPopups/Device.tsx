@@ -45,7 +45,7 @@ class Device extends React.Component<Props, State> {
           onClick={() => this.setState(prevState => ({ extended: !prevState.extended }))}
           className="device-info">
           <i className="fal fa-desktop" />
-          <span>{session.system.split(" ")[2].replace(";", "")}</span>
+          <span>{session.system ? session.system.split(" ")[2].replace(";", "") : ""}</span>
           <span className="location">{`${session.location.city}, ${session.location.country}`}</span>
           <span className="current">{session.id == sessionID ? "This device" : ""}</span>
           <i className={`fal fa-angle-down ${this.state.extended ? "turn" : ""}`} />
