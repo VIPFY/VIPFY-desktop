@@ -52,6 +52,7 @@ import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
+import CryptoDebug from "../components/admin/crytpodebug";
 
 interface AreaProps {
   history: any[];
@@ -380,6 +381,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
+      { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },
       { path: "emanager", component: EmployeeOverview, admin: true },
