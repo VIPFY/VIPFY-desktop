@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose, Query, withApollo } from "react-apollo";
+import { graphql, Query, withApollo } from "react-apollo";
 import Dropzone from "react-dropzone";
 
 import LoadingDiv from "../../components/LoadingDiv";
@@ -345,4 +345,4 @@ class PersonalData extends React.Component<Props, State> {
   }
 }
 
-export default compose(graphql(UPDATE_PIC, { name: "updatePic" }))(withApollo(PersonalData));
+export default graphql(UPDATE_PIC, { name: "updatePic" }))(withApollo(PersonalData);
