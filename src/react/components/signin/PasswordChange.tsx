@@ -4,11 +4,11 @@ import ReactPasswordStrength from "react-password-strength";
 import { me } from "../../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { CHANGE_PASSWORD } from "../../mutations/auth";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
 import { PW_MIN_LENGTH } from "../../common/constants";
+import { updatePassword } from "../../common/passwords";
 
 interface PasswordChangeProps {
   logMeOut: Function;
@@ -75,14 +75,10 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
     }
     await this.setState({ error: null, loading: true });
     try {
-      await this.props.client.mutate({
-        mutation: CHANGE_PASSWORD,
-        variables: {
-          pw: this.state.oldPassword,
-          newPw: this.state.newPassword,
-          confirmPw: this.state.repeatPassword
-        }
-      });
+      if (this.state.newPassword != this.state.repeatPassword) {
+        throw new Error("Passwords don't match");
+      }
+      await updatePassword(this.props.client, this.state.oldPassword, this.state.newPassword!);
       await this.props.client.query({ query: me, fetchPolicy: "network-only" });
     } catch (err) {
       this.setState({ error: filterError(err), loading: false });

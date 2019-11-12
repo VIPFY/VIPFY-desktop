@@ -298,3 +298,18 @@ export function getMyUnitId(client: any): string {
     `
   }).me.id;
 }
+
+export async function getMyEmail(client: any): Promise<string> {
+  return (await client.query({
+    query: gql`
+      query email {
+        me {
+          id
+          emails {
+            email
+          }
+        }
+      }
+    `
+  })).data.me.emails[0].email;
+}
