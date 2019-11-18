@@ -6,9 +6,13 @@ import { url } from "inspector";
 const { shell, remote } = require("electron");
 import { sleep, getPreloadScriptPath } from "../../common/functions";
 import UniversalTextInput from "../universalForms/universalTextInput";
+import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 import ClickElement from "./clickElement";
 import { element } from "prop-types";
+import PlanHolder from "../PlanHolder";
+import UniversalButton from "../universalButtons/universalButton";
+import { threadId } from "worker_threads";
 const { session } = remote;
 
 interface Props {
@@ -16,37 +20,44 @@ interface Props {
 }
 
 interface State {
+  end: boolean;
   sendTarget: any; //die Webview
   divList: JSX.Element[];
-  isClicked: boolean;
   trackwhat: string;
-  username: string;
-  password: string;
+  /* username: string; */
+  /* password: string; */
   url: string;
   urlBevorChange: string;
   cantrack: boolean /* 
   currenturl: string|null */;
+  finalexecutionPlan: Object[];
   executionPlan: Object[];
   searchurl: string;
-  selectlist: any;
   site: number;
+  targetpage: string;
+  test: boolean;
 }
 
 class ServiceIntegrator extends React.Component<Props, State> {
+  loginState = {
+    step: 0
+  };
   state = {
+    end: false,
     sendTarget: null,
     divList: [],
-    isClicked: false,
     trackwhat: "siteTrain",
-    username: "fabrice.schoenebergerTEST@gmail.com",
-    password: "2018Vipfy",
+    /* username: "fabrice.schoenebergerTEST@gmail.com",
+    password: "2018Vipfy", */
     url: "",
     urlBevorChange: "",
+    finalexecutionPlan: [],
     executionPlan: [],
     searchurl: "",
     cantrack: false,
-    selectlist: [],
-    site: 1
+    site: 1,
+    targetpage: "",
+    test: false
   };
 
   siteUrllist: (string | null)[] = []; //where does it happen
@@ -490,14 +501,125 @@ class ServiceIntegrator extends React.Component<Props, State> {
           return element.args.id == id;
         }) != -1
       ) {
-        plan[
-          plan.findIndex(element => {
-            return element.args.id == id;
-          })
-        ][changeling] = value;
+        if (changeling == "args" || changeling == "operations") {
+          plan[
+            plan.findIndex(element => {
+              return element.args.id == id;
+            })
+          ][changeling] = value;
+        } else {
+          plan[
+            plan.findIndex(element => {
+              return element.args.id == id;
+            })
+          ].args[changeling] = value;
+        }
       }
       return { ...oldstate, executionPlan: plan };
     });
+  }
+
+  sendExecute() {
+    this.setState(oldstate => {
+      oldstate.executionPlan.sort((a, b) => {
+        if (a.operation == b.operation) {
+          return 0;
+        } else if (a.operation == "click") {
+          return 1;
+        } else if (b.operation == "click") {
+          return -1;
+        } else if (a.operation == "waitandfill") {
+          return -1;
+        } else if (b.operation == "waitandfill") {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      return oldstate;
+    });
+    var inputList: JSX.Element[] = [];
+    var fillPlans: number[] = [];
+    this.state.executionPlan.forEach(plan => {
+      console.log("CHECK", this.state, plan);
+      if (plan.operation == "waitandfill") {
+        fillPlans.push(plan.args.id);
+        var input = (
+          <div>
+            {plan.args.fillkey[0].toUpperCase() +
+              plan.args.fillkey.substring(1, 10000).toLowerCase()}
+            :
+            <input
+              required
+              type="text"
+              name={plan.args.fillkey}
+              id={plan.args.id + "input"}></input>
+          </div>
+        );
+        inputList.push(input);
+      }
+    });
+    var popup = (
+      <PopupBase
+        id="inputPopup"
+        small={true}
+        styles={{ textAlign: "center" }}
+        buttonStyles={{ justifyContent: "space-around" }}
+        closeable={false}>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            fillPlans.forEach(planid => {
+              this.setState(oldstate => {
+                oldstate.executionPlan.find(plan => {
+                  return plan.args.id == planid;
+                })!.value = document.getElementById(planid + "input")!.value;
+                return oldstate;
+              });
+            });
+            this.setState({ divList: [] });
+            this.sendExecuteFinal();
+          }}>
+          {inputList.map(e => e)}
+          <UniversalButton type="high" label="submit"></UniversalButton>
+        </form>
+      </PopupBase>
+    );
+    this.state.executionPlan.forEach(plan => {
+      this.state.sendTarget!.send(
+        "delockItem",
+        this.state.executionPlan[
+          this.state.executionPlan.findIndex(element => {
+            return element.args.id == plan.args.id;
+          })
+        ].args.selector
+      );
+    });
+
+    this.setState(oldstate => {
+      oldstate.divList.push(popup);
+
+      return oldstate;
+    });
+  }
+
+  sendExecuteFinal() {
+    this.setState({
+      divList: [
+        <div
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            top: 74,
+            left: 442,
+            background: "grey",
+            zIndex: 5,
+            opacity: 0
+          }}></div>
+      ]
+    });
+    this.state.sendTarget!.send("execute", this.state.executionPlan);
   }
 
   async onIpcMessage(e): Promise<void> {
@@ -569,15 +691,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
             }
             console.log("executionplan", plan);
             e.target.send("givePosition", plan[plan.length - 1].args.selector, id, 1);
-
-            let selectlist = oldstate.selectlist;
-            selectlist.push({
-              id: id,
-              selector: e.args[6],
-              document: e.args[8],
-              operation: "waitandfill",
-              fillkey: "usernameEmail"
-            });
 
             return { ...oldstate, executionPlan: plan };
           }
@@ -664,6 +777,43 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
         break;
 
+      case "loaded":
+        if (this.state.test) {
+          this.state.sendTarget!.send(
+            "execute",
+            this.state.finalexecutionPlan.slice(this.loginState.step)
+          );
+        }
+        break;
+
+      case "readyForNextStep":
+        this.setState(oldstate => {
+          oldstate.executionPlan.forEach(element => {
+            oldstate.finalexecutionPlan.push(element);
+          });
+          return oldstate;
+        });
+        this.setState({ executionPlan: [], site: this.state.site + 1 });
+        if (this.state.end) {
+          let targetpage = this.webview.url;
+          this.setState({ url: this.state.url, end: false, test: true, targetpage });
+          this.trySiteLoading();
+          console.log(this.state.finalexecutionPlan);
+        } else if (this.state.test) {
+          if (this.state.targetpage == this.webview.url) {
+            console.log("Yea did it");
+            //doSomething with finalexecutionPlan
+          } else {
+            throw "Execution fehlgeschlagen";
+          }
+          console.log("Did repeat");
+        } else {
+          this.setState({ divList: [] });
+          console.log("Ready for next Step");
+        }
+
+        break;
+
       case "reset":
         let w = e.target;
         console.log("RESET TRACKER");
@@ -727,10 +877,25 @@ class ServiceIntegrator extends React.Component<Props, State> {
       case "fillFormField":
         {
           const w = e.target;
-          console.log("fillForm", e.args[0]);
-          let text = this.state.executionPlan.find(element => {
-            element.args.fillkey = e.args[0];
-          })!.value;
+          /* console.log(
+            "fillForm",
+            e.args[0],
+            this.state.executionPlan[0].args.fillkey,
+            this.state.executionPlan.findIndex(element => {
+              return element.args.fillkey == e.args[0];
+            })
+          ); */
+          if (!this.state.test) {
+            var text = this.state.executionPlan.find(element => {
+              //console.log("E", element, element.args.fillkey, e.args[0]);
+              return element.args.fillkey == e.args[0];
+            })!.value;
+          } else {
+            var text = this.state.finalexecutionPlan.find(element => {
+              //console.log("E", element, element.args.fillkey, e.args[0]);
+              return element.args.fillkey == e.args[0];
+            })!.value;
+          }
 
           for await (const c of text) {
             const shift = c.toLowerCase() != c;
@@ -744,6 +909,12 @@ class ServiceIntegrator extends React.Component<Props, State> {
           }
           await sleep(500);
           w.send("formFieldFilled");
+        }
+        break;
+
+      case "executeStep":
+        {
+          this.loginState.step += 1;
         }
         break;
       default:
@@ -857,8 +1028,24 @@ class ServiceIntegrator extends React.Component<Props, State> {
           ))}
           <div style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
             Every thing selected?
-            <button style={{ width: "100px" }}>Then try to go to a next step</button>
-            <button style={{ width: "100px" }}>or finish the login process</button>
+            <button
+              disabled={this.state.sendTarget == undefined}
+              onClick={() => {
+                this.setState({ site: this.state.site -= -1 });
+                this.sendExecute();
+              }}
+              style={{ width: "100px" }}>
+              Then try to go to a next step
+            </button>
+            <button
+              disabled={this.state.sendTarget == undefined}
+              onClick={async () => {
+                await this.setState({ end: true });
+                this.sendExecute();
+              }}
+              style={{ width: "100px" }}>
+              or finish the login process
+            </button>
           </div>
         </div>
         <div
@@ -867,26 +1054,14 @@ class ServiceIntegrator extends React.Component<Props, State> {
             height: "calc(100vh - 72px)",
             width: "calc(100% - 200px)"
           }}>
-          {this.state.isClicked && (
-            <div
-              style={{
-                position: "absolute",
-                top: "20px",
-                left: "0px",
-                width: "100%",
-                height: "calc(100vh - 80px - 48px",
-                opacity: 0.2,
-                background: "hotpink",
-                zIndex: 1
-              }}></div>
-          )}
           {this.state.divList.map(e => e)}
           <WebView
             id="LoginFinder"
+            ref={element => (this.webview = element)}
             preload={getPreloadScriptPath("integrationTracker.js")}
             webpreferences="webSecurity=no"
             className="newMainPosition"
-            src={/* this.state.currenturl ||  */ this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
+            src={this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
             partition="followLogin"
             style={{ width: "100%", height: "100%" }}
             onIpcMessage={e => this.onIpcMessage(e)}

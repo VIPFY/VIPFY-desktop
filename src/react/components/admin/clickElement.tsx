@@ -26,7 +26,8 @@ class ClickElement extends React.Component<Props, State> {
           options={[
             { value: "waitandfill", label: "Fill Field" },
             { value: "click", label: "click" },
-            { value: "wait", label: "Wait" }
+            { value: "wait", label: "Wait" },
+            { value: "recaptcha", label: "Recaptcha" }
           ]}
           dropdownStyles={{ color: "white", width: "100%", height: "32px", fontSize: "16px" }}
           dropdownOptionStyles={{ color: "#253647" }}

@@ -5,6 +5,7 @@ let stopped = false;
 let cookiefound = false;
 let recaptchaConfirmOnce = false;
 let checkRecaptcha = false;
+let bot = false;
 
 var listeners = [];
 
@@ -114,21 +115,42 @@ function createObjFromDom(elem) {
   o.hash = hash(o);
   return o;
 }
+var i = 0;
+ipcRenderer.on("execute", (e, args1) => onExecute(args1, true));
 
-ipcRenderer.once("execute", (e, args1) => execute(args1, true));
+async function onExecute(args1, booler) {
+  await execute(args1, booler);
+  //reset everything
+  await ipcRenderer.sendToHost("readyForNextStep");
+  listeners = [];
+  iframeList = [];
+  stopped = false;
+  cookiefound = false;
+  recaptchaConfirmOnce = false;
+  checkRecaptcha = false;
+  bot = false;
+}
 
 ipcRenderer.on("delockItem", async (e, args1) => {
-  const ding = document.querySelector(args1);
-  ding.disabled = false;
+  const element = document.querySelector(args1);
+  element.disabled = false;
+  element.clearEventListeners(); //entferne das perventDefault
   const listeners1 =
     listeners[
-      listeners.findIndex(element => {
-        return element[0] == ding;
+      listeners.findIndex(elemente => {
+        return elemente[0] == element;
       })
     ][1];
   Object.keys(listeners1).forEach(key => {
-    listeners1[key].forEach(i => ding.addEventListener(key, i));
+    listeners1[key].forEach(i => element.addEventListener(key, i));
   });
+  listeners.splice(
+    //entferne alte Objekte wieder aus der Liste
+    listeners.findIndex(elemente => {
+      return elemente[0] == element;
+    }),
+    1
+  );
   console.log("Events Regiven");
 });
 
@@ -284,6 +306,7 @@ var callback2 = function(mutationsList, observer) {
     }
 }) */
 window.addEventListener("load", () => {
+  ipcRenderer.sendToHost("loaded");
   //webview = document.getElementById("LoginFinder");
   document.addEventListener("click", findTarget, true);
   document.addEventListener("keyup", findTarget, true);
@@ -307,6 +330,9 @@ const attributesSelector = [
 ];
 
 function findTarget(event, iframe) {
+  if (bot) {
+    return;
+  }
   console.log("findTarget", event, event.target, iframe);
   /* if(event.type == "click") {
         console.log("Event", event)
@@ -436,7 +462,7 @@ function findTarget(event, iframe) {
       }
     }
   }
-  const button = event.target;
+  //const button = event.target;
   const wereans = onClick(event);
   if (wereans[0]) {
     const button = wereans[1];
@@ -452,11 +478,16 @@ function findTarget(event, iframe) {
   }
   console.log("Parents", els);
 
+  if (wereans[0]) {
+    var button = wereans[1];
+  } else {
+    var button = event.target;
+  }
   ipcRenderer.sendToHost(
     "sendEvent",
-    event.target.tagName,
-    event.target.type,
-    event.target.value,
+    button.tagName,
+    button.type,
+    button.value,
     createObjFromDom(element1),
     "ID-Elements " + Array.from(document.querySelectorAll(iselector)).length,
     //document.querySelectorAll("INPUT"),
@@ -464,8 +495,16 @@ function findTarget(event, iframe) {
     selector,
     { x: rect.x, y: rect.y },
     iselector
-  );
-  ipcRenderer.sendToHost(
+  ); /* ipcRenderer.sendToHost(
+    "sendMessage",
+    event.target.tagName,
+    event.target.type,
+    event.type,
+    asktypes.includes(event.target.tagName.toLowerCase()),
+    event.type == "click"
+  ); */ //clientLeft clientTop
+
+  /* ipcRenderer.sendToHost(
     "sendClick",
     [event.target.clientWidth, event.target.clientHeight, event.offsetX, event.offsetY],
     [
@@ -475,16 +514,19 @@ function findTarget(event, iframe) {
       event.target.clientLeft,
       event.target.clientTop
     ]
-  ); //clientLeft clientTop
-  ipcRenderer.sendToHost(
-    "sendMessage",
-    event.target.tagName,
-    event.target.type,
-    event.type,
-    asktypes.includes(event.target.tagName.toLowerCase()),
-    event.type == "click"
-  );
-  if (asktypes.includes(event.target.tagName.toLowerCase()) && event.type == "click") {
+  );  */ if (
+    asktypes.includes(event.target.tagName.toLowerCase()) &&
+    event.type == "click" &&
+    wereans[0]
+  ) {
+    ipcRenderer.sendToHost(
+      "gotClicked",
+      wereans[1].clientWidth,
+      wereans[1].clientHeight,
+      rect.x,
+      rect.y
+    );
+  } else {
     ipcRenderer.sendToHost(
       "gotClicked",
       event.target.clientWidth,
@@ -577,11 +619,20 @@ function findCookieButton() {
   return t[0];
 }
 
+/* function findRecaptcha() {
+  let t = document.querySelector('iframe[src*="/recaptcha/"]');
+  console.log("button", t);
+  if (t == null) {
+    return false;
+  }
+  return t;
+} */
+
 async function start() {
   console.log("TEST");
   await sleep(300);
   totaltime = 0;
-  stopped = true;
+  //stopped = true;
   while (!stopped && !checkRecaptcha && totaltime < 5000) {
     if (!cookiefound) {
       let cookiebutton = findCookieButton();
@@ -600,6 +651,7 @@ async function start() {
       }
 
       let recaptcha = findRecaptcha();
+      console.log("recaptcha", recaptcha);
 
       if (recaptcha) {
         await recaptchaClick(recaptcha);
@@ -617,6 +669,7 @@ async function start() {
     await sleep(100);
     totaltime += 100;
   }
+  console.log("TEST NACH");
 
   /*await execute([
     { operation: "waitandfill", args: { selector: "#customerUrl", fillkey: "domain" } },
@@ -754,15 +807,6 @@ function findRecaptcha() {
   let t = document.querySelector('iframe[src*="/recaptcha/"]');
   console.log("button", t);
   if (t == null) {
-    /*let f = fetchFieldProps(appname);
-    let recaptchaTag = f[0].fields.recaptcha;
-    if (recaptchaTag) {
-      let t = document.querySelector(recaptchaTag.tag_props);
-      console.log("recaptcha", t);
-      return t;
-    } else {
-      return false;
-    }*/
     return false;
   }
   return t;
@@ -784,6 +828,7 @@ start();
 //Script based login functions
 
 async function execute(operations) {
+  bot = true;
   let doc;
   for ({ operation, args } of operations) {
     console.log("EXECUTE", operation, args);
@@ -847,6 +892,8 @@ async function fillFormField(target, fillkey) {
 }
 
 async function execute(operations, mainexecute = false) {
+  bot = true;
+  console.log("Hier1");
   let doc;
   for ({ operation, args = {} } of operations) {
     console.log("EXECUTE", operation, args);
