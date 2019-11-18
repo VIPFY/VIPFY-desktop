@@ -6,6 +6,7 @@ import { fetchTeams, fetchUserLicences } from "../../../queries/departments";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import moment from "moment";
+import PrintTeamSquare from "../universal/squares/printTeamSquare";
 
 interface Props {
   employee: any;
@@ -84,31 +85,7 @@ class Team extends React.Component<Props, State> {
           <div className="tableRow" onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
             <div className="tableMain">
               <div className="tableColumnSmall">
-                <div
-                  className="managerSquare"
-                  style={
-                    team.profilepicture
-                      ? {
-                          backgroundImage:
-                            team.profilepicture.indexOf("/") != -1
-                              ? `url(https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                                  team.profilepicture
-                                )})`
-                              : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                                  team.profilepicture
-                                )})`,
-                          backgroundColor: "unset"
-                        }
-                      : team.internaldata && team.internaldata.color
-                      ? { backgroundColor: team.internaldata.color }
-                      : {}
-                  }>
-                  {team.profilepicture
-                    ? ""
-                    : team.internaldata && team.internaldata.letters
-                    ? team.internaldata.letters
-                    : team.name.slice(0, 1)}
-                </div>
+                <PrintTeamSquare team={team} />
                 <span className="name">{team.name}</span>
               </div>
               <div className="tableColumnSmall content">

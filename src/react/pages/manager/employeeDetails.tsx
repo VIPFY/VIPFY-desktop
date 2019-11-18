@@ -264,7 +264,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                       employee={querydata}
                       isadmin={this.props.isadmin}
                     />
-                    <TemporaryLicences
+                    {/*<TemporaryLicences
                       firstName={querydata.firstname}
                       unitid={employeeid}
                       isadmin={this.props.isadmin}
@@ -275,7 +275,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                       showTimeAway={this.state.showTimeAway}
                       closeTimeAway={() => this.setState({ showTimeAway: false })}
                       isadmin={this.props.isadmin}
-                    />
+                    />*/}
                   </React.Fragment>
                 )}
 

@@ -91,6 +91,22 @@ class ServiceDetails extends React.Component<Props, State> {
     keepAccount: true
   };
 
+  showtime(start, endstring) {
+    const end = endstring == 8640000000000000 ? null : endstring;
+
+    if (end) {
+      return (
+        <span
+          className="infoTag"
+          style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
+          Ends in {moment(end - 0).toNow(true)}
+        </span>
+      );
+    } else {
+      return <span className="infoTag">Active since {moment(start - 0).fromNow(true)}</span>;
+    }
+  }
+
   render() {
     const { e } = this.props;
     return (
@@ -103,13 +119,24 @@ class ServiceDetails extends React.Component<Props, State> {
                 key={`div-${e.id}`}
                 onClick={() => this.props.moveTo(`lmanager/${e.boughtplanid.planid.appid.id}`)}>
                 <div className="tableMain">
-                  <div className="tableColumnSmall">
+                  <div
+                    className="tableColumnSmall"
+                    style={
+                      e.rightscount > 1
+                        ? {
+                            display: "grid",
+                            alignItems: "center",
+                            gridTemplateColumns: "32px 1fr 50px"
+                          }
+                        : { display: "grid", alignItems: "center", gridTemplateColumns: "32px 1fr" }
+                    }>
                     <PrintServiceSquare
                       appidFunction={app => app.boughtplanid.planid.appid}
                       service={e}
                       className="managerSquare"
+                      additionalStyles={{ marginTop: "0px" }}
                     />
-                    <div className="licenceInfoHolder">
+                    {/*} <div className="licenceInfoHolder">
                       <div className="licenceInfoElement">
                         {e.teamaccount ? (
                           <i className="fal fa-users" title="Shared Account" />
@@ -128,24 +155,29 @@ class ServiceDetails extends React.Component<Props, State> {
                             />
                           ))}
                       </div>
-                    </div>
-                    <span className="name" style={{ marginLeft: "0px" }}>
-                      {e.boughtplanid.planid.appid.name}
+                    </div>*/}
+                    <span
+                      className="name"
+                      style={{ marginLeft: "8px" }}
+                      title={e.boughtplanid.alias}>
+                      {/*e.boughtplanid.planid.appid.name*/}
+                      {e.boughtplanid.alias}
                     </span>
+                    {e.rightscount > 1 && (
+                      <span
+                        className="infoTag share"
+                        style={{ marginLeft: "8px", textAlign: "center" }}
+                        title="This account is shared between multiple users">
+                        Shared
+                      </span>
+                    )}
                   </div>
+                  {/*<div className="tableColumnSmall content">{e.boughtplanid.alias}</div>*/}
                   <div className="tableColumnSmall content">
-                    {moment(e.starttime - 0).format("DD.MM.YYYY")}
+                    {/*moment(e.starttime - 0).format("DD.MM.YYYY")*/}
+                    {this.showtime(e.starttime, e.endtime)}
                   </div>
-                  <div className="tableColumnSmall content">
-                    {e.endtime ? moment(e.endtime - 0).format("DD.MM.YYYY") : "Recurring"}
-                  </div>
-                  <div
-                    className="tableColumnSmall content"
-                    title="Please check in external account">
-                    {e.boughtplanid.totalprice > 0
-                      ? `$${e.boughtplanid.totalprice}/month`
-                      : "Integrated Account"}
-                  </div>
+
                   <div className="tableColumnSmall content">
                     <Query
                       //pollInterval={60 * 10 * 1000 + 500}
@@ -219,6 +251,17 @@ class ServiceDetails extends React.Component<Props, State> {
                       }}
                     </Query>
                   </div>
+                  <div className="tableColumnSmall content">
+                    {/*{e.endtime ? moment(e.endtime - 0).format("DD.MM.YYYY") : "Recurring"}*/}
+                  </div>
+                  <div
+                    className="tableColumnSmall content"
+                    /*title="Please check in external account"*/
+                  >
+                    {/*{e.boughtplanid.totalprice > 0
+                      ? `$${e.boughtplanid.totalprice}/month`
+                    : "Integrated Account"}*/}
+                  </div>
                 </div>
                 <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
                   {e.pending && (
@@ -230,21 +273,21 @@ class ServiceDetails extends React.Component<Props, State> {
                 <div className="tableEnd">
                   {this.props.isadmin && (
                     <div className="editOptions">
-                      <i className="fal fa-external-link-alt editbuttons" />
+                      <i className="fal fa-link editbuttons" />
                       <i
-                        className="fal fa-pen editbuttons"
+                        className="fal fa-cog editbuttons"
                         onClick={e => {
                           e.stopPropagation();
                           this.setState({ edit: true });
                         }}
                       />
-                      <i
+                      {/*<i
                         className="fal fa-trash-alt editbuttons"
                         onClick={e => {
                           e.stopPropagation();
                           this.setState({ delete: true, keepAccount: true });
                         }}
-                      />
+                      />*/}
                     </div>
                   )}
                 </div>

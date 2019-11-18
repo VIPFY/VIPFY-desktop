@@ -190,17 +190,19 @@ class Dashboard extends React.Component<Props, State> {
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
         {!licenceCheck ? (
-          <div className="no-apps">
-            <div>This is your</div>
-            <h1>DASHBOARD</h1>
-            <div>
-              It's a central point of information about your connected services and licenses.
-            </div>
-            <img src={dashboardPic} alt="Cool pic of a dashboard" />
-            <div>You haven't integrated any services yet.</div>
-            <div>
-              Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
-              services.
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "64px" }}>
+            <div className="no-apps">
+              <div>This is your</div>
+              <h1>DASHBOARD</h1>
+              <div>
+                It's a central point of information about your connected services and licenses.
+              </div>
+              <img src={dashboardPic} alt="Cool pic of a dashboard" />
+              <div>You haven't integrated any services yet.</div>
+              <div>
+                Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
+                services.
+              </div>
             </div>
           </div>
         ) : (

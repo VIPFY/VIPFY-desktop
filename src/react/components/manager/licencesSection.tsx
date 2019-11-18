@@ -11,6 +11,13 @@ import UniversalSearchBox from "../universalSearchBox";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import ManageServices from "./universal/managing/services";
+import UniversalDropDownInput from "../universalForms/universalDropdownInput";
+import { concatName } from "../../common/functions";
+import PrintServiceSquare from "./universal/squares/printServiceSquare";
+import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
+import AssignServiceToUser from "./universal/adding/assignServiceToUser";
+import AssignAccount from "./universal/adding/assignAccount";
+import AssignNewAccount from "./universal/adding/assignNewAccount";
 
 interface Props {
   employeeid: number;
@@ -65,6 +72,9 @@ interface State {
     closeFunction: Function;
     saveFunction: Function;
   } | null;
+  service: number;
+  showall: Boolean;
+  choosenApp: number;
 }
 
 const ADD_EXTERNAL_PLAN = gql`
@@ -93,7 +103,10 @@ class LicencesSection extends React.Component<Props, State> {
     network: false,
     finished: false,
     error: null,
-    savingObject: null
+    savingObject: null,
+    service: 0,
+    showall: false,
+    choosenApp: 0
   };
 
   render() {
@@ -131,6 +144,7 @@ class LicencesSection extends React.Component<Props, State> {
               return 0;
             });
             //this.setState({ apps: data.fetchUsersOwnLicences });
+            console.log("APPS", data.fetchUsersOwnLicences);
             data.fetchUsersOwnLicences.forEach((e, k) => {
               if (
                 !e.disabled &&
@@ -155,30 +169,41 @@ class LicencesSection extends React.Component<Props, State> {
             return (
               <div className="section" key="Licences">
                 <div className="heading">
-                  <h1>Assigned Licences</h1>
+                  <h1>Assigned Accounts</h1>
+                  <UniversalButton
+                    type="high"
+                    label="Assign Account"
+                    customStyles={{
+                      fontSize: "12px",
+                      lineHeight: "24px",
+                      fontWeight: "700",
+                      marginRight: "16px",
+                      width: "120px"
+                    }}
+                    onClick={() => this.setState({ add: true })}
+                  />
                 </div>
                 <div className="table">
                   <div className="tableHeading">
                     <div className="tableMain">
-                      <div className="tableColumnSmall">
+                      {/*<div className="tableColumnSmall">
                         <h1>App</h1>
+                  </div>*/}
+                      <div className="tableColumnSmall">
+                        <h1>Orbit</h1>
                       </div>
                       <div className="tableColumnSmall">
-                        <h1>Beginning</h1>
-                      </div>
-                      <div className="tableColumnSmall">
-                        <h1>Ending</h1>
-                      </div>
-                      <div className="tableColumnSmall">
-                        <h1>Price</h1>
+                        <h1>Status</h1>
                       </div>
                       <div className="tableColumnSmall">
                         <h1>min/Month</h1>
                       </div>
+                      <div className="tableColumnSmall">{/*<h1>Ending</h1>*/}</div>
+                      <div className="tableColumnSmall">{/*<h1>Price</h1>*/}</div>
                     </div>
                     <div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>
                     <div className="tableEnd">
-                      {this.props.isadmin && (
+                      {/*this.props.isadmin && (
                         <UniversalButton
                           type="high"
                           label="Manage Licences"
@@ -191,23 +216,16 @@ class LicencesSection extends React.Component<Props, State> {
                           }}
                           onClick={() => this.setState({ add: true })}
                         />
-                      )}
+                        )*/}
                     </div>
                   </div>
                   {appArray}
                 </div>
                 {this.state.add && (
-                  <ManageServices
+                  <AssignNewAccount
+                    close={() => this.setState({ add: false })}
                     employee={this.props.employee}
-                    close={() => this.setState({ add: false })}>
-                    <div className="buttonsPopup">
-                      <UniversalButton
-                        label="Close"
-                        type="low"
-                        onClick={() => this.setState({ add: false })}
-                      />
-                    </div>
-                  </ManageServices>
+                  />
                 )}
 
                 {this.state.savingObject && (

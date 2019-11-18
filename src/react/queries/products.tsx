@@ -30,6 +30,7 @@ export const fetchAppById = gql`
       id
       name
       logo
+      icon
       description
       needssubdomain
       website
@@ -318,6 +319,20 @@ export const FETCH_TOTAL_APP_USAGE = gql`
       }
       options
       totalminutes
+    }
+  }
+`;
+
+export const fetchUseableApps = gql`
+  query {
+    fetchUseableApps {
+      id
+      teaserdescription
+      name
+      logo
+      icon
+      needssubdomain
+      options
     }
   }
 `;
