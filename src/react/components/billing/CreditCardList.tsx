@@ -168,9 +168,12 @@ export default (props: Props) => {
               <Mutation
                 update={cache => {
                   const cachedData = cache.readQuery({ query: FETCH_CARDS });
-                  const fetchCards = cachedData.fetchCards.filter(card => card.id != cardData.id);
 
-                  cache.writeQuery({ query: FETCH_CARDS, data: { fetchCards } });
+                  const fetchPaymentData = cachedData.fetchPaymentData.filter(
+                    card => card.id != cardData.id
+                  );
+
+                  cache.writeQuery({ query: FETCH_CARDS, data: { fetchPaymentData } });
                   setShowDelete(false);
                   setCardData(null);
                 }}

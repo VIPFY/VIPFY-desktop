@@ -29,7 +29,6 @@ interface State {
   submitting: boolean;
   success: string;
   showFields: boolean;
-  refetchQueries: object[];
 }
 
 interface Props {
@@ -55,8 +54,7 @@ class StripeBody extends React.Component<Props, State> {
     complete: false,
     submitting: false,
     showFields: false,
-    success: "",
-    refetchQueries: [{ query: FETCH_CARDS }]
+    success: ""
   };
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
@@ -85,6 +83,7 @@ class StripeBody extends React.Component<Props, State> {
       e.preventDefault();
       await this.setState({ error: "" });
       const { firstName, lastName, address, newAddress, email } = this.state;
+      const refetchQueries = [{ query: FETCH_CARDS }];
 
       if (firstName.length < 2 || lastName.length < 2) {
         return this.setState({ error: "Please enter a First and Last Name" });
@@ -105,14 +104,9 @@ class StripeBody extends React.Component<Props, State> {
         address_line1 = newAddress.street;
         variables.address = newAddress;
 
-        await this.setState(prevState => {
-          const refetchQueries = prevState.refetchQueries;
-          refetchQueries.push({
-            query: FETCH_ADDRESSES,
-            variables: { company: true, tag: "billing" }
-          });
-
-          return { refetchQueries };
+        refetchQueries.push({
+          query: FETCH_ADDRESSES,
+          variables: { company: true, tag: "billing" }
         });
       } else {
         address_city = this.props.addresses[address].address.city;
@@ -137,7 +131,7 @@ class StripeBody extends React.Component<Props, State> {
 
       variables.data = token;
       this.setState({ submitting: true });
-      await addCard({ variables });
+      await addCard({ variables, refetchQueries });
     } catch (error) {
       this.setState({ submitting: false, error: "Oops, something went wrong, please retry." });
     }
@@ -197,8 +191,7 @@ class StripeBody extends React.Component<Props, State> {
       <Mutation
         mutation={ADD_PAYMENT}
         onError={error => this.setState({ error: filterError(error), submitting: false })}
-        onCompleted={this.handleSuccess}
-        refetchQueries={this.state.refetchQueries}>
+        onCompleted={this.handleSuccess}>
         {(addCard, { loading }) => (
           <form
             id="stripe-form"

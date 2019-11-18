@@ -10,17 +10,22 @@ interface Props {
 interface State {
   show: boolean;
   maxHeight: string;
+  initial: boolean;
 }
 
 export default class Collapsible extends React.Component<Props, State> {
-  state = { show: true, maxHeight: "1000px" };
+  state = { show: true, maxHeight: "1000px", initial: true };
   childrenRef = React.createRef<HTMLTextAreaElement>();
 
   componentDidMount() {
     if (this.childrenRef && this.childrenRef!.current) {
       // Needed to correctly render the height
       setTimeout(
-        () => this.setState({ maxHeight: `${this.childrenRef!.current!.scrollHeight}px` }),
+        () =>
+          this.setState({
+            maxHeight: `${this.childrenRef!.current!.scrollHeight + 150}px`,
+            initial: false
+          }),
         this.props.noResize ? 800 : 2500
       );
     }
@@ -42,7 +47,7 @@ export default class Collapsible extends React.Component<Props, State> {
         <div
           ref={this.childrenRef}
           className={show ? "children" : "no-spacing"}
-          style={{ maxHeight: show ? this.state.maxHeight : "0" }}>
+          style={{ height: "auto", maxHeight: show ? this.state.maxHeight : "0" }}>
           {React.Children.map(this.props.children, child => child)}
         </div>
       </section>

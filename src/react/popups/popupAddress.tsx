@@ -160,7 +160,7 @@ class PopupAddress extends React.Component<Props, State> {
     if (this.props.delete) {
       return (
         <PopupBase close={() => this.props.close()} small={true} closeable={false}>
-          <h2 className="lightHeading">Do you really want to delete this adress?</h2>
+          <h1>Do you really want to delete this adress?</h1>
           <div>
             <p>
               <span className="bold light">Country: </span>
@@ -243,10 +243,10 @@ class PopupAddress extends React.Component<Props, State> {
       );
     }
     return (
-      <PopupBase close={() => this.props.close()}>
-        <h2 className="lightHeading">
+      <PopupBase styles={{ width: "600px" }} close={() => this.props.close()}>
+        <h1>
           {this.props.oldvalues ? "Please change your address" : "Please insert your address"}
-        </h2>
+        </h1>
         <div className="addressLayout">
           <UniversalDropDownInput
             id="country"
