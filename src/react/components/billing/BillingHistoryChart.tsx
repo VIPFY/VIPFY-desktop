@@ -1,47 +1,124 @@
 import * as React from "react";
-import { graphql, compose, Query } from "react-apollo";
+import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import Chart from "react-apexcharts";
 import ResizeAware from "react-resize-aware";
+import moment, { Moment } from "moment";
+import LoadingDiv from "../LoadingDiv";
 
-import moment from "moment";
-
-interface State {}
-
-interface Props {
-  fetchUnitApps: { fetchUnitApps: any };
-  width: number;
-  height: number;
+interface State {
+  differentCurrencies: boolean;
 }
 
-//fetchUnitApps
+interface Props {
+  fetchUnitApps: { fetchUnitApps: any[] };
+  width: number;
+  height: number;
+  data: any;
+}
+
+interface CalculateData {
+  fetchUnitApps: any[];
+  periodStart: Moment;
+  periodEnd: Moment;
+}
 
 class BillingHistoryChartInner extends React.Component<Props, State> {
-  render() {
-    //console.log("CHARTPROPS", this.props);
-    if (!this.props.data.fetchUnitApps) {
-      return <div>Error fetching data</div>;
-    }
+  state = { differentCurrencies: false };
 
-    const timestart = moment()
+  componentDidMount() {
+    // TODO: [VIP-789] Implement https://fixer.io/ in the backend and exchange currencies
+    let sameCurrencies = true;
+
+    if (this.props.data.fetchUnitApps.length > 1) {
+      const currency = this.props.data.fetchUnitApps[0].boughtplan.plan.currency;
+
+      sameCurrencies = this.props.data.fetchUnitApps.every(
+        ({ boughtplan }) => boughtplan.plan.currency == currency
+      );
+
+      if (!sameCurrencies) {
+        this.setState({ differentCurrencies: true });
+      }
+    }
+  }
+
+  calculateData = (fetchUnitApps, periodStart, periodEnd): CalculateData[] =>
+    fetchUnitApps
+      .map(({ boughtplan }) => ({
+        id: boughtplan.id,
+        alias: boughtplan.alias,
+        price: boughtplan.totalprice,
+        buytime: boughtplan.buytime,
+        endtime: boughtplan.endtime,
+        planName: boughtplan.plan.name,
+        appName: boughtplan.plan.app.name,
+        applogo: boughtplan.plan.app.logo,
+        appicon: boughtplan.plan.app.icon,
+        appcolor: boughtplan.plan.app.color
+      }))
+      .sort((a, b) => (a.alias || `${a.appName} ${a.id}`) > (b.alias || `${b.appName} ${b.id}`))
+      .map(plan => {
+        let planData: { name: string; data: number[]; color: string } = {
+          name: plan.alias ? plan.alias : `${plan.appName} ${plan.id}`,
+          data: [],
+          color: plan.appcolor
+        };
+
+        for (
+          let month = moment(periodStart);
+          month.isSameOrBefore(periodEnd);
+          month.add(1, "month")
+        ) {
+          // Convert String to number with - 0; equal to parseInt
+          if (moment(plan.buytime).isSameOrBefore(month.endOf("month"))) {
+            if (moment(plan.buytime).isAfter(month.startOf("month"))) {
+              let price =
+                (-moment(plan.buytime).diff(month.endOf("month"), "days") / month.daysInMonth()) *
+                plan.price;
+              planData.data.push(price);
+            } else {
+              planData.data.push(plan.price);
+            }
+          } else {
+            planData.data.push(0);
+          }
+        }
+        return planData;
+      })
+      .filter(planData => planData.data.some(x => x !== 0));
+
+  render() {
+    if (this.state.differentCurrencies) {
+      return (
+        <div className="no-data">
+          Sorry, seems like your plans use different currencies. We can't render a chart for this.
+        </div>
+      );
+    }
+    const periodStart: Moment = moment()
       .startOf("month")
       .subtract(6, "months");
-    const timeend = moment();
-    const labels: string[] = [];
-    for (let m = moment(timestart); m.isBefore(timeend); m.add(1, "month")) {
-      const label = m.toISOString();
-      labels.push(label);
-    }
-    const data = this.BarSeries(this.props);
 
-    let monthlysum: number[] = [0, 0, 0, 0, 0, 0, 0];
+    const periodEnd: Moment = moment().endOf("month");
+
+    const labels: string[] = [];
+
+    for (let month = moment(periodStart); month.isBefore(periodEnd); month.add(1, "month")) {
+      labels.push(month.toISOString());
+    }
+
+    const data = this.calculateData(this.props.data.fetchUnitApps, periodStart, periodEnd);
+
+    let monthlySum: number[] = [0, 0, 0, 0, 0, 0, 0];
+
     data.forEach(d => {
       for (let i = 0; i < 7; i++) {
-        monthlysum[i] += d.data[i];
+        monthlySum[i] += d.data[i];
       }
     });
-    let monthlymax: number = Math.max(...monthlysum);
-    //console.log("DATA", data, monthlysum);
+
+    let monthlyMax: number = Math.max(...monthlySum);
 
     return (
       <Chart
@@ -50,9 +127,8 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
         type="bar"
         series={data}
         options={{
-          chart: {
-            stacked: true
-          },
+          chart: { stacked: true },
+          toolbar: { show: true },
           dataLabels: {
             formatter: y => (y === 0 ? "" : "$" + `${y.toFixed(2)}`.padStart(3, " "))
           },
@@ -67,96 +143,21 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
           },
           yaxis: {
             labels: {
-              formatter: y => "$" + `${y}`.padStart(3, " ")
+              formatter: y => "$" + `${y.toFixed(0)}`.padStart(3, " ")
             },
-            max: monthlymax % 6 === 0 ? monthlymax : Math.ceil(monthlymax / 6) * 6
+            max: monthlyMax % 6 === 0 ? monthlyMax : Math.ceil(monthlyMax / 6) * 6
           },
           tooltip: {
-            x: {
-              formatter: x => {
-                return moment(x).format("MMMM YYYY");
-              }
-            },
+            x: { formatter: x => moment(x).format("MMMM YYYY") },
             y: { formatter: y => (y === 0 ? "" : "$" + `${y.toFixed(2)}`.padStart(3, " ")) }
           }
         }}
       />
     );
   }
-
-  /*<FlexibleXYPlot stackBy="y" xType="ordinal">
-        <VerticalGridLines />
-        <HorizontalGridLines />
-        <DiscreteColorLegend orientation="horizontal" width={300} items={names} />
-        <XAxis tickLabelAngle={270} />
-        <YAxis tickFormat={v => `$${v}`} />
-        {bars}
-      </FlexibleXYPlot>*/
-
-  BarSeries(props): { name: string; data: number[]; color: string }[] {
-    let d = props.data.fetchUnitApps;
-    let plans = d.map(boughtplan => ({
-      id: boughtplan.boughtplan.id,
-      alias: boughtplan.boughtplan.alias,
-      price: boughtplan.boughtplan.totalprice,
-      buytime: boughtplan.boughtplan.buytime,
-      endtime: boughtplan.boughtplan.endtime,
-      planname: boughtplan.boughtplan.planid.name,
-      appname: boughtplan.boughtplan.planid.appid.name,
-      applogo: boughtplan.boughtplan.planid.appid.logo,
-      appicon: boughtplan.boughtplan.planid.appid.icon,
-      appcolor: boughtplan.boughtplan.planid.appid.color
-    }));
-    plans.sort(function(a, b) {
-      return (
-        (a.alias ? a.alias : `${a.appname} ${a.id}`) > (b.alias ? b.alias : `${b.appname} ${b.id}`)
-      );
-    });
-    //console.log("PLANS", plans);
-    const timestart = moment()
-      .startOf("month")
-      .subtract(6, "months");
-    const timeend = moment().endOf("month");
-    //console.log("times", timestart, timeend);
-
-    return plans
-      .map(plan => {
-        let d: { name: string; data: number[]; color: string } = {
-          name: plan.alias ? plan.alias : `${plan.appname} ${plan.id}`,
-          data: [],
-          color: plan.appcolor
-        };
-        for (let m = moment(timestart); m.isSameOrBefore(timeend); m.add(1, "month")) {
-          //console.log("Month", m, moment(plan.buytime), m.endOf("month"));
-          //console.log(m.endOf("month"));
-          let mm = m;
-          if (moment(plan.buytime - 0).isSameOrBefore(mm.endOf("month"))) {
-            //console.log(moment(plan.buytime).isAfter(m.startOf("month")), plan, m);
-            //console.log("BEFORE", moment(plan.buytime));
-            if (moment(plan.buytime - 0).isAfter(mm.startOf("month"))) {
-              //console.log(-moment(plan.buytime).diff(m.endOf("month"), "days"), m.daysInMonth());
-              //console.log("AFTER", moment(plan.buytime));
-              let price =
-                (-moment(plan.buytime - 0).diff(mm.endOf("month"), "days") / mm.daysInMonth()) *
-                plan.price;
-              d.data.push(price);
-            } else {
-              //console.log("ELSE", moment(plan.buytime));
-              d.data.push(plan.price);
-            }
-          } else {
-            //console.log("ELSE1", moment(plan.buytime));
-            d.data.push(0);
-          }
-        }
-        return d;
-      })
-      .filter(d => d.data.some(x => x !== 0));
-  }
 }
 
-function BillingHistoryChart(props) {
-  //console.log("PROPS", props);
+function BillingHistoryChart(props: { departmentID: number }) {
   return (
     <Query
       pollInterval={60 * 10 * 1000}
@@ -170,10 +171,11 @@ function BillingHistoryChart(props) {
               buytime
               endtime
               alias
-              planid {
+              plan: planid {
+                currency
                 id
                 name
-                appid {
+                app: appid {
                   id
                   name
                   icon
@@ -185,14 +187,16 @@ function BillingHistoryChart(props) {
           }
         }
       `}
-      variables={{ departmentid: props.company.unit.id }}>
+      variables={{ departmentid: props.departmentID }}>
       {({ data, loading, error }) => {
         if (loading) {
-          return <div>Loading</div>;
+          return <LoadingDiv />;
         }
-        if (error) {
+
+        if (error || !data) {
           return <div>Error fetching data</div>;
         }
+
         return (
           <ResizeAware style={{ width: "100%" }}>
             <BillingHistoryChartInner {...props} data={data} />

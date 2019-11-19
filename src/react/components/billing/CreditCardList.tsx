@@ -65,7 +65,7 @@ export default (props: Props) => {
               <h1>Your currently active card</h1>
               {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
 
-              {normalizedCards.length > 0 && (
+              {normalizedCards && normalizedCards.length > 0 && (
                 <UniversalButton
                   className="floating-button"
                   type="high"

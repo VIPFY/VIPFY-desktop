@@ -1,14 +1,13 @@
 import gql from "graphql-tag";
 
-export const fetchBills = gql`
-  query fetchBills {
+export const FETCH_BILLS = gql`
+  query onFetchBills {
     fetchBills {
       id
       billtime
       paytime
       stornotime
-      pdflink
-      invoicelink
+      billname
       amount
       currency
       refundedtime

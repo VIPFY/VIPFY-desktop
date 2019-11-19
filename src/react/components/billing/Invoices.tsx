@@ -11,23 +11,31 @@ import * as moment from "moment";
 import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../LoadingDiv";
 
-import { fetchBills } from "../../queries/billing";
+import { FETCH_BILLS } from "../../queries/billing";
 import { filterError } from "../../common/functions";
-import InvoiceMonth from "./InvoiceMonth";
 import { DOWNLOAD_INVOICE } from "../../mutations/billing";
+import DropDown from "../../common/DropDown";
+import IconButton from "../../common/IconButton";
 
 interface Props {}
-interface State {
-  show: number;
-  showmonth: String;
-}
 
-class Invoices extends React.Component<Props, State> {
-  state = {
-    show: 0,
-    showmonth: ""
+const Invoices = (props: Props) => {
+  const [currentYear, setYear] = React.useState(moment().get("year"));
+  const [currentMonth, setMonth] = React.useState(moment.months(moment().get("month")));
+
+  const onEnter = e => {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      setMonth(e.target.name);
+    }
   };
 
+  React.useEffect(() => {
+    window.addEventListener("keydown", onEnter, true);
+
+    return function cleanup() {
+      window.removeEventListener("keydown", onEnter);
+    };
+  });
   // downloadPdf = async pdfLink => {
   //   const pathArray = pdfLink.split("/");
   //   const fileName = pathArray[pathArray.length - 2];
@@ -49,118 +57,188 @@ class Invoices extends React.Component<Props, State> {
   //   shell.openExternal(pdfPath);
   // };
 
-  toggleInvoice = invoice => {
-    if (invoice != this.state.show) {
-      this.setState({ show: invoice });
-    } else {
-      this.setState({ show: 0 });
-    }
-  };
+  // toggleInvoice = invoice => {
+  //   if (invoice != this.state.show) {
+  //     this.setState({ show: invoice });
+  //   } else {
+  //     this.setState({ show: 0 });
+  //   }
+  // };
 
-  toggleMonthInvoice = monthid => {
-    this.setState({ showmonth: monthid });
-  };
+  // toggleMonthInvoice = monthid => {
+  //   this.setState({ showmonth: monthid });
+  // };
 
-  render() {
-    return (
-      <Query query={fetchBills}>
-        {({ data: { fetchBills }, loading, error }) => {
-          if (loading) {
-            return <LoadingDiv text="Fetching data..." />;
+  return (
+    <Query query={FETCH_BILLS}>
+      {({ data: { fetchBills }, loading, error }) => {
+        if (loading) {
+          return <LoadingDiv text="Fetching data..." />;
+        }
+
+        if (error || !fetchBills) {
+          return <ErrorComp error={error} />;
+        }
+
+        if (fetchBills.length < 1) {
+          return <div className="no-data">No Invoices yet</div>;
+        }
+
+        const invoicesByYears = fetchBills.reduce((acc, obj) => {
+          const key = moment(obj.billtime).get("year");
+
+          if (!acc[key]) {
+            acc[key] = [];
           }
 
-          if (error || !fetchBills) {
-            return <ErrorComp error={error} />;
-          }
+          acc[key].push(obj);
+          return acc;
+        }, {});
 
-          if (fetchBills.length > 0) {
-            let billmonth: JSX.Element[] = [];
-            let thismonth = "";
-            let lastinvoice = {};
-            let monthlyinvoices: JSX.Element[] = [];
+        const yearsList = Object.keys(invoicesByYears).map(year => year);
 
-            fetchBills.forEach(invoice => {
-              let newthismonth = `${moment(invoice.billtime - 0).format("MMM")}${moment(
-                invoice.billtime - 0
-              ).format("YYYY")}`;
+        return (
+          <div className="billing-table-holder">
+            <ul className="billing-period">
+              {[...Array(12).keys()].map(i => {
+                const month = moment().months(i);
 
-              if (thismonth !== newthismonth && thismonth !== "") {
-                billmonth.push(
-                  <InvoiceMonth
-                    key={thismonth}
-                    monthlyinvoices={monthlyinvoices}
-                    lastinvoice={lastinvoice}
-                  />
+                return (
+                  <button
+                    key={i}
+                    className={`naked-button ${
+                      month.format("MMMM") == currentMonth ? "current" : ""
+                    }`}
+                    name={month.format("MMM")}
+                    onClick={() => setMonth(month.format("MMMM"))}>
+                    {month.format("MMM")}
+                  </button>
                 );
-                monthlyinvoices = [];
-              }
+              })}
+              <DropDown
+                option={currentYear}
+                defaultValue={currentYear}
+                options={yearsList}
+                handleChange={year => setYear(year)}
+              />
+            </ul>
 
-              monthlyinvoices.push(
-                <React.Fragment key={`bill-${invoice.id}`}>
-                  <div className={`invoices${invoice.refundedtime ? "-refunded" : ""}`}>
-                    <span>{`${invoice.amount} ${invoice.currency.toUpperCase()}`}</span>
-                    <span
-                      onClick={() => this.setState({ show: 0 })}
-                      title={
-                        invoice.refundedtime
-                          ? `Refunded on ${moment(invoice.refundedtime - 0).format("LLL")}`
-                          : ""
-                      }>
-                      {moment(invoice.billtime - 0).format("LLL")}
-                    </span>
-                    {console.log(invoice)}
-                    <span className="naked-button-holder">
-                      <Mutation mutation={DOWNLOAD_INVOICE}>
-                        {(downloadInvoice, { loading, error }) => (
-                          <button
-                            title="Download Invoice"
-                            className="naked-button"
-                            onClick={() => downloadInvoice({ variables: { billid: invoice.id } })}>
-                            <i className="fal fa-download" />
-                            {loading && <LoadingDiv text="Downloading Invoice..." />}
-                            {error && filterError(error)}
-                          </button>
-                        )}
-                      </Mutation>
-                      <i
-                        onClick={() => this.toggleInvoice(invoice.id)}
-                        className={`fal fa-search-${
-                          this.state.show == invoice.id ? "minus" : "plus"
-                        }`}
-                        title="Show Invoice"
-                      />
-                    </span>
-                  </div>
-                  {this.state.show == invoice.id && (
-                    <InvoiceWebView invoice={invoice.invoicelink} />
-                  )}
-                </React.Fragment>
-              );
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th colSpan={2}>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
 
-              thismonth = newthismonth;
-              lastinvoice = invoice;
+              <tbody>
+                {Object.values(invoicesByYears[currentYear]).map(invoice => (
+                  <tr>
+                    <td>{moment(invoice.billtime).format("LL")}</td>
+                    <td>{invoice.amount}</td>
+                    <td colSpan={2} className="billIcons">
+                      <IconButton
+                        onClick={() => console.log("FIRE")}
+                        title={
+                          invoice.paytime
+                            ? `Paid on ${moment(invoice.paytime).format("LL")}`
+                            : "Not paid yet"
+                        }
+                        icon={invoice.paytime ? "money-bill" : "file-invoice-dollar"}></IconButton>
 
-              /*if (thismonth !== newthismonth && thismonth !== "") {
-                billmonth.push(
+                      {invoice.stornotime && (
+                        <IconButton
+                          onClick={() => console.log("FIRE")}
+                          title={`Reversed on ${moment(invoice.stornotime).format("LL")}`}
+                          icon="strikethrough"></IconButton>
+                      )}
+
+                      {invoice.refundedtime && (
+                        <IconButton
+                          onClick={() => console.log("FIRE")}
+                          title={`Refunded on ${moment(invoice.refundedtime).format("LL")}`}
+                          icon="hand-holding-usd"></IconButton>
+                      )}
+                    </td>
+                    <td align="right">
+                      <IconButton
+                        onClick={() => console.log("FIRE")}
+                        title="Download"
+                        icon="download"></IconButton>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        return fetchBills.map(invoice => {
+          return <InvoiceMonth key={invoice.id} {...invoice} />;
+
+          monthlyInvoices.push(
+            <React.Fragment key={`bill-${invoice.id}`}>
+              <div className={`invoices${invoice.refundedtime ? "-refunded" : ""}`}>
+                <span>{`${invoice.amount} ${invoice.currency.toUpperCase()}`}</span>
+                <span
+                  onClick={() => this.setState({ show: 0 })}
+                  title={
+                    invoice.refundedtime
+                      ? `Refunded on ${moment(invoice.refundedtime).format("LLL")}`
+                      : ""
+                  }>
+                  {moment(invoice.billtime).format("LLL")}
+                </span>
+                {console.log(invoice)}
+                <span className="naked-button-holder">
+                  <Mutation mutation={DOWNLOAD_INVOICE}>
+                    {(downloadInvoice, { loading, error }) => (
+                      <button
+                        title="Download Invoice"
+                        className="naked-button"
+                        onClick={() => downloadInvoice({ variables: { billid: invoice.id } })}>
+                        <i className="fal fa-download" />
+                        {loading && <LoadingDiv text="Downloading Invoice..." />}
+                        {error && filterError(error)}
+                      </button>
+                    )}
+                  </Mutation>
+                  <i
+                    onClick={() => this.toggleInvoice(invoice.id)}
+                    className={`fal fa-search-${this.state.show == invoice.id ? "minus" : "plus"}`}
+                    title="Show Invoice"
+                  />
+                </span>
+              </div>
+              {this.state.show == invoice.id && <InvoiceWebView invoice={invoice.invoicelink} />}
+            </React.Fragment>
+          );
+
+          thisMonth = newthisMonth;
+          lastInvoice = invoice;
+
+          /*if (thisMonth !== newthisMonth && thisMonth !== "") {
+                billMonth.push(
                   <div
                     className="genericInsideHolder"
-                    key={`${moment(lastinvoice.billtime).format("MMM")}${moment(
-                      lastinvoice.billtime
+                    key={`${moment(lastInvoice.billtime).format("MMM")}${moment(
+                      lastInvoice.billtime
                     ).format("YYYY")}`}>
                     <div
                       className="header"
                       onClick={() =>
                         this.toggleMonthInvoice(
-                          `${moment(lastinvoice.billtime).format("MMM")}${moment(
-                            lastinvoice.billtime
+                          `${moment(lastInvoice.billtime).format("MMM")}${moment(
+                            lastInvoice.billtime
                           ).format("YYYY")}`
                         )
                       }>
                       <i
                         className={`button-hide fas ${
                           this.state.showmonth ===
-                          `${moment(lastinvoice.billtime).format("MMM")}${moment(
-                            lastinvoice.billtime
+                          `${moment(lastInvoice.billtime).format("MMM")}${moment(
+                            lastInvoice.billtime
                           ).format("YYYY")}`
                             ? "fa-angle-left"
                             : "fa-angle-down"
@@ -168,86 +246,80 @@ class Invoices extends React.Component<Props, State> {
                         //onClick={this.toggle}
                       />
                       <span>
-                        Invocies for {moment(lastinvoice.billtime).format("MMM")}{" "}
-                        {moment(lastinvoice.billtime).format("YYYY")}
+                        Invocies for {moment(lastInvoice.billtime).format("MMM")}{" "}
+                        {moment(lastInvoice.billtime).format("YYYY")}
                       </span>
                     </div>
                     <div
                       className={`inside ${
                         this.state.showmonth ===
-                        `${moment(lastinvoice.billtime).format("MMM")}${moment(
-                          lastinvoice.billtime
+                        `${moment(lastInvoice.billtime).format("MMM")}${moment(
+                          lastInvoice.billtime
                         ).format("YYYY")}`
                           ? "in"
                           : "out"
                       }`}>
-                      {monthlyinvoices}
+                      {monthlyInvoices}
                     </div>
                   </div>
                 );
-                monthlyinvoices = [];
+                monthlyInvoices = [];
               }*/
-              // thismonth = newthismonth;
-              // lastinvoice = invoice;
-            });
-            /*monthlyinvoices.push(
-              <React.Fragment key={`bill-${lastinvoice.id}`}>
-                {console.log(lastinvoice)}
-                <div className={`invoices${lastinvoice.refundedtime ? "-refunded" : ""}`}>
-                  <span>{`${lastinvoice.amount} ${lastinvoice.currency.toUpperCase()}`}</span>
+          // thisMonth = newthisMonth;
+          // lastInvoice = invoice;
+        });
+        /*monthlyInvoices.push(
+              <React.Fragment key={`bill-${lastInvoice.id}`}>
+                {console.log(lastInvoice)}
+                <div className={`invoices${lastInvoice.refundedtime ? "-refunded" : ""}`}>
+                  <span>{`${lastInvoice.amount} ${lastInvoice.currency.toUpperCase()}`}</span>
                   <span
                     onClick={() => this.setState({ show: 0 })}
                     title={
-                      lastinvoice.refundedtime
-                        ? `Refunded on ${moment(lastinvoice.refundedtime).format("LLL")}`
+                      lastInvoice.refundedtime
+                        ? `Refunded on ${moment(lastInvoice.refundedtime).format("LLL")}`
                         : ""
                     }>
-                    {moment(lastinvoice.billtime).format("LLL")}
+                    {moment(lastInvoice.billtime).format("LLL")}
                   </span>
 
                   <span className="naked-button-holder">
-                    <a href={lastinvoice.pdflink} className="naked-button">
+                    <a href={lastInvoice.pdflink} className="naked-button">
                       <i
                         className="fas fa-download"
-                        // onClick={() => this.downloadPdf(lastinvoice.pdflink)}
+                        // onClick={() => this.downloadPdf(lastInvoice.pdflink)}
                       />
                     </a>
                     <i
-                      onClick={() => this.toggleInvoice(lastinvoice.id)}
+                      onClick={() => this.toggleInvoice(lastInvoice.id)}
                       className="fas fa-file-invoice-dollar"
                       title="Show Invoice"
                     />
                   </span>
                 </div>
-                {this.state.show == lastinvoice.id ? (
-                  <InvoiceWebView invoice={lastinvoice.invoicelink} />
+                {this.state.show == lastInvoice.id ? (
+                  <InvoiceWebView invoice={lastInvoice.invoicelink} />
                 ) : (
                   ""
                 )}
               </React.Fragment>
             );*/
-            billmonth.push(
-              <InvoiceMonth
-                key={thismonth}
-                monthlyinvoices={monthlyinvoices}
-                lastinvoice={lastinvoice}
-              />
-            );
-            /*billmonth.push(
+
+        /*billMonth.push(
               <div
                 className="genericInsideHolder"
-                key={`${moment(lastinvoice.billtime).format("MMM")}${moment(
-                  lastinvoice.billtime
+                key={`${moment(lastInvoice.billtime).format("MMM")}${moment(
+                  lastInvoice.billtime
                 ).format("YYYY")}`}>
                 <div className="header">
-                  Invocies for {moment(lastinvoice.billtime).format("MMM")}{" "}
-                  {moment(lastinvoice.billtime).format("YYYY")}
+                  Invocies for {moment(lastInvoice.billtime).format("MMM")}{" "}
+                  {moment(lastInvoice.billtime).format("YYYY")}
                 </div>
               </div>
             );*/
-            //console.log(thismonth, monthlyinvoices);
-            return billmonth;
-            /*
+        //console.log(thisMonth, monthlyInvoices);
+
+        /*
               return(
               <React.Fragment key={`bill-${invoice.id}`}>
                 {console.log(invoice)}
@@ -284,13 +356,11 @@ class Invoices extends React.Component<Props, State> {
                 )}
               </React.Fragment>)
             ));*/
-          }
-          return "No Invoices yet";
-        }}
-      </Query>
-    );
-  }
-}
+      }}
+    </Query>
+  );
+};
+
 export default Invoices;
 
 interface InvoiceProps {
@@ -302,22 +372,20 @@ interface InvoiceState {
 }
 // The Webview needs is own class to handle events properly
 class InvoiceWebView extends React.Component<InvoiceProps, InvoiceState> {
-  state = {
-    loading: true
-  };
+  state = { loading: true };
 
   componentDidMount() {
     const webview = document.querySelector("webview");
 
-    webview.addEventListener("did-start-loading", this.loadstart);
-    webview.addEventListener("did-stop-loading", this.loadstop);
+    webview!.addEventListener("did-start-loading", this.loadstart);
+    webview!.addEventListener("did-stop-loading", this.loadstop);
   }
 
   componentWillUnMount() {
     const webview = document.querySelector("webview");
 
-    webview.removeEventListener("did-start-loading", this.loadstart);
-    webview.removeEventListener("did-stop-loading", this.loadstop);
+    webview!.removeEventListener("did-start-loading", this.loadstart);
+    webview!.removeEventListener("did-stop-loading", this.loadstop);
   }
 
   loadstart = () => this.setState({ loading: true });

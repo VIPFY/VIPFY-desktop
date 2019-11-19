@@ -1,48 +1,16 @@
 import * as React from "react";
-import gql from "graphql-tag";
-import { Query, compose, graphql } from "react-apollo";
-
-import Confirmation from "../../popups/Confirmation";
-import GenericInputForm from "../GenericInputForm";
+import { Query } from "react-apollo";
 import LoadingDiv from "../LoadingDiv";
-
 import { AppContext } from "../../common/functions";
-import { filterError, ErrorComp } from "../../common/functions";
-import { addressFields } from "../../common/constants";
-import { CREATE_ADDRESS } from "../../mutations/contact";
+import { filterError } from "../../common/functions";
 import { FETCH_ADDRESSES } from "../../queries/contact";
 import PopupAddress from "../../popups/popupAddress";
 import Collapsible from "../../common/Collapsible";
 import UniversalButton from "../universalButtons/universalButton";
 import IconButton from "../../common/IconButton";
 
-const UPDATE_ADDRESS = gql`
-  mutation onUpdateAddress($address: AddressInput!, $id: ID!) {
-    updateAddress(address: $address, id: $id) {
-      id
-      address
-      country
-      description
-      priority
-      tags
-    }
-  }
-`;
-
-const DELETE_ADDRESS = gql`
-  mutation onDeleteAddress($id: ID!, $department: Boolean) {
-    deleteAddress(id: $id, department: $department) {
-      ok
-    }
-  }
-`;
-
 interface Props {
   company: number;
-  deleteAddress: Function;
-  createAddress: Function;
-  updateAddress: Function;
-  unitid: number;
   label?: string;
   tag?: string;
 }
@@ -70,9 +38,7 @@ class Addresses extends React.Component<Props, State> {
   state = {
     edit: -1,
     error: "",
-    variables: {
-      company: false
-    },
+    variables: { company: false },
     createNew: false,
     update: false,
     oldAddress: null,
@@ -91,98 +57,6 @@ class Addresses extends React.Component<Props, State> {
     }
   }
 
-  showCreation = showPopup => {
-    const creationPopup = {
-      header: "Create new Address",
-      body: GenericInputForm,
-      props: {
-        fields: addressFields,
-        handleSubmit: async addressData => {
-          const { variables } = this.state;
-          await this.props.createAddress({
-            variables: { addressData, department: variables.company },
-            update: (proxy, { data: { createAddress } }) => {
-              // Read the data from our cache for this query.
-              const cachedData = proxy.readQuery({ query: FETCH_ADDRESSES, variables });
-              cachedData.fetchAddresses.push(createAddress);
-              // Write our data back to the cache.
-              proxy.writeQuery({ query: FETCH_ADDRESSES, variables, data: cachedData });
-            }
-          });
-        },
-        submittingMessage: "Registering Address..."
-      }
-    };
-
-    showPopup(creationPopup);
-  };
-
-  editAddress = async (e, id, showPopup) => {
-    e.preventDefault();
-    try {
-      const address: { tags: string[]; department?: boolean } = { tags: [] };
-
-      Object.values(e.target.childNodes).forEach(node => {
-        if (node.childNodes[0].name) {
-          address[node.childNodes[0].name] = node.childNodes[0].value;
-        } else {
-          if (node.childNodes["0"].childNodes["0"].checked) {
-            address.tags.push("billing");
-          }
-
-          if (node.childNodes["1"].childNodes["0"].checked) {
-            address.tags.push("main");
-          }
-        }
-      });
-
-      if (this.state.variables.company) {
-        address.department = true;
-      }
-
-      await this.props.updateAddress({ variables: { address, id } });
-      this.setState({ edit: -1 });
-    } catch (err) {
-      showPopup({
-        header: "Error",
-        body: ErrorComp,
-        props: { error: filterError(err) }
-      });
-    }
-  };
-
-  showDeletion = (id: { id: number }, showPopup: { showPopup: Function }) => {
-    const { variables } = this.state;
-
-    const deletionPopup = {
-      header: "Delete Address",
-      body: Confirmation,
-      props: {
-        id,
-        headline: "Please confirm deletion of this address",
-        submitFunction: id =>
-          this.props.deleteAddress({
-            variables: { id, department: variables.company },
-            update: proxy => {
-              // Read the data from our cache for this query.
-              const cachedData = proxy.readQuery({ query: FETCH_ADDRESSES, variables });
-              const filteredAddresses = cachedData.fetchAddresses.filter(
-                address => address.id != id
-              );
-              // Write our data back to the cache.
-              proxy.writeQuery({
-                query: FETCH_ADDRESSES,
-                variables,
-                data: { fetchAddresses: filteredAddresses }
-              });
-            }
-          })
-      }
-    };
-
-    showPopup(deletionPopup);
-  };
-
   render() {
     const addressHeaders = ["Street", "Zip", "City", "Country", "Description" /*, "Priority"*/];
 
@@ -200,8 +74,12 @@ class Addresses extends React.Component<Props, State> {
                     return <LoadingDiv text="Fetching Addresses..." />;
                   }
 
-                  if (error) {
+                  if (error || !data) {
                     return filterError(error);
+                  }
+
+                  if (data.fetchAddresses.length < 1) {
+                    return <div style={{ padding: "20px" }}>No addresses yet</div>;
                   }
 
                   return (
@@ -314,7 +192,24 @@ class Addresses extends React.Component<Props, State> {
                                     </form>
                                   )}
 
-                                  <td>
+                                  <td align="right">
+                                    <IconButton
+                                      title="Edit"
+                                      onClick={() =>
+                                        this.setState({
+                                          update: true,
+                                          oldAddress: {
+                                            country,
+                                            street,
+                                            zip,
+                                            city,
+                                            description,
+                                            id
+                                          }
+                                        })
+                                      }
+                                      icon="edit"
+                                    />
                                     <IconButton
                                       title="Delete"
                                       onClick={() =>
@@ -333,23 +228,6 @@ class Addresses extends React.Component<Props, State> {
                                       }
                                       icon="trash-alt"
                                     />
-                                    <IconButton
-                                      title="Edit"
-                                      onClick={() =>
-                                        this.setState({
-                                          update: true,
-                                          oldAddress: {
-                                            country,
-                                            street,
-                                            zip,
-                                            city,
-                                            description,
-                                            id
-                                          }
-                                        })
-                                      }
-                                      icon="fa-edit"
-                                    />
                                   </td>
                                 </tr>
                               );
@@ -363,16 +241,23 @@ class Addresses extends React.Component<Props, State> {
               </Query>
 
               {this.state.createNew && (
-                <PopupAddress close={() => this.setState({ createNew: false })} />
+                <PopupAddress
+                  tag={this.props.tag}
+                  close={() => this.setState({ createNew: false })}
+                />
               )}
+
               {this.state.update && (
                 <PopupAddress
+                  tag={this.props.tag}
                   close={() => this.setState({ update: false })}
                   oldvalues={this.state.oldAddress}
                 />
               )}
+
               {this.state.delete && (
                 <PopupAddress
+                  tag={this.props.tag}
                   close={() => this.setState({ delete: false })}
                   delete={true}
                   oldvalues={this.state.oldAddress}
@@ -393,8 +278,4 @@ class Addresses extends React.Component<Props, State> {
   }
 }
 
-export default compose(
-  graphql(CREATE_ADDRESS, { name: "createAddress" }),
-  graphql(UPDATE_ADDRESS, { name: "updateAddress" }),
-  graphql(DELETE_ADDRESS, { name: "deleteAddress" })
-)(Addresses);
+export default Addresses;

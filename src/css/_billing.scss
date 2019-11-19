@@ -93,6 +93,29 @@ $plan-background: #ccc;
   position: relative;
   padding: 0;
 
+  .billing-period {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+
+    .naked-button {
+      color: #a19d9d;
+      transition: color 300ms ease-in-out;
+
+      &:hover,
+      &:focus {
+        color: $vipfy-darktext;
+      }
+    }
+
+    .current {
+      position: relative;
+      color: $vipfy-darktext;
+    }
+  }
+
   th,
   td {
     padding: 10px;
@@ -120,6 +143,13 @@ $plan-background: #ccc;
         opacity: 0;
         line-height: 1rem;
         font-size: 1rem;
+        margin-left: 10px;
+      }
+    }
+
+    .billIcons {
+      i {
+        opacity: 1;
       }
     }
   }
