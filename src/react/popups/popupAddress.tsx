@@ -129,17 +129,23 @@ class PopupAddress extends React.Component<Props, State> {
       }
     } else {
       try {
-        await this.props.createAddress({
-          variables: {
-            addressData: {
-              street: this.state.street,
-              zip: this.state.zip,
-              city: this.state.city,
-              country: this.state.country,
-              description: this.state.description
-            },
-            department: true
+        const variables = {
+          addressData: {
+            street: this.state.street,
+            zip: this.state.zip,
+            city: this.state.city,
+            country: this.state.country,
+            description: this.state.description
           },
+          department: true
+        };
+
+        if (this.props.tag) {
+          variables.addressData.tags = [this.props.tag];
+        }
+
+        await this.props.createAddress({
+          variables,
           update: (proxy, { data: { createAddress } }) => {
             /**
              * @type {{company: boolean, [tag]: string}} - Whether it's a personal or a company address

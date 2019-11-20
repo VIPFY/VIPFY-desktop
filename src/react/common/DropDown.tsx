@@ -92,7 +92,7 @@ class DropDown extends React.PureComponent<Props, State> {
       bodyClass += " slide-up";
     }
     // }
-    console.log(this.props.defaultValue);
+
     return (
       <div className={`dropdown ${this.props.className}`} ref={this.wrapper}>
         <button

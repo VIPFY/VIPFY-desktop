@@ -1,20 +1,20 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import gql from "graphql-tag";
 import Chart from "react-apexcharts";
 import ResizeAware from "react-resize-aware";
 import moment, { Moment } from "moment";
 import LoadingDiv from "../LoadingDiv";
+import { FETCH_UNIT_APPS } from "../../queries/billing";
 
 interface State {
   differentCurrencies: boolean;
+  currency: string;
 }
 
 interface Props {
-  fetchUnitApps: { fetchUnitApps: any[] };
-  width: number;
-  height: number;
-  data: any;
+  data: { fetchUnitApps: any[] };
+  width?: number;
+  height?: number;
 }
 
 interface CalculateData {
@@ -23,8 +23,8 @@ interface CalculateData {
   periodEnd: Moment;
 }
 
-class BillingHistoryChartInner extends React.Component<Props, State> {
-  state = { differentCurrencies: false };
+class BillingHistoryChart extends React.Component<Props, State> {
+  state = { differentCurrencies: false, currency: "USD" };
 
   componentDidMount() {
     // TODO: [VIP-789] Implement https://fixer.io/ in the backend and exchange currencies
@@ -37,9 +37,7 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
         ({ boughtplan }) => boughtplan.plan.currency == currency
       );
 
-      if (!sameCurrencies) {
-        this.setState({ differentCurrencies: true });
-      }
+      this.setState({ differentCurrencies: !sameCurrencies, currency });
     }
   }
 
@@ -130,7 +128,8 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
           chart: { stacked: true },
           toolbar: { show: true },
           dataLabels: {
-            formatter: y => (y === 0 ? "" : "$" + `${y.toFixed(2)}`.padStart(3, " "))
+            formatter: y =>
+              y === 0 ? "" : `${y.toFixed(2).padStart(3, " ")} ${this.state.currency}`
           },
           colors: data.map(d => d.color),
           xaxis: {
@@ -143,13 +142,16 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
           },
           yaxis: {
             labels: {
-              formatter: y => "$" + `${y.toFixed(0)}`.padStart(3, " ")
+              formatter: y => `${y.toFixed(0).padStart(3, " ")} ${this.state.currency}`
             },
             max: monthlyMax % 6 === 0 ? monthlyMax : Math.ceil(monthlyMax / 6) * 6
           },
           tooltip: {
             x: { formatter: x => moment(x).format("MMMM YYYY") },
-            y: { formatter: y => (y === 0 ? "" : "$" + `${y.toFixed(2)}`.padStart(3, " ")) }
+            y: {
+              formatter: y =>
+                y === 0 ? "" : `${y.toFixed(2).padStart(3, " ")} ${this.state.currency}`
+            }
           }
         }}
       />
@@ -157,54 +159,25 @@ class BillingHistoryChartInner extends React.Component<Props, State> {
   }
 }
 
-function BillingHistoryChart(props: { departmentID: number }) {
-  return (
-    <Query
-      pollInterval={60 * 10 * 1000}
-      query={gql`
-        query fetchUnitApps($departmentid: ID!) {
-          fetchUnitApps(departmentid: $departmentid) {
-            id
-            boughtplan {
-              id
-              totalprice
-              buytime
-              endtime
-              alias
-              plan: planid {
-                currency
-                id
-                name
-                app: appid {
-                  id
-                  name
-                  icon
-                  logo
-                  color
-                }
-              }
-            }
-          }
-        }
-      `}
-      variables={{ departmentid: props.departmentID }}>
-      {({ data, loading, error }) => {
-        if (loading) {
-          return <LoadingDiv />;
-        }
+export default (props: { departmentID: number }) => (
+  <Query
+    pollInterval={60 * 10 * 1000}
+    query={FETCH_UNIT_APPS}
+    variables={{ departmentid: props.departmentID }}>
+    {({ data, loading, error }) => {
+      if (loading) {
+        return <LoadingDiv />;
+      }
 
-        if (error || !data) {
-          return <div>Error fetching data</div>;
-        }
+      if (error || !data) {
+        return <div>Error fetching data</div>;
+      }
 
-        return (
-          <ResizeAware style={{ width: "100%" }}>
-            <BillingHistoryChartInner {...props} data={data} />
-          </ResizeAware>
-        );
-      }}
-    </Query>
-  );
-}
-
-export default BillingHistoryChart;
+      return (
+        <ResizeAware style={{ width: "100%" }}>
+          <BillingHistoryChart {...props} data={data} />
+        </ResizeAware>
+      );
+    }}
+  </Query>
+);

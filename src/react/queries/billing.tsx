@@ -45,3 +45,30 @@ export const FETCH_ALL_BOUGHTPLANS = gql`
     }
   }
 `;
+
+export const FETCH_UNIT_APPS = gql`
+  query fetchUnitApps($departmentid: ID!) {
+    fetchUnitApps(departmentid: $departmentid) {
+      id
+      boughtplan {
+        id
+        totalprice
+        buytime
+        endtime
+        alias
+        plan: planid {
+          currency
+          id
+          name
+          app: appid {
+            id
+            name
+            icon
+            logo
+            color
+          }
+        }
+      }
+    }
+  }
+`;

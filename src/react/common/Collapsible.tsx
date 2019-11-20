@@ -23,7 +23,7 @@ export default class Collapsible extends React.Component<Props, State> {
       setTimeout(
         () =>
           this.setState({
-            maxHeight: `${this.childrenRef!.current!.scrollHeight + 150}px`,
+            maxHeight: `${this.childrenRef!.current!.scrollHeight + 200}px`,
             initial: false
           }),
         this.props.noResize ? 800 : 2500

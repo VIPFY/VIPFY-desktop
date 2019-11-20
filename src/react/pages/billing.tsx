@@ -1,10 +1,9 @@
 import * as React from "react";
-// import BillHistory from "../graphs/billhistory";
 import CreditCardList from "../components/billing/CreditCardList";
 import Addresses from "../components/profile/Addresses";
 import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 import EmailList from "../components/EmailList";
-// import BillingPie from "../components/billing/BillingPie";
+import BillingPie from "../components/billing/BillingPie";
 import Invoices from "../components/billing/Invoices";
 import Collapsible from "../common/Collapsible";
 
@@ -16,30 +15,28 @@ interface Props {
   createAddress: Function;
 }
 
-export default (props: Props) => {
-  return (
-    <section id="billing-page">
-      <Collapsible title="Billing Emails" info="Invoices will be sent to these Email addresses">
-        <EmailList tag="billing" />
-      </Collapsible>
+export default (props: Props) => (
+  <section id="billing-page">
+    <Collapsible title="Billing Emails" info="Invoices will be sent to these Email addresses">
+      <EmailList tag="billing" />
+    </Collapsible>
 
-      <Collapsible title="Credit Cards">
-        <CreditCardList companyID={props.company.unit.id} />
-      </Collapsible>
+    <Collapsible title="Credit Cards">
+      <CreditCardList companyID={props.company.unit.id} />
+    </Collapsible>
 
-      {/* <Collapsible title="Cost Distribution">
-        <div className="nextPaymentChart"><BillingPie {...this.props} /> </div>
-      </Collapsible> */}
+    <Collapsible title="Cost Distribution">
+      <BillingPie {...props} />
+    </Collapsible>
 
-      <Addresses label="Billing Addresses" company={props.company.unit.id} tag="billing" />
+    <Addresses label="Billing Addresses" company={props.company.unit.id} tag="billing" />
 
-      {/* <Collapsible title="Billing History">
-        <BillingHistoryChart departmentID={props.company.unit.id} />
-      </Collapsible> */}
+    <Collapsible title="Billing History">
+      <BillingHistoryChart departmentID={props.company.unit.id} />
+    </Collapsible>
 
-      <Collapsible title="Invoices">
-        <Invoices />
-      </Collapsible>
-    </section>
-  );
-};
+    <Collapsible title="Invoices">
+      <Invoices />
+    </Collapsible>
+  </section>
+);
