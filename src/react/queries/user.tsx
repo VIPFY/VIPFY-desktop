@@ -44,6 +44,12 @@ export const QUERY_SEMIPUBLICUSER = gql`
       twofa
       deleted
       companyban
+      vacation {
+        id
+        starttime
+        endtime
+        options
+      }
     }
   }
 `;
@@ -81,6 +87,12 @@ export const QUERY_ME = gql`
       twofa
       deleted
       companyban
+      vacation {
+        id
+        starttime
+        endtime
+        options
+      }
     }
   }
 `;

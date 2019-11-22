@@ -33,8 +33,22 @@ interface State {
 }
 
 const ASSIGN_ACCOUNT = gql`
-  mutation assignAccount($licenceid: ID!, $userid: ID!, $rights: LicenceRights, $tags: [String]) {
-    assignAccount(licenceid: $licenceid, userid: $userid, rights: $rights, tags: $tags)
+  mutation assignAccount(
+    $licenceid: ID!
+    $userid: ID!
+    $rights: LicenceRights
+    $tags: [String]
+    $starttime: Date
+    $endtime: Date
+  ) {
+    assignAccount(
+      licenceid: $licenceid
+      userid: $userid
+      rights: $rights
+      tags: $tags
+      starttime: $starttime
+      endtime: $endtime
+    )
   }
 `;
 
@@ -228,12 +242,6 @@ class AssignNewAccount extends React.Component<Props, State> {
                             showWeekNumbers={true}
                             onChange={v =>
                               this.setState(oldstate => {
-                                console.log(
-                                  "COMPARE DATES",
-                                  oldstate.todate,
-                                  v,
-                                  moment(oldstate.todate || new Date()).isSame(v)
-                                );
                                 return moment(oldstate.todate || new Date()).isSame(v)
                                   ? { todate: null }
                                   : { todate: v };

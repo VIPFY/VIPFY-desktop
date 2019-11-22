@@ -51,7 +51,7 @@ class Dashboard extends React.Component<Props, State> {
   setApp = (licence: number) => this.props.setApp(licence);
 
   handleDrop = async (dropPosition: number) => {
-    const dragged = this.props.licences.fetchLicences.find(
+    const dragged = this.props.licences.fetchUserLicenceAssignments.find(
       licence => licence.id == this.state.dragItem
     );
 
@@ -120,7 +120,7 @@ class Dashboard extends React.Component<Props, State> {
   handleDelete = async e => {
     try {
       e.preventDefault();
-      const dragged = this.props.licences.fetchLicences.find(
+      const dragged = this.props.licences.fetchUserLicenceAssignments.find(
         licence => licence.id == this.state.dragItem
       );
 
@@ -163,10 +163,11 @@ class Dashboard extends React.Component<Props, State> {
       "Temporary Apps": []
     };
 
-    const licenceCheck = this.props.licences && this.props.licences.fetchLicences.length > 0;
+    const licenceCheck =
+      this.props.licences && this.props.licences.fetchUserLicenceAssignments.length > 0;
 
     if (licenceCheck) {
-      this.props.licences.fetchLicences.forEach(licence => {
+      this.props.licences.fetchUserLicenceAssignments.forEach(licence => {
         if (licence.dashboard !== null && licence.dashboard <= 8) {
           favourites[licence.dashboard] = licence;
         }

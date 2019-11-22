@@ -280,7 +280,7 @@ class ServiceOverview extends React.Component<Props, State> {
     return (
       <div className="managerPage">
         <div className="heading">
-          <h1>Service Manager</h1>
+          <h1>Account Manager</h1>
           <UniversalSearchBox
             getValue={v => {
               this.setState({ search: v });
@@ -290,6 +290,26 @@ class ServiceOverview extends React.Component<Props, State> {
         <div className="section">
           <div className="heading">
             <h1>Services</h1>
+            <UniversalButton
+              type="high"
+              label="Add Service"
+              customStyles={{
+                fontSize: "12px",
+                lineHeight: "24px",
+                fontWeight: "700",
+                marginRight: "16px",
+                width: "120px"
+              }}
+              onClick={() =>
+                this.setState({
+                  add: true,
+                  addStage: 1,
+                  addemployees: [],
+                  addservice: {},
+                  apps: []
+                })
+              }
+            />
           </div>
           <Query
             pollInterval={60 * 10 * 1000 + 900}
@@ -331,7 +351,7 @@ class ServiceOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        <UniversalButton
+                        {/*<UniversalButton
                           type="high"
                           label="Add Service"
                           customStyles={{
@@ -350,7 +370,7 @@ class ServiceOverview extends React.Component<Props, State> {
                               apps: []
                             })
                           }
-                        />
+                        />*/}
                       </div>
                     </div>
                     {this.loading()}

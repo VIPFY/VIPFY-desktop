@@ -82,8 +82,8 @@ class ServiceDetails extends React.Component<Props, State> {
             <div className="managerPage">
               <div className="heading">
                 <span className="h1">
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("emanager")}>
-                    Service Manager
+                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("smanager")}>
+                    Account Manager
                   </span>
                   <span className="h2">{service.name}</span>
                 </span>

@@ -357,7 +357,7 @@ export const fetchCompanyTeams = gql`
 
 export const fetchUserLicences = gql`
   query fetchUsersOwnLicences($unitid: ID!) {
-    fetchUsersOwnLicences(unitid: $unitid) {
+    fetchUserLicenceAssignments(unitid: $unitid) {
       id
       disabled
       endtime
@@ -368,6 +368,8 @@ export const fetchUserLicences = gql`
       vacationstart
       pending
       rightscount
+      alias
+      accountid
       teamlicence {
         id
         profilepicture

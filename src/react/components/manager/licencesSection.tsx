@@ -125,8 +125,8 @@ class LicencesSection extends React.Component<Props, State> {
           }
           let appArray: JSX.Element[] = [];
 
-          if (data.fetchUsersOwnLicences) {
-            data.fetchUsersOwnLicences.sort(function(a, b) {
+          if (data.fetchUserLicenceAssignments) {
+            data.fetchUserLicenceAssignments.sort(function(a, b) {
               let nameA = a.boughtplanid.alias
                 ? a.boughtplanid.alias.toUpperCase()
                 : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
@@ -143,9 +143,7 @@ class LicencesSection extends React.Component<Props, State> {
               // namen müssen gleich sein
               return 0;
             });
-            //this.setState({ apps: data.fetchUsersOwnLicences });
-            console.log("APPS", data.fetchUsersOwnLicences);
-            data.fetchUsersOwnLicences.forEach((e, k) => {
+            data.fetchUserLicenceAssignments.forEach((e, k) => {
               if (
                 !e.disabled &&
                 !e.boughtplanid.planid.appid.disabled &&
@@ -196,12 +194,14 @@ class LicencesSection extends React.Component<Props, State> {
                         <h1>Status</h1>
                       </div>
                       <div className="tableColumnSmall">
+                        <h1>Accountalias</h1>
+                      </div>
+                      <div className="tableColumnSmall">
                         <h1>min/Month</h1>
                       </div>
-                      <div className="tableColumnSmall">{/*<h1>Ending</h1>*/}</div>
                       <div className="tableColumnSmall">{/*<h1>Price</h1>*/}</div>
                     </div>
-                    <div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>
+                    {/*<div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>*/}
                     <div className="tableEnd">
                       {/*this.props.isadmin && (
                         <UniversalButton

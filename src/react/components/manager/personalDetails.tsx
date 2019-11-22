@@ -8,6 +8,7 @@ import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import { concatName } from "../../common/functions";
+import AddVacation from "./universal/adding/addvacation";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
@@ -323,7 +324,8 @@ class PersonalDetails extends React.Component<Props, State> {
                         if (
                           e &&
                           (e.emaildeleted == true ||
-                            (e.email == null || (e.email && !e.email.includes("@"))))
+                            e.email == null ||
+                            (e.email && !e.email.includes("@")))
                         ) {
                           return a + 1;
                         } else {
@@ -368,6 +370,7 @@ class PersonalDetails extends React.Component<Props, State> {
         return emailforms;
 
       case "workphones":
+        console.log("WORKPHONES", this.state, this.props.querydata.workPhones);
         const phoneforms: JSX.Element[] = [];
         let newphone = false;
         if (
@@ -450,6 +453,7 @@ class PersonalDetails extends React.Component<Props, State> {
         return phoneforms;
 
       case "privatephones":
+        console.log("PRIVATEPHONES", this.state, this.props.querydata.workPhones);
         const privatephoneforms: JSX.Element[] = [];
         let privatenewphone = false;
         if (
@@ -533,6 +537,64 @@ class PersonalDetails extends React.Component<Props, State> {
         }
         return privatephoneforms;
 
+      case "vacation":
+        console.log("Vacation", this.state, this.props.querydata.vacation);
+        const vacationforms: JSX.Element[] = [];
+        let newvacation = false;
+        if (
+          Math.max(
+            this.props.querydata.vacation.filter(e => e != null).length,
+            this.state.editvalueArray.length
+          ) > 0
+        ) {
+          const vacations = this.props.querydata.vacation.map((va, index) => {
+            if (this.state.editvalueArray[index]) {
+              const update = this.state.editvalueArray[index];
+              return { ...va, ...update };
+            } else {
+              return { ...va };
+            }
+          });
+          this.state.editvalueArray.forEach(
+            (va, index) => index >= this.props.querydata.vacation.length && vacations.push(va)
+          );
+          let first = true;
+          vacations.forEach((va, index) => {
+            if (!first && !va.deleted) {
+              vacationforms.push(<div key={`sep-${index}`} className="fieldsSeperator" />);
+            }
+            if (!va.deleted) {
+              first = false;
+            }
+            newvacation = newvacation || (!va.deleted && (va.from == null || va.from == ""));
+            vacationforms.push(<AddVacation id={this.props.querydata.id} />);
+          });
+        }
+        if (!newvacation) {
+          vacationforms.push(
+            <UniversalButton
+              type="low"
+              label="Add Vacation"
+              onClick={() =>
+                this.setState(({ editvalueArray }) => {
+                  editvalueArray[
+                    Math.max(editvalueArray.length, this.props.querydata.vacation.length)
+                  ] = {
+                    from: null,
+                    to: null,
+                    id: `new-${Math.max(
+                      editvalueArray.length,
+                      this.props.querydata.vacation.length
+                    )}`
+                  };
+                  return { editvalueArray };
+                })
+              }
+            />
+          );
+        }
+        return vacationforms;
+
       default:
         return (
           <UniversalTextInput
@@ -548,6 +610,7 @@ class PersonalDetails extends React.Component<Props, State> {
 
   render() {
     const querydata = this.props.querydata;
+    console.log("QUERY", querydata);
     return (
       <React.Fragment>
         <div className="tableColumnSmall content twoline">
@@ -731,22 +794,35 @@ class PersonalDetails extends React.Component<Props, State> {
               <i className="fal fa-pen editbuttons" />
             </div>
           </div>
-          <div className="tableColumnSmallOne">
-            {/*<h1>Address</h1>
-              <h2>
-                {querydata.addresses[0] &&
-                  querydata.addresses[0].address &&
-                  querydata.addresses[0].address.street}
-              </h2>
-              <h2 className="second">
-                {querydata.addresses[0] &&
-                  querydata.addresses[0].address &&
-                  querydata.addresses[0].address.zip}{" "}
-                {querydata.addresses[0] &&
-                  querydata.addresses[0].address &&
-                  querydata.addresses[0].address.city}
-                </h2>*/}
-          </div>
+          <div className="tableColumnSmallOne" style={{ cursor: "inital" }}></div>
+          {/*<div
+            className="tableColumnSmallOne editable"
+            onClick={() =>
+              this.setState({
+                edit: {
+                  id: "vacation",
+                  label: "Vacation",
+                  startvalue: querydata.vacation
+                }
+              })
+            }>
+            <h1>Vacations</h1>
+            <h2>
+              {querydata.vacation[0] &&
+                querydata.vacation[0].starttime &&
+                querydata.vacation[0].endtime &&
+                `${querydata.vacation[0].starttime} - ${querydata.vacation[0].endtime}`}
+            </h2>
+            <h2 className="second">
+              {querydata.vacation[1] &&
+                querydata.vacation[1].starttime &&
+                querydata.vacation[1].endtime &&
+                `${querydata.vacation[1].starttime} - ${querydata.vacation[1].endtime}`}
+            </h2>
+            <div className="profileEditButton">
+              <i className="fal fa-pen editbuttons" />
+            </div>
+              </div>*/}
         </div>
         {this.state.edit && (
           <Mutation mutation={UPDATE_DATA}>

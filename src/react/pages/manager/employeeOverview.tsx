@@ -624,7 +624,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                     <ColumnServices
                                       {...this.props}
                                       style={{ width: "30%" }}
-                                      services={data.fetchUsersOwnLicences}
+                                      services={data.fetchUserLicenceAssignments}
                                       checkFunction={element =>
                                         !element.disabled &&
                                         !element.boughtplanid.planid.appid.disabled &&
@@ -651,7 +651,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                   <ColumnServices
                                     {...this.props}
                                     style={{ width: "30%" }}
-                                    services={data.fetchUsersOwnLicences}
+                                    services={data.fetchUserLicenceAssignments}
                                     checkFunction={element =>
                                       !element.disabled &&
                                       !element.boughtplanid.planid.appid.disabled &&

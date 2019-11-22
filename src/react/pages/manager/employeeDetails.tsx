@@ -83,15 +83,19 @@ class EmployeeDetails extends React.Component<Props, State> {
 
           if (data && (data.fetchSemiPublicUser || data.me)) {
             const querydata = data.fetchSemiPublicUser || data.me;
-            console.log("LOG: EmployeeDetails -> render -> querydata", querydata);
+            console.log("INPUT", querydata);
             const privatePhones = [];
             const workPhones = [];
 
-            querydata.phones.forEach(phone =>
-              phone && phone.tags && phone.tags[0] == ["private"]
-                ? privatePhones.push(phone)
-                : workPhones.push(phone)
-            );
+            querydata.phones.forEach(phone => {
+              if (phone) {
+                if (phone.tags && phone.tags[0] == ["private"]) {
+                  privatePhones.push(phone);
+                } else {
+                  workPhones.push(phone);
+                }
+              }
+            });
             querydata.workPhones = workPhones;
             querydata.privatePhones = privatePhones;
 
@@ -159,7 +163,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                         className="tableEnd"
                         style={{ alignItems: "flex-start", marginLeft: "16px" }}>
                         <div className="personalEditButtons">
-                          {this.props.isadmin && (
+                          {/* this.props.isadmin && (
                             <UniversalButton
                               type="high"
                               label="Manage Absence"
@@ -172,7 +176,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                               }}
                               onClick={() => this.setState({ showTimeAway: true })}
                             />
-                          )}
+                            ) */}
                         </div>
                       </div>
                     </div>

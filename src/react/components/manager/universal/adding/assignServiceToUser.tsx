@@ -122,12 +122,7 @@ class AssignServiceToUser extends React.Component<Props, State> {
                     />
                   )}
                   startvalue={this.state.service ? this.state.service + "" : ""}
-                  livecode={
-                    c =>
-                      this.props.continue(
-                        apps.find(a => a.id == c)
-                      ) /*this.setState({ service: c })*/
-                  }
+                  livecode={c => this.props.continue(apps.find(a => a.id == c))}
                   noresults="Integrate as new service"
                   noresultsClick={v => console.log("NEW SERVICE", v)}
                   fewResults={true}
@@ -150,16 +145,7 @@ class AssignServiceToUser extends React.Component<Props, State> {
                           onClick={() => {
                             this.setState({ showall: false });
                             this.props.continue(apps.find(a => a.id == app.id));
-                          }}
-                          /*style={
-                            this.state.choosenApp == app.id
-                                ? {
-                                    outline: "2px solid #20baa9",
-                                    boxShadow: "0px 0px 10px 3px #20baa9"
-                                }
-                                : {}
-                            }*/
-                        >
+                          }}>
                           <PrintServiceSquare
                             service={app}
                             appidFunction={s => s}
@@ -193,11 +179,6 @@ class AssignServiceToUser extends React.Component<Props, State> {
                     </div>
                   </div>
                   <UniversalButton type="low" label="Cancel" closingPopup={true} />
-                  {/*<UniversalButton
-                    type="high"
-                    label="Continue"
-                    disabled={this.state.choosenApp == 0}
-                    />*/}
                 </PopupBase>
               )}
             </>

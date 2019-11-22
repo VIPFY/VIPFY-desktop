@@ -15,6 +15,7 @@ import PrintTeamSquare from "./universal/squares/printTeamSquare";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
 import FormPopup from "../../popups/universalPopups/formPopup";
+import TerminateAssignedAccount from "./universal/adding/terminateAssignedAccount";
 
 const UPDATE_CREDENTIALS = gql`
   mutation onUpdateCredentials(
@@ -64,6 +65,8 @@ interface State {
   } | null;
   keepAccount: Boolean;
   isadmin?: Boolean;
+  terminate: Boolean;
+  vacation: Boolean;
 }
 
 const REMOVE_LICENCE = gql`
@@ -88,11 +91,44 @@ class ServiceDetails extends React.Component<Props, State> {
     erroredit: null,
     errordelete: null,
     savingObject: null,
-    keepAccount: true
+    keepAccount: true,
+    terminate: false,
+    vacation: false
   };
 
-  showtime(start, endstring) {
-    const end = endstring == 8640000000000000 ? null : endstring;
+  showStatus(e) {
+    const end = e.endtime == 8640000000000000 ? null : e.endtime;
+    const start = e.starttime;
+
+    if (e.pending) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#c73544",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          Integration pending
+        </span>
+      );
+    }
+
+    if (moment(start - 0).isAfter(moment.now())) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#20baa9",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          Starts in {moment(start - 0).toNow(true)}
+        </span>
+      );
+    }
 
     if (end) {
       return (
@@ -104,6 +140,12 @@ class ServiceDetails extends React.Component<Props, State> {
       );
     } else {
       return <span className="infoTag">Active since {moment(start - 0).fromNow(true)}</span>;
+    }
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (nextProps.e.id != this.props.e.id) {
+      this.setState({ terminate: false });
     }
   }
 
@@ -175,8 +217,9 @@ class ServiceDetails extends React.Component<Props, State> {
                   {/*<div className="tableColumnSmall content">{e.boughtplanid.alias}</div>*/}
                   <div className="tableColumnSmall content">
                     {/*moment(e.starttime - 0).format("DD.MM.YYYY")*/}
-                    {this.showtime(e.starttime, e.endtime)}
+                    {this.showStatus(e)}
                   </div>
+                  <div className="tableColumnSmall content">{e.alias}</div>
 
                   <div className="tableColumnSmall content">
                     <Query
@@ -214,7 +257,7 @@ class ServiceDetails extends React.Component<Props, State> {
                           return <div>Error fetching data</div>;
                         }
                         if (data && Object.keys(data).length > 0) {
-                          console.log("LOG: ServiceDetails -> render -> data", data);
+                          //console.log("LOG: ServiceDetails -> render -> data", data);
                           const percent = data.fetchBoughtplanUsagePerUser.find(
                             e => e.unit.id == this.props.employeeid
                           )
@@ -251,9 +294,6 @@ class ServiceDetails extends React.Component<Props, State> {
                       }}
                     </Query>
                   </div>
-                  <div className="tableColumnSmall content">
-                    {/*{e.endtime ? moment(e.endtime - 0).format("DD.MM.YYYY") : "Recurring"}*/}
-                  </div>
                   <div
                     className="tableColumnSmall content"
                     /*title="Please check in external account"*/
@@ -263,36 +303,44 @@ class ServiceDetails extends React.Component<Props, State> {
                     : "Integrated Account"}*/}
                   </div>
                 </div>
-                <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
+                {/*<div style={{ width: "18px", display: "flex", alignItems: "center" }}>
                   {e.pending && (
                     <i
                       className="fad fa-exclamation-triangle warningColor"
                       title="Integration pending"></i>
                   )}
-                </div>
+                  </div>*/}
                 <div className="tableEnd">
                   {this.props.isadmin && (
                     <div className="editOptions">
                       <i className="fal fa-link editbuttons" />
                       <i
-                        className="fal fa-cog editbuttons"
-                        onClick={e => {
-                          e.stopPropagation();
-                          this.setState({ edit: true });
-                        }}
-                      />
-                      {/*<i
                         className="fal fa-trash-alt editbuttons"
                         onClick={e => {
                           e.stopPropagation();
-                          this.setState({ delete: true, keepAccount: true });
+                          this.setState({ terminate: true });
+                        }}
+                      />
+                      {/*<i
+                        className="fal fa-island-tropical editbuttons"
+                        onClick={e => {
+                          e.stopPropagation();
+                          this.setState({ vacation: true });
                         }}
                       />*/}
                     </div>
                   )}
                 </div>
-                {this.state.edit && (
-                  <FormPopup
+                {this.state.terminate && (
+                  <TerminateAssignedAccount
+                    employee={this.props.employee}
+                    service={this.props.e.boughtplanid.planid.appid}
+                    orbit={this.props.e.boughtplanid}
+                    account={this.props.e}
+                    close={() => this.setState({ terminate: false })}
+                  />
+
+                  /*<FormPopup
                     key={`${this.props.employeename}-${e.boughtplanid.planid.appid.name}`}
                     heading="Edit Licence"
                     subHeading={`Edit licence from ${this.props.employeename} of ${e.boughtplanid.planid.appid.name}`}
@@ -386,7 +434,7 @@ class ServiceDetails extends React.Component<Props, State> {
                         }
                       }
                     ])}
-                  />
+                  />*/
                 )}
                 {this.state.delete && (
                   <PopupBase

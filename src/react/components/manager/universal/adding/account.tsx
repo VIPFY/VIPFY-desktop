@@ -98,7 +98,7 @@ class CreateAccount extends React.Component<Props, State> {
                     orbitid: this.props.orbit.id,
                     alias: this.state.alias,
                     logindata: {
-                      email: this.state.email,
+                      username: this.state.email,
                       password: this.state.password
                     }
                   },

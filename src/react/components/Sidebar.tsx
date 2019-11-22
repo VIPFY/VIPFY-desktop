@@ -408,7 +408,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "emanager"
       },
       {
-        label: "Service Manager",
+        label: "Account Manager",
         location: "lmanager",
         icon: "credit-card-blank",
         show: this.props.isadmin,
@@ -460,10 +460,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
             !licence.vacationstart) ||
           (!licence.disabled &&
             !licence.pending &&
-            (licence.vacationstart &&
-              licence.vacationstart <= moment.now() &&
-              ((licence.vacationend && licence.vacationend > moment.now()) ||
-                licence.vacationend == null)))
+            licence.vacationstart &&
+            licence.vacationstart <= moment.now() &&
+            ((licence.vacationend && licence.vacationend > moment.now()) ||
+              licence.vacationend == null))
         )
       ) {
         return false;
@@ -575,6 +575,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
         return 0;
       });
     }
+
+    console.log("LICENCES", this.props.licences, filteredLicences);
 
     return (
       <AppContext.Consumer>
