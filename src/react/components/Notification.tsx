@@ -184,9 +184,9 @@ class Notification extends React.Component<Props, State> {
               {refetchButton}
             </div>
             <div className="notificationPopupFooter">
-              <span>Discard:</span>
+              <span>Clear Notifications:</span>
               <button className="button-sync" type="button" onClick={this.markAllAsRead}>
-                <i className="fas fa-check" />
+                <i className="fas fa-trash-alt" />
               </button>
             </div>
           </React.Fragment>
