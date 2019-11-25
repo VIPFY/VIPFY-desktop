@@ -33,7 +33,6 @@ interface State {
   finalexecutionPlan: Object[];
   executionPlan: Object[];
   searchurl: string;
-  site: number;
   targetpage: string;
   test: boolean;
 }
@@ -55,7 +54,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
     executionPlan: [],
     searchurl: "",
     cantrack: false,
-    site: 1,
     targetpage: "",
     test: false
   };
@@ -317,8 +315,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
     //console.log("Hello1", document.getElementById(args[4] + "side"));
     const width = args[0];
     const height = args[1];
-    const left = args[2] + 442;
-    const top = args[3] + 74;
+    const left = args[2] + 440;
+    const top = args[3] + 72;
 
     const div = (
       <div
@@ -376,8 +374,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
     const width = args[0];
     const height = args[1];
-    const left = args[2] + 442;
-    const top = args[3] + 74;
+    const left = args[2] + 440;
+    const top = args[3] + 72;
 
     var ausgrauDivs = [
       <div //erste
@@ -387,8 +385,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
           position: "absolute",
           height: args[3],
           width: "100%",
-          top: 74,
-          left: 442,
+          top: 72,
+          left: 440,
           background: "grey",
           zIndex: 2,
           opacity: 0.5
@@ -401,7 +399,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
           height: 926 - args[3] - 40,
           width: "100%",
           top: height + top,
-          left: 442,
+          left: 440,
           background: "grey",
           zIndex: 2,
           opacity: 0.5
@@ -412,9 +410,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
         style={{
           position: "absolute",
           height: height,
-          width: left - 442,
+          width: left - 440,
           top: top,
-          left: 442,
+          left: 440,
           background: "grey",
           zIndex: 2,
           opacity: 0.5
@@ -448,6 +446,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   zeigeElement(onOff, id) {
+    if (this.state.test) {
+      return;
+    }
     //console.log(onOff, id, this.state.executionPlan);
     if (onOff) {
       this.state.sendTarget!.send(
@@ -611,14 +612,15 @@ class ServiceIntegrator extends React.Component<Props, State> {
             position: "absolute",
             width: "100%",
             height: "100%",
-            top: 74,
-            left: 442,
+            top: 72,
+            left: 440,
             background: "grey",
             zIndex: 5,
             opacity: 0
           }}></div>
       ]
     });
+    console.log("sending execute");
     this.state.sendTarget!.send("execute", this.state.executionPlan);
   }
 
@@ -636,6 +638,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "sendEvent":
+        if (this.state.test) {
+          break;
+        }
         if (this.state.sendTarget == null) {
           this.setState({ sendTarget: e.target });
         }
@@ -675,7 +680,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
               case "input":
                 plan.push({
                   operation: "waitandfill",
-                  site: this.state.site,
+                  step: this.loginState.step,
                   value: "",
                   args: { selector: e.args[6], document: e.args[8], id: id, fillkey: "username" }
                 });
@@ -683,7 +688,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
               default:
                 plan.push({
                   operation: "click",
-                  site: this.state.site,
+                  step: this.loginState.step,
                   value: "",
                   args: { fillkey: "", selector: e.args[6], document: e.args[8], id: id }
                 });
@@ -778,11 +783,19 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "loaded":
-        if (this.state.test) {
-          this.state.sendTarget!.send(
-            "execute",
-            this.state.finalexecutionPlan.slice(this.loginState.step)
-          );
+        console.log("loaded first");
+        if (this.state.test && this.state.url != "about:blank") {
+          let exx = [];
+          console.log("111", this.state.finalexecutionPlan);
+          this.state.finalexecutionPlan.forEach(element => {
+            //console.log("loaded", element, element.step, this.loginState.step);
+            if (element.step == this.loginState.step) {
+              exx.push(element);
+            }
+          });
+          console.log("exx", exx);
+          //exx = this.state.finalexecutionPlan.slice(0, 2);
+          this.state.sendTarget!.send("execute", exx);
         }
         break;
 
@@ -793,15 +806,23 @@ class ServiceIntegrator extends React.Component<Props, State> {
           });
           return oldstate;
         });
-        this.setState({ executionPlan: [], site: this.state.site + 1 });
+        this.setState({ executionPlan: [] });
         if (this.state.end) {
           let targetpage = this.webview.url;
-          this.setState({ url: this.state.url, end: false, test: true, targetpage });
+          this.setState({ end: false, test: true, targetpage });
+          this.loginState.step = 0;
+          console.log("step = 0", this.loginState.step, this.state.finalexecutionPlan);
           this.trySiteLoading();
-          console.log(this.state.finalexecutionPlan);
         } else if (this.state.test) {
+          if (
+            this.state.finalexecutionPlan.findIndex(element => {
+              element.step == this.loginState.step;
+            }) != -1
+          ) {
+            break;
+          }
           if (this.state.targetpage == this.webview.url) {
-            console.log("Yea did it");
+            console.log("Yea did it", this.state.finalexecutionPlan);
             //doSomething with finalexecutionPlan
           } else {
             throw "Execution fehlgeschlagen";
@@ -913,8 +934,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "executeStep":
-        {
-          this.loginState.step += 1;
+        if (this.state.url != "about:blank") {
+          console.log("Step++", this.loginState.step, " -> ", this.loginState.step + 1);
+          this.loginState.step -= -1;
+        } else {
+          console.log("about:blank triggert");
         }
         break;
       default:
@@ -1031,7 +1055,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
             <button
               disabled={this.state.sendTarget == undefined}
               onClick={() => {
-                this.setState({ site: this.state.site -= -1 });
                 this.sendExecute();
               }}
               style={{ width: "100px" }}>

@@ -133,6 +133,9 @@ async function onExecute(args1, booler) {
 
 ipcRenderer.on("delockItem", async (e, args1) => {
   const element = document.querySelector(args1);
+  if (element == null) {
+    return;
+  }
   element.disabled = false;
   element.clearEventListeners(); //entferne das perventDefault
   const listeners1 =
@@ -156,6 +159,9 @@ ipcRenderer.on("delockItem", async (e, args1) => {
 
 ipcRenderer.on("givePosition", async (e, args1, args2, args3) => {
   const ding = document.querySelector(args1);
+  if (ding == null) {
+    return;
+  }
   const rect = ding.getBoundingClientRect();
   ipcRenderer.sendToHost(
     "givePosition",
@@ -373,7 +379,7 @@ function findTarget(event, iframe) {
     selector = element1.tagName;
     console.log(obj.attr);
     for (key of Object.keys(obj.attr)) {
-      if (["name", "type"].includes(key)) {
+      if (["name", "type", "id"].includes(key)) {
         selector += "[" + key + "='" + obj.attr[key] + "']";
       }
     }
@@ -381,7 +387,7 @@ function findTarget(event, iframe) {
     t = Array.from(doc.querySelectorAll(selector));
 
     if (t.length != 1) {
-      console.log("Need Parents");
+      console.log("Need Parents", els);
       var parent = els.pop();
       var pobj;
       var pt;
@@ -395,13 +401,13 @@ function findTarget(event, iframe) {
         }
         pselector = parent.tagName;
         for (key of Object.keys(pobj.attr)) {
-          if (["name", "type"].includes(key)) {
+          if (["name", "type", "id"].includes(key)) {
             pselector += "[" + key + "='" + pobj.attr[key] + "']";
           }
         }
         pt = Array.from(doc.querySelectorAll(pselector));
+        selector = pselector + " > " + selector;
         if (pt.length == 1) {
-          selector = pselector + " > " + selector;
           break;
         }
         parent = els.pop();
@@ -426,7 +432,7 @@ function findTarget(event, iframe) {
       iselector = iframe.tagName;
       console.log(iobj.attr);
       for (key of Object.keys(iobj.attr)) {
-        if (["name", "type"].includes(key)) {
+        if (["name", "type", "id"].includes(key)) {
           iselector += "[" + key + "='" + iobj.attr[key] + "']";
         }
       }
@@ -448,13 +454,13 @@ function findTarget(event, iframe) {
           }
           ipselector = iparent.tagName;
           for (key of Object.keys(ipobj.attr)) {
-            if (["name", "type"].includes(key)) {
+            if (["name", "type", "id"].includes(key)) {
               ipselector += "[" + key + "='" + ipobj.attr[key] + "']";
             }
           }
           ipt = Array.from(document.querySelectorAll(ipselector));
+          iselector = ipselector + " > " + iselector;
           if (ipt.length == 1) {
-            iselector = ipselector + " > " + iselector;
             break;
           }
           iparent = iels.pop();
@@ -570,6 +576,7 @@ function onClick(e) {
 }
 
 function hasEventHandler(t, e) {
+  console.log("E", t);
   return (
     t["on" + e] ||
     t.getAttribute("on" + e) ||
@@ -862,7 +869,10 @@ async function execute(operations) {
         }
         break;
       case "recaptcha":
-        await execute([{ operation: "waitfor", args }, { operation: "solverecaptcha", args }]);
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "solverecaptcha", args }
+        ]);
       case "waitandfill":
         await execute([
           { operation: "waitfor", args },
@@ -893,13 +903,14 @@ async function fillFormField(target, fillkey) {
 
 async function execute(operations, mainexecute = false) {
   bot = true;
-  console.log("Hier1");
+  console.log("Hier1", operations);
   let doc;
+  if (mainexecute) {
+    ipcRenderer.sendToHost("executeStep");
+  }
   for ({ operation, args = {} } of operations) {
     console.log("EXECUTE", operation, args);
-    if (mainexecute) {
-      ipcRenderer.sendToHost("executeStep");
-    }
+
     doc = args.document ? document.querySelector(args.document).contentWindow.document : document;
     switch (operation) {
       case "sleep":
@@ -934,7 +945,10 @@ async function execute(operations, mainexecute = false) {
         }
         break;
       case "recaptcha":
-        await execute([{ operation: "waitfor", args }, { operation: "solverecaptcha", args }]);
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "solverecaptcha", args }
+        ]);
         break;
       case "waitandfill":
         await execute([
