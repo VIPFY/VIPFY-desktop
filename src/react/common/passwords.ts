@@ -26,7 +26,6 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
             confirmPw: newPw
           }
         });
-        console.log(r);
         return r;
       } catch (error) {
         console.error(error);
@@ -182,7 +181,6 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
           logOut: true
         }
       });
-      console.log(r);
       return r;
     }
 
@@ -232,7 +230,6 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
                 }
                 let key = await decryptLicenceKey(client, licence);
                 let data = (await encryptLicence(key, publicKey)).toString("base64");
-                console.log({ old: key, new: data });
                 return {
                   old: entry,
                   new: { key: "new", data, belongsto: "" + unitid },
@@ -288,7 +285,6 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
         logOut: true
       }
     });
-    console.log(r);
     return r;
   } catch (error) {
     console.error(error, error.stack);
@@ -301,7 +297,7 @@ export function computePasswordScore(password) {
 }
 
 export async function decryptLicenceKey(client, licence) {
-  let key = licence.key;
+  let { key } = licence;
   if (licence.key && licence.key.encrypted) {
     key = null;
     const { id, isadmin } = client.readQuery({
@@ -336,19 +332,6 @@ export async function decryptLicenceKey(client, licence) {
           `,
           variables: { id: candidate.key }
         });
-        console.log(
-          await client.query({
-            query: gql`
-              query onFetchKey($id: ID!) {
-                fetchKey(id: $id) {
-                  id
-                  privatekeyDecrypted @client
-                }
-              }
-            `,
-            variables: { id: candidate.key }
-          })
-        );
         if (d.error) {
           console.error(d.error);
           throw new Error("can't fetch key");
@@ -363,7 +346,6 @@ export async function decryptLicenceKey(client, licence) {
             )
           ).toString("utf8")
         );
-        console.log("key", key);
         break; // success
       } catch (error) {
         console.error("failed decrypting, trying next candidate", candidate, error);
