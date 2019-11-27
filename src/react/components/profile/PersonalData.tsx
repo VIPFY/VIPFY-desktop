@@ -345,4 +345,4 @@ class PersonalData extends React.Component<Props, State> {
   }
 }
 
-export default graphql(UPDATE_PIC, { name: "updatePic" }))(withApollo(PersonalData);
+export default graphql(UPDATE_PIC, { name: "updatePic" })(withApollo(PersonalData));

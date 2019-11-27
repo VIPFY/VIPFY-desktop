@@ -2,8 +2,9 @@ import { configure, getLogger } from "log4js";
 import config from "./configurationManager";
 import * as os from "os";
 import * as is from "electron-is";
+import { app } from "electron";
 
-let activeAppenders = ["logstash_filtered"];
+let activeAppenders = []; //["logstash_filtered"];
 if (config.isDevelopment) {
   activeAppenders.push("stdout");
 }
@@ -15,15 +16,15 @@ configure({
   appenders: {
     // file: {
     //   type: "file",
-    //   filename: "debug.log",
+    //   filename: app.getPath("userData") + "/debug.log",
     //   maxLogSize: 10 * 1024 * 1024,
     //   backups: 3,
     //   keepFileExt: true
     // },
     console: { type: "console", layout: { type: "messagePassThrough" } },
-    stdout: { type: "stdout", layout: { type: "coloured" } },
-    logstash: { type: "@log4js-node/logstash-http", url: "https://clientlogs.vipfy.store/_bulk" },
-    logstash_filtered: { type: "logLevelFilter", appender: "logstash", level: "info" }
+    stdout: { type: "stdout", layout: { type: "coloured" } }
+    //logstash: { type: "@log4js-node/logstash-http", url: "https://clientlogs.vipfy.store/_bulk" },
+    //logstash_filtered: { type: "logLevelFilter", appender: "logstash", level: "info" }
   },
   categories: { default: { appenders: activeAppenders, level: "trace", enableCallStack: true } }
 });
@@ -42,12 +43,12 @@ export const resetLoggingContext = () => {
 };
 
 const consoleLogger = getLogger("vipfy.console");
-// console.trace = consoleLogger.trace.bind(consoleLogger);
-// console.debug = consoleLogger.debug.bind(consoleLogger);
-// console.log = consoleLogger.debug.bind(consoleLogger);
-// console.info = consoleLogger.info.bind(consoleLogger);
-// console.warn = consoleLogger.warn.bind(consoleLogger);
-// console.error = consoleLogger.error.bind(consoleLogger);
+console.trace = consoleLogger.trace.bind(consoleLogger);
+console.debug = consoleLogger.debug.bind(consoleLogger);
+console.log = consoleLogger.debug.bind(consoleLogger);
+console.info = consoleLogger.info.bind(consoleLogger);
+console.warn = consoleLogger.warn.bind(consoleLogger);
+console.error = consoleLogger.error.bind(consoleLogger);
 
 export const addToLoggerContext = (key: string, value: any) => {
   consoleLogger.addContext(key, value);
