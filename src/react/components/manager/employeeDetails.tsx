@@ -114,6 +114,7 @@ class EmployeeDetails extends React.Component<Props, State> {
   render() {
     const employee = this.props.employee;
     const team = this.props.team;
+
     return (
       <Mutation mutation={REMOVE_EMPLOYEE_FROM_TEAM} key={employee.id}>
         {removeFromTeam => (

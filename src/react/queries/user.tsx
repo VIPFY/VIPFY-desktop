@@ -64,12 +64,12 @@ export const QUERY_ME = gql`
         number
         tags
       }
-      addresses {
-        id
-        country
-        address
-        tags
-      }
+      # addresses {
+      #   id
+      #   country
+      #   address
+      #   tags
+      # }
       position
       hiredate
       birthday
