@@ -88,7 +88,7 @@ class SecurityPopup extends React.Component<Props, State> {
         header: "Force Two-Factor Authentication",
         text: "You can force an employee to use a two-factor authentication to increase security",
         state: "showForce2FA",
-        button: "force"
+        button: this.props.user.needstwofa ? "unforce" : "force"
       });
 
       links.push({
@@ -222,6 +222,7 @@ class SecurityPopup extends React.Component<Props, State> {
 
           {this.state.showForce2FA && (
             <TwoFactorForce
+              status={this.props.user.needstwofa}
               unitid={this.props.user.id}
               closeFunction={() => this.setState({ showForce2FA: false })}
             />
