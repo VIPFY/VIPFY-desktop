@@ -215,6 +215,9 @@ class App extends React.Component<AppProps, AppState> {
       } catch (err) {
         // fallback for accounts without passkey
         // this should eventually be removed
+
+        loginkey = null; // reset since it's invalid
+        encryptionkey1 = null;
         const res = await this.props.signIn({
           variables: { email, password }
         });

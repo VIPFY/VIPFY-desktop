@@ -1,31 +1,36 @@
-import { hashPassword, encryptLicence } from "./crypto";
+import { hashPassword, encryptLicence, decryptLicence } from "./crypto";
 import zxcvbn from "zxcvbn";
 import { encryptPrivateKey, generateNewKeypair } from "./crypto";
 import gql from "graphql-tag";
 import { getMyEmail } from "./functions";
+import { string } from "prop-types";
 
 // replaces CHANGE_PASSWORD
 export async function updatePassword(client, oldPw: string, newPw: string) {
   try {
     if (!localStorage.getItem("key1")) {
       // no encryption used
-      return await client.mutate({
-        mutation: gql`
-          mutation updatePassword($pw: String!, $newPw: String!, $confirmPw: String!) {
-            changePassword(pw: $pw, newPw: $newPw, confirmPw: $confirmPw) {
-              ok
-              token
+      try {
+        const r = await client.mutate({
+          mutation: gql`
+            mutation updatePassword($pw: String!, $newPw: String!, $confirmPw: String!) {
+              changePassword(pw: $pw, newPw: $newPw, confirmPw: $confirmPw) {
+                ok
+                token
+              }
             }
+          `,
+          variables: {
+            pw: oldPw,
+            newPw: newPw,
+            confirmPw: newPw
           }
-        `,
-        variables: {
-          pw: oldPw,
-          newPw: newPw,
-          confirmPw: newPw
-        }
-      });
+        });
+        return r;
+      } catch (error) {
+        console.error(error);
+      }
     }
-
     // encryption
     const email = await getMyEmail(client);
 
@@ -75,7 +80,7 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
       id: k.id,
       publickey: k.publickey,
       privatekey: priv.toString("hex"),
-      encryptedby: "NEW"
+      encryptedby: "new"
     };
 
     const r = await client.mutate({
@@ -118,6 +123,238 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
   }
 }
 
+async function fetchEmail(client, userid: string): Promise<string> {
+  return (
+    await client.query({
+      query: gql`
+        query email($userid: ID!) {
+          fetchSemiPublicUser(userid: $userid) {
+            id
+            emails {
+              email
+            }
+          }
+        }
+      `,
+      variables: { userid }
+    })
+  ).data.fetchSemiPublicUser.emails[0].email;
+}
+
+async function usesEncryption(client, unitid: string): Promise<boolean> {
+  return (
+    await client.query({
+      query: gql`
+        query isUserEncrypted($unitid: ID!) {
+          fetchSemiPublicUser(userid: $unitid) {
+            id
+            usesencryption
+          }
+        }
+      `,
+      variables: { unitid }
+    })
+  ).data.fetchSemiPublicUser.usesencryption;
+}
+
+export async function updateEmployeePassword(client, unitid: string, newPassword: string) {
+  //todo: handle unencrypted case
+  try {
+    if (!(await usesEncryption(client, unitid))) {
+      const r = await client.mutate({
+        mutation: gql`
+          mutation onUpdateEmployeePassword($unitid: ID!, $password: String!, $logOut: Boolean) {
+            updateEmployeePassword(unitid: $unitid, password: $password, logOut: $logOut) {
+              id
+              unitid {
+                id
+              }
+              needspasswordchange
+              passwordlength
+              passwordstrength
+            }
+          }
+        `,
+        variables: {
+          unitid,
+          password: newPassword,
+          logOut: true
+        }
+      });
+      return r;
+    }
+
+    const email = await fetchEmail(client, unitid);
+    const { loginkey, encryptionkey1 } = await hashPassword(client, email, newPassword);
+    const passwordstrength = computePasswordScore(newPassword);
+    const passwordlength = newPassword.length;
+
+    // generate new key
+    const { publicKey, privateKey } = await generateNewKeypair();
+    const encPrivateKey = await encryptPrivateKey(privateKey, encryptionkey1);
+    privateKey.fill(0); // overwrite it for security
+
+    // add this key
+    const newKey = {
+      privatekey: encPrivateKey.toString("hex"),
+      publickey: publicKey.toString("hex"),
+      encryptedby: null
+    };
+
+    const licences = await client.query({
+      query: gql`
+        query licencekeys($unitid: ID!) {
+          fetchUserLicences(unitid: $unitid) {
+            id
+            key
+          }
+        }
+      `,
+      fetchPolicy: "network-only",
+      variables: {
+        unitid
+      }
+    });
+
+    const licenceUpdates = (
+      await Promise.all(
+        licences.data.fetchUserLicences
+          .flatMap(licence => {
+            if (!licence.key || !licence.key.encrypted) {
+              return null;
+            }
+            return licence.key.encrypted.map(
+              async (entry: { key: string; data: string; belongsto: string }) => {
+                if (entry.belongsto != unitid) {
+                  return null;
+                }
+                let key = await decryptLicenceKey(client, licence);
+                let data = (await encryptLicence(key, publicKey)).toString("base64");
+                return {
+                  old: entry,
+                  new: { key: "new", data, belongsto: "" + unitid },
+                  licence: licence.id
+                };
+              }
+            );
+          })
+          .filter(l => l !== null)
+      )
+    ).filter(l => l !== null);
+
+    const r = await client.mutate({
+      mutation: gql`
+        mutation updateEmployeePassword(
+          $unitid: ID!
+          $newPasskey: String!
+          $passwordMetrics: PasswordMetricsInput!
+          $logOut: Boolean
+          $newKey: KeyInput!
+          $deprecateAllExistingKeys: Boolean!
+          $licenceUpdates: [licenceKeyUpdateInput!]!
+        ) {
+          updateEmployeePasswordEncrypted(
+            unitid: $unitid
+            newPasskey: $newPasskey
+            passwordMetrics: $passwordMetrics
+            logOut: $logOut
+            newKey: $newKey
+            deprecateAllExistingKeys: $deprecateAllExistingKeys
+            licenceUpdates: $licenceUpdates
+          ) {
+            id
+            unitid {
+              id
+            }
+            needspasswordchange
+            passwordlength
+            passwordstrength
+          }
+        }
+      `,
+      variables: {
+        unitid,
+        newPasskey: loginkey.toString("hex"),
+        passwordMetrics: {
+          passwordlength,
+          passwordstrength
+        },
+        newKey,
+        licenceUpdates,
+        deprecateAllExistingKeys: true,
+        logOut: true
+      }
+    });
+    return r;
+  } catch (error) {
+    console.error(error, error.stack);
+    throw error;
+  }
+}
+
 export function computePasswordScore(password) {
   return zxcvbn(password.substring(0, 50)).score;
+}
+
+export async function decryptLicenceKey(client, licence) {
+  let { key } = licence;
+  if (licence.key && licence.key.encrypted) {
+    key = null;
+    const { id, isadmin } = client.readQuery({
+      // read from cache
+      query: gql`
+        {
+          me {
+            id
+            isadmin
+          }
+        }
+      `
+    }).me;
+
+    const candidates = licence.key.encrypted.filter(
+      e => e.belongsto == id || (isadmin && e.belongsto == "admin")
+    );
+    console.log("candidates", candidates);
+    for (const candidate of candidates) {
+      console.log("trying candidate", candidate);
+      try {
+        const d = await client.query({
+          query: gql`
+            query onFetchKey($id: ID!) {
+              fetchKey(id: $id) {
+                id
+                publickey
+                privatekey
+                privatekeyDecrypted @client
+              }
+            }
+          `,
+          variables: { id: candidate.key }
+        });
+        if (d.error) {
+          console.error(d.error);
+          throw new Error("can't fetch key");
+        }
+        console.log(d);
+        key = JSON.parse(
+          (
+            await decryptLicence(
+              Buffer.from(candidate.data, "base64"),
+              Buffer.from(d.data.fetchKey.publickey, "hex"),
+              Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
+            )
+          ).toString("utf8")
+        );
+        break; // success
+      } catch (error) {
+        console.error("failed decrypting, trying next candidate", candidate, error);
+      }
+    }
+    if (!key) {
+      console.error("failed decrypting, exhausted all candidates", licence);
+      // TODO: add UI here
+    }
+  }
+  return key;
 }
