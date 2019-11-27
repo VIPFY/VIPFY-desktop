@@ -1,6 +1,5 @@
 import * as React from "react";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
-import Dropzone from "react-dropzone";
 import UploadImage from "../uploadImage";
 
 interface Props {
@@ -15,7 +14,7 @@ interface State {
   picture: any;
 }
 
-class TeamGerneralDataAdd extends React.Component<Props, State> {
+class TeamGeneralDataAdd extends React.Component<Props, State> {
   state = {
     name: this.props.name || "",
     picture: this.props.picture || null
@@ -61,4 +60,4 @@ class TeamGerneralDataAdd extends React.Component<Props, State> {
     );
   }
 }
-export default TeamGerneralDataAdd;
+export default TeamGeneralDataAdd;

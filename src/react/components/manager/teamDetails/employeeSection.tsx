@@ -6,6 +6,7 @@ import EmployeeDetails from "./../employeeDetails";
 import ManageTeamEmployees from "../universal/managing/teamemployees";
 
 interface Props {
+  isadmin: boolean;
   employees: any[];
   search: string;
   team: any;
@@ -43,6 +44,7 @@ class EmployeeSection extends React.Component<Props, State> {
   render() {
     let employees: any[] = [];
     let interemployees: any[] = [];
+
     if (this.props.employees) {
       interemployees = this.props.employees;
 
@@ -125,7 +127,10 @@ class EmployeeSection extends React.Component<Props, State> {
           {employeeArray}
         </div>
         {this.state.add && (
-          <ManageTeamEmployees team={this.props.team} close={() => this.setState({ add: false })}>
+          <ManageTeamEmployees
+            isadmin={this.props.isadmin}
+            team={this.props.team}
+            close={() => this.setState({ add: false })}>
             <div className="buttonsPopup">
               <UniversalButton
                 label="Close"
