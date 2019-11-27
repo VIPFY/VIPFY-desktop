@@ -44,6 +44,7 @@ class UserSecurityTable extends React.Component<Props, State> {
           if (error || !data) {
             return <div>Error fetching data</div>;
           }
+
           return (
             <table className="security-table">
               <thead>

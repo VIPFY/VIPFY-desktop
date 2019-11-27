@@ -61,6 +61,7 @@ export interface SecurityUser {
   banned: boolean;
   suspended: boolean;
   needspasswordchange: boolean;
+  needstwofa: boolean;
   twofactormethods: {
     twofaid: number;
     twofatype: string;
