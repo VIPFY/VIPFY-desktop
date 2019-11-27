@@ -226,7 +226,8 @@ export const filterAndSort = (licences, property) =>
 export const AppIcon = ({ app }) => (
   <div className="app-icon-wrapper">
     <PrintServiceSquare service={app} appidFunction={a => a} className="app-icon" />
-    <span className="app-name">{app.name}</span>
+    {/* <span className="app-name">{app.name}</span> */}
+    <span className="app-name">934u9ajfg9jsadfjdsafasdfasdfsadfsadf</span>
   </div>
 );
 
@@ -300,16 +301,18 @@ export function getMyUnitId(client: any): string {
 }
 
 export async function getMyEmail(client: any): Promise<string> {
-  return (await client.query({
-    query: gql`
-      query email {
-        me {
-          id
-          emails {
-            email
+  return (
+    await client.query({
+      query: gql`
+        query email {
+          me {
+            id
+            emails {
+              email
+            }
           }
         }
-      }
-    `
-  })).data.me.emails[0].email;
+      `
+    })
+  ).data.me.emails[0].email;
 }

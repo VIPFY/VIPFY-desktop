@@ -389,7 +389,7 @@ $rccs-valid-font-size: 0.4rem;
   display: flex;
 
   .app-icon {
-    width: 32px;
+    min-width: 32px;
     height: 32px;
     border-radius: 4px;
     float: left;
