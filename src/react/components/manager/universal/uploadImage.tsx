@@ -1,5 +1,4 @@
 import * as React from "react";
-import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
 import Dropzone from "react-dropzone";
 
 interface Props {
@@ -40,6 +39,7 @@ class UploadImage extends React.Component<Props, State> {
 
   render() {
     const { picture, name } = this.state;
+
     return (
       <form className={`profilepicture ${this.props.mainClassName}`} style={this.props.formstyles}>
         <label>

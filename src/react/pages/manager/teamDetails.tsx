@@ -62,6 +62,7 @@ class TeamDetails extends React.Component<Props, State> {
 
   render() {
     const teamid = this.props.match.params.teamid;
+
     return (
       <Query pollInterval={60 * 10 * 1000 + 200} query={fetchTeam} variables={{ teamid }}>
         {({ loading, error, data }) => {
@@ -122,6 +123,7 @@ class TeamDetails extends React.Component<Props, State> {
                 </div>
               </div>
               <EmployeeSection
+                isadmin={this.props.isadmin}
                 employees={team.employees}
                 search={this.state.search}
                 team={team}
