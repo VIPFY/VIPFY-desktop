@@ -35,8 +35,6 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
     };
   }
 
-  statisticsRef = React.createRef<HTMLTextAreaElement>();
-
   refetch = async (value, refetch) => {
     await this.setState(value);
 
@@ -178,8 +176,8 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
 
   render() {
     return (
-      <Collapsible child={this.statisticsRef} title="Overview">
-        <section ref={this.statisticsRef} className="statistics-overview">
+      <Collapsible title="Overview">
+        <section className="statistics-overview">
           <Query
             query={FETCH_TOTAL_APP_USAGE}
             fetchPolicy="cache-and-network"

@@ -10,7 +10,7 @@ import Notification from "../components/Notification";
 import { sleep, refetchQueries } from "../common/functions";
 import { fetchLicences, me } from "../queries/auth";
 import { FETCH_DOMAINS } from "../components/domains/graphql";
-import { fetchCards } from "../queries/billing";
+import { FETCH_CARDS } from "../queries/billing";
 import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
@@ -189,12 +189,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "invoices":
-          await refetchQueries(client, ["fetchBills"]);
+          await refetchQueries(client, ["FETCH_BILLS"]);
           break;
 
         case "paymentMethods":
           await client.query({
-            query: fetchCards,
+            query: FETCH_CARDS,
             ...options
           });
           break;
@@ -460,10 +460,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
             !licence.vacationstart) ||
           (!licence.disabled &&
             !licence.pending &&
-            (licence.vacationstart &&
+            licence.vacationstart &&
               licence.vacationstart <= moment.now() &&
               ((licence.vacationend && licence.vacationend > moment.now()) ||
-                licence.vacationend == null)))
+                licence.vacationend == null))
         )
       ) {
         return false;

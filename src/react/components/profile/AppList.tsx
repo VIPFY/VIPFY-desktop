@@ -24,7 +24,6 @@ export default (props: Props) => {
     licence.boughtplanid.alias
       ? licence.boughtplanid.alias
       : licence.boughtplanid.planid.appid.name;
-  let appListRef = React.createRef<HTMLDivElement>();
 
   if (props.licences.length == 0) {
     return null;
@@ -33,8 +32,7 @@ export default (props: Props) => {
   let anyapp = false;
 
   return (
-    /*<Collapsible child={appListRef} title={props.header ? props.header : "Apps"}>
-    <div ref={appListRef} className="dashboard-apps">*/
+    /*<Collapsible  title={props.header ? props.header : "Apps"}>*/
 
     <div className="section">
       <div className="heading">

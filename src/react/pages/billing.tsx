@@ -1,20 +1,11 @@
 import * as React from "react";
-import { graphql, compose } from "react-apollo";
-// import BillHistory from "../graphs/billhistory";
-import CreditCard from "../components/billing/CreditCard";
-import CreditCardSelector from "../components/billing/CreditCardSelector";
-import LoadingDiv from "../components/LoadingDiv";
-import StripeForm from "../components/billing/StripeForm";
+import CreditCardList from "../components/billing/CreditCardList";
 import Addresses from "../components/profile/Addresses";
-
-import { ErrorComp } from "../common/functions";
-import { fetchCards } from "../queries/billing";
-import { CREATE_ADDRESS } from "../mutations/contact";
 import BillingHistoryChart from "../components/billing/BillingHistoryChart";
-import AppTable from "../components/billing/AppTable";
 import EmailList from "../components/EmailList";
 import BillingPie from "../components/billing/BillingPie";
 import Invoices from "../components/billing/Invoices";
+import Collapsible from "../common/Collapsible";
 
 interface Props {
   cards: any;
@@ -24,216 +15,28 @@ interface Props {
   createAddress: Function;
 }
 
-interface State {
-  bills: any[];
-  error: string;
-  showCostDistribution: Boolean;
-  showBillingHistory: Boolean;
-  showBoughtApps: Boolean;
-  showInvocies: Boolean;
-  showEmailList: Boolean;
-  showCurrentCreditCard: Boolean;
-}
+export default (props: Props) => (
+  <section id="billing-page">
+    <Collapsible title="Billing Emails" info="Invoices will be sent to these Email addresses">
+      <EmailList tag="billing" />
+    </Collapsible>
 
-class Billing extends React.Component<Props, State> {
-  state = {
-    bills: [],
-    error: "",
-    showCostDistribution: true,
-    showBillingHistory: true,
-    showBoughtApps: true,
-    showInvocies: true,
-    showEmailList: true,
-    showCurrentCreditCard: true,
-    showInvoice: 0
-  };
+    <Collapsible title="Credit Cards">
+      <CreditCardList companyID={props.company.unit.id} />
+    </Collapsible>
 
-  toggleShowCostDistribution = (): void =>
-    this.setState(prevState => ({ showCostDistribution: !prevState.showCostDistribution }));
+    <Collapsible title="Cost Distribution">
+      <BillingPie {...props} />
+    </Collapsible>
 
-  toggleShowBillingHistory = (): void =>
-    this.setState(prevState => ({ showBillingHistory: !prevState.showBillingHistory }));
+    <Addresses label="Billing Addresses" company={props.company.unit.id} tag="billing" />
 
-  toggleShowBoughtApps = (): void =>
-    this.setState(prevState => ({ showBoughtApps: !prevState.showBoughtApps }));
+    <Collapsible title="Billing History">
+      <BillingHistoryChart departmentID={props.company.unit.id} />
+    </Collapsible>
 
-  toggleShowInvocies = (): void =>
-    this.setState(prevState => ({ showInvocies: !prevState.showInvocies }));
-
-  toggleShowEmailList = (): void =>
-    this.setState(prevState => ({ showEmailList: !prevState.showEmailList }));
-
-  toggleShowCurrentCreditCard = (): void =>
-    this.setState(prevState => ({ showCurrentCreditCard: !prevState.showCurrentCreditCard }));
-
-  render() {
-    const { cards } = this.props;
-
-    if (!cards) {
-      return <div>No Billing Data to find</div>;
-    }
-
-    if (cards.loading) {
-      return <LoadingDiv text="Fetching bills..." />;
-    }
-
-    if (cards.error || !cards.fetchPaymentData) {
-      return <ErrorComp error="Oops... something went wrong" />;
-    }
-
-    const paymentData = cards.fetchPaymentData;
-    let mainCard;
-    let normalizedCards;
-
-    if (paymentData && paymentData.length > 0) {
-      normalizedCards = paymentData.map(card => card);
-      mainCard = normalizedCards[0];
-    }
-
-    return (
-      <div id="billing-page">
-        <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowEmailList()}>
-            <i
-              className={`button-hide fas ${
-                this.state.showEmailList ? "fa-angle-left" : "fa-angle-down"
-              }`}
-              //onClick={this.toggle}
-            />
-            <span>Billing Emails</span>
-          </div>
-          <div className={`inside ${this.state.showEmailList ? "in" : "out"}`}>
-            <EmailList
-              tag="billing"
-              header="Invoices will be sent to these Email addresses"
-              showPopup={this.props.showPopup}
-            />
-          </div>
-        </div>
-
-        <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowCurrentCreditCard()}>
-            <i
-              className={`button-hide fas ${
-                this.state.showCurrentCreditCard ? "fa-angle-left" : "fa-angle-down"
-              }`}
-              //onClick={this.toggle}
-            />
-            <span>Credit Cards</span>
-          </div>
-          <div className={`inside ${this.state.showCurrentCreditCard ? "in" : "out"}`}>
-            {/* {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
-            {normalizedCards && normalizedCards.length > 1 && (
-              <div className="credit-card-change-button">
-                <button
-                  className="payment-data-change-button"
-                  onClick={() =>
-                    this.props.showPopup({
-                      header: "Change default Card",
-                      body: CreditCardSelector,
-                      props: { cards: normalizedCards }
-                    })
-                  }>
-                  Change default Card
-                </button>
-              </div>
-            )} */}
-            <div className="credit-card-change-button">
-              <button
-                className="payment-data-change-button"
-                onClick={() =>
-                  this.props.showPopup({
-                    header: "Add another Card",
-                    body: StripeForm,
-                    props: {
-                      departmentid: this.props.company.unit.id,
-                      hasCard: mainCard ? true : false
-                    }
-                  })
-                }>
-                Add Credit Card
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowCostDistribution()}>
-            <i
-              className={`button-hide fas ${
-                this.state.showCostDistribution ? "fa-angle-left" : "fa-angle-down"
-              }`}
-              //onClick={this.toggle}
-            />
-            <span>Cost Distribution</span>
-          </div>
-          <div className={`inside ${this.state.showCostDistribution ? "in" : "out"}`}>
-            <div className="nextPaymentChart">{/* <BillingPie {...this.props} /> */}</div>
-          </div>
-        </div>
-
-        {/*<div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowBillingAddresses()}>
-            <i
-              className={`button-hide fas ${this.state.show ? "fa-angle-left" : "fa-angle-down"}`}
-              //onClick={this.toggle}
-            />
-            <span>Billing Addresses</span>
-          </div>
-            <div className={`inside ${this.state.showBillingAddresses ? "in" : "out"}`}>*/}
-        <Addresses label=" " company={this.props.company.unit.id} tag="billing" />
-        {/*</div>
-        </div>*/}
-
-        <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowBillingHistory()}>
-            <i
-              className={`button-hide fas ${
-                this.state.showBillingHistory ? "fa-angle-left" : "fa-angle-down"
-              }`}
-              //onClick={this.toggle}
-            />
-            <span>Billing History</span>
-          </div>
-          <div className={`inside ${this.state.showBillingHistory ? "in" : "out"}`}>
-            {/* <BillingHistoryChart {...this.props} /> */}
-          </div>
-        </div>
-
-        <div className="genericHolder" id="bought-apps">
-          <div className="header" onClick={() => this.toggleShowBoughtApps()}>
-            <i
-              className={`button-hide fas ${
-                this.state.showBoughtApps ? "fa-angle-left" : "fa-angle-down"
-              }`}
-              //onClick={this.toggle}
-            />
-            <span>Bought Apps</span>
-          </div>
-          <div className={`inside ${this.state.showBoughtApps ? "in" : "out"}`}>
-            <AppTable {...this.props} />
-          </div>
-        </div>
-        <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowInvocies()}>
-            <i
-              className={`button-hide fas ${
-                this.state.showInvocies ? "fa-angle-left" : "fa-angle-down"
-              }`}
-              //onClick={this.toggle}
-            />
-            <span>Invoices</span>
-          </div>
-          <div className={`inside ${this.state.showInvocies ? "in" : "out"}`}>
-            {/* <Invoices /> */}
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-
-export default compose(
-  graphql(fetchCards, { name: "cards" }),
-  graphql(CREATE_ADDRESS, { name: "createAddress" })
-)(Billing);
+    <Collapsible title="Invoices">
+      <Invoices />
+    </Collapsible>
+  </section>
+);

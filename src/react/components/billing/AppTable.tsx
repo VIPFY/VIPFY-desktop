@@ -313,10 +313,8 @@ export default class AppListOuter extends React.Component<{ company: any }, {}> 
           }
 
           return (
-            <Collapsible child={this.teamRef} title="Teams">
-              <div ref={this.teamRef}>
-                <AppListInner {...this.props} data={data} />
-              </div>
+            <Collapsible title="Teams">
+              <AppListInner {...this.props} data={data} />
             </Collapsible>
           );
         }}

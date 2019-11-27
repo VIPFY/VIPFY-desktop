@@ -183,17 +183,20 @@ $rccs-valid-font-size: 0.4rem;
 }
 
 .collapsible {
-  height: auto;
-  min-height: 80px;
-  overflow: hidden !important;
-  transition: all 0.3s ease-in-out !important;
+  @extend .genericHolder;
+
+  .children {
+    transition: all 0.3s ease-in;
+  }
+
+  .no-spacing {
+    margin: 0;
+    padding: 0 ;
+    transition: all 0.3s ease-in;
+    overflow: hidden;
+  }
 }
 
-.no-spacing {
-  margin: 0 !important;
-  padding: 0 !important;
-  min-height: 0 !important;
-}
 
 .inside-padding {
   padding: 10px 20px;
