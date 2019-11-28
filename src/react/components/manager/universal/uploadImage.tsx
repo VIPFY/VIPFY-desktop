@@ -1,5 +1,4 @@
 import * as React from "react";
-import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
 import Dropzone from "react-dropzone";
 
 interface Props {

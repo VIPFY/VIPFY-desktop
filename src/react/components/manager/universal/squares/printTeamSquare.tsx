@@ -9,49 +9,45 @@ interface Props {
   fake?: boolean;
 }
 
-interface State {}
+export default (props: Props) => {
+  const { team, title } = props;
+  const size = props.size || 32;
 
-class PrintTeamSquare extends React.Component<Props, State> {
-  render() {
-    const { team, title } = this.props;
-    const size = this.props.size || 32;
-    if (this.props.fake) {
-      return (
-        <div
-          key={team.name}
-          title={title || team.name}
-          className={this.props.className || "managerSquare"}
-          style={{
-            color: "#253647",
-            backgroundColor: "#F2F2F2",
-            fontSize: "12px",
-            fontWeight: 400
-          }}
-        />
-      );
-    }
+  if (props.fake) {
     return (
       <div
         key={team.name}
         title={title || team.name}
-        className={this.props.className || "managerSquare"}
-        style={
-          team.profilepicture
-            ? {
-                backgroundImage: getBgImageTeam(team.profilepicture, size),
-                backgroundColor: "unset"
-              }
-            : team.internaldata && team.internaldata.color
-            ? { backgroundColor: team.internaldata.color }
-            : { backgroundColor: "#5d76ff" }
-        }>
-        {team.profilepicture
-          ? ""
-          : team.internaldata && team.internaldata.letters
-          ? team.internaldata.letters
-          : team.name.slice(0, 1)}
-      </div>
+        className={props.className || "managerSquare"}
+        style={{
+          color: "#253647",
+          backgroundColor: "#F2F2F2",
+          fontSize: "12px",
+          fontWeight: 400
+        }}
+      />
     );
   }
-}
-export default PrintTeamSquare;
+  return (
+    <div
+      key={team.name}
+      title={title || team.name}
+      className={props.className || "managerSquare"}
+      style={
+        team.profilepicture
+          ? {
+              backgroundImage: getBgImageTeam(team.profilepicture, size),
+              backgroundColor: "unset"
+            }
+          : team.internaldata && team.internaldata.color
+          ? { backgroundColor: team.internaldata.color }
+          : { backgroundColor: "#5d76ff" }
+      }>
+      {team.profilepicture
+        ? ""
+        : team.internaldata && team.internaldata.letters
+        ? team.internaldata.letters
+        : team.name.slice(0, 1)}
+    </div>
+  );
+};
