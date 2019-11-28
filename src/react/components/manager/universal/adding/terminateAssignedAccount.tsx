@@ -18,7 +18,6 @@ interface Props {
   service: any;
   orbit: any;
   account: any;
-  fromdate: Date;
   todate: Date;
   close: Function;
   terminateAssignAccount: Function;
@@ -46,20 +45,18 @@ class TerminateAssignedAccount extends React.Component<Props, State> {
     saved: false,
     error: null,
     editfrom: false,
-    fromdate: this.props.fromdate,
+    fromdate: this.props.account.starttime,
     editto: false,
-    todate: this.props.todate || null
+    todate: this.props.account.endtime != 8640000000000000 ? this.props.account.endtime : undefined
   };
 
   componentWillUpdate(nextProps, nextState) {
-    console.log("WILL UPDATE", nextProps, this.props);
     if (nextProps.account.id != this.props.account.id) {
       this.props.close();
     }
   }
 
   render() {
-    console.log("PROPS", this.props);
     return (
       <PopupBase
         small={true}
@@ -142,7 +139,7 @@ class TerminateAssignedAccount extends React.Component<Props, State> {
           }}>
           <span style={{ lineHeight: "24px", width: "84px" }}>From:</span>
           <span style={{ lineHeight: "24px" }}>
-            {moment(this.props.fromdate!).format("DD.MM.YYYY")}
+            {moment(this.state.fromdate!).format("DD.MM.YYYY")}
           </span>
         </div>
 
@@ -156,7 +153,9 @@ class TerminateAssignedAccount extends React.Component<Props, State> {
           }}>
           <span style={{ lineHeight: "24px", width: "84px" }}>Terminate:</span>
           <span style={{ lineHeight: "24px" }}>
-            {this.state.todate ? moment(this.state.todate!).format("DD.MM.YYYY") : "Now"}
+            {this.state.todate != 8640000000000000
+              ? moment(this.state.todate!).format("DD.MM.YYYY")
+              : "Now"}
           </span>
           <i className="fal fa-pen editbutton" onClick={() => this.setState({ editto: true })} />
           {this.state.editto && (
@@ -179,7 +178,7 @@ class TerminateAssignedAccount extends React.Component<Props, State> {
                       : { todate: v };
                   })
                 }
-                value={this.state.todate || undefined}
+                value={this.state.todate != 8640000000000000 ? this.state.todate : new Date()}
               />
               <UniversalButton type="low" label="Cancel" closingPopup={true} />
               <UniversalButton

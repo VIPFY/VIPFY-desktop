@@ -794,8 +794,8 @@ class PersonalDetails extends React.Component<Props, State> {
               <i className="fal fa-pen editbuttons" />
             </div>
           </div>
-          <div className="tableColumnSmallOne" style={{ cursor: "inital" }}></div>
-          {/*<div
+          {/* <div className="tableColumnSmallOne" style={{ cursor: "inital" }}></div> */}
+          <div
             className="tableColumnSmallOne editable"
             onClick={() =>
               this.setState({
@@ -822,7 +822,7 @@ class PersonalDetails extends React.Component<Props, State> {
             <div className="profileEditButton">
               <i className="fal fa-pen editbuttons" />
             </div>
-              </div>*/}
+          </div>
         </div>
         {this.state.edit && (
           <Mutation mutation={UPDATE_DATA}>

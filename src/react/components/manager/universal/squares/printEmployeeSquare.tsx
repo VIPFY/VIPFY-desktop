@@ -1,5 +1,6 @@
 import * as React from "react";
 import { getBgImageUser } from "../../../../common/images";
+import { concatName } from "../../../../common/functions";
 
 interface Props {
   employee: any;
@@ -14,20 +15,33 @@ interface Props {
 interface State {}
 
 class PrintEmployeeSquare extends React.Component<Props, State> {
+  getShort(employee) {
+    let short = "";
+    if (employee.firstname) {
+      short += employee.firstname.slice(0, 1);
+    }
+    if (employee.lastname) {
+      short += employee.lastname.slice(0, 1);
+    }
+    return short;
+  }
+
   render() {
     let { employee, overlayFunction } = this.props;
     if (!employee) {
       // handle employee == null for renders without data (happens in login)
-      employee = { firstname: "" };
+      employee = { firstname: "", lastname: "" };
     }
     const size = this.props.size || 32;
-    const name = employee.firstname || employee.lastname || employee.fullname || " "; // fullname is used by login
+    const name = concatName(employee);
     return (
       <div
         title={this.props.hideTitle ? null : name}
         className={this.props.className || "managerSquare"}
         style={Object.assign(
           { ...(this.props.styles || {}) },
+
+          { position: "relative" },
           employee.profilepicture
             ? {
                 backgroundImage: getBgImageUser(employee.profilepicture, size),
@@ -40,7 +54,7 @@ class PrintEmployeeSquare extends React.Component<Props, State> {
             this.props.onClick();
           }
         }}>
-        {employee.profilepicture ? "" : name.slice(0, 1)}
+        {employee.profilepicture ? "" : this.getShort(employee)}
         {overlayFunction && overlayFunction(employee)}
       </div>
     );

@@ -111,6 +111,34 @@
                 }
               }
 
+            .noHover{
+                cursor: inherit;
+                &:hover {
+                box-shadow: none;
+
+                    .editOptions{
+                        opacity: 1;
+
+                        
+                        &:hover .editbuttons:not(:hover){
+                            background-color: transparent;
+                        }
+                        
+                        .editbuttons:first-child{
+                            background-color: transparent;
+                        }
+                        .editbuttons{
+                            cursor: pointer;
+
+                            &:hover{
+                                background-color: #f5f5f5;
+                            }
+                        }
+                    }
+                }
+            }
+            
+
             .tableRowShow{
             border-radius: 4px; 
             height: 56px ;

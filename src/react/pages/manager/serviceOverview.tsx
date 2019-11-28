@@ -197,54 +197,103 @@ class ServiceOverview extends React.Component<Props, State> {
     }
   }
 
+  countOrbits(licences) {
+    let orbits = [];
+    if (licences) {
+      licences.forEach(l => {
+        if (!orbits.find(id => id == l.boughtplanid.id)) {
+          orbits.push(l.boughtplanid.id);
+        }
+      });
+    }
+
+    return orbits.length;
+  }
+
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
-      if (
-        service.licences.find(l => l && (l.endtime == null || l.endtime > now())) ||
-        (service.app.owner && service.app.owner.id)
-      ) {
-        serviceArray.push(
-          <div
-            key={service.name}
-            className="tableRow"
-            onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
-            <div className="tableMain">
-              <div className="tableColumnBig">
-                <PrintServiceSquare appidFunction={s => s.app} service={service} />
-                <span className="name">{service.app.name}</span>
+      console.log("Service", service);
+      const teams = [];
+      const accounts = [];
+      const singleAccounts = [];
+
+      service.orbitids.forEach(element => {
+        element.teams.forEach(team => {
+          if (team != null) {
+            teams.push(team);
+          }
+        });
+      });
+
+      service.orbitids.forEach(element => {
+        element.accounts.forEach(account => {
+          if (account != null) {
+            accounts.push(account);
+            account.assignments.forEach(checkunit => {
+              if (
+                !singleAccounts.find(s => s && s && checkunit.unitid && s.id == checkunit.unitid.id)
+              ) {
+                singleAccounts.push(checkunit.unitid);
+              }
+            });
+          }
+        });
+      });
+
+      serviceArray.push(
+        <div
+          key={service.name}
+          className="tableRow"
+          onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
+          <div className="tableMain">
+            <div className="tableColumnBig">
+              <PrintServiceSquare appidFunction={s => s.app} service={service} />
+              <span className="name">{service.app.name}</span>
+            </div>
+            <div className="tableColumnSmall">
+              <div
+                className="managerSquare"
+                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                {service.orbitids.length}
               </div>
-              <ColumnTeams teams={service.teams} teamidFunction={team => team.departmentid} />
-              <ColumnEmployees
-                employees={service.licences}
-                checkFunction={l =>
-                  l &&
-                  ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-                  (l.options == null || l.options.teamlicence == null)
-                }
-                employeeidFunction={e => e.unitid}
+              <div
+                className="managerSquare"
+                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                {accounts.length}
+              </div>
+            </div>
+            <ColumnTeams teams={teams} teamidFunction={team => team} />
+            <ColumnEmployees
+              employees={singleAccounts}
+              checkFunction={
+                l => true
+                /* l &&
+                ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
+                (l.options == null || l.options.teamlicence == null)*/
+              }
+              employeeidFunction={e => e}
+            />
+          </div>
+          <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
+            {service.app.disabled && (
+              <i className="fad fa-exclamation-triangle warningColor" title="App is disabled"></i>
+            )}
+          </div>
+          <div className="tableEnd">
+            <div className="editOptions">
+              <i className="fal fa-external-link-alt editbuttons" />
+              <i
+                className="fal fa-trash-alt editbuttons"
+                onClick={e => {
+                  e.stopPropagation();
+                  this.setState({ willdeleting: service });
+                }}
               />
             </div>
-            <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
-              {service.app.disabled && (
-                <i className="fad fa-exclamation-triangle warningColor" title="App is disabled"></i>
-              )}
-            </div>
-            <div className="tableEnd">
-              <div className="editOptions">
-                <i className="fal fa-external-link-alt editbuttons" />
-                <i
-                  className="fal fa-trash-alt editbuttons"
-                  onClick={e => {
-                    e.stopPropagation();
-                    this.setState({ willdeleting: service });
-                  }}
-                />
-              </div>
-            </div>
           </div>
-        );
-      }
+        </div>
+      );
     });
     return serviceArray;
   }
@@ -261,6 +310,7 @@ class ServiceOverview extends React.Component<Props, State> {
               <PrintServiceSquare appidFunction={s => s.app} service={{}} fake={true} />
               <span className="name" />
             </div>
+            <div className="tableColumnBig"></div>
             <ColumnTeams teams={[null]} teamidFunction={team => team.departmentid} fake={true} />
             <ColumnEmployees
               employees={[null]}
@@ -311,10 +361,7 @@ class ServiceOverview extends React.Component<Props, State> {
               }
             />
           </div>
-          <Query
-            pollInterval={60 * 10 * 1000 + 900}
-            query={fetchCompanyServices}
-            fetchPolicy="cache-and-network">
+          <Query pollInterval={60 * 10 * 1000 + 900} query={fetchCompanyServices}>
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return (
@@ -338,6 +385,12 @@ class ServiceOverview extends React.Component<Props, State> {
                                 style={{ marginLeft: "8px", opacity: 0.4 }}></i>
                             )}
                           </h1>
+                        </div>
+                        <div
+                          className="tableColumnSmall"
+                          //onClick={() => this.handleSortClick("Teams")}
+                        >
+                          <h1>Orbits/Accounts</h1>
                         </div>
                         <div
                           className="tableColumnBig" //onClick={() => this.handleSortClick("Teams")}
@@ -537,6 +590,12 @@ class ServiceOverview extends React.Component<Props, State> {
                           )}
                         </div>
                         <div
+                          className="tableColumnSmall"
+                          //onClick={() => this.handleSortClick("Teams")}
+                        >
+                          <h1>Orbits/Accounts</h1>
+                        </div>
+                        <div
                           className="tableColumnBig"
                           //onClick={() => this.handleSortClick("Teams")}
                         >
@@ -551,7 +610,7 @@ class ServiceOverview extends React.Component<Props, State> {
                       </div>
                       <div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>
                       <div className="tableEnd">
-                        <UniversalButton
+                        {/* <UniversalButton
                           type="high"
                           label="Add Service"
                           customStyles={{
@@ -571,7 +630,7 @@ class ServiceOverview extends React.Component<Props, State> {
                               currentServices: data.fetchCompanyServices
                             })
                           }
-                        />
+                        />*/}
                       </div>
                     </div>
                     {services.length > 0 && this.printServices(services)}

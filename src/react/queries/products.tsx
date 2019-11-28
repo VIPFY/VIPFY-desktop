@@ -130,6 +130,102 @@ export const fetchPlanInputs = gql`
 export const fetchCompanyServices = gql`
   query fetchCompanyServices {
     fetchCompanyServices {
+      app {
+        id
+        name
+        icon
+        disabled
+      }
+      orbitids {
+        id
+        alias
+        buytime
+        endtime
+        accounts {
+          id
+          alias
+          assignments {
+            id
+            unitid {
+              id
+              firstname
+              lastname
+              profilepicture
+            }
+          }
+        }
+        teams {
+          id
+          unitid {
+            id
+          }
+          name
+          profilepicture
+        }
+      }
+    }
+  }
+`;
+
+export const fetchCompanyService = gql`
+  query fetchCompanyService($serviceid: ID!) {
+    fetchCompanyService(serviceid: $serviceid) {
+      app {
+        id
+        name
+        logo
+        needssubdomain
+        description
+        icon
+        website
+        supportwebsite
+        developerwebsite
+        options
+        features
+        owner {
+          id
+        }
+        disabled
+      }
+      orbitids {
+        id
+        alias
+        buytime
+        endtime
+        key
+        accounts {
+          id
+          alias
+          starttime
+          endtime
+          assignments {
+            assignmentid
+            starttime
+            endtime
+            unitid {
+              id
+              firstname
+              lastname
+              profilepicture
+            }
+          }
+        }
+        teams {
+          id
+          unitid {
+            id
+          }
+          name
+          profilepicture
+        }
+      }
+    }
+  }
+`;
+
+export const fetchCompanyServicesa = gql`
+  query fetchCompanyServices {
+    fetchCompanyServices {
       id
       app {
         id
@@ -144,8 +240,13 @@ export const fetchCompanyServices = gql`
       }
       licences {
         id
+        assignmentid
+        starttime
         endtime
         options
+        boughtplanid {
+          id
+        }
         unitid {
           id
           firstname
@@ -173,7 +274,7 @@ export const fetchCompanyServices = gql`
   }
 `;
 
-export const fetchCompanyService = gql`
+export const fetchCompanyServicea = gql`
   query fetchCompanyService($serviceid: ID!) {
     fetchCompanyService(serviceid: $serviceid) {
       id
