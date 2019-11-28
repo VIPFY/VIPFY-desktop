@@ -1,192 +1,166 @@
 import * as React from "react";
-import { graphql, compose, Query } from "react-apollo";
-import gql from "graphql-tag";
+import { Query } from "react-apollo";
 import Chart from "react-apexcharts";
-import ResizeAware from "react-resize-aware";
-
 import moment from "moment";
+import { FETCH_UNIT_APPS } from "../../queries/billing";
 
-interface State {}
-
-interface Props {
-  fetchUnitApps: { fetchUnitApps: any };
-  width: number;
-  height: number;
+interface Plan {
+  id: number;
+  alias: string;
+  price: number;
+  currency: string;
+  buytime: string;
+  endtime: string;
+  planname: string;
+  appname: string;
+  applogo: string;
+  appicon: string;
+  appcolor: string;
 }
 
-//fetchUnitApps
+interface Props {
+  data: Plan[];
+  sameCurrencies: boolean;
+  currency: string;
+}
 
-class BillingPieInner extends React.Component<Props, State> {
-  render() {
-    //console.log("CHARTPROPS", this.props);
-    if (!this.props.data.fetchUnitApps) {
-      return <div>Error fetching data</div>;
-    }
-    const data = this.BarSeries(this.props);
-    //console.log("HW", data);
-    return (
-      <Chart
-        height={this.props.height}
-        width={this.props.width}
-        type="donut"
-        series={data.data}
-        options={{
-          dataLabels: {
-            formatter: (val, opt) =>
-              "$" + `${data.data[opt.seriesIndex].toFixed(2)}`.padStart(3, " ")
-          },
-          colors: data.color,
-          labels: data.name,
-          legend: {
-            position: "right",
-            verticalAlign: "top"
-          }
-        }}
-      />
-    );
-  }
-
-  /*<FlexibleXYPlot stackBy="y" xType="ordinal">
-        <VerticalGridLines />
-        <HorizontalGridLines />
-        <DiscreteColorLegend orientation="horizontal" width={300} items={names} />
-        <XAxis tickLabelAngle={270} />
-        <YAxis tickFormat={v => `$${v}`} />
-        {bars}
-      </FlexibleXYPlot>*/
-
-  BarSeries(props): { name: string[]; data: number[]; color: string[] } {
-    let d = props.data.fetchUnitApps;
-    let plans = d.map(boughtplan => ({
-      id: boughtplan.boughtplan.id,
-      alias: boughtplan.boughtplan.alias,
-      price: boughtplan.boughtplan.totalprice,
-      buytime: boughtplan.boughtplan.buytime,
-      endtime: boughtplan.boughtplan.endtime,
-      planname: boughtplan.boughtplan.planid.name,
-      appname: boughtplan.boughtplan.planid.appid.name,
-      applogo: boughtplan.boughtplan.planid.appid.logo,
-      appicon: boughtplan.boughtplan.planid.appid.icon,
-      appcolor: boughtplan.boughtplan.planid.appid.color
-    }));
-    plans.sort(function(a, b) {
-      return (
-        (a.alias ? a.alias : `${a.appname} ${a.id}`) > (b.alias ? b.alias : `${b.appname} ${b.id}`)
-      );
-    });
-    let returndata: { name: string[]; data: number[]; color: string[] } = {
-      name: [],
+const BillingPie = (props: Props) => {
+  const calculateData = (data: Plan[]) => {
+    let returnData: { names: string[]; data: number[]; colors: string[]; currencies: string[] } = {
+      names: [],
       data: [],
-      color: []
+      colors: [],
+      currencies: []
     };
-    plans.forEach(plan => {
+
+    data.forEach(plan => {
       if (plan.price !== 0) {
-        returndata.name.push(plan.alias ? plan.alias : `${plan.appname} ${plan.id}`);
-        returndata.color.push(plan.appcolor);
+        returnData.names.push(plan.alias ? plan.alias : `${plan.appname} ${plan.id}`);
+        returnData.colors.push(plan.appcolor);
+        returnData.currencies.push(plan.currency);
+
         if (moment(plan.endtime).isAfter(moment().startOf("month"))) {
-          returndata.data.push(
+          returnData.data.push(
             (-moment(plan.endtime).diff(moment().startOf("month"), "days") /
               moment().daysInMonth()) *
               plan.price
           );
         } else {
-          returndata.data.push(plan.price);
+          returnData.data.push(plan.price);
         }
       }
     });
-    return returndata;
-  }
-}
 
-function BillingPie(props) {
-  //console.log("PROPS", props);
+    return returnData;
+  };
+
+  const chart = calculateData(props.data);
+
   return (
-    <Query
-      query={gql`
-        query fetchUnitApps($departmentid: ID!) {
-          fetchUnitApps(departmentid: $departmentid) {
-            id
-            boughtplan {
-              id
-              totalprice
-              buytime
-              endtime
-              alias
-              planid {
-                id
-                name
-                appid {
-                  id
-                  name
-                  icon
-                  logo
-                  color
-                }
+    <Chart
+      width="380px"
+      type="donut"
+      series={chart.data}
+      options={{
+        tooltip: {
+          x: { show: true, format: "dd MMM" },
+          y: {
+            // seriesIndex is sometimes defined, sometimes not. So there is no way to display
+            // differing currencies -> FUCK YOU Apex Charts!!!
+            formatter: value => {
+              if (props.sameCurrencies) {
+                return `${value} ${props.currency}`;
+              } else {
+                return value;
               }
             }
           }
+        },
+        dataLabels: {
+          formatter: (_val, opt) => chart.data[opt.seriesIndex].toFixed(2).padStart(3, " ")
+        },
+        colors: chart.colors,
+        labels: chart.names,
+        legend: {
+          position: "right",
+          verticalAlign: "top"
         }
-      `}
-      variables={{ departmentid: props.company.unit.id }}>
-      {({ data, loading, error }) => {
-        if (loading) {
-          return <div>Loading</div>;
-        }
-        if (error) {
-          return <div>Error fetching data</div>;
-        }
+      }}
+    />
+  );
+};
 
-        let d = data.fetchUnitApps;
-        let plans = d.map(boughtplan => ({
-          id: boughtplan.boughtplan.id,
-          alias: boughtplan.boughtplan.alias,
-          price: boughtplan.boughtplan.totalprice,
-          buytime: boughtplan.boughtplan.buytime,
-          endtime: boughtplan.boughtplan.endtime,
-          planname: boughtplan.boughtplan.planid.name,
-          appname: boughtplan.boughtplan.planid.appid.name,
-          applogo: boughtplan.boughtplan.planid.appid.logo,
-          appicon: boughtplan.boughtplan.planid.appid.icon,
-          appcolor: boughtplan.boughtplan.planid.appid.color
-        }));
-        plans.sort(function(a, b) {
-          return (
+export default props => (
+  <Query query={FETCH_UNIT_APPS} variables={{ departmentid: props.company.unit.id }}>
+    {({ data, loading, error }) => {
+      if (loading) {
+        return <div>Loading</div>;
+      }
+
+      if (error || !data) {
+        return <div>Error fetching data</div>;
+      }
+
+      if (data.fetchUnitApps.length < 1) {
+        return <div className="no-data">No data to compute future invoices yet</div>;
+      }
+
+      const currency = data.fetchUnitApps[0].boughtplan.plan.currency;
+
+      const sameCurrencies = data.fetchUnitApps.every(
+        ({ boughtplan }) => boughtplan.plan.currency == currency
+      );
+
+      let plans: Plan[] = data.fetchUnitApps
+        .map(({ boughtplan }) => ({
+          id: boughtplan.id,
+          alias: boughtplan.alias,
+          price: boughtplan.totalprice,
+          buytime: boughtplan.buytime,
+          endtime: boughtplan.endtime,
+          planname: boughtplan.plan.name,
+          appname: boughtplan.plan.app.name,
+          applogo: boughtplan.plan.app.logo,
+          appicon: boughtplan.plan.app.icon,
+          appcolor: boughtplan.plan.app.color,
+          currency: boughtplan.plan.currency
+        }))
+        .sort(
+          (a, b) =>
             (a.alias ? a.alias : `${a.appname} ${a.id}`) >
             (b.alias ? b.alias : `${b.appname} ${b.id}`)
-          );
-        });
-        let sumnextmonth = 0;
-        plans.forEach(plan => {
-          if (plan.price !== 0) {
-            if (moment(plan.endtime).isAfter(moment().startOf("month"))) {
-              sumnextmonth +=
-                (-moment(plan.endtime).diff(moment().startOf("month"), "days") /
-                  moment().daysInMonth()) *
-                plan.price;
-            } else {
-              sumnextmonth += plan.price;
-            }
-          }
-        });
+        );
 
-        return (
-          <React.Fragment>
-            <span className="nextBillHeading">
+      let sumNextMonth = 0;
+
+      plans.forEach(plan => {
+        if (plan.price !== 0) {
+          if (moment(plan.endtime).isAfter(moment().startOf("month"))) {
+            sumNextMonth +=
+              (-moment(plan.endtime).diff(moment().startOf("month"), "days") /
+                moment().daysInMonth()) *
+              plan.price;
+          } else {
+            sumNextMonth += plan.price;
+          }
+        }
+      });
+
+      return (
+        <section className="billing-pie-holder">
+          {sameCurrencies && (
+            <h1>
               {`Next scheduled bill on
               ${moment()
                 .add(1, "month")
                 .startOf("month")
                 .format("ll")}
-              : approx. $${sumnextmonth}`}
-            </span>
-            <ResizeAware style={{ height: "15em", width: "20em" }}>
-              <BillingPieInner {...props} data={data} />
-            </ResizeAware>
-          </React.Fragment>
-        );
-      }}
-    </Query>
-  );
-}
-
-export default BillingPie;
+              : approx. ${sumNextMonth} ${currency}`}
+            </h1>
+          )}
+          <BillingPie sameCurrencies={sameCurrencies} currency={currency} data={plans} />
+        </section>
+      );
+    }}
+  </Query>
+);

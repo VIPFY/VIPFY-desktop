@@ -50,6 +50,7 @@ class UniversalButton extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <button
+          type={this.props.form ? "submit" : "button"}
           form={this.props.form}
           className={`cleanup universalCoverButton ${this.props.className}`}
           onClick={e => this.click(e)}

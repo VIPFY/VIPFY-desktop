@@ -49,13 +49,14 @@ class ManageTeamEmployees extends React.Component<Props, State> {
         break;
 
       default:
-        console.log("Change teamemployees", s);
         break;
     }
     //TODO SAVING STUFF
   }
 
   render() {
+    console.log("LOG: ManageTeamEmployees -> render -> this.props.isadmin", this.props.isadmin);
+
     return (
       <Query
         pollInterval={60 * 10 * 1000 + 700}
@@ -102,7 +103,7 @@ class ManageTeamEmployees extends React.Component<Props, State> {
                   close={() => this.setState({ deleteEmployee: null })}
                   employee={this.state.deleteEmployee}
                   team={data.fetchTeam}
-                  savingFunction={so => {
+                  savingFunction={() => {
                     refetch();
                     this.setState({ deleteEmployee: null });
                   }}
@@ -129,6 +130,7 @@ class ManageTeamEmployees extends React.Component<Props, State> {
                       });
                       refetch();
                     }}
+                    isadmin={this.props.isadmin}
                     close={() => this.setState({ addEmployee: null })}
                     addpersonal={this.state.addEmployee}
                   />
@@ -140,7 +142,7 @@ class ManageTeamEmployees extends React.Component<Props, State> {
                   close={() => this.setState({ addEmployee: null })}
                   employee={this.state.addEmployee}
                   team={data.fetchTeam}
-                  savingFunction={so => {
+                  savingFunction={() => {
                     refetch();
                     this.setState({ addEmployee: null });
                   }}

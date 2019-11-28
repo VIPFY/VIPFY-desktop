@@ -9,10 +9,9 @@ let config = {
     process.env.SERVER_SSL !== "FALSE",
   isDevelopment: !!process.env.DEVELOPMENT,
   stripeToken: process.env.stripeToken,
-
   showProfile: true,
   showMessageCenter: false,
-  showBilling: false,
+  showBilling: true,
   showTeams: false,
   showDomains: false,
   showMarketplace: false,

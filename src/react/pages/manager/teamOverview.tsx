@@ -167,6 +167,7 @@ class TeamOverview extends React.Component<Props, State> {
       case 2:
         return (
           <ManageTeamEmployees
+            isadmin={this.props.isadmin}
             team={this.state.addteam}
             close={() => this.setState({ add: false })}>
             <div className="buttonsPopup">

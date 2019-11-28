@@ -16,7 +16,7 @@ import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
 import { randomPassword } from "../common/passwordgen";
 import HeaderNotificationContext from "../components/notifications/headerNotificationContext";
 import { getPreloadScriptPath } from "../common/functions";
-import { encryptLicence, decryptLicence } from "../common/crypto";
+import { decryptLicenceKey } from "../common/passwords";
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -310,77 +310,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       });
     }*/
 
-    let key = licence.key;
-    if (licence.key && licence.key.encrypted) {
-      key = null;
-      const { id, isadmin } = this.props.client.readQuery({
-        // read from cache
-        query: gql`
-          {
-            me {
-              id
-              isadmin
-            }
-          }
-        `
-      }).me;
-
-      const candidates = licence.key.encrypted.filter(
-        e => e.belongsto == id || (isadmin && e.belongsto == "admin")
-      );
-      console.log("candidates", candidates);
-      for (const candidate of candidates) {
-        console.log("trying candidate", candidate);
-        try {
-          const d = await this.props.client.query({
-            query: gql`
-              query onFetchKey($id: ID!) {
-                fetchKey(id: $id) {
-                  id
-                  publickey
-                  privatekey
-                  privatekeyDecrypted @client
-                }
-              }
-            `,
-            variables: { id: candidate.key }
-          });
-          console.log(
-            await this.props.client.query({
-              query: gql`
-                query onFetchKey($id: ID!) {
-                  fetchKey(id: $id) {
-                    id
-                    privatekeyDecrypted @client
-                  }
-                }
-              `,
-              variables: { id: candidate.key }
-            })
-          );
-          if (d.error) {
-            console.error(d.error);
-            throw new Error("can't fetch key");
-          }
-          console.log(d);
-          key = JSON.parse(
-            (await decryptLicence(
-              Buffer.from(candidate.data, "base64"),
-              Buffer.from(d.data.fetchKey.publickey, "hex"),
-              Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
-            )).toString("utf8")
-          );
-          console.log("key", key);
-          break; // success
-        } catch (error) {
-          console.error("failed decrypting, trying next candidate", candidate, error);
-        }
-      }
-      if (!key) {
-        console.error("failed decrypting, exhausted all candidates", licence);
-        // TODO: add UI here
-      }
-    }
+    let key = await decryptLicenceKey(this.props.client, licence);
     let loginurl = licence.boughtPlan.plan.app.loginurl;
     if (key && key.loginurl) {
       loginurl = key.loginurl;
@@ -829,7 +759,4 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 }
 
-export default compose(
-  withApollo,
-  graphql(LOG_SSO_ERROR, { name: "logError" })
-)(Webview);
+export default compose(withApollo, graphql(LOG_SSO_ERROR, { name: "logError" }))(Webview);

@@ -8,6 +8,7 @@ import PopupBase from "./popupBase";
 import { me as ME } from "../../queries/auth";
 import { updatePassword } from "../../common/passwords";
 import { MutationLike } from "../../common/mutationlike";
+import { forgotPassword } from "../../mutations/auth";
 
 interface PasswordChangeProps {
   email: string;

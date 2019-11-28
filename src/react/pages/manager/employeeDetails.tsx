@@ -147,7 +147,6 @@ class EmployeeDetails extends React.Component<Props, State> {
                             {querydata.isonline ? "Online" : "Offline"}
                           </div>
                         </div>
-                        {console.log("LOG: EmployeeDetails -> render -> querydata", querydata)}{" "}
                         <PersonalDetails
                           querydata={querydata}
                           refetch={refetch}

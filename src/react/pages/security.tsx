@@ -30,10 +30,8 @@ class Security extends React.Component<Props, State> {
               <UniversalSearchBox getValue={v => this.setState({ search: v })} />
             </div>
 
-            <Collapsible child={this.securityRef} title="Overview">
-              <div ref={this.securityRef}>
-                <UserSecurityTable search={this.state.search} />
-              </div>
+            <Collapsible title="Overview">
+              <UserSecurityTable search={this.state.search} />
             </Collapsible>
           </div>
         }
