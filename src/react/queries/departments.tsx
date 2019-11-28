@@ -79,22 +79,6 @@ export const fetchUnitApps = gql`
   }
 `;
 
-export const fetchAllAppsEnhanced = gql`
-  query fetchAllAppsEnhanced {
-    fetchAllAppsEnhanced {
-      id
-      description
-      name
-      icon
-      hasboughtplan
-      hidden
-      disabled
-      needssubdomain
-      options
-    }
-  }
-`;
-
 export const fetchUsersOwnLicences = gql`
   query fetchUsersOwnLicences($unitid: ID!) {
     fetchUsersOwnLicences(unitid: $unitid) {
