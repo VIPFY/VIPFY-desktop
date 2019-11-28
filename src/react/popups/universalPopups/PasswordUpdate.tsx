@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Mutation, withApollo } from "react-apollo";
-import gql from "graphql-tag";
+import { withApollo } from "react-apollo";
 import ReactPasswordStrength from "react-password-strength";
 import { PW_MIN_LENGTH } from "../../common/constants";
 import { ErrorComp } from "../../common/functions";
@@ -101,11 +100,11 @@ class PasswordUpdate extends React.Component<Props, State> {
                       />
 
                       <ReactPasswordStrength
-                        className="passwordStrength"
+                        className="passwordStrength not-show-bar"
                         minLength={PW_MIN_LENGTH}
                         minScore={2}
-                        scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                        tooShortWord={"too short"}
+                        scoreWords={[]}
+                        tooShortWord=""
                         inputProps={{
                           name: "password_input_repeat",
                           autoComplete: "off",
@@ -122,8 +121,8 @@ class PasswordUpdate extends React.Component<Props, State> {
                           opacity:
                             password &&
                             passwordRepeat &&
-                            passwordRepeat.password.length >= PW_MIN_LENGTH &&
-                            password.password.length != passwordRepeat.password.length
+                            password.password.length >= PW_MIN_LENGTH &&
+                            password.password != passwordRepeat.password
                               ? 1
                               : 0
                         }}
@@ -148,7 +147,7 @@ class PasswordUpdate extends React.Component<Props, State> {
                 )}
                 {!data && (
                   <UniversalButton
-                    type="low"
+                    type="high"
                     disabled={
                       unitid == userid
                         ? !currentPassword || !currentPassword.password
