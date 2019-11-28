@@ -20,6 +20,8 @@ interface State {
   changed: Boolean;
   email: string;
   changeEmail: boolean;
+  submitting: boolean;
+  showError: boolean;
 }
 
 class Login extends React.Component<Props, State> {
@@ -29,12 +31,20 @@ class Login extends React.Component<Props, State> {
     changed: false,
     email: "",
     changeEmail: false,
-    prevEmail: ""
+    prevEmail: "",
+    submitting: false,
+    showError: false
   };
 
   static getDerivedStateFromProps(props, state) {
     if (props.email != state.prevEmail) {
       return { ...state, email: props.email, prevEmail: props.email };
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.props.error && this.state.submitting) {
+      this.setState({ submitting: false });
     }
   }
 
@@ -92,10 +102,10 @@ class Login extends React.Component<Props, State> {
                 width="312px"
                 type="password"
                 label="Password"
-                livevalue={v => this.setState({ field2: v, changed: true })}
+                livevalue={v => this.setState({ field2: v, changed: true, showError: false })}
                 errorEvaluation={this.props.error && this.state.changed}
                 errorhint={
-                  this.props.error && this.state.changed ? (
+                  this.props.error && this.state.changed && this.state.showError ? (
                     <React.Fragment>
                       <i className="fal fa-exclamation-circle" />
                       <span>{this.props.error}</span>
@@ -116,8 +126,12 @@ class Login extends React.Component<Props, State> {
               <UniversalButton
                 label="Login"
                 type="high"
-                disabled={this.state.field2 == ""}
-                onClick={() => this.props.continueFunction(this.state.field2, this.state.email)}
+                disabled={this.state.field2 == "" || this.state.submitting}
+                onClick={async () => {
+                  await this.setState({ submitting: true });
+                  await this.props.continueFunction(this.state.field2, this.state.email);
+                  await this.setState({ showError: true });
+                }}
               />
             </div>
           </div>
