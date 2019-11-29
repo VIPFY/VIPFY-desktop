@@ -1,12 +1,11 @@
 import * as React from "react";
 import { withApollo } from "react-apollo";
-import { me } from "../../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { agreeTos } from "../../mutations/auth";
 import UniversalButton from "../universalButtons/universalButton";
-import CoolCheckbox from "../CoolCheckbox";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
+import welcomeImage from "../../../images/onboarding.png";
 
 interface FirstLoginProps {
   logMeOut: Function;
@@ -48,7 +47,7 @@ class FirstLogin extends React.Component<FirstLoginProps, FirstLoginState> {
     return (
       <section className="welcome">
         <div className="welcome-holder">
-          <img src={`${__dirname}/../../../images/onboarding.png`} alt="Welcome" />
+          <img src={welcomeImage} alt="Welcome" />
           <div className="welcome-text">
             <h1>Welcome to VIPFY!</h1>
             <div>
