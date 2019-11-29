@@ -16,6 +16,7 @@ import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
 import { FETCH_EMPLOYEES } from "../queries/departments";
+import { fetchCompanyServices, fetchCompanyService } from "../queries/products";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -175,6 +176,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
             query: FETCH_EMPLOYEES,
             ...options
           });
+          break;
+
+        case "companyServices":
+          await refetchQueries(client, ["fetchCompanyService"]);
           break;
 
         case "domains":

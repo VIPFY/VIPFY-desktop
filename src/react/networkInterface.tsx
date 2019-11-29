@@ -88,13 +88,20 @@ const cache = new InMemoryCache({
         if (
           object.id !== undefined &&
           object.unitid !== undefined &&
-          object.unitid && object.unitid.id !== undefined
+          object.unitid &&
+          object.unitid.id !== undefined
         ) {
           return `Licence:${object.id}:${object.unitid ? object.unitid.id : "null"}`;
         } else {
           return null;
         }
       case "LicenceAssignment":
+        if (object.assignmentid !== undefined) {
+          return `LicenceAssignment:${object.assignmentid}`;
+        } else {
+          return null;
+        }
+      case "TerminateAssignment":
         if (object.assignmentid !== undefined) {
           return `LicenceAssignment:${object.assignmentid}`;
         } else {

@@ -1,17 +1,55 @@
 import * as React from "react";
-import PrintServiceSquare from "./universal/squares/printServiceSquare";
-import ColumnTeams from "./universal/columns/columnTeams";
 import ColumnEmployees from "./universal/columns/columnEmployee";
 import moment, { now } from "moment";
+import ChangeAccount from "./universal/changeAccount";
 
 interface Props {
   account: any;
+  orbit: any;
+  app: any;
 }
 
-interface State {}
+interface State {
+  change: Boolean;
+  changeda: Boolean;
+  changede: Boolean;
+  changedp: Boolean;
+  changedt: Boolean;
+  editto: Boolean;
+  alias: String;
+  email: String | null;
+  password: String;
+  todate: Date | null;
+  saving: Boolean;
+  saved: Boolean;
+  error: String | null;
+  showall: Boolean;
+}
+
+const INITAL_STATE = {
+  change: false,
+  changeda: false,
+  changede: false,
+  changedp: false,
+  changedt: false,
+  editto: false,
+  password: "",
+  saving: false,
+  saved: false,
+  error: null,
+  showall: false
+};
 
 class AccountRow extends React.Component<Props, State> {
-  state = {};
+  state = {
+    ...INITAL_STATE,
+    alias: this.props.account.alias,
+    todate:
+      this.props.account.endtime != 8640000000000000 && this.props.account.endtime != null
+        ? moment(this.props.account.endtime - 0).toDate()
+        : null,
+    email: this.props.account.key ? this.props.account.key.email : ""
+  };
 
   showStatus(e) {
     const end = e.endtime == 8640000000000000 ? null : e.endtime;
@@ -70,7 +108,7 @@ class AccountRow extends React.Component<Props, State> {
 
   render() {
     const account = this.props.account;
-    console.log("Account", account);
+    console.log("Account", account, this.state, this.props);
     return (
       <div className="tableRow noHover">
         <div className="tableMain">
@@ -112,10 +150,21 @@ class AccountRow extends React.Component<Props, State> {
         </div>
         <div className="tableEnd">
           <div className="editOptions">
-            <i className="fal fa-trash-alt editbuttons" title="Terminate account" />
-            <i className="fal fa-pen editbuttons" title="Edit account settings" />
+            <i
+              className="fal fa-pen editbuttons"
+              title="Edit account settings"
+              onClick={() => this.setState({ change: true })}
+            />
           </div>
         </div>
+        {this.state.change && (
+          <ChangeAccount
+            account={account}
+            orbit={this.props.orbit}
+            app={this.props.app}
+            closeChange={() => this.setState({ change: false })}
+          />
+        )}
       </div>
     );
   }

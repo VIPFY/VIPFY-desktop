@@ -86,7 +86,7 @@ class UniversalDropDownInput extends React.Component<Props, State> {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.startvalue != this.props.startvalue) {
+    if (prevProps.startvalue != this.props.startvalue || prevProps.id != this.props.id) {
       this.setState({
         code: this.props.startvalue || "",
         value: this.props.options

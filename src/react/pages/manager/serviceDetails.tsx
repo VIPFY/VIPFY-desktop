@@ -8,6 +8,8 @@ import { fetchCompanyService } from "../../queries/products";
 import ServiceGeneralData from "../../components/manager/serviceGeneralData";
 import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 import OrbitSection from "../../components/manager/orbitSection";
+import UniversalButton from "../../components/universalButtons/universalButton";
+import PopupBase from "../../popups/universalPopups/popupBase";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -29,12 +31,14 @@ interface Props {
 interface State {
   loading: boolean;
   search: string;
+  create: boolean;
 }
 
 class ServiceDetails extends React.Component<Props, State> {
   state = {
     loading: false,
-    search: ""
+    search: "",
+    create: false
   };
 
   uploadPic = async (picture: File) => {
@@ -140,6 +144,27 @@ class ServiceDetails extends React.Component<Props, State> {
               {service.orbitids.map(orbit => (
                 <OrbitSection orbit={orbit} app={service.app} />
               ))}
+              <div className="section">
+                <div className="heading">
+                  <h1>
+                    <UniversalButton
+                      type="high"
+                      label="Create Orbit"
+                      onClick={() => this.setState({ create: true })}
+                    />
+                  </h1>
+                </div>
+              </div>
+              {this.state.create && (
+                <PopupBase
+                  small={true}
+                  nooutsideclose={true}
+                  close={() => this.setState({ create: false })}
+                  additionalclassName="assignNewAccountPopup"
+                  buttonStyles={{ justifyContent: "space-between" }}>
+                  <h1>Create Orbit</h1>
+                </PopupBase>
+              )}
               {/*<ServiceTeamsSection
                 service={service}
                 teams={data.fetchCompanyService.teams}

@@ -145,7 +145,7 @@ export const fetchCompanyServices = gql`
           id
           alias
           assignments {
-            id
+            assignmentid
             unitid {
               id
               firstname
