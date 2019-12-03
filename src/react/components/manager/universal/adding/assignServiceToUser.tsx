@@ -9,7 +9,6 @@ import { Query } from "react-apollo";
 import { fetchApps } from "../../../../queries/products";
 
 interface Props {
-  employee: any;
   continue: Function;
 }
 
@@ -49,6 +48,7 @@ class AssignServiceToUser extends React.Component<Props, State> {
             // namen müssen gleich sein
             return 0;
           });
+          console.log("APPS", apps);
           return (
             <>
               <div

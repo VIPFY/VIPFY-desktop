@@ -4,7 +4,7 @@ import UniversalButton from "../../../../components/universalButtons/universalBu
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
-import { fetchPlans } from "../../../../queries/products";
+import { fetchPlans, fetchCompanyService } from "../../../../queries/products";
 
 interface Props {
   service: any;
@@ -142,6 +142,12 @@ class CreateOrbit extends React.Component<Props, State> {
                             query: fetchPlans,
                             variables: {
                               appid: this.props.service.id
+                            }
+                          },
+                          {
+                            query: fetchCompanyService,
+                            variables: {
+                              serviceid: this.props.service.id
                             }
                           }
                         ]

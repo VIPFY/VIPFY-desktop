@@ -8,6 +8,8 @@ import Calendar from "react-calendar";
 import { withApollo, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import ChangeAccount from "./universal/changeAccount";
+import ShowAndAddEmployee from "./universal/showAndAddEmployee";
+import ShowAndDeleteEmployee from "./universal/showAndDeleteEmployee";
 
 interface Props {
   orbit: any;
@@ -28,6 +30,7 @@ interface State {
   changedl: Boolean;
   changedt: Boolean;
   newaccount: Boolean;
+  addUsers: any;
 }
 
 const CHANGE_ORBIT = gql`
@@ -58,7 +61,8 @@ const INITAL_STATE = {
   changeda: false,
   changedl: false,
   changedt: false,
-  newaccount: false
+  newaccount: false,
+  addUsers: null
 };
 
 class OrbitSection extends React.Component<Props, State> {
@@ -109,6 +113,7 @@ class OrbitSection extends React.Component<Props, State> {
 
   render() {
     const orbit = this.props.orbit;
+    console.log("ACCOUNTS", orbit.accounts);
     return (
       <div className="section">
         <div className="heading">
@@ -149,9 +154,11 @@ class OrbitSection extends React.Component<Props, State> {
             </div>
             <div className="tableEnd"></div>
           </div>
-          {orbit.accounts.map(account => (
-            <AccountRow account={account} orbit={orbit} app={this.props.app} />
-          ))}
+          {orbit.accounts &&
+            orbit.accounts[0] != null &&
+            orbit.accounts.map(account => (
+              <AccountRow account={account} orbit={orbit} app={this.props.app} />
+            ))}
           <div className="tableRow noHover">
             <div className="tableMain">
               <div className="tableColumnBig" style={{ alignItems: "center", display: "flex" }}>
@@ -181,8 +188,57 @@ class OrbitSection extends React.Component<Props, State> {
             newaccount={true}
             orbit={orbit}
             app={this.props.app}
-            closeChange={() => this.setState({ newaccount: false })}
+            closeChange={backelement => {
+              if (backelement) {
+                console.log("BACK", backelement);
+                this.setState({ newaccount: false, addUsers: backelement });
+              } else {
+                this.setState({ newaccount: false });
+              }
+            }}
           />
+        )}
+        {this.state.addUsers && (
+          <PopupBase
+            small={true}
+            nooutsideclose={true}
+            close={() => this.setState(INITAL_STATE)}
+            additionalclassName="assignNewAccountPopup"
+            buttonStyles={{ justifyContent: "space-between" }}>
+            <h1>Select User for Account</h1>
+            {orbit.accounts.find(a => a.id == this.state.addUsers!.id).assignments &&
+              orbit.accounts
+                .find(a => a.id == this.state.addUsers!.id)
+                .assignments.map(
+                  assignment =>
+                    assignment &&
+                    assignment.endtime > moment.now() && (
+                      <ShowAndDeleteEmployee
+                        employee={{
+                          ...assignment.unitid,
+                          endtime: assignment.endtime,
+                          starttime: assignment.starttime,
+                          assignmentid: assignment.assignmentid
+                        }}
+                      />
+                    )
+                )}
+
+            <ShowAndAddEmployee
+              account={orbit.accounts.find(a => a.id == this.state.addUsers!.id)}
+            />
+
+            <UniversalButton
+              type="low"
+              label="Cancel"
+              onClick={() => this.setState(INITAL_STATE)}
+            />
+            <UniversalButton
+              type="high"
+              label="Close"
+              onClick={() => this.setState(INITAL_STATE)}
+            />
+          </PopupBase>
         )}
         {this.state.change && (
           <PopupBase
@@ -200,7 +256,7 @@ class OrbitSection extends React.Component<Props, State> {
                   width="100%"
                   startvalue={this.state.alias}
                   livevalue={v => {
-                    if (v != this.state.alias) {
+                    if (v != this.state.alias && v != "") {
                       this.setState({ alias: v, changeda: true });
                     } else {
                       this.setState({ alias: v, changeda: false });
@@ -225,7 +281,7 @@ class OrbitSection extends React.Component<Props, State> {
                     id="orbitsubdomain"
                     startvalue={this.state.loginurl}
                     livevalue={v => {
-                      if (v != this.state.loginurl) {
+                      if (v != this.state.loginurl && v != "") {
                         this.setState({ loginurl: v, changedl: true });
                       } else {
                         this.setState({ loginurl: v, changedl: false });

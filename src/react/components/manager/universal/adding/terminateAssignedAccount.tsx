@@ -35,7 +35,10 @@ interface State {
 
 const TERMINATE_ASSIGN_ACCOUNT = gql`
   mutation terminateAssignAccount($assignmentid: ID!, $endtime: Date) {
-    terminateAssignAccount(assignmentid: $assignmentid, endtime: $endtime)
+    terminateAssignAccount(assignmentid: $assignmentid, endtime: $endtime) {
+      assignmentid
+      endtime
+    }
   }
 `;
 
@@ -57,6 +60,7 @@ class TerminateAssignedAccount extends React.Component<Props, State> {
   }
 
   render() {
+    console.log("TERMINATE", this.props, this.state);
     return (
       <PopupBase
         small={true}
@@ -153,7 +157,7 @@ class TerminateAssignedAccount extends React.Component<Props, State> {
           }}>
           <span style={{ lineHeight: "24px", width: "84px" }}>Terminate:</span>
           <span style={{ lineHeight: "24px" }}>
-            {this.state.todate != 8640000000000000
+            {this.state.todate && this.state.todate != 8640000000000000
               ? moment(this.state.todate!).format("DD.MM.YYYY")
               : "Now"}
           </span>
@@ -169,16 +173,23 @@ class TerminateAssignedAccount extends React.Component<Props, State> {
               <Calendar
                 className="calendarEdit"
                 locale="en-us"
-                minDate={this.state.fromdate || new Date()}
+                minDate={moment.max(moment(this.state.fromdate), moment(new Date())).toDate()}
                 showWeekNumbers={true}
                 onChange={v =>
                   this.setState(oldstate => {
-                    return moment(oldstate.todate || new Date()).isSame(v)
+                    console.log("COMPARE", oldstate.todate, v);
+                    return oldstate.todate && moment(oldstate.todate).isSame(v)
                       ? { todate: null }
                       : { todate: v };
                   })
                 }
-                value={this.state.todate != 8640000000000000 ? this.state.todate : new Date()}
+                value={
+                  this.state.todate
+                    ? this.state.todate != 8640000000000000
+                      ? moment(this.state.todate).toDate()
+                      : new Date()
+                    : undefined
+                }
               />
               <UniversalButton type="low" label="Cancel" closingPopup={true} />
               <UniversalButton

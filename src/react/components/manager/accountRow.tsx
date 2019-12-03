@@ -43,7 +43,7 @@ const INITAL_STATE = {
 class AccountRow extends React.Component<Props, State> {
   state = {
     ...INITAL_STATE,
-    alias: this.props.account.alias,
+    alias: this.props.account ? this.props.account.alias : "",
     todate:
       this.props.account.endtime != 8640000000000000 && this.props.account.endtime != null
         ? moment(this.props.account.endtime - 0).toDate()
@@ -58,7 +58,7 @@ class AccountRow extends React.Component<Props, State> {
     //No activeAssignment
     const activeAssignment = [];
     e.assignments.forEach(element => {
-      if (element.endtime > now()) {
+      if (element && element.endtime > now()) {
         activeAssignment.push(element);
       }
     });
@@ -108,7 +108,6 @@ class AccountRow extends React.Component<Props, State> {
 
   render() {
     const account = this.props.account;
-    console.log("Account", account, this.state, this.props);
     return (
       <div className="tableRow noHover">
         <div className="tableMain">
@@ -126,7 +125,7 @@ class AccountRow extends React.Component<Props, State> {
             employeeidFunction={e => {
               return { ...e.unitid, endtime: e.endtime };
             }}
-            checkFunction={e => e.endtime > moment.now()}
+            checkFunction={e => e && e.endtime > moment.now()}
             overlayFunction={e => {
               if (e.endtime != 8640000000000000) {
                 return (
@@ -162,7 +161,7 @@ class AccountRow extends React.Component<Props, State> {
             account={account}
             orbit={this.props.orbit}
             app={this.props.app}
-            closeChange={() => this.setState({ change: false })}
+            closeChange={b => this.setState({ change: false })}
           />
         )}
       </div>

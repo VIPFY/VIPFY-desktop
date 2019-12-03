@@ -9,7 +9,7 @@ import ServiceGeneralData from "../../components/manager/serviceGeneralData";
 import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 import OrbitSection from "../../components/manager/orbitSection";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import PopupBase from "../../popups/universalPopups/popupBase";
+import CreateOrbit from "../../components/manager/universal/adding/orbit";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -89,6 +89,7 @@ class ServiceDetails extends React.Component<Props, State> {
                 accounts.push(account);
                 account.assignments.forEach(checkunit => {
                   if (
+                    checkunit &&
                     !singleAccounts.find(
                       s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
                     )
@@ -156,14 +157,7 @@ class ServiceDetails extends React.Component<Props, State> {
                 </div>
               </div>
               {this.state.create && (
-                <PopupBase
-                  small={true}
-                  nooutsideclose={true}
-                  close={() => this.setState({ create: false })}
-                  additionalclassName="assignNewAccountPopup"
-                  buttonStyles={{ justifyContent: "space-between" }}>
-                  <h1>Create Orbit</h1>
-                </PopupBase>
+                <CreateOrbit service={service.app} close={() => this.setState({ create: false })} />
               )}
               {/*<ServiceTeamsSection
                 service={service}

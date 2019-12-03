@@ -140,6 +140,35 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                   fewResults={true}
                 />
               </div>
+              {this.state.showall && (
+                <PopupBase
+                  nooutsideclose={true}
+                  small={true}
+                  close={() => this.setState({ showall: false })}
+                  buttonStyles={{ justifyContent: "space-between" }}>
+                  <h1>All Employees</h1>
+                  {employees.map(employee => (
+                    <div className="listingDiv" key={employee.id}>
+                      <UniversalButton
+                        type="low"
+                        label={concatName(employee)}
+                        onClick={() => {
+                          this.setState({ showall: false });
+                          this.setState({ user: employee.id });
+                        }}
+                      />
+                    </div>
+                  ))}
+                  <div className="listingDiv" key="new">
+                    <UniversalButton
+                      type="low"
+                      label="Create new User"
+                      onClick={() => this.setState({ showall: false })}
+                    />
+                  </div>
+                  <UniversalButton type="low" label="Cancel" closingPopup={true} />
+                </PopupBase>
+              )}
               {this.state.user && (
                 <PopupBase
                   small={true}
@@ -262,35 +291,6 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                           label="Select"
                           onClick={() => this.setState({ editto: false })}
                         />
-                      </PopupBase>
-                    )}
-                    {this.state.showall && (
-                      <PopupBase
-                        nooutsideclose={true}
-                        small={true}
-                        close={() => this.setState({ showall: false })}
-                        buttonStyles={{ justifyContent: "space-between" }}>
-                        <h1>All Employees</h1>
-                        {employees.map(employee => (
-                          <div className="listingDiv" key={employee.id}>
-                            <UniversalButton
-                              type="low"
-                              label={concatName(employee)}
-                              onClick={() => {
-                                this.setState({ showall: false });
-                                this.setState({ user: employee.id });
-                              }}
-                            />
-                          </div>
-                        ))}
-                        <div className="listingDiv" key="new">
-                          <UniversalButton
-                            type="low"
-                            label="Create new User"
-                            onClick={() => this.setState({ showall: false })}
-                          />
-                        </div>
-                        <UniversalButton type="low" label="Cancel" closingPopup={true} />
                       </PopupBase>
                     )}
                   </div>

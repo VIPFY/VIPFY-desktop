@@ -370,7 +370,6 @@ class PersonalDetails extends React.Component<Props, State> {
         return emailforms;
 
       case "workphones":
-        console.log("WORKPHONES", this.state, this.props.querydata.workPhones);
         const phoneforms: JSX.Element[] = [];
         let newphone = false;
         if (
@@ -453,7 +452,6 @@ class PersonalDetails extends React.Component<Props, State> {
         return phoneforms;
 
       case "privatephones":
-        console.log("PRIVATEPHONES", this.state, this.props.querydata.workPhones);
         const privatephoneforms: JSX.Element[] = [];
         let privatenewphone = false;
         if (
@@ -538,12 +536,11 @@ class PersonalDetails extends React.Component<Props, State> {
         return privatephoneforms;
 
       case "vacation":
-        console.log("Vacation", this.state, this.props.querydata.vacation);
         const vacationforms: JSX.Element[] = [];
         let newvacation = false;
         if (
           Math.max(
-            this.props.querydata.vacation.filter(e => e != null).length,
+            this.props.querydata.vacation.filter(e => e != null && e != {}).length,
             this.state.editvalueArray.length
           ) > 0
         ) {
@@ -578,7 +575,7 @@ class PersonalDetails extends React.Component<Props, State> {
               onClick={() =>
                 this.setState(({ editvalueArray }) => {
                   editvalueArray[
-                    Math.max(editvalueArray.length, this.props.querydata.vacation.length)
+                    Math.max(editvalueArray.length, this.props.querydata.vacation.length) - 1
                   ] = {
                     from: null,
                     to: null,
@@ -610,7 +607,6 @@ class PersonalDetails extends React.Component<Props, State> {
 
   render() {
     const querydata = this.props.querydata;
-    console.log("QUERY", querydata);
     return (
       <React.Fragment>
         <div className="tableColumnSmall content twoline">

@@ -581,8 +581,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
       });
     }
 
-    console.log("LICENCES", this.props.licences, filteredLicences);
-
     return (
       <AppContext.Consumer>
         {context => (
@@ -663,7 +661,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 </span>
               </button>
             </li>
-            {console.log(this.props.data)}
             {this.state.showNotification && (
               <Notification
                 //sidebar={"1"}

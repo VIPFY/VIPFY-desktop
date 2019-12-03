@@ -277,10 +277,7 @@ class AssignNewAccount extends React.Component<Props, State> {
             )}
           </>
         ) : (
-          <AssignServiceToUser
-            employee={this.props.employee}
-            continue={s => this.setState({ service: s })}
-          />
+          <AssignServiceToUser continue={s => this.setState({ service: s })} />
         )}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
           <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />

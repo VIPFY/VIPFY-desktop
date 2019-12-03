@@ -8,6 +8,8 @@ import ShowAndDeleteEmployee from "./showAndDeleteEmployee";
 import ShowAndAddEmployee from "./showAndAddEmployee";
 import gql from "graphql-tag";
 import { compose, graphql, withApollo } from "react-apollo";
+import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../queries/billing";
+import { fetchCompanyService } from "../../../queries/products";
 
 interface Props {
   account: any;
@@ -16,6 +18,7 @@ interface Props {
   closeChange: Function;
   newaccount: boolean;
   changeAccount: Function;
+  createAccount: Function;
 }
 
 interface State {
@@ -33,6 +36,8 @@ interface State {
   saved: Boolean;
   error: String | null;
   showall: Boolean;
+  fromdate: Date | null;
+  editfrom: Boolean;
 }
 
 const INITAL_STATE = {
@@ -46,7 +51,9 @@ const INITAL_STATE = {
   saving: false,
   saved: false,
   error: null,
-  showall: false
+  showall: false,
+  editfrom: false,
+  fromdate: null
 };
 
 const CHANGE_ACCOUNT = gql`
@@ -57,6 +64,40 @@ const CHANGE_ACCOUNT = gql`
       endtime
       assignments {
         assignmentid
+        endtime
+      }
+    }
+  }
+`;
+
+const CREATE_ACCOUNT = gql`
+  mutation createAccount(
+    $orbitid: ID!
+    $alias: String
+    $logindata: JSON!
+    $starttime: Date
+    $endtime: Date
+  ) {
+    createAccount(
+      orbitid: $orbitid
+      alias: $alias
+      logindata: $logindata
+      starttime: $starttime
+      endtime: $endtime
+    ) {
+      id
+      alias
+      starttime
+      endtime
+      assignments {
+        assignmentid
+        unitid {
+          id
+          firstname
+          lastname
+          profilepicture
+        }
+        starttime
         endtime
       }
     }
@@ -186,21 +227,65 @@ class ChangeAccount extends React.Component<Props, State> {
               />
             </span>
           </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "24px",
-              marginTop: "28px",
-              position: "relative"
-            }}>
-            <span style={{ lineHeight: "24px", width: "84px" }}>From:</span>
-            <span style={{ lineHeight: "24px" }}>
-              {!newaccount && account.starttime
-                ? moment(account.starttime!).format("DD.MM.YYYY")
-                : "Now"}
-            </span>
-          </div>
+          {newaccount ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "24px",
+                marginTop: "28px",
+                position: "relative"
+              }}>
+              <span style={{ lineHeight: "24px", width: "84px" }}>From:</span>
+              <span style={{ lineHeight: "24px" }}>
+                {this.state.fromdate ? moment(this.state.fromdate!).format("DD.MM.YYYY") : "Now"}
+              </span>
+              <i
+                className="fal fa-pen editbutton"
+                onClick={() => this.setState({ editfrom: true })}
+              />
+              {this.state.editfrom && (
+                <PopupBase
+                  styles={{ maxWidth: "fit-content" }}
+                  close={() => this.setState({ editfrom: false, fromdate: null })}
+                  buttonStyles={{ justifyContent: "space-between" }}>
+                  <span style={{ fontSize: "18px", marginBottom: "8px", display: "block" }}>
+                    Select Startdate
+                  </span>
+                  <Calendar
+                    className="calendarEdit"
+                    locale="en-us"
+                    minDate={new Date()}
+                    showWeekNumbers={true}
+                    onChange={v => this.setState({ fromdate: v })}
+                    value={this.state.fromdate || new Date()}
+                  />
+                  <UniversalButton type="low" label="Cancel" closingPopup={true} />
+                  <UniversalButton
+                    type="high"
+                    label="Select"
+                    onClick={() => this.setState({ editfrom: false })}
+                  />
+                </PopupBase>
+              )}
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "24px",
+                marginTop: "28px",
+                position: "relative"
+              }}>
+              <span style={{ lineHeight: "24px", width: "84px" }}>From:</span>
+              <span style={{ lineHeight: "24px" }}>
+                {!newaccount && account.starttime
+                  ? moment(account.starttime!).format("DD.MM.YYYY")
+                  : "Now"}
+              </span>
+            </div>
+          )}
           <div
             style={{
               display: "flex",
@@ -270,6 +355,7 @@ class ChangeAccount extends React.Component<Props, State> {
             <h2 style={{ paddingTop: "24px", paddingBottom: "24px" }}>Singe Users</h2>
             {account.assignments.map(
               assignment =>
+                assignment &&
                 assignment.endtime > moment.now() && (
                   <ShowAndDeleteEmployee
                     employee={{
@@ -291,7 +377,6 @@ class ChangeAccount extends React.Component<Props, State> {
             type="low"
             label="Cancel"
             onClick={() => {
-              console.log("CLICKED");
               this.setState(INITAL_STATE);
               this.props.closeChange();
             }}
@@ -315,34 +400,67 @@ class ChangeAccount extends React.Component<Props, State> {
                   !(this.state.changede && this.state.changedp)
             }
             onClick={async () => {
-              if (
-                this.state.changeda ||
-                this.state.changede ||
-                this.state.changedp ||
-                this.state.changedt
-              ) {
+              if (newaccount) {
                 this.setState({ saving: true });
                 try {
-                  await this.props.changeAccount({
+                  const newAccountData = await this.props.createAccount({
                     variables: {
-                      accountid: account.id,
+                      orbitid: this.props.orbit.id,
                       alias: this.state.alias,
-                      logindata: { username: this.state.email, password: this.state.password },
-                      endtime: this.state.todate || null,
-                      isNull: !!(this.state.todate == null)
-                    }
+                      logindata: {
+                        username: this.state.email,
+                        password: this.state.password
+                      },
+                      starttime: this.state.fromdate || undefined,
+                      endtime: this.state.todate || null
+                    },
+                    refetchQueries: [
+                      {
+                        query: fetchCompanyService,
+                        variables: {
+                          serviceid: this.props.app.id
+                        }
+                      }
+                    ]
                   });
                   this.setState({ saved: true });
                   setTimeout(() => {
                     this.setState(INITAL_STATE);
-                    this.props.closeChange();
+                    this.props.closeChange(newAccountData.data.createAccount);
                   }, 1000);
                 } catch (err) {
                   this.setState({ error: err });
                 }
               } else {
-                this.setState(INITAL_STATE);
-                this.props.closeChange();
+                if (
+                  this.state.changeda ||
+                  this.state.changede ||
+                  this.state.changedp ||
+                  this.state.changedt
+                ) {
+                  this.setState({ saving: true });
+                  try {
+                    await this.props.changeAccount({
+                      variables: {
+                        accountid: account.id,
+                        alias: this.state.alias,
+                        logindata: { username: this.state.email, password: this.state.password },
+                        endtime: this.state.todate || null,
+                        isNull: !!(this.state.todate == null)
+                      }
+                    });
+                    this.setState({ saved: true });
+                    setTimeout(() => {
+                      this.setState(INITAL_STATE);
+                      this.props.closeChange();
+                    }, 1000);
+                  } catch (err) {
+                    this.setState({ error: err });
+                  }
+                } else {
+                  this.setState(INITAL_STATE);
+                  this.props.closeChange();
+                }
               }
             }}
           />
@@ -389,6 +507,9 @@ class ChangeAccount extends React.Component<Props, State> {
     );
   }
 }
-export default compose(graphql(CHANGE_ACCOUNT, { name: "changeAccount" }))(
-  withApollo(ChangeAccount)
-);
+export default compose(
+  graphql(CHANGE_ACCOUNT, { name: "changeAccount" }),
+  graphql(CREATE_ACCOUNT, {
+    name: "createAccount"
+  })
+)(withApollo(ChangeAccount));

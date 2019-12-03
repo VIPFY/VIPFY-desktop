@@ -13,6 +13,7 @@ import ColumnEmployees from "../../components/manager/universal/columns/columnEm
 import ManageServiceTeams from "../../components/manager/universal/managing/serviceteams";
 import ManageServiceEmployees from "../../components/manager/universal/managing/serviceemployees";
 import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
+import AssignServiceToUser from "../../components/manager/universal/adding/assignServiceToUser";
 
 interface Props {
   moveTo: Function;
@@ -213,7 +214,6 @@ class ServiceOverview extends React.Component<Props, State> {
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
-      console.log("Service", service);
       const teams = [];
       const accounts = [];
       const singleAccounts = [];
@@ -232,6 +232,7 @@ class ServiceOverview extends React.Component<Props, State> {
             accounts.push(account);
             account.assignments.forEach(checkunit => {
               if (
+                checkunit &&
                 !singleAccounts.find(s => s && s && checkunit.unitid && s.id == checkunit.unitid.id)
               ) {
                 singleAccounts.push(checkunit.unitid);
@@ -635,7 +636,26 @@ class ServiceOverview extends React.Component<Props, State> {
                     </div>
                     {services.length > 0 && this.printServices(services)}
                   </div>
-                  {this.state.add && this.addProcess(refetch)}
+                  {this.state.add && (
+                    <PopupBase
+                      small={true}
+                      nooutsideclose={true}
+                      close={() => this.setState({ add: false })}
+                      additionalclassName="assignNewAccountPopup"
+                      buttonStyles={{ justifyContent: "space-between" }}>
+                      <h1>Choose Service</h1>
+                      <AssignServiceToUser
+                        continue={app => app && this.props.moveTo(`lmanager/${app.id}`)}
+                      />
+                      <UniversalButton
+                        type="low"
+                        label="Cancel"
+                        onClick={() => this.setState({ add: false })}
+                      />
+                    </PopupBase>
+                  )
+                  /*this.addProcess(refetch)*/
+                  }
                 </>
               );
             }}

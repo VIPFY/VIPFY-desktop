@@ -24,6 +24,9 @@ interface Props {
   noresultsClick?: Function;
   fewResults?: Boolean;
   nameFunction?: Function;
+  styles?: Object;
+  noNoResults?: Boolean;
+  noFixed?: Boolean;
 }
 
 interface State {
@@ -175,8 +178,6 @@ class UniversalDropDownInput extends React.Component<Props, State> {
     let results: JSX.Element[] = [];
     if (this.state.value != "") {
       for (let i = 0; i < possibleValues.length; i++) {
-        //console.log("TESTING", this.nameFunction(possibleValues[i]));
-        //console.log("TESTING2", this.state.value);
         if (
           numresults < 5 &&
           //possibleValues[i].name.toLowerCase().includes(this.state.value.toLowerCase()) &&
@@ -218,7 +219,7 @@ class UniversalDropDownInput extends React.Component<Props, State> {
           break;
         }
       }
-      if (numresults < 5) {
+      if (numresults < 5 && !this.props.noNoResults) {
         results.push(
           <div
             className="searchResult"
@@ -234,7 +235,11 @@ class UniversalDropDownInput extends React.Component<Props, State> {
           {/*<div style={{ width: "355px", height: "10px", position: "relative" }} />*/}
           <div
             className="resultHolder"
-            style={{ marginTop: "10px", position: "fixed", width: this.props.width || "400px" }}>
+            style={
+              this.props.noFixed
+                ? { marginTop: "10px", width: this.props.width || "400px" }
+                : { marginTop: "10px", position: "fixed", width: this.props.width || "400px" }
+            }>
             {numresults == 0 ? (
               <div
                 className="searchResult"
@@ -278,7 +283,11 @@ class UniversalDropDownInput extends React.Component<Props, State> {
     return (
       <div
         className="universalLabelInput"
-        style={this.props.width ? { width: this.props.width } : {}}>
+        style={Object.assign(
+          {},
+          this.props.width ? { width: this.props.width } : {},
+          this.props.styles || {}
+        )}>
         <input
           id={this.props.id}
           type={
