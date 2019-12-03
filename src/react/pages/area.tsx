@@ -53,6 +53,7 @@ import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
 import CryptoDebug from "../components/admin/crytpodebug";
+import AppSupport from "../components/support/AppSupport";
 
 interface AreaProps {
   history: any[];
@@ -374,7 +375,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan },
-      //{ path: "support", component: SupportPage },
+      { path: "support", component: SupportPage },
+      { path: "support/app", component: AppSupport },
       { path: "error", component: ErrorPage },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
