@@ -1,31 +1,42 @@
 import * as React from "react";
-import { Query, Subscription } from "react-apollo";
-import gql from "graphql-tag";
-import LoadingDiv from "../components/LoadingDiv";
-import { shell } from "electron";
+import { Mutation, Query } from "react-apollo";
 import Collapsible from "../common/Collapsible";
 import UniversalSearchBox from "../components/universalSearchBox";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
 import UniversalButton from "../components/universalButtons/universalButton";
+import UniversalDropDownInput from "../components/universalForms/universalDropdownInput";
+import gql from "graphql-tag";
+import { ErrorComp } from "../common/functions";
+import UniversalTextArea from "../components/universalForms/UniversalTextArea";
+import LoadingDiv from "../components/LoadingDiv";
+
+const SEND_REQUEST = gql`
+  mutation onSendSupportRequest($topic: String!, $description: String!, $component: String) {
+    sendSupportRequest(topic: $topic, description: $description, component: $component)
+  }
+`;
+
+const GET_REQUESTS = gql`
+  {
+    fetchSupportRequests
+  }
+`;
 
 interface Props {
   chatOpen: boolean;
   sidebarOpen: boolean;
   fromErrorPage?: boolean;
   moveTo: Function;
+  isadmin: boolean;
 }
-
-const FETCH_SUPPORT_TOKEN = gql`
-  query {
-    fetchSupportToken
-  }
-`;
 
 export default (props: Props) => {
   const [search, setSearch] = React.useState("");
-  const [showForm, setShowForm] = React.useState(true);
+  const [showForm, setShowForm] = React.useState("");
   const [topic, setTopic] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const [component, setComponent] = React.useState("");
+  const [success, showSuccess] = React.useState(false);
 
   let cssClass = "marginLeft";
   if (props.chatOpen) {
@@ -38,21 +49,34 @@ export default (props: Props) => {
   const items = [
     {
       header: "External App Help",
-      body: "If you need help with an App integrated into VIPFY"
+      body: "If you need help with an App integrated into VIPFY",
+      form: "app"
     },
     {
       header: "VIPFY App Help",
-      body: "If you need help with the functionality of VIPFY"
+      body: "If you need help with the functionality of VIPFY",
+      form: "vipfy"
     }
   ];
 
-  const handleSubmit = async () => {
-    try {
-      console.log(topic, description);
-    } catch (error) {
-      console.error("LOG: handleSubmit -> error", error);
-    }
-  };
+  let options = [
+    { id: "dashboard", name: "Dashboard" },
+    { id: "accountIntegrator", name: "Account Integrator" },
+    { id: "notifications", name: "Notifications" },
+    { id: "profile", name: "Profile" }
+  ];
+
+  if (props.isadmin) {
+    options = [
+      ...options,
+      { id: "billing", name: "Billing" },
+      { id: "security", name: "Security" },
+      { id: "usageStatistics", name: "Usage Statistics" },
+      { id: "teamManager", name: "Team Manager" },
+      { id: "employeeManager", name: "Employee Manager" },
+      { id: "serviceManager", name: "Service Manager" }
+    ];
+  }
 
   return (
     <section className={`support ${cssClass}`}>
@@ -62,129 +86,146 @@ export default (props: Props) => {
       </div>
 
       <Collapsible title="Support Forms">
-        <Query query={FETCH_SUPPORT_TOKEN} fetchPolicy="network-only">
-          {({ loading, error, data }) => {
-            if (loading) {
-              return <LoadingDiv />;
-            }
+        <div className="support-form-wrapper">
+          <div className="support-options">
+            <h2>What can we help you with?</h2>
+            <ul>
+              {items.map(item => (
+                <li
+                  key={item.header}
+                  role="button"
+                  onClick={() => {
+                    setShowForm(item.form);
+                    showSuccess(false);
+                  }}>
+                  <div className="support-list-item">
+                    <i className="fal fa-desktop" />
+                    <h3>{item.header}</h3>
+                    <div>{item.body}</div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            if (error || !data) {
-              return (
-                <div>
-                  There was an internal error, please go to our external support support page under{" "}
-                  <span
-                    className="fancy-link"
-                    style={{ color: "#20baa9" }}
-                    onClick={() =>
-                      shell.openExternal(
-                        "https://vipfy-marketplace.atlassian.net/servicedesk/customer/portal/1"
-                      )
-                    }>
-                    https://vipfy-marketplace.atlassian.net/servicedesk/customer/portal/1
-                  </span>
-                </div>
-              );
-            }
+          {success && (
+            <h3 className="support-success">
+              Thanks for submitting your request. A member of our Support Team will answer you soon.
+            </h3>
+          )}
 
-            return (
-              <div className="support-form-wrapper">
-                <div className="support-options">
-                  <h2>What can we help you with?</h2>
-                  <ul>
-                    {items.map(item => (
-                      <li
-                        key={item.header}
-                        role="button"
-                        onClick={() => props.moveTo(`support/${item.link}`)}>
-                        <div className="support-list-item">
-                          <i className="fal fa-desktop" />
-                          <h3>{item.header}</h3>
-                          <div>{item.body}</div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                {showForm && (
+          {showForm && (
+            <Mutation
+              mutation={SEND_REQUEST}
+              onCompleted={() => {
+                setShowForm("");
+                showSuccess(true);
+                setDescription("");
+                setTopic("");
+                setComponent("");
+              }}>
+              {(sendRequest, { loading, error }) => {
+                const handleSubmit = async () => {
+                  const variables: { topic: string; description: string; component?: string } = {
+                    topic,
+                    description
+                  };
+
+                  if (showForm == "vipfy") {
+                    variables.component = component;
+                  }
+                  sendRequest({ variables });
+                };
+
+                return (
                   <form className="support-form" onSubmit={handleSubmit}>
                     <h3>Please describe your issue</h3>
-                    <UniversalTextInput
-                      id="topic"
-                      width="500px"
-                      label="Please specify a topic"
-                      livevalue={v => setTopic(v)}
-                    />
 
-                    <div className="textarea-wrapper">
-                      <textarea
-                        id="description"
-                        cols={54}
-                        rows={10}
-                        value={description}
-                        onChange={e => setDescription(e.target.value)}
-                      />
-                      <label htmlFor="description">Please describe your issue with the App</label>
-                    </div>
+                    {loading && <LoadingDiv style={{ maxHeight: "200px" }} />}
 
-                    <div className="button-holder">
-                      <UniversalButton
-                        type="low"
-                        label="cancel"
-                        onClick={() => setShowForm(false)}
+                    <div className={`support-form-fields ${loading ? "support-form-hide" : ""}`}>
+                      <UniversalTextInput
+                        disabled={loading}
+                        id="topic"
+                        width="500px"
+                        label="Please specify a topic"
+                        livevalue={v => setTopic(v)}
                       />
-                      <UniversalButton
-                        disabled={!description || !topic}
-                        type="high"
-                        label="submit"
-                        onClick={handleSubmit}
+
+                      {showForm == "vipfy" && (
+                        <UniversalDropDownInput
+                          id="support-form"
+                          disabled={loading}
+                          options={options}
+                          label="Please specify which part causes the problem"
+                          width="500px"
+                          codeFunction={option => option.id}
+                          nameFunction={option => option.name}
+                          renderOption={(possibleValues, i, click, value) => (
+                            <div
+                              key={`searchResult-${i}`}
+                              className="searchResult"
+                              onClick={() => click(possibleValues[i])}>
+                              <span className="resultHighlight">
+                                {possibleValues[i].name.substring(0, value.length)}
+                              </span>
+                              <span>{possibleValues[i].name.substring(value.length)}</span>
+                            </div>
+                          )}
+                          resetPossible={true}
+                          livecode={id => setComponent(id)}
+                        />
+                      )}
+
+                      <UniversalTextArea
+                        required={true}
+                        disabled={loading}
+                        label="Please describe your issue with the App"
+                        handleChange={value => setDescription(value)}
                       />
+
+                      {error && <ErrorComp error={error} />}
+
+                      <div className="button-holder">
+                        <UniversalButton
+                          disabled={loading}
+                          type="low"
+                          label="cancel"
+                          onClick={() => setShowForm("")}
+                        />
+                        <UniversalButton
+                          disabled={!description || !topic || loading}
+                          type="high"
+                          label="submit"
+                          onClick={handleSubmit}
+                        />
+                      </div>
                     </div>
                   </form>
-                )}
-              </div>
-            );
-          }}
-        </Query>
+                );
+              }}
+            </Mutation>
+          )}
+        </div>
       </Collapsible>
+
+      <Query query={GET_REQUESTS}>
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <LoadingDiv />;
+          }
+
+          if (error || !data) {
+            return <ErrorComp error={error} />;
+          }
+
+          return (
+            <Collapsible title="Support requests">
+              <div>Your requests</div>
+            </Collapsible>
+          );
+        }}
+      </Query>
     </section>
   );
 };
-
-{
-  /* <WebView
-id="support"
-preload="https://jsd-widget.atlassian.com/assets/embed.js"
-webpreferences="webSecurity=no"
-className="newMainPositionFull"
-// src={`https://vipfy.zendesk.com/access/jwt?jwt=${
-//   data.fetchSupportToken
-// }&return_to=https://vipfy.zendesk.com${
-//   props.fromErrorPage ? "/hc/en-us/requests/new" : ""
-// }`}
-src="https://vipfy-marketplace.atlassian.net/servicedesk/customer/portal/1"
-data-jsd-embedded
-data-key="0250f5cb-d74e-43c4-a80f-2a9e2be2c48a"
-// src="https://jsd-widget.atlassian.com"
-partition="services"
-onLoadCommit={e => console.log("LoadCommit", e)}
-onNewWindow={e => console.log("NewWindow", e)}
-onWillNavigate={e => console.log("WillNavigate", e)}
-onDidStartLoading={e => console.log("DidStartLoading", e)}
-onDidStartNavigation={e => console.log("DidStartNavigation", e)}
-onDidFinishLoad={e => console.log("DidFinishLoad", e)}
-onDidStopLoading={e => console.log("DidStopLoading", e)}
-onDomReady={e => {
-  console.log("DomReady", e);
-  //this.maybeHideLoadingScreen();
-  if (!e.target.isDevToolsOpened()) {
-    //e.target.openDevTools();
-  }
-}}
-onDialog={e => console.log("Dialog", e)}
-onIpcMessage={e => {
-  // e.target.send("loginData", {
-  //   token: data.fetchSupportToken
-  // })
-}}
-/> */
-}
