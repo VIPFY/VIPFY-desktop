@@ -474,7 +474,12 @@ class TeamOverview extends React.Component<Props, State> {
                         <div
                           className="tableColumnBig" //onClick={() => this.handleSortClick("Services")}
                         >
-                          <h1>Services</h1>
+                          <h1>Orbits</h1>
+                        </div>
+                        <div
+                          className="tableColumnBig" //onClick={() => this.handleSortClick("Services")}
+                        >
+                          <h1>Shared Accounts</h1>
                         </div>
                       </div>
                       <div className="tableEnd">
@@ -506,6 +511,7 @@ class TeamOverview extends React.Component<Props, State> {
                           id={team.name}
                           className="tableRow"
                           onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
+                          {console.log("TEAM", team)}
                           <div className="tableMain">
                             <div className="tableColumnBig">
                               <PrintTeamSquare team={team} />
@@ -518,6 +524,13 @@ class TeamOverview extends React.Component<Props, State> {
                             />
                             <ColumnServices
                               services={team.services}
+                              checkFunction={element =>
+                                !element.disabled && !element.planid.appid.disabled
+                              }
+                              appidFunction={element => element.planid.appid}
+                            />
+                            <ColumnServices
+                              services={team.licences}
                               checkFunction={element =>
                                 !element.disabled && !element.planid.appid.disabled
                               }

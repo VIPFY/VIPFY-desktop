@@ -7,7 +7,6 @@ import PopupBase from "../../../../popups/universalPopups/popupBase";
 import CreateOrbit from "./orbit";
 
 interface Props {
-  employee: any;
   service: any;
   continue: Function;
 }
@@ -32,8 +31,6 @@ class AssignOrbit extends React.Component<Props, State> {
             return `Error! ${error.message}`;
           }
           let orbits = data.fetchBoughtPlansOfCompany;
-
-          console.log("Orbits", orbits);
 
           orbits.sort(function(a, b) {
             let nameA = a.alias.toUpperCase(); // ignore upper and lowercase

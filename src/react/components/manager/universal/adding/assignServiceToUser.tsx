@@ -48,7 +48,6 @@ class AssignServiceToUser extends React.Component<Props, State> {
             // namen müssen gleich sein
             return 0;
           });
-          console.log("APPS", apps);
           return (
             <>
               <div

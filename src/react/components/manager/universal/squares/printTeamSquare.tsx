@@ -7,6 +7,7 @@ interface Props {
   size?: number;
   title?: string;
   fake?: boolean;
+  styles?: Object;
 }
 
 interface State {}
@@ -35,16 +36,18 @@ class PrintTeamSquare extends React.Component<Props, State> {
         key={team.name}
         title={title || team.name}
         className={this.props.className || "managerSquare"}
-        style={
+        style={Object.assign(
+          { ...(this.props.styles || {}) },
+
           team.profilepicture
             ? {
-                backgroundImage: getBgImageTeam(team.profilepicture, size),
+                backgroundImage: getBgImageTeam(team.profilepicture, size) || "unset",
                 backgroundColor: "unset"
               }
             : team.internaldata && team.internaldata.color
             ? { backgroundColor: team.internaldata.color }
             : { backgroundColor: "#9C13BC" }
-        }>
+        )}>
         {team.profilepicture
           ? ""
           : team.internaldata && team.internaldata.letters

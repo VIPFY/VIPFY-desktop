@@ -14,6 +14,9 @@ interface Props {
   e: any;
   liveid: Function;
   livecheck: Function;
+  style?: Object;
+  forceValue?: Boolean;
+  forceUser?: Object | null;
 }
 
 interface State {
@@ -32,19 +35,21 @@ class AssignVacation extends React.Component<Props, State> {
     todate: null,
     editto: false,
     showall: false,
-    user: null
+    user: this.props.forceUser || null
   };
   render() {
     const { e } = this.props;
     return (
       <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: "24px",
-          marginTop: "28px",
-          position: "relative"
-        }}>
+        style={
+          this.props.style || {
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "24px",
+            marginTop: "28px",
+            position: "relative"
+          }
+        }>
         <div
           style={{
             lineHeight: "24px",
@@ -53,7 +58,11 @@ class AssignVacation extends React.Component<Props, State> {
             flexFlow: "column",
             alignItems: "center"
           }}>
-          <UniversalCheckbox name={e.id} liveValue={v => this.props.livecheck(v)} />
+          <UniversalCheckbox
+            name={e.id}
+            liveValue={v => this.props.livecheck(v)}
+            startingvalue={this.props.forceValue}
+          />
         </div>
         <div
           style={{
@@ -87,7 +96,13 @@ class AssignVacation extends React.Component<Props, State> {
               return (
                 <>
                   <UniversalDropDownInput
-                    id={`employee-search-${this.state.user ? this.state.user.id : ""}`}
+                    id={`employee-search-${
+                      this.state.user
+                        ? this.state.user.id
+                        : this.props.forceUser
+                        ? this.props.forceUser.id
+                        : ""
+                    }`}
                     label="Search for users"
                     options={employees}
                     noFloating={true}
@@ -132,7 +147,11 @@ class AssignVacation extends React.Component<Props, State> {
                       </span>
                     )}
                     startvalue={
-                      this.state.user ? employees.find(a => a.id == this.state.user.id).id : ""
+                      this.state.user
+                        ? employees.find(a => a.id == this.state.user.id).id
+                        : this.props.forceUser
+                        ? this.props.forceUser.id
+                        : ""
                     }
                     noNoResults={true}
                     livecode={c => {

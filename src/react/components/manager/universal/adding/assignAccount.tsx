@@ -5,10 +5,9 @@ import PopupBase from "../../../../popups/universalPopups/popupBase";
 import CreateAccount from "./account";
 
 interface Props {
-  employee: any;
-  service: any;
   orbit: any;
   continue: Function;
+  leftSide?: JSX.Element;
 }
 
 interface State {
@@ -22,7 +21,6 @@ class AssignAccount extends React.Component<Props, State> {
 
   render() {
     const accounts = this.props.orbit.licences;
-    console.log("AC", accounts);
     return (
       <>
         <div
@@ -32,7 +30,7 @@ class AssignAccount extends React.Component<Props, State> {
             justifyContent: "space-between",
             marginBottom: "24px"
           }}>
-          <span style={{ marginBottom: "2px" }}>Account:</span>
+          {this.props.leftSide || <span style={{ marginBottom: "2px" }}>Account:</span>}
 
           {!accounts || (accounts.length == 1 && !accounts[0]) ? (
             <UniversalButton

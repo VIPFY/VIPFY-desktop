@@ -6,6 +6,7 @@ import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import AddTeamService from "./addTeamService";
 import TeamServiceDetails from "./teamserviceDetails";
 import ManageTeamServices from "./universal/managing/teamservices";
+import AssignNewTeamOrbit from "./universal/adding/assignNewTeamOrbit";
 
 interface Props {
   team: any;
@@ -126,7 +127,21 @@ class ServiceSection extends React.Component<Props, State> {
     return (
       <div className="section">
         <div className="heading">
-          <h1>Teamservices</h1>
+          <h1>Orbits</h1>
+          <UniversalButton
+            type="high"
+            label="Assign Orbit"
+            customStyles={{
+              fontSize: "12px",
+              lineHeight: "24px",
+              fontWeight: "700",
+              marginRight: "16px",
+              width: "120px"
+            }}
+            onClick={() => {
+              this.setState({ add: true });
+            }}
+          />
         </div>
         <div className="table">
           <div className="tableHeading">
@@ -135,18 +150,18 @@ class ServiceSection extends React.Component<Props, State> {
                 <h1>Service</h1>
               </div>
               <div className="tableColumnSmall">
-                <h1>Buytime</h1>
+                <h1>Orbitname</h1>
               </div>
               <div className="tableColumnSmall">
-                <h1>Endtime</h1>
+                <h1>Status</h1>
               </div>
               <div className="tableColumnSmall">
-                <h1>Price</h1>
+                <h1>{/*Price*/}</h1>
               </div>
               <div className="tableColumnSmall">{/*<h1>Average Usage</h1>*/}</div>
             </div>
             <div className="tableEnd">
-              <UniversalButton
+              {/*<UniversalButton
                 type="high"
                 label="Manage Services"
                 customStyles={{
@@ -159,12 +174,12 @@ class ServiceSection extends React.Component<Props, State> {
                 onClick={() => {
                   this.setState({ add: true });
                 }}
-              />
+              />*/}
             </div>
           </div>
           {serviceArray}
         </div>
-        {this.state.add && (
+        {/*this.state.add && (
           <ManageTeamServices
             close={sO => {
               this.setState({ add: false, savingObject: sO });
@@ -178,6 +193,9 @@ class ServiceSection extends React.Component<Props, State> {
               />
             </div>
           </ManageTeamServices>
+          )*/}
+        {this.state.add && (
+          <AssignNewTeamOrbit team={this.props.team} close={() => this.setState({ add: false })} />
         )}
         {this.state.savingObject && (
           <PopupSelfSaving

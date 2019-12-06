@@ -151,6 +151,7 @@ class ServiceDetails extends React.Component<Props, State> {
 
   render() {
     const { e } = this.props;
+    console.log("PROPS", e);
     return (
       <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT} key={e.id}>
         {deleteLicenceAt => (
@@ -164,7 +165,7 @@ class ServiceDetails extends React.Component<Props, State> {
                   <div
                     className="tableColumnSmall"
                     style={
-                      e.rightscount > 1
+                      e.rightscount > 1 || e.tags
                         ? {
                             display: "grid",
                             alignItems: "center",
@@ -205,12 +206,28 @@ class ServiceDetails extends React.Component<Props, State> {
                       {/*e.boughtplanid.planid.appid.name*/}
                       {e.boughtplanid.alias}
                     </span>
-                    {e.rightscount > 1 && (
+                    {!(e.tags && e.tags.includes("vacation")) && e.rightscount > 1 && (
                       <span
                         className="infoTag share"
                         style={{ marginLeft: "8px", textAlign: "center" }}
                         title="This account is shared between multiple users">
                         Shared
+                      </span>
+                    )}
+                    {e.tags && e.tags.includes("vacation") && (
+                      <span
+                        className="infoTag vacationTag"
+                        style={{ marginLeft: "8px", textAlign: "center" }}
+                        title="This account is a vacation access">
+                        Holiday
+                      </span>
+                    )}
+                    {e.tags && e.tags.includes("teamlicence") && (
+                      <span
+                        className="infoTag teamTag"
+                        style={{ marginLeft: "8px", textAlign: "center" }}
+                        title="This account is a assigned through a team">
+                        Team
                       </span>
                     )}
                   </div>

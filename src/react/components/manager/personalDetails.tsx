@@ -9,6 +9,7 @@ import { parseName } from "humanparser";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import { concatName } from "../../common/functions";
 import AddVacation from "./universal/adding/addvacation";
+import EditVacations from "./universal/editVacations";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
@@ -69,6 +70,8 @@ interface State {
   editvalueArray: Object[];
   idlist: Array<string>;
   idlistset: string;
+  editvacation: Boolean;
+  editvacationid: number;
 }
 
 const CREATE_EMAIL = gql`
@@ -174,7 +177,9 @@ class PersonalDetails extends React.Component<Props, State> {
     editvalue: null,
     editvalueArray: [],
     idlist: [""],
-    idlistset: ""
+    idlistset: "",
+    editvacation: false,
+    editvacationid: 0
   };
 
   async handleConfirm() {
@@ -535,63 +540,6 @@ class PersonalDetails extends React.Component<Props, State> {
         }
         return privatephoneforms;
 
-      case "vacation":
-        const vacationforms: JSX.Element[] = [];
-        let newvacation = false;
-        if (
-          Math.max(
-            this.props.querydata.vacation.filter(e => e != null && e != {}).length,
-            this.state.editvalueArray.length
-          ) > 0
-        ) {
-          const vacations = this.props.querydata.vacation.map((va, index) => {
-            if (this.state.editvalueArray[index]) {
-              const update = this.state.editvalueArray[index];
-              return { ...va, ...update };
-            } else {
-              return { ...va };
-            }
-          });
-          this.state.editvalueArray.forEach(
-            (va, index) => index >= this.props.querydata.vacation.length && vacations.push(va)
-          );
-          let first = true;
-          vacations.forEach((va, index) => {
-            if (!first && !va.deleted) {
-              vacationforms.push(<div key={`sep-${index}`} className="fieldsSeperator" />);
-            }
-            if (!va.deleted) {
-              first = false;
-            }
-            newvacation = newvacation || (!va.deleted && (va.from == null || va.from == ""));
-            vacationforms.push(<AddVacation id={this.props.querydata.id} />);
-          });
-        }
-        if (!newvacation) {
-          vacationforms.push(
-            <UniversalButton
-              type="low"
-              label="Add Vacation"
-              onClick={() =>
-                this.setState(({ editvalueArray }) => {
-                  editvalueArray[
-                    Math.max(editvalueArray.length, this.props.querydata.vacation.length) - 1
-                  ] = {
-                    from: null,
-                    to: null,
-                    id: `new-${Math.max(
-                      editvalueArray.length,
-                      this.props.querydata.vacation.length
-                    )}`
-                  };
-                  return { editvalueArray };
-                })
-              }
-            />
-          );
-        }
-        return vacationforms;
-
       default:
         return (
           <UniversalTextInput
@@ -607,6 +555,17 @@ class PersonalDetails extends React.Component<Props, State> {
 
   render() {
     const querydata = this.props.querydata;
+    if (querydata.vacation) {
+      querydata.vacation.sort((a, b) => {
+        if (a.starttime > b.starttime) {
+          return 1;
+        }
+        if (a.starttime < b.starttime) {
+          return -1;
+        }
+        return 0;
+      });
+    }
     return (
       <React.Fragment>
         <div className="tableColumnSmall content twoline">
@@ -793,27 +752,32 @@ class PersonalDetails extends React.Component<Props, State> {
           {/* <div className="tableColumnSmallOne" style={{ cursor: "inital" }}></div> */}
           <div
             className="tableColumnSmallOne editable"
-            onClick={() =>
+            onClick={() => {
               this.setState({
-                edit: {
-                  id: "vacation",
-                  label: "Vacation",
-                  startvalue: querydata.vacation
-                }
-              })
-            }>
-            <h1>Vacations</h1>
+                editvacation: true
+              });
+            }}>
+            <h1>
+              Vacations{" "}
+              <span className="morehint">
+                {querydata.vacation.length > 2 && `+${querydata.vacation.length - 2} more`}
+              </span>
+            </h1>
             <h2>
               {querydata.vacation[0] &&
                 querydata.vacation[0].starttime &&
                 querydata.vacation[0].endtime &&
-                `${querydata.vacation[0].starttime} - ${querydata.vacation[0].endtime}`}
+                `${moment(querydata.vacation[0].starttime).format("DD.MM.YYYY")} - ${moment(
+                  querydata.vacation[0].endtime
+                ).format("DD.MM.YYYY")}`}
             </h2>
             <h2 className="second">
               {querydata.vacation[1] &&
                 querydata.vacation[1].starttime &&
                 querydata.vacation[1].endtime &&
-                `${querydata.vacation[1].starttime} - ${querydata.vacation[1].endtime}`}
+                `${moment(querydata.vacation[1].starttime).format("DD.MM.YYYY")} - ${moment(
+                  querydata.vacation[1].endtime
+                ).format("DD.MM.YYYY")}`}
             </h2>
             <div className="profileEditButton">
               <i className="fal fa-pen editbuttons" />
@@ -1059,6 +1023,12 @@ class PersonalDetails extends React.Component<Props, State> {
               </PopupBase>
             )}
           </Mutation>
+        )}
+        {this.state.editvacation && (
+          <EditVacations
+            querydata={querydata}
+            close={() => this.setState({ editvacation: false })}
+          />
         )}
       </React.Fragment>
     );

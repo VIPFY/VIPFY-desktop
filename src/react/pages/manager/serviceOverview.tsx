@@ -80,7 +80,7 @@ class ServiceOverview extends React.Component<Props, State> {
   filterMotherfunction(service) {
     if (service.app.name.toUpperCase().includes(this.state.search.toUpperCase())) {
       return true;
-    } else if (service.teams.filter(team => this.filterTeams(team)).length > 0) {
+    } else if (service.teams && service.teams.filter(team => this.filterTeams(team)).length > 0) {
       return true;
     } else if (
       service.licences.filter(
