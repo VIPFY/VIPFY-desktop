@@ -9,7 +9,7 @@ import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 import ClickElement from "./clickElement";
-import { element } from "prop-types";
+import { element, number, object } from "prop-types";
 import PlanHolder from "../PlanHolder";
 import UniversalButton from "../universalButtons/universalButton";
 import { threadId } from "worker_threads";
@@ -20,16 +20,16 @@ interface Props {
 }
 
 interface State {
+  logInOrSignUp: boolean;
+  isLogin: boolean;
   end: boolean;
   sendTarget: any; //die Webview
   divList: JSX.Element[];
+  showDivList: boolean;
   trackwhat: string;
-  /* username: string; */
-  /* password: string; */
   url: string;
   urlBevorChange: string;
-  cantrack: boolean /* 
-  currenturl: string|null */;
+  cantrack: boolean;
   finalexecutionPlan: Object[];
   executionPlan: Object[];
   searchurl: string;
@@ -39,15 +39,19 @@ interface State {
 
 class ServiceIntegrator extends React.Component<Props, State> {
   loginState = {
+    listen: false,
+    makeNext: false,
+    didLoadOnSteps: [],
     step: 0
   };
   state = {
+    logInOrSignUp: true,
+    isLogin: true,
     end: false,
     sendTarget: null,
     divList: [],
+    showDivList: true,
     trackwhat: "siteTrain",
-    /* username: "fabrice.schoenebergerTEST@gmail.com",
-    password: "2018Vipfy", */
     url: "",
     urlBevorChange: "",
     finalexecutionPlan: [],
@@ -198,20 +202,12 @@ class ServiceIntegrator extends React.Component<Props, State> {
       } else {
         this.setState({ url: searchvalue });
         this.timeoutSave = setTimeout(() => this.searchOnGoogle(), 20000);
-        //console.log("timeout set");
       }
     } else {
       this.shallSearch = true;
       this.searchOnGoogle();
     }
   }
-
-  /* didFinishLoad(e) {
-    console.log("didFinishLoad");
-    if(this.shallSearch) {
-    }
-    this.shallSearch = true;
-  } */
 
   didFailLoad(e) {
     console.log("onDidFailLoad triggered", e.isMainFrame, this.searchattampts);
@@ -245,11 +241,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   async cancelSelection(id) {
-    /* console.log(
-      this.state.executionPlan.findIndex(element => {
-        return element.args.id == id;
-      })
-    ); */
     if (
       this.state.executionPlan.findIndex(element => {
         return element.args.id == id;
@@ -273,11 +264,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
         return oldstate;
       });
     }
-    /* await this.setState({ divList: [] });
-    console.log(this.state.executionPlan, this.state.divList);
-    for (let i = 0; i < this.state.executionPlan.length; i++) {
-      this.state.sendTarget!.send("givePosition", this.state.executionPlan[i].args.selector, i, 1);
-    } */
     if (
       this.state.divList.findIndex(element => {
         return element.props.id == id + "b";
@@ -312,7 +298,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   makeCoverdiv(args) {
-    //console.log("Hello1", document.getElementById(args[4] + "side"));
     const width = args[0];
     const height = args[1];
     const left = args[2] + 440;
@@ -364,8 +349,10 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   tickDiv(args) {
+    //console.log("Hello1", this.state.divList);
     if (
       this.state.divList.findIndex(element => {
+        //console.log("Hello7", element.props.id);
         return element.props.id == args[4];
       }) != -1
     ) {
@@ -378,7 +365,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     const top = args[3] + 72;
 
     var ausgrauDivs = [
-      <div //erste
+      <div //erste oben
         key={Math.random()}
         id={args[4]}
         style={{
@@ -396,7 +383,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         id={args[4]}
         style={{
           position: "absolute",
-          height: 926 - args[3] - 40,
+          height: "100%",
           width: "100%",
           top: height + top,
           left: 440,
@@ -423,7 +410,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         style={{
           position: "absolute",
           height: height,
-          width: 1365 - left,
+          width: "100%",
           top: top,
           left: left + width,
           background: "grey",
@@ -431,10 +418,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
           opacity: 0.5
         }}></div>
     ];
-
-    /*     var divTop = top
-    var divLeft = left + width + "px"; */
-    //console.log("hier", divTop, divLeft);
 
     this.setState(oldstate => {
       ausgrauDivs.forEach(div => {
@@ -446,11 +429,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   zeigeElement(onOff, id) {
-    if (this.state.test) {
+    if (this.state.test || this.state.end || !this.state.showDivList) {
       return;
-    }
-    //console.log(onOff, id, this.state.executionPlan);
-    if (onOff) {
+    } else if (onOff) {
       this.state.sendTarget!.send(
         "givePosition",
         this.state.executionPlan[
@@ -462,12 +443,19 @@ class ServiceIntegrator extends React.Component<Props, State> {
         0
       );
       this.setState(oldstate => {
-        oldstate.divList.splice(
+        while (
           oldstate.divList.findIndex(element => {
             return element.props.id == id + "b";
-          }),
-          1
-        );
+          }) != -1
+        ) {
+          oldstate.divList.splice(
+            oldstate.divList.findIndex(element => {
+              return element.props.id == id + "b";
+            }),
+            1
+          );
+        }
+        return oldstate;
       });
     } else {
       this.state.sendTarget!.send(
@@ -482,12 +470,18 @@ class ServiceIntegrator extends React.Component<Props, State> {
       );
       for (let i = 0; i < 4; i++) {
         this.setState(oldstate => {
-          oldstate.divList.splice(
+          while (
             oldstate.divList.findIndex(element => {
               return element.props.id == id;
-            }),
-            1
-          );
+            }) != -1
+          ) {
+            oldstate.divList.splice(
+              oldstate.divList.findIndex(element => {
+                return element.props.id == id;
+              }),
+              1
+            );
+          }
           return oldstate;
         });
       }
@@ -495,6 +489,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   updateSelection(id, changeling, value) {
+    //console.log("Hello1", id, changeling, value);
     this.setState(oldstate => {
       let plan = oldstate.executionPlan;
       if (
@@ -502,7 +497,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
           return element.args.id == id;
         }) != -1
       ) {
-        if (changeling == "args" || changeling == "operations") {
+        if (changeling == "args" || changeling == "operation") {
           plan[
             plan.findIndex(element => {
               return element.args.id == id;
@@ -520,8 +515,46 @@ class ServiceIntegrator extends React.Component<Props, State> {
     });
   }
 
+  wuerfelWerte(plan) {
+    switch (plan.args.fillkey) {
+      case "username":
+        plan.value = Math.round(Math.random() * 10000000000).toString();
+        break;
+
+      case "email":
+        plan.value = Math.round(Math.random() * 10000000000).toString() + "@vipfy.store";
+        break;
+
+      case "password":
+        plan.value = "!12345678!Aa";
+        break;
+
+      case "domain":
+        plan.value = "vipfy" + Math.round(Math.random() * 10000000000).toString();
+        break;
+
+      default:
+        plan.value = Math.round(Math.random() * 10000000000).toString();
+        break;
+    }
+  }
+
   sendExecute() {
     this.setState(oldstate => {
+      //console.log("Heeello2", oldstate.executionPlan);
+      oldstate.executionPlan.forEach(object => {
+        if (object.operation == "repeatFill") {
+          oldstate.finalexecutionPlan.forEach(finalobject => {
+            if (object.args.fillkey == finalobject.args.fillkey) {
+              object.args.fillkey = finalobject.args.fillkey;
+              object.value = finalobject.value;
+              //object.operation = finalobject.operation;
+              //object.repeat = true;
+            }
+          });
+        }
+      });
+      //console.log("Heeello3", oldstate.executionPlan);
       oldstate.executionPlan.sort((a, b) => {
         if (a.operation == b.operation) {
           return 0;
@@ -530,8 +563,18 @@ class ServiceIntegrator extends React.Component<Props, State> {
         } else if (b.operation == "click") {
           return -1;
         } else if (a.operation == "waitandfill") {
+          if (b.operation == "repeatFill") {
+            return 1;
+          }
           return -1;
-        } else if (b.operation == "waitandfill") {
+        } else if (b.operation == "waitandfill" || b.operation == "repeatFill") {
+          if (a.operation == "repeatFill") {
+            return -1;
+          }
+          return 1;
+        } else if (a.operation == "repeatFill") {
+          return -1;
+        } else if (b.operation == "repeatFill") {
           return 1;
         } else {
           return 0;
@@ -541,24 +584,68 @@ class ServiceIntegrator extends React.Component<Props, State> {
     });
     var inputList: JSX.Element[] = [];
     var fillPlans: number[] = [];
-    this.state.executionPlan.forEach(plan => {
-      console.log("CHECK", this.state, plan);
-      if (plan.operation == "waitandfill") {
-        fillPlans.push(plan.args.id);
-        var input = (
-          <div>
-            {plan.args.fillkey[0].toUpperCase() +
-              plan.args.fillkey.substring(1, 10000).toLowerCase()}
-            :
-            <input
-              required
-              type="text"
-              name={plan.args.fillkey}
-              id={plan.args.id + "input"}></input>
-          </div>
-        );
-        inputList.push(input);
-      }
+    this.setState(oldstate => {
+      oldstate.executionPlan.forEach(plan => {
+        if (plan.operation == "waitandfill" && !this.state.isLogin) {
+          this.wuerfelWerte(plan);
+        } else if (plan.operation == "waitandfill" && this.state.isLogin) {
+          fillPlans.push(plan.args.id);
+          var input = (
+            <div margin-bottom="20px">
+              {plan.args.fillkey[0].toUpperCase() +
+                plan.args.fillkey.substring(1, 10000).toLowerCase()}
+              :
+              <input
+                required
+                type="text"
+                name={plan.args.fillkey}
+                id={plan.args.id + "input"}></input>
+              <label>
+                <input
+                  type="checkbox"
+                  id="myCheck"
+                  onChange={e => {
+                    if (e.target.checked) {
+                      switch (document.getElementById(plan.args.id + "input")!.name) {
+                        case "username":
+                          document.getElementById(plan.args.id + "input")!.value = Math.round(
+                            Math.random() * 10000000000
+                          ).toString();
+                          break;
+
+                        case "email":
+                          document.getElementById(plan.args.id + "input")!.value =
+                            Math.round(Math.random() * 10000000000).toString() + "@vipfy.store";
+                          break;
+
+                        case "password":
+                          document.getElementById(plan.args.id + "input")!.value = "!12345678!Aa";
+                          break;
+
+                        case "domain":
+                          document.getElementById(plan.args.id + "input")!.value =
+                            "vipfy" + Math.round(Math.random() * 10000000000).toString();
+                          break;
+
+                        default:
+                          document.getElementById(plan.args.id + "input")!.value = Math.round(
+                            Math.random() * 10000000000
+                          ).toString();
+                          break;
+                      }
+                    } else {
+                      document.getElementById(plan.args.id + "input")!.value = "";
+                    }
+                  }}
+                />
+                Random Wert
+              </label>
+            </div>
+          );
+          inputList.push(input);
+        }
+      });
+      return oldstate;
     });
     var popup = (
       <PopupBase
@@ -584,6 +671,12 @@ class ServiceIntegrator extends React.Component<Props, State> {
           {inputList.map(e => e)}
           <UniversalButton type="high" label="submit"></UniversalButton>
         </form>
+        <UniversalButton
+          onClick={e => {
+            this.setState({ divList: [], test: false, end: false });
+          }}
+          type="high"
+          label="Abbrechen"></UniversalButton>
       </PopupBase>
     );
     this.state.executionPlan.forEach(plan => {
@@ -625,8 +718,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   async onIpcMessage(e): Promise<void> {
-    //console.log("onIpcMessage", e, e.senderId);
-
     switch (e.channel) {
       case "sendMessage":
         console.log(e.channel); //, e.args[0], e.args[1], e.args[2], e.args[3], e.args[4],
@@ -660,13 +751,13 @@ class ServiceIntegrator extends React.Component<Props, State> {
         //generate Execution Plan
         this.setState(oldstate => {
           let plan = oldstate.executionPlan;
-          let id = Math.round(Math.random() * 1000000);
+          let id = Math.round(Math.random() * 10000000000);
           while (
             plan.findIndex(element => {
-              element.args.id == id;
+              return element.args.id == id;
             }) != -1
           ) {
-            id = Math.round(Math.random() * 1000000);
+            id = Math.round(Math.random() * 10000000000);
           }
           if (
             plan.length == 0 ||
@@ -757,16 +848,12 @@ class ServiceIntegrator extends React.Component<Props, State> {
           default:
             break;
         }
-        /* if(e.args[0] === "INPUT" && e.args[2] !== "" && !this.siteTrain.includes(e.args[3])) {
-            console.log("Done");
-          } */
         break;
 
       case "sendClick":
         break;
 
       case "givePosition":
-        //console.log("triggert", e.args[4]);
         switch (e.args[5]) {
           case 0:
             this.tickDiv([e.args[0], e.args[1], e.args[2], e.args[3], e.args[4]]);
@@ -783,19 +870,57 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "loaded":
-        console.log("loaded first");
+        if (this.state.logInOrSignUp && !this.state.test && !this.state.end) {
+          let popup = (
+            <PopupBase
+              id="logInOrSignUp"
+              small={true}
+              styles={{ textAlign: "center" }}
+              buttonStyles={{ justifyContent: "space-around" }}
+              closeable={false}>
+              <div>Dies ist ein: </div>
+              <UniversalButton
+                onClick={e => {
+                  e.preventDefault();
+                  this.setState({ isLogin: true, divList: [], logInOrSignUp: false });
+                }}
+                type="high"
+                label="Login Prozess"></UniversalButton>
+              <UniversalButton
+                onClick={e => {
+                  e.preventDefault();
+                  this.setState({ isLogin: false, divList: [], logInOrSignUp: false });
+                }}
+                type="high"
+                label="SignUp Prozess"></UniversalButton>
+            </PopupBase>
+          );
+          this.setState(oldstate => {
+            oldstate.divList.push(popup);
+
+            return oldstate;
+          });
+        }
+        console.log(
+          "loaded first",
+          this.loginState.didLoadOnSteps,
+          this.loginState.step,
+          this.loginState.listen
+        );
+
         if (this.state.test && this.state.url != "about:blank") {
           let exx = [];
-          console.log("111", this.state.finalexecutionPlan);
           this.state.finalexecutionPlan.forEach(element => {
-            //console.log("loaded", element, element.step, this.loginState.step);
             if (element.step == this.loginState.step) {
               exx.push(element);
             }
           });
-          console.log("exx", exx);
-          //exx = this.state.finalexecutionPlan.slice(0, 2);
           this.state.sendTarget!.send("execute", exx);
+        } else if (
+          !this.loginState.didLoadOnSteps.includes(this.loginState.step) &&
+          this.loginState.listen
+        ) {
+          this.loginState.didLoadOnSteps.push(this.loginState.step);
         }
         break;
 
@@ -810,15 +935,61 @@ class ServiceIntegrator extends React.Component<Props, State> {
         if (this.state.end) {
           let targetpage = this.webview.url;
           this.setState({ end: false, test: true, targetpage });
+          session.fromPartition("followLogin").clearStorageData();
           this.loginState.step = 0;
+          this.loginState.listen = false;
           console.log("step = 0", this.loginState.step, this.state.finalexecutionPlan);
           this.trySiteLoading();
         } else if (this.state.test) {
+          if (this.loginState.makeNext) {
+            console.log("makeNext = true");
+            this.loginState.makeNext = false;
+            e.channel = "loaded";
+            this.onIpcMessage(e);
+          }
+          console.log(
+            "Blablacar",
+            this.state.finalexecutionPlan.findIndex(element => {
+              return element.step == this.loginState.step;
+            }),
+            this.loginState.step
+          );
           if (
             this.state.finalexecutionPlan.findIndex(element => {
-              element.step == this.loginState.step;
-            }) != -1
+              return element.step == this.loginState.step;
+            }) == -1
           ) {
+            if (this.state.isLogin == false) {
+              let popup = (
+                <PopupBase
+                  id="logInOrSignUp"
+                  small={true}
+                  styles={{ textAlign: "center" }}
+                  buttonStyles={{ justifyContent: "space-around" }}
+                  closeable={false}>
+                  <div>Did it work?: </div>
+                  <UniversalButton
+                    onClick={e => {
+                      e.preventDefault();
+                      this.setState({ divList: [] });
+                    }}
+                    type="high"
+                    label="Yes"></UniversalButton>
+                  <UniversalButton
+                    onClick={e => {
+                      e.preventDefault();
+                      this.setState({ divList: [] });
+                    }}
+                    type="high"
+                    label="No"></UniversalButton>
+                </PopupBase>
+              );
+              this.setState(oldstate => {
+                oldstate.divList.push(popup);
+
+                return oldstate;
+              });
+            }
             break;
           }
           if (this.state.targetpage == this.webview.url) {
@@ -829,7 +1000,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
           }
           console.log("Did repeat");
         } else {
-          this.setState({ divList: [] });
+          this.setState({ divList: [], showDivList: true });
           console.log("Ready for next Step");
         }
 
@@ -845,7 +1016,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         {
           let w = e.target;
           w.sendInputEvent({ type: "mouseMove", x: e.args[0], y: e.args[1] });
-          console.log("CONSENT", e.args[0], e.args[1]);
+          //console.log("CONSENT", e.args[0], e.args[1]);
           await sleep(Math.random() * 30 + 200);
           w.sendInputEvent({
             type: "mouseDown",
@@ -906,6 +1077,15 @@ class ServiceIntegrator extends React.Component<Props, State> {
               return element.args.fillkey == e.args[0];
             })
           ); */
+          console.log(
+            "fillField",
+            this.state.finalexecutionPlan,
+            this.state.executionPlan.find(element => {
+              return element.args.fillkey == e.args[0];
+            }),
+            e.args[0]
+          );
+          //if (this.state.isLogin) {
           if (!this.state.test) {
             var text = this.state.executionPlan.find(element => {
               //console.log("E", element, element.args.fillkey, e.args[0]);
@@ -917,6 +1097,30 @@ class ServiceIntegrator extends React.Component<Props, State> {
               return element.args.fillkey == e.args[0];
             })!.value;
           }
+          /* } else {
+            var text;
+            switch (e.args[0]) {
+              case "username":
+                text = Math.round(Math.random() * 10000000000).toString();
+                break;
+
+              case "email":
+                text = Math.round(Math.random() * 10000000000).toString() + "@vipfy.store";
+                break;
+
+              case "password":
+                text = "!12345678!Aa";
+                break;
+
+              case "domain":
+                text = "vipfy" + Math.round(Math.random() * 10000000000).toString();
+                break;
+
+              default:
+                text = Math.round(Math.random() * 10000000000).toString();
+                break;
+            }
+          } */
 
           for await (const c of text) {
             const shift = c.toLowerCase() != c;
@@ -935,7 +1139,21 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
       case "executeStep":
         if (this.state.url != "about:blank") {
-          console.log("Step++", this.loginState.step, " -> ", this.loginState.step + 1);
+          console.log(
+            "Step++",
+            this.loginState.step,
+            " -> ",
+            this.loginState.step + 1,
+            this.state.finalexecutionPlan
+          );
+          if (
+            this.state.finalexecutionPlan.findIndex(element => {
+              return element.step == this.loginState.step;
+            }) != -1 &&
+            !this.loginState.didLoadOnSteps.includes(this.loginState.step + 1)
+          ) {
+            this.loginState.makeNext = true;
+          }
           this.loginState.step -= -1;
         } else {
           console.log("about:blank triggert");
@@ -948,7 +1166,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   render() {
-    console.log(this.state.executionPlan);
+    console.log("Anfang Render", this.state.executionPlan);
     if (this.state.url === this.startUrl) {
       session.fromPartition("followLogin").clearStorageData();
     }
@@ -970,91 +1188,88 @@ class ServiceIntegrator extends React.Component<Props, State> {
               style={{ color: "black", borderColor: "white" }}
               width="100%"
               onEnter={() => {
+                this.setState({
+                  logInOrSignUp: true,
+                  isLogin: true,
+                  end: false,
+                  sendTarget: null,
+                  divList: [],
+                  showDivList: true,
+                  trackwhat: "siteTrain",
+                  url: "",
+                  urlBevorChange: "",
+                  finalexecutionPlan: [],
+                  executionPlan: [],
+                  searchurl: "",
+                  cantrack: false,
+                  targetpage: "",
+                  test: false
+                });
+                session.fromPartition("followLogin").clearStorageData();
                 this.searchattampts = 0;
                 this.trySiteLoading();
               }}></UniversalTextInput>
             <button
               onClick={() => {
+                this.setState({
+                  logInOrSignUp: true,
+                  isLogin: true,
+                  end: false,
+                  sendTarget: null,
+                  divList: [],
+                  showDivList: true,
+                  trackwhat: "siteTrain",
+                  url: "",
+                  urlBevorChange: "",
+                  finalexecutionPlan: [],
+                  executionPlan: [],
+                  searchurl: "",
+                  cantrack: false,
+                  targetpage: "",
+                  test: false
+                });
+                session.fromPartition("followLogin").clearStorageData();
                 this.searchattampts = 0;
                 this.trySiteLoading();
               }}>
               Go!
             </button>
           </div>
-          {/*<span>
-            <input
-              type="text"
-              onChange={e => {
-                this.savevalue = e.target.value;
-              }}
-              onKeyDown={e => {
-                if (e.which == 13) {
-                  this.searchattampts = 0;
-                  this.trySiteLoading();
-                }
-              }}></input>
-            <button
-              onClick={() => {
-                /* console.log("savevalue", this.savevalue); *&/ this.searchattampts = 0;
-                this.trySiteLoading();
-              }}>
-              Go!
-            </button>
-            </span>*/}
           {this.state.executionPlan.map((o, k) => (
             <div
               id={o.args.id + "side"}
               onMouseEnter={() => this.zeigeElement(true, o.args.id)}
               onMouseLeave={() => this.zeigeElement(false, o.args.id)}
               style={{ border: "1px solid red", marginTop: "10px" }}>
-              {/*<select
-                onChange={e => this.updateSelection(o.args.id, "operation", e.target.value)}
-                id={`operation-${k}`}
-                style={{ width: "100%", color: "black" }}>
-                <option value="waitandfill">Fill Input Field</option>
-                <option value="click">Click</option>
-                {/&* <option value="wait">Wait</option> *&/}
-                <option value="other">Other</option>
-              </select>
-              <select
-                onChange={e => this.updateSelection(o.args.id, "fillkey", e.target.value)}
-                id={`fillkey-${k}`}
-                style={{
-                  width: "100%",
-                  color: "black",
-                  visibility: function() {
-                    if (
-                      arguments.callee.caller.state.executionPlan[
-                        this.state.executionPlan.findIndex(element => {
-                          return element.args.id == o.args.id;
-                        })
-                      ].operation == "waitandfill"
-                    ) {
-                      return "visible";
-                    } else {
-                      return "collapsed";
-                    }
-                  }
-                }}>
-                <option value="usernameEmail">Username/Email</option>
-                <option value="password">Password</option>
-                <option value="domain">Domain</option>
-                <option value="other">Other</option>
-              </select>
-              <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>*/}
               <ClickElement
                 id={`ce-${k}`}
                 startvalue={o.operation}
                 onChange={(operation, value) => this.updateSelection(o.args.id, operation, value)}
+                isLogin={this.state.isLogin}
               />
               <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
+              {!this.state.isLogin ? (
+                <span>
+                  <input type="checkbox" id={"paralelOption" + o.args.id} />
+                  <div color="white">Is Paralel Option</div>
+                </span>
+              ) : null}
+              {document.getElementById("paralelOption" + o.args.id)!.checked ? (
+                <input
+                  id={"team" + o.args.id}
+                  onChange={e => {
+                    o.paralelTeam = document.getElementById("team" + o.args.id)!.value;
+                  }}></input>
+              ) : null}
             </div>
           ))}
           <div style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
             Every thing selected?
             <button
               disabled={this.state.sendTarget == undefined}
-              onClick={() => {
+              onClick={async () => {
+                await this.setState({ showDivList: false });
+                this.loginState.listen = true;
                 this.sendExecute();
               }}
               style={{ width: "100px" }}>
@@ -1063,7 +1278,15 @@ class ServiceIntegrator extends React.Component<Props, State> {
             <button
               disabled={this.state.sendTarget == undefined}
               onClick={async () => {
-                await this.setState({ end: true });
+                if (!this.state.isLogin) {
+                  await this.setState(oldstate => {
+                    oldstate.finalexecutionPlan.forEach(object => {
+                      this.wuerfelWerte(object);
+                    });
+                  });
+                }
+                this.loginState.listen = true;
+                await this.setState({ end: true, showDivList: false });
                 this.sendExecute();
               }}
               style={{ width: "100px" }}>
@@ -1090,69 +1313,13 @@ class ServiceIntegrator extends React.Component<Props, State> {
             onIpcMessage={e => this.onIpcMessage(e)}
             onNewWindow={e => {
               this.handleNewWindow(e);
-              /* this.setState({url: e.url}) */
             }}
             onClose={e => this.handleClosing(e)}
             onDidNavigateInPage={e => this.handleSiteChange(e)}
             onDidNavigate={e => this.handleSiteChange(e)}
-            /* onDidFinishLoad={e => this.didFinishLoad(e)} */
             onDidFailLoad={e => this.didFailLoad(e)}
-            /*onDidNavigate={e => this.onDidNavigate(e.target.src)}
-          //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
-          onDidFailLoad={(code, desc, url, isMain) => {
-            if (isMain) {
-              //this.hideLoadingScreen();
-            }
-            console.log(`failed loading ${url}: ${code} ${desc}`);
-          }}
-          onLoadCommit={e => this.onLoadCommit(e)}
-          onNewWindow={e => this.onNewWindow(e)}
-          //onWillNavigate={e => console.log("WillNavigate", e.target.src)}
-          //onDidStartLoading={e => console.log("DidStartLoading", e.target.src)}
-          onDidStartNavigation={e => console.log("DidStartNavigation", e.target.src)}
-          //onDidFinishLoad={e => console.log("DidFinishLoad", e.target.src)}
-          //onDidStopLoading={e => console.log("DidStopLoading", e.target.src)}
-          onDomReady={e => {
-            //console.log("DomReady", e);
-            //this.maybeHideLoadingScreen();
-            if (!e.target.isDevToolsOpened()) {
-              //e.target.openDevTools();
-            }
-          }}
-          //onDialog={e => console.log("Dialog", e)}
-          onIpcMessage={e => this.onIpcMessage(e)}
-          //onConsoleMessage={e => console.log("LOGCONSOLE", e.message)}
-          onDidNavigateInPage={e => this.onDidNavigateInPage(e.target.src)}
-        */
           />
         </div>
-        {/*<span style={{ height: "48px", width: "100%" }}>
-          <button
-            style={{ height: "48px", width: "20%" }}
-            onClick={() => this.props.functionupper()}>
-            NukeButton
-          </button>
-          <button
-            style={{ height: "48px", width: "20%" }}
-            onClick={() => this.finishSiteTracking()}>
-            finishSiteTracking
-          </button>
-          <button
-            style={{ height: "48px", width: "20%" }}
-            onClick={() => this.finishLoginTracking()}>
-            finishLoginTracking
-          </button>
-          <button
-            style={{ height: "48px", width: "20%" }}
-            onClick={() => this.finishLogoutTracking()}>
-            finishLogoutTracking
-          </button>
-          <button
-            style={{ height: "48px", width: "20%" }}
-            onClick={() => this.printExecutionPlan()}>
-            printExecutionPlan
-          </button>
-        </span>*/}
       </div>
     );
   }

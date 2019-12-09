@@ -355,8 +355,30 @@ function findTarget(event, iframe) {
     console.log(createObjFromDom(iframe));
   }
 
+  //const button = event.target;
+  const wereans = onClick(event);
+  if (wereans[0]) {
+    const button = wereans[1];
+    const listenersers = button.getEventListeners();
+    //ipcRenderer.sendToHost("sendMessage", button, listeners);
+    listeners.push([event.target, listenersers]); //
+    button.clearEventListeners();
+    button.addEventListener("click", e => {
+      e.preventDefault();
+      return false;
+    });
+    console.log("Events Cleared");
+  }
+  console.log("Parents", els);
+
+  if (wereans[0]) {
+    var button = wereans[1];
+  } else {
+    var button = event.target;
+  }
+
   var els = [];
-  var a = event.target;
+  var a = button;
   while (a) {
     els.unshift(a);
     a = a.parentNode;
@@ -371,7 +393,7 @@ function findTarget(event, iframe) {
 
   var doc = iframe ? iframe.contentWindow.document : document;
   var iselector;
-  var selector = "#" + obj.attr.id;
+  var selector = "[id='" + obj.attr.id + "']";
   var t = Array.from(doc.querySelectorAll(selector));
 
   if (t.length != 1) {
@@ -379,7 +401,7 @@ function findTarget(event, iframe) {
     selector = element1.tagName;
     console.log(obj.attr);
     for (key of Object.keys(obj.attr)) {
-      if (["name", "type", "id"].includes(key)) {
+      if (["name", "type", "id", "for", "data-qa"].includes(key)) {
         selector += "[" + key + "='" + obj.attr[key] + "']";
       }
     }
@@ -401,7 +423,7 @@ function findTarget(event, iframe) {
         }
         pselector = parent.tagName;
         for (key of Object.keys(pobj.attr)) {
-          if (["name", "type", "id"].includes(key)) {
+          if (["name", "type", "id", "for", "data-qa"].includes(key)) {
             pselector += "[" + key + "='" + pobj.attr[key] + "']";
           }
         }
@@ -432,7 +454,7 @@ function findTarget(event, iframe) {
       iselector = iframe.tagName;
       console.log(iobj.attr);
       for (key of Object.keys(iobj.attr)) {
-        if (["name", "type", "id"].includes(key)) {
+        if (["name", "type", "id", "for"].includes(key)) {
           iselector += "[" + key + "='" + iobj.attr[key] + "']";
         }
       }
@@ -454,13 +476,14 @@ function findTarget(event, iframe) {
           }
           ipselector = iparent.tagName;
           for (key of Object.keys(ipobj.attr)) {
-            if (["name", "type", "id"].includes(key)) {
+            if (["name", "type", "id", "for"].includes(key)) {
               ipselector += "[" + key + "='" + ipobj.attr[key] + "']";
             }
           }
           ipt = Array.from(document.querySelectorAll(ipselector));
-          iselector = ipselector + " > " + iselector;
+
           if (ipt.length == 1) {
+            iselector = ipselector + " > " + iselector;
             break;
           }
           iparent = iels.pop();
@@ -468,27 +491,7 @@ function findTarget(event, iframe) {
       }
     }
   }
-  //const button = event.target;
-  const wereans = onClick(event);
-  if (wereans[0]) {
-    const button = wereans[1];
-    const listenersers = button.getEventListeners();
-    //ipcRenderer.sendToHost("sendMessage", button, listeners);
-    listeners.push([event.target, listenersers]); //
-    button.clearEventListeners();
-    button.addEventListener("click", e => {
-      e.preventDefault();
-      return false;
-    });
-    console.log("Events Cleared");
-  }
-  console.log("Parents", els);
 
-  if (wereans[0]) {
-    var button = wereans[1];
-  } else {
-    var button = event.target;
-  }
   ipcRenderer.sendToHost(
     "sendEvent",
     button.tagName,
@@ -546,19 +549,28 @@ function findTarget(event, iframe) {
 
 function elemIsButton(t) {
   if (!t) {
+    console.log("Not t");
     return false;
   }
-  if (t.tagName == "BUTTON" || t.tagName == "INPUT" || t.tagName == "A") {
+  if (t.tagName == "svg") {
+    console.log("CHECK TAGNAME IS SVG");
+    return false;
+  }
+  if (t.tagName == "BUTTON" || t.tagName == "INPUT" || t.tagName == "A" || t.tagName == "LABEL") {
+    console.log("has special Tag");
     return true;
   }
 
   if (
     hasEventHandler(t, "click") ||
     hasEventHandler(t, "mousedown") ||
-    hasEventHandler(t, "dragstart")
+    hasEventHandler(t, "dragstart") ||
+    hasEventHandler(t, "onClick")
   ) {
+    console.log("has Eventhandler");
     return true;
   }
+  console.log("No Button oder sowas");
   return false;
 }
 
@@ -572,6 +584,7 @@ function onClick(e) {
     t = e.target;
     isButton = false;
   }
+  console.log("CHECK TAGNAME", isButton, t);
   return [isButton, t];
 }
 
@@ -610,7 +623,7 @@ function findCookieButton() {
   if (t.length == 0) {
     t = Array.from(
       document.querySelectorAll(
-        "button, input[type='button'], [role='button'], [class~='btn'], [class~='cc-btn'], [class~='button'], [class~='btn-small']"
+        "button, input[type='checkbox'], input[type='button'], [role='button'], [class~='btn'], [class~='cc-btn'], [class~='button'], [class~='btn-small']"
       )
     )
       .filter(
@@ -853,6 +866,7 @@ async function execute(operations) {
         }
         break;
       case "click":
+        await execute([{ operation: "waitfor", args }]);
         doc = args.document || document;
         console.log("CLICK", doc.querySelector(args.selector));
         await clickButton(doc.querySelector(args.selector));
@@ -874,6 +888,13 @@ async function execute(operations) {
           { operation: "solverecaptcha", args }
         ]);
       case "waitandfill":
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "click", args },
+          { operation: "fill", args }
+        ]);
+        break;
+      case "repeatFill": //same as waitandfill but here to retain the information of the repeat
         await execute([
           { operation: "waitfor", args },
           { operation: "click", args },
@@ -930,6 +951,7 @@ async function execute(operations, mainexecute = false) {
         await p;
         break;
       case "click":
+        await execute([{ operation: "waitfor", args }]);
         console.log("CLICK", doc.querySelector(args.selector));
         await clickButton(doc.querySelector(args.selector), args.document);
         break;
@@ -951,6 +973,13 @@ async function execute(operations, mainexecute = false) {
         ]);
         break;
       case "waitandfill":
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "click", args },
+          { operation: "fill", args }
+        ]);
+        break;
+      case "repeatFill":
         await execute([
           { operation: "waitfor", args },
           { operation: "click", args },
