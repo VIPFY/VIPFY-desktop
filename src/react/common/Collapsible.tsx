@@ -7,50 +7,38 @@ interface Props {
   info?: string;
 }
 
-interface State {
-  show: boolean;
-  maxHeight: string;
-  initial: boolean;
-}
+export default (props: Props) => {
+  const [show, setShow] = React.useState(true);
+  const [maxHeight, setHeight] = React.useState("1000px");
 
-export default class Collapsible extends React.Component<Props, State> {
-  state = { show: true, maxHeight: "1000px", initial: true };
-  childrenRef = React.createRef<HTMLTextAreaElement>();
+  const childrenRef = React.createRef<HTMLTextAreaElement>();
 
-  componentDidMount() {
-    if (this.childrenRef && this.childrenRef!.current) {
-      // Needed to correctly render the height
-      setTimeout(
-        () =>
-          this.setState({
-            maxHeight: `${this.childrenRef!.current!.scrollHeight + 200}px`,
-            initial: false
-          }),
-        this.props.noResize ? 800 : 2500
-      );
+  React.useEffect(() => {
+    if (childrenRef && childrenRef!.current) {
+      const { scrollHeight } = childrenRef!.current!;
+
+      if (parseInt(maxHeight.split("px")[0]) + 200 < scrollHeight) {
+        setHeight(`${scrollHeight + 200}px`);
+      }
     }
-  }
+  });
 
-  render() {
-    const { show } = this.state;
+  return (
+    <section className={`collapsible ${props.className}`}>
+      <div
+        className="header"
+        title={props.info ? props.info : ""}
+        onClick={(): void => setShow(prevState => !prevState)}>
+        <i className={`button-hide fas fa-angle-left rotate-${show ? "left" : "down"}`} />
+        <span>{props.title}</span>
+      </div>
 
-    return (
-      <section className={`collapsible ${this.props.className}`}>
-        <div
-          className="header"
-          title={this.props.info ? this.props.info : ""}
-          onClick={(): void => this.setState(prevState => ({ show: !prevState.show }))}>
-          <i className={`button-hide fas fa-angle-left rotate-${show ? "left" : "down"}`} />
-          <span>{this.props.title}</span>
-        </div>
-
-        <div
-          ref={this.childrenRef}
-          className={show ? "children" : "no-spacing"}
-          style={{ height: "auto", maxHeight: show ? this.state.maxHeight : "0" }}>
-          {React.Children.map(this.props.children, child => child)}
-        </div>
-      </section>
-    );
-  }
-}
+      <div
+        ref={childrenRef}
+        className={show ? "children" : "no-spacing"}
+        style={{ height: "auto", maxHeight: show ? maxHeight : "0" }}>
+        {React.Children.map(props.children, child => child)}
+      </div>
+    </section>
+  );
+};

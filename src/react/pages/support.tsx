@@ -1,26 +1,40 @@
 import * as React from "react";
-import { Mutation, Query } from "react-apollo";
+import WebView from "react-electron-web-view";
+import { Mutation } from "react-apollo";
 import Collapsible from "../common/Collapsible";
 import UniversalSearchBox from "../components/universalSearchBox";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
 import UniversalButton from "../components/universalButtons/universalButton";
 import UniversalDropDownInput from "../components/universalForms/universalDropdownInput";
 import gql from "graphql-tag";
-import { ErrorComp } from "../common/functions";
+import { ErrorComp, getPreloadScriptPath } from "../common/functions";
 import UniversalTextArea from "../components/universalForms/UniversalTextArea";
 import LoadingDiv from "../components/LoadingDiv";
+import SupportRequests, { GET_REQUESTS } from "../components/support/SupportRequests";
+import moment from "moment";
 
 const SEND_REQUEST = gql`
-  mutation onSendSupportRequest($topic: String!, $description: String!, $component: String) {
-    sendSupportRequest(topic: $topic, description: $description, component: $component)
+  mutation onSendSupportRequest(
+    $topic: String!
+    $description: String!
+    $component: String!
+    $internal: Boolean!
+  ) {
+    sendSupportRequest(
+      topic: $topic
+      description: $description
+      component: $component
+      internal: $internal
+    )
   }
 `;
 
-const GET_REQUESTS = gql`
-  {
-    fetchSupportRequests
-  }
-`;
+interface Variables {
+  topic: string;
+  description: string;
+  component: string;
+  internal: boolean;
+}
 
 interface Props {
   chatOpen: boolean;
@@ -32,11 +46,13 @@ interface Props {
 
 export default (props: Props) => {
   const [search, setSearch] = React.useState("");
-  const [showForm, setShowForm] = React.useState("");
-  const [topic, setTopic] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [component, setComponent] = React.useState("");
-  const [success, showSuccess] = React.useState(false);
+  // const [showForm, setShowForm] = React.useState("");
+  // const [topic, setTopic] = React.useState("");
+  // const [description, setDescription] = React.useState("");
+  // const [component, setComponent] = React.useState("");
+  // const [success, showSuccess] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [submitted, setSubmitted] = React.useState(false);
 
   let cssClass = "marginLeft";
   if (props.chatOpen) {
@@ -46,37 +62,59 @@ export default (props: Props) => {
     cssClass += " sidebar-open";
   }
 
-  const items = [
-    {
-      header: "External App Help",
-      body: "If you need help with an App integrated into VIPFY",
-      form: "app"
-    },
-    {
-      header: "VIPFY App Help",
-      body: "If you need help with the functionality of VIPFY",
-      form: "vipfy"
+  // const items = [
+  //   {
+  //     header: "External App Help",
+  //     body: "If you need help with an App integrated into VIPFY",
+  //     form: "app"
+  //   },
+  //   {
+  //     header: "VIPFY App Help",
+  //     body: "If you need help with the functionality of VIPFY",
+  //     form: "vipfy"
+  //   }
+  // ];
+
+  // let options = [
+  //   { id: "dashboard", name: "Dashboard" },
+  //   { id: "accountIntegrator", name: "Account Integrator" },
+  //   { id: "notifications", name: "Notifications" },
+  //   { id: "profile", name: "Profile" }
+  // ];
+
+  // if (props.isadmin) {
+  //   options = [
+  //     ...options,
+  //     { id: "billing", name: "Billing" },
+  //     { id: "security", name: "Security" },
+  //     { id: "usageStatistics", name: "Usage Statistics" },
+  //     { id: "teamManager", name: "Team Manager" },
+  //     { id: "employeeManager", name: "Employee Manager" },
+  //     { id: "serviceManager", name: "Service Manager" }
+  //   ];
+  // }
+
+  const onIpcMessage = e => {
+    switch (e.channel) {
+      case "get-email":
+        {
+          e.target.send("email", "peter.herbertsenf@vipfy.com");
+        }
+        break;
+      case "loading-finished":
+        {
+          setLoading(false);
+        }
+        break;
+      case "form-submit":
+        {
+          setSubmitted(true);
+        }
+        break;
+      default:
+        console.log("No case applied", e.channel);
     }
-  ];
-
-  let options = [
-    { id: "dashboard", name: "Dashboard" },
-    { id: "accountIntegrator", name: "Account Integrator" },
-    { id: "notifications", name: "Notifications" },
-    { id: "profile", name: "Profile" }
-  ];
-
-  if (props.isadmin) {
-    options = [
-      ...options,
-      { id: "billing", name: "Billing" },
-      { id: "security", name: "Security" },
-      { id: "usageStatistics", name: "Usage Statistics" },
-      { id: "teamManager", name: "Team Manager" },
-      { id: "employeeManager", name: "Employee Manager" },
-      { id: "serviceManager", name: "Service Manager" }
-    ];
-  }
+  };
 
   return (
     <section className={`support ${cssClass}`}>
@@ -87,12 +125,39 @@ export default (props: Props) => {
 
       <Collapsible title="Support Forms">
         <div className="support-form-wrapper">
-          <div className="support-options">
+          {loading && <LoadingDiv style={{ height: "300px" }} />}
+          {submitted ? (
+            <div className="support-form-submit">
+              <h2>Ticket successfully created</h2>
+              <UniversalButton
+                onClick={() => {
+                  setSubmitted(false);
+                  setLoading(true);
+                }}
+                type="high"
+                label="create another ticket"
+              />
+            </div>
+          ) : (
+            <div style={loading ? { height: 0 } : {}}>
+              <WebView
+                preload={getPreloadScriptPath("freshdesk.js")}
+                webpreferences="webSecurity=no"
+                src="https://vipfy-support.freshdesk.com/support/tickets/new"
+                partition="vipfy-support"
+                className="support-webview"
+                onIpcMessage={e => onIpcMessage(e)}
+              />
+            </div>
+          )}
+
+          {/* <div className="support-options">
             <h2>What can we help you with?</h2>
             <ul>
               {items.map(item => (
                 <li
                   key={item.header}
+                  className={showForm == item.form ? "selected" : ""}
                   role="button"
                   onClick={() => {
                     setShowForm(item.form);
@@ -106,9 +171,9 @@ export default (props: Props) => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
-          {success && (
+          {/* {success && (
             <h3 className="support-success">
               Thanks for submitting your request. A member of our Support Team will answer you soon.
             </h3>
@@ -117,6 +182,23 @@ export default (props: Props) => {
           {showForm && (
             <Mutation
               mutation={SEND_REQUEST}
+              update={cache => {
+                const cachedData = cache.readQuery({ query: GET_REQUESTS });
+
+                const fetchSupportRequests = [
+                  ...cachedData.fetchSupportRequests,
+                  {
+                    id: "-1",
+                    createdDate: moment().format("lll"),
+                    status: "Waiting for support",
+                    labels: showForm == "vipfy" ? "VIPFY" : ["external-app", component],
+                    topic,
+                    description
+                  }
+                ];
+
+                cache.writeQuery({ query: GET_REQUESTS, data: { fetchSupportRequests } });
+              }}
               onCompleted={() => {
                 setShowForm("");
                 showSuccess(true);
@@ -126,14 +208,13 @@ export default (props: Props) => {
               }}>
               {(sendRequest, { loading, error }) => {
                 const handleSubmit = async () => {
-                  const variables: { topic: string; description: string; component?: string } = {
+                  const variables: Variables = {
                     topic,
-                    description
+                    description,
+                    component,
+                    internal: showForm == "vipfy"
                   };
 
-                  if (showForm == "vipfy") {
-                    variables.component = component;
-                  }
                   sendRequest({ variables });
                 };
 
@@ -152,7 +233,7 @@ export default (props: Props) => {
                         livevalue={v => setTopic(v)}
                       />
 
-                      {showForm == "vipfy" && (
+                      {showForm == "vipfy" ? (
                         <UniversalDropDownInput
                           id="support-form"
                           disabled={loading}
@@ -174,6 +255,14 @@ export default (props: Props) => {
                           )}
                           resetPossible={true}
                           livecode={id => setComponent(id)}
+                        />
+                      ) : (
+                        <UniversalTextInput
+                          disabled={loading}
+                          id="component"
+                          width="500px"
+                          label="Please specify which App causes the problem"
+                          livevalue={v => setComponent(v)}
                         />
                       )}
 
@@ -205,27 +294,11 @@ export default (props: Props) => {
                 );
               }}
             </Mutation>
-          )}
+          )} */}
         </div>
       </Collapsible>
 
-      <Query query={GET_REQUESTS}>
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <LoadingDiv />;
-          }
-
-          if (error || !data) {
-            return <ErrorComp error={error} />;
-          }
-
-          return (
-            <Collapsible title="Support requests">
-              <div>Your requests</div>
-            </Collapsible>
-          );
-        }}
-      </Query>
+      {/* <SupportRequests /> */}
     </section>
   );
 };
