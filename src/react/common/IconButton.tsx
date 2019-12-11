@@ -6,6 +6,7 @@ interface Props {
   icon: string;
   title?: string;
   disabled?: boolean;
+  type?: string;
 }
 
 export default (props: Props) => {

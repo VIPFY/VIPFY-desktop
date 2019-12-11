@@ -1,0 +1,68 @@
+#vacation {
+  @extend .managerPage;
+
+  .contentPopup {
+    h1 {
+      font-size: 24px;
+      display: block;
+      text-align: center;
+      padding-bottom: 24px;
+    }
+  }
+
+  .vacation-request {
+    padding: 20px;
+    height: 500px;
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+    }
+
+    form {
+      display: flex;
+      flex-flow: column;
+
+      .vacation-form-row {
+        display: flex;
+        align-items: center;
+
+        span {
+          margin-right: 20px;
+
+          &:nth-of-type(2) {
+            margin-left: 20px;
+          }
+        }
+
+        button {
+          margin-left: 20px;
+        }
+
+        &:not(:first-of-type) {
+          margin-top: 20px;
+        }
+
+        .error-field {
+          font-size: 1rem;
+          margin-left: 20px;
+        }
+      }
+    }
+
+    .vacation-form-buttons {
+      margin-top: 30px;
+
+      button:first-of-type {
+        margin-right: 20px;
+      }
+    }
+  }
+
+  .vacation-requests-overview {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+}

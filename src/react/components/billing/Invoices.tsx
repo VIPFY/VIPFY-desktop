@@ -80,7 +80,7 @@ export default () => {
         const yearsList = Object.keys(invoicesByYears).map(year => year);
 
         return (
-          <div className="billing-table-holder" style={{ minHeight: "175px" }}>
+          <div className="table-holder" style={{ minHeight: "175px" }}>
             <ul className="billing-period">
               {[...Array(12).keys()].map(i => {
                 const month = moment().months(i);
