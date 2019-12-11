@@ -55,6 +55,7 @@ class ServiceGrid extends React.Component<Props, State> {
                 }
               }}
               className="image"
+              size={88}
             />
             <div
               className="name"
@@ -141,7 +142,12 @@ class ServiceGrid extends React.Component<Props, State> {
                   draggable
                   onClick={() => this.props.onChange({ action: "add", content: app })}
                   onDragStart={() => this.setState({ drag: app })}>
-                  <PrintServiceSquare service={app} appidFunction={s => s} className="image" />
+                  <PrintServiceSquare
+                    service={app}
+                    appidFunction={s => s}
+                    className="image"
+                    size={88}
+                  />
                   <div className="name" title={app.name}>
                     {app.name}
                   </div>
