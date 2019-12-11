@@ -53,6 +53,7 @@ import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
 import CryptoDebug from "../components/admin/crytpodebug";
+import Vacation from "./vacation";
 
 interface AreaProps {
   history: any[];
@@ -357,7 +358,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   render() {
     const { sidebarOpen, chatOpen } = this.state;
     const routes = [
-      { path: "", component: Dashboard },
+      { path: "", component: Vacation },
       { path: "dashboard", component: Dashboard },
       { path: "dashboard/:overlay", component: Dashboard },
       { path: "settings", component: Settings },
@@ -376,6 +377,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan },
       //{ path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
+      { path: "vacation", component: Vacation },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
