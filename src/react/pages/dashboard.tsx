@@ -208,7 +208,7 @@ class Dashboard extends React.Component<Props, State> {
           </div>
         ) : (
           <React.Fragment>
-            {/*<Collapsible noResize={true} child={this.favouriteListRef} title="Favourite Apps">*/}
+            {/*<Collapsible noResize={true}  title="Favourite Apps">*/}
             <div className="section">
               <div className="heading">
                 <h1>Favourite Apps</h1>

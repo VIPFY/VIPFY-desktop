@@ -57,7 +57,7 @@ interface State {
   country: string;
   phone1: string;
   phone2: string;
-  updateing: Boolean;
+  updating: Boolean;
   hiredate: string;
   position: string;
   email: string;
@@ -142,18 +142,22 @@ class PersonalDetails extends React.Component<Props, State> {
     name: `${this.props.querydata.firstname || ""} ${this.props.querydata.lastname || ""}`,
     birthday: this.props.querydata.birthday,
     street:
+      this.props.querydata.addresses &&
       this.props.querydata.addresses[0] &&
       this.props.querydata.addresses[0].address &&
       this.props.querydata.addresses[0].address.street,
     zip:
+      this.props.querydata.addresses &&
       this.props.querydata.addresses[0] &&
       this.props.querydata.addresses[0].address &&
       this.props.querydata.addresses[0].address.zip,
     city:
+      this.props.querydata.addresses &&
       this.props.querydata.addresses[0] &&
       this.props.querydata.addresses[0].address &&
       this.props.querydata.addresses[0].address.city,
     country:
+      this.props.querydata.addresses &&
       this.props.querydata.addresses[0] &&
       this.props.querydata.addresses[0].address &&
       this.props.querydata.addresses[0].country,
@@ -165,7 +169,7 @@ class PersonalDetails extends React.Component<Props, State> {
       this.props.querydata.privatePhones &&
       this.props.querydata.privatePhones[1] &&
       this.props.querydata.privatePhones[1].number,
-    updateing: false,
+    updating: false,
     hiredate: this.props.querydata.hiredate,
     position: this.props.querydata.position,
     email: this.props.querydata.email,
@@ -183,7 +187,7 @@ class PersonalDetails extends React.Component<Props, State> {
   };
 
   async handleConfirm() {
-    this.setState({ updateing: true });
+    this.setState({ updating: true });
     return;
   }
 
@@ -192,7 +196,6 @@ class PersonalDetails extends React.Component<Props, State> {
   }
 
   listenKeyboard = e => {
-    const { name, email } = this.state;
     if (this.state.edit) {
       switch (this.state.edit.id) {
         case "emails":
@@ -818,7 +821,7 @@ class PersonalDetails extends React.Component<Props, State> {
                   }
                   onClick={() => this.handleConfirm()}
                 />
-                {this.state.updateing ? (
+                {this.state.updating ? (
                   <PopupSelfSaving
                     heading={`Save ${this.state.edit.label} of ${concatName(querydata)}`}
                     saveFunction={async () => {
@@ -996,20 +999,20 @@ class PersonalDetails extends React.Component<Props, State> {
                       }
                     }}
                     closeFunction={() =>
-                      this.setState({ edit: null, updateing: false, editvalue: null })
+                      this.setState({ edit: null, updating: false, editvalue: null })
                     }
                     savingmessage="Saving"
                     savedmessage={`${this.state.edit.label} saved`}
                   />
                 ) : (
-                  /*<PopupBase small={true} close={() => this.setState({ updateing: false })}>
+                  /*<PopupBase small={true} close={() => this.setState({ updating: false })}>
                     <i className="fal fa-spinner fa-spin" />
                     <span>Saving</span>
                   </PopupBase>*/
                   ""
                 )}
                 {this.state.error ? (
-                  <PopupBase small={true} close={() => this.setState({ updateing: false })}>
+                  <PopupBase small={true} close={() => this.setState({ updating: false })}>
                     <span>Something went wrong :( Please try again or contact support</span>
                     <UniversalButton
                       type="high"

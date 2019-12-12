@@ -113,7 +113,7 @@ class PopupBase extends React.Component<Props, State> {
           element &&
           element.type &&
           element.type.name &&
-          element.type.name == "UniversalButton"
+          element.type.name.endsWith("UniversalButton")
         ) {
           if (popupButtonArray.length > 0) {
             popupButtonArray.push(<div key={`${key}-sep`} className="buttonSeperator" />);
@@ -136,7 +136,7 @@ class PopupBase extends React.Component<Props, State> {
           element &&
           element.type &&
           element.type.name &&
-          element.type.name == "UniversalTextInput"
+          element.type.name.endsWith("UniversalTextInput")
         ) {
           if (popupFieldsArray.length > 0) {
             popupFieldsArray.push(<div key={`${key}-sep`} className="fieldsSeperator" />);
@@ -146,7 +146,7 @@ class PopupBase extends React.Component<Props, State> {
           element &&
           element.type &&
           element.type.name &&
-          element.type.name == "PopupBase"
+          element.type.name.endsWith("PopupBase")
         ) {
           popupElementArray.push(React.cloneElement(element, { closeall: () => this.closeall() }));
         } else {

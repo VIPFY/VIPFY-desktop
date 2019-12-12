@@ -22,6 +22,7 @@
 @import './admin.scss';
 @import './manager.scss';
 @import './dataForms.scss';
+@import './support.scss';
 @import './headerNotifications.scss';
 @import './macosx';
 @import './error';
@@ -70,6 +71,10 @@ li {
     font-size: 10px;
     font-style: oblique;
   }
+}
+
+.no-data {
+  padding: 20px;
 }
 
 .credits {

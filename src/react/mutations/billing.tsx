@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
-export const downloadBill = gql`
-  mutation downloadBill($billid: ID!) {
+export const DOWNLOAD_INVOICE = gql`
+  mutation onDownloadBill($billid: ID!) {
     downloadBill(billid: $billid)
   }
 `;

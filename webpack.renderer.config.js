@@ -42,7 +42,7 @@ rules.push({
 });
 
 plugins.push(new CopyPlugin([{ from: "src/ssoConfigPreload/", to: "ssoConfigPreload/" }]));
-plugins.push(new BundleAnalyzerPlugin());
+//plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
   // Put your normal webpack config below here
@@ -52,6 +52,9 @@ module.exports = {
   target: "electron-renderer",
   node: { global: true },
   plugins,
+  optimization: {
+    minimize: false
+  },
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".scss", ".node", ".json"]
   }

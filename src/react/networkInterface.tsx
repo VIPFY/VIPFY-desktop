@@ -9,6 +9,7 @@ import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
 import { logger } from "../logger";
 import { typeDefs, resolvers } from "./localGraphQL";
+import { inspect } from "util";
 
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
@@ -209,7 +210,13 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const retryLink = new RetryLink({
-  attempts: { max: 10 },
+  attempts: {
+    max: 10,
+    retryIf: (error, operation) => {
+      console.log("GQL retry", inspect(error), operation);
+      return !!error && error.name !== "ServerError" && !("mutation" in operation);
+    }
+  },
   delay: { initial: 1000 }
 });
 

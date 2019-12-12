@@ -41,8 +41,6 @@ class EmployeeSection extends React.Component<Props, State> {
   };
 
   render() {
-    const employeeids: number[] = [];
-
     let licences: any[] = [];
     let interlicences: any[] = [];
     if (this.props.licences) {
@@ -135,9 +133,7 @@ class EmployeeSection extends React.Component<Props, State> {
         {this.state.add && (
           <ManageServiceEmployees
             service={this.props.service}
-            close={sO => {
-              this.setState({ add: false });
-            }}>
+            close={() => this.setState({ add: false })}>
             <div className="buttonsPopup">
               <UniversalButton
                 label="Close"
@@ -162,4 +158,5 @@ class EmployeeSection extends React.Component<Props, State> {
     );
   }
 }
+
 export default EmployeeSection;

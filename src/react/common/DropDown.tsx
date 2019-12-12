@@ -6,11 +6,12 @@ interface Props {
   defaultValue?: any;
   options: any[];
   handleChange: Function;
-  option: Option | null | string;
+  option: Option | null | string | number;
   touched?: boolean;
   holder?: any;
   scrollItem?: any;
-  header: string;
+  header?: string;
+  className?: string;
 }
 
 interface State {
@@ -91,8 +92,9 @@ class DropDown extends React.PureComponent<Props, State> {
       bodyClass += " slide-up";
     }
     // }
+
     return (
-      <div className="dropdown" ref={this.wrapper}>
+      <div className={`dropdown ${this.props.className}`} ref={this.wrapper}>
         <button
           className="naked-button dropdown-header"
           onClick={() => this.setState(prev => ({ ...prev, show: !prev.show, touched: true }))}>

@@ -7,6 +7,7 @@ import ManageTeamEmployees from "../universal/managing/teamemployees";
 import AssignNewTeamMember from "../universal/adding/assignNewTeamMember";
 
 interface Props {
+  isadmin: boolean;
   employees: any[];
   search: string;
   team: any;
@@ -44,6 +45,7 @@ class EmployeeSection extends React.Component<Props, State> {
   render() {
     let employees: any[] = [];
     let interemployees: any[] = [];
+
     if (this.props.employees) {
       interemployees = this.props.employees;
 

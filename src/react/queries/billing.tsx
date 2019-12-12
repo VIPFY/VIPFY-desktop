@@ -1,14 +1,13 @@
 import gql from "graphql-tag";
 
-export const fetchBills = gql`
-  query fetchBills {
+export const FETCH_BILLS = gql`
+  query onFetchBills {
     fetchBills {
       id
       billtime
       paytime
       stornotime
-      pdflink
-      invoicelink
+      billname
       amount
       currency
       refundedtime
@@ -16,7 +15,7 @@ export const fetchBills = gql`
   }
 `;
 
-export const fetchCards = gql`
+export const FETCH_CARDS = gql`
   {
     fetchPaymentData {
       id
@@ -70,6 +69,33 @@ export const FETCH_ALL_BOUGHTPLANS_LICENCES = gql`
           icon
           needssubdomain
           options
+        }
+      }
+    }
+  }
+`;
+
+export const FETCH_UNIT_APPS = gql`
+  query fetchUnitApps($departmentid: ID!) {
+    fetchUnitApps(departmentid: $departmentid) {
+      id
+      boughtplan {
+        id
+        totalprice
+        buytime
+        endtime
+        alias
+        plan: planid {
+          currency
+          id
+          name
+          app: appid {
+            id
+            name
+            icon
+            logo
+            color
+          }
         }
       }
     }

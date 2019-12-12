@@ -1,12 +1,14 @@
 import * as React from "react";
 import ReactPasswordStrength from "react-password-strength";
-import { Mutation } from "react-apollo";
-import { CHANGE_PASSWORD, forgotPassword } from "../../mutations/auth";
+import { Mutation, withApollo } from "react-apollo";
 import { PW_MIN_LENGTH } from "../../common/constants";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import PopupBase from "./popupBase";
 import { me as ME } from "../../queries/auth";
+import { updatePassword } from "../../common/passwords";
+import { MutationLike } from "../../common/mutationlike";
+import { forgotPassword } from "../../mutations/auth";
 
 interface PasswordChangeProps {
   email: string;
@@ -49,13 +51,14 @@ class ForcedPasswordChange extends React.Component<PasswordChangeProps, Password
 
   render() {
     return (
-      <Mutation
+      <MutationLike
+        client={this.props.client}
         update={cache => {
           const { me } = cache.readQuery({ query: ME });
 
           cache.writeQuery({ query: ME, data: { me: { ...me, needspasswordchange: false } } });
         }}
-        mutation={CHANGE_PASSWORD}
+        mutation={updatePassword}
         onError={() => this.setState({ showError: true })}>
         {(updatePassword, { loading }) => (
           <PopupBase
@@ -173,9 +176,9 @@ class ForcedPasswordChange extends React.Component<PasswordChangeProps, Password
             )}
           </PopupBase>
         )}
-      </Mutation>
+      </MutationLike>
     );
   }
 }
 
-export default ForcedPasswordChange;
+export default withApollo(ForcedPasswordChange);

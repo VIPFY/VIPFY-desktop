@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Mutation } from "react-apollo";
-import gql from "graphql-tag";
+import { withApollo } from "react-apollo";
 import ReactPasswordStrength from "react-password-strength";
 import { PW_MIN_LENGTH } from "../../common/constants";
 import { ErrorComp } from "../../common/functions";
@@ -8,17 +7,9 @@ import UserName from "../../components/UserName";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { UserContext } from "../../common/context";
-import { CHANGE_PASSWORD } from "../../mutations/auth";
-
-const UPDATE_PASSWORD = gql`
-  mutation onUpdateEmployeePassword($unitid: ID!, $password: String!, $logOut: Boolean) {
-    updateEmployeePassword(unitid: $unitid, password: $password, logOut: $logOut) {
-      id
-      passwordlength
-      passwordstrength
-    }
-  }
-`;
+import { MutationLike } from "../../common/mutationlike";
+import { updatePassword } from "../../common/passwords";
+import { updateEmployeePassword } from "../../common/passwords";
 
 interface Password {
   score: number;
@@ -29,6 +20,7 @@ interface Password {
 interface Props {
   closeFunction: Function;
   unitid: number;
+  client: any;
 }
 
 interface State {
@@ -49,7 +41,9 @@ class PasswordUpdate extends React.Component<Props, State> {
     return (
       <UserContext.Consumer>
         {({ userid }) => (
-          <Mutation mutation={unitid == userid ? CHANGE_PASSWORD : UPDATE_PASSWORD}>
+          <MutationLike
+            client={this.props.client}
+            mutation={unitid == userid ? updatePassword : updateEmployeePassword}>
             {(updatePassword, { loading, error, data }) => (
               <PopupBase
                 buttonStyles={{ justifyContent: "space-between" }}
@@ -106,11 +100,11 @@ class PasswordUpdate extends React.Component<Props, State> {
                       />
 
                       <ReactPasswordStrength
-                        className="passwordStrength"
+                        className="passwordStrength not-show-bar"
                         minLength={PW_MIN_LENGTH}
                         minScore={2}
-                        scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                        tooShortWord={"too short"}
+                        scoreWords={[]}
+                        tooShortWord=""
                         inputProps={{
                           name: "password_input_repeat",
                           autoComplete: "off",
@@ -127,8 +121,8 @@ class PasswordUpdate extends React.Component<Props, State> {
                           opacity:
                             password &&
                             passwordRepeat &&
-                            passwordRepeat.password.length >= PW_MIN_LENGTH &&
-                            password.password.length != passwordRepeat.password.length
+                            password.password.length >= PW_MIN_LENGTH &&
+                            password.password != passwordRepeat.password
                               ? 1
                               : 0
                         }}
@@ -153,7 +147,7 @@ class PasswordUpdate extends React.Component<Props, State> {
                 )}
                 {!data && (
                   <UniversalButton
-                    type="low"
+                    type="high"
                     disabled={
                       unitid == userid
                         ? !currentPassword || !currentPassword.password
@@ -165,27 +159,24 @@ class PasswordUpdate extends React.Component<Props, State> {
                           loading
                     }
                     onClick={() => {
-                      let variables = { password: password.password, unitid };
-
                       if (unitid == userid) {
-                        variables = {
-                          pw: currentPassword.password,
-                          newPw: password.password,
-                          confirmPw: passwordRepeat.password
-                        };
+                        if (password.password !== passwordRepeat.password) {
+                          return null;
+                        }
+                        return updatePassword(this.props.client, pw, newPw);
                       }
-                      updatePassword({ variables });
+                      return updatePassword(this.props.client, unitid, password.password);
                     }}
                     label="Update Password"
                   />
                 )}
               </PopupBase>
             )}
-          </Mutation>
+          </MutationLike>
         )}
       </UserContext.Consumer>
     );
   }
 }
 
-export default PasswordUpdate;
+export default withApollo(PasswordUpdate);

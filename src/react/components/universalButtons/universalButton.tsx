@@ -26,7 +26,12 @@ class UniversalButton extends React.Component<Props, State> {
   click(e) {
     const child = this.props.children;
     if (!this.props.disabled) {
-      if (child && !Array.isArray(child) && child.type && child.type.name == "ConfirmationPopup") {
+      if (
+        child &&
+        !Array.isArray(child) &&
+        child.type &&
+        child.type.name.endsWith("ConfirmationPopup")
+      ) {
         this.setState({ confirmpopup: true });
         return;
       }
@@ -51,6 +56,7 @@ class UniversalButton extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <button
+          type={this.props.form ? "submit" : "button"}
           form={this.props.form}
           className={`cleanup universalCoverButton ${this.props.className}`}
           onClick={e => this.click(e)}

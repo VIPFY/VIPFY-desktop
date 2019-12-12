@@ -92,11 +92,11 @@ export const resolvers = {
         if (!d.data || !d.data.fetchKey == null) {
           throw new Error(d.error);
         }
-        return await decryptLicence(
+        return (await decryptLicence(
           Buffer.from(key.privatekey, "hex"),
           Buffer.from(d.data.fetchKey.publickey, "hex"),
           Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
-        ).toString("hex");
+        )).toString("hex");
       }
     }
   },

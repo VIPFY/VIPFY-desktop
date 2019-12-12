@@ -79,6 +79,7 @@ class ServiceGeneralDataAdd extends React.Component<Props, State> {
                   additionalStyles={{ width: "120px", height: "120px" }}
                   appidFunction={a => a}
                   className="image"
+                  size={120}
                 />
                 <div className="name" style={{ top: "136px" }}>
                   {this.state.integrateService!.name}
@@ -148,6 +149,7 @@ class ServiceGeneralDataAdd extends React.Component<Props, State> {
                     additionalStyles={{ width: "120px", height: "120px" }}
                     appidFunction={a => a}
                     className="image"
+                    size={120}
                   />
                   <div className="name" style={{ top: "136px" }}>
                     {app.name}

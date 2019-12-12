@@ -24,10 +24,10 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { sleep } from "./common/functions";
 import { remote } from "electron";
 const { session } = remote;
+import { version } from "../../package.json";
 
 import pjson from "pjson";
 import config from "../../configurationManager.ts";
-import windowControls from "../../windowcontrols.js";
 
 interface IndexProps {
   client: ApolloClient<InMemoryCache>;
@@ -65,6 +65,8 @@ class Application extends React.Component<IndexProps> {
     if (is.macOS()) {
       document.body.classList.add("mac");
     }
+
+    document.getElementById("versionnumber")!.innerText = version;
   }
 
   componentWillUnmount() {

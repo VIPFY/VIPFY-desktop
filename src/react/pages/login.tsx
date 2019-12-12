@@ -10,11 +10,11 @@ import ReactPasswordStrength from "react-password-strength";
 import { me } from "../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { CHANGE_PASSWORD } from "../mutations/auth";
 import DataNameForm from "../components/dataForms/NameForm";
 import DataNextForm from "../components/dataForms/NextForm";
 import SignUpInGeneral from "../components/dataForms/SignUpInGeneralForm";
 import ChangeAccount from "../components/dataForms/ChangeAccount";
+import { updatePassword } from "../common/passwords";
 
 const SIGN_UP = gql`
   mutation onSignUp($email: String!, $name: NameInput, $companyData: CompanyInput!) {
@@ -181,14 +181,11 @@ class Login extends React.Component<Props, State> {
     }
     await this.setState({ error: null, loading: true });
     try {
-      await this.props.client.mutate({
-        mutation: CHANGE_PASSWORD,
-        variables: {
-          pw: this.state.oldPassword,
-          newPw: this.state.newPassword,
-          confirmPw: this.state.repeatPassword
-        }
-      });
+      if (this.state.newPassword != this.state.repeatPassword) {
+        throw new Error("Passwords don't match");
+      }
+      await updatePassword(this.props.client, this.state.oldPassword, this.state.newPassword!);
+
       await this.props.client.query({ query: me, fetchPolicy: "network-only" });
     } catch (err) {
       this.setState({ error: err.message, loading: false });

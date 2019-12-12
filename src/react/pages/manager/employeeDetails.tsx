@@ -83,7 +83,6 @@ class EmployeeDetails extends React.Component<Props, State> {
 
           if (data && (data.fetchSemiPublicUser || data.me)) {
             const querydata = data.fetchSemiPublicUser || data.me;
-            console.log("INPUT", querydata);
             const privatePhones = [];
             const workPhones = [];
 
@@ -152,7 +151,6 @@ class EmployeeDetails extends React.Component<Props, State> {
                             {querydata.isonline ? "Online" : "Offline"}
                           </div>
                         </div>
-                        {console.log("LOG: EmployeeDetails -> render -> querydata", querydata)}{" "}
                         <PersonalDetails
                           querydata={querydata}
                           refetch={refetch}

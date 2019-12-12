@@ -132,6 +132,7 @@ class ServiceDetails extends React.Component<Props, State> {
                           service={service.app}
                           className="managerBigSquare"
                           additionalStyles={{ marginLeft: "16px", marginTop: "16px" }}
+                          size={96}
                         />
                       </label>
                     </form>

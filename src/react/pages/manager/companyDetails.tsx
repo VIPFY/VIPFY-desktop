@@ -2,14 +2,12 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
 import { FETCH_COMPANY } from "../../queries/departments";
-import PersonalDetails from "../../components/manager/personalDetails";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import moment from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
@@ -96,69 +94,10 @@ class CompanyDetails extends React.Component<Props, State> {
     }
   };
 
-  printEditForm() {
-    switch (this.state.edit!.id) {
-      case "promocode":
-        if (this.state.edit!.startvalue) {
-          return (
-            <>
-              <div>
-                <span>Please contact support to change this information</span>
-              </div>
-              <UniversalButton
-                label="Cancel"
-                type="low"
-                onClick={() => this.setState({ edit: null, editvalue: null })}
-              />
-            </>
-          );
-        }
-        return (
-          <>
-            <div>
-              <UniversalTextInput
-                id={this.state.edit!.id}
-                label={this.state.edit!.label}
-                livevalue={v => this.setState({ editvalue: v })}
-                startvalue={this.state.edit!.startvalue}
-                type={this.state.edit!.type}
-              />
-            </div>
-            <UniversalButton
-              label="Cancel"
-              type="low"
-              onClick={() => this.setState({ edit: null, editvalue: null })}
-            />
-            <UniversalButton
-              label="Save"
-              type="high"
-              onClick={async () => {
-                this.setState({ updateing: true });
-                return;
-              }}
-            />
-          </>
-        );
-      default:
-        return (
-          <>
-            <div>
-              <span>Please contact support to change this information</span>
-            </div>
-            <UniversalButton
-              label="Cancel"
-              type="low"
-              onClick={() => this.setState({ edit: null, editvalue: null })}
-            />
-          </>
-        );
-    }
-  }
-
   render() {
     return (
       <Query pollInterval={60 * 10 * 1000 + 300} query={FETCH_COMPANY}>
-        {({ loading, error, data, refetch }) => {
+        {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";
           }
@@ -242,18 +181,18 @@ class CompanyDetails extends React.Component<Props, State> {
                                 pollInterval={60 * 10 * 1000 + 900}
                                 query={fetchCompanyServices}
                                 fetchPolicy="cache-and-network">
-                                {({ loading, error, data, refetch }) => {
+                                {({ loading, error, data }) => {
                                   if (loading) {
                                     return "Loading...";
                                   }
                                   if (error) {
                                     return `Error! ${error.message}`;
                                   }
-                                  return (
-                                    data &&
+                                  return data &&
                                     data.fetchCompanyServices &&
                                     data.fetchCompanyServices.length
-                                  );
+                                    ? data.fetchCompanyServices.length
+                                    : "No Data available";
                                 }}
                               </Query>
                             </h2>
@@ -272,7 +211,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                 pollInterval={60 * 10 * 1000 + 900}
                                 query={fetchCompanyServices}
                                 fetchPolicy="cache-and-network">
-                                {({ loading, error, data, refetch }) => {
+                                {({ loading, error, data }) => {
                                   if (loading) {
                                     return "Loading...";
                                   }
@@ -282,6 +221,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                   let sum = 0;
                                   if (data && data.fetchCompanyServices) {
                                     data.fetchCompanyServices.map(s => (sum += s.licences.length));
+
                                     return sum;
                                   } else {
                                     return "No Data avaiable";
@@ -330,15 +270,15 @@ class CompanyDetails extends React.Component<Props, State> {
                           <div
                             className="tableColumnSmall editable"
                             style={{ width: "100%" }}
-                            onClick={() =>
+                            onClick={() => {
                               this.setState({
                                 edit: {
                                   id: "promocode",
                                   label: "Promocode",
-                                  startvalue: promocode
+                                  startvalue: promocode || ""
                                 }
-                              })
-                            }>
+                              });
+                            }}>
                             <h1>Promocode</h1>
                             <h2>{promocode}</h2>
                             <div className="profileEditButton">
@@ -419,10 +359,11 @@ class CompanyDetails extends React.Component<Props, State> {
                               this.setState({ edit: null, updateing: false, editvalue: null })
                             }
                             savingmessage="Saving"
+                            errormessage="Seems like the entered code was not valid!"
                             savedmessage={`${this.state.edit.label} saved`}
                           />
                         )}
-                        {this.state.error ? (
+                        {this.state.error && (
                           <PopupBase small={true} close={() => this.setState({ updateing: false })}>
                             <span>Something went wrong :( Please try again or contact support</span>
                             <UniversalButton
@@ -431,8 +372,6 @@ class CompanyDetails extends React.Component<Props, State> {
                               onClick={() => this.setState({ error: null })}
                             />
                           </PopupBase>
-                        ) : (
-                          ""
                         )}
                       </PopupBase>
                     )}
@@ -441,6 +380,8 @@ class CompanyDetails extends React.Component<Props, State> {
                 </div>
               </div>
             );
+          } else {
+            return <div>Nothing here :-(</div>;
           }
         }}
       </Query>

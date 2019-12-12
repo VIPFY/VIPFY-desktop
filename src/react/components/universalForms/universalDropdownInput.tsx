@@ -14,7 +14,7 @@ interface Props {
   width?: string;
   livecode?: Function;
   noresults?: string;
-  options?: [];
+  options?: any[];
   codeFunction?: Function;
   renderOption?: Function;
   noFloating?: Boolean;
@@ -27,6 +27,7 @@ interface Props {
   styles?: Object;
   noNoResults?: Boolean;
   noFixed?: Boolean;
+  disabled?: boolean;
 }
 
 interface State {
@@ -60,7 +61,7 @@ class UniversalDropDownInput extends React.Component<Props, State> {
             )
           : ""
         : countries.find(c => c.code == this.props.startvalue)
-        ? countries.find(c => c.code == this.props.startvalue).name
+        ? countries.find(c => c.code == this.props.startvalue)!.name
         : "",
     error: null,
     inputFocus: false,
@@ -88,7 +89,7 @@ class UniversalDropDownInput extends React.Component<Props, State> {
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.startvalue != this.props.startvalue || prevProps.id != this.props.id) {
       this.setState({
         code: this.props.startvalue || "",
@@ -232,7 +233,6 @@ class UniversalDropDownInput extends React.Component<Props, State> {
       }
       return (
         <React.Fragment>
-          {/*<div style={{ width: "355px", height: "10px", position: "relative" }} />*/}
           <div
             className="resultHolder"
             style={
@@ -290,6 +290,7 @@ class UniversalDropDownInput extends React.Component<Props, State> {
         )}>
         <input
           id={this.props.id}
+          disabled={this.props.disabled}
           type={
             this.props.type == "password"
               ? this.state.eyeopen
@@ -357,9 +358,11 @@ class UniversalDropDownInput extends React.Component<Props, State> {
             <i className="fal fa-trash-alt" />
           </button>
         )}
-        {!this.state.value && this.props.alternativeText(this.nameInput)}
-        {this.props.type == "password" ? (
-          this.state.eyeopen ? (
+        {!this.state.value &&
+          this.props.alternativeText &&
+          this.props.alternativeText(this.nameInput)}
+        {this.props.type == "password" &&
+          (this.state.eyeopen ? (
             <button
               className="cleanup inputInsideButton"
               tabIndex={-1}
@@ -373,12 +376,10 @@ class UniversalDropDownInput extends React.Component<Props, State> {
               onClick={() => this.setState({ eyeopen: true })}>
               <i className="fal fa-eye-slash" />
             </button>
-          )
-        ) : (
-          ""
-        )}
+          ))}
       </div>
     );
   }
 }
+
 export default UniversalDropDownInput;
