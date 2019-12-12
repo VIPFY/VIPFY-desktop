@@ -17,6 +17,7 @@ export interface Licence {
   delete: boolean;
   vacationstart?: number | Date;
   vacationend?: number | Date;
+  accountid: number;
 }
 
 export interface Unit {

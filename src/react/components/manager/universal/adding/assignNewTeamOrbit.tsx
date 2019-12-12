@@ -61,7 +61,7 @@ const ADD_ORBIT_TO_TEAM = gql`
   }
 `;
 
-class AssignNewAccount extends React.Component<Props, State> {
+class AssignNewTeamOrbit extends React.Component<Props, State> {
   state = {
     service: null,
     orbit: null,
@@ -347,4 +347,4 @@ export default compose(
   graphql(ADD_ORBIT_TO_TEAM, {
     name: "addOrbitToTeam"
   })
-)(AssignNewAccount);
+)(AssignNewTeamOrbit);

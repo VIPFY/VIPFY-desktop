@@ -7,6 +7,7 @@ import CreateAccount from "./account";
 interface Props {
   orbit: any;
   continue: Function;
+  accountFunction?: Function;
   leftSide?: JSX.Element;
 }
 
@@ -20,7 +21,9 @@ class AssignAccount extends React.Component<Props, State> {
   state = { newaccount: false, showall: false, newaccountname: null };
 
   render() {
-    const accounts = this.props.orbit.licences;
+    const accounts = this.props.accountFunction
+      ? this.props.accountFunction(this.props.orbit)
+      : this.props.orbit.licences;
     return (
       <>
         <div

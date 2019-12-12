@@ -1,14 +1,9 @@
 import * as React from "react";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
-import { fetchTeam } from "../../queries/departments";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import moment from "moment";
-import { concatName } from "../../common/functions";
-import DeletePopup from "../../popups/universalPopups/deletePopup";
-import Calendar from "react-calendar";
+import RemoveTeamOrbit from "./removeTeamOrbit";
 
 interface Props {
   service: any;
@@ -127,7 +122,6 @@ class TeamServiceDetails extends React.Component<Props, State> {
 
   render() {
     const { service, team } = this.props;
-    console.log("PROPS", this.props);
     return (
       <Mutation mutation={REMOVE_SERVICE_FROM_TEAM} key={service.id}>
         {removeServiceFromTeam => (
@@ -186,100 +180,11 @@ class TeamServiceDetails extends React.Component<Props, State> {
               </div>
             </div>
             {this.state.delete && (
-              <PopupBase
-                small={true}
-                nooutsideclose={true}
+              <RemoveTeamOrbit
+                orbit={this.props.service}
+                team={this.props.team}
                 close={() => this.setState({ delete: false })}
-                additionalclassName="assignNewAccountPopup"
-                buttonStyles={{ justifyContent: "space-between" }}>
-                <h1>Remove Teamorbit</h1>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "24px",
-                    marginTop: "28px",
-                    position: "relative"
-                  }}>
-                  <span style={{ lineHeight: "24px", width: "84px" }}>Enddate:</span>
-                  <span style={{ lineHeight: "24px" }}>
-                    {this.state.todate ? moment(this.state.todate!).format("DD.MM.YYYY") : "Now"}
-                  </span>
-                  <i
-                    className="fal fa-pen editbutton"
-                    onClick={() => this.setState({ editto: true })}
-                  />
-                  {this.state.editto && (
-                    <PopupBase
-                      styles={{ maxWidth: "fit-content" }}
-                      close={() => this.setState({ editto: false, todate: null })}
-                      buttonStyles={{ justifyContent: "space-between" }}>
-                      <span style={{ fontSize: "18px", marginBottom: "8px", display: "block" }}>
-                        Select Enddate
-                      </span>
-                      <Calendar
-                        className="calendarEdit"
-                        locale="en-us"
-                        minDate={this.state.fromdate || new Date()}
-                        showWeekNumbers={true}
-                        onChange={v =>
-                          this.setState(oldstate => {
-                            return moment(oldstate.todate || new Date()).isSame(v)
-                              ? { todate: null }
-                              : { todate: v };
-                          })
-                        }
-                        value={this.state.todate || undefined}
-                      />
-                      <UniversalButton type="low" label="Cancel" closingPopup={true} />
-                      <UniversalButton
-                        type="high"
-                        label="Select"
-                        onClick={() => this.setState({ editto: false })}
-                      />
-                    </PopupBase>
-                  )}
-                </div>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
-                  <span
-                    style={{
-                      lineHeight: "24px",
-                      width: "84px",
-                      display: "flex",
-                      justifyContent: "center"
-                    }}>
-                    <UniversalCheckbox name="Assignment" liveValue={v => console.log(v)} />
-                  </span>
-
-                  <span style={{ lineHeight: "24px" }}>Delete all assignments</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
-                  <span
-                    style={{
-                      lineHeight: "24px",
-                      width: "84px",
-                      display: "flex",
-                      justifyContent: "center"
-                    }}>
-                    <UniversalCheckbox name="Account" liveValue={v => console.log(v)} />
-                  </span>
-
-                  <span style={{ lineHeight: "24px" }}>Delete all accounts</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
-                  <span
-                    style={{
-                      lineHeight: "24px",
-                      width: "84px",
-                      display: "flex",
-                      justifyContent: "center"
-                    }}>
-                    <UniversalCheckbox name="Orbit" liveValue={v => console.log(v)} />
-                  </span>
-
-                  <span style={{ lineHeight: "24px" }}>Delete orbit</span>
-                </div>
-              </PopupBase>
+              />
               /*  subHeading={`If you delete licence access for ${team.name} to ${service.planid.appid.name}, you remove access for the following team members`}
                 employees={this.props.team.employees}
                 services={[service]}

@@ -23,21 +23,23 @@ class EditVacations extends React.Component<Props, State> {
     const vacationforms: JSX.Element[] = [];
 
     this.props.querydata.vacation.forEach(v => {
-      vacationforms.push(
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "4fr 4fr 1fr",
-            lineHeight: "24px",
-            marginBottom: "24px"
-          }}>
-          <div>{moment(v.starttime).format("DD.MM.YYYY")}</div>
-          <div>{moment(v.endtime).format("DD.MM.YYYY")}</div>
-          <div>
-            <i className="fal fa-pen" />
+      if (v) {
+        vacationforms.push(
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "4fr 4fr 1fr",
+              lineHeight: "24px",
+              marginBottom: "24px"
+            }}>
+            <div>{moment(v.starttime).format("DD.MM.YYYY")}</div>
+            <div>{moment(v.endtime).format("DD.MM.YYYY")}</div>
+            <div>
+              <i className="fal fa-pen" />
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     });
     return (
       <PopupBase

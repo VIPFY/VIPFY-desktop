@@ -4,6 +4,7 @@ import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
 import AddTeamEmployee from "./../addTeamEmployee";
 import EmployeeDetails from "./../employeeDetails";
 import ManageTeamEmployees from "../universal/managing/teamemployees";
+import AssignNewTeamMember from "../universal/adding/assignNewTeamMember";
 
 interface Props {
   employees: any[];
@@ -85,6 +86,20 @@ class EmployeeSection extends React.Component<Props, State> {
       <div className="section">
         <div className="heading">
           <h1>Employees</h1>
+          <UniversalButton
+            type="high"
+            label="Assign Employee"
+            customStyles={{
+              fontSize: "12px",
+              lineHeight: "24px",
+              fontWeight: "700",
+              marginRight: "16px",
+              width: "128px"
+            }}
+            onClick={() => {
+              this.setState({ add: true });
+            }}
+          />
         </div>
         <div className="table">
           <div className="tableHeading">
@@ -106,7 +121,7 @@ class EmployeeSection extends React.Component<Props, State> {
               </div>
             </div>
             <div className="tableEnd">
-              <UniversalButton
+              {/* <UniversalButton
                 type="high"
                 label="Manage Employees"
                 customStyles={{
@@ -119,13 +134,14 @@ class EmployeeSection extends React.Component<Props, State> {
                 onClick={() => {
                   this.setState({ add: true });
                 }}
-              />
+              />*/}
             </div>
           </div>
           {employeeArray}
         </div>
         {this.state.add && (
-          <ManageTeamEmployees team={this.props.team} close={() => this.setState({ add: false })}>
+          <AssignNewTeamMember team={this.props.team} close={() => this.setState({ add: false })} />
+          /*<ManageTeamEmployees team={this.props.team} close={() => this.setState({ add: false })}>
             <div className="buttonsPopup">
               <UniversalButton
                 label="Close"
@@ -133,7 +149,7 @@ class EmployeeSection extends React.Component<Props, State> {
                 onClick={() => this.setState({ add: false })}
               />
             </div>
-          </ManageTeamEmployees>
+          </ManageTeamEmployees>*/
         )}
         {this.state.savingObject && (
           <PopupSelfSaving

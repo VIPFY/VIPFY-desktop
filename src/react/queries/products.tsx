@@ -144,8 +144,12 @@ export const fetchCompanyServices = gql`
         accounts {
           id
           alias
+          starttime
+          endtime
           assignments {
             assignmentid
+            starttime
+            endtime
             unitid {
               id
               firstname

@@ -276,6 +276,37 @@ export const fetchTeam = gql`
             disabled
           }
         }
+        accounts {
+          id
+          starttime
+          endtime
+          alias
+          options
+          assignments {
+            id
+            assignmentid
+            unitid {
+              id
+              firstname
+              lastname
+              profilepicture
+            }
+            starttime
+            endtime
+            tags
+            assignoptions
+            options
+            alias
+            rightscount
+          }
+        }
+        teams {
+          unitid {
+            id
+          }
+          name
+          profilepicture
+        }
       }
       createdate
       promocode

@@ -82,7 +82,12 @@ class Team extends React.Component<Props, State> {
     return (
       <Mutation mutation={REMOVE_EMPLOYEE_FROM_TEAM} key={team.name}>
         {removeFromTeam => (
-          <div className="tableRow" onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
+          <div
+            className="tableRow"
+            onClick={() => {
+              console.log("CLICK");
+              this.props.moveTo(`dmanager/${team.unitid.id}`);
+            }}>
             <div className="tableMain">
               <div className="tableColumnSmall">
                 <PrintTeamSquare team={team} />

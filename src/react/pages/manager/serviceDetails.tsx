@@ -60,7 +60,8 @@ class ServiceDetails extends React.Component<Props, State> {
       <Query
         pollInterval={60 * 10 * 1000 + 1000}
         query={fetchCompanyService}
-        variables={{ serviceid }}>
+        variables={{ serviceid }}
+        fetchPolicy="network-only">
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";

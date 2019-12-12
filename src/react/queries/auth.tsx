@@ -72,6 +72,7 @@ export const fetchLicences = gql`
       vacationstart
       vacationend
       tags
+      accountid
     }
   }
 `;

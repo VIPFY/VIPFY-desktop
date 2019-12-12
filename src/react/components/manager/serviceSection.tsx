@@ -91,6 +91,7 @@ class ServiceSection extends React.Component<Props, State> {
       interservices = this.props.team.services;
 
       interservices.sort(function(a, b) {
+        console.log("a", a, "b", b);
         let nameA = a.planid.appid.name.toUpperCase();
         let nameB = b.planid.appid.name.toUpperCase();
         if (nameA < nameB) {

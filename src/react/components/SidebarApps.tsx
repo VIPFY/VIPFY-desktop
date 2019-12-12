@@ -396,8 +396,8 @@ class SidebarApps extends React.Component<Props, State> {
                       openInstances={openInstances}
                       sidebarOpen={sidebarOpen}
                       active={
-                        openInstances && openInstances[licence.id]
-                          ? openInstances[licence.id][this.props.viewID]
+                        openInstances && openInstances[licence.accountid]
+                          ? openInstances[licence.accountid][this.props.viewID]
                           : false
                       }
                       setTeam={this.props.setApp}

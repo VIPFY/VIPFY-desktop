@@ -307,7 +307,7 @@ class AddVacation extends React.Component<Props, State> {
                         await this.props.createVacation({
                           variables: {
                             userid: this.props.employeeid,
-                            starttime: this.state.fromdate,
+                            starttime: this.state.fromdate || new Date(),
                             endtime: this.state.todate,
                             assignments: assignmentSending
                           }
