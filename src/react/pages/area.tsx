@@ -374,7 +374,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan },
-      //{ path: "support", component: SupportPage },
+      { path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
