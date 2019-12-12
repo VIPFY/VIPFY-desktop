@@ -354,7 +354,7 @@ class CheckOrder extends React.Component<Props, State> {
 
               let possibleDomains: JSX.Element[] = [];
               possibleDomains.push(
-                <option key="DNCAD" value={}>
+                <option key="DNCAD" value={undefined}>
                   Do not connect any domain
                 </option>
               );
