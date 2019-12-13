@@ -175,6 +175,7 @@ class AccountRow extends React.Component<Props, State> {
                     }}></div>
                 );
               }
+              return "";
             }}
           />
         </div>

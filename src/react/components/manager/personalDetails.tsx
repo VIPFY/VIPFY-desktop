@@ -558,8 +558,8 @@ class PersonalDetails extends React.Component<Props, State> {
 
   render() {
     const querydata = this.props.querydata;
-    if (querydata.vacation) {
-      querydata.vacation.sort((a, b) => {
+    if (querydata.vacations) {
+      querydata.vacations.sort((a, b) => {
         if (a.starttime > b.starttime) {
           return 1;
         }
@@ -763,23 +763,23 @@ class PersonalDetails extends React.Component<Props, State> {
             <h1>
               Vacations{" "}
               <span className="morehint">
-                {querydata.vacation.length > 2 && `+${querydata.vacation.length - 2} more`}
+                {querydata.vacations.length > 2 && `+${querydata.vacations.length - 2} more`}
               </span>
             </h1>
             <h2>
-              {querydata.vacation[0] &&
-                querydata.vacation[0].starttime &&
-                querydata.vacation[0].endtime &&
-                `${moment(querydata.vacation[0].starttime).format("DD.MM.YYYY")} - ${moment(
-                  querydata.vacation[0].endtime
+              {querydata.vacations[0] &&
+                querydata.vacations[0].starttime &&
+                querydata.vacations[0].endtime &&
+                `${moment(querydata.vacations[0].starttime).format("DD.MM.YYYY")} - ${moment(
+                  querydata.vacations[0].endtime
                 ).format("DD.MM.YYYY")}`}
             </h2>
             <h2 className="second">
-              {querydata.vacation[1] &&
-                querydata.vacation[1].starttime &&
-                querydata.vacation[1].endtime &&
-                `${moment(querydata.vacation[1].starttime).format("DD.MM.YYYY")} - ${moment(
-                  querydata.vacation[1].endtime
+              {querydata.vacations[1] &&
+                querydata.vacations[1].starttime &&
+                querydata.vacations[1].endtime &&
+                `${moment(querydata.vacations[1].starttime).format("DD.MM.YYYY")} - ${moment(
+                  querydata.vacations[1].endtime
                 ).format("DD.MM.YYYY")}`}
             </h2>
             <div className="profileEditButton">

@@ -44,7 +44,7 @@ export const QUERY_SEMIPUBLICUSER = gql`
       twofa
       deleted
       companyban
-      vacation {
+      vacations {
         id
         starttime
         endtime
@@ -103,7 +103,7 @@ export const QUERY_ME = gql`
       twofa
       deleted
       companyban
-      vacation {
+      vacations {
         id
         starttime
         endtime

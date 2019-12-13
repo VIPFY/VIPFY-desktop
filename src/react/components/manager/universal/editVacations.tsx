@@ -22,7 +22,7 @@ class EditVacations extends React.Component<Props, State> {
   render() {
     const vacationforms: JSX.Element[] = [];
 
-    this.props.querydata.vacation.forEach(v => {
+    this.props.querydata.vacations.forEach(v => {
       if (v) {
         vacationforms.push(
           <div
