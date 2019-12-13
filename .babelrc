@@ -1,15 +1,35 @@
 {
   "presets": [
-    "react",
     [
-      "env",
+      "@babel/preset-env",
       {
         "targets": {
-          "browsers": ["last 2 versions"]
+          "uglify": true
         },
-        "debug": true,
-        "modules": "commonjs"
+        "forceAllTransforms": true
       }
-    ]
+    ],
+    "@babel/preset-react",
+    "@babel/typescript"
+  ],
+  "plugins": [
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/proposal-class-properties",
+    "@babel/plugin-transform-classes",
+    "@babel/proposal-object-rest-spread",
+    ["@babel/plugin-proposal-decorators",
+      {"decoratorsBeforeExport": true}
+    ],
+    "@babel/plugin-transform-async-to-generator",
+    "@babel/plugin-proposal-async-generator-functions",
+    "@babel/plugin-transform-regenerator"
+    // ["@babel/plugin-transform-runtime",
+    //   {
+    //   "corejs": false,
+    //   "helpers": true,
+    //   "regenerator": true,
+    //   "useESModules": false
+    //   }
+    // ]
   ]
 }
