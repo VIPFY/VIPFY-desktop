@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
-import moment from "moment";
+import moment, { now } from "moment";
 import AccountRow from "./accountRow";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
@@ -156,9 +156,9 @@ class OrbitSection extends React.Component<Props, State> {
           </div>
           {orbit.accounts &&
             orbit.accounts[0] != null &&
-            orbit.accounts.map(account => (
-              <AccountRow account={account} orbit={orbit} app={this.props.app} />
-            ))}
+            orbit.accounts
+              .filter(account => account && (account.endtime == null || account.endtime > now()))
+              .map(account => <AccountRow account={account} orbit={orbit} app={this.props.app} />)}
           <div className="tableRow noHover">
             <div className="tableMain">
               <div className="tableColumnBig" style={{ alignItems: "center", display: "flex" }}>

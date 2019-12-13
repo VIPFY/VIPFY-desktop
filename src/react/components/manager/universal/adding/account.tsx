@@ -106,7 +106,9 @@ class CreateAccount extends React.Component<Props, State> {
                     {
                       query: FETCH_ALL_BOUGHTPLANS_LICENCES,
                       variables: {
-                        appid: this.props.orbit.plan.app.id
+                        appid: this.props.orbit.plan
+                          ? this.props.orbit.plan.app.id
+                          : this.props.orbit.planid.appid.id
                       }
                     }
                   ]

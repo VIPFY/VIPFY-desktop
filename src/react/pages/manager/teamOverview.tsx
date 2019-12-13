@@ -149,22 +149,26 @@ class TeamOverview extends React.Component<Props, State> {
   }
 
   addProcess(refetch) {
-    switch (this.state.addStage) {
-      case 1:
-        return (
-          <PopupBase
-            small={true}
-            close={() => this.setState({ add: false })}
-            additionalclassName="formPopup">
-            <AddTeamGeneralData
-              savingFunction={data => this.setState({ addteam: data.content, addStage: 2 })}
-              close={() => this.setState({ add: false })}
-              addteam={this.state.addteam}
-              isadmin={this.props.isadmin}
-            />
-          </PopupBase>
-        );
-      case 2:
+    /*switch (this.state.addStage) {
+      case 1:*/
+    return (
+      <PopupBase
+        small={true}
+        close={() => this.setState({ add: false })}
+        additionalclassName="formPopup">
+        <AddTeamGeneralData
+          savingFunction={data => {
+            console.log("DATA", data);
+            this.setState({ add: false });
+            this.props.moveTo(`dmanager/${data.content.unitid.id}`);
+          }}
+          close={() => this.setState({ add: false })}
+          addteam={this.state.addteam}
+          isadmin={this.props.isadmin}
+        />
+      </PopupBase>
+    );
+    /*case 2:
         return (
           <ManageTeamEmployees
             isadmin={this.props.isadmin}
@@ -205,7 +209,7 @@ class TeamOverview extends React.Component<Props, State> {
         );
       default:
         return <div />;
-    }
+    }*/
   }
 
   loading() {
@@ -264,6 +268,26 @@ class TeamOverview extends React.Component<Props, State> {
         <div className="section">
           <div className="heading">
             <h1>Teams</h1>
+            <UniversalButton
+              type="high"
+              label="Add Team"
+              customStyles={{
+                fontSize: "12px",
+                lineHeight: "24px",
+                fontWeight: "700",
+                marginRight: "16px",
+                width: "92px"
+              }}
+              onClick={() =>
+                this.setState({
+                  add: true,
+                  addStage: 1,
+                  addemployees: [],
+                  addteam: {},
+                  apps: []
+                })
+              }
+            />
           </div>
           <Query
             pollInterval={60 * 10 * 1000 + 600}
@@ -292,7 +316,7 @@ class TeamOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        <UniversalButton
+                        {/*<UniversalButton
                           type="high"
                           label="Add Team"
                           customStyles={{
@@ -311,7 +335,7 @@ class TeamOverview extends React.Component<Props, State> {
                               apps: []
                             })
                           }
-                        />
+                        />*/}
                       </div>
                     </div>
                     {this.loading()}
@@ -484,7 +508,7 @@ class TeamOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        <UniversalButton
+                        {/*<UniversalButton
                           type="high"
                           label="Add Team"
                           customStyles={{
@@ -503,7 +527,7 @@ class TeamOverview extends React.Component<Props, State> {
                               apps: []
                             })
                           }
-                        />
+                        />*/}
                       </div>
                     </div>
                     {teams.length > 0 &&

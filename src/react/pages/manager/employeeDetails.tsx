@@ -255,6 +255,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                   employeename={`${querydata.firstname} ${querydata.lastname}`}
                   moveTo={this.props.profile ? () => {} : this.props.moveTo}
                   isadmin={this.props.isadmin}
+                  employee={querydata}
                 />
 
                 {this.props.isadmin && (

@@ -204,6 +204,8 @@ export const fetchCompanyService = gql`
           endtime
           assignments {
             assignmentid
+            tags
+            assignoptions
             starttime
             endtime
             unitid {

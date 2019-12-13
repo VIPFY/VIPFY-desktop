@@ -2,6 +2,8 @@ import * as React from "react";
 import ColumnEmployees from "./universal/columns/columnEmployee";
 import moment, { now } from "moment";
 import ChangeAccount from "./universal/changeAccount";
+import ColumnTeams from "./universal/columns/columnTeams";
+import { Query } from "react-apollo";
 
 interface Props {
   account: any;
@@ -117,17 +119,46 @@ class AccountRow extends React.Component<Props, State> {
           <div className="tableColumnSmall" style={{ alignItems: "center", display: "flex" }}>
             {this.showStatus(account)}
           </div>
-          <div className="tableColumnBig" style={{ alignItems: "center", display: "flex" }}>
-            Teams
-          </div>
+          <ColumnTeams
+            teams={account.assignments
+              .filter(
+                asa =>
+                  (asa.endtime == null || asa.endtime > now()) &&
+                  asa.tags.includes("teamlicence") &&
+                  asa.assignoptions &&
+                  asa.assignoptions.teamlicence
+              )
+              .map(asa => asa.assignoptions.teamlicence)}
+            teamidFunction={team => team}
+            onlyids={true}
+          />
           <ColumnEmployees
-            employees={account.assignments}
+            employees={account.assignments.filter(
+              asa =>
+                !asa.tags.includes("teamlicence") && (asa.endtime == null || asa.endtime > now())
+            )}
             employeeidFunction={e => {
               return { ...e.unitid, endtime: e.endtime };
             }}
             checkFunction={e => e && e.endtime > moment.now()}
             overlayFunction={e => {
-              if (e.endtime != 8640000000000000) {
+              if (e.tags && e.tags.includes("vacation")) {
+                return (
+                  <div
+                    className="fad fa-island-tropical warningColor"
+                    title={`Vacation access (ends ${moment(e.endtime).fromNow()})`}
+                    style={{
+                      position: "absolute",
+                      width: "100%",
+                      height: "100%",
+                      top: 0,
+                      left: 0,
+                      alignItems: "center",
+                      display: "flex",
+                      justifyContent: "center"
+                    }}></div>
+                );
+              } else if (e.endtime != 8640000000000000) {
                 return (
                   <div
                     className="fad fa-exclamation-triangle warningColor"

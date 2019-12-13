@@ -151,7 +151,6 @@ class ServiceDetails extends React.Component<Props, State> {
 
   render() {
     const { e } = this.props;
-    console.log("PROPS", e);
     return (
       <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT} key={e.id}>
         {deleteLicenceAt => (

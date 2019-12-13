@@ -7,12 +7,18 @@ import AssignAccount from "./assignAccount";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
-import { fetchTeam, fetchDepartmentsData } from "../../../../queries/departments";
+import {
+  fetchTeam,
+  fetchDepartmentsData,
+  fetchCompanyTeams,
+  fetchTeams,
+  fetchUserLicences
+} from "../../../../queries/departments";
 import PrintTeamSquare from "../squares/printTeamSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 
 interface Props {
-  team: any;
+  employee: any;
   close: Function;
   addMemberToTeam: Function;
 }
@@ -28,7 +34,7 @@ interface State {
   todate: Date | Date[] | null;
   orbitassignment: any[];
   showall: boolean;
-  employee: any;
+  team: any;
 }
 
 const ADD_MEMBER_TO_TEAM = gql`
@@ -57,7 +63,7 @@ const ADD_MEMBER_TO_TEAM = gql`
   }
 `;
 
-class AssignNewTeamMember extends React.Component<Props, State> {
+class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
   state = {
     account: null,
     saving: false,
@@ -69,12 +75,12 @@ class AssignNewTeamMember extends React.Component<Props, State> {
     todate: null,
     orbitassignment: [],
     showall: false,
-    employee: null
+    team: null
   };
 
   showTeamOrbits() {
     const members: JSX.Element[] = [];
-    this.props.team.services.forEach((e, k) => {
+    this.state.team.services.forEach((e, k) => {
       if (this.state.orbitassignment[k] && this.state.orbitassignment[k].account) {
         members.push(
           <div
@@ -129,6 +135,7 @@ class AssignNewTeamMember extends React.Component<Props, State> {
           </div>
         );
       } else {
+        console.log("E", e);
         members.push(
           <AssignAccount
             orbit={e}
@@ -182,8 +189,8 @@ class AssignNewTeamMember extends React.Component<Props, State> {
         <h1>Assign Teammember</h1>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
           <span style={{ lineHeight: "24px", width: "84px" }}>To:</span>
-          <PrintTeamSquare
-            team={this.props.team}
+          <PrintEmployeeSquare
+            employee={this.props.employee}
             size={24}
             styles={{
               lineHeight: "24px",
@@ -194,9 +201,11 @@ class AssignNewTeamMember extends React.Component<Props, State> {
               marginLeft: "0px"
             }}
           />
-          <span style={{ lineHeight: "24px", marginLeft: "8px" }}>{this.props.team.name}</span>
+          <span style={{ lineHeight: "24px", marginLeft: "8px" }}>
+            {concatName(this.props.employee)}
+          </span>
         </div>
-        {this.state.employee ? (
+        {this.state.team ? (
           <>
             <div
               style={{
@@ -207,8 +216,8 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                 position: "relative"
               }}>
               <span style={{ lineHeight: "24px", width: "84px" }}>Employee:</span>
-              <PrintEmployeeSquare
-                employee={this.state.employee}
+              <PrintTeamSquare
+                team={this.state.team}
                 size={24}
                 styles={{
                   lineHeight: "24px",
@@ -219,12 +228,10 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                   marginLeft: "0px"
                 }}
               />
-              <span style={{ lineHeight: "24px", marginLeft: "8px" }}>
-                {concatName(this.state.employee)}
-              </span>
+              <span style={{ lineHeight: "24px", marginLeft: "8px" }}>{this.state.team.name}</span>
               <i
                 className="fal fa-pen editbutton"
-                onClick={() => this.setState({ employee: null, orbit: null, account: null })}
+                onClick={() => this.setState({ team: null, orbit: null, account: null })}
               />
             </div>
             <div
@@ -241,7 +248,7 @@ class AssignNewTeamMember extends React.Component<Props, State> {
             {this.showTeamOrbits()}
           </>
         ) : (
-          <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchDepartmentsData}>
+          <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchCompanyTeams}>
             {({ loading, error, data }) => {
               if (loading) {
                 return "Loading...";
@@ -249,7 +256,7 @@ class AssignNewTeamMember extends React.Component<Props, State> {
               if (error) {
                 return `Error! ${error.message}`;
               }
-              const employees = data.fetchDepartmentsData[0].employees;
+              const teams = data.fetchCompanyTeams;
               return (
                 <>
                   <div
@@ -259,25 +266,25 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                       marginBottom: "24px",
                       position: "relative"
                     }}>
-                    <span style={{ lineHeight: "24px", width: "84px" }}>Employee:</span>
+                    <span style={{ lineHeight: "24px", width: "84px" }}>Team:</span>
                     <UniversalDropDownInput
                       id="employee-search-new"
                       label="Search for users"
-                      options={employees}
+                      options={teams}
                       noFloating={true}
                       resetPossible={true}
                       width="300px"
-                      codeFunction={employee => employee.id}
-                      nameFunction={employee => concatName(employee)}
+                      codeFunction={team => team.unitid.id}
+                      nameFunction={team => team.name}
                       renderOption={(possibleValues, i, click, value) => (
                         <div
                           key={`searchResult-${i}`}
                           className="searchResult"
                           onClick={() => click(possibleValues[i])}>
                           <span className="resultHighlight">
-                            {concatName(possibleValues[i]).substring(0, value.length)}
+                            {possibleValues[i].name.substring(0, value.length)}
                           </span>
-                          <span>{concatName(possibleValues[i]).substring(value.length)}</span>
+                          <span>{possibleValues[i].name.substring(value.length)}</span>
                         </div>
                       )}
                       alternativeText={inputelement => (
@@ -305,9 +312,9 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                         </span>
                       )}
                       startvalue=""
-                      livecode={c => this.setState({ employee: employees.find(a => a.id == c) })}
+                      livecode={c => this.setState({ team: teams.find(a => a.unitid.id == c) })}
                       noresults="Create new user"
-                      noresultsClick={v => console.log("CREATE EMPLOYEE")}
+                      noresultsClick={v => console.log("CREATE Team")}
                       fewResults={true}
                     />
                   </div>
@@ -317,15 +324,15 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                       small={true}
                       close={() => this.setState({ showall: false })}
                       buttonStyles={{ justifyContent: "space-between" }}>
-                      <h1>All Employees</h1>
-                      {employees.map(employee => (
-                        <div className="listingDiv" key={employee.id}>
+                      <h1>All Teams</h1>
+                      {teams.map(team => (
+                        <div className="listingDiv" key={team.id}>
                           <UniversalButton
                             type="low"
-                            label={concatName(employee)}
+                            label={team.name}
                             onClick={() => {
                               this.setState({ showall: false });
-                              this.setState({ employee: employee });
+                              this.setState({ team: team });
                             }}
                           />
                         </div>
@@ -352,7 +359,8 @@ class AssignNewTeamMember extends React.Component<Props, State> {
             label="Save"
             disabled={
               !(
-                this.state.orbitassignment.length == this.props.team.services.length &&
+                this.state.team &&
+                this.state.orbitassignment.length == this.state.team.services.length &&
                 this.state.orbitassignment.every(oa => oa.account && oa.account.id)
               )
             }
@@ -361,14 +369,15 @@ class AssignNewTeamMember extends React.Component<Props, State> {
               try {
                 await this.props.addMemberToTeam({
                   variables: {
-                    teamid: this.props.team.unitid.id,
-                    employeeid: this.state.employee!.id,
+                    teamid: this.state.team.unitid.id,
+                    employeeid: this.props.employee!.id,
                     assignments: this.state.orbitassignment.map(oa => {
                       return { accountid: oa.account.id, orbitid: oa.orbitid };
                     })
                   },
                   refetchQueries: [
-                    { query: fetchTeam, variables: { teamid: this.props.team.unitid.id } }
+                    { query: fetchTeams, variables: { userid: this.props.employee.id } },
+                    { query: fetchUserLicences, variables: { unitid: this.props.employee.id } }
                   ]
                 });
                 this.setState({ saved: true });
@@ -426,4 +435,4 @@ export default compose(
   graphql(ADD_MEMBER_TO_TEAM, {
     name: "addMemberToTeam"
   })
-)(AssignNewTeamMember);
+)(AssignNewTeamMemberFromMember);

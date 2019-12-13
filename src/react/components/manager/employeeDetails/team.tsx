@@ -7,6 +7,7 @@ import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import moment from "moment";
 import PrintTeamSquare from "../universal/squares/printTeamSquare";
+import RemoveTeamMember from "../removeTeamMember";
 
 interface Props {
   employee: any;
@@ -120,7 +121,12 @@ class Team extends React.Component<Props, State> {
             </div>
 
             {this.state.delete && (
-              <PopupBase
+              <RemoveTeamMember
+                team={this.props.team}
+                employee={this.props.employee}
+                close={() => this.setState({ delete: false })}
+              />
+              /*<PopupBase
                 small={true}
                 close={() => this.setState({ delete: false })}
                 closeable={false}>
@@ -194,11 +200,11 @@ class Team extends React.Component<Props, State> {
                     {this.printRemoveLicences(team)}
                   </div>
                 </div>
-                {/*<div>
+                {/&*<div>
                   Do you really want to remove {employee.firstname} {employee.lastname} from{" "}
                   <b>{team.name}</b>
                   {this.printRemoveLicences(team)}
-                </div>*/}
+                </div>*&/}
                 <UniversalButton type="low" closingPopup={true} label="Cancel" />
                 <UniversalButton
                   type="low"
@@ -236,7 +242,7 @@ class Team extends React.Component<Props, State> {
                     });
                   }}
                 />
-              </PopupBase>
+              </PopupBase>*/
             )}
           </div>
         )}

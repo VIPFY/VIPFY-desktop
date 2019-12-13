@@ -50,6 +50,22 @@ export const QUERY_SEMIPUBLICUSER = gql`
         endtime
         options
       }
+      assignments {
+        alias
+        assignmentid
+        assignoptions
+        boughtplanid {
+          id
+          planid {
+            id
+            appid {
+              id
+              name
+              icon
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -92,6 +108,22 @@ export const QUERY_ME = gql`
         starttime
         endtime
         options
+      }
+      assignments {
+        alias
+        assignmentid
+        assignoptions
+        boughtplanid {
+          id
+          planid {
+            id
+            appid {
+              id
+              name
+              icon
+            }
+          }
+        }
       }
     }
   }

@@ -10,6 +10,7 @@ import PrintServiceSquare from "../../components/manager/universal/squares/print
 import OrbitSection from "../../components/manager/orbitSection";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import CreateOrbit from "../../components/manager/universal/adding/orbit";
+import { now } from "moment";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -86,7 +87,7 @@ class ServiceDetails extends React.Component<Props, State> {
 
           service.orbitids.forEach(element => {
             element.accounts.forEach(account => {
-              if (account != null) {
+              if (account != null && (account.endtime > now() || account.endtime == null)) {
                 accounts.push(account);
                 account.assignments.forEach(checkunit => {
                   if (

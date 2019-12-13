@@ -108,6 +108,7 @@ class TeamDetails extends React.Component<Props, State> {
                       className="managerBigSquare"
                       uploadError={this.state.uploadError}
                       isadmin={this.props.isadmin}
+                      isteam={true}
                     />
                   </div>
                   <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
