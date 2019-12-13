@@ -8,6 +8,7 @@ interface Props {
   teams: any[];
   style?: Object;
   fake?: Boolean;
+  onlyids?: Boolean;
 }
 
 interface State {
@@ -73,7 +74,9 @@ class ColumnTeams extends React.Component<Props, State> {
           );
           break;
         } else {
-          teamsArray.push(<PrintTeamSquare key={`team-${counter}`} team={team} />);
+          teamsArray.push(
+            <PrintTeamSquare key={`team-${counter}`} team={team} onlyids={this.props.onlyids} />
+          );
         }
       }
     }

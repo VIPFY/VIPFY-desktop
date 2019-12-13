@@ -5,10 +5,12 @@ import { fetchTeams } from "../../queries/departments";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import Team from "./employeeDetails/team";
 import ManageTeams from "./universal/managing/teams";
+import AssignNewTeamMemberFromMember from "./universal/adding/assignNewTeamMemberFromMember";
 
 interface Props {
   employeeid: number; //TODO CHANGE TO EMPLOYEE
   employeename: string;
+  employee: any;
   moveTo: Function;
   isadmin?: Boolean;
 }
@@ -72,9 +74,10 @@ class TeamsSection extends React.Component<Props, State> {
               return 0;
             });
             data.fetchTeams.forEach(team => {
+              console.log("TEAM", team);
               teamArray.push(
                 <Team
-                  employee={{ id: this.props.employeeid, name: this.props.employeename }}
+                  employee={this.props.employee}
                   team={team}
                   deleteFunction={sO => this.setState({ savingObject: sO })}
                   moveTo={this.props.moveTo}
@@ -86,6 +89,22 @@ class TeamsSection extends React.Component<Props, State> {
               <div className="section">
                 <div className="heading">
                   <h1>Teams</h1>
+                  {this.props.isadmin && (
+                    <UniversalButton
+                      type="high"
+                      label="Manage Teams"
+                      customStyles={{
+                        fontSize: "12px",
+                        lineHeight: "24px",
+                        fontWeight: "700",
+                        marginRight: "16px",
+                        width: "120px"
+                      }}
+                      onClick={() => {
+                        this.setState({ add: true });
+                      }}
+                    />
+                  )}
                 </div>
                 <div className="table">
                   <div className="tableHeading">
@@ -105,7 +124,7 @@ class TeamsSection extends React.Component<Props, State> {
                       <div className="tableColumnSmall">{/*<h1>Leader</h1>*/}</div>
                     </div>
                     <div className="tableEnd">
-                      {this.props.isadmin && (
+                      {/*this.props.isadmin && (
                         <UniversalButton
                           type="high"
                           label="Manage Teams"
@@ -120,13 +139,17 @@ class TeamsSection extends React.Component<Props, State> {
                             this.setState({ add: true });
                           }}
                         />
-                      )}
+                        )*/}
                     </div>
                   </div>
                   {teamArray}
                 </div>
                 {this.state.add && (
-                  <ManageTeams
+                  <AssignNewTeamMemberFromMember
+                    employee={this.props.employee}
+                    close={() => this.setState({ add: false })}
+                  />
+                  /*<ManageTeams
                     employee={{ id: this.props.employeeid, firstname: this.props.employeename }} //TODO CHANGE employeename
                     close={() => this.setState({ add: false })}>
                     <div className="buttonsPopup">
@@ -136,7 +159,7 @@ class TeamsSection extends React.Component<Props, State> {
                         onClick={() => this.setState({ add: false })}
                       />
                     </div>
-                  </ManageTeams>
+                  </ManageTeams>*/
                 )}
                 {this.state.savingObject && (
                   <PopupSelfSaving

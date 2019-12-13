@@ -10,6 +10,7 @@ interface Props {
   isadmin?: Boolean;
   mainClassName?: string;
   formstyles?: Object;
+  isteam?: Boolean;
 }
 
 interface State {
@@ -50,7 +51,7 @@ class UploadImage extends React.Component<Props, State> {
         backgroundColor: "unset"
       };
     } else if ((!picture || !picture.preview) && name != "") {
-      formStyles = { ...formStyles, backgroundColor: "#5D76FF" };
+      formStyles = { ...formStyles, backgroundColor: this.props.isteam ? "#9C13BC" : "#5D76FF" };
     }
 
     return (

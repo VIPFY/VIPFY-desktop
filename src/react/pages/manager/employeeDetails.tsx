@@ -86,11 +86,15 @@ class EmployeeDetails extends React.Component<Props, State> {
             const privatePhones = [];
             const workPhones = [];
 
-            querydata.phones.forEach(phone =>
-              phone && phone.tags && phone.tags[0] == ["private"]
-                ? privatePhones.push(phone)
-                : workPhones.push(phone)
-            );
+            querydata.phones.forEach(phone => {
+              if (phone) {
+                if (phone.tags && phone.tags[0] == ["private"]) {
+                  privatePhones.push(phone);
+                } else {
+                  workPhones.push(phone);
+                }
+              }
+            });
             querydata.workPhones = workPhones;
             querydata.privatePhones = privatePhones;
 
@@ -157,7 +161,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                         className="tableEnd"
                         style={{ alignItems: "flex-start", marginLeft: "16px" }}>
                         <div className="personalEditButtons">
-                          {this.props.isadmin && (
+                          {/* this.props.isadmin && (
                             <UniversalButton
                               type="high"
                               label="Manage Absence"
@@ -170,7 +174,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                               }}
                               onClick={() => this.setState({ showTimeAway: true })}
                             />
-                          )}
+                            ) */}
                         </div>
                       </div>
                     </div>
@@ -245,12 +249,13 @@ class EmployeeDetails extends React.Component<Props, State> {
                     </div>
                   </div>
                 </div>
-
+                {console.log("TESTING", employeeid, this.props.id)}
                 <TeamsSection
                   employeeid={employeeid}
                   employeename={`${querydata.firstname} ${querydata.lastname}`}
-                  moveTo={employeeid == this.props.id ? () => {} : this.props.moveTo}
+                  moveTo={this.props.profile ? () => {} : this.props.moveTo}
                   isadmin={this.props.isadmin}
+                  employee={querydata}
                 />
 
                 {this.props.isadmin && (
@@ -262,7 +267,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                       employee={querydata}
                       isadmin={this.props.isadmin}
                     />
-                    <TemporaryLicences
+                    {/*<TemporaryLicences
                       firstName={querydata.firstname}
                       unitid={employeeid}
                       isadmin={this.props.isadmin}
@@ -273,7 +278,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                       showTimeAway={this.state.showTimeAway}
                       closeTimeAway={() => this.setState({ showTimeAway: false })}
                       isadmin={this.props.isadmin}
-                    />
+                    />*/}
                   </React.Fragment>
                 )}
 

@@ -16,6 +16,7 @@ import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
 import { FETCH_EMPLOYEES } from "../queries/departments";
+import { fetchCompanyServices, fetchCompanyService } from "../queries/products";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -175,6 +176,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
             query: FETCH_EMPLOYEES,
             ...options
           });
+          break;
+
+        case "companyServices":
+          await refetchQueries(client, ["fetchCompanyService"]);
           break;
 
         case "domains":
@@ -408,7 +413,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "emanager"
       },
       {
-        label: "Service Manager",
+        label: "Account Manager",
         location: "lmanager",
         icon: "credit-card-blank",
         show: this.props.isadmin,
@@ -461,9 +466,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
           (!licence.disabled &&
             !licence.pending &&
             licence.vacationstart &&
-              licence.vacationstart <= moment.now() &&
-              ((licence.vacationend && licence.vacationend > moment.now()) ||
-                licence.vacationend == null))
+            licence.vacationstart <= moment.now() &&
+            ((licence.vacationend && licence.vacationend > moment.now()) ||
+              licence.vacationend == null))
         )
       ) {
         return false;
@@ -656,7 +661,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 </span>
               </button>
             </li>
-            {console.log(this.props.data)}
             {this.state.showNotification && (
               <Notification
                 //sidebar={"1"}

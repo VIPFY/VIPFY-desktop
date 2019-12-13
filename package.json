@@ -153,6 +153,7 @@
     "react": "^16.7.0",
     "react-apexcharts": "^1.2.1",
     "react-apollo": "^2.5.8",
+    "react-calendar": "^2.19.2",
     "react-credit-cards": "^0.7.0",
     "react-dom": "^16.7.0",
     "react-draft-wysiwyg": "^1.13.1",

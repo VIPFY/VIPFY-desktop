@@ -419,7 +419,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                           toggleSidebar={this.toggleSidebar}
                           setInstance={this.setInstance}
                           {...this.props}
-                          licences={this.props.licences.fetchLicences}
+                          licences={this.props.licences.fetchUserLicenceAssignments}
                           {...props}
                           {...res}
                           moveTo={this.moveTo}

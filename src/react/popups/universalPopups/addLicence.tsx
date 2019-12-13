@@ -136,17 +136,48 @@ class PopupAddLicence extends React.Component<Props, State> {
         }
         addStyles={addStyles}
         nooutsideclose={true}
-        fields={(empty
-          ? [
-              {
-                id: `${id}-identifier`,
-                options: {
-                  label: "Identifier"
-                }
-              }
-            ]
-          : []
-        )
+        fields={[
+          {
+            id: "orbit",
+            type: "dropdown",
+            options: {
+              label: "Orbit",
+              children: (
+                <span className="small">
+                  Orbit is the main account for this account. This is often called the "company" or
+                  identified by a subdomain. The main account is responsible for any payment so it
+                  is often equivalent to the cost position.
+                </span>
+              ),
+              labelstyle: { fontSize: "12px", color: "#20baa9" },
+              dropdownStyles: {
+                fontSize: "16px",
+                fontWeight: 300,
+                borderBottom: "1px solid",
+                letterSpacing: "0.02em",
+                height: "32px",
+                cursor: "auto",
+                WebkitAppearance: "none"
+              },
+              allowOther: true,
+              othertext: "Create New",
+              starttext: "Select Orbit",
+              options: [{ value: "T1", label: "T1" }, { value: "T2", label: "T2" }]
+            }
+          }
+        ]
+          .concat(
+            empty
+              ? [
+                  {
+                    id: `${id}-identifier`,
+                    options: {
+                      label: "Identifier"
+                    }
+                  }
+                ]
+              : []
+          )
           .concat(
             needssubdomain
               ? [
@@ -197,6 +228,8 @@ class PopupAddLicence extends React.Component<Props, State> {
         }}
         submitDisabled={values =>
           !(
+            values["orbit"] &&
+            (!empty || values[`${id}-identifier`]) &&
             values[`${employee && employee.id}-${id}-email`] &&
             values[`${employee && employee.id}-${id}-password`] &&
             (!needssubdomain || values[`${employee && employee.id}-${id}-subdomain`])

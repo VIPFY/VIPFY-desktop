@@ -51,7 +51,7 @@ class Dashboard extends React.Component<Props, State> {
   setApp = (licence: number) => this.props.setApp(licence);
 
   handleDrop = async (dropPosition: number) => {
-    const dragged = this.props.licences.fetchLicences.find(
+    const dragged = this.props.licences.fetchUserLicenceAssignments.find(
       licence => licence.id == this.state.dragItem
     );
 
@@ -120,7 +120,7 @@ class Dashboard extends React.Component<Props, State> {
   handleDelete = async e => {
     try {
       e.preventDefault();
-      const dragged = this.props.licences.fetchLicences.find(
+      const dragged = this.props.licences.fetchUserLicenceAssignments.find(
         licence => licence.id == this.state.dragItem
       );
 
@@ -163,10 +163,11 @@ class Dashboard extends React.Component<Props, State> {
       "Temporary Apps": []
     };
 
-    const licenceCheck = this.props.licences && this.props.licences.fetchLicences.length > 0;
+    const licenceCheck =
+      this.props.licences && this.props.licences.fetchUserLicenceAssignments.length > 0;
 
     if (licenceCheck) {
-      this.props.licences.fetchLicences.forEach(licence => {
+      this.props.licences.fetchUserLicenceAssignments.forEach(licence => {
         if (licence.dashboard !== null && licence.dashboard <= 8) {
           favourites[licence.dashboard] = licence;
         }
@@ -190,17 +191,19 @@ class Dashboard extends React.Component<Props, State> {
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
         {!licenceCheck ? (
-          <div className="no-apps">
-            <div>This is your</div>
-            <h1>DASHBOARD</h1>
-            <div>
-              It's a central point of information about your connected services and licenses.
-            </div>
-            <img src={dashboardPic} alt="Cool pic of a dashboard" />
-            <div>You haven't integrated any services yet.</div>
-            <div>
-              Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
-              services.
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "64px" }}>
+            <div className="no-apps">
+              <div>This is your</div>
+              <h1>DASHBOARD</h1>
+              <div>
+                It's a central point of information about your connected services and licenses.
+              </div>
+              <img src={dashboardPic} alt="Cool pic of a dashboard" />
+              <div>You haven't integrated any services yet.</div>
+              <div>
+                Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
+                services.
+              </div>
             </div>
           </div>
         ) : (

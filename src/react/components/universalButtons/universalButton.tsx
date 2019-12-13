@@ -11,6 +11,7 @@ interface Props {
   customStyles?: Object;
   form?: string;
   className?: string;
+  tabIndex?: number;
 }
 
 interface State {
@@ -61,7 +62,8 @@ class UniversalButton extends React.Component<Props, State> {
           onClick={e => this.click(e)}
           style={
             this.props.customStyles ? {} : { width: this.props.label.length > 6 ? undefined : 90 }
-          }>
+          }
+          tabIndex={this.props.tabIndex}>
           <div
             className={`cleanup universalButton ${this.props.type ? this.props.type : ""} ${
               this.props.disabled ? "disabled" : "useable"

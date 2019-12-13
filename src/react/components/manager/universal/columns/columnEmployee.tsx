@@ -13,7 +13,7 @@ interface State {}
 
 class ColumnEmployees extends React.Component<Props, State> {
   render() {
-    const { employees, employeeidFunction, checkFunction, overlayFunction } = this.props;
+    const { employees, employeeidFunction, checkFunction } = this.props;
     let employeesArray: JSX.Element[] = [];
     if (this.props.fake) {
       let fakecounter = 0;
@@ -59,7 +59,11 @@ class ColumnEmployees extends React.Component<Props, State> {
           break;
         } else {
           employeesArray.push(
-            <PrintEmployeeSquare key={`employee-${counter}`} employee={employee} />
+            <PrintEmployeeSquare
+              key={`employee-${counter}`}
+              employee={employee}
+              overlayFunction={this.props.overlayFunction}
+            />
           );
         }
       }

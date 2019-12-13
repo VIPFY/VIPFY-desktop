@@ -13,6 +13,8 @@ import ColumnEmployees from "../../components/manager/universal/columns/columnEm
 import ManageServiceTeams from "../../components/manager/universal/managing/serviceteams";
 import ManageServiceEmployees from "../../components/manager/universal/managing/serviceemployees";
 import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
+import AssignServiceToUser from "../../components/manager/universal/adding/assignServiceToUser";
+import moment from "moment";
 
 interface Props {
   moveTo: Function;
@@ -79,7 +81,7 @@ class ServiceOverview extends React.Component<Props, State> {
   filterMotherfunction(service) {
     if (service.app.name.toUpperCase().includes(this.state.search.toUpperCase())) {
       return true;
-    } else if (service.teams.filter(team => this.filterTeams(team)).length > 0) {
+    } else if (service.teams && service.teams.filter(team => this.filterTeams(team)).length > 0) {
       return true;
     } else if (
       service.licences.filter(
@@ -197,54 +199,111 @@ class ServiceOverview extends React.Component<Props, State> {
     }
   }
 
+  countOrbits(licences) {
+    let orbits = [];
+    if (licences) {
+      licences.forEach(l => {
+        if (!orbits.find(id => id == l.boughtplanid.id)) {
+          orbits.push(l.boughtplanid.id);
+        }
+      });
+    }
+
+    return orbits.length;
+  }
+
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
-      if (
-        service.licences.find(l => l && (l.endtime == null || l.endtime > now())) ||
-        (service.app.owner && service.app.owner.id)
-      ) {
-        serviceArray.push(
-          <div
-            key={service.name}
-            className="tableRow"
-            onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
-            <div className="tableMain">
-              <div className="tableColumnBig">
-                <PrintServiceSquare appidFunction={s => s.app} service={service} />
-                <span className="name">{service.app.name}</span>
+      const teams = [];
+      const accounts = [];
+      const singleAccounts = [];
+
+      console.log("SERIVCE", service);
+      service.orbitids.forEach(element => {
+        console.log("ORBIT", element);
+        element.teams.forEach(team => {
+          if (team != null) {
+            teams.push(team);
+          }
+        });
+      });
+
+      service.orbitids.forEach(element => {
+        element.accounts.forEach(account => {
+          if (
+            account != null &&
+            (account.endtime == null || moment(account.endtime).toDate() > new Date()) &&
+            moment(account.starttime).toDate() < new Date()
+          ) {
+            accounts.push(account);
+            account.assignments.forEach(checkunit => {
+              if (
+                checkunit &&
+                (checkunit.endtime == null || moment(checkunit.endtime).toDate() > new Date()) &&
+                moment(checkunit.starttime).toDate() < new Date() &&
+                !singleAccounts.find(s => s && s && checkunit.unitid && s.id == checkunit.unitid.id)
+              ) {
+                singleAccounts.push(checkunit.unitid);
+              }
+            });
+          }
+        });
+      });
+
+      serviceArray.push(
+        <div
+          key={service.name}
+          className="tableRow"
+          onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
+          <div className="tableMain">
+            <div className="tableColumnBig">
+              <PrintServiceSquare appidFunction={s => s.app} service={service} />
+              <span className="name">{service.app.name}</span>
+            </div>
+            <div className="tableColumnSmall">
+              <div
+                className="managerSquare"
+                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                {service.orbitids.length}
               </div>
-              <ColumnTeams teams={service.teams} teamidFunction={team => team.departmentid} />
-              <ColumnEmployees
-                employees={service.licences}
-                checkFunction={l =>
-                  l &&
-                  ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-                  (l.options == null || l.options.teamlicence == null)
-                }
-                employeeidFunction={e => e.unitid}
+              <div
+                className="managerSquare"
+                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                {accounts.length}
+              </div>
+            </div>
+            <ColumnTeams teams={teams} teamidFunction={team => team} />
+            <ColumnEmployees
+              employees={singleAccounts}
+              checkFunction={
+                l => true
+                /* l &&
+                ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
+                (l.options == null || l.options.teamlicence == null)*/
+              }
+              employeeidFunction={e => e}
+            />
+          </div>
+          <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
+            {service.app.disabled && (
+              <i className="fad fa-exclamation-triangle warningColor" title="App is disabled"></i>
+            )}
+          </div>
+          <div className="tableEnd">
+            <div className="editOptions">
+              <i className="fal fa-external-link-alt editbuttons" />
+              <i
+                className="fal fa-trash-alt editbuttons"
+                onClick={e => {
+                  e.stopPropagation();
+                  this.setState({ willdeleting: service });
+                }}
               />
             </div>
-            <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
-              {service.app.disabled && (
-                <i className="fad fa-exclamation-triangle warningColor" title="App is disabled"></i>
-              )}
-            </div>
-            <div className="tableEnd">
-              <div className="editOptions">
-                <i className="fal fa-external-link-alt editbuttons" />
-                <i
-                  className="fal fa-trash-alt editbuttons"
-                  onClick={e => {
-                    e.stopPropagation();
-                    this.setState({ willdeleting: service });
-                  }}
-                />
-              </div>
-            </div>
           </div>
-        );
-      }
+        </div>
+      );
     });
     return serviceArray;
   }
@@ -261,6 +320,7 @@ class ServiceOverview extends React.Component<Props, State> {
               <PrintServiceSquare appidFunction={s => s.app} service={{}} fake={true} />
               <span className="name" />
             </div>
+            <div className="tableColumnBig"></div>
             <ColumnTeams teams={[null]} teamidFunction={team => team.departmentid} fake={true} />
             <ColumnEmployees
               employees={[null]}
@@ -280,7 +340,7 @@ class ServiceOverview extends React.Component<Props, State> {
     return (
       <div className="managerPage">
         <div className="heading">
-          <h1>Service Manager</h1>
+          <h1>Account Manager</h1>
           <UniversalSearchBox
             getValue={v => {
               this.setState({ search: v });
@@ -290,11 +350,28 @@ class ServiceOverview extends React.Component<Props, State> {
         <div className="section">
           <div className="heading">
             <h1>Services</h1>
+            <UniversalButton
+              type="high"
+              label="Add Service"
+              customStyles={{
+                fontSize: "12px",
+                lineHeight: "24px",
+                fontWeight: "700",
+                marginRight: "16px",
+                width: "120px"
+              }}
+              onClick={() =>
+                this.setState({
+                  add: true,
+                  addStage: 1,
+                  addemployees: [],
+                  addservice: {},
+                  apps: []
+                })
+              }
+            />
           </div>
-          <Query
-            pollInterval={60 * 10 * 1000 + 900}
-            query={fetchCompanyServices}
-            fetchPolicy="cache-and-network">
+          <Query pollInterval={60 * 10 * 1000 + 900} query={fetchCompanyServices}>
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return (
@@ -320,6 +397,12 @@ class ServiceOverview extends React.Component<Props, State> {
                           </h1>
                         </div>
                         <div
+                          className="tableColumnSmall"
+                          //onClick={() => this.handleSortClick("Teams")}
+                        >
+                          <h1>Orbits/Accounts</h1>
+                        </div>
+                        <div
                           className="tableColumnBig" //onClick={() => this.handleSortClick("Teams")}
                         >
                           <h1>Teams</h1>
@@ -331,7 +414,7 @@ class ServiceOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        <UniversalButton
+                        {/*<UniversalButton
                           type="high"
                           label="Add Service"
                           customStyles={{
@@ -350,7 +433,7 @@ class ServiceOverview extends React.Component<Props, State> {
                               apps: []
                             })
                           }
-                        />
+                        />*/}
                       </div>
                     </div>
                     {this.loading()}
@@ -517,6 +600,12 @@ class ServiceOverview extends React.Component<Props, State> {
                           )}
                         </div>
                         <div
+                          className="tableColumnSmall"
+                          //onClick={() => this.handleSortClick("Teams")}
+                        >
+                          <h1>Orbits/Accounts</h1>
+                        </div>
+                        <div
                           className="tableColumnBig"
                           //onClick={() => this.handleSortClick("Teams")}
                         >
@@ -531,7 +620,7 @@ class ServiceOverview extends React.Component<Props, State> {
                       </div>
                       <div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>
                       <div className="tableEnd">
-                        <UniversalButton
+                        {/* <UniversalButton
                           type="high"
                           label="Add Service"
                           customStyles={{
@@ -551,12 +640,31 @@ class ServiceOverview extends React.Component<Props, State> {
                               currentServices: data.fetchCompanyServices
                             })
                           }
-                        />
+                        />*/}
                       </div>
                     </div>
                     {services.length > 0 && this.printServices(services)}
                   </div>
-                  {this.state.add && this.addProcess(refetch)}
+                  {this.state.add && (
+                    <PopupBase
+                      small={true}
+                      nooutsideclose={true}
+                      close={() => this.setState({ add: false })}
+                      additionalclassName="assignNewAccountPopup"
+                      buttonStyles={{ justifyContent: "space-between" }}>
+                      <h1>Choose Service</h1>
+                      <AssignServiceToUser
+                        continue={app => app && this.props.moveTo(`lmanager/${app.id}`)}
+                      />
+                      <UniversalButton
+                        type="low"
+                        label="Cancel"
+                        onClick={() => this.setState({ add: false })}
+                      />
+                    </PopupBase>
+                  )
+                  /*this.addProcess(refetch)*/
+                  }
                 </>
               );
             }}

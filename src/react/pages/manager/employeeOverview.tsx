@@ -113,30 +113,31 @@ class EmployeeOverview extends React.Component<Props, State> {
   }
 
   addProcess(refetch) {
-    switch (this.state.addStage) {
-      case 1:
-        return (
-          <PopupBase
-            //fullmiddle={true}
-            small={true}
-            //customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}
-            nooutsideclose={true}
-            additionalclassName="formPopup deletePopup">
-            <AddEmployeePersonalData
-              continue={data => {
-                this.setState({ addpersonal: data, addStage: 2 });
-              }}
-              close={() => {
-                this.setState({ add: false });
-                refetch();
-              }}
-              addpersonal={this.state.addpersonal}
-              isadmin={this.props.isadmin}
-            />
-          </PopupBase>
-        );
-      case 2:
+    /*switch (this.state.addStage) {
+      case 1:*/
+    return (
+      <PopupBase
+        //fullmiddle={true}
+        small={true}
+        //customStyles={{ maxWidth: "1152px" }}
+        close={() => this.setState({ add: false })}
+        nooutsideclose={true}
+        additionalclassName="formPopup deletePopup">
+        <AddEmployeePersonalData
+          continue={data => {
+            this.setState({ add: false });
+            this.props.moveTo(`emanager/${data.unitid}`);
+          }}
+          close={() => {
+            this.setState({ add: false });
+            refetch();
+          }}
+          addpersonal={this.state.addpersonal}
+          isadmin={this.props.isadmin}
+        />
+      </PopupBase>
+    );
+    /* case 2:
         return (
           <ManageTeams
             employee={{
@@ -192,7 +193,7 @@ class EmployeeOverview extends React.Component<Props, State> {
         );
       default:
         return <div />;
-    }
+    }*/
   }
 
   loading() {
@@ -204,7 +205,7 @@ class EmployeeOverview extends React.Component<Props, State> {
         <div className="tableRow">
           <div className="tableMain">
             <div className="tableColumnBig" style={{ width: "20%" }}>
-              <PrintTeamSquare team={{}} fake={true} />
+              <PrintEmployeeSquare employee={{}} fake={true} />
               <span className="name" />
             </div>
             <div className="tableColumnSmall" style={{ width: "10%" }}>
@@ -260,6 +261,25 @@ class EmployeeOverview extends React.Component<Props, State> {
         <div className="section">
           <div className="heading">
             <h1>Employees</h1>
+            <UniversalButton
+              type="high"
+              label="Add Employee"
+              customStyles={{
+                fontSize: "12px",
+                lineHeight: "24px",
+                fontWeight: "700",
+                marginRight: "16px",
+                width: "92px"
+              }}
+              onClick={() =>
+                this.setState({
+                  add: true,
+                  addStage: 1,
+                  addpersonal: {},
+                  apps: []
+                })
+              }
+            />
           </div>
           <Query query={fetchDepartmentsData} fetchPolicy="network-only">
             {({ loading, error, data, refetch }) => {
@@ -296,7 +316,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        <UniversalButton
+                        {/*<UniversalButton
                           type="high"
                           label="Add Employee"
                           customStyles={{
@@ -314,7 +334,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                               apps: []
                             })
                           }
-                        />
+                        />*/}
                       </div>
                     </div>
                     {this.loading()}
@@ -505,7 +525,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                         </div>
                       </div>
                       <div className="tableEnd">
-                        <UniversalButton
+                        {/*<UniversalButton
                           type="high"
                           label="Add Employee"
                           customStyles={{
@@ -523,7 +543,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                               apps: []
                             })
                           }
-                        />
+                        />*/}
                       </div>
                     </div>
                     {employees.length > 0 &&
@@ -624,7 +644,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                     <ColumnServices
                                       {...this.props}
                                       style={{ width: "30%" }}
-                                      services={data.fetchUsersOwnLicences}
+                                      services={data.fetchUserLicenceAssignments}
                                       checkFunction={element =>
                                         !element.disabled &&
                                         !element.boughtplanid.planid.appid.disabled &&
@@ -651,7 +671,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                   <ColumnServices
                                     {...this.props}
                                     style={{ width: "30%" }}
-                                    services={data.fetchUsersOwnLicences}
+                                    services={data.fetchUserLicenceAssignments}
                                     checkFunction={element =>
                                       !element.disabled &&
                                       !element.boughtplanid.planid.appid.disabled &&
