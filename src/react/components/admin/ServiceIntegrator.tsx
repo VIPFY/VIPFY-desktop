@@ -13,7 +13,25 @@ import { element, number, object } from "prop-types";
 import PlanHolder from "../PlanHolder";
 import UniversalButton from "../universalButtons/universalButton";
 import { threadId } from "worker_threads";
+
+import * as ReactDOM from "react-dom";
+import "./diagrams/diagram.scss";
+import createEngine, { DefaultLinkModel, DiagramModel } from "@projectstorm/react-diagrams";
+import { JSCustomNodeFactory } from "./diagrams/custom-node-js/JSCustomNodeFactory";
+import { TSCustomNodeFactory } from "./diagrams/custom-node-ts/TSCustomNodeFactory";
+import { JSCustomNodeModel } from "./diagrams/custom-node-js/JSCustomNodeModel";
+import { TSCustomNodeModel } from "./diagrams/custom-node-ts/TSCustomNodeModel";
+import { BodyWidget } from "./diagrams/BodyWidget";
+
+// capture the session for reset reasons
 const { session } = remote;
+
+// create an instance of the diagram-engine
+const engine = createEngine();
+
+// register the two engines
+engine.getNodeFactories().registerFactory(new JSCustomNodeFactory() as any);
+engine.getNodeFactories().registerFactory(new TSCustomNodeFactory());
 
 interface Props {
   functionupper: Function;
@@ -26,10 +44,8 @@ interface State {
   sendTarget: any; //die Webview
   divList: JSX.Element[];
   showDivList: boolean;
-  trackwhat: string;
   url: string;
   urlBevorChange: string;
-  cantrack: boolean;
   finalexecutionPlan: Object[];
   executionPlan: Object[];
   searchurl: string;
@@ -44,6 +60,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
     didLoadOnSteps: [],
     step: 0
   };
+  aktDivListState = {
+    divListHold: [],
+    divHold: false,
+    divHoldRepeat: false
+  };
   state = {
     logInOrSignUp: true,
     isLogin: true,
@@ -51,75 +72,18 @@ class ServiceIntegrator extends React.Component<Props, State> {
     sendTarget: null,
     divList: [],
     showDivList: true,
-    trackwhat: "siteTrain",
     url: "",
     urlBevorChange: "",
     finalexecutionPlan: [],
     executionPlan: [],
     searchurl: "",
-    cantrack: false,
     targetpage: "",
     test: false
   };
-
-  siteUrllist: (string | null)[] = []; //where does it happen
-  siteTrain: (string | null)[] = []; //where does the user do something
-  siteTrainwhat: string[] = []; //what does he do there
-  loginUrllist: string[] = [];
-  loginTrain: (string | null)[] = [];
-  loginTrainwhat: string[] = [];
-  logoutUrllist: string[] = [];
-  logoutTrain: (string | null)[] = [];
-  logoutTrainwhat: string[] = [];
-  startUrl = "";
   savevalue: string;
   shallSearch: boolean = true;
   timeoutSave: any;
   searchattampts: number = 0;
-
-  finishSiteTracking() {
-    if (this.state.trackwhat == "siteTrain") {
-      if (this.siteUrllist.length == 0) {
-        this.siteUrllist.push(document.querySelector<HTMLIFrameElement>("webview")!.src);
-      }
-      console.log("Site Tracking finished", this.siteUrllist, this.siteTrain, this.siteTrainwhat);
-      var sendList: any[] = [];
-      for (let i = 0; i < this.siteTrain.length; i++) {
-        sendList.push([this.siteUrllist[i], this.siteTrain[i], this.siteTrainwhat[i]]);
-      }
-      console.log(JSON.stringify(sendList));
-      this.setState({ trackwhat: "loginTrain" });
-    }
-  }
-
-  finishLoginTracking() {
-    if (this.state.trackwhat == "loginTrain") {
-      console.log("Login Tracking finished", this.loginUrllist, this.loginTrain, this.loginTrain);
-      var sendList: any[] = [];
-      for (let i = 0; i < this.siteTrain.length; i++) {
-        sendList.push([this.siteUrllist[i], this.siteTrain[i], this.siteTrainwhat[i]]);
-      }
-      console.log(JSON.stringify(sendList));
-      this.setState({ trackwhat: "logoutTrain" });
-    }
-  }
-
-  finishLogoutTracking() {
-    if (this.state.trackwhat == "logoutTrain") {
-      console.log(
-        "Logout Tracking finished",
-        this.logoutUrllist,
-        this.logoutTrain,
-        this.logoutTrain
-      );
-      var sendList: any[] = [];
-      for (let i = 0; i < this.siteTrain.length; i++) {
-        sendList.push([this.siteUrllist[i], this.siteTrain[i], this.siteTrainwhat[i]]);
-      }
-      console.log(JSON.stringify(sendList));
-      this.setState({ trackwhat: "finished" });
-    } //finish the tracking
-  }
 
   handleClosing(e) {
     if (this.state.urlBevorChange !== "") {
@@ -131,33 +95,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
     console.log("SITE CHANGE", e);
     if (!e.url.includes("google")) {
       this.state.cantrack = true;
-    }
-    if (this.state.cantrack) {
-      switch (this.state.trackwhat) {
-        case "siteTrain":
-          if (this.siteTrain.length == this.siteUrllist.length) {
-            this.siteUrllist.push(e.url);
-            this.siteTrain.push(null);
-            this.siteTrainwhat.push("gotoUrl");
-          }
-          while (this.siteTrain.length > this.siteUrllist.length) {
-            if (this.siteTrain.length == this.siteUrllist.length + 1) {
-              this.siteUrllist.push(e.target.src);
-            } else {
-              this.siteUrllist.push(null);
-            }
-          }
-          break;
-
-        case "loginTrain":
-          break;
-
-        case "logoutTrain":
-          break;
-
-        default:
-          break;
-      }
     }
   }
 
@@ -176,9 +113,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
       var searchvalue = this.state.searchurl;
       if (
         !this.state.searchurl.startsWith("http://") &&
-        !this.state.searchurl.startsWith(
-          "https://"
-        ) /*  && !this.state.searchurl.startsWith("localhost") && this.state.searchurl != "127.0.0.1" */
+        !this.state.searchurl.startsWith("https://")
       ) {
         console.log("searchdinger", this.searchattampts);
         if (this.searchattampts == 0) {
@@ -238,6 +173,34 @@ class ServiceIntegrator extends React.Component<Props, State> {
   printExecutionPlan() {
     console.log(JSON.stringify(this.state.executionPlan));
     this.setState({ executionPlan: [] });
+  }
+
+  async aktualisiereDivList() {
+    if (this.aktDivListState.divHold) {
+      this.aktDivListState.divHoldRepeat = true;
+      return;
+    }
+    /* let divList2 = this.state.divList;
+    
+    divList2.forEach(element => {
+      this.setState(oldstate => {
+        oldstate.divList.push(element);
+      });
+    }); */
+    this.aktDivListState.divHold = true;
+    for (let i = 0; i < 15; i++) {
+      this.state.executionPlan.forEach(element => {
+        this.state.sendTarget!.send("givePosition", element.args.selector, element.args.id, 1);
+      });
+      await sleep(50);
+      await this.setState({ divList: this.aktDivListState.divListHold });
+      this.aktDivListState.divListHold = [];
+      if (this.aktDivListState.divHoldRepeat) {
+        this.aktDivListState.divHoldRepeat = false;
+        i = 0;
+      }
+    }
+    this.aktDivListState.divHold = false;
   }
 
   async cancelSelection(id) {
@@ -307,24 +270,27 @@ class ServiceIntegrator extends React.Component<Props, State> {
       <div
         onClick={() => this.cancelSelection(args[4])}
         onMouseEnter={() => {
-          document.getElementById(args[4] + "a").style.color = "white";
-          document.getElementById(args[4] + "side").style.border = "1px solid blue";
+          document.getElementById(args[4] + "a")!.style.color = "white";
+          document.getElementById(args[4] + "side")!.style.border = "1px solid blue";
         }}
         onMouseLeave={() => {
-          document.getElementById(args[4] + "a").style.color = "black";
-          document.getElementById(args[4] + "side").style.border = "1px solid red";
+          document.getElementById(args[4] + "a")!.style.color = "black";
+          document.getElementById(args[4] + "side")!.style.border = "1px solid red";
         }}
         id={args[4] + "b"}
         key={Math.random()}
         style={{
           position: "absolute",
-          height: height,
-          width: width,
-          top: top,
-          left: left,
+          height: height - 8,
+          width: width - 8,
+          top: top + 2,
+          left: left + 2,
           background: "red",
           zIndex: 2,
-          opacity: 0.5
+          opacity: 0.5,
+          borderColor: "darkred",
+          borderWidth: "4px",
+          borderStyle: "solid"
         }}>
         <a
           id={args[4] + "a"}
@@ -334,18 +300,23 @@ class ServiceIntegrator extends React.Component<Props, State> {
             display: "table-cell",
             verticalAlign: "middle",
             color: "black",
-            textAlign: "center"
+            textAlign: "center",
+            fontSize: "1vb"
           }}>
           Cancel Selection
         </a>
       </div>
     );
 
-    this.setState(oldstate => {
-      oldstate.divList.push(div);
+    if (this.aktDivListState.divHold) {
+      this.aktDivListState.divListHold.push(div);
+    } else {
+      this.setState(oldstate => {
+        oldstate.divList.push(div);
 
-      return oldstate;
-    });
+        return oldstate;
+      });
+    }
   }
 
   tickDiv(args) {
@@ -792,62 +763,10 @@ class ServiceIntegrator extends React.Component<Props, State> {
           }
           return oldstate;
         });
+        break;
 
-        /* this.state[this.state.trackwhat].push(e.args[3]);
-          this.state[this.state.trackwhat + "what"].push(e.args[5]); */
-        var owi = false; //OverWriteInput
-        if (
-          (this.siteTrainwhat[this.siteTrainwhat.length - 1] == "input" ||
-            this.siteTrainwhat[this.siteTrainwhat.length - 1] == "keyup" ||
-            this.siteTrainwhat[this.siteTrainwhat.length - 1] == "paste") &&
-          e.args[6] != 9 &&
-          (e.args[5] == "input" || e.args[5] == "keyup" || e.args[5] == "paste")
-        ) {
-          owi = true;
-        }
-        switch (this.state.trackwhat) {
-          case "siteTrain":
-            if (owi && this.state.cantrack) {
-              //this.siteUrllist.pop();
-              this.siteTrain.pop();
-              this.siteTrainwhat.pop();
-            }
-            if (this.state.cantrack) {
-              //this.siteUrllist.push(document.querySelector<HTMLIFrameElement>("webview")!.src);
-              this.siteTrain.push(e.args[3]);
-              this.siteTrainwhat.push(e.args[5]);
-            }
-            break;
-
-          case "loginTrain":
-            if (owi && this.state.cantrack) {
-              //this.loginUrllist.pop();
-              this.loginTrain.pop();
-              this.loginTrainwhat.pop();
-            }
-            if (this.state.cantrack) {
-              //this.loginUrllist.push(document.querySelector<HTMLIFrameElement>("webview")!.src);
-              this.loginTrain.push(e.args[3]);
-              this.loginTrainwhat.push(e.args[5]);
-            }
-            break;
-
-          case "logoutTrain":
-            if (owi && this.state.cantrack) {
-              //this.logoutUrllist.pop();
-              this.logoutTrain.pop();
-              this.logoutTrainwhat.pop();
-            }
-            if (this.state.cantrack) {
-              //this.logoutUrllist.push(document.querySelector<HTMLIFrameElement>("webview")!.src);
-              this.logoutTrain.push(e.args[3]);
-              this.logoutTrainwhat.push(e.args[5]);
-            }
-            break;
-
-          default:
-            break;
-        }
+      case "aktualisiereDivList":
+        this.aktualisiereDivList();
         break;
 
       case "sendClick":
@@ -1179,7 +1098,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             height: "calc(100vh - 72px)",
             backgroundColor: "#30475D"
           }}>
-          <div>
+          <div style={{ height: "10%" }}>
             <h4 style={{ color: "white" }}>Please enter the Login-Url</h4>
             <UniversalTextInput
               /* autofocus="true" */
@@ -1195,13 +1114,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   sendTarget: null,
                   divList: [],
                   showDivList: true,
-                  trackwhat: "siteTrain",
                   url: "",
                   urlBevorChange: "",
                   finalexecutionPlan: [],
                   executionPlan: [],
                   searchurl: "",
-                  cantrack: false,
                   targetpage: "",
                   test: false
                 });
@@ -1218,13 +1135,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   sendTarget: null,
                   divList: [],
                   showDivList: true,
-                  trackwhat: "siteTrain",
                   url: "",
                   urlBevorChange: "",
                   finalexecutionPlan: [],
                   executionPlan: [],
                   searchurl: "",
-                  cantrack: false,
                   targetpage: "",
                   test: false
                 });
@@ -1235,64 +1150,105 @@ class ServiceIntegrator extends React.Component<Props, State> {
               Go!
             </button>
           </div>
-          {this.state.executionPlan.map((o, k) => (
-            <div
-              id={o.args.id + "side"}
-              onMouseEnter={() => this.zeigeElement(true, o.args.id)}
-              onMouseLeave={() => this.zeigeElement(false, o.args.id)}
-              style={{ border: "1px solid red", marginTop: "10px" }}>
-              <ClickElement
-                id={`ce-${k}`}
-                startvalue={o.operation}
-                onChange={(operation, value) => this.updateSelection(o.args.id, operation, value)}
-                isLogin={this.state.isLogin}
-              />
-              <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
-              {!this.state.isLogin ? (
-                <span>
-                  <input type="checkbox" id={"paralelOption" + o.args.id} />
-                  <div color="white">Is Paralel Option</div>
-                </span>
-              ) : null}
-              {document.getElementById("paralelOption" + o.args.id)!.checked ? (
-                <input
-                  id={"team" + o.args.id}
-                  onChange={e => {
-                    o.paralelTeam = document.getElementById("team" + o.args.id)!.value;
-                  }}></input>
-              ) : null}
-            </div>
-          ))}
-          <div style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
-            Every thing selected?
-            <button
-              disabled={this.state.sendTarget == undefined}
-              onClick={async () => {
-                await this.setState({ showDivList: false });
-                this.loginState.listen = true;
-                this.sendExecute();
-              }}
-              style={{ width: "100px" }}>
-              Then try to go to a next step
-            </button>
-            <button
-              disabled={this.state.sendTarget == undefined}
-              onClick={async () => {
-                if (!this.state.isLogin) {
-                  await this.setState(oldstate => {
-                    oldstate.finalexecutionPlan.forEach(object => {
-                      this.wuerfelWerte(object);
+          <div style={{ overflowY: "scroll", width: "100%", height: "90%" }}>
+            {this.state.executionPlan.map((o, k) => (
+              <div
+                id={o.args.id + "side"}
+                onMouseEnter={() => this.zeigeElement(true, o.args.id)}
+                onMouseLeave={() => this.zeigeElement(false, o.args.id)}
+                style={{ border: "1px solid red", marginTop: "10px" }}>
+                <ClickElement
+                  id={`ce-${k}`}
+                  startvalue={o.operation}
+                  onChange={(operation, value) => this.updateSelection(o.args.id, operation, value)}
+                  isLogin={this.state.isLogin}
+                />
+                <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
+                <div /* style={{ float: "left" }} */>
+                  {!this.state.isLogin ? (
+                    <span>
+                      <input
+                        type="checkbox"
+                        id={"paralelOption" + o.args.id}
+                        onChange={e => {
+                          o.isParalelOption = e.target.checked;
+                          this.forceUpdate();
+                        }}
+                      />
+                      <div style={{ color: "white" }}>Is Paralel Option</div>
+                    </span>
+                  ) : null}
+                  <input
+                    style={{ visibility: o.isParalelOption ? "visible" : "collapse" }}
+                    id={"team" + o.args.id}
+                    onChange={e => {
+                      o.paralelTeam = document.getElementById("team" + o.args.id)!.value;
+                    }}></input>
+                </div>
+              </div>
+            ))}
+
+            <div style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
+              Every thing selected?
+              <button
+                disabled={this.state.sendTarget == undefined}
+                onClick={async () => {
+                  await this.setState({ showDivList: false });
+                  this.loginState.listen = true;
+                  this.sendExecute();
+                }}
+                style={{ width: "100px" }}>
+                Then try to go to a next step
+              </button>
+              <button
+                disabled={this.state.sendTarget == undefined}
+                onClick={async () => {
+                  if (!this.state.isLogin) {
+                    await this.setState(oldstate => {
+                      oldstate.finalexecutionPlan.forEach(object => {
+                        this.wuerfelWerte(object);
+                      });
                     });
-                  });
-                }
-                this.loginState.listen = true;
-                await this.setState({ end: true, showDivList: false });
-                this.sendExecute();
-              }}
-              style={{ width: "100px" }}>
-              or finish the login process
-            </button>
+                  }
+                  this.loginState.listen = true;
+                  await this.setState({ end: true, showDivList: false });
+                  this.sendExecute();
+                }}
+                style={{ width: "100px" }}>
+                or finish the login process
+              </button>
+            </div>
           </div>
+        </div>
+        <div
+          style={{
+            background: "yellow",
+            float: "left",
+            height: "calc(100vh - 72px)",
+            width: "192px"
+          }}>
+          <button
+            onClick={e => {
+              this.setState({ bodyWidget: true });
+              const model = new DiagramModel();
+
+              const node1 = new JSCustomNodeModel({ color: "red" });
+              node1.setPosition(50, 50);
+
+              const node2 = new TSCustomNodeModel({ color: "rgb(0,192,255)" });
+              node2.setPosition(60, 50);
+
+              const link1 = new DefaultLinkModel();
+              link1.setSourcePort(node1.getPort("out"));
+              link1.setTargetPort(node2.getPort("in"));
+
+              model.addAll(node1, node2, link1);
+
+              engine.setModel(model);
+            }}>
+            Klick mich!
+          </button>
+          {this.state.bodyWidget && <BodyWidget engine={engine} />}
         </div>
         <div
           style={{

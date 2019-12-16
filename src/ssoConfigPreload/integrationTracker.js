@@ -336,6 +336,7 @@ const attributesSelector = [
 ];
 
 function findTarget(event, iframe) {
+  ipcRenderer.sendToHost("aktualisiereDivList");
   if (bot) {
     return;
   }
