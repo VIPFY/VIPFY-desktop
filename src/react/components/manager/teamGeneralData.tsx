@@ -1,11 +1,6 @@
 import * as React from "react";
-import moment from "moment";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalTextInput from "../universalForms/universalTextInput";
-import UniversalButton from "../universalButtons/universalButton";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
-import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 
 import { fetchTeam } from "../../queries/departments";
 import FormPopup from "../../popups/universalPopups/formPopup";

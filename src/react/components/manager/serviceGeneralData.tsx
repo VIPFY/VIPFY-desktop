@@ -1,37 +1,5 @@
 import * as React from "react";
-import moment from "moment";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalTextInput from "../universalForms/universalTextInput";
-import UniversalButton from "../universalButtons/universalButton";
-import { Mutation } from "react-apollo";
-import gql from "graphql-tag";
-import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 
-const UPDATE_DATA = gql`
-  mutation updateEmployee($user: EmployeeInput!) {
-    updateEmployee(user: $user) {
-      id
-      firstname
-      lastname
-      birthday
-      hiredate
-      position
-      emails {
-        email
-      }
-      addresses {
-        id
-        country
-        address
-      }
-      phones {
-        id
-        number
-        tags
-      }
-    }
-  }
-`;
 interface Props {
   servicedata: any;
 }

@@ -143,6 +143,7 @@
     "jsonwebtoken": "^8.5.1",
     "log4js": "^4.5.1",
     "moment": "^2.24.0",
+    "moment-feiertage": "^1.1.5",
     "nivo": "^0.31.0",
     "node-abi": "^2.12.0",
     "npm": "^6.10.3",

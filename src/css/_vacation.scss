@@ -8,6 +8,15 @@
       text-align: center;
       padding-bottom: 24px;
     }
+
+    div {
+      margin-bottom: 20px;
+    }
+
+    .success {
+      color: $vipfy-primary-color;
+      font-size: 1rem;
+    }
   }
 
   .vacation-request {
@@ -64,5 +73,22 @@
     flex-flow: column;
     align-items: center;
     margin-top: 20px;
+  }
+
+  .table-cell-wrapper {
+    display: flex;
+    align-items: center;
+
+    .managerSquare {
+      margin-top: 0;
+      margin-right: 10px;
+    }
+  }
+
+  .show-icons {
+    i {
+      margin: 0;
+      opacity: 1;
+    }
   }
 }

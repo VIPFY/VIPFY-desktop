@@ -11,39 +11,36 @@ interface Props {
   onClick?: Function;
 }
 
-interface State {}
+export default (props: Props) => {
+  let { employee, overlayFunction } = props;
 
-class PrintEmployeeSquare extends React.Component<Props, State> {
-  render() {
-    let { employee, overlayFunction } = this.props;
-    if (!employee) {
-      // handle employee == null for renders without data (happens in login)
-      employee = { firstname: "" };
-    }
-    const size = this.props.size || 32;
-    const name = employee.firstname || employee.lastname || employee.fullname || " "; // fullname is used by login
-    return (
-      <div
-        title={this.props.hideTitle ? null : name}
-        className={this.props.className || "managerSquare"}
-        style={Object.assign(
-          { ...(this.props.styles || {}) },
-          employee.profilepicture
-            ? {
-                backgroundImage: getBgImageUser(employee.profilepicture, size),
-                backgroundColor: "unset"
-              }
-            : { backgroundColor: employee.color || "#5d76ff" }
-        )}
-        onClick={() => {
-          if (this.props.onClick) {
-            this.props.onClick();
-          }
-        }}>
-        {employee.profilepicture ? "" : name.slice(0, 1)}
-        {overlayFunction && overlayFunction(employee)}
-      </div>
-    );
+  if (!employee) {
+    // handle employee == null for renders without data (happens in login)
+    employee = { firstname: "" };
   }
-}
-export default PrintEmployeeSquare;
+  const size = props.size || 32;
+  const name = employee.firstname || employee.lastname || employee.fullname || " "; // fullname is used by login
+
+  return (
+    <div
+      title={props.hideTitle ? null : name}
+      className={props.className || "managerSquare"}
+      style={Object.assign(
+        { ...(props.styles || {}) },
+        employee.profilepicture
+          ? {
+              backgroundImage: getBgImageUser(employee.profilepicture, size),
+              backgroundColor: "unset"
+            }
+          : { backgroundColor: employee.color || "#5d76ff" }
+      )}
+      onClick={() => {
+        if (props.onClick) {
+          props.onClick();
+        }
+      }}>
+      {employee.profilepicture ? "" : name.slice(0, 1)}
+      {overlayFunction && overlayFunction(employee)}
+    </div>
+  );
+};

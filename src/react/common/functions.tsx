@@ -315,3 +315,35 @@ export async function getMyEmail(client: any): Promise<string> {
     })
   ).data.me.emails[0].email;
 }
+
+/**
+ * Computes the vacation days an employee has in a year
+ * @param employee {object}
+ */
+export const computeFullDays = employee =>
+  employee.vacationDaysPerYear[moment().get("year")] + (computeDaysLastYear(employee) || 0);
+
+/**
+ * Computes the vacation days an employee has already taken this year
+ * @param employee {object}
+ */
+export const computeTakenDays = ({ vacationRequests }) => {
+  if (vacationRequests.length < 1) {
+    return 0;
+  } else {
+    return 0;
+  }
+};
+
+/**
+ * Computes the vacation days an employee has left over from last year
+ * @param employee {object}
+ */
+export const computeDaysLastYear = ({ vacationRequests }) => {
+  if (vacationRequests.length < 1) {
+    return 0;
+  } else {
+    vacationRequests.filter(req => req);
+    return 0;
+  }
+};
