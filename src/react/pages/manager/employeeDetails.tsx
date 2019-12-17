@@ -11,8 +11,6 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import TemporaryLicences from "../../components/manager/employeeDetails/TemporaryLicences";
-import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicences";
 import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
@@ -267,27 +265,13 @@ class EmployeeDetails extends React.Component<Props, State> {
                 />
 
                 {this.props.isadmin && (
-                  <React.Fragment>
-                    <LicencesSection
-                      employeeid={employeeid}
-                      employeename={`${querydata.firstname} ${querydata.lastname}`}
-                      moveTo={this.props.moveTo}
-                      employee={querydata}
-                      isadmin={this.props.isadmin}
-                    />
-                    {/*<TemporaryLicences
-                      firstName={querydata.firstname}
-                      unitid={employeeid}
-                      isadmin={this.props.isadmin}
-                    />
-                    <IssuedLicences
-                      unitid={employeeid}
-                      firstName={querydata.firstname}
-                      showTimeAway={this.state.showTimeAway}
-                      closeTimeAway={() => this.setState({ showTimeAway: false })}
-                      isadmin={this.props.isadmin}
-                    />*/}
-                  </React.Fragment>
+                  <LicencesSection
+                    employeeid={employeeid}
+                    employeename={`${querydata.firstname} ${querydata.lastname}`}
+                    moveTo={this.props.moveTo}
+                    employee={querydata}
+                    isadmin={this.props.isadmin}
+                  />
                 )}
 
                 {this.state.changepicture && (

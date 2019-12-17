@@ -61,18 +61,6 @@ export const addEmployee = gql`
   }
 `;
 
-export const distributeLicence = gql`
-  mutation distributeLicence($licenceid: ID!, $unitid: ID!, $departmentid: ID!) {
-    distributeLicence(licenceid: $licenceid, unitid: $unitid, departmentid: $departmentid) {
-      ok
-      error {
-        code
-        message
-      }
-    }
-  }
-`;
-
 export const updateUser = gql`
   mutation UpdateUser($user: UserInput!) {
     updateUser(user: $user) {

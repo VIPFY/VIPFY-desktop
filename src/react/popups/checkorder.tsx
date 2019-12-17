@@ -10,7 +10,6 @@ import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
 import UserName from "../components/UserName";
 
-import { distributeLicence } from "../mutations/auth";
 import { fetchBuyingInput } from "../queries/products";
 
 interface Props {
@@ -624,8 +623,4 @@ class CheckOrder extends React.Component<Props, State> {
     }
   }
 }
-export default compose(
-  graphql(distributeLicence, {
-    name: "distributeLicence" //Change to distributeLicence10
-  })
-)(CheckOrder);
+export default CheckOrder;
