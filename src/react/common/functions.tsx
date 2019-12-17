@@ -318,14 +318,14 @@ export async function getMyEmail(client: any): Promise<string> {
 
 /**
  * Computes the vacation days an employee has in a year
- * @param employee {object}
+ * @param {object} employee
  */
 export const computeFullDays = employee =>
   employee.vacationDaysPerYear[moment().get("year")] + (computeDaysLastYear(employee) || 0);
 
 /**
  * Computes the vacation days an employee has already taken this year
- * @param employee {object}
+ * @param {object} employee
  */
 export const computeTakenDays = ({ vacationRequests }) => {
   if (vacationRequests.length < 1) {
@@ -337,7 +337,7 @@ export const computeTakenDays = ({ vacationRequests }) => {
 
 /**
  * Computes the vacation days an employee has left over from last year
- * @param employee {object}
+ * @param {object} employee
  */
 export const computeDaysLastYear = ({ vacationRequests }) => {
   if (vacationRequests.length < 1) {
@@ -345,5 +345,25 @@ export const computeDaysLastYear = ({ vacationRequests }) => {
   } else {
     vacationRequests.filter(req => req);
     return 0;
+  }
+};
+
+/**
+ * Renders an icon for a given status
+ * @param {string} status Either PENDING, REJECTED or CONFIRMED
+ */
+export const renderIcon = status => {
+  switch (status) {
+    case "PENDING":
+      return "clock";
+
+    case "REJECTED":
+      return "times";
+
+    case "CONFIRMED":
+      return "check";
+
+    default:
+      return "secret";
   }
 };

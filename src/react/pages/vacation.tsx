@@ -19,7 +19,7 @@ export default (props: Props) => {
 
       <VacationRequests id={props.id} isAdmin={props.isadmin} />
       <UserVacationRequests id={props.id} />
-      <RequestVacation id={props.id} />
+      <RequestVacation id={props.id} isAdmin={props.isadmin} />
     </section>
   );
 };

@@ -16,6 +16,7 @@ import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
 import { FETCH_EMPLOYEES } from "../queries/departments";
+import { FETCH_VACATION_REQUESTS } from "./vacation/graphql";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -132,7 +133,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     notify: false
   };
 
-  //references: { key; element }[] = [];
+  // references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
   addReferences = (key, element, addRenderElement) => {
@@ -204,6 +205,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
             query: FETCH_CREDIT_DATA,
             ...options
           });
+          break;
+
+        case "vacationRequest":
+          await refetchQueries(client, ["FETCH_VACATION_REQUESTS"]);
           break;
 
         case "me":
@@ -443,6 +448,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
         icon: "dragon",
         show: false,
         highlight: "ssotest"
+      },
+      {
+        label: "Vacation Requests",
+        location: "vacation",
+        icon: "umbrella-beach",
+        show: true,
+        highlight: "vacation"
       }
     ];
 
@@ -461,9 +473,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
           (!licence.disabled &&
             !licence.pending &&
             licence.vacationstart &&
-              licence.vacationstart <= moment.now() &&
-              ((licence.vacationend && licence.vacationend > moment.now()) ||
-                licence.vacationend == null))
+            licence.vacationstart <= moment.now() &&
+            ((licence.vacationend && licence.vacationend > moment.now()) ||
+              licence.vacationend == null))
         )
       ) {
         return false;

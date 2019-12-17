@@ -8,7 +8,8 @@ import {
   ErrorComp,
   computeDaysLastYear,
   computeFullDays,
-  computeTakenDays
+  computeTakenDays,
+  renderIcon
 } from "../../common/functions";
 import { FETCH_VACATION_REQUESTS } from "../../components/vacation/graphql";
 import moment from "moment";
@@ -22,25 +23,27 @@ interface Props {
 }
 
 export default (props: Props) => {
-  const currentYear = moment().get("year");
-  const [show, setShow] = React.useState(0);
-
-  const renderRequestAmounts = ({ vacationRequests }) => {
-    if (vacationRequests.length < 1) {
-      return [0, 0, 0];
-    } else {
-      return [0, 0, 0];
-    }
-  };
-
   if (!props.isAdmin) {
     return null;
   }
 
   return (
-    <Collapsible title="Vacation Requests">
-      <div className="table-holder">
-        <table>
+    <Collapsible title="Employees Vacation Requests">
+      <div className="vacation-table">
+        <div className="vacation-request-header">
+          <span id="requester-name">Name</span>
+          <span id="vacation-header">Vacation Days</span>
+          <span id="request-header">Requests</span>
+          <span id="year">this year</span>
+          <span id="last-year">from last year</span>
+          <span id="total">total</span>
+          <span id="taken">taken</span>
+          <span id="left">left</span>
+          <span id="open">open</span>
+          <span id="approved">approved</span>
+          <span id="rejected">rejected</span>
+        </div>
+        {/* <table>
           <thead>
             <tr>
               <th vAlign="top" rowSpan={2} colSpan={2}>
@@ -67,72 +70,121 @@ export default (props: Props) => {
           </thead>
 
           <tbody>
-            <Query query={FETCH_VACATION_REQUESTS} fetchPolicy="network-only">
-              {({ data, loading, error }) => {
-                if (loading) {
-                  return <LoadingDiv text="Fetching data..." />;
-                }
+            </tbody>
+        </table> */}
+        <Query query={FETCH_VACATION_REQUESTS}>
+          {({ data, loading, error }) => {
+            if (loading) {
+              return <LoadingDiv text="Fetching data..." />;
+            }
 
-                if (error || !data) {
-                  return <ErrorComp error={error} />;
-                }
+            if (error || !data) {
+              return <ErrorComp error={error} />;
+            }
 
-                const employees = data.fetchVacationRequests.filter(
-                  employee => employee.id != props.id
-                );
-
-                return employees.map((employee, key) => {
-                  return (
-                    <React.Fragment>
-                      <tr rowSpan={2} key={key}>
-                        <td vAlign="center" colSpan={2}>
-                          <div className="table-cell-wrapper">
-                            <PrintEmployeeSquare key={`employee-${key}`} employee={employee} />
-                            <UserName unitid={employee.id} />
-                          </div>
-                        </td>
-                        {employee.vacationDaysPerYear &&
-                        employee.vacationDaysPerYear[currentYear] ? (
-                          <React.Fragment>
-                            <td>{`${employee.vacationDaysPerYear[currentYear]} days`}</td>
-                            <td>{`${computeDaysLastYear(employee)} days`}</td>
-                            <td>{`${computeFullDays(employee)} days`}</td>
-                            <td>{`${computeTakenDays(employee)} days`}</td>
-                            <td>{`${computeFullDays(employee) -
-                              computeTakenDays(employee)} days`}</td>
-                            {renderRequestAmounts(employee).map((amount, key) => (
-                              <td key={key}>{amount}</td>
-                            ))}
-                          </React.Fragment>
-                        ) : (
-                          <React.Fragment>
-                            <td>User not set up yet</td>
-                            <td colSpan={7}>
-                              <UniversalButton
-                                onClick={() => setShow(key + 1)}
-                                label="set up"
-                                type="high"
-                              />
-                            </td>
-                          </React.Fragment>
-                        )}
-                        <td>
-                          <IconButton icon="cog" onClick={() => setShow(key + 1)} />
-                          <IconButton icon="angle-double-down" onClick={() => setShow(key + 1)} />
-                        </td>
-                        {show == key + 1 && (
-                          <VacationConfigPopup id={employee.id} close={() => setShow(0)} />
-                        )}
-                      </tr>
-                      {/* <div></div> */}
-                    </React.Fragment>
-                  );
-                });
-              }}
-            </Query>
-          </tbody>
-        </table>
+            return data.fetchVacationRequests.map((employee, key) => (
+              <VacationRequestRow key={key} employee={employee} />
+            ));
+          }}
+        </Query>
       </div>
     </Collapsible>
+  );
+};
+
+const VacationRequestRow = ({ employee }) => {
+  const currentYear = moment().get("year");
+  const [showPopup, setShowPopup] = React.useState(false);
+  const [showInfo, setShowInfo] = React.useState(false);
+
+  const renderRequestAmounts = vacationRequests => {
+    const requests = { open: 0, approved: 0, rejected: 0 };
+
+    if (vacationRequests.length < 1) {
+      return requests;
+    } else {
+      vacationRequests.map(request => {
+        switch (request.status) {
+          case "PENDING":
+            requests.open = requests.open + 1;
+            break;
+
+          case "PENDING":
+            requests.approved = requests.approved + 1;
+            break;
+
+          case "REJECTED":
+            requests.rejected = requests.rejected + 1;
+            break;
+        }
+      });
+
+      return requests;
+    }
+  };
+
+  const vacationStatus = renderRequestAmounts(employee.vacationRequests);
+
+  return (
+    <React.Fragment>
+      <tr rowSpan={2}>
+        <td vAlign="center" colSpan={2}>
+          <div className="table-cell-wrapper">
+            <PrintEmployeeSquare key={`employee-${employee.id}`} employee={employee} />
+            <UserName unitid={employee.id} />
+          </div>
+        </td>
+        {employee.vacationDaysPerYear && employee.vacationDaysPerYear[currentYear] ? (
+          <React.Fragment>
+            <td>{`${employee.vacationDaysPerYear[currentYear]} days`}</td>
+            <td>{`${computeDaysLastYear(employee)} days`}</td>
+            <td>{`${computeFullDays(employee)} days`}</td>
+            <td>{`${computeTakenDays(employee)} days`}</td>
+            <td>{`${computeFullDays(employee) - computeTakenDays(employee)} days`}</td>
+            {Object.keys(vacationStatus).map(status => (
+              <td key={status}>{vacationStatus[status]}</td>
+            ))}
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <td>User not set up yet</td>
+            <td colSpan={7}>
+              <UniversalButton onClick={() => setShowPopup(true)} label="set up" type="high" />
+            </td>
+          </React.Fragment>
+        )}
+        <td>
+          <IconButton icon="cog" onClick={() => setShowPopup(true)} />
+          <IconButton icon="angle-double-down" onClick={() => setShowInfo(info => !info)} />
+        </td>
+        {showPopup && <VacationConfigPopup id={employee.id} close={() => setShowPopup(false)} />}
+      </tr>
+      {
+        <tr className={`add-info${showInfo ? "-show" : ""}`}>
+          <ul className="table-header">
+            <li>Start Date</li>
+            <li>End Date</li>
+            <li>Vacation Days</li>
+            <li>Status</li>
+          </ul>
+
+          {employee.vacationRequests
+            .filter(request => request.status != "CANCELLED")
+            .map(request => (
+              <ul className="table-body" key={request.id}>
+                <li>{moment(request.startdate).format("LL")}</li>
+                <li>{moment(request.enddate).format("LL")}</li>
+                <li>{request.days}</li>
+                <li className="show-icons">
+                  <i
+                    title={request.status}
+                    className={`fal fa-user-${renderIcon(request.status)}`}
+                  />
+                </li>
+              </ul>
+            ))}
+        </tr>
+      }
+    </React.Fragment>
   );
 };

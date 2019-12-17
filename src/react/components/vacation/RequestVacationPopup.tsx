@@ -1,20 +1,15 @@
 import * as React from "react";
 import { Mutation } from "react-apollo";
 import "moment-feiertage";
-import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
 import moment from "moment";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp } from "../../common/functions";
-
-const REQUEST_VACATION = gql`
-  mutation onRequestVacation($startDate: Date!, $endDate: Date!, $days: Int!) {
-    requestVacation(startDate: $startDate, endDate: $endDate, days: $days)
-  }
-`;
+import { FETCH_VACATION_REQUESTS, REQUEST_VACATION } from "./graphql";
 
 interface Props {
+  userid: number;
   requests: any[];
   close: Function;
 }
@@ -73,8 +68,6 @@ export default (props: Props) => {
       });
 
       await Promise.all(promises);
-      setLoading(false);
-      setSuccess(true);
     } catch (error) {
       setError(error);
       setLoading(false);
@@ -82,7 +75,30 @@ export default (props: Props) => {
   };
 
   return (
-    <Mutation mutation={REQUEST_VACATION}>
+    <Mutation
+      mutation={REQUEST_VACATION}
+      update={(cache, { data }) => {
+        const cachedData = cache.readQuery({
+          query: FETCH_VACATION_REQUESTS,
+          variables: { userid: props.userid }
+        });
+
+        // Brute force to enable rerender because the changes are too deeply nested.
+        const fetchVacationRequests = JSON.parse(JSON.stringify(cachedData.fetchVacationRequests));
+        const requests = fetchVacationRequests[0];
+
+        requests.vacationRequests = [...requests.vacationRequests, data.requestVacation];
+        fetchVacationRequests[0] = requests;
+        cache.writeQuery({
+          query: FETCH_VACATION_REQUESTS,
+          data: { fetchVacationRequests },
+          variables: { userid: props.userid }
+        });
+
+        setLoading(false);
+        setSuccess(true);
+        setTimeout(() => props.close(), 500);
+      }}>
       {mutate => (
         <PopupBase
           small={true}
@@ -114,7 +130,7 @@ export default (props: Props) => {
             })}
           </ul>
 
-          {loading && <LoadingDiv style={{ height: "200px" }} />}
+          {loading && <LoadingDiv />}
           {error && <ErrorComp error={error} />}
           {success && <div className="success">Vacation successfully requested</div>}
 

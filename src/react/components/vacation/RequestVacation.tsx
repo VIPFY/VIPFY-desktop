@@ -12,6 +12,7 @@ import RequestVacationPopup from "./RequestVacationPopup";
 
 interface Props {
   id: number;
+  isAdmin: boolean;
 }
 
 interface Field {
@@ -34,6 +35,16 @@ export default (props: Props) => {
 
       return updatedRequests;
     });
+  };
+
+  const computeRemainingDays = (fullDays, vacationRequests) => {
+    vacationRequests.forEach(({ days, status }) => {
+      if (status != "CANCELLED" && status != "REJECTED") {
+        fullDays -= days;
+      }
+    });
+
+    return fullDays;
   };
 
   const handleSubmit = e => {
@@ -75,7 +86,7 @@ export default (props: Props) => {
 
           if (!vacationDaysPerYear) {
             return (
-              <section style={{ padding: "20px" }}>
+              <section className="no-data">
                 This feature has not been set up for you yet. Please ask your administrator to do
                 so.
               </section>
@@ -84,7 +95,7 @@ export default (props: Props) => {
 
           if (!vacationDaysPerYear[moment().get("year")]) {
             return (
-              <section style={{ padding: "20px" }}>
+              <section className="no-data">
                 Your admin has not entered your vacation days into the system yet. Please ask him to
                 do so.
               </section>
@@ -95,9 +106,10 @@ export default (props: Props) => {
             <section className="vacation-request">
               <h1>Please select from until when you want to have your vacation</h1>
 
-              <div className="">{`You have ${
-                vacationDaysPerYear[moment().get("year")]
-              } days left.`}</div>
+              <div className="vacation-days">{`You have ${computeRemainingDays(
+                vacationDaysPerYear[moment().get("year")],
+                data.fetchVacationRequests[0].vacationRequests
+              )} days left.`}</div>
 
               <form id="vacation-request-form" onSubmit={handleSubmit}>
                 {requests.map(({ startDate, endDate, fieldError }, key) => (
@@ -165,7 +177,9 @@ export default (props: Props) => {
         }}
       </Query>
 
-      {showPopup && <RequestVacationPopup requests={requests} close={() => setShow(false)} />}
+      {showPopup && (
+        <RequestVacationPopup userid={props.id} requests={requests} close={() => setShow(false)} />
+      )}
     </Collapsible>
   );
 };

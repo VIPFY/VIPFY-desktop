@@ -27,22 +27,17 @@ export default (props: Props) => {
     <Mutation
       mutation={SET_VACATION_DAYS}
       update={proxy => {
-        const cachedData = proxy.readQuery({
-          query: FETCH_VACATION_REQUESTS
-        });
+        const cachedData = proxy.readQuery({ query: FETCH_VACATION_REQUESTS });
 
         const fetchVacationRequests = cachedData.fetchVacationRequests.map(emp => {
           if (props.id == emp.id) {
-            emp.vacationDaysPerYear = days;
+            emp.vacationDaysPerYear = { [year]: days };
           }
 
           return emp;
         });
 
-        proxy.writeQuery({
-          query: FETCH_VACATION_REQUESTS,
-          data: { fetchVacationRequests }
-        });
+        proxy.writeQuery({ query: FETCH_VACATION_REQUESTS, data: { fetchVacationRequests } });
 
         setYear(moment().get("year"));
         setDays(0);

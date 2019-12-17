@@ -23,6 +23,10 @@
     padding: 20px;
     height: 500px;
 
+    .vacation-days {
+      margin-bottom: 20px;
+    }
+
     h1 {
       margin-bottom: 20px;
       font-size: 1.3rem;
@@ -89,6 +93,88 @@
     i {
       margin: 0;
       opacity: 1;
+    }
+  }
+
+  .mainPosition {
+    max-height: 200px;
+  }
+
+  .add-info {
+    height: 0;
+    overflow: auto;
+    transition: all 300ms ease-in-out;
+
+    &-show {
+      @extend .add-info;
+      height: 200px;
+      padding: 10px;
+    }
+  }
+
+  .vacation-table {
+    padding: 20px;
+    display: flex;
+    flex-flow: column;
+  }
+
+  .vacation-request-header {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: 40px 20px;
+    grid-template-areas:
+      "name days days days days days request request request ."
+      ". year lastYear total taken left open approved rejected .";
+    justify-items: center;
+    font-weight: bold;
+
+    #requester-name {
+      grid-area: name;
+      justify-self: start;
+    }
+
+    #vacation-header {
+      grid-area: days;
+    }
+
+    #request-header {
+      grid-area: request;
+    }
+
+    #year {
+      grid-area: year;
+    }
+
+    #last-year {
+      grid-area: lastYear;
+    }
+
+    #total {
+      grid-area: total;
+    }
+
+    #taken {
+      grid-area: taken;
+    }
+
+    #left {
+      grid-area: left;
+    }
+
+    #open {
+      grid-area: open;
+    }
+
+    #approved {
+      grid-area: approved;
+    }
+
+    #rejected {
+      grid-area: rejected;
+    }
+
+    #icons {
+      grid-area: icons;
     }
   }
 }
