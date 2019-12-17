@@ -172,24 +172,6 @@ class ServiceDetails extends React.Component<Props, State> {
               {this.state.create && (
                 <CreateOrbit service={service.app} close={() => this.setState({ create: false })} />
               )}
-              {/*<ServiceTeamsSection
-                service={service}
-                teams={data.fetchCompanyService.teams}
-                moveTo={this.props.moveTo}
-                search={this.state.search}
-              />
-              <EmployeeSection
-                search={this.state.search}
-                service={service}
-                licences={data.fetchCompanyService.licences}
-                moveTo={this.props.moveTo}
-              />
-              <EmptySection
-                search={this.state.search}
-                service={service}
-                licences={data.fetchCompanyService.licences}
-                moveTo={this.props.moveTo}
-              />*/}
             </div>
           );
         }}
