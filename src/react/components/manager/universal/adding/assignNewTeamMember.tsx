@@ -280,7 +280,10 @@ class AssignNewTeamMember extends React.Component<Props, State> {
             )}
           </>
         ) : (
-          <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchDepartmentsData}>
+          <Query
+            pollInterval={60 * 10 * 1000 + 1000}
+            query={fetchDepartmentsData}
+            fetchPolicy="network-only">
             {({ loading, error, data }) => {
               if (loading) {
                 return "Loading...";
@@ -358,7 +361,7 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                         additionalclassName="formPopup deletePopup">
                         <AddEmployeePersonalData
                           continue={data => {
-                            this.setState({ add: false, employee: data });
+                            this.setState({ add: false, employee: data.employee });
                           }}
                           close={() => {
                             this.setState({ add: false });

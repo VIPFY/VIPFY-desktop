@@ -16,6 +16,7 @@ import {
 } from "../../../../queries/departments";
 import PrintTeamSquare from "../squares/printTeamSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
+import AddTeamGeneralData from "../../addTeamGeneralData";
 
 interface Props {
   employee: any;
@@ -35,6 +36,8 @@ interface State {
   orbitassignment: any[];
   showall: boolean;
   team: any;
+  newTeam: Boolean;
+  value: String | null;
 }
 
 const ADD_MEMBER_TO_TEAM = gql`
@@ -75,7 +78,9 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
     todate: null,
     orbitassignment: [],
     showall: false,
-    team: null
+    team: null,
+    newTeam: false,
+    value: null
   };
 
   showTeamOrbits() {
@@ -354,10 +359,27 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                       )}
                       startvalue=""
                       livecode={c => this.setState({ team: teams.find(a => a.unitid.id == c) })}
-                      noresults="Create new user"
-                      noresultsClick={v => console.log("CREATE Team")}
+                      noresults="Create new team"
+                      noresultsClick={v => this.setState({ newTeam: true })}
                       fewResults={true}
+                      livevalue={v => this.setState({ value: v })}
                     />
+                    {this.state.newTeam && (
+                      <PopupBase
+                        small={true}
+                        close={() => this.setState({ newTeam: false })}
+                        additionalclassName="formPopup">
+                        <AddTeamGeneralData
+                          close={() => this.setState({ newTeam: false })}
+                          savingFunction={so => {
+                            if (so.action == "success") {
+                              this.setState({ newTeam: false, team: so.content });
+                            }
+                          }}
+                          addteam={{ name: this.state.value }}
+                        />
+                      </PopupBase>
+                    )}
                   </div>
                   {this.state.showall && (
                     <PopupBase

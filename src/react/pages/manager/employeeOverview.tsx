@@ -40,12 +40,37 @@ interface State {
 
 const CREATE_EMPLOYEE = gql`
   mutation onCreateEmployee(
-    $file: Upload
-    $addpersonal: JSON!
-    $addteams: [JSON]!
-    $apps: [JSON]!
+    $name: HumanName!
+    $emails: [EmailInput!]!
+    $birthday: Date
+    $hiredate: Date
+    $address: AddressInput
+    $position: String
+    $phones: [PhoneInput]
+    $password: String!
+    $needpasswordchange: Boolean
+    $picture: Upload
   ) {
-    createEmployee(file: $file, addpersonal: $addpersonal, addteams: $addteams, apps: $apps)
+    createEmployee(
+      name: $name
+      emails: $emails
+      file: $picture
+      birthday: $birthday
+      hiredate: $hiredate
+      address: $address
+      position: $position
+      phones: $phones
+      password: $password
+      needpasswordchange: $needpasswordchange
+    ) {
+      id
+      profilepicture
+      firstname
+      middlename
+      lastname
+      title
+      suffix
+    }
   }
 `;
 
@@ -727,12 +752,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                   await createEmployee({
                     variables: {
                       file: this.state.addpersonal.picture,
-                      addpersonal: {
-                        password: await randomPassword(),
-                        ...this.state.addpersonal
-                      },
-                      addteams: this.state.addteams,
-                      apps: this.state.apps
+                      password: await randomPassword(),
+                      ...this.state.addpersonal
                     },
                     refetchQueries: [{ query: fetchDepartmentsData }]
                   });

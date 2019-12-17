@@ -41,10 +41,11 @@ interface State {
   parsedName: any;
   error: String | null;
   picture: File | null;
+  employee: any;
 }
 
 const CREATE_EMPLOYEE = gql`
-  mutation createEmployee09(
+  mutation createEmployee(
     $name: HumanName!
     $emails: [EmailInput!]!
     $birthday: Date
@@ -56,7 +57,7 @@ const CREATE_EMPLOYEE = gql`
     $needpasswordchange: Boolean
     $picture: Upload
   ) {
-    createEmployee09(
+    createEmployee(
       name: $name
       emails: $emails
       file: $picture
@@ -67,7 +68,15 @@ const CREATE_EMPLOYEE = gql`
       phones: $phones
       password: $password
       needpasswordchange: $needpasswordchange
-    )
+    ) {
+      id
+      profilepicture
+      firstname
+      middlename
+      lastname
+      title
+      suffix
+    }
   }
 `;
 
@@ -92,7 +101,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     unitid: null,
     parsedName: null,
     error: null,
-    picture: null
+    picture: null,
+    employee: null
   };
 
   handleConfirm() {
@@ -234,14 +244,15 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                 });
                 this.setState({
                   success: true,
-                  unitid: unitid.data.createEmployee09,
+                  unitid: unitid.data.createEmployee.id,
                   parsedName: {
                     title: parsedName.salutation || "",
                     firstname: parsedName.firstName || "",
                     middlename: parsedName.middleName || "",
                     lastname: parsedName.lastName || "",
                     suffix: parsedName.suffix || ""
-                  }
+                  },
+                  employee: unitid.data.createEmployee
                 });
               } catch (err) {
                 console.log("ERR", err);
