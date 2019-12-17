@@ -215,13 +215,14 @@ class ServiceOverview extends React.Component<Props, State> {
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
+      if (service.app.id == 66) {
+        return;
+      }
       const teams = [];
       const accounts = [];
       const singleAccounts = [];
 
-      console.log("SERIVCE", service);
       service.orbitids.forEach(element => {
-        console.log("ORBIT", element);
         element.teams.forEach(team => {
           if (team != null) {
             teams.push(team);
@@ -241,7 +242,6 @@ class ServiceOverview extends React.Component<Props, State> {
               if (
                 checkunit &&
                 (checkunit.endtime == null || moment(checkunit.endtime).toDate() > new Date()) &&
-                moment(checkunit.starttime).toDate() < new Date() &&
                 !singleAccounts.find(s => s && s && checkunit.unitid && s.id == checkunit.unitid.id)
               ) {
                 singleAccounts.push(checkunit.unitid);

@@ -615,7 +615,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 setInstance={this.props.setInstance}
                 sidebarOpen={sidebarOpen}
                 openInstances={this.props.openInstances}
-                licences={filteredLicences.filter(({ tags }) => tags.length < 1)}
+                licences={filteredLicences.filter(
+                  ({ tags }) => tags.length < 1 || !tags.includes("vacation")
+                )}
                 viewID={this.props.viewID}
               />
 
@@ -629,7 +631,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 openInstances={this.props.openInstances}
                 licences={filteredLicences.filter(
                   ({ vacationend, vacationstart, tags }) =>
-                    tags.length > 0 && vacationstart && moment().isBefore(moment(vacationend))
+                    tags.length > 0 &&
+                    tags.includes("vacation") &&
+                    vacationstart &&
+                    moment().isBefore(moment(vacationend))
                 )}
                 viewID={this.props.viewID}
               />

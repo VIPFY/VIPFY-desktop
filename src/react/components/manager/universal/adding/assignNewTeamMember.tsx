@@ -10,6 +10,7 @@ import gql from "graphql-tag";
 import { fetchTeam, fetchDepartmentsData } from "../../../../queries/departments";
 import PrintTeamSquare from "../squares/printTeamSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
+import AddEmployeePersonalData from "../../addEmployeePersonalData";
 
 interface Props {
   team: any;
@@ -29,6 +30,8 @@ interface State {
   orbitassignment: any[];
   showall: boolean;
   employee: any;
+  add: boolean;
+  value: string | null;
 }
 
 const ADD_MEMBER_TO_TEAM = gql`
@@ -69,7 +72,9 @@ class AssignNewTeamMember extends React.Component<Props, State> {
     todate: null,
     orbitassignment: [],
     showall: false,
-    employee: null
+    employee: null,
+    add: false,
+    value: null
   };
 
   showTeamOrbits() {
@@ -306,10 +311,29 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                       )}
                       startvalue=""
                       livecode={c => this.setState({ employee: employees.find(a => a.id == c) })}
+                      livevalue={v => this.setState({ value: v })}
                       noresults="Create new user"
-                      noresultsClick={v => console.log("CREATE EMPLOYEE")}
+                      noresultsClick={v => this.setState({ add: true })}
                       fewResults={true}
                     />
+                    {this.state.add && (
+                      <PopupBase
+                        small={true}
+                        close={() => this.setState({ add: false })}
+                        nooutsideclose={true}
+                        additionalclassName="formPopup deletePopup">
+                        <AddEmployeePersonalData
+                          continue={data => {
+                            this.setState({ add: false, employee: data });
+                          }}
+                          close={() => {
+                            this.setState({ add: false });
+                          }}
+                          addpersonal={{ name: this.state.value }}
+                          isadmin={true}
+                        />
+                      </PopupBase>
+                    )}
                   </div>
                   {this.state.showall && (
                     <PopupBase

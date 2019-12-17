@@ -5,6 +5,7 @@ import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import { filterError, ErrorComp } from "../common/functions";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
+import { isNumber } from "util";
 
 const READ_NOTIFICATION = gql`
   mutation onReadNotification($id: ID!) {
@@ -144,7 +145,11 @@ class Notification extends React.Component<Props, State> {
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
         <p className="notificationText">{message}</p>
-        <div className="notificationTime">{moment(sendtime - 0).format("LLL")}</div>
+        <div className="notificationTime">
+          {!isNaN(sendtime - 0)
+            ? moment(sendtime - 0).format("LLL")
+            : moment(sendtime).format("LLL")}
+        </div>
       </div>
     ));
   }

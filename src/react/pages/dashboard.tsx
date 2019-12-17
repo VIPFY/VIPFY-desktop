@@ -175,7 +175,11 @@ class Dashboard extends React.Component<Props, State> {
         if (licence.pending) {
           appLists["Pending Apps"].push(licence);
         } else if (licence.tags.length > 0) {
-          if (licence.vacationstart && moment().isBefore(moment(licence.vacationend))) {
+          if (
+            licence.tags.includes("vacation") &&
+            licence.vacationstart &&
+            moment().isBefore(moment(licence.vacationend))
+          ) {
             appLists["Temporary Apps"].push(licence);
           }
         } else {

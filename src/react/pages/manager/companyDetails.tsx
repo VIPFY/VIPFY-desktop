@@ -12,6 +12,7 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import { ADD_PROMOCODE } from "../../mutations/auth";
+import { now } from "moment";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -41,7 +42,6 @@ interface State {
 const fetchCompanyServices = gql`
   query fetchCompanyServices {
     fetchCompanyServices {
-      id
       app {
         id
         name
@@ -52,18 +52,13 @@ const fetchCompanyServices = gql`
           id
         }
       }
-      licences {
+      orbitids {
         id
         endtime
-        options
-        unitid {
+        accounts {
           id
-          firstname
-          lastname
-          profilepicture
-        }
-        teamlicence {
-          id
+          starttime
+          endtime
         }
       }
     }
@@ -205,7 +200,7 @@ class CompanyDetails extends React.Component<Props, State> {
                             className="tableColumnSmall editable"
                             style={{ width: "100%" }}
                             onClick={() => this.props.moveTo("lmanager")}>
-                            <h1>Integrated Accounts</h1>
+                            <h1>Used Accounts</h1>
                             <h2>
                               <Query
                                 pollInterval={60 * 10 * 1000 + 900}
@@ -220,7 +215,19 @@ class CompanyDetails extends React.Component<Props, State> {
                                   }
                                   let sum = 0;
                                   if (data && data.fetchCompanyServices) {
-                                    data.fetchCompanyServices.map(s => (sum += s.licences.length));
+                                    data.fetchCompanyServices.map(
+                                      s =>
+                                        s.orbitids &&
+                                        s.orbitids.map(
+                                          o =>
+                                            (sum +=
+                                              o.accounts &&
+                                              o.accounts.filter(
+                                                ac =>
+                                                  ac && (ac.endtime == null || ac.endtime > now())
+                                              ).length)
+                                        )
+                                    );
 
                                     return sum;
                                   } else {

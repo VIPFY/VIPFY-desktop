@@ -77,8 +77,18 @@ class TeamDetails extends React.Component<Props, State> {
           return (
             <div className="managerPage">
               <div className="heading">
-                <span className="h1">
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("dmanager")}>
+                <span
+                  className="h1"
+                  style={{
+                    display: "block",
+                    maxWidth: "40vw",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    color: "rgba(37, 54, 71, 0.6)"
+                  }}>
+                  <span
+                    style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
+                    onClick={() => this.props.moveTo("dmanager")}>
                     Team Manager
                   </span>
                   <span className="h2">{team.name}</span>
