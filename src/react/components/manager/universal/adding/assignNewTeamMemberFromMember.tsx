@@ -201,7 +201,14 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
               marginLeft: "0px"
             }}
           />
-          <span style={{ lineHeight: "24px", marginLeft: "8px" }}>
+          <span
+            style={{
+              lineHeight: "24px",
+              marginLeft: "8px",
+              width: "calc(100% - 116px)",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}>
             {concatName(this.props.employee)}
           </span>
         </div>
@@ -215,7 +222,7 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                 marginTop: "28px",
                 position: "relative"
               }}>
-              <span style={{ lineHeight: "24px", width: "84px" }}>Employee:</span>
+              <span style={{ lineHeight: "24px", width: "84px" }}>Team:</span>
               <PrintTeamSquare
                 team={this.state.team}
                 size={24}
@@ -228,24 +235,58 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                   marginLeft: "0px"
                 }}
               />
-              <span style={{ lineHeight: "24px", marginLeft: "8px" }}>{this.state.team.name}</span>
+              <span
+                style={{
+                  lineHeight: "24px",
+                  marginLeft: "8px",
+                  width: "calc(100% - 116px)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}>
+                {this.state.team.name}
+              </span>
               <i
                 className="fal fa-pen editbutton"
                 onClick={() => this.setState({ team: null, orbit: null, account: null })}
               />
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-                marginTop: "14px",
-                position: "relative"
-              }}>
-              <span style={{ lineHeight: "12px", width: "84px" }}></span>
-              <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
-            </div>
-            {this.showTeamOrbits()}
+            {this.state.team.employees.find(e => e.id == this.props.employee.id) ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "20px",
+                  marginTop: "14px",
+                  position: "relative",
+                  justifyContent: "center"
+                }}>
+                <span
+                  className="infoTag"
+                  style={{
+                    backgroundColor: "rgb(199, 53, 68)",
+                    textAlign: "center",
+                    lineHeight: "initial",
+                    color: "white"
+                  }}>
+                  Employee is already in this team
+                </span>
+              </div>
+            ) : (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                    marginTop: "14px",
+                    position: "relative"
+                  }}>
+                  <span style={{ lineHeight: "12px", width: "84px" }}></span>
+                  <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
+                </div>
+                {this.showTeamOrbits()}
+              </>
+            )}
           </>
         ) : (
           <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchCompanyTeams}>
@@ -360,6 +401,7 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
             disabled={
               !(
                 this.state.team &&
+                !this.state.team.employees.find(e => e.id == this.props.employee.id) &&
                 this.state.orbitassignment.length == this.state.team.services.length &&
                 this.state.orbitassignment.every(oa => oa.account && oa.account.id)
               )

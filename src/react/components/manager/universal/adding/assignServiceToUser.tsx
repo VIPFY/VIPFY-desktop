@@ -149,6 +149,7 @@ class AssignServiceToUser extends React.Component<Props, State> {
                             service={app}
                             appidFunction={s => s}
                             className="image"
+                            size={88}
                           />
                           <div className="name" title={app.name}>
                             {app.name}

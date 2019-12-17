@@ -164,7 +164,9 @@ class Dashboard extends React.Component<Props, State> {
     };
 
     const licenceCheck =
-      this.props.licences && this.props.licences.fetchUserLicenceAssignments.length > 0;
+      this.props.licences &&
+      this.props.licences.fetchUserLicenceAssignments &&
+      this.props.licences.fetchUserLicenceAssignments.length > 0;
 
     if (licenceCheck) {
       this.props.licences.fetchUserLicenceAssignments.forEach(licence => {

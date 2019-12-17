@@ -89,7 +89,14 @@ class AssignNewAccount extends React.Component<Props, State> {
               marginLeft: "0px"
             }}
           />
-          <span style={{ lineHeight: "24px", marginLeft: "8px" }}>
+          <span
+            style={{
+              lineHeight: "24px",
+              marginLeft: "8px",
+              width: "calc(100% - 116px)",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}>
             {concatName(this.props.employee)}
           </span>
         </div>

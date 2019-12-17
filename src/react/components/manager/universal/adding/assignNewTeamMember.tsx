@@ -199,7 +199,16 @@ class AssignNewTeamMember extends React.Component<Props, State> {
               marginLeft: "0px"
             }}
           />
-          <span style={{ lineHeight: "24px", marginLeft: "8px" }}>{this.props.team.name}</span>
+          <span
+            style={{
+              lineHeight: "24px",
+              marginLeft: "8px",
+              width: "calc(100% - 116px)",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}>
+            {this.props.team.name}
+          </span>
         </div>
         {this.state.employee ? (
           <>
@@ -232,18 +241,43 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                 onClick={() => this.setState({ employee: null, orbit: null, account: null })}
               />
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-                marginTop: "14px",
-                position: "relative"
-              }}>
-              <span style={{ lineHeight: "12px", width: "84px" }}></span>
-              <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
-            </div>
-            {this.showTeamOrbits()}
+            {this.props.team.employees.find(e => e.id == this.state.employee.id) ? (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "20px",
+                  marginTop: "14px",
+                  position: "relative",
+                  justifyContent: "center"
+                }}>
+                <span
+                  className="infoTag"
+                  style={{
+                    backgroundColor: "rgb(199, 53, 68)",
+                    textAlign: "center",
+                    lineHeight: "initial",
+                    color: "white"
+                  }}>
+                  Employee is already in this team
+                </span>
+              </div>
+            ) : (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                    marginTop: "14px",
+                    position: "relative"
+                  }}>
+                  <span style={{ lineHeight: "12px", width: "84px" }}></span>
+                  <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
+                </div>
+                {this.showTeamOrbits()}
+              </>
+            )}
           </>
         ) : (
           <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchDepartmentsData}>
@@ -376,6 +410,8 @@ class AssignNewTeamMember extends React.Component<Props, State> {
             label="Save"
             disabled={
               !(
+                this.state.employee &&
+                !this.props.team.employees.find(e => e.id == this.state.employee.id) &&
                 this.state.orbitassignment.length == this.props.team.services.length &&
                 this.state.orbitassignment.every(oa => oa.account && oa.account.id)
               )
