@@ -39,35 +39,38 @@ export default (props: Props) => {
 
           const fetchedteam = data.fetchTeam;
 
-          return (
-            <div
-              key={fetchedteam.name}
-              title={title || fetchedteam.name}
-              className={props.className || "managerSquare"}
-              style={Object.assign(
-                {},
-                fetchedteam.profilepicture
-                  ? {
-                      backgroundImage: getBgImageTeam(fetchedteam.profilepicture, size),
-                      backgroundColor: "unset"
-                    }
-                  : fetchedteam.internaldata && fetchedteam.internaldata.color
-                  ? { backgroundColor: fetchedteam.internaldata.color }
-                  : { backgroundColor: "#9C13BC" },
-                props.styles || {}
-              )}>
-              {fetchedteam.profilepicture
-                ? ""
-                : fetchedteam.internaldata && fetchedteam.internaldata.letters
-                ? fetchedteam.internaldata.letters
-                : (fetchedteam.name && fetchedteam.name.slice(0, 1)) || ""}
-            </div>
-          );
+          if (fetchedteam) {
+            return (
+              <div
+                key={fetchedteam.name}
+                title={title || fetchedteam.name}
+                className={props.className || "managerSquare"}
+                style={Object.assign(
+                  {},
+                  fetchedteam.profilepicture
+                    ? {
+                        backgroundImage: getBgImageTeam(fetchedteam.profilepicture, size),
+                        backgroundColor: "unset"
+                      }
+                    : fetchedteam.internaldata && fetchedteam.internaldata.color
+                    ? { backgroundColor: fetchedteam.internaldata.color }
+                    : { backgroundColor: "#9C13BC" },
+                  props.styles || {}
+                )}>
+                {fetchedteam.profilepicture
+                  ? ""
+                  : fetchedteam.internaldata && fetchedteam.internaldata.letters
+                  ? fetchedteam.internaldata.letters
+                  : (fetchedteam.name && fetchedteam.name.slice(0, 1)) || ""}
+              </div>
+            );
+          } else {
+            return "";
+          }
         }}
       </Query>
     );
   }
-  console.log("T", team);
   return (
     <div
       key={team.name}

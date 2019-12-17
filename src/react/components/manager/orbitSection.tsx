@@ -77,6 +77,29 @@ class OrbitSection extends React.Component<Props, State> {
     const end = e.endtime == 8640000000000000 ? null : e.endtime;
     const start = e.buytime;
 
+    if (
+      !(
+        e.accounts &&
+        e.accounts[0] != null &&
+        e.accounts.filter(
+          account => account && (account.endtime == null || account.endtime > now())
+        ).length >= 0
+      )
+    ) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#c73544",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          No active Accounts
+        </span>
+      );
+    }
+
     if (moment(start - 0).isAfter(moment.now())) {
       return (
         <span

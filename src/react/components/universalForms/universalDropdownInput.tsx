@@ -89,6 +89,10 @@ class UniversalDropDownInput extends React.Component<Props, State> {
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 
+  componentDidMount() {
+    this.nameInput.focus();
+  }
+
   componentDidUpdate(prevProps) {
     if (prevProps.startvalue != this.props.startvalue || prevProps.id != this.props.id) {
       this.setState({
@@ -318,9 +322,7 @@ class UniversalDropDownInput extends React.Component<Props, State> {
           }}
           value={this.state.value}
           onChange={e => this.changeValue(e)}
-          ref={input => {
-            this.nameInput = input;
-          }}
+          ref={input => (this.nameInput = input)}
         />
         {this.props.noFloating ? (
           ""

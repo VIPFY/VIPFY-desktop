@@ -113,7 +113,7 @@ class AccountRow extends React.Component<Props, State> {
     return (
       <div className="tableRow noHover">
         <div className="tableMain">
-          <div className="tableColumnBig" style={{ alignItems: "center", display: "flex" }}>
+          <div className="tableColumnBig" style={{ lineHeight: "56px" }}>
             {account.alias}
           </div>
           <div className="tableColumnSmall" style={{ alignItems: "center", display: "flex" }}>
@@ -123,6 +123,7 @@ class AccountRow extends React.Component<Props, State> {
             teams={account.assignments
               .filter(
                 asa =>
+                  asa &&
                   (asa.endtime == null || asa.endtime > now()) &&
                   asa.tags.includes("teamlicence") &&
                   asa.assignoptions &&
@@ -135,7 +136,9 @@ class AccountRow extends React.Component<Props, State> {
           <ColumnEmployees
             employees={account.assignments.filter(
               asa =>
-                !asa.tags.includes("teamlicence") && (asa.endtime == null || asa.endtime > now())
+                asa &&
+                !asa.tags.includes("teamlicence") &&
+                (asa.endtime == null || asa.endtime > now())
             )}
             employeeidFunction={e => {
               return { ...e.unitid, endtime: e.endtime };

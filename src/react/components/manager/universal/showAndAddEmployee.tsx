@@ -154,7 +154,7 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                         label={concatName(employee)}
                         onClick={() => {
                           this.setState({ showall: false });
-                          this.setState({ user: employee.id });
+                          this.setState({ user: employee });
                         }}
                       />
                     </div>
