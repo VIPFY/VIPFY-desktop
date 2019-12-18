@@ -17,6 +17,7 @@ interface Props {
   employee: any;
   close: Function;
   assignAccount: Function;
+  service?: any;
 }
 
 interface State {
@@ -54,7 +55,7 @@ const ASSIGN_ACCOUNT = gql`
 
 class AssignNewAccount extends React.Component<Props, State> {
   state = {
-    service: null,
+    service: this.props.service || null,
     orbit: null,
     account: null,
     saving: false,
@@ -268,8 +269,6 @@ class AssignNewAccount extends React.Component<Props, State> {
                   </>
                 ) : (
                   <AssignAccount
-                    employee={this.props.employee}
-                    service={this.state.service}
                     orbit={this.state.orbit}
                     continue={a => this.setState({ account: a })}
                   />
@@ -277,7 +276,6 @@ class AssignNewAccount extends React.Component<Props, State> {
               </>
             ) : (
               <AssignOrbit
-                employee={this.props.employee}
                 service={this.state.service}
                 continue={o => this.setState({ orbit: o })}
               />
