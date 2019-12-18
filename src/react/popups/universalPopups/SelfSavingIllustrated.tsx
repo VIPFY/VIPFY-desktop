@@ -8,6 +8,9 @@ import { SSO } from "../../interfaces";
 import { CREATE_OWN_APP } from "../../mutations/products";
 import LogoExtractor from "../../components/ssoconfig/LogoExtractor";
 import { fetchLicences } from "../../queries/auth";
+import fail_pic from "../../../images/sso_creation_fail.png";
+import success_pic from "../../../images/sso_creation_success.png";
+import loading_pic from "../../../images/sso_creation_loading.png";
 
 const FAILED_INTEGRATION = gql`
   mutation onFailedIntegration($data: SSOResult!) {
@@ -70,8 +73,6 @@ class SelfSaving extends React.Component<Props, State> {
     this.props.closeFunction(err);
   }
 
-  fullPath = path => `${__dirname}/../../../images/sso_creation_${path}.png`;
-
   createOwnSSO = async (createOwnApp: Function) => {
     if (this.state.ssoCheck) {
       const { sso } = this.props;
@@ -127,13 +128,13 @@ class SelfSaving extends React.Component<Props, State> {
           </>
         ) : this.state.error ? (
           <div className="popup-sso">
-            <img className="status-pic" src={this.fullPath("fail")} />
+            <img className="status-pic" src={fail_pic} />
             <h3>{this.state.error}</h3>
             <UniversalButton type="high" label="Ok" onClick={() => this.close("error")} />
           </div>
         ) : this.state.success ? (
           <div className="popup-sso">
-            <img className="status-pic" src={this.fullPath("success")} />
+            <img className="status-pic" src={success_pic} />
             <h3>
               <span>Congratulations!</span>
               <span>Your Implementation was successful.</span>
@@ -142,7 +143,7 @@ class SelfSaving extends React.Component<Props, State> {
           </div>
         ) : (
           <div className="popup-sso">
-            <img className="status-pic" src={this.fullPath("loading")} />
+            <img className="status-pic" src={loading_pic} />
             <progress max="100" value={this.state.progress} />
 
             <Mutation
