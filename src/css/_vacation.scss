@@ -100,33 +100,21 @@
     max-height: 200px;
   }
 
-  .add-info {
-    height: 0;
-    overflow: auto;
-    transition: all 300ms ease-in-out;
-
-    &-show {
-      @extend .add-info;
-      height: 200px;
-      padding: 10px;
-    }
-  }
-
   .vacation-table {
-    padding: 20px;
     display: flex;
     flex-flow: column;
   }
 
   .vacation-request-header {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: 200px repeat(9, 1fr);
     grid-template-rows: 40px 20px;
     grid-template-areas:
       "name days days days days days request request request ."
       ". year lastYear total taken left open approved rejected .";
     justify-items: center;
     font-weight: bold;
+    padding: 20px;
 
     #requester-name {
       grid-area: name;
@@ -175,6 +163,23 @@
 
     #icons {
       grid-area: icons;
+    }
+  }
+
+  .add-info {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    align-items: center;
+    grid-row-gap: 20px;
+    width: 100%;
+
+    .headline {
+      font-weight: bold;
+    }
+
+    .universalCoverButton {
+      align-self: start;
+      max-width: 150px;
     }
   }
 }

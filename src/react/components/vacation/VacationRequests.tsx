@@ -16,6 +16,7 @@ import moment from "moment";
 import UniversalButton from "../universalButtons/universalButton";
 import VacationConfigPopup from "./VacationConfigPopup";
 import IconButton from "../../common/IconButton";
+import VacationDecissionPopup from "./VacationDecissionPopup";
 
 interface Props {
   id: number;
@@ -43,35 +44,7 @@ export default (props: Props) => {
           <span id="approved">approved</span>
           <span id="rejected">rejected</span>
         </div>
-        {/* <table>
-          <thead>
-            <tr>
-              <th vAlign="top" rowSpan={2} colSpan={2}>
-                Name
-              </th>
-              <th colSpan={5} align="center">
-                Vacation Days
-              </th>
-              <th vAlign="top" colSpan={3} align="center">
-                Requests
-              </th>
-              <th rowSpan={2} />
-            </tr>
-            <tr>
-              <th>this year</th>
-              <th>from last year</th>
-              <th>total</th>
-              <th>taken</th>
-              <th>left</th>
-              <th>open</th>
-              <th>approved</th>
-              <th>rejected</th>
-            </tr>
-          </thead>
 
-          <tbody>
-            </tbody>
-        </table> */}
         <Query query={FETCH_VACATION_REQUESTS}>
           {({ data, loading, error }) => {
             if (loading) {
@@ -94,7 +67,9 @@ export default (props: Props) => {
 
 const VacationRequestRow = ({ employee }) => {
   const currentYear = moment().get("year");
-  const [showPopup, setShowPopup] = React.useState(false);
+  const [showConfigPopup, setShowConfig] = React.useState(false);
+  const [decission, setDecission] = React.useState("");
+  const [showDecissionPopup, setIDPopup] = React.useState(0);
   const [showInfo, setShowInfo] = React.useState(false);
 
   const renderRequestAmounts = vacationRequests => {
@@ -109,7 +84,7 @@ const VacationRequestRow = ({ employee }) => {
             requests.open = requests.open + 1;
             break;
 
-          case "PENDING":
+          case "CONFIRMED":
             requests.approved = requests.approved + 1;
             break;
 
@@ -123,68 +98,129 @@ const VacationRequestRow = ({ employee }) => {
     }
   };
 
-  const vacationStatus = renderRequestAmounts(employee.vacationRequests);
+  const yearlyRequests = employee.vacationRequests.filter(({ requested, status }) => {
+    return status != "CANCELLED" && moment(requested).get("year") == currentYear;
+  });
+
+  const vacationStatus = renderRequestAmounts(yearlyRequests);
 
   return (
-    <React.Fragment>
-      <tr rowSpan={2}>
-        <td vAlign="center" colSpan={2}>
-          <div className="table-cell-wrapper">
-            <PrintEmployeeSquare key={`employee-${employee.id}`} employee={employee} />
-            <UserName unitid={employee.id} />
+    <div
+      role="button"
+      onClick={() => setShowInfo(info => (info = !info))}
+      className={`accordion ${showInfo ? "show-shadow" : ""}`}>
+      <span className="user-holder">
+        <PrintEmployeeSquare key={`employee-${employee.id}`} employee={employee} />
+        <UserName unitid={employee.id} />
+      </span>
+      {employee.vacationDaysPerYear && employee.vacationDaysPerYear[currentYear] ? (
+        <React.Fragment>
+          <span>{`${employee.vacationDaysPerYear[currentYear]} days`}</span>
+          <span>{`${computeDaysLastYear(employee)} days`}</span>
+          <span>{`${computeFullDays(employee)} days`}</span>
+          <span>{`${computeTakenDays(employee)} days`}</span>
+          <span>{`${computeFullDays(employee) - computeTakenDays(employee)} days`}</span>
+          {Object.keys(vacationStatus).map(status => (
+            <span key={status}>{vacationStatus[status]}</span>
+          ))}
+          <span className="button-holder">
+            <IconButton
+              title="Update Vacation days"
+              icon="cog"
+              onClick={() => setShowConfig(true)}
+            />
+            <IconButton
+              title="Show more info"
+              icon="angle-double-down"
+              onClick={e => {
+                e.stopPropagation();
+                setShowInfo(info => !info);
+              }}
+            />
+          </span>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <div>User not set up yet</div>
+          <div>
+            <UniversalButton
+              onClick={e => {
+                e.stopPropagation();
+                setShowConfig(true);
+              }}
+              label="set up"
+              type="high"
+            />
           </div>
-        </td>
-        {employee.vacationDaysPerYear && employee.vacationDaysPerYear[currentYear] ? (
-          <React.Fragment>
-            <td>{`${employee.vacationDaysPerYear[currentYear]} days`}</td>
-            <td>{`${computeDaysLastYear(employee)} days`}</td>
-            <td>{`${computeFullDays(employee)} days`}</td>
-            <td>{`${computeTakenDays(employee)} days`}</td>
-            <td>{`${computeFullDays(employee) - computeTakenDays(employee)} days`}</td>
-            {Object.keys(vacationStatus).map(status => (
-              <td key={status}>{vacationStatus[status]}</td>
-            ))}
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <td>User not set up yet</td>
-            <td colSpan={7}>
-              <UniversalButton onClick={() => setShowPopup(true)} label="set up" type="high" />
-            </td>
-          </React.Fragment>
-        )}
-        <td>
-          <IconButton icon="cog" onClick={() => setShowPopup(true)} />
-          <IconButton icon="angle-double-down" onClick={() => setShowInfo(info => !info)} />
-        </td>
-        {showPopup && <VacationConfigPopup id={employee.id} close={() => setShowPopup(false)} />}
-      </tr>
-      {
-        <tr className={`add-info${showInfo ? "-show" : ""}`}>
-          <ul className="table-header">
-            <li>Start Date</li>
-            <li>End Date</li>
-            <li>Vacation Days</li>
-            <li>Status</li>
-          </ul>
+        </React.Fragment>
+      )}
 
-          {employee.vacationRequests
-            .filter(request => request.status != "CANCELLED")
-            .map(request => (
-              <ul className="table-body" key={request.id}>
-                <li>{moment(request.startdate).format("LL")}</li>
-                <li>{moment(request.enddate).format("LL")}</li>
-                <li>{request.days}</li>
-                <li className="show-icons">
-                  <i
-                    title={request.status}
-                    className={`fal fa-user-${renderIcon(request.status)}`}
-                  />
-                </li>
-              </ul>
-            ))}
-        </tr>
-      }
-    </React.Fragment>
+      <div className={`add-info${showInfo ? "-show" : ""}`}>
+        <div className="headline">Start Date</div>
+        <div className="headline">End Date</div>
+        <div className="headline">Vacation Days</div>
+        <div className="headline">Status</div>
+        <div className="headline">Confirm</div>
+        <div className="headline">Decline</div>
+
+        {yearlyRequests.map(request => (
+          <React.Fragment key={request.id}>
+            <div>{moment(request.startdate).format("LL")}</div>
+            <div>{moment(request.enddate).format("LL")}</div>
+            <div>{request.days}</div>
+            <div className="show-icons">
+              <i title={request.status} className={`fal fa-user-${renderIcon(request.status)}`} />
+            </div>
+            {request.status == "CONFIRMED" ? (
+              moment(request.decided).format("LL")
+            ) : request.status == "PENDING" ? (
+              <UniversalButton
+                onClick={e => {
+                  e.stopPropagation();
+                  setDecission("confirm");
+                  setIDPopup(request.id);
+                }}
+                label="approve"
+                type="high"
+              />
+            ) : (
+              <div></div>
+            )}
+
+            {request.status == "REJECTED" ? (
+              moment(request.decided).format("LL")
+            ) : request.status == "PENDING" ? (
+              <UniversalButton
+                onClick={e => {
+                  e.stopPropagation();
+                  setDecission("decline");
+                  setIDPopup(request.id);
+                }}
+                label="decline"
+                type="high"
+              />
+            ) : (
+              <div></div>
+            )}
+
+            {showDecissionPopup == request.id && (
+              <VacationDecissionPopup
+                decission={decission}
+                id={employee.id}
+                requestID={showDecissionPopup}
+                close={() => {
+                  setDecission("");
+                  setIDPopup(0);
+                }}
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {showConfigPopup && (
+        <VacationConfigPopup id={employee.id} close={() => setShowConfig(false)} />
+      )}
+    </div>
   );
 };

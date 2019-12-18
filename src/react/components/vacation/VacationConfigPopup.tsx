@@ -31,7 +31,7 @@ export default (props: Props) => {
 
         const fetchVacationRequests = cachedData.fetchVacationRequests.map(emp => {
           if (props.id == emp.id) {
-            emp.vacationDaysPerYear = { [year]: days };
+            emp.vacationDaysPerYear = { ...emp.vacationDaysPerYear, [year]: days };
           }
 
           return emp;

@@ -38,11 +38,19 @@ export default (props: Props) => {
   };
 
   const computeRemainingDays = (fullDays, vacationRequests) => {
-    vacationRequests.forEach(({ days, status }) => {
-      if (status != "CANCELLED" && status != "REJECTED") {
-        fullDays -= days;
-      }
-    });
+    vacationRequests
+      .filter(({ requested, status }) => {
+        if (moment(requested).get("year") != moment().get("year")) {
+          return false;
+        } else {
+          return true;
+        }
+      })
+      .forEach(({ days, status }) => {
+        if (status != "CANCELLED" && status != "REJECTED") {
+          fullDays -= days;
+        }
+      });
 
     return fullDays;
   };

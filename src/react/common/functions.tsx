@@ -7,6 +7,7 @@ import path from "path";
 
 import moment from "moment";
 import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
+import VacationRequests from "../components/vacation/VacationRequests";
 
 export function getPreloadScriptPath(script: string): string {
   return (
@@ -331,7 +332,14 @@ export const computeTakenDays = ({ vacationRequests }) => {
   if (vacationRequests.length < 1) {
     return 0;
   } else {
-    return 0;
+    let days = 0;
+    vacationRequests.forEach(request => {
+      if (request.status == "CONFIRMED") {
+        days += request.days;
+      }
+    });
+
+    return days;
   }
 };
 
@@ -339,12 +347,32 @@ export const computeTakenDays = ({ vacationRequests }) => {
  * Computes the vacation days an employee has left over from last year
  * @param {object} employee
  */
-export const computeDaysLastYear = ({ vacationRequests }) => {
-  if (vacationRequests.length < 1) {
+export const computeDaysLastYear = ({ vacationDaysPerYear, vacationRequests }) => {
+  const daysLastYear =
+    vacationDaysPerYear[
+      moment()
+        .subtract(1, "year")
+        .get("year")
+    ];
+
+  if (vacationRequests.length < 1 || !daysLastYear) {
     return 0;
   } else {
-    vacationRequests.filter(req => req);
-    return 0;
+    const requestsLastYear = vacationRequests.filter(({ requested, status }) => {
+      if (
+        moment(requested).get("year") ==
+          moment()
+            .subtract(1, "year")
+            .get("year") &&
+        status == "CONFIRMED"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    return daysLastYear - requestsLastYear.reduce((acc, cV) => acc.days + cV.days, { days: 0 });
   }
 };
 

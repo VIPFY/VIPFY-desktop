@@ -71,7 +71,9 @@ export default (props: Props) => {
                         />
                       </td>
                       <td>
-                        <IconButton icon="trash-alt" onClick={() => setShow(true)} />
+                        {request.status == "PENDING" && (
+                          <IconButton icon="trash-alt" onClick={() => setShow(true)} />
+                        )}
                       </td>
 
                       {show && (
