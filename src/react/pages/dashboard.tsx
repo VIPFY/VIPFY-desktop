@@ -23,7 +23,7 @@ interface Props {
   rcApps: any;
   setApp: Function;
   moveTo: Function;
-  licences: any;
+  licences: any[];
   placeid?: string;
   disableWelcome: Function;
   addressProposal?: object;
@@ -51,9 +51,7 @@ class Dashboard extends React.Component<Props, State> {
   setApp = (licence: number) => this.props.setApp(licence);
 
   handleDrop = async (dropPosition: number) => {
-    const dragged = this.props.licences.fetchUserLicenceAssignments.find(
-      licence => licence.id == this.state.dragItem
-    );
+    const dragged = this.props.licences.find(licence => licence.id == this.state.dragItem);
 
     if (dropPosition != dragged.dashboard) {
       try {
@@ -120,9 +118,7 @@ class Dashboard extends React.Component<Props, State> {
   handleDelete = async e => {
     try {
       e.preventDefault();
-      const dragged = this.props.licences.fetchUserLicenceAssignments.find(
-        licence => licence.id == this.state.dragItem
-      );
+      const dragged = this.props.licences.find(licence => licence.id == this.state.dragItem);
 
       if (dragged.dashboard !== null) {
         favourites[dragged.dashboard] = null;
@@ -145,14 +141,6 @@ class Dashboard extends React.Component<Props, State> {
   };
 
   render() {
-    if (this.props.licences.loading) {
-      return <LoadingDiv text="Fetching Licences..." />;
-    }
-
-    if (this.props.licences.error) {
-      return <ErrorComp error={filterError(this.props.licences.error)} />;
-    }
-
     const appLists: {
       "My Apps": Licence[];
       "Pending Apps": Licence[];
@@ -163,13 +151,10 @@ class Dashboard extends React.Component<Props, State> {
       "Temporary Apps": []
     };
 
-    const licenceCheck =
-      this.props.licences &&
-      this.props.licences.fetchUserLicenceAssignments &&
-      this.props.licences.fetchUserLicenceAssignments.length > 0;
+    const licenceCheck = this.props.licences && this.props.licences.length > 0;
 
     if (licenceCheck) {
-      this.props.licences.fetchUserLicenceAssignments.forEach(licence => {
+      this.props.licences.forEach(licence => {
         if (licence.dashboard !== null && licence.dashboard <= 8) {
           favourites[licence.dashboard] = licence;
         }

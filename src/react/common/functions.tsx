@@ -315,3 +315,21 @@ export async function getMyEmail(client: any): Promise<string> {
     })
   ).data.me.emails[0].email;
 }
+
+export async function getMe(client: any): Promise<string> {
+  return (
+    await client.query({
+      query: gql`
+        {
+          me {
+            id
+            profilepicture
+            firstname
+            middlename
+            lastname
+          }
+        }
+      `
+    })
+  ).data.me.emails[0].email;
+}

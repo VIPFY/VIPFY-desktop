@@ -138,13 +138,9 @@ class EmployeeOverview extends React.Component<Props, State> {
   }
 
   addProcess(refetch) {
-    /*switch (this.state.addStage) {
-      case 1:*/
     return (
       <PopupBase
-        //fullmiddle={true}
         small={true}
-        //customStyles={{ maxWidth: "1152px" }}
         close={() => this.setState({ add: false })}
         nooutsideclose={true}
         additionalclassName="formPopup deletePopup">
@@ -162,63 +158,6 @@ class EmployeeOverview extends React.Component<Props, State> {
         />
       </PopupBase>
     );
-    /* case 2:
-        return (
-          <ManageTeams
-            employee={{
-              ...this.state.addpersonal,
-              firstname: this.state.addpersonal.name,
-              id: this.state.addpersonal.unitid
-            }} //TODO CHANGE employeename
-            close={() => {
-              this.setState({ add: false });
-              refetch();
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  this.setState({ add: false });
-                  refetch();
-                }}
-              />
-              <div className="buttonSeperator" />
-              <UniversalButton
-                label="Manage Services"
-                type="high"
-                onClick={() => this.setState({ addStage: 3 })}
-              />
-            </div>
-          </ManageTeams>
-        );
-      case 3:
-        return (
-          <ManageServices
-            employee={{
-              ...this.state.addpersonal,
-              firstname: this.state.addpersonal.name,
-              id: this.state.addpersonal.unitid
-            }} //TODO CHANGE employeename
-            close={() => {
-              this.setState({ add: false });
-              refetch();
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  this.setState({ add: false });
-                  refetch();
-                }}
-              />
-            </div>
-          </ManageServices>
-        );
-      default:
-        return <div />;
-    }*/
   }
 
   loading() {
