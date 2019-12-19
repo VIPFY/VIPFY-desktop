@@ -416,30 +416,6 @@ class TeamOverview extends React.Component<Props, State> {
             team={this.state.willdeleting}
             close={() => this.setState({ willdeleting: null })}
           />
-          /*<Mutation mutation={DELETE_TEAM}>
-            {deleteTeam => (
-              <DeletePopup
-                key="deleteTeam"
-                heading="Delete Team"
-                subHeading={`If you delete ${
-                  this.state.willdeleting!.name
-                }, you delete the following services of the following people`}
-                employees={this.state.willdeleting!.employees}
-                services={this.state.willdeleting!.services}
-                main="service"
-                close={() => this.setState({ willdeleting: null })}
-                submit={values =>
-                  deleteTeam({
-                    variables: {
-                      teamid: this.state.willdeleting!.unitid.id,
-                      keepLicences: this.getKeepLicences(values)
-                    },
-                    refetchQueries: [{ query: fetchCompanyTeams }]
-                  })
-                }
-              />
-            )}
-          </Mutation>*/
         )}
       </div>
     );

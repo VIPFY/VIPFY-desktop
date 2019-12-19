@@ -14,7 +14,7 @@ import { filterError } from "../../common/functions";
 interface Props {
   close: Function;
   continue: Function;
-  addpersonal: any;
+  addpersonal?: any;
   heading?: string;
   createEmployee: Function;
   isadmin?: boolean;
@@ -82,19 +82,19 @@ const CREATE_EMPLOYEE = gql`
 
 class AddEmployeePersonalData extends React.Component<Props, State> {
   state = {
-    name: this.props.addpersonal.name || "",
-    birthday: this.props.addpersonal.birthday || "",
-    hiredate: this.props.addpersonal.hiredate || "",
-    street: this.props.addpersonal.street || "",
-    zip: this.props.addpersonal.zip || "",
-    city: this.props.addpersonal.city || "",
-    pphone1: this.props.addpersonal.pphone1 || "",
-    pphone2: this.props.addpersonal.pphone2 || "",
-    position: this.props.addpersonal.position || "",
-    wmail1: this.props.addpersonal.wmail1 || "",
-    wmail2: this.props.addpersonal.wmail2 || "",
-    wphone1: this.props.addpersonal.wphone1 || "",
-    wphone2: this.props.addpersonal.wphone2 || "",
+    name: (this.props.addpersonal && this.props.addpersonal.name) || "",
+    birthday: (this.props.addpersonal && this.props.addpersonal.birthday) || "",
+    hiredate: (this.props.addpersonal && this.props.addpersonal.hiredate) || "",
+    street: (this.props.addpersonal && this.props.addpersonal.street) || "",
+    zip: (this.props.addpersonal && this.props.addpersonal.zip) || "",
+    city: (this.props.addpersonal && this.props.addpersonal.city) || "",
+    pphone1: (this.props.addpersonal && this.props.addpersonal.pphone1) || "",
+    pphone2: (this.props.addpersonal && this.props.addpersonal.pphone2) || "",
+    position: (this.props.addpersonal && this.props.addpersonal.position) || "",
+    wmail1: (this.props.addpersonal && this.props.addpersonal.wmail1) || "",
+    wmail2: (this.props.addpersonal && this.props.addpersonal.wmail2) || "",
+    wphone1: (this.props.addpersonal && this.props.addpersonal.wphone1) || "",
+    wphone2: (this.props.addpersonal && this.props.addpersonal.wphone2) || "",
     confirm: false,
     saving: false,
     success: true,

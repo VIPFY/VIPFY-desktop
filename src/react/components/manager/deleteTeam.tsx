@@ -7,13 +7,13 @@ import gql from "graphql-tag";
 import moment, { now } from "moment";
 import Calendar from "react-calendar";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
-import { fetchTeam } from "../../queries/departments";
+import { fetchTeam, fetchCompanyTeams } from "../../queries/departments";
 import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
 import { concatName } from "../../common/functions";
 
 interface Props {
   team: any;
-  removeMemberFromTeam: Function;
+  deleteTeam: Function;
   close: Function;
 }
 
@@ -27,19 +27,9 @@ interface State {
   error: string | null;
 }
 
-const REMOVE_MEMBER_FROM_TEAM = gql`
-  mutation removeMemberFromTeam($teamid: ID!, $userid: ID!, $deletejson: JSON, $endtime: Date) {
-    removeMemberFromTeam(
-      teamid: $teamid
-      userid: $userid
-      deletejson: $deletejson
-      endtime: $endtime
-    ) {
-      id
-      employees {
-        id
-      }
-    }
+const DELETE_TEAM = gql`
+  mutation deleteTeam($teamid: ID!, $deletejson: JSON, $endtime: Date) {
+    deleteTeam(teamid: $teamid, deletejson: $deletejson, endtime: $endtime)
   }
 `;
 
@@ -59,7 +49,7 @@ class DeleteTeam extends React.Component<Props, State> {
     deleteArray: this.props.team.employees.map(
       e =>
         e && {
-          employeeid: e.id,
+          userid: e.id,
           bool: false,
           assignments:
             (e.assignments &&
@@ -99,19 +89,28 @@ class DeleteTeam extends React.Component<Props, State> {
                   <span
                     style={{
                       lineHeight: "24px",
-                      width: "84px",
+                      width: "76px",
+                      display: "flex",
+                      justifyContent: "center"
+                    }}></span>
+                  <span
+                    style={{
+                      lineHeight: "24px",
+                      width: "24px",
                       display: "flex",
                       justifyContent: "center"
                     }}>
                     <UniversalCheckbox
-                      name={`Assignments-${k}`}
+                      name={`Assignments-${ek}-${k}`}
                       liveValue={v => {
                         console.log("CLICKED ASSIGNMENT", ek, k, this.state);
                         this.setState(
                           oldstate =>
                             (oldstate.deleteArray[ek] = {
-                              employeeid: e.id,
-                              bool: false,
+                              userid: e.id,
+                              bool: oldstate.deleteArray[ek].assignments.every((asa, ik) =>
+                                k != ik ? asa.bool : v
+                              ),
                               assignments: oldstate.deleteArray[ek].assignments.map((asa, ik) =>
                                 k != ik
                                   ? asa
@@ -131,7 +130,7 @@ class DeleteTeam extends React.Component<Props, State> {
                     style={{
                       lineHeight: "24px",
                       alignItems: "center",
-                      width: "calc(100% - 84px)",
+                      width: "calc(100% - 100px)",
                       display: "flex"
                     }}>
                     <PrintServiceSquare
@@ -175,7 +174,7 @@ class DeleteTeam extends React.Component<Props, State> {
                     this.setState(
                       oldstate =>
                         (oldstate.deleteArray[ek] = {
-                          employeeid: e.id,
+                          userid: e.id,
                           bool: v,
                           assignments: oldstate.deleteArray[ek].assignments.map(asa => ({
                             ...asa,
@@ -186,6 +185,15 @@ class DeleteTeam extends React.Component<Props, State> {
                   }}
                   startingvalue={this.state.deleteArray[ek].bool}
                 />
+                <span
+                  style={{
+                    lineHeight: "24px",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginLeft: "8px"
+                  }}>
+                  all of
+                </span>
               </span>
 
               <span
@@ -342,18 +350,18 @@ class DeleteTeam extends React.Component<Props, State> {
             console.log("STATE", this.state, this.props);
             try {
               this.setState({ saving: true });
-              await this.props.removeMemberFromTeam({
+              await this.props.deleteTeam({
                 variables: {
                   teamid: this.props.team.unitid.id,
-                  userid: employee!.id,
                   deletejson: {
-                    assignments: this.state.deleteArray,
+                    users: this.state.deleteArray,
                     autodelete: this.state.autodelete
                   },
                   endtime: this.state.todate || now()
                 },
                 refetchQueries: [
-                  { query: fetchTeam, variables: { teamid: this.props.team.unitid.id } }
+                  { query: fetchTeam, variables: { teamid: this.props.team.unitid.id } },
+                  { query: fetchCompanyTeams }
                 ]
               });
               this.setState({ saved: true });
@@ -406,6 +414,4 @@ class DeleteTeam extends React.Component<Props, State> {
     );
   }
 }
-export default compose(graphql(REMOVE_MEMBER_FROM_TEAM, { name: "removeMemberFromTeam" }))(
-  DeleteTeam
-);
+export default compose(graphql(DELETE_TEAM, { name: "deleteTeam" }))(DeleteTeam);
