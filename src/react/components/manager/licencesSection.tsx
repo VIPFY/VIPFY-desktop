@@ -190,22 +190,7 @@ class LicencesSection extends React.Component<Props, State> {
                       <div className="tableColumnSmall">{/*<h1>Price</h1>*/}</div>
                     </div>
                     {/*<div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>*/}
-                    <div className="tableEnd">
-                      {/*this.props.isadmin && (
-                        <UniversalButton
-                          type="high"
-                          label="Manage Licences"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "120px"
-                          }}
-                          onClick={() => this.setState({ add: true })}
-                        />
-                        )*/}
-                    </div>
+                    <div className="tableEnd"></div>
                   </div>
                   {appArray}
                 </div>
