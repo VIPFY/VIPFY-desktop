@@ -7,11 +7,8 @@ import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import { fetchCompanyServices } from "../../queries/products";
 import { now } from "moment";
-import AddServiceGeneralData from "../../components/manager/serviceDetails/addServiceGeneralData";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
-import ManageServiceTeams from "../../components/manager/universal/managing/serviceteams";
-import ManageServiceEmployees from "../../components/manager/universal/managing/serviceemployees";
 import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 import AssignServiceToUser from "../../components/manager/universal/adding/assignServiceToUser";
 import moment from "moment";
@@ -111,92 +108,6 @@ class ServiceOverview extends React.Component<Props, State> {
       return team.departmentid.name.toUpperCase().includes(this.state.search.toUpperCase());
     }
     return false;
-  }
-
-  addService(singles) {
-    this.setState({ addemployees: singles, saving: true, add: false });
-  }
-
-  addProcess(refetch) {
-    switch (this.state.addStage) {
-      case 1:
-        return (
-          <PopupBase
-            fullmiddle={true}
-            customStyles={{ maxWidth: "1152px" }}
-            close={() => {
-              refetch();
-              this.setState({ add: false });
-            }}>
-            <AddServiceGeneralData
-              continue={data => this.setState({ addservice: data, addStage: 2 })}
-              close={() => {
-                refetch();
-                this.setState({ add: false });
-              }}
-              addservice={this.state.addservice}
-              currentServices={this.state.currentServices}
-            />
-          </PopupBase>
-        );
-      case 2:
-        return (
-          /*<AddTeam
-            continue={data => {
-              this.setState({ teams: data, addStage: 3 });
-            }}
-            close={() => this.setState({ addStage: 1 })}
-            service={this.state.addservice}
-            addedTeams={this.state.teams}
-            teams={[]}
-          />*/
-          <ManageServiceTeams
-            service={this.state.addservice}
-            close={() => {
-              //refetch();
-              this.setState({ add: false });
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  refetch();
-                  this.setState({ add: false });
-                }}
-              />
-              <div className="buttonSeperator" />
-              <UniversalButton
-                label="Manage Employees"
-                type="high"
-                onClick={() => this.setState({ addStage: 3 })}
-              />
-            </div>
-          </ManageServiceTeams>
-        );
-      case 3:
-        return (
-          <ManageServiceEmployees
-            service={this.state.addservice}
-            close={() => {
-              //refetch();
-              this.setState({ add: false });
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  refetch();
-                  this.setState({ add: false });
-                }}
-              />
-            </div>
-          </ManageServiceEmployees>
-        );
-      default:
-        return <div />;
-    }
   }
 
   countOrbits(licences) {

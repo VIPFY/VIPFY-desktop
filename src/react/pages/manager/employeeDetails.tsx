@@ -1,5 +1,4 @@
 import * as React from "react";
-import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, Query, withApollo } from "react-apollo";
 import { QUERY_SEMIPUBLICUSER, QUERY_ME } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
