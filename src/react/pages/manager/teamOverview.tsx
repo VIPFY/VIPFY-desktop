@@ -7,17 +7,11 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
-import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
-import AddTeamServices from "../../components/manager/addTeamServices";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
-import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
-import ManageTeamEmployees from "../../components/manager/universal/managing/teamemployees";
-import ManageTeamServices from "../../components/manager/universal/managing/teamservices";
 import DeletePopup from "../../popups/universalPopups/deletePopup";
-import FormPopup from "../../popups/universalPopups/formPopup";
 
 interface Props {
   moveTo: Function;
@@ -168,48 +162,6 @@ class TeamOverview extends React.Component<Props, State> {
         />
       </PopupBase>
     );
-    /*case 2:
-        return (
-          <ManageTeamEmployees
-            isadmin={this.props.isadmin}
-            team={this.state.addteam}
-            close={() => this.setState({ add: false })}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  this.setState({ add: false });
-                  refetch();
-                }}
-              />
-              <div className="buttonSeperator" />
-              <UniversalButton
-                label="Manage Services"
-                type="high"
-                onClick={() => this.setState({ addStage: 3 })}
-              />
-            </div>
-          </ManageTeamEmployees>
-        );
-      case 3:
-        return (
-          <ManageTeamServices team={this.state.addteam} close={() => this.setState({ add: false })}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  this.setState({ add: false });
-                  refetch();
-                }}
-              />
-            </div>
-          </ManageTeamServices>
-        );
-      default:
-        return <div />;
-    }*/
   }
 
   loading() {

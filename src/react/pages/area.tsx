@@ -21,7 +21,6 @@ import ErrorPage from "./error";
 import UsageStatistics from "./usagestatistics";
 import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 
-import { fetchLicences } from "../queries/auth";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
 import Security from "./security";

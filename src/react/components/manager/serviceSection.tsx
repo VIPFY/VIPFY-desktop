@@ -3,9 +3,7 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 import gql from "graphql-tag";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import AddTeamService from "./addTeamService";
 import TeamServiceDetails from "./teamserviceDetails";
-import ManageTeamServices from "./universal/managing/teamservices";
 import AssignNewTeamOrbit from "./universal/adding/assignNewTeamOrbit";
 
 interface Props {
