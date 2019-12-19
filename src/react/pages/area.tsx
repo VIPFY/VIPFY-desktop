@@ -50,6 +50,7 @@ import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
 import CryptoDebug from "../components/admin/crytpodebug";
+import Vacation from "./vacation";
 import { fetchUserLicences } from "../queries/departments";
 
 interface AreaProps {
@@ -336,6 +337,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan },
       { path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
+      { path: "vacation", component: Vacation },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },

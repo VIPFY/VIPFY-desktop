@@ -8,15 +8,14 @@ import * as moment from "moment";
 import * as ReactDOM from "react-dom";
 import Notification from "../components/Notification";
 import { sleep, refetchQueries } from "../common/functions";
-import { fetchLicences, me } from "../queries/auth";
+import { me } from "../queries/auth";
 import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { FETCH_CARDS } from "../queries/billing";
 import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
-import { FETCH_EMPLOYEES, fetchUserLicences } from "../queries/departments";
-import { fetchCompanyServices, fetchCompanyService } from "../queries/products";
+import { FETCH_EMPLOYEES } from "../queries/departments";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -133,7 +132,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     notify: false
   };
 
-  //references: { key; element }[] = [];
+  // references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
   addReferences = (key, element, addRenderElement) => {
@@ -187,11 +186,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "foreignLicences":
-          await refetchQueries(client, ["fetchUnitApps", "fetchUsersOwnLicences"]);
+          await refetchQueries(client, ["onFetchUnitApps", "fetchUsersOwnLicences"]);
           break;
 
         case "invoices":
-          await refetchQueries(client, ["FETCH_BILLS"]);
+          await refetchQueries(client, ["onFetchBills"]);
           break;
 
         case "paymentMethods":
@@ -206,6 +205,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
             query: FETCH_CREDIT_DATA,
             ...options
           });
+          break;
+
+        case "vacationRequest":
+          await refetchQueries(client, ["onFetchVacationRequests"]);
           break;
 
         case "me":
@@ -445,6 +448,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
         icon: "dragon",
         show: false,
         highlight: "ssotest"
+      },
+      {
+        label: "Vacation Requests",
+        location: "vacation",
+        icon: "umbrella-beach",
+        show: true,
+        highlight: "vacation"
       }
     ];
 

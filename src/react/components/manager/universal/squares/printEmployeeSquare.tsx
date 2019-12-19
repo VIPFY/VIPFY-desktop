@@ -13,10 +13,10 @@ interface Props {
   fake?: Boolean;
 }
 
-interface State {}
+export default (props: Props) => {
+  let { employee, overlayFunction } = props;
 
-class PrintEmployeeSquare extends React.Component<Props, State> {
-  getShort(employee) {
+  const getShort = employee => {
     let short = "";
     if (employee.firstname) {
       short += employee.firstname.slice(0, 1);
@@ -25,54 +25,45 @@ class PrintEmployeeSquare extends React.Component<Props, State> {
       short += employee.lastname.slice(0, 1);
     }
     return short;
-  }
+  };
 
-  render() {
-    if (this.props.fake) {
-      return (
-        <div
-          key="fake"
-          title="Loading"
-          className={this.props.className || "managerSquare"}
-          style={Object.assign(
-            { ...(this.props.styles || {}) },
-
-            { backgroundColor: "#F2F2F2" }
-          )}></div>
-      );
-    } else {
-      let { employee, overlayFunction } = this.props;
-      if (!employee) {
-        // handle employee == null for renders without data (happens in login)
-        employee = { firstname: "", lastname: "" };
-      }
-      const size = this.props.size || 32;
-      const name = concatName(employee);
-      return (
-        <div
-          title={this.props.hideTitle ? null : name}
-          className={this.props.className || "managerSquare"}
-          style={Object.assign(
-            { ...(this.props.styles || {}) },
-
-            { position: "relative" },
-            employee.profilepicture
-              ? {
-                  backgroundImage: getBgImageUser(employee.profilepicture, size),
-                  backgroundColor: "unset"
-                }
-              : { backgroundColor: employee.color || "#5d76ff" }
-          )}
-          onClick={() => {
-            if (this.props.onClick) {
-              this.props.onClick();
-            }
-          }}>
-          {employee.profilepicture ? "" : this.getShort(employee)}
-          {overlayFunction && overlayFunction(employee)}
-        </div>
-      );
+  if (props.fake) {
+    return (
+      <div
+        key="fake"
+        title="Loading"
+        className={props.className || "managerSquare"}
+        style={Object.assign({ ...(props.styles || {}) }, { backgroundColor: "#F2F2F2" })}></div>
+    );
+  } else {
+    if (!employee) {
+      // handle employee == null for renders without data (happens in login)
+      employee = { firstname: "", lastname: "" };
     }
+    const size = props.size || 32;
+    const name = concatName(employee);
+
+    return (
+      <div
+        title={props.hideTitle ? null : name}
+        className={props.className || "managerSquare"}
+        style={Object.assign(
+          { ...(props.styles || {}) },
+          employee.profilepicture
+            ? {
+                backgroundImage: getBgImageUser(employee.profilepicture, size),
+                backgroundColor: "unset"
+              }
+            : { backgroundColor: employee.color || "#5d76ff" }
+        )}
+        onClick={() => {
+          if (props.onClick) {
+            props.onClick();
+          }
+        }}>
+        {employee.profilepicture ? "" : getShort(employee)}
+        {overlayFunction && overlayFunction(employee)}
+      </div>
+    );
   }
-}
-export default PrintEmployeeSquare;
+};

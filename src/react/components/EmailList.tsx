@@ -51,7 +51,7 @@ export default (props: Props) => {
         const billingEmailCheck = fetchEmailList.length < 2 && props.tag == "billing";
 
         return (
-          <div className="billing-table-holder">
+          <div className="table-holder">
             <table>
               <thead>
                 <tr>
