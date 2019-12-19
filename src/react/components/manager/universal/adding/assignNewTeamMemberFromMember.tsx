@@ -403,8 +403,8 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                       <div className="listingDiv" key="new">
                         <UniversalButton
                           type="low"
-                          label="Create new User"
-                          onClick={() => this.setState({ showall: false })}
+                          label="Create new team"
+                          onClick={() => this.setState({ newTeam: true })}
                         />
                       </div>
                       <UniversalButton type="low" label="Cancel" closingPopup={true} />
@@ -424,8 +424,8 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
               !(
                 this.state.team &&
                 !this.state.team.employees.find(e => e.id == this.props.employee.id) &&
-                this.state.orbitassignment.length == this.state.team.services.length &&
-                this.state.orbitassignment.every(oa => oa.account && oa.account.id)
+                this.state.orbitassignment.filter(oa => oa.account && oa.account.id).length ==
+                  this.state.team.services.length
               )
             }
             onClick={async () => {

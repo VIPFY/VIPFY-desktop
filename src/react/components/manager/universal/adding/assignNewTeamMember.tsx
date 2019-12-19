@@ -395,7 +395,7 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                         <UniversalButton
                           type="low"
                           label="Create new User"
-                          onClick={() => this.setState({ showall: false })}
+                          onClick={() => this.setState({ add: true })}
                         />
                       </div>
                       <UniversalButton type="low" label="Cancel" closingPopup={true} />
@@ -415,8 +415,8 @@ class AssignNewTeamMember extends React.Component<Props, State> {
               !(
                 this.state.employee &&
                 !this.props.team.employees.find(e => e.id == this.state.employee.id) &&
-                this.state.orbitassignment.length == this.props.team.services.length &&
-                this.state.orbitassignment.every(oa => oa.account && oa.account.id)
+                this.state.orbitassignment.filter(oa => oa.account && oa.account.id).length ==
+                  this.props.team.services.length
               )
             }
             onClick={async () => {

@@ -256,6 +256,7 @@ class ChangeAccount extends React.Component<Props, State> {
                     className="calendarEdit"
                     locale="en-us"
                     minDate={new Date()}
+                    maxDate={(this.state.todate && moment(this.state.todate).toDate()) || undefined}
                     showWeekNumbers={true}
                     onChange={v => this.setState({ fromdate: v })}
                     value={this.state.fromdate || new Date()}
@@ -313,7 +314,10 @@ class ChangeAccount extends React.Component<Props, State> {
                   className="calendarEdit"
                   locale="en-us"
                   minDate={moment(
-                    moment.max(moment(!newaccount ? account.starttime : 0), moment())
+                    moment.max(
+                      moment(!newaccount ? account.starttime : 0),
+                      this.state.fromdate ? moment(this.state.fromdate) : moment()
+                    )
                   ).toDate()}
                   showWeekNumbers={true}
                   onChange={v =>

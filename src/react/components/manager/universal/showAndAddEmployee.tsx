@@ -9,6 +9,7 @@ import UniversalDropDownInput from "../../universalForms/universalDropdownInput"
 import { fetchDepartmentsData } from "../../../queries/departments";
 import { concatName } from "../../../common/functions";
 import PrintEmployeeSquare from "./squares/printEmployeeSquare";
+import AddEmployeePersonalData from "../addEmployeePersonalData";
 
 interface Props {
   account: any;
@@ -27,6 +28,8 @@ interface State {
   todate: Date | null;
   showall: boolean;
   time: number;
+  add: Boolean;
+  value: string | null;
 }
 
 const ASSIGN_ACCOUNT = gql`
@@ -59,7 +62,9 @@ const INITIAL_STATE = {
   editto: false,
   fromdate: null,
   todate: null,
-  showall: false
+  showall: false,
+  add: false,
+  value: null
 };
 
 class ShowAndAddEmployee extends React.Component<Props, State> {
@@ -136,7 +141,7 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                   startvalue=""
                   livecode={c => this.setState({ user: employees.find(a => a.id == c) })}
                   noresults="Create new user"
-                  noresultsClick={v => console.log("CREATE EMPLOYEE")}
+                  noresultsClick={v => this.setState({ add: true, value: v })}
                   fewResults={true}
                 />
               </div>
@@ -163,7 +168,7 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                     <UniversalButton
                       type="low"
                       label="Create new User"
-                      onClick={() => this.setState({ showall: false })}
+                      onClick={() => this.setState({ add: true })}
                     />
                   </div>
                   <UniversalButton type="low" label="Cancel" closingPopup={true} />
@@ -376,6 +381,24 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                       </div>
                     </>
                   )}
+                </PopupBase>
+              )}
+              {this.state.add && (
+                <PopupBase
+                  small={true}
+                  close={() => this.setState({ add: false })}
+                  nooutsideclose={true}
+                  additionalclassName="formPopup deletePopup">
+                  <AddEmployeePersonalData
+                    continue={data => {
+                      this.setState({ add: false, user: data.employee });
+                    }}
+                    close={() => {
+                      this.setState({ add: false });
+                    }}
+                    addpersonal={{ name: this.state.value }}
+                    isadmin={true}
+                  />
                 </PopupBase>
               )}
             </>

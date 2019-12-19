@@ -5,7 +5,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import { fetchTeam } from "../../queries/departments";
 import { Mutation, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
-import moment from "moment";
+import moment, { now } from "moment";
 import { concatName } from "../../common/functions";
 import DeletePopup from "../../popups/universalPopups/deletePopup";
 import Calendar from "react-calendar";
@@ -109,26 +109,27 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
       teams: this.props.orbit.teams.map(t => {
         return { id: t.unitid.id, bool: false };
       }),
-      accounts: this.props.orbit.accounts.map(a => {
-        return {
-          id: a.id,
-          bool: false,
-          assignments: a.assignments
-            .filter(asa => asa != null)
-            .map(as => {
-              if (as) {
-                return { id: as.assignmentid, bool: false };
-              } else {
-                return undefined;
-              }
-            })
-        };
-      })
+      accounts: this.props.orbit.accounts
+        .filter(a => a != null && (a.endtime == null || a.endtime > now()))
+        .map(a => {
+          return {
+            id: a.id,
+            bool: false,
+            assignments: a.assignments
+              .filter(asa => asa != null && (asa.endtime == null || asa.endtime > now()))
+              .map(as => {
+                if (as) {
+                  return { id: as.assignmentid, bool: false };
+                } else {
+                  return undefined;
+                }
+              })
+          };
+        })
     };
   }
 
   render() {
-    console.log("ORBIT", this.props.orbit, this.state);
     const accounts: JSX.Element[] = [];
     const teamsARRAY: JSX.Element[] = [];
 
@@ -822,7 +823,7 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                     }
                   })
                 }>
-                Remove orbit from team and completely delete it
+                Remove Orbit from team and completely delete it
               </span>
             </div>
             <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
@@ -951,9 +952,10 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
 
                   //When select => select all children
                   if (newbool) {
-                    array.accounts.forEach(a => a.assignments.forEach(as => (as.bool = true)));
-                    array.accounts.forEach(a => (a.bool = true));
-                    array.teams.forEach(t => (t.bool = true));
+                    array.accounts &&
+                      array.accounts.forEach(a => a.assignments.forEach(as => (as.bool = true)));
+                    array.accounts && array.accounts.forEach(a => (a.bool = true));
+                    array.teams && array.teams.forEach(t => (t.bool = true));
                   }
                   array.orbit = newbool;
 
@@ -1002,9 +1004,11 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
           disabled={
             !(
               this.state.deleteArray.orbit ||
-              this.state.deleteArray.teams.find(t => t.bool) ||
-              this.state.deleteArray.accounts.find(a => a.bool) ||
-              this.state.deleteArray.accounts.forEach(a => a.assignments.find(as => as.bool))
+              (this.state.deleteArray.teams && this.state.deleteArray.teams.find(t => t.bool)) ||
+              (this.state.deleteArray.accounts &&
+                this.state.deleteArray.accounts.find(a => a.bool)) ||
+              (this.state.deleteArray.accounts &&
+                this.state.deleteArray.accounts.forEach(a => a.assignments.find(as => as.bool)))
             )
           }
           onClick={async () => {

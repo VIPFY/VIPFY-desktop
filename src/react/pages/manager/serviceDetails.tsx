@@ -155,9 +155,11 @@ class ServiceDetails extends React.Component<Props, State> {
                   </div>
                 </div>
               </div>
-              {service.orbitids.map(orbit => (
-                <OrbitSection orbit={orbit} app={service.app} />
-              ))}
+              {service.orbitids
+                .filter(o => o.endtime == null || o.endtime > now())
+                .map(orbit => (
+                  <OrbitSection orbit={orbit} app={service.app} />
+                ))}
               <div className="section">
                 <div className="heading">
                   <h1>

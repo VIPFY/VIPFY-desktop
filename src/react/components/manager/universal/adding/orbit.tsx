@@ -4,7 +4,11 @@ import UniversalButton from "../../../../components/universalButtons/universalBu
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
-import { fetchPlans, fetchCompanyService } from "../../../../queries/products";
+import {
+  fetchPlans,
+  fetchCompanyService,
+  fetchCompanyServices
+} from "../../../../queries/products";
 
 interface Props {
   service: any;
@@ -76,7 +80,6 @@ class CreateOrbit extends React.Component<Props, State> {
           });
 
           const externalplan = plans.find(p => p.options.external);
-          console.log("EXTERNAL PLAN", externalplan, plans);
           return (
             <PopupBase
               small={true}
@@ -149,6 +152,9 @@ class CreateOrbit extends React.Component<Props, State> {
                             variables: {
                               serviceid: this.props.service.id
                             }
+                          },
+                          {
+                            query: fetchCompanyServices
                           }
                         ]
                       });
