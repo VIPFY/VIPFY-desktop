@@ -12,6 +12,7 @@ import ColumnEmployees from "../../components/manager/universal/columns/columnEm
 import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 import AssignServiceToUser from "../../components/manager/universal/adding/assignServiceToUser";
 import moment from "moment";
+import DeleteService from "../../components/manager/deleteService";
 
 interface Props {
   moveTo: Function;
@@ -408,7 +409,11 @@ class ServiceOverview extends React.Component<Props, State> {
         </div>
 
         {this.state.willdeleting && (
-          <PopupBase
+          <DeleteService
+            service={this.state.willdeleting}
+            close={() => this.setState({ willdeleting: null })}
+          />
+          /*<PopupBase
             fullmiddle={true}
             dialog={true}
             close={() => this.setState({ willdeleting: null })}
@@ -427,7 +432,7 @@ class ServiceOverview extends React.Component<Props, State> {
                 });
               }}
             />
-          </PopupBase>
+          </PopupBase>*/
         )}
         {this.state.deleting && (
           <Mutation mutation={DELETE_SERVICE}>
