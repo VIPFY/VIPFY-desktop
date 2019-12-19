@@ -36,7 +36,6 @@ class DeleteUser extends React.Component<Props, State> {
   state = INITAL_STATE;
 
   render() {
-    console.log("DU", this.props, this.state);
     return (
       <PopupBase
         small={true}
