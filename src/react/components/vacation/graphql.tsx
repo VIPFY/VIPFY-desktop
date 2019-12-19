@@ -39,6 +39,15 @@ export const REQUEST_VACATION = gql`
   ${fragment}
 `;
 
+export const REQUEST_HALF_DAY = gql`
+  mutation onRequestHalfVacationDay($day: Date!) {
+    requestHalfVacationDay(day: $day) {
+      ...VacationRequestParts
+    }
+  }
+  ${fragment}
+`;
+
 export const DELETE_VACATION_REQUEST = gql`
   mutation onDeleteVacationRequest($id: ID!) {
     deleteVacationRequest(id: $id)

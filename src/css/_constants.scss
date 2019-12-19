@@ -186,13 +186,12 @@ $rccs-valid-font-size: 0.4rem;
   @extend .genericHolder;
 
   .children {
-    transition: all 0.3s ease-in;
+    overflow-y: auto;
   }
 
   .no-spacing {
     margin: 0;
     padding: 0 ;
-    transition: all 0.3s ease-in;
     overflow: hidden;
   }
 }

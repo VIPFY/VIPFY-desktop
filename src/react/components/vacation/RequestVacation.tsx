@@ -4,11 +4,12 @@ import Collapsible from "../../common/Collapsible";
 import DatePicker from "../../common/DatePicker";
 import UniversalButton from "../universalButtons/universalButton";
 import IconButton from "../../common/IconButton";
-import { ErrorComp } from "../../common/functions";
+import { ErrorComp, computeFullDays } from "../../common/functions";
 import { FETCH_VACATION_REQUESTS } from "./graphql";
 import { Query } from "react-apollo";
 import LoadingDiv from "../LoadingDiv";
 import RequestVacationPopup from "./RequestVacationPopup";
+import RequestHalfDayPopup from "./RequestHalfDayPopup";
 
 interface Props {
   id: number;
@@ -26,6 +27,8 @@ export default (props: Props) => {
     { startDate: moment(), endDate: moment() }
   ] as Field[]);
   const [showPopup, setShow] = React.useState(false);
+  const [showHalfDay, setShowHalfDay] = React.useState(false);
+  const currentYear = moment().get("year");
 
   const setDate = (val, pos, prop) => {
     setRequests(currentRequests => {
@@ -39,13 +42,7 @@ export default (props: Props) => {
 
   const computeRemainingDays = (fullDays, vacationRequests) => {
     vacationRequests
-      .filter(({ requested, status }) => {
-        if (moment(requested).get("year") != moment().get("year")) {
-          return false;
-        } else {
-          return true;
-        }
-      })
+      .filter(({ requested }) => moment(requested).get("year") == currentYear)
       .forEach(({ days, status }) => {
         if (status != "CANCELLED" && status != "REJECTED") {
           fullDays -= days;
@@ -90,7 +87,7 @@ export default (props: Props) => {
             return <ErrorComp error={error} />;
           }
 
-          const { vacationDaysPerYear } = data.fetchVacationRequests[0];
+          const { vacationDaysPerYear, vacationRequests } = data.fetchVacationRequests[0];
 
           if (!vacationDaysPerYear) {
             return (
@@ -101,7 +98,7 @@ export default (props: Props) => {
             );
           }
 
-          if (!vacationDaysPerYear[moment().get("year")]) {
+          if (!vacationDaysPerYear[currentYear]) {
             return (
               <section className="no-data">
                 Your admin has not entered your vacation days into the system yet. Please ask him to
@@ -112,12 +109,19 @@ export default (props: Props) => {
 
           return (
             <section className="vacation-request">
-              <h1>Please select from until when you want to have your vacation</h1>
+              <h1>Please select the period you want to have your vacation for</h1>
 
-              <div className="vacation-days">{`You have ${computeRemainingDays(
-                vacationDaysPerYear[moment().get("year")],
-                data.fetchVacationRequests[0].vacationRequests
-              )} days left.`}</div>
+              <div className="vacation-days">{`You can make requests for ${computeRemainingDays(
+                computeFullDays(data.fetchVacationRequests[0]),
+                vacationRequests
+              )} more days.`}</div>
+
+              <UniversalButton
+                className="vacation-days"
+                label="Request half a day"
+                type="high"
+                onClick={() => setShowHalfDay(true)}
+              />
 
               <form id="vacation-request-form" onSubmit={handleSubmit}>
                 {requests.map(({ startDate, endDate, fieldError }, key) => (
@@ -188,6 +192,8 @@ export default (props: Props) => {
       {showPopup && (
         <RequestVacationPopup userid={props.id} requests={requests} close={() => setShow(false)} />
       )}
+
+      {showHalfDay && <RequestHalfDayPopup userid={props.id} close={() => setShowHalfDay(false)} />}
     </Collapsible>
   );
 };

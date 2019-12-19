@@ -186,11 +186,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "foreignLicences":
-          await refetchQueries(client, ["fetchUnitApps", "fetchUsersOwnLicences"]);
+          await refetchQueries(client, ["onFetchUnitApps", "fetchUsersOwnLicences"]);
           break;
 
         case "invoices":
-          await refetchQueries(client, ["FETCH_BILLS"]);
+          await refetchQueries(client, ["onFetchBills"]);
           break;
 
         case "paymentMethods":
@@ -208,7 +208,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "vacationRequest":
-          await refetchQueries(client, ["FETCH_VACATION_REQUESTS"]);
+          await refetchQueries(client, ["onFetchVacationRequests"]);
           break;
 
         case "me":

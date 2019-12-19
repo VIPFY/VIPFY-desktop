@@ -6,7 +6,7 @@ import UserName from "../../components/UserName";
 import LoadingDiv from "../../components/LoadingDiv";
 import {
   ErrorComp,
-  computeDaysLastYear,
+  computeLeftOverDays,
   computeFullDays,
   computeTakenDays,
   renderIcon
@@ -36,7 +36,7 @@ export default (props: Props) => {
           <span id="vacation-header">Vacation Days</span>
           <span id="request-header">Requests</span>
           <span id="year">this year</span>
-          <span id="last-year">from last year</span>
+          <span id="last-year">leftover</span>
           <span id="total">total</span>
           <span id="taken">taken</span>
           <span id="left">left</span>
@@ -54,6 +54,7 @@ export default (props: Props) => {
             if (error || !data) {
               return <ErrorComp error={error} />;
             }
+            console.log("LOG: data", data);
 
             return data.fetchVacationRequests.map((employee, key) => (
               <VacationRequestRow key={key} employee={employee} />
@@ -116,7 +117,7 @@ const VacationRequestRow = ({ employee }) => {
       {employee.vacationDaysPerYear && employee.vacationDaysPerYear[currentYear] ? (
         <React.Fragment>
           <span>{`${employee.vacationDaysPerYear[currentYear]} days`}</span>
-          <span>{`${computeDaysLastYear(employee)} days`}</span>
+          <span>{`${computeLeftOverDays(employee)} days`}</span>
           <span>{`${computeFullDays(employee)} days`}</span>
           <span>{`${computeTakenDays(employee)} days`}</span>
           <span>{`${computeFullDays(employee) - computeTakenDays(employee)} days`}</span>
@@ -127,7 +128,10 @@ const VacationRequestRow = ({ employee }) => {
             <IconButton
               title="Update Vacation days"
               icon="cog"
-              onClick={() => setShowConfig(true)}
+              onClick={e => {
+                e.stopPropagation();
+                setShowConfig(true);
+              }}
             />
             <IconButton
               title="Show more info"
@@ -141,7 +145,7 @@ const VacationRequestRow = ({ employee }) => {
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <div>User not set up yet</div>
+          <div>User not set up yet for this year</div>
           <div>
             <UniversalButton
               onClick={e => {

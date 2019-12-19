@@ -14,6 +14,7 @@ interface Props {
   holder?: any;
   scrollItem?: any;
   style?: object;
+  useOnlyBody?: boolean;
 }
 
 interface State {
@@ -28,7 +29,7 @@ const firstYear = moment()
   .subtract(100, "y")
   .year();
 
-class DatePicker extends React.PureComponent<Props, State> {
+export default class DatePicker extends React.PureComponent<Props, State> {
   state = {
     show: false,
     touched: false,
@@ -262,7 +263,10 @@ class DatePicker extends React.PureComponent<Props, State> {
             <div className="arrow-up" />
 
             <div className="date-picker-popup-header">
-              <button onClick={() => this.changeDate("subtract")} className="naked-button">
+              <button
+                type="button"
+                onClick={() => this.changeDate("subtract")}
+                className="naked-button">
                 <i className="fal fa-angle-left" />
               </button>
 
@@ -281,7 +285,7 @@ class DatePicker extends React.PureComponent<Props, State> {
                 <i className="fal fa-angle-down" />
               </span>
 
-              <button onClick={() => this.changeDate("add")} className="naked-button">
+              <button type="button" onClick={() => this.changeDate("add")} className="naked-button">
                 <i className="fal fa-angle-right" />
               </button>
             </div>
@@ -337,5 +341,3 @@ class DatePicker extends React.PureComponent<Props, State> {
     );
   }
 }
-
-export default DatePicker;

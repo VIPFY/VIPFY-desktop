@@ -317,12 +317,14 @@ export async function getMyEmail(client: any): Promise<string> {
   ).data.me.emails[0].email;
 }
 
+const currentYear = moment().get("year");
+
 /**
  * Computes the vacation days an employee has in a year
  * @param {object} employee
  */
 export const computeFullDays = employee =>
-  employee.vacationDaysPerYear[moment().get("year")] + (computeDaysLastYear(employee) || 0);
+  employee.vacationDaysPerYear[currentYear] + (computeLeftOverDays(employee) || 0);
 
 /**
  * Computes the vacation days an employee has already taken this year
@@ -333,8 +335,9 @@ export const computeTakenDays = ({ vacationRequests }) => {
     return 0;
   } else {
     let days = 0;
+
     vacationRequests.forEach(request => {
-      if (request.status == "CONFIRMED") {
+      if (request.status == "CONFIRMED" && moment(request.requested).get("year") == currentYear) {
         days += request.days;
       }
     });
@@ -344,36 +347,20 @@ export const computeTakenDays = ({ vacationRequests }) => {
 };
 
 /**
- * Computes the vacation days an employee has left over from last year
+ * Computes the vacation days an employee has left over from the last years
  * @param {object} employee
  */
-export const computeDaysLastYear = ({ vacationDaysPerYear, vacationRequests }) => {
-  const daysLastYear =
-    vacationDaysPerYear[
-      moment()
-        .subtract(1, "year")
-        .get("year")
-    ];
+export const computeLeftOverDays = ({ vacationDaysPerYear, vacationRequests }) => {
+  const copy = { ...vacationDaysPerYear };
+  delete copy[currentYear];
 
-  if (vacationRequests.length < 1 || !daysLastYear) {
-    return 0;
-  } else {
-    const requestsLastYear = vacationRequests.filter(({ requested, status }) => {
-      if (
-        moment(requested).get("year") ==
-          moment()
-            .subtract(1, "year")
-            .get("year") &&
-        status == "CONFIRMED"
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+  const remainingVacationDays: number = Object.values(copy).reduce((acc, cV) => acc + cV, 0);
 
-    return daysLastYear - requestsLastYear.reduce((acc, cV) => acc.days + cV.days, { days: 0 });
-  }
+  const requestsLastYears = vacationRequests.filter(({ status }) => status == "CONFIRMED");
+
+  return (
+    remainingVacationDays - requestsLastYears.map(t => t.days).reduce((acc, cV) => acc + cV, 0)
+  );
 };
 
 /**
