@@ -173,6 +173,7 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
     return members;
   }
   render() {
+    console.log("CHECK", this.props, this.state);
     return (
       <PopupBase
         small={true}
@@ -285,7 +286,13 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
           <UniversalButton
             type="high"
             label="Save"
-            disabled={!this.state.orbit}
+            disabled={
+              !(
+                this.state.orbit &&
+                this.state.memberassignments.filter(ma => ma != null && ma.employeeid).length ==
+                  this.props.team.employees.length
+              )
+            }
             onClick={async () => {
               this.setState({ saving: true });
               try {

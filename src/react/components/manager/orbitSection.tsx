@@ -10,6 +10,7 @@ import gql from "graphql-tag";
 import ChangeAccount from "./universal/changeAccount";
 import ShowAndAddEmployee from "./universal/showAndAddEmployee";
 import ShowAndDeleteEmployee from "./universal/showAndDeleteEmployee";
+import { fetchCompanyServices } from "./../../queries/products";
 
 interface Props {
   orbit: any;
@@ -415,7 +416,12 @@ class OrbitSection extends React.Component<Props, State> {
                         alias: this.state.alias,
                         loginurl: this.props.app.needssubdomain ? this.state.loginurl : undefined,
                         endtime: this.state.todate
-                      }
+                      },
+                      refetchQueries: [
+                        {
+                          query: fetchCompanyServices
+                        }
+                      ]
                     });
                     this.setState({ saved: true });
                     setTimeout(() => this.setState(INITAL_STATE), 1000);
