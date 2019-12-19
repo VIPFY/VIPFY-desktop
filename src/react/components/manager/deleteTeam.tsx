@@ -8,9 +8,10 @@ import moment, { now } from "moment";
 import Calendar from "react-calendar";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import { fetchTeam } from "../../queries/departments";
+import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
+import { concatName } from "../../common/functions";
 
 interface Props {
-  employee: any;
   team: any;
   removeMemberFromTeam: Function;
   close: Function;
@@ -52,26 +53,108 @@ const INITAL_STATE = {
   error: null
 };
 
-class RemoveTeamMember extends React.Component<Props, State> {
+class DeleteTeam extends React.Component<Props, State> {
   state = {
     ...INITAL_STATE,
-    deleteArray: this.props.employee.assignments
-      .filter(
-        asa =>
-          asa && asa.assignoptions && asa.assignoptions.teamlicence == this.props.team.unitid.id
-      )
-      .map(asa => ({ id: asa.assignmentid, bool: false }))
+    deleteArray: this.props.team.employees.map(
+      e =>
+        e && {
+          employeeid: e.id,
+          bool: false,
+          assignments:
+            (e.assignments &&
+              e.assignments
+                .filter(
+                  asa =>
+                    asa &&
+                    asa.assignoptions &&
+                    asa.assignoptions.teamlicence == this.props.team.unitid.id
+                )
+                .map(asa => ({ id: asa.assignmentid, bool: false }))) ||
+            []
+        }
+    )
   };
   printAssignments() {
-    const assignments: JSX.Element[] = [];
-    if (this.props.employee.assignments) {
-      this.props.employee.assignments
-        .filter(
-          asa =>
-            asa && asa.assignoptions && asa.assignoptions.teamlicence == this.props.team.unitid.id
-        )
-        .forEach((asa, k) => {
-          assignments.push(
+    const employees: JSX.Element[] = [];
+    if (this.props.team && this.props.team.employees) {
+      this.props.team.employees.forEach((e, ek) => {
+        const assignments: JSX.Element[] = [];
+        if (e.assignments) {
+          e.assignments
+            .filter(
+              asa =>
+                asa &&
+                asa.assignoptions &&
+                asa.assignoptions.teamlicence == this.props.team.unitid.id
+            )
+            .forEach((asa, k) => {
+              assignments.push(
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "16px"
+                  }}>
+                  <span
+                    style={{
+                      lineHeight: "24px",
+                      width: "84px",
+                      display: "flex",
+                      justifyContent: "center"
+                    }}>
+                    <UniversalCheckbox
+                      name={`Assignments-${k}`}
+                      liveValue={v => {
+                        console.log("CLICKED ASSIGNMENT", ek, k, this.state);
+                        this.setState(
+                          oldstate =>
+                            (oldstate.deleteArray[ek] = {
+                              employeeid: e.id,
+                              bool: false,
+                              assignments: oldstate.deleteArray[ek].assignments.map((asa, ik) =>
+                                k != ik
+                                  ? asa
+                                  : {
+                                      id: asa.assignmentid,
+                                      bool: v
+                                    }
+                              )
+                            })
+                        );
+                      }}
+                      startingvalue={this.state.deleteArray[ek].assignments[k].bool}
+                    />
+                  </span>
+
+                  <span
+                    style={{
+                      lineHeight: "24px",
+                      alignItems: "center",
+                      width: "calc(100% - 84px)",
+                      display: "flex"
+                    }}>
+                    <PrintServiceSquare
+                      service={asa.boughtplanid.planid.appid}
+                      appidFunction={e => e}
+                      size={24}
+                      additionalStyles={{
+                        lineHeight: "24px",
+                        width: "24px",
+                        height: "24px",
+                        fontSize: "13px",
+                        marginTop: "0px",
+                        marginLeft: "0px"
+                      }}
+                    />
+                    <div style={{ marginLeft: "8px" }}>{asa.alias}</div>
+                  </span>
+                </div>
+              );
+            });
+        }
+        employees.push(
+          <>
             <div
               style={{
                 display: "flex",
@@ -86,15 +169,22 @@ class RemoveTeamMember extends React.Component<Props, State> {
                   justifyContent: "center"
                 }}>
                 <UniversalCheckbox
-                  name={`Assignments-${k}`}
+                  name={`Employee-${ek}`}
                   liveValue={v => {
-                    if (v) {
-                      this.setState(
-                        oldstate => (oldstate.deleteArray[k] = { id: asa.assignmentid, bool: v })
-                      );
-                    }
+                    console.log("CLICKED", ek, this.state);
+                    this.setState(
+                      oldstate =>
+                        (oldstate.deleteArray[ek] = {
+                          employeeid: e.id,
+                          bool: v,
+                          assignments: oldstate.deleteArray[ek].assignments.map(asa => ({
+                            ...asa,
+                            bool: v
+                          }))
+                        })
+                    );
                   }}
-                  startingvalue={this.state.deleteArray[k].bool}
+                  startingvalue={this.state.deleteArray[ek].bool}
                 />
               </span>
 
@@ -105,11 +195,10 @@ class RemoveTeamMember extends React.Component<Props, State> {
                   width: "calc(100% - 84px)",
                   display: "flex"
                 }}>
-                <PrintServiceSquare
-                  service={asa.boughtplanid.planid.appid}
-                  appidFunction={e => e}
+                <PrintEmployeeSquare
+                  employee={e}
                   size={24}
-                  additionalStyles={{
+                  styles={{
                     lineHeight: "24px",
                     width: "24px",
                     height: "24px",
@@ -118,17 +207,19 @@ class RemoveTeamMember extends React.Component<Props, State> {
                     marginLeft: "0px"
                   }}
                 />
-                <div style={{ marginLeft: "8px" }}>{asa.alias}</div>
+                <div style={{ marginLeft: "8px" }}>{concatName(e)}</div>
               </span>
             </div>
-          );
-        });
+            {assignments}
+          </>
+        );
+      });
     }
-    return assignments;
+    return employees;
   }
 
   render() {
-    console.log("RTM", this.props, this.state);
+    console.log("DT", this.props, this.state);
     const employee = this.props.employee;
     return (
       <PopupBase
@@ -137,7 +228,7 @@ class RemoveTeamMember extends React.Component<Props, State> {
         nooutsideclose={true}
         additionalclassName="assignNewAccountPopup"
         buttonStyles={{ justifyContent: "space-between" }}>
-        <h1>Remove Member</h1>
+        <h1>Delete Team</h1>
         <div style={{ position: "relative", marginLeft: "16px" }}>
           <div
             style={{
@@ -316,5 +407,5 @@ class RemoveTeamMember extends React.Component<Props, State> {
   }
 }
 export default compose(graphql(REMOVE_MEMBER_FROM_TEAM, { name: "removeMemberFromTeam" }))(
-  RemoveTeamMember
+  DeleteTeam
 );
