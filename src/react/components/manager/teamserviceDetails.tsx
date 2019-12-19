@@ -1,13 +1,9 @@
 import * as React from "react";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
-import { fetchTeam } from "../../queries/departments";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import moment from "moment";
-import { concatName } from "../../common/functions";
-import DeletePopup from "../../popups/universalPopups/deletePopup";
+import RemoveTeamOrbit from "./removeTeamOrbit";
 
 interface Props {
   service: any;
@@ -77,6 +73,53 @@ class TeamServiceDetails extends React.Component<Props, State> {
     return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
   }
 
+  showStatus(e) {
+    const end = e.endtime == 8640000000000000 ? null : e.endtime;
+    const start = e.buytime;
+
+    if (e.pending) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#c73544",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          Integration pending
+        </span>
+      );
+    }
+
+    if (moment(start).isAfter(moment.now())) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#20baa9",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          Starts in {moment(start).toNow(true)}
+        </span>
+      );
+    }
+
+    if (end) {
+      return (
+        <span
+          className="infoTag"
+          style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
+          Ends in {moment(end).toNow(true)}
+        </span>
+      );
+    } else {
+      return <span className="infoTag">Active since {moment(start).fromNow(true)}</span>;
+    }
+  }
+
   render() {
     const { service, team } = this.props;
     return (
@@ -114,12 +157,14 @@ class TeamServiceDetails extends React.Component<Props, State> {
                 <span className="name">{service.planid.appid.name}</span>
               </div>
               <div className="tableColumnSmall content">
-                {moment(service.buytime).format("DD.MM.YYYY")}
+                {/*moment(service.buytime).format("DD.MM.YYYY")*/}
+                {service.alias}
               </div>
               <div className="tableColumnSmall content">
-                {service.endtime ? moment(service.endtime - 0).format("DD.MM.YYYY") : "Recurring"}
+                {/*service.endtime ? moment(service.endtime - 0).format("DD.MM.YYYY") : "Recurring"*/}
+                {this.showStatus(service)}
               </div>
-              <div className="tableColumnSmall content">${service.totalprice.toFixed(2)}</div>
+              <div className="tableColumnSmall content">{/*${service.totalprice.toFixed(2)*/}</div>
               <div className="tableColumnSmall content">{/*not implemented yet*/}</div>
             </div>
             <div className="tableEnd">
@@ -134,12 +179,13 @@ class TeamServiceDetails extends React.Component<Props, State> {
                 />
               </div>
             </div>
-
             {this.state.delete && (
-              <DeletePopup
-                key="deleteLicence"
-                heading="Delete Licence"
-                subHeading={`If you delete licence access for ${team.name} to ${service.planid.appid.name}, you remove access for the following team members`}
+              <RemoveTeamOrbit
+                orbit={this.props.service}
+                team={this.props.team}
+                close={() => this.setState({ delete: false })}
+              />
+              /*  subHeading={`If you delete licence access for ${team.name} to ${service.planid.appid.name}, you remove access for the following team members`}
                 employees={this.props.team.employees}
                 services={[service]}
                 main="service"
@@ -162,7 +208,7 @@ class TeamServiceDetails extends React.Component<Props, State> {
                   });
                   this.setState({ delete: false });
                 }}
-              />
+              />*/
             )}
           </div>
         )}

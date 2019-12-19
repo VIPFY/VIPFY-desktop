@@ -44,6 +44,28 @@ export const QUERY_SEMIPUBLICUSER = gql`
       twofa
       deleted
       companyban
+      vacations {
+        id
+        starttime
+        endtime
+        options
+      }
+      assignments {
+        alias
+        assignmentid
+        assignoptions
+        boughtplanid {
+          id
+          planid {
+            id
+            appid {
+              id
+              name
+              icon
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -81,6 +103,28 @@ export const QUERY_ME = gql`
       twofa
       deleted
       companyban
+      vacations {
+        id
+        starttime
+        endtime
+        options
+      }
+      assignments {
+        alias
+        assignmentid
+        assignoptions
+        boughtplanid {
+          id
+          planid {
+            id
+            appid {
+              id
+              name
+              icon
+            }
+          }
+        }
+      }
     }
   }
 `;

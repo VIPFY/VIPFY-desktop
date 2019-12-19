@@ -1,5 +1,4 @@
 import * as React from "react";
-import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, Query, withApollo } from "react-apollo";
 import { QUERY_SEMIPUBLICUSER, QUERY_ME } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
@@ -11,8 +10,6 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import TemporaryLicences from "../../components/manager/employeeDetails/TemporaryLicences";
-import IssuedLicences from "../../components/manager/employeeDetails/IssuedLicences";
 import UploadImage from "../../components/manager/universal/uploadImage";
 import { getImageUrlUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
@@ -86,24 +83,36 @@ class EmployeeDetails extends React.Component<Props, State> {
             const privatePhones = [];
             const workPhones = [];
 
-            querydata.phones.forEach(phone =>
-              phone && phone.tags && phone.tags[0] == ["private"]
-                ? privatePhones.push(phone)
-                : workPhones.push(phone)
-            );
+            querydata.phones.forEach(phone => {
+              if (phone) {
+                if (phone.tags && phone.tags[0] == ["private"]) {
+                  privatePhones.push(phone);
+                } else {
+                  workPhones.push(phone);
+                }
+              }
+            });
             querydata.workPhones = workPhones;
             querydata.privatePhones = privatePhones;
 
             return (
               <div className="managerPage">
                 <div className="heading">
-                  <span className="h1">
+                  <span
+                    className="h1"
+                    style={{
+                      display: "block",
+                      maxWidth: "40vw",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      color: "rgba(37, 54, 71, 0.6)"
+                    }}>
                     {this.props.profile ? (
-                      <span>Profile</span>
+                      <span style={{ color: "#253647" }}>Profile</span>
                     ) : (
                       <>
                         <span
-                          style={{ cursor: "pointer" }}
+                          style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
                           onClick={() => this.props.moveTo("emanager")}>
                           Employee Manager
                         </span>
@@ -157,7 +166,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                         className="tableEnd"
                         style={{ alignItems: "flex-start", marginLeft: "16px" }}>
                         <div className="personalEditButtons">
-                          {this.props.isadmin && (
+                          {/* this.props.isadmin && (
                             <UniversalButton
                               type="high"
                               label="Manage Absence"
@@ -170,7 +179,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                               }}
                               onClick={() => this.setState({ showTimeAway: true })}
                             />
-                          )}
+                            ) */}
                         </div>
                       </div>
                     </div>
@@ -245,36 +254,23 @@ class EmployeeDetails extends React.Component<Props, State> {
                     </div>
                   </div>
                 </div>
-
+                {console.log("TESTING", employeeid, this.props.id)}
                 <TeamsSection
                   employeeid={employeeid}
                   employeename={`${querydata.firstname} ${querydata.lastname}`}
-                  moveTo={employeeid == this.props.id ? () => {} : this.props.moveTo}
+                  moveTo={this.props.profile ? () => {} : this.props.moveTo}
                   isadmin={this.props.isadmin}
+                  employee={querydata}
                 />
 
                 {this.props.isadmin && (
-                  <React.Fragment>
-                    <LicencesSection
-                      employeeid={employeeid}
-                      employeename={`${querydata.firstname} ${querydata.lastname}`}
-                      moveTo={this.props.moveTo}
-                      employee={querydata}
-                      isadmin={this.props.isadmin}
-                    />
-                    <TemporaryLicences
-                      firstName={querydata.firstname}
-                      unitid={employeeid}
-                      isadmin={this.props.isadmin}
-                    />
-                    <IssuedLicences
-                      unitid={employeeid}
-                      firstName={querydata.firstname}
-                      showTimeAway={this.state.showTimeAway}
-                      closeTimeAway={() => this.setState({ showTimeAway: false })}
-                      isadmin={this.props.isadmin}
-                    />
-                  </React.Fragment>
+                  <LicencesSection
+                    employeeid={employeeid}
+                    employeename={`${querydata.firstname} ${querydata.lastname}`}
+                    moveTo={this.props.moveTo}
+                    employee={querydata}
+                    isadmin={this.props.isadmin}
+                  />
                 )}
 
                 {this.state.changepicture && (

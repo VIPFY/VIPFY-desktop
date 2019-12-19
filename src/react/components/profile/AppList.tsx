@@ -18,7 +18,7 @@ interface Props {
 }
 
 export default (props: Props) => {
-  const [sortBy, setSortBy] = React.useState("Oldest");
+  const [sortBy, setSortBy] = React.useState("A-Z");
 
   const handleName = licence =>
     licence.boughtplanid.alias

@@ -37,7 +37,7 @@ export const me = gql`
 
 export const fetchLicences = gql`
   query onFetchLicence {
-    fetchLicences {
+    fetchUserLicenceAssignments {
       id
       unitid {
         id
@@ -72,6 +72,7 @@ export const fetchLicences = gql`
       vacationstart
       vacationend
       tags
+      accountid
     }
   }
 `;

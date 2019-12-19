@@ -4,10 +4,8 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { shell } from "electron";
 import path from "path";
-
 import moment from "moment";
 import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
-import VacationRequests from "../components/vacation/VacationRequests";
 
 export function getPreloadScriptPath(script: string): string {
   return (
@@ -382,3 +380,21 @@ export const renderIcon = status => {
       return "secret";
   }
 };
+
+export async function getMe(client: any): Promise<string> {
+  return (
+    await client.query({
+      query: gql`
+        {
+          me {
+            id
+            profilepicture
+            firstname
+            middlename
+            lastname
+          }
+        }
+      `
+    })
+  ).data.me.emails[0].email;
+}

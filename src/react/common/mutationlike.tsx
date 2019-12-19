@@ -1,6 +1,6 @@
 import { MutationUpdaterFn } from "react-apollo";
 import { useState, ReactElement } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+//import { useApolloClient } from "@apollo/react-hooks";
 
 export function MutationLike(props: {
   update?: MutationUpdaterFn | undefined;
@@ -14,7 +14,7 @@ export function MutationLike(props: {
 }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
-  const client = props.client || useApolloClient();
+  const client = props.client;
 
   return props.children
     ? props.children(

@@ -4,7 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 rules.push({
-  test: /\.s[ac]ss$/i,
+  test: /\.s?[ac]ss$/i,
   use: [
     { loader: "style-loader" },
     { loader: "css-loader" },

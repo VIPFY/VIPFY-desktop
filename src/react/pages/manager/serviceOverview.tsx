@@ -7,12 +7,11 @@ import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import { fetchCompanyServices } from "../../queries/products";
 import { now } from "moment";
-import AddServiceGeneralData from "../../components/manager/serviceDetails/addServiceGeneralData";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
-import ManageServiceTeams from "../../components/manager/universal/managing/serviceteams";
-import ManageServiceEmployees from "../../components/manager/universal/managing/serviceemployees";
 import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
+import AssignServiceToUser from "../../components/manager/universal/adding/assignServiceToUser";
+import moment from "moment";
 
 interface Props {
   moveTo: Function;
@@ -23,25 +22,10 @@ interface State {
   sort: string;
   sortforward: boolean;
   add: Boolean;
-  addStage: number;
-  addservice: Object | null;
-  teams: { id: number; name: number; profilepicture: string }[];
-  addemployees: any[];
-  saving: Boolean;
   deleting: number | null;
   willdeleting: number | null;
   keepLicences: { service: number; employee: number }[];
 }
-
-const CREATE_SERVICE = gql`
-  mutation createService($serviceData: JSON!, $addedTeams: [JSON]!, $addedEmployees: [JSON]!) {
-    createService(
-      serviceData: $serviceData
-      addedTeams: $addedTeams
-      addedEmployees: $addedEmployees
-    )
-  }
-`;
 
 const DELETE_SERVICE = gql`
   mutation deleteService($serviceid: ID!) {
@@ -79,7 +63,7 @@ class ServiceOverview extends React.Component<Props, State> {
   filterMotherfunction(service) {
     if (service.app.name.toUpperCase().includes(this.state.search.toUpperCase())) {
       return true;
-    } else if (service.teams.filter(team => this.filterTeams(team)).length > 0) {
+    } else if (service.teams && service.teams.filter(team => this.filterTeams(team)).length > 0) {
       return true;
     } else if (
       service.licences.filter(
@@ -111,140 +95,108 @@ class ServiceOverview extends React.Component<Props, State> {
     return false;
   }
 
-  addService(singles) {
-    this.setState({ addemployees: singles, saving: true, add: false });
-  }
-
-  addProcess(refetch) {
-    switch (this.state.addStage) {
-      case 1:
-        return (
-          <PopupBase
-            fullmiddle={true}
-            customStyles={{ maxWidth: "1152px" }}
-            close={() => {
-              refetch();
-              this.setState({ add: false });
-            }}>
-            <AddServiceGeneralData
-              continue={data => this.setState({ addservice: data, addStage: 2 })}
-              close={() => {
-                refetch();
-                this.setState({ add: false });
-              }}
-              addservice={this.state.addservice}
-              currentServices={this.state.currentServices}
-            />
-          </PopupBase>
-        );
-      case 2:
-        return (
-          /*<AddTeam
-            continue={data => {
-              this.setState({ teams: data, addStage: 3 });
-            }}
-            close={() => this.setState({ addStage: 1 })}
-            service={this.state.addservice}
-            addedTeams={this.state.teams}
-            teams={[]}
-          />*/
-          <ManageServiceTeams
-            service={this.state.addservice}
-            close={() => {
-              //refetch();
-              this.setState({ add: false });
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  refetch();
-                  this.setState({ add: false });
-                }}
-              />
-              <div className="buttonSeperator" />
-              <UniversalButton
-                label="Manage Employees"
-                type="high"
-                onClick={() => this.setState({ addStage: 3 })}
-              />
-            </div>
-          </ManageServiceTeams>
-        );
-      case 3:
-        return (
-          <ManageServiceEmployees
-            service={this.state.addservice}
-            close={() => {
-              //refetch();
-              this.setState({ add: false });
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  refetch();
-                  this.setState({ add: false });
-                }}
-              />
-            </div>
-          </ManageServiceEmployees>
-        );
-      default:
-        return <div />;
-    }
-  }
-
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
-      if (
-        service.licences.find(l => l && (l.endtime == null || l.endtime > now())) ||
-        (service.app.owner && service.app.owner.id)
-      ) {
-        serviceArray.push(
-          <div
-            key={service.name}
-            className="tableRow"
-            onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
-            <div className="tableMain">
-              <div className="tableColumnBig">
-                <PrintServiceSquare appidFunction={s => s.app} service={service} />
-                <span className="name">{service.app.name}</span>
-              </div>
-              <ColumnTeams teams={service.teams} teamidFunction={team => team.departmentid} />
-              <ColumnEmployees
-                employees={service.licences}
-                checkFunction={l =>
-                  l &&
-                  ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-                  (l.options == null || l.options.teamlicence == null)
+      if (service.app.id == 66) {
+        return;
+      }
+      const teams = [];
+      const accounts = [];
+      const singleAccounts = [];
+
+      service.orbitids.forEach(element => {
+        element.teams.forEach(team => {
+          if (team != null) {
+            teams.push(team);
+          }
+        });
+      });
+
+      service.orbitids.forEach(element => {
+        if (element.endtime == null || moment(element.endtime).toDate() < new Date()) {
+          console.log(
+            element.id,
+            element,
+            element.endtime,
+            element.endtime && moment(element.endtime).toDate() < new Date()
+          );
+          element.accounts.forEach(account => {
+            if (
+              account != null &&
+              (account.endtime == null || moment(account.endtime).toDate() > new Date()) &&
+              moment(account.starttime).toDate() < new Date()
+            ) {
+              accounts.push(account);
+              account.assignments.forEach(checkunit => {
+                if (
+                  checkunit &&
+                  (checkunit.endtime == null || moment(checkunit.endtime).toDate() > new Date()) &&
+                  !singleAccounts.find(
+                    s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
+                  )
+                ) {
+                  singleAccounts.push(checkunit.unitid);
                 }
-                employeeidFunction={e => e.unitid}
+              });
+            }
+          });
+        }
+      });
+
+      serviceArray.push(
+        <div
+          key={service.name}
+          className="tableRow"
+          onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
+          <div className="tableMain">
+            <div className="tableColumnBig">
+              <PrintServiceSquare appidFunction={s => s.app} service={service} />
+              <span className="name">{service.app.name}</span>
+            </div>
+            <div className="tableColumnSmall">
+              <div
+                className="managerSquare"
+                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                {service.orbitids.length}
+              </div>
+              <div
+                className="managerSquare"
+                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                {accounts.length}
+              </div>
+            </div>
+            <ColumnTeams teams={teams} teamidFunction={team => team} />
+            <ColumnEmployees
+              employees={singleAccounts}
+              checkFunction={
+                l => true
+                /* l &&
+                ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
+                (l.options == null || l.options.teamlicence == null)*/
+              }
+              employeeidFunction={e => e}
+            />
+          </div>
+          <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
+            {service.app.disabled && (
+              <i className="fad fa-exclamation-triangle warningColor" title="App is disabled"></i>
+            )}
+          </div>
+          <div className="tableEnd">
+            <div className="editOptions">
+              <i className="fal fa-external-link-alt editbuttons" />
+              <i
+                className="fal fa-trash-alt editbuttons"
+                onClick={e => {
+                  e.stopPropagation();
+                  this.setState({ willdeleting: service });
+                }}
               />
             </div>
-            <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
-              {service.app.disabled && (
-                <i className="fad fa-exclamation-triangle warningColor" title="App is disabled"></i>
-              )}
-            </div>
-            <div className="tableEnd">
-              <div className="editOptions">
-                <i className="fal fa-external-link-alt editbuttons" />
-                <i
-                  className="fal fa-trash-alt editbuttons"
-                  onClick={e => {
-                    e.stopPropagation();
-                    this.setState({ willdeleting: service });
-                  }}
-                />
-              </div>
-            </div>
           </div>
-        );
-      }
+        </div>
+      );
     });
     return serviceArray;
   }
@@ -261,6 +213,7 @@ class ServiceOverview extends React.Component<Props, State> {
               <PrintServiceSquare appidFunction={s => s.app} service={{}} fake={true} />
               <span className="name" />
             </div>
+            <div className="tableColumnBig"></div>
             <ColumnTeams teams={[null]} teamidFunction={team => team.departmentid} fake={true} />
             <ColumnEmployees
               employees={[null]}
@@ -280,7 +233,7 @@ class ServiceOverview extends React.Component<Props, State> {
     return (
       <div className="managerPage">
         <div className="heading">
-          <h1>Service Manager</h1>
+          <h1>Account Manager</h1>
           <UniversalSearchBox
             getValue={v => {
               this.setState({ search: v });
@@ -290,11 +243,24 @@ class ServiceOverview extends React.Component<Props, State> {
         <div className="section">
           <div className="heading">
             <h1>Services</h1>
+            <UniversalButton
+              type="high"
+              label="Add Service"
+              customStyles={{
+                fontSize: "12px",
+                lineHeight: "24px",
+                fontWeight: "700",
+                marginRight: "16px",
+                width: "120px"
+              }}
+              onClick={() =>
+                this.setState({
+                  add: true
+                })
+              }
+            />
           </div>
-          <Query
-            pollInterval={60 * 10 * 1000 + 900}
-            query={fetchCompanyServices}
-            fetchPolicy="cache-and-network">
+          <Query pollInterval={60 * 10 * 1000 + 900} query={fetchCompanyServices}>
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return (
@@ -319,39 +285,17 @@ class ServiceOverview extends React.Component<Props, State> {
                             )}
                           </h1>
                         </div>
-                        <div
-                          className="tableColumnBig" //onClick={() => this.handleSortClick("Teams")}
-                        >
+                        <div className="tableColumnSmall">
+                          <h1>Orbits/Accounts</h1>
+                        </div>
+                        <div className="tableColumnBig">
                           <h1>Teams</h1>
                         </div>
-                        <div
-                          className="tableColumnBig" //onClick={() => this.handleSortClick("Single Users")}
-                        >
+                        <div className="tableColumnBig">
                           <h1>Single Users</h1>
                         </div>
                       </div>
-                      <div className="tableEnd">
-                        <UniversalButton
-                          type="high"
-                          label="Add Service"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "92px"
-                          }}
-                          onClick={() =>
-                            this.setState({
-                              add: true,
-                              addStage: 1,
-                              addemployees: [],
-                              addservice: {},
-                              apps: []
-                            })
-                          }
-                        />
-                      </div>
+                      <div className="tableEnd"></div>
                     </div>
                     {this.loading()}
                   </div>
@@ -367,6 +311,7 @@ class ServiceOverview extends React.Component<Props, State> {
               if (data && data.fetchCompanyServices) {
                 interservices = data.fetchCompanyServices;
                 let sortforward = this.state.sortforward;
+                console.log("SERVICES ALL", interservices);
 
                 //sortselection
                 switch (this.state.sort) {
@@ -391,99 +336,6 @@ class ServiceOverview extends React.Component<Props, State> {
                       // namen müssen gleich sein
                       return 0;
                     });
-                    break;
-
-                  case "Teams":
-                    interservices.sort(function(a, b) {
-                      let teamsA = a.teams.length;
-                      let teamsB = b.teams.length;
-
-                      if (teamsA > teamsB) {
-                        if (sortforward) {
-                          return -1;
-                        } else {
-                          return 1;
-                        }
-                      }
-                      if (teamsA < teamsB) {
-                        if (sortforward) {
-                          return 1;
-                        } else {
-                          return -1;
-                        }
-                      }
-                      //if teamsCount is equal sort by name instant
-                      let nameA = a.app.name.toUpperCase();
-                      let nameB = b.app.name.toUpperCase();
-                      if (nameA < nameB) {
-                        if (sortforward) {
-                          return -1;
-                        } else {
-                          return 1;
-                        }
-                      }
-                      if (nameA > nameB) {
-                        if (sortforward) {
-                          return 1;
-                        } else {
-                          return -1;
-                        }
-                      }
-                      // namen müssen gleich sein
-                      return 0;
-                    });
-                    break;
-
-                  case "Single Users":
-                    interservices.sort(function(a, b) {
-                      let licencesA = a.licences.filter(
-                        l =>
-                          l &&
-                          ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-                          (l.options == null || l.options.teamlicence == null)
-                      ).length;
-                      let licencesB = b.licences.filter(
-                        l =>
-                          l &&
-                          ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-                          (l.options == null || l.options.teamlicence == null)
-                      ).length;
-
-                      if (licencesA > licencesB) {
-                        if (sortforward) {
-                          return -1;
-                        } else {
-                          return 1;
-                        }
-                      }
-                      if (licencesA < licencesB) {
-                        if (sortforward) {
-                          return 1;
-                        } else {
-                          return -1;
-                        }
-                      }
-                      //if licencesCount is equal sort by name instant
-                      let nameA = a.app.name.toUpperCase();
-                      let nameB = b.app.name.toUpperCase();
-                      if (nameA < nameB) {
-                        if (sortforward) {
-                          return -1;
-                        } else {
-                          return 1;
-                        }
-                      }
-                      if (nameA > nameB) {
-                        if (sortforward) {
-                          return 1;
-                        } else {
-                          return -1;
-                        }
-                      }
-                      // namen müssen gleich sein
-                      return 0;
-                    });
-
                     break;
 
                   default:
@@ -516,81 +368,45 @@ class ServiceOverview extends React.Component<Props, State> {
                               style={{ marginLeft: "8px", opacity: 0.4 }}></i>
                           )}
                         </div>
-                        <div
-                          className="tableColumnBig"
-                          //onClick={() => this.handleSortClick("Teams")}
-                        >
+                        <div className="tableColumnSmall">
+                          <h1>Orbits/Accounts</h1>
+                        </div>
+                        <div className="tableColumnBig">
                           <h1>Teams</h1>
                         </div>
-                        <div
-                          className="tableColumnBig"
-                          //onClick={() => this.handleSortClick("Single Users")}
-                        >
+                        <div className="tableColumnBig">
                           <h1>Single Users</h1>
                         </div>
                       </div>
                       <div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>
-                      <div className="tableEnd">
-                        <UniversalButton
-                          type="high"
-                          label="Add Service"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "92px"
-                          }}
-                          onClick={() =>
-                            this.setState({
-                              add: true,
-                              addStage: 1,
-                              addemployees: [],
-                              addservice: null,
-                              teams: [],
-                              currentServices: data.fetchCompanyServices
-                            })
-                          }
-                        />
-                      </div>
+                      <div className="tableEnd"></div>
                     </div>
                     {services.length > 0 && this.printServices(services)}
                   </div>
-                  {this.state.add && this.addProcess(refetch)}
+                  {this.state.add && (
+                    <PopupBase
+                      small={true}
+                      nooutsideclose={true}
+                      close={() => this.setState({ add: false })}
+                      additionalclassName="assignNewAccountPopup"
+                      buttonStyles={{ justifyContent: "space-between" }}>
+                      <h1>Choose Service</h1>
+                      <AssignServiceToUser
+                        continue={app => app && this.props.moveTo(`lmanager/${app.id}`)}
+                      />
+                      <UniversalButton
+                        type="low"
+                        label="Cancel"
+                        onClick={() => this.setState({ add: false })}
+                      />
+                    </PopupBase>
+                  )}
                 </>
               );
             }}
           </Query>
         </div>
-        {this.state.saving && (
-          <Mutation mutation={CREATE_SERVICE}>
-            {createService => (
-              <PopupSelfSaving
-                savingmessage="Adding new service"
-                savedmessage="New service succesfully added"
-                saveFunction={async () => {
-                  await createService({
-                    variables: {
-                      serviceData: this.state.addservice,
-                      addedTeams: this.state.teams,
-                      addedEmployees: this.state.addemployees
-                    },
-                    refetchQueries: [{ query: fetchCompanyServices }]
-                  });
-                }}
-                closeFunction={() =>
-                  this.setState({
-                    saving: false,
-                    addemployees: [],
-                    teams: [],
-                    addservice: null,
-                    addStage: 1
-                  })
-                }
-              />
-            )}
-          </Mutation>
-        )}
+
         {this.state.willdeleting && (
           <PopupBase
             fullmiddle={true}

@@ -46,6 +46,35 @@ export const FETCH_ALL_BOUGHTPLANS = gql`
   }
 `;
 
+export const FETCH_ALL_BOUGHTPLANS_LICENCES = gql`
+  query onFetchAllBoughtPlansFromCompany($appid: ID!, $external: Boolean) {
+    fetchBoughtPlansOfCompany(appid: $appid, external: $external) {
+      id
+      alias
+      key
+      licences {
+        id
+        options
+        disabled
+        starttime
+        endtime
+        pending
+        alias
+      }
+      plan: planid {
+        id
+        app: appid {
+          id
+          name
+          icon
+          needssubdomain
+          options
+        }
+      }
+    }
+  }
+`;
+
 export const FETCH_UNIT_APPS = gql`
   query fetchUnitApps($departmentid: ID!) {
     fetchUnitApps(departmentid: $departmentid) {

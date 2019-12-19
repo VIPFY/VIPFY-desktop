@@ -77,8 +77,18 @@ class TeamDetails extends React.Component<Props, State> {
           return (
             <div className="managerPage">
               <div className="heading">
-                <span className="h1">
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("dmanager")}>
+                <span
+                  className="h1"
+                  style={{
+                    display: "block",
+                    maxWidth: "40vw",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    color: "rgba(37, 54, 71, 0.6)"
+                  }}>
+                  <span
+                    style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
+                    onClick={() => this.props.moveTo("dmanager")}>
                     Team Manager
                   </span>
                   <span className="h2">{team.name}</span>
@@ -108,6 +118,7 @@ class TeamDetails extends React.Component<Props, State> {
                       className="managerBigSquare"
                       uploadError={this.state.uploadError}
                       isadmin={this.props.isadmin}
+                      isteam={true}
                     />
                   </div>
                   <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
