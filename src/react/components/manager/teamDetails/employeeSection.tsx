@@ -1,9 +1,7 @@
 import * as React from "react";
 import UniversalButton from "../../../components/universalButtons/universalButton";
 import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
-import AddTeamEmployee from "./../addTeamEmployee";
 import EmployeeDetails from "./../employeeDetails";
-import ManageTeamEmployees from "../universal/managing/teamemployees";
 import AssignNewTeamMember from "../universal/adding/assignNewTeamMember";
 
 interface Props {
@@ -143,15 +141,6 @@ class EmployeeSection extends React.Component<Props, State> {
         </div>
         {this.state.add && (
           <AssignNewTeamMember team={this.props.team} close={() => this.setState({ add: false })} />
-          /*<ManageTeamEmployees team={this.props.team} close={() => this.setState({ add: false })}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => this.setState({ add: false })}
-              />
-            </div>
-          </ManageTeamEmployees>*/
         )}
         {this.state.savingObject && (
           <PopupSelfSaving

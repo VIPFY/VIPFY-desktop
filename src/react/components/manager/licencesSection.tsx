@@ -4,19 +4,8 @@ import ServiceDetails from "../../components/manager/serviceDetails";
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
 import { fetchUserLicences } from "../../queries/departments";
-import { fetchApps } from "../../queries/products";
 import { now } from "moment";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalSearchBox from "../universalSearchBox";
-import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import ManageServices from "./universal/managing/services";
-import UniversalDropDownInput from "../universalForms/universalDropdownInput";
-import { concatName } from "../../common/functions";
-import PrintServiceSquare from "./universal/squares/printServiceSquare";
-import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
-import AssignServiceToUser from "./universal/adding/assignServiceToUser";
-import AssignAccount from "./universal/adding/assignAccount";
 import AssignNewAccount from "./universal/adding/assignNewAccount";
 
 interface Props {
@@ -201,22 +190,7 @@ class LicencesSection extends React.Component<Props, State> {
                       <div className="tableColumnSmall">{/*<h1>Price</h1>*/}</div>
                     </div>
                     {/*<div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>*/}
-                    <div className="tableEnd">
-                      {/*this.props.isadmin && (
-                        <UniversalButton
-                          type="high"
-                          label="Manage Licences"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "120px"
-                          }}
-                          onClick={() => this.setState({ add: true })}
-                        />
-                        )*/}
-                    </div>
+                    <div className="tableEnd"></div>
                   </div>
                   {appArray}
                 </div>

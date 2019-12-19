@@ -5,18 +5,13 @@ import { Query, Mutation } from "react-apollo";
 import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
-import AddEmployeeTeams from "../../components/manager/addEmployeeTeams";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import AddEmployeeServices from "../../components/manager/addEmployeeServices";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import { randomPassword } from "../../common/passwordgen";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
-import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
-import ManageTeams from "../../components/manager/universal/managing/teams";
-import ManageServices from "../../components/manager/universal/managing/services";
 import DeletePopup from "../../popups/universalPopups/deletePopup";
 
 interface Props {

@@ -4,7 +4,6 @@ import { Query } from "react-apollo";
 import { fetchTeams } from "../../queries/departments";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import Team from "./employeeDetails/team";
-import ManageTeams from "./universal/managing/teams";
 import AssignNewTeamMemberFromMember from "./universal/adding/assignNewTeamMemberFromMember";
 
 interface Props {
@@ -149,17 +148,6 @@ class TeamsSection extends React.Component<Props, State> {
                     employee={this.props.employee}
                     close={() => this.setState({ add: false })}
                   />
-                  /*<ManageTeams
-                    employee={{ id: this.props.employeeid, firstname: this.props.employeename }} //TODO CHANGE employeename
-                    close={() => this.setState({ add: false })}>
-                    <div className="buttonsPopup">
-                      <UniversalButton
-                        label="Close"
-                        type="low"
-                        onClick={() => this.setState({ add: false })}
-                      />
-                    </div>
-                  </ManageTeams>*/
                 )}
                 {this.state.savingObject && (
                   <PopupSelfSaving
