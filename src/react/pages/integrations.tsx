@@ -67,7 +67,7 @@ class Integrations extends React.Component<Props, AppPageState> {
         </div>
       );
     }
-    return <LoadingDiv text="Preparing marketplace" legalText="Just a moment please" />;
+    return <LoadingDiv />;
   }
 
   showapps = apps => {
@@ -97,7 +97,7 @@ class Integrations extends React.Component<Props, AppPageState> {
       key={id}
       id={id}
       logo={logo}
-      icon={icon}
+      icon={icon ? icon : logo}
       name={name}
       teaserdescription={teaserdescription}
       needssubdomain={needssubdomain}
@@ -109,7 +109,6 @@ class Integrations extends React.Component<Props, AppPageState> {
     return (
       <div>
         {this.renderLoading(this.props.products.allApps)}
-
         {this.state.popupSSO && (
           <React.Fragment>
             <PopupSSO
