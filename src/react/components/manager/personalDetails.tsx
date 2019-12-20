@@ -566,6 +566,7 @@ class PersonalDetails extends React.Component<Props, State> {
             className="tableColumnSmallOne editable"
             onClick={() =>
               this.setState({
+                editvalue: concatName(querydata),
                 edit: {
                   id: "name",
                   label: "Name",
@@ -585,10 +586,12 @@ class PersonalDetails extends React.Component<Props, State> {
             className="tableColumnSmallOne editable"
             onClick={() =>
               this.setState({
+                editvalue: querydata.position,
                 edit: {
                   id: "position",
                   label: "Position",
-                  startvalue: querydata.position
+                  startvalue: querydata.position,
+                  checking: true
                 }
               })
             }>
@@ -796,18 +799,13 @@ class PersonalDetails extends React.Component<Props, State> {
                   disabled={
                     this.state.edit!.checking &&
                     (!(
-                      this.state.editvalue != null &&
-                      this.state.editvalue != "" &&
-                      this.state.editvalue!.trim() != ""
-                    ) ||
+                      (this.state.editvalue != null &&
+                        this.state.editvalue != "" &&
+                        this.state.editvalue!.trim() != "") ||
                       (this.state.editvalueArray != null &&
-                        this.state.editvalueArray.some(v => v != null && v != ""))) &&
-                    !(
-                      (this.state.editvalue == null || this.state.editvalue == "") &&
-                      (this.state.edit!.startvalue != null ||
-                        this.state.edit!.startvalue != "" ||
-                        this.state.edit!.startvalue!.trim() != "")
-                    )
+                        this.state.editvalueArray.some(v => v != null && v != ""))
+                    ) ||
+                      this.state.editvalue == this.state.edit!.startvalue)
                   }
                   onClick={() => this.handleConfirm()}
                 />

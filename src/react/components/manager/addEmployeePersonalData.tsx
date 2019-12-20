@@ -112,7 +112,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
   }
 
   handleCreate() {
-    if (this.props.addpersonal.unitid) {
+    if (this.props.addpersonal && this.props.addpersonal.unitid) {
       this.props.continue(this.state);
     } else {
       this.setState({ confirm: true });

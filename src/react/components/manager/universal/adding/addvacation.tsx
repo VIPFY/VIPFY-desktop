@@ -17,6 +17,7 @@ interface Props {
   vacationid: number;
   close: Function;
   createVacation: Function;
+  editVacation?: Object;
 }
 
 interface State {
@@ -55,9 +56,9 @@ const ADD_VACATION = gql`
 
 class AddVacation extends React.Component<Props, State> {
   state = {
-    fromdate: null,
+    fromdate: (this.props.editVacation && this.props.editVacation.fromdate) || null,
     editfrom: false,
-    todate: null,
+    todate: (this.props.editVacation && this.props.editVacation.todate) || null,
     editto: false,
     showall: false,
     users: [],
@@ -138,7 +139,7 @@ class AddVacation extends React.Component<Props, State> {
               buttonStyles={{ justifyContent: "space-between" }}
               additionalclassName="formPopup deletePopup"
               close={() => this.props.close()}>
-              <h1>Add Vacation</h1>
+              <h1>{this.props.editVacation ? "Edit Vacation" : "Add Vacation"}</h1>
               <div className="deleteContent" style={{ overflowY: "scroll" }}>
                 <div className="assignNewAccountPopup" style={{ marginBottom: "90px" }}>
                   <div
