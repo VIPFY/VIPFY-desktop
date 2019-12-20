@@ -547,6 +547,7 @@ class PersonalDetails extends React.Component<Props, State> {
 
   render() {
     const querydata = this.props.querydata;
+    console.log("QUERYDATA", querydata);
     if (querydata.vacations) {
       querydata.vacations.sort((a, b) => {
         if (a.starttime > b.starttime) {

@@ -38,6 +38,7 @@ class AssignVacation extends React.Component<Props, State> {
     user: this.props.forceUser || null
   };
   render() {
+    console.log("AV", this.props, this.state);
     const { e } = this.props;
     return (
       <div
@@ -175,7 +176,7 @@ class AssignVacation extends React.Component<Props, State> {
                             label={concatName(employee)}
                             onClick={() => {
                               this.setState({ showall: false });
-                              this.setState({ user: employee.id });
+                              this.setState({ user: employee });
                               this.props.liveid(employee.id);
                             }}
                           />
