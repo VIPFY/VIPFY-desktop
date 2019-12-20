@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 interface Props {
   closeme: Function;
@@ -16,15 +15,6 @@ export default (props: Props) => {
   const { sidebarOpen, id, logMeOut, isadmin } = props;
 
   React.useEffect(() => {
-    // const handleClickOutside = e => {
-    //   console.log("LOG: e ", e);
-    //   const domNode = contextMenuRef;
-    //   console.log("LOG: domNode", domNode);
-
-    //   if (!domNode) {
-    //     props.closeme();
-    //   }
-    // };
     document.addEventListener("click", handleClickOutside, true);
 
     return () => {
