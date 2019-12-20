@@ -20,12 +20,13 @@ interface Props {
   client: { query: Function };
   search?: string;
   data: any;
+  createdate: string;
 }
 
 class AppCompanyChartWrapper extends React.Component<Props, State> {
   constructor(props) {
     super(props);
-    const starttime = moment("2019-01-01");
+    const starttime = moment(parseInt(props.createdate));
     const endtime = moment().add("1d");
 
     this.state = {
@@ -146,7 +147,7 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
                     if (typeof x === "string") {
                       return x;
                     }
-                    return x.toFixed(0) + "%";
+                    return `${x.toFixed(x <= 10 ? 2 : 0)} %`;
                   }
                 }
               },

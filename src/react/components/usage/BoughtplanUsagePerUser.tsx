@@ -205,7 +205,7 @@ class BoughtplanUsagePerUser extends React.Component<Props, State> {
                           if (typeof x === "string") {
                             return x;
                           }
-                          return x.toFixed(0) + "%";
+                          return `${x.toFixed(x <= 10 ? 2 : 0)} %`;
                         }
                       }
                     },
