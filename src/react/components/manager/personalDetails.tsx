@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment from "moment";
+import moment, { now } from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
@@ -547,18 +547,20 @@ class PersonalDetails extends React.Component<Props, State> {
 
   render() {
     const querydata = this.props.querydata;
-    console.log("QUERYDATA", querydata);
     if (querydata.vacations) {
-      querydata.vacations.sort((a, b) => {
-        if (a.starttime > b.starttime) {
-          return 1;
-        }
-        if (a.starttime < b.starttime) {
-          return -1;
-        }
-        return 0;
-      });
+      querydata.vacations = querydata.vacations
+        .filter(v => v && v.endtime >= now())
+        .sort((a, b) => {
+          if (a.starttime > b.starttime) {
+            return 1;
+          }
+          if (a.starttime < b.starttime) {
+            return -1;
+          }
+          return 0;
+        });
     }
+    console.log("QUERYDATA", querydata);
     return (
       <React.Fragment>
         <div className="tableColumnSmall content twoline">
@@ -1019,6 +1021,7 @@ class PersonalDetails extends React.Component<Props, State> {
           <EditVacations
             querydata={querydata}
             close={() => this.setState({ editvacation: false })}
+            refetch={this.props.refetch}
           />
         )}
       </React.Fragment>

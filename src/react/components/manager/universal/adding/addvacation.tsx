@@ -14,10 +14,11 @@ import gql from "graphql-tag";
 
 interface Props {
   employeeid: number;
-  vacationid: number;
   close: Function;
   createVacation: Function;
   editVacation?: Object;
+
+  refetch: Function;
 }
 
 interface State {
@@ -56,9 +57,10 @@ const ADD_VACATION = gql`
 
 class AddVacation extends React.Component<Props, State> {
   state = {
-    fromdate: (this.props.editVacation && this.props.editVacation.fromdate) || null,
+    fromdate:
+      (this.props.editVacation && moment(this.props.editVacation.starttime).toDate()) || null,
     editfrom: false,
-    todate: (this.props.editVacation && this.props.editVacation.todate) || null,
+    todate: (this.props.editVacation && moment(this.props.editVacation.endtime).toDate()) || null,
     editto: false,
     showall: false,
     users: [],
@@ -128,7 +130,16 @@ class AddVacation extends React.Component<Props, State> {
                     this.setState({ assignAll: false });
                   }}
                   forceValue={this.state.checked[k]}
-                  forceUser={this.state.users[k] ? { id: this.state.users[k] } : null}
+                  forceUser={
+                    this.props.editVacation
+                      ? {
+                          id: this.props.editVacation.options.find(o => (o.accountid = e.accountid))
+                            .userid
+                        }
+                      : this.state.users[k]
+                      ? { id: this.state.users[k] }
+                      : null
+                  }
                 />
               );
             });
@@ -156,10 +167,14 @@ class AddVacation extends React.Component<Props, State> {
                         ? moment(this.state.fromdate!).format("DD.MM.YYYY")
                         : "Now"}
                     </span>
-                    <i
-                      className="fal fa-pen editbutton"
-                      onClick={() => this.setState({ editfrom: true })}
-                    />
+                    {this.state.fromdate <= now() ? (
+                      ""
+                    ) : (
+                      <i
+                        className="fal fa-pen editbutton"
+                        onClick={() => this.setState({ editfrom: true })}
+                      />
+                    )}
                     {this.state.editfrom && (
                       <PopupBase
                         styles={{ maxWidth: "fit-content" }}
@@ -200,7 +215,7 @@ class AddVacation extends React.Component<Props, State> {
                     <span style={{ lineHeight: "24px" }}>
                       {this.state.todate
                         ? moment(this.state.todate!).format("DD.MM.YYYY")
-                        : "Further Notice"}
+                        : "Please specify"}
                     </span>
                     <i
                       className="fal fa-pen editbutton"
@@ -294,33 +309,50 @@ class AddVacation extends React.Component<Props, State> {
                   <UniversalButton
                     label="Save"
                     type="high"
+                    disabled={!this.state.todate}
                     onClick={async () => {
-                      try {
-                        this.setState({ saving: true });
-                        const assignmentSending = [];
+                      if (this.props.editVacation) {
+                        console.log(
+                          "Let's edit this",
+                          this.state,
+                          this.props,
 
-                        assignments.forEach((a, k) => {
-                          if (this.state.users[k] && this.state.users[k] != "") {
-                            assignmentSending.push({
-                              accountid: a.accountid,
-                              userid: this.state.users[k]
-                            });
-                          }
-                        });
+                          moment(this.state.fromdate).toISOString(),
+                          this.props.editVacation &&
+                            moment(this.props.editVacation.starttime).toISOString(),
+                          this.props.editVacation &&
+                            moment(this.state.fromdate).toISOString() ==
+                              moment(this.props.editVacation.starttime).toISOString()
+                        );
+                      } else {
+                        try {
+                          this.setState({ saving: true });
+                          const assignmentSending = [];
 
-                        await this.props.createVacation({
-                          variables: {
-                            userid: this.props.employeeid,
-                            starttime: this.state.fromdate || new Date(),
-                            endtime: this.state.todate,
-                            assignments: assignmentSending
-                          }
-                        });
-                        this.setState({ saved: true });
-                        this.props.close();
-                      } catch (error) {
-                        console.log("error", error);
-                        this.setState({ error });
+                          assignments.forEach((a, k) => {
+                            if (this.state.users[k] && this.state.users[k] != "") {
+                              assignmentSending.push({
+                                accountid: a.accountid,
+                                userid: this.state.users[k]
+                              });
+                            }
+                          });
+
+                          await this.props.createVacation({
+                            variables: {
+                              userid: this.props.employeeid,
+                              starttime: this.state.fromdate || new Date(),
+                              endtime: this.state.todate,
+                              assignments: assignmentSending
+                            }
+                          });
+                          this.setState({ saved: true });
+                          this.props.refetch();
+                          this.props.close();
+                        } catch (error) {
+                          console.log("error", error);
+                          this.setState({ error });
+                        }
                       }
                     }}
                   />
