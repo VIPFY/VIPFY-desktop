@@ -1,9 +1,6 @@
 import * as React from "react";
-import { withApollo } from "react-apollo";
-
+import Collapsible from "../common/Collapsible";
 import BoughtplanUsagePerUser from "../components/usage/BoughtplanUsagePerUser";
-import UniversalButton from "../components/universalButtons/universalButton";
-import IconButton from "../common/IconButton";
 import UniversalSearchBox from "../components/universalSearchBox";
 
 interface Props {
@@ -13,61 +10,39 @@ interface Props {
   moveTo: Function;
 }
 
-interface State {
-  error: string;
-  showBoughtplans: Boolean;
-  teamname: string | null;
-  searchString: string;
-}
+export default (props: Props) => {
+  const [searchString, setSearch] = React.useState("");
 
-class UsageStatistics extends React.Component<Props, State> {
-  state = { error: "", showBoughtplans: true, teamname: null, searchString: "" };
+  let teamname = "[failed to fetch name]";
 
-  toggleShowBoughtplans = (): void =>
-    this.setState(prevState => ({ showBoughtplans: !prevState.showBoughtplans }));
+  if (props.history.location.state && props.history.location.state.name) {
+    teamname = props.history.location.state.name;
+  }
 
-  render() {
-    let teamname = "[failed to fetch name]";
-
-    if (this.props.history.location.state && this.props.history.location.state.name) {
-      teamname = this.props.history.location.state.name;
-    }
-
-    return (
-      <div className="statistic-team managerPage">
-        <div className="heading" style={{ gridColumnStart: 1, gridColumnEnd: 3 }}>
-          <span className="h1">
-            <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("usage")}>
-              Usage Statistics
-            </span>
-            <span className="h2">{teamname}</span>
+  return (
+    <div className="statistic-team managerPage">
+      <div className="heading" style={{ gridColumnStart: 1, gridColumnEnd: 3 }}>
+        <span className="h1">
+          <span style={{ cursor: "pointer" }} onClick={() => props.moveTo("usage")}>
+            Usage Statistics
           </span>
-          <UniversalSearchBox
-            getValue={value => this.setState({ searchString: value })}
-            placeholder="Search Usage Statistics"
+          <span className="h2">{teamname}</span>
+        </span>
+        <UniversalSearchBox
+          getValue={value => setSearch(value)}
+          placeholder="Search Usage Statistics"
+        />
+      </div>
+
+      <Collapsible title={`Time spent in ${teamname}`}>
+        <div className="inside">
+          <BoughtplanUsagePerUser
+            {...props}
+            search={searchString}
+            boughtplanid={props.match.params.boughtplanid}
           />
         </div>
-
-        <div className="genericHolder">
-          <div className="header" onClick={() => this.toggleShowBoughtplans()}>
-            <i
-              className={`button-hide fas ${
-                this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
-              }`}
-            />
-            <span>Time spent in {teamname}</span>
-          </div>
-          <div className={`inside ${this.state.showBoughtplans ? "in" : "out"}`}>
-            <BoughtplanUsagePerUser
-              {...this.props}
-              search={this.state.searchString}
-              boughtplanid={this.props.match.params.boughtplanid}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-
-export default withApollo(UsageStatistics);
+      </Collapsible>
+    </div>
+  );
+};
