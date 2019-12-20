@@ -6,61 +6,60 @@ interface Props {
   sidebarOpen: boolean;
   history: any;
   id: number;
+  isadmin: boolean;
   logMeOut: Function;
   goTo: Function;
 }
 
-interface State {}
+export default (props: Props) => {
+  const contextMenuRef = React.useRef();
+  const { sidebarOpen, id, logMeOut, isadmin } = props;
 
-class ProfileMenu extends React.Component<Props, State> {
-  state = {};
+  React.useEffect(() => {
+    // const handleClickOutside = e => {
+    //   console.log("LOG: e ", e);
+    //   const domNode = contextMenuRef;
+    //   console.log("LOG: domNode", domNode);
 
-  componentDidMount() {
-    document.addEventListener("click", this.handleClickOutside, true);
-  }
+    //   if (!domNode) {
+    //     props.closeme();
+    //   }
+    // };
+    document.addEventListener("click", handleClickOutside, true);
 
-  componentWillUnmount() {
-    document.removeEventListener("click", this.handleClickOutside, true);
-  }
-  handleClickOutside = e => {
-    const domNode = ReactDOM.findDOMNode(this);
-    if (!domNode || !domNode.contains(e.target)) {
-      this.props.closeme();
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  });
+
+  const handleClickOutside = event => {
+    if (contextMenuRef.current && !contextMenuRef!.current!.contains(event.target)) {
+      props.closeme();
     }
   };
 
-  render() {
-    const { sidebarOpen, history, id, logMeOut } = this.props;
-    return (
-      <div
-        className="context-menu"
-        style={{
-          left: sidebarOpen ? "210px" : "50px",
-          zIndex: 1000
-        }}>
-        <button
-          className="naked-button"
-          onClick={() => {
-            this.props.goTo("company");
-          }}>
+  return (
+    <div
+      ref={contextMenuRef}
+      className="context-menu"
+      style={{
+        left: sidebarOpen ? "210px" : "50px",
+        zIndex: 1000
+      }}>
+      {isadmin && (
+        <button className="naked-button" onClick={() => props.goTo("company")}>
           <span>Company Settings</span>
           <i className="fal fa-external-link-alt" />
         </button>
-        <button
-          className="naked-button"
-          onClick={() => {
-            this.props.goTo(`profile/${id}`);
-          }}>
-          <span>Profile</span>
-          <i className="fal fa-external-link-alt" />
-        </button>
-        <button className="naked-button" onClick={() => logMeOut()}>
-          <span>Log out</span>
-          <i className="fal fa-sign-out-alt" />
-        </button>
-      </div>
-    );
-  }
-}
-
-export default ProfileMenu;
+      )}
+      <button className="naked-button" onClick={() => props.goTo(`profile/${id}`)}>
+        <span>Profile</span>
+        <i className="fal fa-external-link-alt" />
+      </button>
+      <button className="naked-button" onClick={() => logMeOut()}>
+        <span>Log out</span>
+        <i className="fal fa-sign-out-alt" />
+      </button>
+    </div>
+  );
+};
