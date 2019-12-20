@@ -724,6 +724,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 sidebarOpen={this.props.sidebarOpen}
                 history={this.props.history}
                 id={this.props.id}
+                isadmin={this.props.isadmin}
                 logMeOut={this.props.logMeOut}
                 goTo={location => {
                   this.goTo(location);
