@@ -158,7 +158,7 @@ class AppCardIntegrations extends React.Component<Props, State> {
           <Query query={me}>
             {({ data, loading, error }) => {
               if (loading) {
-                return <LoadingDiv text="Loading Data" />;
+                return <LoadingDiv />;
               }
               if (error) {
                 return <div>Error loading data</div>;
