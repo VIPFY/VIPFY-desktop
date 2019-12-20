@@ -42,6 +42,7 @@ interface Props {
   fromErrorPage?: boolean;
   moveTo: Function;
   isadmin: boolean;
+  emails: { email: string[] };
 }
 
 export default (props: Props) => {
@@ -98,7 +99,7 @@ export default (props: Props) => {
     switch (e.channel) {
       case "get-email":
         {
-          e.target.send("email", "peter.herbertsenf@vipfy.com");
+          e.target.send("email", props.emails[0].email);
         }
         break;
       case "loading-finished":
