@@ -114,7 +114,7 @@ class AppListInner extends React.Component<Props, State> {
         <thead>
           <tr>
             <th>App</th>
-            <th>Team Name</th>
+            <th>Orbit</th>
             <th>Total Licences</th>
             <th>Used Licences</th>
             <th>Time Spent/Month</th>
