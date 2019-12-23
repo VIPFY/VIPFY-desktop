@@ -99,7 +99,7 @@ export default (props: Props) => {
       header: "Impersonate Account",
       text: "As Admin you can impersonate other accounts",
       state: "showSudo",
-      button: "set it up"
+      button: "Impersonate"
     });
 
     links.reverse();
