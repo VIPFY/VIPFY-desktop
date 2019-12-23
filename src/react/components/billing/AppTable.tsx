@@ -82,7 +82,7 @@ interface State {
 interface Props {
   data: { fetchUnitApps: any; fetchUnitAppsSimpleStats: any };
   company: object;
-  search?: boolean;
+  search?: string;
 }
 
 const shortEnglishHumanizer = humanizeDuration.humanizer({
@@ -133,9 +133,9 @@ class AppListInner extends React.Component<Props, State> {
           return true;
         }
 
-        const name = item.boughtplan.alias || item.boughtplan.planid.appid.name;
-
-        if (name.toUpperCase().includes(this.props.search.toUpperCase())) {
+        if (
+          item.boughtplan.planid.appid.name.toUpperCase().includes(this.props.search.toUpperCase())
+        ) {
           return true;
         } else {
           return false;
@@ -159,10 +159,10 @@ class AppListInner extends React.Component<Props, State> {
             : shortEnglishHumanizer(stats.minutestotal * 60 * 1000, {
                 largest: 2
               });
-        let endSat = "forever";
+        let endsAt = "forever";
 
         if (endtime) {
-          endSat = `ends at ${moment(endtime - 0).format("LLL")}`;
+          endsAt = `ends at ${moment(endtime - 0).format("LLL")}`;
         }
 
         return (
@@ -294,31 +294,25 @@ class AppListInner extends React.Component<Props, State> {
   }
 }
 
-export default class AppListOuter extends React.Component<{ company: any }, {}> {
-  teamRef = React.createRef<HTMLTextAreaElement>();
+export default (props: { company: any }) => (
+  <Query
+    query={FETCH_UNIT_APPS}
+    variables={{ departmentid: props.company.unit.id }}
+    pollInterval={1000 * 60 * 10}>
+    {({ data, loading, error }) => {
+      if (loading) {
+        return <LoadingDiv />;
+      }
 
-  render() {
-    return (
-      <Query
-        query={FETCH_UNIT_APPS}
-        variables={{ departmentid: this.props.company.unit.id }}
-        pollInterval={1000 * 60 * 10}>
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <LoadingDiv text="Fetching data..." />;
-          }
+      if (error) {
+        return <div>Error fetching data</div>;
+      }
 
-          if (error) {
-            return <div>Error fetching data</div>;
-          }
-
-          return (
-            <Collapsible title="Teams">
-              <AppListInner {...this.props} data={data} />
-            </Collapsible>
-          );
-        }}
-      </Query>
-    );
-  }
-}
+      return (
+        <Collapsible title="Teams">
+          <AppListInner {...props} data={data} />
+        </Collapsible>
+      );
+    }}
+  </Query>
+);

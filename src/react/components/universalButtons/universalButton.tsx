@@ -39,7 +39,7 @@ export default (props: Props) => {
 
   const printChildren = children => {
     if (children && !Array.isArray(children)) {
-      return "";
+      return children;
     } else {
       return "";
     }
