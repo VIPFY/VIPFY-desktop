@@ -5,6 +5,7 @@ interface Props {
   className?: string;
   noResize?: boolean;
   info?: string;
+  children?: any;
 }
 
 export default (props: Props) => {

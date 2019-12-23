@@ -126,7 +126,13 @@ export default (props: Props) => {
               <p className="settings-info">{link.text}</p>
               <p className="settings-message" />
               {link.button ? (
-                <UniversalButton className="button-end" type="high" label={link.button} />
+                <UniversalButton
+                  // Workaround so that the button does not use the custom width
+                  customStyles={{}}
+                  className="button-end"
+                  type="high"
+                  label={link.button}
+                />
               ) : (
                 <i className="fal fa-pen end" />
               )}
