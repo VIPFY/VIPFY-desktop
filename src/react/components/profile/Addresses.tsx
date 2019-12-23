@@ -71,7 +71,7 @@ class Addresses extends React.Component<Props, State> {
                 variables={this.state.variables}>
                 {({ data, loading, error }) => {
                   if (loading) {
-                    return <LoadingDiv text="Fetching Addresses..." />;
+                    return <LoadingDiv />;
                   }
 
                   if (error || !data) {
@@ -109,90 +109,15 @@ class Addresses extends React.Component<Props, State> {
 
                               return (
                                 <tr className="addresses-list" key={id}>
-                                  {this.state.edit != id ? (
-                                    <React.Fragment>
-                                      <td>{street ? street : "not set"}</td>
-                                      <td>{zip ? zip : "not set"}</td>
-                                      <td>{city ? city : "not set"}</td>
-                                      <td>{country}</td>
-                                      <td>{description ? description : "not set"}</td>
-                                      {/*<td>{priority}</td>*/}
-                                      {/* <span className="tags">{normalizedTags}</span> */}
-                                    </React.Fragment>
-                                  ) : (
-                                    <form
-                                      className="inline-form"
-                                      id={`address-form-${id}`}
-                                      onSubmit={e => this.editAddress(e, id, showPopup)}>
-                                      <td>
-                                        <input
-                                          type="text"
-                                          name="street"
-                                          className="inline-searchbar"
-                                          defaultValue={street}
-                                        />
-                                      </td>
-                                      <td>
-                                        <input
-                                          name="zip"
-                                          type="text"
-                                          className="inline-searchbar"
-                                          defaultValue={zip ? zip : "not set"}
-                                        />
-                                      </td>
-                                      <td>
-                                        <input
-                                          type="text"
-                                          name="city"
-                                          className="inline-searchbar"
-                                          defaultValue={city}
-                                        />
-                                      </td>
-                                      <td>
-                                        <select
-                                          name="country"
-                                          className="inline-dropdown"
-                                          defaultValue={country}>
-                                          <option value=""> </option>
-                                          {["DE", "US", "JP", "FR", "PL"].map(tag => (
-                                            <option key={tag} value={tag}>
-                                              {tag}
-                                            </option>
-                                          ))}
-                                        </select>
-                                      </td>
-                                      <td>
-                                        <input
-                                          type="text"
-                                          name="description"
-                                          className="inline-searchbar"
-                                          defaultValue={description}
-                                        />
-                                      </td>
-                                      {/*<td>
-                                        <input
-                                          name="priority"
-                                          type="number"
-                                          className="inline-searchbar"
-                                          defaultValue={priority}
-                                        />
-                                      </td>*/}
+                                  <td>{street ? street : "not set"}</td>
+                                  <td>{zip ? zip : "not set"}</td>
+                                  <td>{city ? city : "not set"}</td>
+                                  <td>{country}</td>
+                                  <td>{description ? description : "not set"}</td>
+                                  {/*<td>{priority}</td>*/}
+                                  {/* <span className="tags">{normalizedTags}</span> */}
 
-                                      {/* <div className="tags">
-                              <CoolCheckbox
-                              name="billing"
-                              value={tags ? tags.includes("billing") : false}
-                              />
-
-                              <CoolCheckbox
-                              name="main"
-                              value={tags ? tags.includes("main") : false}
-                              />
-                            </div> */}
-                                    </form>
-                                  )}
-
-                                  <td align="right">
+                                  <td align="right" className="row-icons">
                                     <IconButton
                                       title="Edit"
                                       onClick={() =>
@@ -213,7 +138,6 @@ class Addresses extends React.Component<Props, State> {
                                     <IconButton
                                       title="Delete"
                                       onClick={() =>
-                                        /*this.showDeletion(id, showPopup)*/
                                         this.setState({
                                           delete: true,
                                           oldAddress: {

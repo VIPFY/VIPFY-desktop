@@ -301,7 +301,12 @@ class PopupAddress extends React.Component<Props, State> {
             startvalue={this.props.oldvalues ? this.props.oldvalues.description : ""}
           />
         </div>
-        <UniversalButton type="low" closingPopup={true} label="Cancel" />
+        <UniversalButton
+          onClick={() => this.props.close()}
+          type="low"
+          closingPopup={true}
+          label="Cancel"
+        />
         <UniversalButton
           type="high"
           label={this.props.oldvalues ? "Save" : "Confirm"}
