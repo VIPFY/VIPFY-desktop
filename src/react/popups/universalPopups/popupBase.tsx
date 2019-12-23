@@ -239,4 +239,5 @@ class PopupBase extends React.Component<Props, State> {
     );
   }
 }
+
 export default PopupBase;
