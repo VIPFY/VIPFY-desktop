@@ -73,7 +73,6 @@ class TeamsSection extends React.Component<Props, State> {
               return 0;
             });
             data.fetchTeams.forEach(team => {
-              console.log("TEAM", team);
               teamArray.push(
                 <Team
                   employee={this.props.employee}
