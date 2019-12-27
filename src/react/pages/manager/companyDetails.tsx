@@ -183,11 +183,12 @@ class CompanyDetails extends React.Component<Props, State> {
                                   if (error) {
                                     return `Error! ${error.message}`;
                                   }
+                                  console.log(data.fetchCompanyServices.length);
                                   return data &&
                                     data.fetchCompanyServices &&
                                     data.fetchCompanyServices.length
                                     ? data.fetchCompanyServices.length
-                                    : "No Data available";
+                                    : 0;
                                 }}
                               </Query>
                             </h2>
