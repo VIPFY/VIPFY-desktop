@@ -126,6 +126,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
               <div style={{ display: "flex", flexFlow: "column", alignItems: "center" }}>
                 <h1>Please set up Two-Factor Authentication</h1>
                 <GoogleAuth
+                  dontClose={true}
                   finishSetup={() => {
                     refetch();
                     clearProps.history.push("/area/dashboard");
