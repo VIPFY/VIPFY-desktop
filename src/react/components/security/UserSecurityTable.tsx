@@ -49,7 +49,7 @@ class UserSecurityTable extends React.Component<Props, State> {
             <table className="security-table">
               <thead>
                 <tr>
-                  <th onClick={() => this.handleSortClick("Name")}>
+                  <th colSpan={2} onClick={() => this.handleSortClick("Name")}>
                     Name
                     {this.state.sort == "Name" ? (
                       this.state.sortforward ? (
