@@ -269,6 +269,7 @@ class PopupAddress extends React.Component<Props, State> {
             label="Country"
             livecode={value => this.setState({ country: value })}
             noresults="No matches"
+            noNoResults={true}
             width="200px"
             startvalue={this.props.oldvalues ? this.props.oldvalues.country : ""}
           />
