@@ -1,6 +1,5 @@
 import * as React from "react";
 import UniversalCheckbox from "../../universalForms/universalCheckbox";
-import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
 import moment from "moment";
 import PrintTeamSquare from "../universal/squares/printTeamSquare";
@@ -24,12 +23,6 @@ interface State {
     saveFunction: Function;
   } | null;
 }
-
-const REMOVE_EMPLOYEE_FROM_TEAM = gql`
-  mutation removeFromTeam($teamid: ID!, $userid: ID!, $keepLicences: [ID!]) {
-    removeFromTeam(teamid: $teamid, userid: $userid, keepLicences: $keepLicences)
-  }
-`;
 
 class Team extends React.Component<Props, State> {
   state = {
@@ -75,59 +68,58 @@ class Team extends React.Component<Props, State> {
   }
 
   render() {
-    const { employee, team } = this.props;
+    const { team } = this.props;
 
     return (
-      <Mutation mutation={REMOVE_EMPLOYEE_FROM_TEAM} key={team.name}>
-        {removeFromTeam => (
-          <div
-            className="tableRow"
-            onClick={() => {
-              console.log("CLICK");
-              this.props.moveTo(`dmanager/${team.unitid.id}`);
-            }}>
-            <div className="tableMain">
-              <div className="tableColumnSmall">
-                <PrintTeamSquare team={team} />
-                <span className="name">{team.name}</span>
-              </div>
-              <div className="tableColumnSmall content">
-                {moment(team.createdate - 0).format("DD.MM.YYYY")}
-              </div>
-              <div className="tableColumnSmall content">{team.employeenumber}</div>
-              <div className="tableColumnSmall content">
-                {team.licences ? team.licences.length : ""}
-              </div>
-              <div className="tableColumnSmall content">
-                {/*team.internaldata ? team.internaldata.leader : ""*/}
-              </div>
-            </div>
-            <div className="tableEnd">
-              {this.props.isadmin && (
-                <div className="editOptions">
-                  <i className="fal fa-external-link-alt editbuttons" />
-                  <i
-                    className="fal fa-trash-alt editbuttons"
-                    onClick={e => {
-                      e.stopPropagation();
-                      this.setState({ delete: true });
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-
-            {this.state.delete && (
-              <RemoveTeamMember
-                team={this.props.team}
-                employee={this.props.employee}
-                close={() => this.setState({ delete: false })}
-              />
-            )}
+      <div
+        className="tableRow"
+        style={this.props.isadmin ? {} : { cursor: "unset" }}
+        onClick={() => {
+          if (this.props.isadmin) {
+            this.props.moveTo(`dmanager/${team.unitid.id}`);
+          }
+        }}>
+        <div className="tableMain">
+          <div className="tableColumnSmall">
+            <PrintTeamSquare team={team} />
+            <span className="name">{team.name}</span>
           </div>
+          <div className="tableColumnSmall content">
+            {moment(team.createdate - 0).format("DD.MM.YYYY")}
+          </div>
+          <div className="tableColumnSmall content">{team.employeenumber}</div>
+          <div className="tableColumnSmall content">
+            {team.licences ? team.licences.length : ""}
+          </div>
+          <div className="tableColumnSmall content">
+            {/*team.internaldata ? team.internaldata.leader : ""*/}
+          </div>
+        </div>
+        <div className="tableEnd">
+          {this.props.isadmin && (
+            <div className="editOptions">
+              <i className="fal fa-external-link-alt editbuttons" />
+              <i
+                className="fal fa-trash-alt editbuttons"
+                onClick={e => {
+                  e.stopPropagation();
+                  this.setState({ delete: true });
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        {this.state.delete && (
+          <RemoveTeamMember
+            team={this.props.team}
+            employee={this.props.employee}
+            close={() => this.setState({ delete: false })}
+          />
         )}
-      </Mutation>
+      </div>
     );
   }
 }
+
 export default Team;
