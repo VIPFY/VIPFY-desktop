@@ -7,6 +7,7 @@ interface Props {
   showPopup: Function;
   history: any;
   client: any;
+  id: number;
 }
 
 export const SecurityContext = React.createContext();
@@ -24,7 +25,7 @@ export default (props: Props) => {
           </div>
 
           <Collapsible title="Overview">
-            <UserSecurityTable search={search} />
+            <UserSecurityTable id={props.id} search={search} />
           </Collapsible>
         </div>
       }

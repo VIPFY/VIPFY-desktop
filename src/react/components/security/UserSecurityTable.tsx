@@ -7,6 +7,7 @@ import { FETCH_USER_SECURITY_OVERVIEW, FORCE_RESET } from "./graphqlOperations";
 interface Props {
   forcePasswordChange: Function;
   search: string;
+  id: number;
 }
 
 interface State {
