@@ -39,7 +39,7 @@ export default (props: Props) => {
     <Query query={FETCH_CARDS}>
       {({ data, loading, error }) => {
         if (loading) {
-          return <LoadingDiv text="Fetching data..." />;
+          return <LoadingDiv />;
         }
 
         if (error || !data) {
@@ -51,7 +51,7 @@ export default (props: Props) => {
         }
 
         const paymentData = data.fetchPaymentData;
-        let mainCard;
+        let mainCard = null;
         let normalizedCards;
 
         if (paymentData && paymentData.length > 0) {
