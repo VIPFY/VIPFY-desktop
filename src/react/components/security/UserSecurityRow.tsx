@@ -64,7 +64,7 @@ class UserSecurityRow extends React.Component<Props, State> {
 
     return (
       <tr onClick={() => this.setState(prevState => ({ showEdit: !prevState.showEdit }))}>
-        <td className="data-recording-sensitive">
+        <td colSpan={2} className="data-recording-sensitive">
           <PrintEmployeeSquare employee={user.unitid} />
           <div className="name">
             <UserName unitid={user.id} />
