@@ -170,7 +170,7 @@ export default props => (
   <Query query={GENERATE_SECRET} variables={{ type: "totp", userid: props.user.id }}>
     {({ data, loading, error }) => {
       if (loading) {
-        return <LoadingDiv text="Fetching data..." />;
+        return <LoadingDiv />;
       }
 
       if (error || !data) {
