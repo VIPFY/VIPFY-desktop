@@ -94,8 +94,9 @@ export const filterError = error => {
     return "";
   }
 
+  const regex = /Error:|GraphQL/gi;
   if (typeof error == "string") {
-    return error;
+    return error.replace(regex, "").trim();
   }
 
   if (error.networkError) {
@@ -103,7 +104,7 @@ export const filterError = error => {
   } else if (error.graphQLErrors) {
     return error.graphQLErrors["0"].message;
   } else {
-    return error.message;
+    return error.message.replace(regex, "").trim();
   }
 };
 

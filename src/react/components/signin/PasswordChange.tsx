@@ -9,6 +9,7 @@ import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
 import { PW_MIN_LENGTH } from "../../common/constants";
 import { updatePassword } from "../../common/passwords";
+import welcomeImage from "../../../images/forgot-password-new.png";
 
 interface PasswordChangeProps {
   logMeOut: Function;
@@ -103,7 +104,7 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
     return (
       <section className={`welcome ${className ? className : ""}`}>
         <div className="welcome-holder">
-          <img src={`${__dirname}/../../../images/forgot-password-new.png`} alt="Welcome" />
+          <img src={welcomeImage} alt="Welcome" />
           <div className="welcome-text">
             <h1>{firstLogin ? "Admin forces Password Reset" : "Please set your password"}</h1>
             <div>
