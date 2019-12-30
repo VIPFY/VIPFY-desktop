@@ -270,6 +270,7 @@ class UserSecurityRow extends React.Component<Props, State> {
               this.setState(prevState => ({ showEdit: !prevState.showEdit }));
             }}
           />
+
           {this.state.showEdit && (
             <SecurityPopup
               securityPage={true}

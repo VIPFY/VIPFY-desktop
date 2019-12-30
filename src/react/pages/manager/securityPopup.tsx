@@ -31,11 +31,11 @@ interface Props {
 }
 
 export default (props: Props) => {
-  const [show, setShow] = React.useState(null);
+  const [show, setShow] = React.useState("");
 
   const backFunction = () => {
     if (show == "show2FA") {
-      setShow(null);
+      setShow("");
     } else {
       props.closeFunction();
     }
@@ -110,8 +110,7 @@ export default (props: Props) => {
       styles={{ maxWidth: "656px" }}
       small={true}
       buttonStyles={{ marginTop: "56px" }}
-      close={props.closeFunction}
-      closeable={true}>
+      close={props.closeFunction}>
       <section className="security-settings">
         <h1>Security Settings</h1>
         <div className="sub-header">
@@ -180,7 +179,7 @@ export default (props: Props) => {
                   </li> */}
             </ul>
 
-            <UniversalButton type="low" label="back" onClick={() => setShow(null)} />
+            <UniversalButton type="low" label="back" onClick={() => setShow("")} />
           </PopupBase>
         )}
 
@@ -194,7 +193,7 @@ export default (props: Props) => {
         {show == "showGoogleAuth" && <GoogleAuth user={user} close={() => setShow(null)} />}
 
         {show == "showPasswordUpdate" && (
-          <PasswordUpdate unitid={user.id} closeFunction={() => setShow(null)} />
+          <PasswordUpdate unitid={user.id} closeFunction={() => setShow("")} />
         )}
 
         {show == "showSudo" && <Impersonate unitid={user.id} closeFunction={() => setShow(null)} />}
@@ -203,16 +202,16 @@ export default (props: Props) => {
           <TwoFactorForce
             status={user.needstwofa}
             unitid={user.id}
-            closeFunction={() => setShow(null)}
+            closeFunction={() => setShow("")}
           />
         )}
 
         {show == "show2FADeactivate" && (
-          <TwoFADeactivate unitid={user.id} closeFunction={() => setShow(null)} />
+          <TwoFADeactivate unitid={user.id} closeFunction={() => setShow("")} />
         )}
 
         {show == "showPasswordForce" && (
-          <PasswordForce unitids={[user.id]} closeFunction={() => setShow(null)} />
+          <PasswordForce unitids={[user.id]} closeFunction={() => setShow("")} />
         )}
 
         {show == "showPasswordForce4All" && (
@@ -230,7 +229,7 @@ export default (props: Props) => {
                 <PasswordForce
                   bulk={true}
                   unitids={data.fetchUserSecurityOverview.map(securityUser => securityUser.id)}
-                  closeFunction={() => setShow(null)}
+                  closeFunction={() => setShow("")}
                 />
               );
             }}
@@ -248,7 +247,7 @@ export default (props: Props) => {
               variables={{ userid: user.id }}>
               {({ data, loading, error }) => {
                 if (loading) {
-                  return <LoadingDiv text="Fetching data..." />;
+                  return <LoadingDiv />;
                 }
 
                 if (error || !data) {
@@ -268,7 +267,7 @@ export default (props: Props) => {
                 );
               }}
             </Query>
-            <UniversalButton type="low" label="back" onClick={() => setShow(null)} />
+            <UniversalButton type="low" label="back" onClick={() => setShow("")} />
           </PopupBase>
         )}
       </section>
