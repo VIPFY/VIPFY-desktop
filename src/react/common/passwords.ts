@@ -3,7 +3,6 @@ import zxcvbn from "zxcvbn";
 import { encryptPrivateKey, generateNewKeypair } from "./crypto";
 import gql from "graphql-tag";
 import { getMyEmail } from "./functions";
-import { string } from "prop-types";
 
 // replaces CHANGE_PASSWORD
 export async function updatePassword(client, oldPw: string, newPw: string) {
@@ -28,7 +27,7 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
         });
         return r;
       } catch (error) {
-        console.error(error);
+        throw new Error(error);
       }
     }
     // encryption
