@@ -23,7 +23,7 @@ interface Props {
   createdate: string;
 }
 
-class AppCompanyChartWrapper extends React.Component<Props, State> {
+export default class AppCompanyChart extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     const starttime = moment(parseInt(props.createdate));
@@ -40,11 +40,8 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
     await this.setState(value);
 
     await refetch({
-      query: FETCH_TOTAL_APP_USAGE,
-      variables: {
-        starttime: moment(this.state.starttime).toISOString(),
-        endtime: moment(this.state.endtime).toISOString()
-      }
+      starttime: moment(this.state.starttime).toISOString(),
+      endtime: moment(this.state.endtime).toISOString()
     });
     this.forceUpdate();
   };
@@ -73,8 +70,6 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
         label: u.app.name,
         value: (u.totalminutes / total) * 100
       }));
-
-    //const colors = d.map(u => u.app.color);
 
     switch (this.state.sortBy) {
       case "Least Used":
@@ -183,48 +178,44 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
             query={FETCH_TOTAL_APP_USAGE}
             fetchPolicy="cache-and-network"
             notifyOnNetworkStatusChange={true}>
-            {({ data, loading, error, refetch, networkStatus }) => {
-              return (
-                <React.Fragment>
-                  <div className="header">
-                    <DatePicker
-                      customFormat="DD MMM YY"
-                      value={this.state.starttime}
-                      maxDate={this.state.endtime}
-                      handleChange={value => this.refetch({ starttime: value }, refetch)}
-                    />
-                    <i className="fal fa-minus" />
-                    <DatePicker
-                      customFormat="DD MMM YY"
-                      minDate={this.state.starttime}
-                      value={this.state.endtime}
-                      handleChange={value => this.refetch({ endtime: value }, refetch)}
-                    />
+            {({ data, loading, error, refetch, networkStatus }) => (
+              <React.Fragment>
+                <div className="header">
+                  <DatePicker
+                    customFormat="DD MMM YY"
+                    value={this.state.starttime}
+                    maxDate={this.state.endtime}
+                    handleChange={value => this.refetch({ starttime: value }, refetch)}
+                  />
+                  <i className="fal fa-minus" />
+                  <DatePicker
+                    customFormat="DD MMM YY"
+                    minDate={this.state.starttime}
+                    value={this.state.endtime}
+                    handleChange={value => this.refetch({ endtime: value }, refetch)}
+                  />
 
-                    <DropDown
-                      handleChange={value => this.setState({ sortBy: value })}
-                      header="Sort By"
-                      options={["A-Z", "Most Used", "Least Used"]}
-                      option={this.state.sortBy}
-                    />
-                  </div>
-                  {networkStatus === 4 ? (
-                    <LoadingDiv text="Refetching..." />
-                  ) : loading ? (
-                    <LoadingDiv text="Fetching data..." />
-                  ) : error || !data ? (
-                    <ErrorComp error={error} />
-                  ) : (
-                    this.renderTable(data.fetchTotalAppUsage)
-                  )}
-                </React.Fragment>
-              );
-            }}
+                  <DropDown
+                    handleChange={value => this.setState({ sortBy: value })}
+                    header="Sort By"
+                    options={["A-Z", "Most Used", "Least Used"]}
+                    option={this.state.sortBy}
+                  />
+                </div>
+                {networkStatus === 4 ? (
+                  <LoadingDiv />
+                ) : loading ? (
+                  <LoadingDiv />
+                ) : error || !data ? (
+                  <ErrorComp error={error} />
+                ) : (
+                  this.renderTable(data.fetchTotalAppUsage)
+                )}
+              </React.Fragment>
+            )}
           </Query>
         </section>
       </Collapsible>
     );
   }
 }
-
-export default AppCompanyChartWrapper;
