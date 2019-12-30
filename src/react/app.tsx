@@ -259,7 +259,7 @@ class App extends React.Component<AppProps, AppState> {
         <Query query={me} fetchPolicy="network-only">
           {({ data, loading, error, refetch }) => {
             if (loading) {
-              return <LoadingDiv text="Preparing Vipfy for you" />;
+              return <LoadingDiv />;
             }
 
             if (error || !data || !data.me) {
