@@ -57,6 +57,7 @@ export default class DatePicker extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     window.addEventListener("keydown", this.listenKeyboard, true);
+    window.addEventListener("scroll", this.closeMe, true);
     document.addEventListener("click", this.handleClickOutside, true);
 
     if (this.props.value) {
@@ -87,8 +88,11 @@ export default class DatePicker extends React.PureComponent<Props, State> {
 
   componentWillUnmount() {
     window.removeEventListener("keydown", this.listenKeyboard, true);
+    window.removeEventListener("scroll", this.closeMe, true);
     document.removeEventListener("click", this.handleClickOutside, true);
   }
+
+  closeMe = () => this.setState({ show: false });
 
   handleClickOutside = e => {
     const domNode = ReactDOM.findDOMNode(this);
