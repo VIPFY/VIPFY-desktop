@@ -8,16 +8,12 @@ $border-length: 10px;
   align-content: center;
   padding: 24px 48px 0;*/
 
-  .favourite-apps {
-    display: grid;
-    //grid-template-columns: repeat(auto-fit, 128px);
-    //grid-column-gap: 56px;
-    //grid-row-gap: 20px;
-    padding: 26px 32px;
-
-    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
-    grid-column-gap: 24px;
-    grid-row-gap: 16px;
+  .appGrid {
+    // display: grid;
+    // padding: 26px 32px;
+    // grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    // grid-column-gap: 24px;
+    // grid-row-gap: 16px;
 
     .favourite {
       background-color: rgb(245, 245, 245);
