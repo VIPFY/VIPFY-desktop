@@ -45,6 +45,7 @@ class Dashboard extends React.Component<Props, State> {
   favouriteListRef = React.createRef<HTMLDivElement>();
 
   dragStartFunction = (item: number): void => {
+    console.log("LOG: Dashboard -> item", item);
     this.setState({ dragItem: item, showDeletion: true });
   };
   dragEndFunction = (): void => this.setState({ dragItem: null, showDeletion: false });
@@ -52,6 +53,7 @@ class Dashboard extends React.Component<Props, State> {
 
   handleDrop = async (dropPosition: number) => {
     const dragged = this.props.licences.find(licence => licence.id == this.state.dragItem);
+    console.log("LOG: Dashboard -> handleDrop -> this.state.dragItem", this.state.dragItem);
 
     if (dropPosition != dragged.dashboard) {
       try {
@@ -217,7 +219,6 @@ class Dashboard extends React.Component<Props, State> {
                     return (
                       <AppTile
                         key={key}
-                        dragItem={this.state.dragItem}
                         dragStartFunction={this.dragStartFunction}
                         dragEndFunction={this.dragEndFunction}
                         handleDrop={this.handleDrop}
@@ -229,7 +230,6 @@ class Dashboard extends React.Component<Props, State> {
                     return (
                       <AppTile
                         key={key}
-                        dragItem={this.state.dragItem}
                         dragStartFunction={this.dragStartFunction}
                         dragEndFunction={this.dragEndFunction}
                         empty={true}

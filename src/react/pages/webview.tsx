@@ -1,19 +1,16 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
 import { parse } from "url";
 import WebView from "react-electron-web-view";
-import { shell, remote } from "electron";
+import { remote } from "electron";
 const { session } = remote;
 import { withApollo, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 
 import LoadingDiv from "../components/LoadingDiv";
-import { STATUS_CODES } from "http";
 import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
-import { randomPassword } from "../common/passwordgen";
 import HeaderNotificationContext from "../components/notifications/headerNotificationContext";
 import { getPreloadScriptPath } from "../common/functions";
 import { decryptLicenceKey } from "../common/passwords";
@@ -507,9 +504,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           console.error(err);
         }
         this.setState({
-          error:
-            // tslint:disable-next-line:max-line-length
-            "Please check your email address. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+          error: `Please check your email address. Then try to reset your password in the service. ${
+            this.props.isadmin
+              ? "Verify the correctness or update the data of the service in the Account Manager afterwards"
+              : "Please ask your admin to check the service in the Account Manager afterwards"
+          }.`,
           errorshowed: true,
           loggedIn: true
         });
@@ -530,9 +529,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           console.error(err);
         }
         this.setState({
-          error:
-            // tslint:disable-next-line:max-line-length
-            "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+          error: `Please check your email address. Then try to reset your password in the service. ${
+            this.props.isadmin
+              ? "Verify the correctness or update the data of the service in the Account Manager afterwards"
+              : "Please ask your admin to check the service in the Account Manager afterwards"
+          }.`,
           errorshowed: true,
           loggedIn: true
         });
@@ -589,8 +590,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           }
 
           this.setState({
-            error:
-              "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+            error: `Please check your email address. Then try to reset your password in the service. ${
+              this.props.isadmin
+                ? "Verify the correctness or update the data of the service in the Account Manager afterwards"
+                : "Please ask your admin to check the service in the Account Manager afterwards"
+            }.`,
             errorshowed: true,
             loggedIn: true
           });
@@ -731,17 +735,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
                 />
               )}
-              {this.state.error ? (
+              {this.state.error && (
                 //TODO VIP-411 Replace old Popup with new PopupBase
                 <Popup
-                  popupHeader={"Uupps, sorry it seems that we can't log you in"}
+                  popupHeader={"Ooopps, sorry it seems that we can't log you in"}
                   popupBody={ErrorPopup}
                   bodyProps={{ sentence: this.state.error }}
                   onClose={this.closePopup}
                 />
-              ) : (
-                ""
               )}
+
               {this.state.popup && (
                 //TODO VIP-411 Replace old Popup with new PopupBase
                 <Popup

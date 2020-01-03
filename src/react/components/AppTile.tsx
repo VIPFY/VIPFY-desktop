@@ -16,7 +16,7 @@ export default (props: Props) => {
   const [entered, setEntered] = React.useState(false);
 
   // prettier-ignore
-  const { licence: { id ,boughtplanid: { planid, alias }, accountid }, empty } = props;
+  const { licence: { id, boughtplanid: { planid, alias }, accountid }, empty } = props;
   const name = alias ? alias : planid.appid.name;
 
   return (
