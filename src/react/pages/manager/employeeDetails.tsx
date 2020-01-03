@@ -11,14 +11,14 @@ import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlUser } from "../../common/images";
+import { getImageUrlUser, resizeImage } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
 import moment from "moment";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
-    updateEmployeePic(file: $file, unitid: $unitid) {
+    updateEmployeePic(file: $file, userid: $unitid) {
       id
       profilepicture
     }
@@ -52,7 +52,8 @@ class EmployeeDetails extends React.Component<Props, State> {
     await this.setState({ loading: true });
 
     try {
-      await this.props.updatePic({ variables: { file: picture, unitid: userid } });
+      const resizedImage = await resizeImage(picture);
+      await this.props.updatePic({ variables: { file: resizedImage, unitid: userid } });
 
       await this.setState({ loading: false });
     } catch (err) {

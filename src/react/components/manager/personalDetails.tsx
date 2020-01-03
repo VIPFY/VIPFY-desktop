@@ -8,7 +8,6 @@ import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import { concatName } from "../../common/functions";
-import AddVacation from "./universal/adding/addvacation";
 import EditVacations from "./universal/editVacations";
 
 const UPDATE_DATA = gql`
@@ -560,7 +559,7 @@ class PersonalDetails extends React.Component<Props, State> {
           return 0;
         });
     }
-    console.log("QUERYDATA", querydata);
+
     return (
       <React.Fragment>
         <div className="tableColumnSmall content twoline">

@@ -11,6 +11,7 @@ import OrbitSection from "../../components/manager/orbitSection";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import CreateOrbit from "../../components/manager/universal/adding/orbit";
 import { now } from "moment";
+import { resizeImage } from "../../common/images";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -47,7 +48,8 @@ class ServiceDetails extends React.Component<Props, State> {
     await this.setState({ loading: true });
 
     try {
-      await this.props.updatePic({ variables: { file: picture, teamid } });
+      const resizedImage = await resizeImage(picture);
+      await this.props.updatePic({ variables: { file: resizedImage, teamid } });
 
       await this.setState({ loading: false });
     } catch (err) {
