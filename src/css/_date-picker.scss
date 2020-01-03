@@ -134,6 +134,7 @@ $date-padding-sides: 16px;
 
 .arrow-up {
   position: absolute;
+  pointer-events: none;
   top: -80px;
   right: 28%;
   width: 100px;
