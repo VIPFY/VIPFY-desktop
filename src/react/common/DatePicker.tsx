@@ -233,7 +233,9 @@ export default class DatePicker extends React.PureComponent<Props, State> {
 
     return (
       <div className="date-picker-wrapper" ref={this.wrapper}>
-        <div className="date-picker" onClick={() => this.setState({ show: true })}>
+        <div
+          className="date-picker"
+          onClick={() => this.setState(prevState => ({ ...prevState, show: !prevState.show }))}>
           <i className="fal fa-calendar" />
           <span className="date-picker-text">
             {touched && this.props.value ? moment(this.props.value).format(format) : "Date"}
