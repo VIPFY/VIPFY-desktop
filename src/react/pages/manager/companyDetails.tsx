@@ -16,7 +16,7 @@ import { now } from "moment";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
-    updateEmployeePic(file: $file, unitid: $unitid) {
+    updateEmployeePic(file: $file, userid: $unitid) {
       id
       profilepicture
     }
