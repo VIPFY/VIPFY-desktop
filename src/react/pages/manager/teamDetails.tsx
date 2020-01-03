@@ -10,7 +10,7 @@ import TeamGeneralData from "../../components/manager/teamGeneralData";
 import EmployeeSection from "../../components/manager/teamDetails/employeeSection";
 import ServiceSection from "../../components/manager/serviceSection";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlTeam } from "../../common/images";
+import { getImageUrlTeam, resizeImage } from "../../common/images";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -47,7 +47,9 @@ class TeamDetails extends React.Component<Props, State> {
     await this.setState({ loading: true });
 
     try {
-      await this.props.updatePic({ variables: { file: picture, teamid } });
+      const resizedImage = await resizeImage(picture);
+
+      await this.props.updatePic({ variables: { file: resizedImage, teamid } });
 
       await this.setState({ loading: false });
     } catch (err) {

@@ -6,7 +6,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlUser } from "../../common/images";
+import { getImageUrlUser, resizeImage } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
@@ -80,7 +80,9 @@ class CompanyDetails extends React.Component<Props, State> {
     await this.setState({ loading: true });
 
     try {
-      await this.props.updatePic({ variables: { file: picture, unitid: userid } });
+      const resizedImage = await resizeImage(picture);
+
+      await this.props.updatePic({ variables: { file: resizedImage, unitid: userid } });
 
       await this.setState({ loading: false });
     } catch (err) {
