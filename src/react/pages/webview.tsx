@@ -663,7 +663,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                     } else if (!loggedin && !emailEntered && !passwordEntered) {
                       this.setState({
                         progress: 1,
-                        showLoadingScreen: true,
                         error:
                           "Sorry, Login was not possible. Please go back to your Dashboard and retry or contact our support if the problem persists.",
                         errorshowed: true
