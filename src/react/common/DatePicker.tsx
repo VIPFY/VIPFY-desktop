@@ -15,6 +15,7 @@ interface Props {
   scrollItem?: any;
   style?: object;
   useOnlyBody?: boolean;
+  useHolidays?: boolean;
 }
 
 interface State {
@@ -165,7 +166,7 @@ export default class DatePicker extends React.PureComponent<Props, State> {
 
   render() {
     const { touched, month, year } = this.state;
-    const { minDate, maxDate } = this.props;
+    const { minDate, maxDate, useHolidays } = this.props;
 
     const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const dates = [];
@@ -192,6 +193,7 @@ export default class DatePicker extends React.PureComponent<Props, State> {
       }
     }
     }
+
     const daysInMonth = moment(`${year}-${month}-1`, "YYYY-MM-D").daysInMonth();
     const days = [];
 
@@ -311,20 +313,24 @@ export default class DatePicker extends React.PureComponent<Props, State> {
                   {time.day}
                 </span>
               ))}
-              {days.map((time, key) => (
-                <span
-                  onClick={() => this.setDate(time)}
-                  className={`day ${this.state.day === time.day ? "active" : ""} ${
-                    (minDate &&
-                      moment(`${time.year}-${time.month}-${time.day}`).isBefore(minDate)) ||
-                    (maxDate && moment(`${time.year}-${time.month}-${time.day}`).isAfter(maxDate))
-                      ? "disabled"
-                      : ""
-                  }`}
-                  key={key}>
-                  {time.day}
-                </span>
-              ))}
+
+              {days.map((time, key) => {
+                const today = moment(`${time.year}-${time.month}-${time.day}`);
+
+                return (
+                  <span
+                    onClick={() => this.setDate(time)}
+                    className={`day ${this.state.day === time.day ? "active" : ""} ${
+                      (minDate && today.isBefore(minDate)) || (maxDate && today.isAfter(maxDate))
+                        ? "disabled"
+                        : ""
+                    } ${useHolidays && today.isHoliday([]).holidayName ? "holiday" : ""}`}
+                    title={useHolidays && today.isHoliday([]).holidayName}
+                    key={key}>
+                    {time.day}
+                  </span>
+                );
+              })}
 
               {comingDays.map((time, key) => (
                 <span

@@ -34,7 +34,7 @@ export default (props: Props) => (
           <Query query={FETCH_VACATION_REQUESTS} variables={{ userid: props.id }}>
             {({ data, loading, error }) => {
               if (loading) {
-                return <LoadingDiv text="Fetching data..." />;
+                return <LoadingDiv />;
               }
 
               if (error || !data) {

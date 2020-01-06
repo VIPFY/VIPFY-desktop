@@ -41,11 +41,7 @@ export default (props: Props) => {
     for (let i = 0; i < days; i++) {
       clonedDate.add(i < 2 ? i : 1, "days");
 
-      if (
-        clonedDate.isoWeekday() == 6 ||
-        clonedDate.isoWeekday() == 7 ||
-        clonedDate.isHoliday(["SL"]).holidayName
-      ) {
+      if (clonedDate.isoWeekday() == 6 || clonedDate.isoWeekday() == 7) {
         offDays++;
       }
     }

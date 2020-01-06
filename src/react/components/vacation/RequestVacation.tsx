@@ -23,9 +23,8 @@ interface Field {
 }
 
 export default (props: Props) => {
-  const [requests, setRequests] = React.useState([
-    { startDate: moment(), endDate: moment() }
-  ] as Field[]);
+  const defaultValue = [{ startDate: moment(), endDate: moment() }] as Field[];
+  const [requests, setRequests] = React.useState(defaultValue);
   const [showPopup, setShow] = React.useState(false);
   const [showHalfDay, setShowHalfDay] = React.useState(false);
   const currentYear = moment().get("year");
@@ -80,7 +79,7 @@ export default (props: Props) => {
       <Query query={FETCH_VACATION_REQUESTS} variables={{ userid: props.id }}>
         {({ data, loading, error }) => {
           if (loading) {
-            return <LoadingDiv text="Fetching data..." />;
+            return <LoadingDiv />;
           }
 
           if (error || !data) {
@@ -133,14 +132,15 @@ export default (props: Props) => {
                       style={{ position: "absolute", top: "50px", left: "-20px" }}
                       value={startDate}
                       handleChange={v => setDate(v, key, "startDate")}
+                      useHolidays={true}
                     />
                     <span>Till</span>
                     <DatePicker
-                      minDate={startDate}
                       maxDate={moment(`${moment().year()}-12-31`)}
                       style={{ position: "absolute", top: "50px", left: "-20px" }}
                       value={endDate}
                       handleChange={v => setDate(v, key, "endDate")}
+                      useHolidays={true}
                     />
 
                     <IconButton
@@ -181,7 +181,11 @@ export default (props: Props) => {
               </form>
 
               <div className="vacation-form-buttons">
-                <UniversalButton type="low" label="cancel" />
+                <UniversalButton
+                  onClick={() => setRequests(defaultValue)}
+                  type="low"
+                  label="cancel"
+                />
                 <UniversalButton form="vacation-request-form" type="high" label="submit" />
               </div>
             </section>
