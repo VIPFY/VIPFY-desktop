@@ -273,7 +273,9 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                     position: "relative"
                   }}>
                   <span style={{ lineHeight: "12px", width: "84px" }}></span>
-                  <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
+                  {this.showTeamOrbits().length > 0 && (
+                    <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
+                  )}
                 </div>
                 {this.showTeamOrbits()}
               </>

@@ -89,7 +89,7 @@ class Team extends React.Component<Props, State> {
           </div>
           <div className="tableColumnSmall content">{team.employeenumber}</div>
           <div className="tableColumnSmall content">
-            {team.licences ? team.licences.length : ""}
+            {/*team.licences ? team.licences.length : ""*/}
           </div>
           <div className="tableColumnSmall content">
             {/*team.internaldata ? team.internaldata.leader : ""*/}
