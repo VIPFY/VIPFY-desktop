@@ -42,7 +42,9 @@ export async function hashPasswordWithParams(
   const salt = Buffer.from(params.salt, "hex");
   if (salt.length !== sodium.CRYPTO_PWHASH_SALTBYTES) {
     console.log("salt", salt, salt.length);
-    throw new Error("Invalid salt length");
+    throw new Error(
+      `Invalid salt length, expected ${sodium.CRYPTO_PWHASH_SALTBYTES}  but got ${salt.length}`
+    );
   }
   const ops = params.ops;
   if (typeof ops !== "number" || ops < 2 || ops > 6) {
