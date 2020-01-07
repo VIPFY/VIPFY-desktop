@@ -20,6 +20,7 @@ interface Props {
   required?: Boolean;
   deleteFunction?: Function;
   style?: Object;
+  update?: Boolean;
 }
 
 interface State {
@@ -73,6 +74,16 @@ class UniversalTextInput extends React.Component<Props, State> {
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.update) {
+      if (prevProps.startvalue != this.props.startvalue) {
+        this.setState({
+          value: this.props.startvalue || ""
+        });
+      }
+    }
+  }
+
   toggleInput = bool => {
     this.setState({ inputFocus: bool });
     if (!bool && this.props.endvalue) {
@@ -96,6 +107,10 @@ class UniversalTextInput extends React.Component<Props, State> {
 
     if (this.props.modifyValue) {
       value = this.props.modifyValue(value);
+    }
+
+    if (this.props.type == "date" && value == "") {
+      value = " ";
     }
 
     this.setState({ value, notypeing: false });

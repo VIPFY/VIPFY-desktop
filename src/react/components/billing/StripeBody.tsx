@@ -4,10 +4,11 @@ import { CardElement, injectStripe } from "react-stripe-elements";
 import { Mutation } from "react-apollo";
 
 import LoadingDiv from "../../components/LoadingDiv";
-import { fetchCards } from "../../queries/billing";
+import { FETCH_CARDS } from "../../queries/billing";
 import { filterError, ErrorComp } from "../../common/functions";
 import { addressFields } from "../../common/constants";
 import { FETCH_ADDRESSES } from "../../queries/contact";
+import UniversalButton from "../universalButtons/universalButton";
 
 const ADD_PAYMENT = gql`
   mutation onAddPaymentData($data: JSON, $address: AddressInput, $email: String) {
@@ -28,7 +29,6 @@ interface State {
   submitting: boolean;
   success: string;
   showFields: boolean;
-  refetchQueries: object[];
 }
 
 interface Props {
@@ -44,8 +44,8 @@ interface Props {
 
 class StripeBody extends React.Component<Props, State> {
   state = {
-    firstName: this.props.firstname ? this.props.firstname : "",
-    lastName: this.props.lastname ? this.props.lastname : "",
+    firstName: this.props.firstname || "",
+    lastName: this.props.lastname || "",
     address: 0,
     email: 0,
     newAddress: {},
@@ -54,8 +54,7 @@ class StripeBody extends React.Component<Props, State> {
     complete: false,
     submitting: false,
     showFields: false,
-    success: "",
-    refetchQueries: [{ query: fetchCards }]
+    success: ""
   };
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
@@ -84,6 +83,7 @@ class StripeBody extends React.Component<Props, State> {
       e.preventDefault();
       await this.setState({ error: "" });
       const { firstName, lastName, address, newAddress, email } = this.state;
+      const refetchQueries = [{ query: FETCH_CARDS }];
 
       if (firstName.length < 2 || lastName.length < 2) {
         return this.setState({ error: "Please enter a First and Last Name" });
@@ -104,16 +104,10 @@ class StripeBody extends React.Component<Props, State> {
         address_line1 = newAddress.street;
         variables.address = newAddress;
 
-        await this.setState(prevState => {
-          const refetchQueries = prevState.refetchQueries;
-          refetchQueries.push({
-            query: FETCH_ADDRESSES,
-            variables: { company: true, tag: "billing" }
-          });
-
-          return { refetchQueries };
+        refetchQueries.push({
+          query: FETCH_ADDRESSES,
+          variables: { company: true, tag: "billing" }
         });
-        console.log(this.state);
       } else {
         address_city = this.props.addresses[address].address.city;
         address_country = this.props.addresses[address].country;
@@ -137,7 +131,7 @@ class StripeBody extends React.Component<Props, State> {
 
       variables.data = token;
       this.setState({ submitting: true });
-      await addCard({ variables });
+      await addCard({ variables, refetchQueries });
     } catch (error) {
       this.setState({ submitting: false, error: "Oops, something went wrong, please retry." });
     }
@@ -193,18 +187,19 @@ class StripeBody extends React.Component<Props, State> {
       }
     ];
 
+    console.log(this.props.emails);
+
     return (
       <Mutation
         mutation={ADD_PAYMENT}
         onError={error => this.setState({ error: filterError(error), submitting: false })}
-        onCompleted={this.handleSuccess}
-        refetchQueries={this.state.refetchQueries}>
+        onCompleted={this.handleSuccess}>
         {(addCard, { loading }) => (
           <form
-            className="generic-form"
+            id="stripe-form"
             style={{ padding: "0 1rem" }}
             onSubmit={e => this.handleSubmit(e, addCard)}>
-            <h3>Please enter your card data:</h3>
+            <h1>Please enter your card data</h1>
 
             {inputFields.map(({ name, placeholder, value }) => (
               <div
@@ -229,7 +224,7 @@ class StripeBody extends React.Component<Props, State> {
               </div>
             ))}
 
-            {!this.props.hasCard ? (
+            {!this.props.hasCard && (
               <div className="billing-addresses">
                 {this.props.emails.length > 0
                   ? this.props.emails.map(({ email }, key) => (
@@ -259,8 +254,6 @@ class StripeBody extends React.Component<Props, State> {
                     ))
                   : "Please set an Billing Email first"}
               </div>
-            ) : (
-              ""
             )}
 
             <div className="billing-addresses">
@@ -274,9 +267,7 @@ class StripeBody extends React.Component<Props, State> {
 
                       <label
                         className={`billing-input ${this.state.showFields ? "disabled" : ""}`}
-                        htmlFor={`address-radio-${key}`}>{`${address.address.street} ${
-                        address.address.zip
-                      } ${address.address.city} ${address.country}`}</label>
+                        htmlFor={`address-radio-${key}`}>{`${address.address.street} ${address.address.zip} ${address.address.city} ${address.country}`}</label>
                       <input
                         defaultChecked={key == 0 ? true : false}
                         name="address"
@@ -326,7 +317,7 @@ class StripeBody extends React.Component<Props, State> {
             </div>
 
             {submitting ? (
-              <LoadingDiv text="Submitting Credit Card Information..." />
+              <LoadingDiv />
             ) : error ? (
               <ErrorComp error={error} />
             ) : success ? (
@@ -336,21 +327,19 @@ class StripeBody extends React.Component<Props, State> {
             )}
 
             <div className="generic-button-holder">
-              <button
-                disabled={loading || success}
-                className="generic-cancel-button"
-                onClick={this.props.onClose}>
-                <i className="fas fa-long-arrow-alt-left" />
-                &nbsp;Cancel
-              </button>
+              <UniversalButton
+                className="cancel-button"
+                onClick={this.props.onClose}
+                type="low"
+                label="Cancel"
+              />
 
-              <button
+              <UniversalButton
+                form="stripe-form"
                 disabled={loading || !complete || success}
-                className="generic-submit-button"
-                type="submit">
-                <i className="fas fa-check-circle" />
-                &nbsp;Submit
-              </button>
+                type="high"
+                label="Add Credit Card"
+              />
             </div>
           </form>
         )}

@@ -26,7 +26,7 @@ interface State {
   picture: File | null;
 }
 
-class EmployeeGerneralDataAdd extends React.Component<Props, State> {
+class EmployeeGeneralDataAdd extends React.Component<Props, State> {
   state = {
     name: (this.props.addpersonal && this.props.addpersonal.name) || "",
     birthday: (this.props.addpersonal && this.props.addpersonal.birthday) || "",
@@ -56,7 +56,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
         <div style={{ display: "flex", alignItems: "flex-end", marginBottom: "40px" }}>
           <UploadImage
             onDrop={file => this.setBothStates({ picture: file })}
-            picture={null}
+            picture={this.state.picture}
             name={this.state.name}
             className="profilepictureTeam"
             isadmin={this.props.isadmin}
@@ -124,6 +124,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
             disabled={this.state.wmail1 == ""}
             livevalue={v => this.setBothStates({ wmail2: v })}
             startvalue={this.state.wmail2}
+            width="100%"
           />
           <UniversalTextInput
             label="Birthday"
@@ -131,6 +132,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
             livevalue={v => this.setBothStates({ birthday: v })}
             startvalue={this.state.birthday || " "}
             type="date"
+            width="100%"
           />
           <UniversalTextInput
             label="Hiredate"
@@ -138,6 +140,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
             livevalue={v => this.setBothStates({ hiredate: v })}
             startvalue={this.state.hiredate || " "}
             type="date"
+            width="100%"
           />
           {/*<UniversalTextInput
           label="Street/Number"
@@ -162,6 +165,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
             id="pphone1"
             livevalue={v => this.setBothStates({ pphone1: v })}
             startvalue={this.state.pphone1}
+            width="100%"
           />
           <UniversalTextInput
             label="Private Phone 2"
@@ -169,12 +173,14 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
             disabled={this.state.pphone1 == ""}
             livevalue={v => this.setBothStates({ pphone2: v })}
             startvalue={this.state.pphone2}
+            width="100%"
           />
           <UniversalTextInput
             label="Position"
             id="position"
             livevalue={v => this.setBothStates({ position: v })}
             startvalue={this.state.position}
+            width="100%"
           />
           <div />
           <UniversalTextInput
@@ -182,6 +188,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
             id="wphone1"
             livevalue={v => this.setBothStates({ wphone1: v })}
             startvalue={this.state.wphone1}
+            width="100%"
           />
           <UniversalTextInput
             label="Workphone 2"
@@ -189,10 +196,11 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
             disabled={this.state.wphone1 == ""}
             livevalue={v => this.setBothStates({ wphone2: v })}
             startvalue={this.state.wphone2}
+            width="100%"
           />
         </div>
       </div>
     );
   }
 }
-export default EmployeeGerneralDataAdd;
+export default EmployeeGeneralDataAdd;

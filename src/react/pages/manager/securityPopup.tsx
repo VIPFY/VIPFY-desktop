@@ -1,6 +1,5 @@
 import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import ResetPassword from "../../popups/universalPopups/resetPassword";
 //import Yubikey from "../../popups/universalPopups/Yubikey";
 import GoogleAuth from "../../popups/universalPopups/GoogleAuth";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -16,6 +15,7 @@ import LoadingDiv from "../../components/LoadingDiv";
 import { ErrorComp } from "../../common/functions";
 import { FETCH_SESSIONS } from "../../components/security/graphqlOperations";
 import Device from "../../popups/universalPopups/Device";
+import TwoFADeactivate from "../../popups/universalPopups/TwoFADeactivate";
 
 interface Link {
   header: string;
@@ -30,146 +30,139 @@ interface Props {
   securityPage?: boolean;
 }
 
-interface State {
-  showPasswordReset: boolean;
-  show2FA: boolean;
-  showYubikey: boolean;
-  showGoogleAuth: boolean;
-  showPasswordForce: boolean;
-  showPasswordForce4All: boolean;
-  showPasswordUpdate: boolean;
-  showSudo: boolean;
-  showForce2FA: boolean;
-  showSessions: boolean;
-}
+export default (props: Props) => {
+  const [show, setShow] = React.useState("");
 
-class SecurityPopup extends React.Component<Props, State> {
-  state = {
-    showPasswordReset: false,
-    show2FA: false,
-    showYubikey: false,
-    showGoogleAuth: false,
-    showPasswordForce: false,
-    showPasswordForce4All: false,
-    showPasswordUpdate: false,
-    showSudo: false,
-    showForce2FA: false,
-    showSessions: false
-  };
-
-  backFunction = () => {
-    if (this.state.show2FA) {
-      this.setState({ show2FA: false });
+  const backFunction = () => {
+    if (show == "show2FA") {
+      setShow("");
     } else {
-      this.props.closeFunction();
+      props.closeFunction();
     }
   };
 
-  render() {
-    const links: Link[] = [
-      {
-        header: "Update Password",
-        text: "You can update the current password here",
-        state: "showPasswordUpdate",
-        button: "update"
-      },
-      {
-        header: "Two-Factor Authentication",
-        text: "Google Authenticator is recommended",
-        state: "show2FA"
-      },
-      {
-        header: "Current Devices",
-        text: "See with which devices you are currently logged into your account",
-        state: "showSessions"
-      }
-    ];
+  const { securityPage, user } = props;
 
-    if (this.props.securityPage) {
+  const links: Link[] = [
+    {
+      header: "Update Password",
+      text: "You can update the current password here",
+      state: "showPasswordUpdate",
+      button: "update"
+    },
+    {
+      header: "Two-Factor Authentication",
+      text: `Google Authenticator is recommended${securityPage ? ". Set it up for the user." : ""}`,
+      state: "show2FA"
+    },
+    {
+      header: "Current Devices",
+      text: `See with which devices ${
+        securityPage ? "the user is" : "you are"
+      } currently logged into the account`,
+      state: "showSessions"
+    }
+  ];
+
+  if (securityPage) {
+    if (user.twofactormethods.length <= 0) {
       links.push({
         header: "Force Two-Factor Authentication",
         text: "You can force an employee to use a two-factor authentication to increase security",
         state: "showForce2FA",
-        button: "force"
+        button: user.needstwofa ? "unforce" : "force"
       });
-
-      links.push({
-        header: "Force Password Change for All",
-        text: "You can force every employee in your company to change their passwords",
-        state: "showPasswordForce4All",
-        button: "force all"
-      });
-
-      links.push({
-        header: "Force Password Change",
-        text: "You can force your employee to change his password if the current one is too weak",
-        state: "showPasswordForce",
-        button: "force"
-      });
-
-      links.push({
-        header: "Impersonate Account",
-        text: "As Admin you can impersonate other accounts",
-        state: "showSudo",
-        button: "set it up"
-      });
-
-      links.reverse();
+    } else {
+      links[1] = {
+        header: "Shut off Two-Factor Authentication",
+        text: "Deactivate the users Two-Factor Authentication",
+        state: "show2FADeactivate",
+        button: "Deactivate"
+      };
     }
 
-    return (
-      <PopupBase
-        styles={{ maxWidth: "656px" }}
-        small={true}
-        buttonStyles={{ marginTop: "56px" }}
-        close={this.props.closeFunction}
-        closeable={true}>
-        <section className="security-settings">
-          <h1>Security Settings</h1>
-          <div className="sub-header">
-            Change the security settings of <UserName unitid={this.props.user.id} />
-          </div>
+    links.push({
+      header: "Force Password Change for All",
+      text: "You can force every employee in your company to change their passwords",
+      state: "showPasswordForce4All",
+      button: "force all"
+    });
 
-          <ul className="security-settings-list">
-            {links.map(link => (
-              <li key={link.state} onClick={() => this.setState({ [link.state]: true })}>
+    links.push({
+      header: "Force Password Change",
+      text: "You can force your employee to change his password if the current one is too weak",
+      state: "showPasswordForce",
+      button: "force"
+    });
+
+    links.push({
+      header: "Impersonate Account",
+      text: "As Admin you can impersonate other accounts",
+      state: "showSudo",
+      button: "Impersonate"
+    });
+
+    links.reverse();
+  }
+
+  return (
+    <PopupBase
+      styles={{ maxWidth: "656px" }}
+      small={true}
+      buttonStyles={{ marginTop: "56px" }}
+      close={props.closeFunction}>
+      <section className="security-settings">
+        <h1>Security Settings</h1>
+        <div className="sub-header">
+          Change the security settings of <UserName unitid={user.id} />
+        </div>
+
+        <ul className="security-settings-list">
+          {links.map(link => (
+            <li key={link.state} onClick={() => setShow(link.state)}>
+              <i className="fal fa-key start" />
+              <h3>{link.header}</h3>
+              <p className="settings-info">{link.text}</p>
+              <p className="settings-message" />
+              {link.button ? (
+                <UniversalButton
+                  // Workaround so that the button does not use the custom width
+                  customStyles={{}}
+                  className="button-end"
+                  type="high"
+                  label={link.button}
+                />
+              ) : (
+                <i className="fal fa-pen end" />
+              )}
+            </li>
+          ))}
+        </ul>
+
+        {show == "show2FA" && (
+          <PopupBase
+            styles={{ maxWidth: "656px" }}
+            small={true}
+            buttonStyles={{ marginTop: "56px", justifyContent: "flex-end" }}
+            close={props.closeFunction}>
+            <h1>Two-Factor Authentication</h1>
+            <ul className="security-settings-list">
+              <li style={{ cursor: "unset" }}>
                 <i className="fal fa-key start" />
-                <h3>{link.header}</h3>
-                <p className="settings-info">{link.text}</p>
+                <h3 style={{ justifySelf: "start" }}>Google Authenticator</h3>
+                <p style={{ textAlign: "start" }} className="settings-info">
+                  A mobile App that generates a dynamic 6 digit one time password
+                </p>
                 <p className="settings-message" />
-                {link.button ? (
-                  <UniversalButton className="button-end" type="high" label={link.button} />
-                ) : (
-                  <i className="fal fa-pen end" />
-                )}
+                <UniversalButton
+                  type="high"
+                  label="set it up"
+                  className="button-end"
+                  onClick={() => setShow("showGoogleAuth")}
+                />
               </li>
-            ))}
-          </ul>
 
-          {this.state.show2FA && (
-            <PopupBase
-              styles={{ maxWidth: "656px" }}
-              small={true}
-              buttonStyles={{ marginTop: "56px", justifyContent: "flex-end" }}
-              close={this.props.closeFunction}>
-              <h1>Two-Factor Authentication</h1>
-              <ul className="security-settings-list">
-                <li style={{ cursor: "unset" }}>
-                  <i className="fal fa-key start" />
-                  <h3 style={{ justifySelf: "start" }}>Google Authenticator</h3>
-                  <p style={{ textAlign: "start" }} className="settings-info">
-                    A mobile App that generates a dynamic 6 digit one time password
-                  </p>
-                  <p className="settings-message" />
-                  <UniversalButton
-                    type="high"
-                    label="set it up"
-                    className="button-end"
-                    onClick={() => this.setState({ showGoogleAuth: true })}
-                  />
-                </li>
-
-                {/* <li style={{ cursor: "unset" }}>
+              {/* <li style={{ cursor: "unset" }}>
                     <i className="fal fa-lock-alt start" />
                     <h3>Yubikey</h3>
                     <p className="settings-info">
@@ -184,133 +177,101 @@ class SecurityPopup extends React.Component<Props, State> {
                       onClick={() => this.setState({ showYubikey: true })}
                     />
                   </li> */}
-              </ul>
+            </ul>
 
-              <UniversalButton
-                type="low"
-                label="back"
-                onClick={() => this.setState({ show2FA: false })}
-              />
-            </PopupBase>
-          )}
+            <UniversalButton type="low" label="back" onClick={() => setShow("")} />
+          </PopupBase>
+        )}
 
-          {this.state.showPasswordReset && (
-            <ResetPassword
-              user={this.props.user}
-              close={() => this.setState({ showPasswordReset: false })}
-            />
-          )}
-
-          {/* {this.state.showYubikey && (
+        {/* {this.state.showYubikey && (
             <Yubikey
               user={this.props.user}
               close={() => this.setState({ showGoogleAuth: false })}
             />
           )} */}
 
-          {this.state.showGoogleAuth && (
-            <GoogleAuth
-              user={this.props.user}
-              close={() => this.setState({ showGoogleAuth: false })}
-            />
-          )}
+        {show == "showGoogleAuth" && <GoogleAuth user={user} close={() => setShow(null)} />}
 
-          {this.state.showPasswordUpdate && (
-            <PasswordUpdate
-              unitid={this.props.user.id}
-              closeFunction={() => this.setState({ showPasswordUpdate: false })}
-            />
-          )}
+        {show == "showPasswordUpdate" && (
+          <PasswordUpdate unitid={user.id} closeFunction={() => setShow("")} />
+        )}
 
-          {this.state.showSudo && (
-            <Impersonate
-              unitid={this.props.user.id}
-              closeFunction={() => this.setState({ showSudo: false })}
-            />
-          )}
+        {show == "showSudo" && <Impersonate unitid={user.id} closeFunction={() => setShow(null)} />}
 
-          {this.state.showForce2FA && (
-            <TwoFactorForce
-              unitid={this.props.user.id}
-              closeFunction={() => this.setState({ showForce2FA: false })}
-            />
-          )}
+        {show == "showForce2FA" && (
+          <TwoFactorForce
+            status={user.needstwofa}
+            unitid={user.id}
+            closeFunction={() => setShow("")}
+          />
+        )}
 
-          {this.state.showPasswordForce && (
-            <PasswordForce
-              unitids={[this.props.user.id]}
-              closeFunction={() => this.setState({ showPasswordForce: false })}
-            />
-          )}
+        {show == "show2FADeactivate" && (
+          <TwoFADeactivate unitid={user.id} closeFunction={() => setShow("")} />
+        )}
 
-          {this.state.showPasswordForce4All && (
-            <Query pollInterval={60 * 10 * 1000 + 7000} query={FETCH_USER_SECURITY_OVERVIEW}>
+        {show == "showPasswordForce" && (
+          <PasswordForce unitids={[user.id]} closeFunction={() => setShow("")} />
+        )}
+
+        {show == "showPasswordForce4All" && (
+          <Query pollInterval={60 * 10 * 1000 + 7000} query={FETCH_USER_SECURITY_OVERVIEW}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <div>Loading</div>;
+              }
+
+              if (error) {
+                return <div>Error fetching data</div>;
+              }
+
+              return (
+                <PasswordForce
+                  bulk={true}
+                  unitids={data.fetchUserSecurityOverview.map(securityUser => securityUser.id)}
+                  closeFunction={() => setShow("")}
+                />
+              );
+            }}
+          </Query>
+        )}
+
+        {show == "showSessions" && (
+          <PopupBase styles={{ maxWidth: "656px" }} small={true} close={() => setShow(null)}>
+            <h1>Current Devices</h1>
+            <div className="sub-header">See on which devices you are logged in</div>
+
+            <Query
+              query={FETCH_SESSIONS}
+              fetchPolicy="network-only"
+              variables={{ userid: user.id }}>
               {({ data, loading, error }) => {
                 if (loading) {
-                  return <div>Loading</div>;
+                  return <LoadingDiv />;
                 }
 
-                if (error) {
-                  return <div>Error fetching data</div>;
+                if (error || !data) {
+                  return <ErrorComp error={error} />;
+                }
+
+                if (data.fetchUsersSessions.length < 1) {
+                  return <div>The User has no active Sessions</div>;
                 }
 
                 return (
-                  <PasswordForce
-                    bulk={true}
-                    unitids={data.fetchUserSecurityOverview.map(user => user.id)}
-                    closeFunction={() => this.setState({ showPasswordForce4All: false })}
-                  />
+                  <div className="devices">
+                    {data.fetchUsersSessions.map(session => (
+                      <Device key={session.id} session={session} userid={user.id} />
+                    ))}
+                  </div>
                 );
               }}
             </Query>
-          )}
-
-          {this.state.showSessions && (
-            <PopupBase
-              styles={{ maxWidth: "656px" }}
-              small={true}
-              close={() => this.setState({ showSessions: false })}>
-              <h1>Current Devices</h1>
-              <div className="sub-header">See on which devices you are logged in</div>
-
-              <Query
-                query={FETCH_SESSIONS}
-                fetchPolicy="network-only"
-                variables={{ userid: this.props.user.id }}>
-                {({ data, loading, error }) => {
-                  if (loading) {
-                    return <LoadingDiv text="Fetching data..." />;
-                  }
-
-                  if (error || !data) {
-                    return <ErrorComp error={error} />;
-                  }
-
-                  if (data.fetchUsersSessions.length < 1) {
-                    return <div>The User has no active Sessions</div>;
-                  }
-
-                  return (
-                    <div className="devices">
-                      {data.fetchUsersSessions.map(session => (
-                        <Device key={session.id} session={session} userid={this.props.user.id} />
-                      ))}
-                    </div>
-                  );
-                }}
-              </Query>
-              <UniversalButton
-                type="low"
-                label="back"
-                onClick={() => this.setState({ showSessions: false })}
-              />
-            </PopupBase>
-          )}
-        </section>
-        <UniversalButton type="low" label="back" onClick={this.backFunction} />
-      </PopupBase>
-    );
-  }
-}
-
-export default SecurityPopup;
+            <UniversalButton type="low" label="back" onClick={() => setShow("")} />
+          </PopupBase>
+        )}
+      </section>
+      <UniversalButton type="low" label="back" onClick={backFunction} />
+    </PopupBase>
+  );
+};

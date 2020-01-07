@@ -2,22 +2,21 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
 import { FETCH_COMPANY } from "../../queries/departments";
-import PersonalDetails from "../../components/manager/personalDetails";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlUser } from "../../common/images";
+import { getImageUrlUser, resizeImage } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import moment from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import { ADD_PROMOCODE } from "../../mutations/auth";
+import { now } from "moment";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
-    updateEmployeePic(file: $file, unitid: $unitid) {
+    updateEmployeePic(file: $file, userid: $unitid) {
       id
       profilepicture
     }
@@ -43,7 +42,6 @@ interface State {
 const fetchCompanyServices = gql`
   query fetchCompanyServices {
     fetchCompanyServices {
-      id
       app {
         id
         name
@@ -54,18 +52,13 @@ const fetchCompanyServices = gql`
           id
         }
       }
-      licences {
+      orbitids {
         id
         endtime
-        options
-        unitid {
+        accounts {
           id
-          firstname
-          lastname
-          profilepicture
-        }
-        teamlicence {
-          id
+          starttime
+          endtime
         }
       }
     }
@@ -87,7 +80,9 @@ class CompanyDetails extends React.Component<Props, State> {
     await this.setState({ loading: true });
 
     try {
-      await this.props.updatePic({ variables: { file: picture, unitid: userid } });
+      const resizedImage = await resizeImage(picture);
+
+      await this.props.updatePic({ variables: { file: resizedImage, unitid: userid } });
 
       await this.setState({ loading: false });
     } catch (err) {
@@ -96,69 +91,10 @@ class CompanyDetails extends React.Component<Props, State> {
     }
   };
 
-  printEditForm() {
-    switch (this.state.edit!.id) {
-      case "promocode":
-        if (this.state.edit!.startvalue) {
-          return (
-            <>
-              <div>
-                <span>Please contact support to change this information</span>
-              </div>
-              <UniversalButton
-                label="Cancel"
-                type="low"
-                onClick={() => this.setState({ edit: null, editvalue: null })}
-              />
-            </>
-          );
-        }
-        return (
-          <>
-            <div>
-              <UniversalTextInput
-                id={this.state.edit!.id}
-                label={this.state.edit!.label}
-                livevalue={v => this.setState({ editvalue: v })}
-                startvalue={this.state.edit!.startvalue}
-                type={this.state.edit!.type}
-              />
-            </div>
-            <UniversalButton
-              label="Cancel"
-              type="low"
-              onClick={() => this.setState({ edit: null, editvalue: null })}
-            />
-            <UniversalButton
-              label="Save"
-              type="high"
-              onClick={async () => {
-                this.setState({ updateing: true });
-                return;
-              }}
-            />
-          </>
-        );
-      default:
-        return (
-          <>
-            <div>
-              <span>Please contact support to change this information</span>
-            </div>
-            <UniversalButton
-              label="Cancel"
-              type="low"
-              onClick={() => this.setState({ edit: null, editvalue: null })}
-            />
-          </>
-        );
-    }
-  }
-
   render() {
     return (
       <Query pollInterval={60 * 10 * 1000 + 300} query={FETCH_COMPANY}>
-        {({ loading, error, data, refetch }) => {
+        {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";
           }
@@ -242,18 +178,19 @@ class CompanyDetails extends React.Component<Props, State> {
                                 pollInterval={60 * 10 * 1000 + 900}
                                 query={fetchCompanyServices}
                                 fetchPolicy="cache-and-network">
-                                {({ loading, error, data, refetch }) => {
+                                {({ loading, error, data }) => {
                                   if (loading) {
                                     return "Loading...";
                                   }
                                   if (error) {
                                     return `Error! ${error.message}`;
                                   }
-                                  return (
-                                    data &&
+
+                                  return data &&
                                     data.fetchCompanyServices &&
                                     data.fetchCompanyServices.length
-                                  );
+                                    ? data.fetchCompanyServices.length
+                                    : 0;
                                 }}
                               </Query>
                             </h2>
@@ -266,13 +203,13 @@ class CompanyDetails extends React.Component<Props, State> {
                             className="tableColumnSmall editable"
                             style={{ width: "100%" }}
                             onClick={() => this.props.moveTo("lmanager")}>
-                            <h1>Integrated Accounts</h1>
+                            <h1>Used Accounts</h1>
                             <h2>
                               <Query
                                 pollInterval={60 * 10 * 1000 + 900}
                                 query={fetchCompanyServices}
                                 fetchPolicy="cache-and-network">
-                                {({ loading, error, data, refetch }) => {
+                                {({ loading, error, data }) => {
                                   if (loading) {
                                     return "Loading...";
                                   }
@@ -281,7 +218,20 @@ class CompanyDetails extends React.Component<Props, State> {
                                   }
                                   let sum = 0;
                                   if (data && data.fetchCompanyServices) {
-                                    data.fetchCompanyServices.map(s => (sum += s.licences.length));
+                                    data.fetchCompanyServices.map(
+                                      s =>
+                                        s.orbitids &&
+                                        s.orbitids.map(
+                                          o =>
+                                            (sum +=
+                                              o.accounts &&
+                                              o.accounts.filter(
+                                                ac =>
+                                                  ac && (ac.endtime == null || ac.endtime > now())
+                                              ).length)
+                                        )
+                                    );
+
                                     return sum;
                                   } else {
                                     return "No Data avaiable";
@@ -330,15 +280,15 @@ class CompanyDetails extends React.Component<Props, State> {
                           <div
                             className="tableColumnSmall editable"
                             style={{ width: "100%" }}
-                            onClick={() =>
+                            onClick={() => {
                               this.setState({
                                 edit: {
                                   id: "promocode",
                                   label: "Promocode",
-                                  startvalue: promocode
+                                  startvalue: promocode || ""
                                 }
-                              })
-                            }>
+                              });
+                            }}>
                             <h1>Promocode</h1>
                             <h2>{promocode}</h2>
                             <div className="profileEditButton">
@@ -419,10 +369,11 @@ class CompanyDetails extends React.Component<Props, State> {
                               this.setState({ edit: null, updateing: false, editvalue: null })
                             }
                             savingmessage="Saving"
+                            errormessage="Seems like the entered code was not valid!"
                             savedmessage={`${this.state.edit.label} saved`}
                           />
                         )}
-                        {this.state.error ? (
+                        {this.state.error && (
                           <PopupBase small={true} close={() => this.setState({ updateing: false })}>
                             <span>Something went wrong :( Please try again or contact support</span>
                             <UniversalButton
@@ -431,8 +382,6 @@ class CompanyDetails extends React.Component<Props, State> {
                               onClick={() => this.setState({ error: null })}
                             />
                           </PopupBase>
-                        ) : (
-                          ""
                         )}
                       </PopupBase>
                     )}
@@ -441,6 +390,8 @@ class CompanyDetails extends React.Component<Props, State> {
                 </div>
               </div>
             );
+          } else {
+            return <div>Nothing here :-(</div>;
           }
         }}
       </Query>

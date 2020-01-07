@@ -29,8 +29,8 @@ export const SWITCH_APPS_LAYOUT = gql`
 `;
 
 export const signInUser = gql`
-  mutation SignInUser($email: String!, $password: String!) {
-    signIn(email: $email, password: $password) {
+  mutation SignInUser($email: String!, $password: String, $passkey: String) {
+    signIn(email: $email, password: $password, passkey: $passkey) {
       ok
       token
       twofactor
@@ -57,18 +57,6 @@ export const addEmployee = gql`
   mutation addEmployee($unitid: ID!, $departmentid: ID!) {
     addEmployee(unitid: $unitid, departmentid: $departmentid) {
       ok
-    }
-  }
-`;
-
-export const distributeLicence = gql`
-  mutation distributeLicence($licenceid: ID!, $unitid: ID!, $departmentid: ID!) {
-    distributeLicence(licenceid: $licenceid, unitid: $unitid, departmentid: $departmentid) {
-      ok
-      error {
-        code
-        message
-      }
     }
   }
 `;

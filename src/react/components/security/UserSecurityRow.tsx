@@ -40,6 +40,7 @@ const UNBAN_EMPLOYEE = gql`
 
 interface Props {
   user: SecurityUser;
+  id: number;
 }
 
 interface State {
@@ -64,7 +65,7 @@ class UserSecurityRow extends React.Component<Props, State> {
 
     return (
       <tr onClick={() => this.setState(prevState => ({ showEdit: !prevState.showEdit }))}>
-        <td className="data-recording-sensitive">
+        <td colSpan={2} className="data-recording-sensitive">
           <PrintEmployeeSquare employee={user.unitid} />
           <div className="name">
             <UserName unitid={user.id} />
@@ -123,28 +124,32 @@ class UserSecurityRow extends React.Component<Props, State> {
                     buttonStyles={{ justifyContent: "space-between" }}
                     close={() => this.setState({ showAdminRights: false })}
                     dialog={true}>
-                    <div className="security-dialogue">
-                      <h1>{`${user.unitid.isadmin ? "Take" : "Give"} Admin Rights`}</h1>
-                      <p>
-                        Do you really want to {user.unitid.isadmin ? "take" : "give"}{" "}
-                        <UserName unitid={user.id} /> Admin Rights?
-                      </p>
-                    </div>
-                    {error && <span className="error">{filterError(error)}</span>}
-
-                    <UniversalButton
-                      type="low"
-                      label="no"
-                      onClick={() => this.setState({ showAdminRights: false })}
-                    />
-
-                    <UniversalButton
-                      type="low"
-                      label="yes"
-                      onClick={() =>
-                        mutate({ variables: { id: user.id, bool: !user.unitid.isadmin } })
-                      }
-                    />
+                    {this.props.id != user.id ? (
+                      <React.Fragment>
+                        <div className="security-dialogue">
+                          <h1>{`${user.unitid.isadmin ? "Take" : "Give"} Admin Rights`}</h1>
+                          <p>
+                            Do you really want to {user.unitid.isadmin ? "take" : "give"}{" "}
+                            <UserName unitid={user.id} /> Admin Rights?
+                          </p>
+                        </div>
+                        {error && <span className="error">{filterError(error)}</span>}
+                        <UniversalButton
+                          type="low"
+                          label="no"
+                          onClick={() => this.setState({ showAdminRights: false })}
+                        />
+                        <UniversalButton
+                          type="low"
+                          label="yes"
+                          onClick={() =>
+                            mutate({ variables: { id: user.id, bool: !user.unitid.isadmin } })
+                          }
+                        />
+                      </React.Fragment>
+                    ) : (
+                      <div>You can't take your own admin rights!</div>
+                    )}
                   </PopupBase>
                 )}
               </React.Fragment>
@@ -265,6 +270,7 @@ class UserSecurityRow extends React.Component<Props, State> {
               this.setState(prevState => ({ showEdit: !prevState.showEdit }));
             }}
           />
+
           {this.state.showEdit && (
             <SecurityPopup
               securityPage={true}

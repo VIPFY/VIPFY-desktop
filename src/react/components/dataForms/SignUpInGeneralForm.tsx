@@ -102,14 +102,12 @@ class SignUpInGeneral extends React.Component<Props, State> {
         <div
           className="buttonHolder"
           style={this.fields[this.props.type].back ? {} : { justifyContent: "space-around" }}>
-          {this.fields[this.props.type].back ? (
+          {this.fields[this.props.type].back && (
             <UniversalButton
               label={this.fields[this.props.type].back}
               type="low"
               onClick={() => this.fields[this.props.type].backFunction()}
             />
-          ) : (
-            ""
           )}
           <UniversalButton
             label={this.fields[this.props.type].continue}

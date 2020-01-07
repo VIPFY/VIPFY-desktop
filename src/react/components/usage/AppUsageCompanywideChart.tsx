@@ -20,12 +20,13 @@ interface Props {
   client: { query: Function };
   search?: string;
   data: any;
+  createdate: string;
 }
 
-class AppCompanyChartWrapper extends React.Component<Props, State> {
+export default class AppCompanyChart extends React.Component<Props, State> {
   constructor(props) {
     super(props);
-    const starttime = moment("2019-01-01");
+    const starttime = moment(parseInt(props.createdate));
     const endtime = moment().add("1d");
 
     this.state = {
@@ -35,17 +36,12 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
     };
   }
 
-  statisticsRef = React.createRef<HTMLTextAreaElement>();
-
   refetch = async (value, refetch) => {
     await this.setState(value);
 
     await refetch({
-      query: FETCH_TOTAL_APP_USAGE,
-      variables: {
-        starttime: moment(this.state.starttime).toISOString(),
-        endtime: moment(this.state.endtime).toISOString()
-      }
+      starttime: moment(this.state.starttime).toISOString(),
+      endtime: moment(this.state.endtime).toISOString()
     });
     this.forceUpdate();
   };
@@ -74,8 +70,6 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
         label: u.app.name,
         value: (u.totalminutes / total) * 100
       }));
-
-    //const colors = d.map(u => u.app.color);
 
     switch (this.state.sortBy) {
       case "Least Used":
@@ -148,7 +142,7 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
                     if (typeof x === "string") {
                       return x;
                     }
-                    return x.toFixed(0) + "%";
+                    return `${x.toFixed(x <= 10 ? 2 : 0)} %`;
                   }
                 }
               },
@@ -178,54 +172,50 @@ class AppCompanyChartWrapper extends React.Component<Props, State> {
 
   render() {
     return (
-      <Collapsible child={this.statisticsRef} title="Overview">
-        <section ref={this.statisticsRef} className="statistics-overview">
+      <Collapsible title="Overview">
+        <section className="statistics-overview">
           <Query
             query={FETCH_TOTAL_APP_USAGE}
             fetchPolicy="cache-and-network"
             notifyOnNetworkStatusChange={true}>
-            {({ data, loading, error, refetch, networkStatus }) => {
-              return (
-                <React.Fragment>
-                  <div className="header">
-                    <DatePicker
-                      customFormat="DD MMM YY"
-                      value={this.state.starttime}
-                      maxDate={this.state.endtime}
-                      handleChange={value => this.refetch({ starttime: value }, refetch)}
-                    />
-                    <i className="fal fa-minus" />
-                    <DatePicker
-                      customFormat="DD MMM YY"
-                      minDate={this.state.starttime}
-                      value={this.state.endtime}
-                      handleChange={value => this.refetch({ endtime: value }, refetch)}
-                    />
+            {({ data, loading, error, refetch, networkStatus }) => (
+              <React.Fragment>
+                <div className="header">
+                  <DatePicker
+                    customFormat="DD MMM YY"
+                    value={this.state.starttime}
+                    maxDate={this.state.endtime}
+                    handleChange={value => this.refetch({ starttime: value }, refetch)}
+                  />
+                  <i className="fal fa-minus" />
+                  <DatePicker
+                    customFormat="DD MMM YY"
+                    minDate={this.state.starttime}
+                    value={this.state.endtime}
+                    handleChange={value => this.refetch({ endtime: value }, refetch)}
+                  />
 
-                    <DropDown
-                      handleChange={value => this.setState({ sortBy: value })}
-                      header="Sort By"
-                      options={["A-Z", "Most Used", "Least Used"]}
-                      option={this.state.sortBy}
-                    />
-                  </div>
-                  {networkStatus === 4 ? (
-                    <LoadingDiv text="Refetching..." />
-                  ) : loading ? (
-                    <LoadingDiv text="Fetching data..." />
-                  ) : error || !data ? (
-                    <ErrorComp error={error} />
-                  ) : (
-                    this.renderTable(data.fetchTotalAppUsage)
-                  )}
-                </React.Fragment>
-              );
-            }}
+                  <DropDown
+                    handleChange={value => this.setState({ sortBy: value })}
+                    header="Sort By"
+                    options={["A-Z", "Most Used", "Least Used"]}
+                    option={this.state.sortBy}
+                  />
+                </div>
+                {networkStatus === 4 ? (
+                  <LoadingDiv />
+                ) : loading ? (
+                  <LoadingDiv />
+                ) : error || !data ? (
+                  <ErrorComp error={error} />
+                ) : (
+                  this.renderTable(data.fetchTotalAppUsage)
+                )}
+              </React.Fragment>
+            )}
           </Query>
         </section>
       </Collapsible>
     );
   }
 }
-
-export default AppCompanyChartWrapper;

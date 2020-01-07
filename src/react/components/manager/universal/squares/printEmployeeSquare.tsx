@@ -1,5 +1,6 @@
 import * as React from "react";
 import { getBgImageUser } from "../../../../common/images";
+import { concatName } from "../../../../common/functions";
 
 interface Props {
   employee: any;
@@ -8,36 +9,61 @@ interface Props {
   hideTitle?: boolean;
   styles?: Object;
   overlayFunction?: Function;
+  onClick?: Function;
+  fake?: Boolean;
 }
 
-interface State {}
+export default (props: Props) => {
+  let { employee, overlayFunction } = props;
 
-class PrintEmployeeSquare extends React.Component<Props, State> {
-  render() {
-    let { employee, overlayFunction } = this.props;
-    if (!employee) {
-      // handle employee == null for renders without data (happens in login)
-      employee = { firstname: "" };
+  const getShort = employee => {
+    let short = "";
+    if (employee.firstname) {
+      short += employee.firstname.slice(0, 1);
     }
-    const size = this.props.size || 32;
-    const name = employee.firstname || employee.lastname || employee.fullname || " "; // fullname is used by login
+    if (employee.lastname) {
+      short += employee.lastname.slice(0, 1);
+    }
+    return short;
+  };
+
+  if (props.fake) {
     return (
       <div
-        title={this.props.hideTitle ? null : name}
-        className={this.props.className || "managerSquare"}
+        key="fake"
+        title="Loading"
+        className={props.className || "managerSquare"}
+        style={Object.assign({ ...(props.styles || {}) }, { backgroundColor: "#F2F2F2" })}></div>
+    );
+  } else {
+    if (!employee) {
+      // handle employee == null for renders without data (happens in login)
+      employee = { firstname: "", lastname: "" };
+    }
+    const size = props.size || 32;
+    const name = concatName(employee);
+
+    return (
+      <div
+        title={props.hideTitle ? null : name}
+        className={props.className || "managerSquare"}
         style={Object.assign(
-          { ...(this.props.styles || {}) },
+          { ...(props.styles || {}) },
           employee.profilepicture
             ? {
                 backgroundImage: getBgImageUser(employee.profilepicture, size),
                 backgroundColor: "unset"
               }
             : { backgroundColor: employee.color || "#5d76ff" }
-        )}>
-        {employee.profilepicture ? "" : name.slice(0, 1)}
+        )}
+        onClick={() => {
+          if (props.onClick) {
+            props.onClick();
+          }
+        }}>
+        {employee.profilepicture ? "" : getShort(employee)}
         {overlayFunction && overlayFunction(employee)}
       </div>
     );
   }
-}
-export default PrintEmployeeSquare;
+};

@@ -76,10 +76,13 @@ class UniversalSearchBox extends React.Component<Props, State> {
     if (b) {
       this.setState({ searching: true });
       this.input.focus();
+
       if (e) {
         e!.preventDefault();
       }
     } else {
+      this.input.blur();
+
       if (
         !this.props.noautomaticclosing &&
         (this.props.automaticclosing || this.state.value == "")
@@ -179,9 +182,7 @@ class UniversalSearchBox extends React.Component<Props, State> {
               <input
                 value={this.state.value}
                 onChange={input => this.handleChange(input)}
-                ref={i => {
-                  this.input = i;
-                }}
+                ref={node => (this.input = node)}
               />
             </div>
             <div

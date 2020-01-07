@@ -5,6 +5,7 @@ import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import { filterError, ErrorComp } from "../common/functions";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
+import { isNumber } from "util";
 
 const READ_NOTIFICATION = gql`
   mutation onReadNotification($id: ID!) {
@@ -144,7 +145,11 @@ class Notification extends React.Component<Props, State> {
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
         <p className="notificationText">{message}</p>
-        <div className="notificationTime">{moment(sendtime - 0).format("LLL")}</div>
+        <div className="notificationTime">
+          {!isNaN(sendtime - 0)
+            ? moment(sendtime - 0).format("LLL")
+            : moment(sendtime).format("LLL")}
+        </div>
       </div>
     ));
   }
@@ -153,6 +158,16 @@ class Notification extends React.Component<Props, State> {
     const { data } = this.props;
     const dataLength = data.fetchNotifications ? data.fetchNotifications.length : 0;
     const dataExists = dataLength > 0;
+    const refetchButton = (
+      <button
+        className="naked-button"
+        type="button"
+        onClick={this.fetchNotifications}
+        onMouseEnter={this.toggleHover}
+        onMouseLeave={this.toggleHover}>
+        <i className={`fas fa-sync ${this.state.hover ? "fa-spin" : ""}`} />
+      </button>
+    );
 
     return (
       <div className="notificationPopup" style={this.props.style}>
@@ -160,34 +175,26 @@ class Notification extends React.Component<Props, State> {
           {`You have ${dataExists ? dataLength : "no"} new notification${
             dataLength == 1 ? "" : "s"
           }`}
+          {!dataExists && refetchButton}
         </div>
 
         <div className="notificationPopupScroller">
-          {dataExists ? this.renderNotifications(data.fetchNotifications) : ""}
+          {dataExists && this.renderNotifications(data.fetchNotifications)}
         </div>
 
-        {dataExists ? (
+        {dataExists && (
           <React.Fragment>
             <div className="notificationPopupFooter">
               <span>Synchronize: </span>
-              <button
-                className="naked-button"
-                type="button"
-                onClick={this.fetchNotifications}
-                onMouseEnter={this.toggleHover}
-                onMouseLeave={this.toggleHover}>
-                <i className={`fas fa-sync ${this.state.hover ? "fa-spin" : ""}`} />
-              </button>
+              {refetchButton}
             </div>
             <div className="notificationPopupFooter">
-              <span>Discard:</span>
+              <span>Clear Notifications:</span>
               <button className="button-sync" type="button" onClick={this.markAllAsRead}>
-                <i className="fas fa-check" />
+                <i className="fas fa-trash-alt" />
               </button>
             </div>
           </React.Fragment>
-        ) : (
-          ""
         )}
       </div>
     );

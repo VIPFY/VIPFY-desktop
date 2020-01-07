@@ -14,7 +14,7 @@ import { filterError, AppContext } from "../../common/functions";
 interface Props {
   close: Function;
   continue: Function;
-  addpersonal: any;
+  addpersonal?: any;
   heading?: string;
   createEmployee: Function;
   isadmin?: boolean;
@@ -41,10 +41,11 @@ interface State {
   parsedName: any;
   error: String | null;
   picture: File | null;
+  employee: any;
 }
 
 const CREATE_EMPLOYEE = gql`
-  mutation createEmployee09(
+  mutation createEmployee(
     $name: HumanName!
     $emails: [EmailInput!]!
     $birthday: Date
@@ -56,7 +57,7 @@ const CREATE_EMPLOYEE = gql`
     $needpasswordchange: Boolean
     $picture: Upload
   ) {
-    createEmployee09(
+    createEmployee(
       name: $name
       emails: $emails
       file: $picture
@@ -67,32 +68,41 @@ const CREATE_EMPLOYEE = gql`
       phones: $phones
       password: $password
       needpasswordchange: $needpasswordchange
-    )
+    ) {
+      id
+      profilepicture
+      firstname
+      middlename
+      lastname
+      title
+      suffix
+    }
   }
 `;
 
 class AddEmployeePersonalData extends React.Component<Props, State> {
   state = {
-    name: this.props.addpersonal.name || "",
-    birthday: this.props.addpersonal.birthday || "",
-    hiredate: this.props.addpersonal.hiredate || "",
-    street: this.props.addpersonal.street || "",
-    zip: this.props.addpersonal.zip || "",
-    city: this.props.addpersonal.city || "",
-    pphone1: this.props.addpersonal.pphone1 || "",
-    pphone2: this.props.addpersonal.pphone2 || "",
-    position: this.props.addpersonal.position || "",
-    wmail1: this.props.addpersonal.wmail1 || "",
-    wmail2: this.props.addpersonal.wmail2 || "",
-    wphone1: this.props.addpersonal.wphone1 || "",
-    wphone2: this.props.addpersonal.wphone2 || "",
+    name: (this.props.addpersonal && this.props.addpersonal.name) || "",
+    birthday: (this.props.addpersonal && this.props.addpersonal.birthday) || "",
+    hiredate: (this.props.addpersonal && this.props.addpersonal.hiredate) || "",
+    street: (this.props.addpersonal && this.props.addpersonal.street) || "",
+    zip: (this.props.addpersonal && this.props.addpersonal.zip) || "",
+    city: (this.props.addpersonal && this.props.addpersonal.city) || "",
+    pphone1: (this.props.addpersonal && this.props.addpersonal.pphone1) || "",
+    pphone2: (this.props.addpersonal && this.props.addpersonal.pphone2) || "",
+    position: (this.props.addpersonal && this.props.addpersonal.position) || "",
+    wmail1: (this.props.addpersonal && this.props.addpersonal.wmail1) || "",
+    wmail2: (this.props.addpersonal && this.props.addpersonal.wmail2) || "",
+    wphone1: (this.props.addpersonal && this.props.addpersonal.wphone1) || "",
+    wphone2: (this.props.addpersonal && this.props.addpersonal.wphone2) || "",
     confirm: false,
     saving: false,
     success: true,
     unitid: null,
     parsedName: null,
     error: null,
-    picture: null
+    picture: null,
+    employee: null
   };
 
   handleConfirm() {
@@ -102,7 +112,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
   }
 
   handleCreate() {
-    if (this.props.addpersonal.unitid) {
+    if (this.props.addpersonal && this.props.addpersonal.unitid) {
       this.props.continue(this.state);
     } else {
       this.setState({ confirm: true });
@@ -241,14 +251,15 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                 });
                 this.setState({
                   success: true,
-                  unitid: unitid.data.createEmployee09,
+                  unitid: unitid.data.createEmployee.id,
                   parsedName: {
                     title: parsedName.salutation || "",
                     firstname: parsedName.firstName || "",
                     middlename: parsedName.middleName || "",
                     lastname: parsedName.lastName || "",
                     suffix: parsedName.suffix || ""
-                  }
+                  },
+                  employee: unitid.data.createEmployee
                 });
               } catch (err) {
                 console.log("ERR", err);

@@ -32,7 +32,7 @@ class ColumnServices extends React.Component<Props, State> {
     const { appidFunction, checkFunction, overlayFunction } = this.props;
     let sortedservices: any[] = [];
     let serviceArray: JSX.Element[] = [];
-    if (this.props.fake) {
+    if (this.props.fake || !this.props.services) {
       let fakecounter = 0;
       const amount = Math.random() * 7 + 1;
       for (fakecounter = 0; fakecounter < Math.min(amount, this.state.numservices); fakecounter++) {

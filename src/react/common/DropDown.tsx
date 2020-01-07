@@ -6,11 +6,12 @@ interface Props {
   defaultValue?: any;
   options: any[];
   handleChange: Function;
-  option: Option | null | string;
+  option: Option | null | string | number;
   touched?: boolean;
   holder?: any;
   scrollItem?: any;
-  header: string;
+  header?: string;
+  className?: string;
 }
 
 interface State {
@@ -91,14 +92,17 @@ class DropDown extends React.PureComponent<Props, State> {
       bodyClass += " slide-up";
     }
     // }
+
     return (
-      <div className="dropdown" ref={this.wrapper}>
+      <div className={`dropdown ${this.props.className}`} ref={this.wrapper}>
         <button
           className="naked-button dropdown-header"
           onClick={() => this.setState(prev => ({ ...prev, show: !prev.show, touched: true }))}>
           <span>
             {this.props.defaultValue && !touched
               ? this.props.defaultValue.label
+                ? this.props.defaultValue.label
+                : this.props.defaultValue
               : touched && this.props.option
               ? this.props.option.label
                 ? this.props.option.label
@@ -107,33 +111,34 @@ class DropDown extends React.PureComponent<Props, State> {
           </span>
           <i className="fal fa-angle-down big-angle" />
         </button>
-
-        <div
-          className={bodyClass}
-          style={
-            this.wrapper &&
-            this.props.holder && {
-              position: "fixed",
-              width: "155px",
-              top:
-                this.calculateTop(this.wrapper.current) +
-                32 -
-                ((this.props.holder.current && this.props.holder.current.scrollTop) || 0),
-              left: this.calculateLeft(this.wrapper.current)
-            }
-          }>
-          {this.props.options.map((option, key) => (
-            <button
-              key={key}
-              className="naked-button dropdown-option"
-              onClick={() => {
-                this.props.handleChange(option);
-                this.setState({ show: false });
-              }}>
-              <span>{option.label ? option.label : option}</span>
-            </button>
-          ))}
-        </div>
+        {this.state.show && (
+          <div
+            className={bodyClass}
+            style={
+              this.wrapper &&
+              this.props.holder && {
+                position: "fixed",
+                width: "155px",
+                top:
+                  this.calculateTop(this.wrapper.current) +
+                  32 -
+                  ((this.props.holder.current && this.props.holder.current.scrollTop) || 0),
+                left: this.calculateLeft(this.wrapper.current)
+              }
+            }>
+            {this.props.options.map((option, key) => (
+              <button
+                key={key}
+                className="naked-button dropdown-option"
+                onClick={() => {
+                  this.props.handleChange(option);
+                  this.setState({ show: false });
+                }}>
+                <span>{option.label ? option.label : option}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   }

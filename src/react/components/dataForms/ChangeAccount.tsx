@@ -112,14 +112,16 @@ class ChangeAccount extends React.Component<Props, State> {
             onClick={() => this.props.registerCompany()}
           />
         </div>
+
         {this.state.confirm && (
-          <PopupBase
-            small={true}
-            close={() => this.setState({ confirm: false })}
-            noSidebar={true}
-            closeable={false}>
+          <PopupBase small={true} close={() => this.setState({ confirm: false })} noSidebar={true}>
+            <h1>Delete Account from Machine</h1>
             <p>Do you really want to delete this account from this machine?</p>
-            <UniversalButton type="low" closingPopup={true} label="Cancel" />
+            <UniversalButton
+              type="low"
+              onClick={() => this.setState({ confirm: false })}
+              label="Cancel"
+            />
             <UniversalButton
               type="low"
               closingAllPopups={true}
