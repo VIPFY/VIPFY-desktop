@@ -45,6 +45,7 @@ interface Props {
   deletePhone: Function;
   updatePhone: Function;
   refetch: Function;
+  isadmin: Boolean;
 }
 
 interface State {
@@ -748,12 +749,13 @@ class PersonalDetails extends React.Component<Props, State> {
           </div>
           {/* <div className="tableColumnSmallOne" style={{ cursor: "inital" }}></div> */}
           <div
-            className="tableColumnSmallOne editable"
-            onClick={() => {
+            className={`tableColumnSmallOne ${this.props.isadmin && "editable"}`}
+            onClick={() =>
+              this.props.isadmin &&
               this.setState({
                 editvacation: true
-              });
-            }}>
+              })
+            }>
             <h1>
               Vacations{" "}
               <span className="morehint">
@@ -776,9 +778,11 @@ class PersonalDetails extends React.Component<Props, State> {
                   querydata.vacations[1].endtime
                 ).format("DD.MM.YYYY")}`}
             </h2>
-            <div className="profileEditButton">
-              <i className="fal fa-pen editbuttons" />
-            </div>
+            {this.props.isadmin && (
+              <div className="profileEditButton">
+                <i className="fal fa-pen editbuttons" />
+              </div>
+            )}
           </div>
         </div>
         {this.state.edit && (
@@ -1016,7 +1020,7 @@ class PersonalDetails extends React.Component<Props, State> {
             )}
           </Mutation>
         )}
-        {this.state.editvacation && (
+        {this.state.editvacation && this.props.isadmin && (
           <EditVacations
             querydata={querydata}
             close={() => this.setState({ editvacation: false })}
