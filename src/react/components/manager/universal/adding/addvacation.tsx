@@ -19,6 +19,7 @@ interface Props {
   editVacation?: Object;
 
   refetch: Function;
+  editVacationFunction: Function;
 }
 
 interface State {
@@ -55,6 +56,25 @@ const ADD_VACATION = gql`
   }
 `;
 
+const EDIT_VACATION = gql`
+  mutation editVacation($vacationid: ID!, $starttime: Date, $endtime: Date, $assignments: [JSON]) {
+    editVacation(
+      vacationid: $vacationid
+      starttime: $starttime
+      endtime: $endtime
+      assignments: $assignments
+    ) {
+      id
+      unitid {
+        id
+      }
+      starttime
+      endtime
+      options
+    }
+  }
+`;
+
 class AddVacation extends React.Component<Props, State> {
   state = {
     fromdate:
@@ -72,7 +92,6 @@ class AddVacation extends React.Component<Props, State> {
     error: null
   };
   render() {
-    console.log("CHECKING ADD VACATION", this.state, this.props);
     return (
       <Query
         pollInterval={60 * 10 * 1000 + 1000}
@@ -86,7 +105,6 @@ class AddVacation extends React.Component<Props, State> {
             return `Error! ${error.message}`;
           }
           let appArray: JSX.Element[] = [];
-          console.log("DATA", data);
           const assignments = [];
           if (data.fetchUserLicenceAssignments) {
             data.fetchUserLicenceAssignments.sort(function(a, b) {
@@ -122,7 +140,6 @@ class AddVacation extends React.Component<Props, State> {
                 <AssignVacation
                   e={e}
                   liveid={id => {
-                    console.log("ID", id);
                     this.setState(oldstate => (oldstate.users[k] = id));
                   }}
                   livecheck={bool => {
@@ -131,10 +148,12 @@ class AddVacation extends React.Component<Props, State> {
                   }}
                   forceValue={this.state.checked[k]}
                   forceUser={
-                    this.props.editVacation
+                    this.props.editVacation &&
+                    this.props.editVacation.options.find(o => o.originalassignment == e.id)
                       ? {
-                          id: this.props.editVacation.options.find(o => (o.accountid = e.accountid))
-                            .userid
+                          id: this.props.editVacation.options.find(
+                            o => o.originalassignment == e.id
+                          ).userid
                         }
                       : this.state.users[k]
                       ? { id: this.state.users[k] }
@@ -167,7 +186,7 @@ class AddVacation extends React.Component<Props, State> {
                         ? moment(this.state.fromdate!).format("DD.MM.YYYY")
                         : "Now"}
                     </span>
-                    {this.state.fromdate <= now() ? (
+                    {this.props.editVacation && this.state.fromdate <= now() ? (
                       ""
                     ) : (
                       <i
@@ -178,7 +197,13 @@ class AddVacation extends React.Component<Props, State> {
                     {this.state.editfrom && (
                       <PopupBase
                         styles={{ maxWidth: "fit-content" }}
-                        close={() => this.setState({ editfrom: false, fromdate: null })}
+                        close={() =>
+                          this.setState(
+                            this.props.editVacation
+                              ? { editfrom: false }
+                              : { editfrom: false, fromdate: null }
+                          )
+                        }
                         buttonStyles={{ justifyContent: "space-between" }}>
                         <span style={{ fontSize: "18px", marginBottom: "8px", display: "block" }}>
                           Select Startdate
@@ -312,18 +337,41 @@ class AddVacation extends React.Component<Props, State> {
                     disabled={!this.state.todate}
                     onClick={async () => {
                       if (this.props.editVacation) {
-                        console.log(
-                          "Let's edit this",
-                          this.state,
-                          this.props,
+                        this.setState({ saving: true });
+                        const assignmentSending = [];
 
-                          moment(this.state.fromdate).toISOString(),
-                          this.props.editVacation &&
-                            moment(this.props.editVacation.starttime).toISOString(),
-                          this.props.editVacation &&
-                            moment(this.state.fromdate).toISOString() ==
+                        assignments.forEach((a, k) => {
+                          if (this.state.users[k] || this.state.users[k] == "") {
+                            assignmentSending.push({
+                              accountid: a.accountid,
+                              assignmentid: a.id,
+                              userid: this.state.users[k],
+                              olduserid: this.props.editVacation.options.find(
+                                o => (o.accountid = a.accountid)
+                              ).userid
+                            });
+                          }
+                        });
+
+                        await this.props.editVacationFunction({
+                          variables: {
+                            vacationid: this.props.editVacation.id,
+                            starttime:
+                              moment(this.state.fromdate).toISOString() !=
                               moment(this.props.editVacation.starttime).toISOString()
-                        );
+                                ? moment(this.state.fromdate).toDate()
+                                : moment(this.props.editVacation.starttime).toDate(),
+                            endtime:
+                              moment(this.state.todate).toISOString() !=
+                              moment(this.props.editVacation.endtime).toISOString()
+                                ? moment(this.state.todate).toDate()
+                                : moment(this.props.editVacation.endtime).toDate(),
+                            assignments: assignmentSending
+                          }
+                        });
+                        this.setState({ saved: true });
+                        this.props.refetch();
+                        this.props.close();
                       } else {
                         try {
                           this.setState({ saving: true });
@@ -333,6 +381,7 @@ class AddVacation extends React.Component<Props, State> {
                             if (this.state.users[k] && this.state.users[k] != "") {
                               assignmentSending.push({
                                 accountid: a.accountid,
+                                originalassignment: a.id,
                                 userid: this.state.users[k]
                               });
                             }
@@ -582,5 +631,8 @@ class AddVacation extends React.Component<Props, State> {
 export default compose(
   graphql(ADD_VACATION, {
     name: "createVacation"
+  }),
+  graphql(EDIT_VACATION, {
+    name: "editVacationFunction"
   })
 )(AddVacation);

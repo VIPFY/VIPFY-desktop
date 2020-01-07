@@ -19,6 +19,8 @@ interface Props {
   newaccount: boolean;
   changeAccount: Function;
   createAccount: Function;
+
+  refetch: Function;
 }
 
 interface State {
@@ -119,7 +121,6 @@ class ChangeAccount extends React.Component<Props, State> {
 
   render() {
     const { newaccount, account } = this.props;
-    console.log("PROPS", this.props);
     return (
       <PopupBase
         small={true}
@@ -200,7 +201,6 @@ class ChangeAccount extends React.Component<Props, State> {
                 startvalue={this.state.email}
                 livevalue={v => {
                   if (v != this.state.email && v != "") {
-                    console.log("CHANGE", v, "|", this.state.email);
                     this.setState({ email: v, changede: true });
                   } else {
                     this.setState({ email: v, changede: false });
@@ -372,7 +372,7 @@ class ChangeAccount extends React.Component<Props, State> {
                 )
             )}
 
-            <ShowAndAddEmployee account={account} />
+            <ShowAndAddEmployee account={account} refetch={this.props.refetch} />
           </>
         )}
 
@@ -427,6 +427,7 @@ class ChangeAccount extends React.Component<Props, State> {
                       }
                     ]
                   });
+                  await this.props.refetch();
                   this.setState({ saved: true });
                   setTimeout(() => {
                     this.setState(INITAL_STATE);
@@ -451,8 +452,17 @@ class ChangeAccount extends React.Component<Props, State> {
                         logindata: { username: this.state.email, password: this.state.password },
                         endtime: this.state.todate || null,
                         isNull: !!(this.state.todate == null)
-                      }
+                      },
+                      refetchQueries: [
+                        {
+                          query: fetchCompanyService,
+                          variables: {
+                            serviceid: this.props.app.id
+                          }
+                        }
+                      ]
                     });
+                    await this.props.refetch();
                     this.setState({ saved: true });
                     setTimeout(() => {
                       this.setState(INITAL_STATE);
