@@ -19,6 +19,8 @@ interface Props {
   newaccount: boolean;
   changeAccount: Function;
   createAccount: Function;
+
+  refetch: Function;
 }
 
 interface State {
@@ -372,7 +374,7 @@ class ChangeAccount extends React.Component<Props, State> {
                 )
             )}
 
-            <ShowAndAddEmployee account={account} />
+            <ShowAndAddEmployee account={account} refetch={this.props.refetch} />
           </>
         )}
 
@@ -406,6 +408,7 @@ class ChangeAccount extends React.Component<Props, State> {
             onClick={async () => {
               if (newaccount) {
                 this.setState({ saving: true });
+                console.log("TEST A");
                 try {
                   const newAccountData = await this.props.createAccount({
                     variables: {
@@ -427,6 +430,7 @@ class ChangeAccount extends React.Component<Props, State> {
                       }
                     ]
                   });
+                  await this.props.refetch();
                   this.setState({ saved: true });
                   setTimeout(() => {
                     this.setState(INITAL_STATE);
@@ -443,6 +447,7 @@ class ChangeAccount extends React.Component<Props, State> {
                   this.state.changedt
                 ) {
                   this.setState({ saving: true });
+                  console.log("TEST B");
                   try {
                     await this.props.changeAccount({
                       variables: {
@@ -451,8 +456,17 @@ class ChangeAccount extends React.Component<Props, State> {
                         logindata: { username: this.state.email, password: this.state.password },
                         endtime: this.state.todate || null,
                         isNull: !!(this.state.todate == null)
-                      }
+                      },
+                      refetchQueries: [
+                        {
+                          query: fetchCompanyService,
+                          variables: {
+                            serviceid: this.props.app.id
+                          }
+                        }
+                      ]
                     });
+                    await this.props.refetch();
                     this.setState({ saved: true });
                     setTimeout(() => {
                       this.setState(INITAL_STATE);

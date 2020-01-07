@@ -9,37 +9,16 @@ interface Props {
   account: any;
   orbit: any;
   app: any;
+
+  refetch: Function;
 }
 
 interface State {
   change: Boolean;
-  changeda: Boolean;
-  changede: Boolean;
-  changedp: Boolean;
-  changedt: Boolean;
-  editto: Boolean;
-  alias: String;
-  email: String | null;
-  password: String;
-  todate: Date | null;
-  saving: Boolean;
-  saved: Boolean;
-  error: String | null;
-  showall: Boolean;
 }
 
 const INITAL_STATE = {
-  change: false,
-  changeda: false,
-  changede: false,
-  changedp: false,
-  changedt: false,
-  editto: false,
-  password: "",
-  saving: false,
-  saved: false,
-  error: null,
-  showall: false
+  change: false
 };
 
 class AccountRow extends React.Component<Props, State> {
@@ -197,6 +176,7 @@ class AccountRow extends React.Component<Props, State> {
             orbit={this.props.orbit}
             app={this.props.app}
             closeChange={b => this.setState({ change: false })}
+            refetch={this.props.refetch}
           />
         )}
       </div>

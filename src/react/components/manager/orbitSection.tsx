@@ -16,6 +16,8 @@ interface Props {
   orbit: any;
   app: any;
   changeOrbit: Function;
+
+  refetch: Function;
 }
 
 interface State {
@@ -182,7 +184,14 @@ class OrbitSection extends React.Component<Props, State> {
             orbit.accounts[0] != null &&
             orbit.accounts
               .filter(account => account && (account.endtime == null || account.endtime > now()))
-              .map(account => <AccountRow account={account} orbit={orbit} app={this.props.app} />)}
+              .map(account => (
+                <AccountRow
+                  account={account}
+                  orbit={orbit}
+                  app={this.props.app}
+                  refetch={this.props.refetch}
+                />
+              ))}
           <div className="tableRow noHover">
             <div className="tableMain">
               <div className="tableColumnBig" style={{ alignItems: "center", display: "flex" }}>
@@ -220,6 +229,7 @@ class OrbitSection extends React.Component<Props, State> {
                 this.setState({ newaccount: false });
               }
             }}
+            refetch={this.props.refetch}
           />
         )}
         {this.state.addUsers && (
@@ -250,6 +260,7 @@ class OrbitSection extends React.Component<Props, State> {
 
             <ShowAndAddEmployee
               account={orbit.accounts.find(a => a.id == this.state.addUsers!.id)}
+              refetch={this.props.refetch}
             />
 
             <UniversalButton

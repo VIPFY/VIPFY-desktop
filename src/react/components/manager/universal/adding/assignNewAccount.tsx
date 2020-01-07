@@ -18,6 +18,8 @@ interface Props {
   close: Function;
   assignAccount: Function;
   service?: any;
+
+  refetch?: Function;
 }
 
 interface State {
@@ -308,6 +310,9 @@ class AssignNewAccount extends React.Component<Props, State> {
                     }
                   ]
                 });
+                if (this.props.refetch) {
+                  await this.props.refetch();
+                }
                 this.setState({ saved: true });
                 setTimeout(() => this.props.close(), 1000);
               } catch (err) {
