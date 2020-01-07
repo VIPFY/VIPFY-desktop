@@ -121,7 +121,6 @@ class ChangeAccount extends React.Component<Props, State> {
 
   render() {
     const { newaccount, account } = this.props;
-    console.log("PROPS", this.props);
     return (
       <PopupBase
         small={true}
@@ -202,7 +201,6 @@ class ChangeAccount extends React.Component<Props, State> {
                 startvalue={this.state.email}
                 livevalue={v => {
                   if (v != this.state.email && v != "") {
-                    console.log("CHANGE", v, "|", this.state.email);
                     this.setState({ email: v, changede: true });
                   } else {
                     this.setState({ email: v, changede: false });
@@ -408,7 +406,6 @@ class ChangeAccount extends React.Component<Props, State> {
             onClick={async () => {
               if (newaccount) {
                 this.setState({ saving: true });
-                console.log("TEST A");
                 try {
                   const newAccountData = await this.props.createAccount({
                     variables: {
@@ -447,7 +444,6 @@ class ChangeAccount extends React.Component<Props, State> {
                   this.state.changedt
                 ) {
                   this.setState({ saving: true });
-                  console.log("TEST B");
                   try {
                     await this.props.changeAccount({
                       variables: {
