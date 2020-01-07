@@ -24,8 +24,6 @@ const LOG_SSO_ERROR = gql`
 export type WebViewState = {
   setUrl: string;
   currentUrl: string;
-  inspirationalText: string;
-  legalText: string;
   showLoadingScreen: boolean;
   t: number;
   licenceId: number;
@@ -62,21 +60,9 @@ export type WebViewProps = {
 export class Webview extends React.Component<WebViewProps, WebViewState> {
   static defaultProps = { app: -1 };
 
-  static loadingQuotes = [
-    "Loading...",
-    "Connecting to the World",
-    "Constructing Pylons",
-    "Did you know that Vipfy is cool",
-    "Just a second",
-    "Vipfy loves you",
-    "Almost there"
-  ];
-
   state = {
     setUrl: "",
     currentUrl: "",
-    inspirationalText: "Loading...",
-    legalText: "Legal Text",
     showLoadingScreen: true,
     t: performance.now(),
     licenceId: this.props.licenceID,
@@ -182,12 +168,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
   }
 
-  showPopup = type => {
-    this.setState({ popup: type });
-  };
-  closePopup = () => {
-    this.setState({ popup: null, error: null, errorshowed: true });
-  };
+  showPopup = type => this.setState({ popup: type });
+
+  closePopup = () => this.setState({ popup: null, error: null, errorshowed: true });
 
   timer1m = () => {
     const now = new Date();
@@ -249,7 +232,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   private async switchApp(): Promise<void> {
     const timeSpent: number[] = [];
     timeSpent[this.state.licenceId] = 0;
-    console.log(this.state.licenceId);
+
     this.sendTimeSpent(timeSpent);
     let result = await this.props.client.query({
       query: gql`
@@ -353,8 +336,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   showLoadingScreen(): void {
     this.setState({
       showLoadingScreen: true,
-      inspirationalText:
-        Webview.loadingQuotes[Math.floor(Math.random() * Webview.loadingQuotes.length)],
       t: performance.now()
     });
   }
@@ -659,19 +640,14 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.plain) {
       cssClass = "";
     }
-    //console.log("OPEN SERVICE", this.state.setUrl , this.state.options.universallogin)
+
     return (
       <HeaderNotificationContext.Consumer>
         {context => {
           return (
             <div className={cssClass} id={`webview-${this.props.viewID}`}>
-              {this.state.showLoadingScreen && (
-                <LoadingDiv
-                  text={this.state.inspirationalText}
-                  legalText={this.state.legalText}
-                  progress={this.state.progress}
-                />
-              )}
+              {this.state.showLoadingScreen && <LoadingDiv progress={this.state.progress} />}
+
               {this.state.options.universallogin ? (
                 <UniversalLoginExecutor
                   loginUrl={this.state.setUrl}
@@ -684,6 +660,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   setResult={({ loggedin, emailEntered, passwordEntered }) => {
                     if (loggedin && emailEntered && passwordEntered) {
                       this.hideLoadingScreen();
+                    } else if (!loggedin && !emailEntered && !passwordEntered) {
+                      this.setState({
+                        progress: 1,
+                        error:
+                          "Sorry, Login was not possible. Please go back to your Dashboard and retry or contact our support if the problem persists.",
+                        errorshowed: true
+                      });
                     }
                   }}
                   progress={progress => this.setState({ progress })}
