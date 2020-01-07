@@ -48,13 +48,12 @@ export default (props: Props) => {
         <Query query={FETCH_VACATION_REQUESTS}>
           {({ data, loading, error }) => {
             if (loading) {
-              return <LoadingDiv text="Fetching data..." />;
+              return <LoadingDiv />;
             }
 
             if (error || !data) {
               return <ErrorComp error={error} />;
             }
-            console.log("LOG: data", data);
 
             return data.fetchVacationRequests.map((employee, key) => (
               <VacationRequestRow key={key} employee={employee} />
