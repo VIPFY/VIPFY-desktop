@@ -90,7 +90,9 @@ class UniversalDropDownInput extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    this.nameInput.focus();
+    if (this.nameInput) {
+      this.nameInput.focus();
+    }
   }
 
   componentDidUpdate(prevProps) {
