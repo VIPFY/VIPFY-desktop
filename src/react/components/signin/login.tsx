@@ -42,12 +42,6 @@ class Login extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate() {
-    if (this.props.error && this.state.submitting) {
-      this.setState({ submitting: false });
-    }
-  }
-
   render() {
     const store = new Store();
     let user: {
@@ -124,13 +118,22 @@ class Login extends React.Component<Props, State> {
               />
 
               <UniversalButton
-                label="Login"
+                label={this.state.submitting ? <i className="fal fa-spinner fa-spin" /> : "login"}
                 type="high"
                 disabled={this.state.field2 == "" || this.state.submitting}
                 onClick={async () => {
                   await this.setState({ submitting: true });
-                  await this.props.continueFunction(this.state.field2, this.state.email);
-                  await this.setState({ showError: true });
+                  const hasError = await this.props.continueFunction(
+                    this.state.field2,
+                    this.state.email
+                  );
+
+                  if (hasError) {
+                    this.setState({ showError: true });
+                    setTimeout(() => this.setState({ showError: false }), 2250);
+                  }
+
+                  await this.setState({ submitting: false });
                 }}
               />
             </div>

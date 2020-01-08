@@ -1,7 +1,7 @@
 import * as React from "react";
 
 interface Props {
-  label: string;
+  label: string | JSX.Element;
   type?: string; //high | low
   disabled?: Boolean;
   onClick?: Function;
