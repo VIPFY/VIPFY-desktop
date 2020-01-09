@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default (props: Props) => {
-  const chartState = {
+  const chartData = {
     options: {
       colors: ["#20BAA9"],
       plotOptions: {
@@ -52,22 +52,23 @@ export default (props: Props) => {
       </div>
       <div className="body">
         <Chart
-          options={chartState.options}
-          series={chartState.series}
+          options={chartData.options}
+          series={chartData.series}
           height="160"
           type="radialBar"
         />
-        <div className="info">
+        {/* Remove style when the user/team differentation is integrated again */}
+        <div className="info" style={{ gridRow: "1 / -1", alignSelf: "center" }}>
           <AppIcon app={props.app} />
         </div>
-        <div className="info-user">
+        {/* <div className="info-user">
           {props.options && props.options.teamlicence ? (
             <i className="fal fa-users" title="Shared Account" />
           ) : (
             <i className="fal fa-user" title="Single Account" />
           )}
-          <span>{`${props.options && props.options.teamlicence ? "Team" : "Single"} Licence`}</span>
-        </div>
+        <span>{`${props.options && props.options.teamlicence ? "Team" : "Single"} Licence`}</span>
+        </div> */}
       </div>
     </div>
   );

@@ -14,6 +14,8 @@ import AddEmployeePersonalData from "../addEmployeePersonalData";
 interface Props {
   account: any;
   assignAccount: Function;
+
+  refetch?: Function;
 }
 
 interface State {
@@ -327,6 +329,9 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                             endtime: this.state.todate || undefined
                           }
                         });
+                        if (this.props.refetch) {
+                          await this.props.refetch();
+                        }
                         this.setState({ saved: true });
                         setTimeout(
                           () => this.setState({ ...INITIAL_STATE, time: Math.random() }),

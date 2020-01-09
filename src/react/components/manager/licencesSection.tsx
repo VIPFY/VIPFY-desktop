@@ -105,7 +105,7 @@ class LicencesSection extends React.Component<Props, State> {
         pollInterval={60 * 10 * 1000 + 1000}
         query={fetchUserLicences}
         variables={{ unitid: employeeid }}>
-        {({ loading, error, data }) => {
+        {({ loading, error, data, refetch }) => {
           if (loading) {
             return "Loading...";
           }
@@ -198,6 +198,7 @@ class LicencesSection extends React.Component<Props, State> {
                   <AssignNewAccount
                     close={() => this.setState({ add: false })}
                     employee={this.props.employee}
+                    refetch={refetch}
                   />
                 )}
 

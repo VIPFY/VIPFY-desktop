@@ -115,9 +115,9 @@ class AppListInner extends React.Component<Props, State> {
           <tr>
             <th>App</th>
             <th>Orbit</th>
-            <th>Total Licences</th>
-            <th>Used Licences</th>
-            <th>Time Spent/Month</th>
+            <th>Total Accounts</th>
+            <th>Used Accounts</th>
+            <th>Time Spent this Month</th>
             <th />
           </tr>
         </thead>
@@ -294,7 +294,7 @@ class AppListInner extends React.Component<Props, State> {
   }
 }
 
-export default (props: { company: any }) => (
+export default (props: { search: string; company: any }) => (
   <Query
     query={FETCH_UNIT_APPS}
     variables={{ departmentid: props.company.unit.id }}
@@ -309,7 +309,7 @@ export default (props: { company: any }) => (
       }
 
       return (
-        <Collapsible title="Teams">
+        <Collapsible title="Details">
           <AppListInner {...props} data={data} />
         </Collapsible>
       );

@@ -20,21 +20,16 @@ interface Props {
   client: { query: Function };
   search?: string;
   data: any;
-  createdate: string;
 }
 
 export default class AppCompanyChart extends React.Component<Props, State> {
-  constructor(props) {
-    super(props);
-    const starttime = moment(parseInt(props.createdate));
-    const endtime = moment().add("1d");
-
-    this.state = {
-      starttime,
-      endtime,
-      sortBy: ""
-    };
-  }
+  state = {
+    starttime: moment()
+      .subtract(1, "M")
+      .startOf("month"),
+    endtime: moment().startOf("month"),
+    sortBy: ""
+  };
 
   refetch = async (value, refetch) => {
     await this.setState(value);

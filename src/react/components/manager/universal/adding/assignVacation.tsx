@@ -38,7 +38,7 @@ class AssignVacation extends React.Component<Props, State> {
     user: this.props.forceUser || null
   };
   render() {
-    console.log("AV", this.props, this.state);
+    //console.log("AV", this.props, this.state);
     const { e } = this.props;
     return (
       <div
@@ -148,7 +148,7 @@ class AssignVacation extends React.Component<Props, State> {
                       </span>
                     )}
                     startvalue={
-                      this.state.user
+                      this.state.user && employees.find(a => a.id == this.state.user.id)
                         ? employees.find(a => a.id == this.state.user.id).id
                         : this.props.forceUser
                         ? this.props.forceUser.id

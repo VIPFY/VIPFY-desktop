@@ -337,7 +337,7 @@ class TeamOverview extends React.Component<Props, State> {
                         <div
                           className="tableColumnBig" //onClick={() => this.handleSortClick("Services")}
                         >
-                          <h1>Shared Accounts</h1>
+                          {/*<h1>Shared Accounts</h1>*/}
                         </div>
                       </div>
                       <div className="tableEnd"></div>

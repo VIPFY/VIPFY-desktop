@@ -65,7 +65,7 @@ class ServiceDetails extends React.Component<Props, State> {
         query={fetchCompanyService}
         variables={{ serviceid }}
         fetchPolicy="network-only">
-        {({ loading, error, data }) => {
+        {({ loading, error, data, refetch }) => {
           if (loading) {
             return "Loading...";
           }
@@ -160,7 +160,7 @@ class ServiceDetails extends React.Component<Props, State> {
               {service.orbitids
                 .filter(o => o.endtime == null || o.endtime > now())
                 .map(orbit => (
-                  <OrbitSection orbit={orbit} app={service.app} />
+                  <OrbitSection orbit={orbit} app={service.app} refetch={refetch} />
                 ))}
               <div className="section">
                 <div className="heading">
