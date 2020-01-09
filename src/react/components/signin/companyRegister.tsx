@@ -112,7 +112,8 @@ class RegisterCompany extends React.Component<Props, State> {
           }
         });
         const { token } = res.data.signUp;
-        await localStorage.setItem("token", token);
+        localStorage.setItem("token", token);
+        localStorage.setItem("key1", encryptionkey1.toString("hex"));
         this.props.continueFunction();
       } else {
         this.setState({ error: "Please accept our Terms of Service and Privacy Agreement" });
