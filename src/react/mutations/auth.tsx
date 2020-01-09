@@ -117,3 +117,9 @@ export const REDEEM_SETUPTOKEN = gql`
     }
   }
 `;
+
+export const CLOSE_TUTORIAL = gql`
+  mutation closeTutorial($tutorial: String!) {
+    closeTutorial(tutorial: $tutorial)
+  }
+`;

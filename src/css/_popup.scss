@@ -1,4 +1,4 @@
-$modal-z: 10000;
+$modal-z: 2000000;
 $modal-wh: 50%;
 
 #overlay {
@@ -12,7 +12,7 @@ $modal-wh: 50%;
   top: 32px;
   width: 100vw;
   z-index: $modal-z;
-  animation: lay-over 100ms ease-in;
+  /*animation: lay-over 100ms ease-in;
 
   @keyframes lay-over {
     from {
@@ -22,7 +22,7 @@ $modal-wh: 50%;
     to {
       transform: translateY(0);
     }
-  }
+  }*/
 }
 
 #popup {

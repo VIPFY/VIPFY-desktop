@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface Props {
   label: string;
+  innerRef?: any;
   type?: string; //high | low
   disabled?: Boolean;
   onClick?: Function;
@@ -59,7 +60,8 @@ export default (props: Props) => {
             props.disabled ? "disabled" : "useable"
           }`}
           tabIndex={-1}
-          style={props.customStyles ? props.customStyles : {}}>
+          style={props.customStyles ? props.customStyles : {}}
+          ref={props.innerRef}>
           {props.label}
         </div>
       </button>
