@@ -33,7 +33,7 @@ export async function generateAdminKeypair(
   return {
     privatekey: encPrivateKey.toString("hex"),
     publickey: publicKey.toString("hex"),
-    encryptedby: null
+    encryptedby: encryptingPublicKey.toString("hex")
   };
 }
 

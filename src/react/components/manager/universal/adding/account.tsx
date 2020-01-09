@@ -1,17 +1,19 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { graphql, compose } from "react-apollo";
+import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../../queries/billing";
 import { AppContext } from "../../../../common/functions";
+import { createEncryptedLicenceKeyObject } from "../../../../common/licences";
 
 interface Props {
   orbit: any;
   close: Function;
   alias: string | null;
   createAccount: Function;
+  client: any;
 }
 
 interface State {
@@ -105,14 +107,19 @@ class CreateAccount extends React.Component<Props, State> {
                 onClick={async () => {
                   this.setState({ saving: true });
                   try {
+                    const logindata = await createEncryptedLicenceKeyObject(
+                      {
+                        username: this.state.email,
+                        password: this.state.password
+                      },
+                      false,
+                      this.props.client
+                    );
                     const account = await this.props.createAccount({
                       variables: {
                         orbitid: this.props.orbit.id,
                         alias: this.state.alias,
-                        logindata: {
-                          username: this.state.email,
-                          password: this.state.password
-                        }
+                        logindata
                       },
                       refetchQueries: [
                         {
@@ -136,7 +143,6 @@ class CreateAccount extends React.Component<Props, State> {
                   }
                 }}
               />
-              )
             </div>
             {this.state.saving && (
               <>
@@ -188,5 +194,6 @@ class CreateAccount extends React.Component<Props, State> {
 export default compose(
   graphql(CREATE_ACCOUNT, {
     name: "createAccount"
-  })
+  }),
+  withApollo
 )(CreateAccount);

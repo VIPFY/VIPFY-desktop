@@ -11,6 +11,7 @@ import { compose, graphql, withApollo } from "react-apollo";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../queries/billing";
 import { fetchCompanyService } from "../../../queries/products";
 import { AppContext } from "../../../common/functions";
+import { createEncryptedLicenceKeyObject } from "../../../common/licences";
 
 interface Props {
   account: any;
@@ -20,8 +21,8 @@ interface Props {
   newaccount: boolean;
   changeAccount: Function;
   createAccount: Function;
-
   refetch: Function;
+  client: any;
 }
 
 interface State {
@@ -462,14 +463,19 @@ class ChangeAccount extends React.Component<Props, State> {
                   if (newaccount) {
                     this.setState({ saving: true });
                     try {
+                      const logindata = await createEncryptedLicenceKeyObject(
+                        {
+                          username: this.state.email,
+                          password: this.state.password
+                        },
+                        false,
+                        this.props.client
+                      );
                       const newAccountData = await this.props.createAccount({
                         variables: {
                           orbitid: this.props.orbit.id,
                           alias: this.state.alias,
-                          logindata: {
-                            username: this.state.email,
-                            password: this.state.password
-                          },
+                          logindata,
                           starttime: this.state.fromdate || undefined,
                           endtime: this.state.todate || null
                         },
