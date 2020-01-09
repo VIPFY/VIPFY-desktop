@@ -533,9 +533,9 @@ class Area extends React.Component<AreaProps, AreaState> {
                   {this.props.needspasswordchange && (
                     <ForcedPasswordChange email={this.props.emails[0].email} />
                   )}
-                  {this.props.tutorialprogress && this.props.highlightReferences && (
-                    <TutorialBase {...this.props} />
-                  )}
+                  {this.props.isadmin &&
+                    this.props.tutorialprogress &&
+                    this.props.highlightReferences && <TutorialBase {...this.props} />}
                 </UserContext.Provider>
               </SideBarContext.Provider>
             </div>

@@ -173,9 +173,18 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           />
 
           <div className="buttonsPopup" style={{ justifyContent: "space-between" }}>
-            <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />
             <AppContext.Consumer>
-              {context => (
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  label="Cancel"
+                  type="low"
+                  onClick={() => this.props.close()}
+                  innerRef={el => addRenderElement({ key: "cancel", element: el })}
+                />
+              )}
+            </AppContext.Consumer>
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
                 <UniversalButton
                   label="Continue"
                   type="high"
@@ -185,7 +194,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                     !this.state.wmail1.includes("@")
                   }
                   onClick={() => this.handleCreate()}
-                  ref={el => context.addRenderElement({ key: "continueAdd", element: el })}
+                  innerRef={el => addRenderElement({ key: "continueAdd", element: el })}
                 />
               )}
             </AppContext.Consumer>
@@ -195,7 +204,16 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           <PopupBase small={true} close={() => this.setState({ confirm: false })}>
             Do you really want to create an Employee called {this.state.name}?
             <UniversalButton label="Cancel" type="low" closingPopup={true} />
-            <UniversalButton label="Confirm" type="high" onClick={() => this.handleConfirm()} />
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  label="Confirm"
+                  type="high"
+                  onClick={() => this.handleConfirm()}
+                  /*innerRef={el => addRenderElement({ key: "saved", element: el })}*/
+                />
+              )}
+            </AppContext.Consumer>
           </PopupBase>
         )}
         {this.state.saving && (

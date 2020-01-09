@@ -11,6 +11,7 @@ import ChangeAccount from "./universal/changeAccount";
 import ShowAndAddEmployee from "./universal/showAndAddEmployee";
 import ShowAndDeleteEmployee from "./universal/showAndDeleteEmployee";
 import { fetchCompanyServices } from "./../../queries/products";
+import { AppContext } from "../../common/functions";
 
 interface Props {
   orbit: any;
@@ -195,11 +196,16 @@ class OrbitSection extends React.Component<Props, State> {
           <div className="tableRow noHover">
             <div className="tableMain">
               <div className="tableColumnBig" style={{ alignItems: "center", display: "flex" }}>
-                <UniversalButton
-                  type="low"
-                  label="Create Account"
-                  onClick={() => this.setState({ newaccount: true })}
-                />
+                <AppContext.Consumer>
+                  {({ addRenderElement }) => (
+                    <UniversalButton
+                      innerRef={el => addRenderElement({ key: "addAccount", element: el })}
+                      type="low"
+                      label="Add Account"
+                      onClick={() => this.setState({ newaccount: true })}
+                    />
+                  )}
+                </AppContext.Consumer>
               </div>
               <div
                 className="tableColumnSmall"
@@ -233,47 +239,53 @@ class OrbitSection extends React.Component<Props, State> {
           />
         )}
         {this.state.addUsers && (
-          <PopupBase
-            small={true}
-            nooutsideclose={true}
-            close={() => this.setState(INITAL_STATE)}
-            additionalclassName="assignNewAccountPopup"
-            buttonStyles={{ justifyContent: "space-between" }}>
-            <h1>Select User for Account</h1>
-            {orbit.accounts.find(a => a.id == this.state.addUsers!.id).assignments &&
-              orbit.accounts
-                .find(a => a.id == this.state.addUsers!.id)
-                .assignments.map(
-                  assignment =>
-                    assignment &&
-                    assignment.endtime > moment.now() && (
-                      <ShowAndDeleteEmployee
-                        employee={{
-                          ...assignment.unitid,
-                          endtime: assignment.endtime,
-                          starttime: assignment.starttime,
-                          assignmentid: assignment.assignmentid
-                        }}
-                      />
-                    )
-                )}
+          <AppContext.Consumer>
+            {({ addRenderElement }) => (
+              <PopupBase
+                innerRef={el => addRenderElement({ key: "assignPopup", element: el })}
+                small={true}
+                nooutsideclose={true}
+                close={() => this.setState(INITAL_STATE)}
+                additionalclassName="assignNewAccountPopup"
+                buttonStyles={{ justifyContent: "space-between" }}>
+                <h1>Select User for Account</h1>
+                {orbit.accounts.find(a => a.id == this.state.addUsers!.id).assignments &&
+                  orbit.accounts
+                    .find(a => a.id == this.state.addUsers!.id)
+                    .assignments.map(
+                      assignment =>
+                        assignment &&
+                        assignment.endtime > moment.now() && (
+                          <ShowAndDeleteEmployee
+                            employee={{
+                              ...assignment.unitid,
+                              endtime: assignment.endtime,
+                              starttime: assignment.starttime,
+                              assignmentid: assignment.assignmentid
+                            }}
+                          />
+                        )
+                    )}
 
-            <ShowAndAddEmployee
-              account={orbit.accounts.find(a => a.id == this.state.addUsers!.id)}
-              refetch={this.props.refetch}
-            />
+                <ShowAndAddEmployee
+                  account={orbit.accounts.find(a => a.id == this.state.addUsers!.id)}
+                  refetch={this.props.refetch}
+                />
 
-            <UniversalButton
-              type="low"
-              label="Cancel"
-              onClick={() => this.setState(INITAL_STATE)}
-            />
-            <UniversalButton
-              type="high"
-              label="Close"
-              onClick={() => this.setState(INITAL_STATE)}
-            />
-          </PopupBase>
+                <UniversalButton
+                  type="low"
+                  label="Cancel"
+                  onClick={() => this.setState(INITAL_STATE)}
+                />
+                <UniversalButton
+                  innerRef={el => addRenderElement({ key: "saveAssign", element: el })}
+                  type="high"
+                  label="Close"
+                  onClick={() => this.setState(INITAL_STATE)}
+                />
+              </PopupBase>
+            )}
+          </AppContext.Consumer>
         )}
         {this.state.change && (
           <PopupBase

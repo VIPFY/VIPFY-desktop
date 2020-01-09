@@ -117,25 +117,32 @@ class EmployeeOverview extends React.Component<Props, State> {
           />
         </div>
         <div className="section">
-          <div className="heading">
-            <h1>Employees</h1>
-            <UniversalButton
-              type="high"
-              label="Add Employee"
-              customStyles={{
-                fontSize: "12px",
-                lineHeight: "24px",
-                fontWeight: "700",
-                marginRight: "16px",
-                width: "92px"
-              }}
-              onClick={() =>
-                this.setState({
-                  add: true
-                })
-              }
-            />
-          </div>
+          <AppContext.Consumer>
+            {({ addRenderElement }) => {
+              return (
+                <div className="heading">
+                  <h1>Employees</h1>
+                  <UniversalButton
+                    innerRef={el => addRenderElement({ key: "addEmp", element: el })}
+                    type="high"
+                    label="Add Employee"
+                    customStyles={{
+                      fontSize: "12px",
+                      lineHeight: "24px",
+                      fontWeight: "700",
+                      marginRight: "16px",
+                      width: "92px"
+                    }}
+                    onClick={() =>
+                      this.setState({
+                        add: true
+                      })
+                    }
+                  />
+                </div>
+              );
+            }}
+          </AppContext.Consumer>
           <Query query={fetchDepartmentsData} fetchPolicy="network-only">
             {({ loading, error, data, refetch }) => {
               if (loading) {
@@ -472,23 +479,28 @@ class EmployeeOverview extends React.Component<Props, State> {
                       ))}
                   </div>
                   {this.state.add && (
-                    <PopupBase
-                      small={true}
-                      close={() => this.setState({ add: false })}
-                      nooutsideclose={true}
-                      additionalclassName="formPopup deletePopup">
-                      <AddEmployeePersonalData
-                        continue={data => {
-                          this.setState({ add: false });
-                          this.props.moveTo(`emanager/${data.unitid}`);
-                        }}
-                        close={() => {
-                          this.setState({ add: false });
-                          refetch();
-                        }}
-                        isadmin={this.props.isadmin}
-                      />
-                    </PopupBase>
+                    <AppContext.Consumer>
+                      {({ addRenderElement }) => (
+                        <PopupBase
+                          innerRef={el => addRenderElement({ key: "addEmpPopup", element: el })}
+                          small={true}
+                          close={() => this.setState({ add: false })}
+                          nooutsideclose={true}
+                          additionalclassName="formPopup deletePopup">
+                          <AddEmployeePersonalData
+                            continue={data => {
+                              this.setState({ add: false });
+                              this.props.moveTo(`emanager/${data.unitid}`);
+                            }}
+                            close={() => {
+                              this.setState({ add: false });
+                              refetch();
+                            }}
+                            isadmin={this.props.isadmin}
+                          />
+                        </PopupBase>
+                      )}
+                    </AppContext.Consumer>
                   )}
                 </>
               );

@@ -96,7 +96,16 @@ class PopupSelfSaving extends React.Component<Props, State> {
               {this.props.errormessage ||
                 "There was an error. Please try again or contact support."}
             </div>
-            <UniversalButton type="high" label="Ok" onClick={() => this.close("error")} />
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  type="high"
+                  label="Ok"
+                  onClick={() => this.close("error")}
+                  /*innerRef={el => addRenderElement({ key: "errorNext", element: el })}*/
+                />
+              )}
+            </AppContext.Consumer>
           </>
         ) : this.state.saved ? (
           <div>
@@ -112,7 +121,7 @@ class PopupSelfSaving extends React.Component<Props, State> {
                     label="Continue"
                     onClick={() => this.close("sucess")}
                     customStyles={{ marginTop: "16px" }}
-                    ref={el => context.addRenderElement({ key: "saved", element: el })}
+                    innerRef={el => context.addRenderElement({ key: "saved", element: el })}
                   />
                 )}
               </AppContext.Consumer>
