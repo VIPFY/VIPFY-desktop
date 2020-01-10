@@ -63,7 +63,6 @@ class ServiceOverview extends React.Component<Props, State> {
   }
 
   filterMotherfunction(service) {
-    console.log("fMf", service);
     if (service.app.name.toUpperCase().includes(this.state.search.toUpperCase())) {
       return true;
     } /*else if (service.teams && service.teams.filter(team => this.filterTeams(team)).length > 0) {
@@ -118,12 +117,6 @@ class ServiceOverview extends React.Component<Props, State> {
 
       service.orbitids.forEach(element => {
         if (element.endtime == null || moment(element.endtime).toDate() < new Date()) {
-          console.log(
-            element.id,
-            element,
-            element.endtime,
-            element.endtime && moment(element.endtime).toDate() < new Date()
-          );
           element.accounts.forEach(account => {
             if (
               account != null &&
@@ -319,7 +312,6 @@ class ServiceOverview extends React.Component<Props, State> {
               if (data && data.fetchCompanyServices) {
                 interservices = data.fetchCompanyServices;
                 let sortforward = this.state.sortforward;
-                console.log("SERVICES ALL", interservices);
 
                 //sortselection
                 switch (this.state.sort) {
