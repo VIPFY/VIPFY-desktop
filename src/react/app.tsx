@@ -245,8 +245,6 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   moveTo = (path: string) => {
-    console.log("LOG: moveTo -> path", path);
-
     if (!(this.props.location.pathname === `/area/${path}`)) {
       this.setState({ page: path });
       this.props.history.push(`/area/${path}`);
@@ -380,7 +378,6 @@ class App extends React.Component<AppProps, AppState> {
 
     if (!this.references.find(e => e.key === reference.key)) {
       if (oldref && oldref.listener && oldref.action) {
-        console.log("oldref", oldref.listener);
         reference.element.addEventListener(oldref.listener, oldref.action);
       }
       this.references.push(reference);
@@ -396,11 +393,9 @@ class App extends React.Component<AppProps, AppState> {
       const oldref = this.references.splice(index, 1);
       if (oldref.element) {
         const newref = { key: oldref.key, element: oldref.element, listener, action };
-        console.log("TEST", newref);
         this.references.push(newref);
       }
     }
-    console.log("ADDRENDERACTION", key, listener, action, this.references);
   };
 
   render() {
