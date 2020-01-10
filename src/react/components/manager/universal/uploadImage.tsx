@@ -1,5 +1,4 @@
 import * as React from "react";
-import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
 import Dropzone from "react-dropzone";
 
 interface Props {
@@ -11,6 +10,7 @@ interface Props {
   isadmin?: Boolean;
   mainClassName?: string;
   formstyles?: Object;
+  isteam?: Boolean;
 }
 
 interface State {
@@ -40,26 +40,24 @@ class UploadImage extends React.Component<Props, State> {
 
   render() {
     const { picture, name } = this.state;
+    let formStyles = this.props.formstyles || {};
+
+    if (picture && picture.preview) {
+      formStyles = {
+        ...formStyles,
+        backgroundImage: `url(${encodeURI(picture.preview)})`,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        backgroundColor: "unset"
+      };
+    } else if ((!picture || !picture.preview) && name != "") {
+      formStyles = { ...formStyles, backgroundColor: this.props.isteam ? "#9C13BC" : "#5D76FF" };
+    }
+
     return (
       <form className={`profilepicture ${this.props.mainClassName}`} style={this.props.formstyles}>
         <label>
-          <div
-            className={this.props.className}
-            style={Object.assign(
-              this.props.formstyles || {},
-              picture && picture.preview
-                ? {
-                    backgroundImage: `url(${encodeURI(picture.preview)})`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundColor: "unset"
-                  }
-                : (!picture || !picture.preview) && name != ""
-                ? {
-                    backgroundColor: "#5D76FF"
-                  }
-                : {}
-            )}>
+          <div className={this.props.className} style={formStyles}>
             {/*picture && picture.preview ? (
               <img
                 src={picture.preview}
@@ -93,7 +91,9 @@ class UploadImage extends React.Component<Props, State> {
                 position: "absolute",
                 zIndex: -1
               }}
-              accept="image/*"
+              accept="image/jpg,image/jpeg,image/tiff,image/gif,image/png,image/webp"
+              maxSize={20000000}
+              minSize={20}
               type="file"
               multiple={false}
               onDrop={([file]) => this.setBothStates(file)}

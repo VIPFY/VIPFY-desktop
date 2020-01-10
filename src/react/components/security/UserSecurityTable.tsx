@@ -7,6 +7,7 @@ import { FETCH_USER_SECURITY_OVERVIEW, FORCE_RESET } from "./graphqlOperations";
 interface Props {
   forcePasswordChange: Function;
   search: string;
+  id: number;
 }
 
 interface State {
@@ -44,11 +45,12 @@ class UserSecurityTable extends React.Component<Props, State> {
           if (error || !data) {
             return <div>Error fetching data</div>;
           }
+
           return (
             <table className="security-table">
               <thead>
                 <tr>
-                  <th onClick={() => this.handleSortClick("Name")}>
+                  <th colSpan={2} onClick={() => this.handleSortClick("Name")}>
                     Name
                     {this.state.sort == "Name" ? (
                       this.state.sortforward ? (

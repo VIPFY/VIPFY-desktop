@@ -5,19 +5,16 @@ import { Query, Mutation } from "react-apollo";
 import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
-import AddEmployeeTeams from "../../components/manager/addEmployeeTeams";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import AddEmployeeServices from "../../components/manager/addEmployeeServices";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
 import { randomPassword } from "../../common/passwordgen";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
-import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
-import ManageTeams from "../../components/manager/universal/managing/teams";
-import ManageServices from "../../components/manager/universal/managing/services";
 import DeletePopup from "../../popups/universalPopups/deletePopup";
+import { AppContext } from "../../common/functions";
+import DeleteUser from "../../components/manager/deleteUser";
 
 interface Props {
   moveTo: Function;
@@ -29,25 +26,8 @@ interface State {
   sort: string;
   sortforward: boolean;
   add: Boolean;
-  addStage: number;
-  addpersonal: Object;
-  apps: { id: number; name: number; icon: string; needssubdomain: Boolean; options: Object }[];
-  addteams: any[];
-  saving: Boolean;
-  deleting: number | null;
   willdeleting: number | null;
 }
-
-const CREATE_EMPLOYEE = gql`
-  mutation onCreateEmployee(
-    $file: Upload
-    $addpersonal: JSON!
-    $addteams: [JSON]!
-    $apps: [JSON]!
-  ) {
-    createEmployee(file: $file, addpersonal: $addpersonal, addteams: $addteams, apps: $apps)
-  }
-`;
 
 const DELETE_EMPLOYEE = gql`
   mutation onDeleteEmployee($employeeid: ID!) {
@@ -61,12 +41,6 @@ class EmployeeOverview extends React.Component<Props, State> {
     sort: "Name",
     sortforward: true,
     add: false,
-    addpersonal: {},
-    addStage: 1,
-    apps: [],
-    addteams: [],
-    saving: false,
-    deleting: null,
     willdeleting: null
   };
 
@@ -80,121 +54,6 @@ class EmployeeOverview extends React.Component<Props, State> {
     }
   }
 
-  filterMotherfunction(employee) {
-    if (
-      `${employee.firstname} ${employee.lastname}`
-        .toUpperCase()
-        .includes(this.state.search.toUpperCase())
-    ) {
-      return true;
-    } else if (/* employee.teams.filter(team => this.filterTeams(team)).length > 0 */ false) {
-      return true;
-    } else if (
-      /* employee.services.filter(service => this.filterServices(service)).length > 0 */ false
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  filterTeams(team) {
-    return team.name.toUpperCase().includes(this.state.search.toUpperCase());
-  }
-
-  filterServices(service) {
-    if (!service.app) {
-      return false;
-    }
-    return service.app.name.toUpperCase().includes(this.state.search.toUpperCase());
-  }
-
-  addUser(apps, addteams) {
-    this.setState({ apps, addteams, saving: true, add: false });
-  }
-
-  addProcess(refetch) {
-    switch (this.state.addStage) {
-      case 1:
-        return (
-          <PopupBase
-            //fullmiddle={true}
-            small={true}
-            //customStyles={{ maxWidth: "1152px" }}
-            close={() => this.setState({ add: false })}
-            nooutsideclose={true}
-            additionalclassName="formPopup deletePopup">
-            <AddEmployeePersonalData
-              continue={data => {
-                this.setState({ addpersonal: data, addStage: 2 });
-              }}
-              close={() => {
-                this.setState({ add: false });
-                refetch();
-              }}
-              addpersonal={this.state.addpersonal}
-              isadmin={this.props.isadmin}
-            />
-          </PopupBase>
-        );
-      case 2:
-        return (
-          <ManageTeams
-            employee={{
-              ...this.state.addpersonal,
-              firstname: this.state.addpersonal.name,
-              id: this.state.addpersonal.unitid
-            }} //TODO CHANGE employeename
-            close={() => {
-              this.setState({ add: false });
-              refetch();
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  this.setState({ add: false });
-                  refetch();
-                }}
-              />
-              <div className="buttonSeperator" />
-              <UniversalButton
-                label="Manage Services"
-                type="high"
-                onClick={() => this.setState({ addStage: 3 })}
-              />
-            </div>
-          </ManageTeams>
-        );
-      case 3:
-        return (
-          <ManageServices
-            employee={{
-              ...this.state.addpersonal,
-              firstname: this.state.addpersonal.name,
-              id: this.state.addpersonal.unitid
-            }} //TODO CHANGE employeename
-            close={() => {
-              this.setState({ add: false });
-              refetch();
-            }}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  this.setState({ add: false });
-                  refetch();
-                }}
-              />
-            </div>
-          </ManageServices>
-        );
-      default:
-        return <div />;
-    }
-  }
-
   loading() {
     const amountFakes = Math.random() * 10 + 1;
     const fakeArray: JSX.Element[] = [];
@@ -204,7 +63,7 @@ class EmployeeOverview extends React.Component<Props, State> {
         <div className="tableRow">
           <div className="tableMain">
             <div className="tableColumnBig" style={{ width: "20%" }}>
-              <PrintTeamSquare team={{}} fake={true} />
+              <PrintEmployeeSquare employee={{}} fake={true} />
               <span className="name" />
             </div>
             <div className="tableColumnSmall" style={{ width: "10%" }}>
@@ -258,9 +117,32 @@ class EmployeeOverview extends React.Component<Props, State> {
           />
         </div>
         <div className="section">
-          <div className="heading">
-            <h1>Employees</h1>
-          </div>
+          <AppContext.Consumer>
+            {({ addRenderElement }) => {
+              return (
+                <div className="heading">
+                  <h1>Employees</h1>
+                  <UniversalButton
+                    innerRef={el => addRenderElement({ key: "addEmp", element: el })}
+                    type="high"
+                    label="Add Employee"
+                    customStyles={{
+                      fontSize: "12px",
+                      lineHeight: "24px",
+                      fontWeight: "700",
+                      marginRight: "16px",
+                      width: "92px"
+                    }}
+                    onClick={() =>
+                      this.setState({
+                        add: true
+                      })
+                    }
+                  />
+                </div>
+              );
+            }}
+          </AppContext.Consumer>
           <Query query={fetchDepartmentsData} fetchPolicy="network-only">
             {({ loading, error, data, refetch }) => {
               if (loading) {
@@ -295,27 +177,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                           <h1>Services</h1>
                         </div>
                       </div>
-                      <div className="tableEnd">
-                        <UniversalButton
-                          type="high"
-                          label="Add Employee"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "92px"
-                          }}
-                          onClick={() =>
-                            this.setState({
-                              add: true,
-                              addStage: 1,
-                              addpersonal: {},
-                              apps: []
-                            })
-                          }
-                        />
-                      </div>
+                      <div className="tableEnd"></div>
                     </div>
                     {this.loading()}
                   </div>
@@ -463,66 +325,14 @@ class EmployeeOverview extends React.Component<Props, State> {
                             )}
                           </h1>
                         </div>
-                        <div
-                          className="tableColumnBig"
-                          style={{ width: "20%" }}
-                          onClick={() => this.handleSortClick("Teams")}>
-                          <h1>
-                            Teams
-                            {/*this.state.sort == "Teams" ? (
-                              this.state.sortforward ? (
-                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
-                              ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
-                            ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )*/}
-                          </h1>
+                        <div className="tableColumnBig" style={{ width: "20%" }}>
+                          <h1>Teams</h1>
                         </div>
-                        <div
-                          className="tableColumnBig"
-                          style={{ width: "30%" }}
-                          onClick={() => this.handleSortClick("Services")}>
-                          <h1>
-                            Services
-                            {/*this.state.sort == "Services" ? (
-                              this.state.sortforward ? (
-                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
-                              ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
-                            ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )*/}
-                          </h1>
+                        <div className="tableColumnBig" style={{ width: "30%" }}>
+                          <h1>Services</h1>
                         </div>
                       </div>
-                      <div className="tableEnd">
-                        <UniversalButton
-                          type="high"
-                          label="Add Employee"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "92px"
-                          }}
-                          onClick={() =>
-                            this.setState({
-                              add: true,
-                              addStage: 1,
-                              addpersonal: {},
-                              apps: []
-                            })
-                          }
-                        />
-                      </div>
+                      <div className="tableEnd"></div>
                     </div>
                     {employees.length > 0 &&
                       employees.map(employee => (
@@ -536,27 +346,6 @@ class EmployeeOverview extends React.Component<Props, State> {
                               <span className="name">
                                 {employee.firstname} {employee.lastname}
                               </span>
-                              {/* <div
-                                className="status"
-                                style={
-                                  employee.isonline
-                                    ? {
-                                        backgroundColor: "#29CC94",
-                                        float: "right",
-                                        marginTop: "18px",
-                                        marginLeft: "0px",
-                                        width: "56px"
-                                      }
-                                    : {
-                                        backgroundColor: "#DB4D3F",
-                                        float: "right",
-                                        marginTop: "18px",
-                                        marginLeft: "0px",
-                                        width: "56px"
-                                      }
-                                }>
-                                {employee.isonline ? "Online" : "Offline"}
-                              </div>*/}
                             </div>
                             <div className="tableColumnSmall" style={{ width: "10%" }}>
                               <div
@@ -622,7 +411,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                     <ColumnServices
                                       {...this.props}
                                       style={{ width: "30%" }}
-                                      services={data.fetchUsersOwnLicences}
+                                      services={data.fetchUserLicenceAssignments}
                                       checkFunction={element =>
                                         !element.disabled &&
                                         !element.boughtplanid.planid.appid.disabled &&
@@ -649,7 +438,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                   <ColumnServices
                                     {...this.props}
                                     style={{ width: "30%" }}
-                                    services={data.fetchUsersOwnLicences}
+                                    services={data.fetchUserLicenceAssignments}
                                     checkFunction={element =>
                                       !element.disabled &&
                                       !element.boughtplanid.planid.appid.disabled &&
@@ -675,59 +464,55 @@ class EmployeeOverview extends React.Component<Props, State> {
                           <div className="tableEnd">
                             <div className="editOptions">
                               <i className="fal fa-external-link-alt editbuttons" />
-                              <i
-                                className="fal fa-trash-alt editbuttons"
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  this.setState({ willdeleting: employee.id });
-                                }}
-                              />
+                              {this.props.id != employee.id && (
+                                <i
+                                  className="fal fa-trash-alt editbuttons"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    this.setState({ willdeleting: employee });
+                                  }}
+                                />
+                              )}
                             </div>
                           </div>
                         </div>
                       ))}
                   </div>
-                  {this.state.add && this.addProcess(refetch)}
+                  {this.state.add && (
+                    <AppContext.Consumer>
+                      {({ addRenderElement }) => (
+                        <PopupBase
+                          innerRef={el => addRenderElement({ key: "addEmpPopup", element: el })}
+                          small={true}
+                          close={() => this.setState({ add: false })}
+                          nooutsideclose={true}
+                          additionalclassName="formPopup deletePopup">
+                          <AddEmployeePersonalData
+                            continue={data => {
+                              this.setState({ add: false });
+                              this.props.moveTo(`emanager/${data.unitid}`);
+                            }}
+                            close={() => {
+                              this.setState({ add: false });
+                              refetch();
+                            }}
+                            isadmin={this.props.isadmin}
+                          />
+                        </PopupBase>
+                      )}
+                    </AppContext.Consumer>
+                  )}
                 </>
               );
             }}
           </Query>
         </div>
-        {this.state.saving && (
-          <Mutation mutation={CREATE_EMPLOYEE}>
-            {createEmployee => (
-              <PopupSelfSaving
-                savingmessage="Adding new employee"
-                savedmessage="New employee succesfully added"
-                saveFunction={async () => {
-                  await createEmployee({
-                    variables: {
-                      file: this.state.addpersonal.picture,
-                      addpersonal: {
-                        password: await randomPassword(),
-                        ...this.state.addpersonal
-                      },
-                      addteams: this.state.addteams,
-                      apps: this.state.apps
-                    },
-                    refetchQueries: [{ query: fetchDepartmentsData }]
-                  });
-                }}
-                closeFunction={() =>
-                  this.setState({
-                    saving: false,
-                    addteams: [],
-                    apps: [],
-                    addpersonal: {},
-                    addStage: 1
-                  })
-                }
-              />
-            )}
-          </Mutation>
-        )}
         {this.state.willdeleting && (
-          <Mutation mutation={DELETE_EMPLOYEE}>
+          <DeleteUser
+            user={this.state.willdeleting}
+            close={() => this.setState({ willdeleting: null })}
+          />
+          /*<Mutation mutation={DELETE_EMPLOYEE}>
             {deleteEmployee => (
               <DeletePopup
                 key="removeEmployee"
@@ -746,7 +531,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                 }
               />
             )}
-          </Mutation>
+          </Mutation>*/
         )}
       </div>
     );

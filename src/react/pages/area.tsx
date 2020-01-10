@@ -11,7 +11,6 @@ import Dashboard from "./dashboard";
 import Domains from "./domains";
 import Marketplace from "./marketplace";
 import MessageCenter from "./messagecenter";
-import Navigation from "./navigation";
 import Profile from "./profile";
 import Settings from "./settings";
 import AdminDashboard from "../components/admin/Dashboard";
@@ -22,8 +21,6 @@ import ErrorPage from "./error";
 import UsageStatistics from "./usagestatistics";
 import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 
-import { fetchLicences } from "../queries/auth";
-// import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
 import Security from "./security";
@@ -53,6 +50,10 @@ import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
 import ServiceIntegrator from "../components/admin/ServiceIntegrator";
+import TutorialBase from "../tutorials/tutorialBase";
+import CryptoDebug from "../components/admin/crytpodebug";
+import Vacation from "./vacation";
+import { fetchUserLicences } from "../queries/departments";
 
 interface AreaProps {
   history: any[];
@@ -69,6 +70,8 @@ interface AreaProps {
   style?: Object;
   needspasswordchange: boolean;
   emails: string[];
+  tutorialprogress?: any;
+  highlightReferences?: any;
 }
 
 interface AreaState {
@@ -111,53 +114,15 @@ class Area extends React.Component<AreaProps, AreaState> {
       this.props.history.push(page);
     });
 
-    /*const meme = await this.props.client.query({ query: me });
-
-    const script = document.createElement("script");
-
-    script.src =
-      "https://static.zdassets.com/ekr/snippet.js?key=dae43c43-7726-40fb-be8a-7468a19337e0";
-    script.id = "ze-snippet";
-    script.async = false;
-    script.onload = () => {
-      const script3 = document.createElement("script");
-
-      const datascript = JSON.stringify({
-        name: `${meme.data.me.firstname} ${meme.data.me.lastname}`,
-        email: `${meme.data.me.emails[0].email}`,
-        organization: `${meme.data.me.company.name}`
-      });
-      script3.innerHTML = `zE(function() {zE.identify(${datascript});});`;
-      script3.id = "ze-snippet3";
-      script3.async = false;
-
-      document.head.appendChild(script3);
-
-      this.setState({ script3 });
-    };
-    this.setState({ script });
-    document.head.appendChild(script);*/
-
     if (this.props.consent === null) {
       this.setState({ consentPopup: true });
     }
   };
 
-  componentWillUnmount() {
-    //console.log("AREA UNMOUNT");
-    /*if (this.state.script) {
-      console.log(this.state.script);
-      document.head.removeChild(this.state.script);
-    }*/
-  }
-
   moveTo = path => {
     if (!path.startsWith("app")) {
       this.setState({ viewID: -1 });
     }
-    /*if (!(this.props.location.pathname === path)) {
-      this.props.history.push(path);
-    }*/
     this.props.moveTo(path);
   };
 
@@ -374,14 +339,16 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan },
-      //{ path: "support", component: SupportPage },
+      { path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
+      { path: "vacation", component: Vacation },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
       { path: "admin/service-integration", component: ServiceIntegrator, admin: true },
+      { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },
       { path: "emanager", component: EmployeeOverview, admin: true },
@@ -395,89 +362,144 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "universallogin", component: UniversalLogin },
       { path: "company", component: CompanyDetails, admin: true }
     ];
-
-    if (this.props.licences.loading) {
-      return <LoadingDiv text="Preparing Vipfy..." />;
-    }
-
     return (
-      <div className="area" style={this.props.style}>
-        <SideBarContext.Provider value={this.state.sidebarOpen}>
-          <UserContext.Provider value={{ userid: this.props.id }}>
-            <Route
-              render={props => {
-                if (!this.props.location.pathname.includes("advisor")) {
-                  return (
-                    <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
-                      {res => (
-                        <Sidebar
-                          sidebarOpen={sidebarOpen}
-                          setApp={this.setApp}
-                          viewID={this.state.viewID}
-                          views={this.state.webviews}
-                          openInstances={this.state.openInstances}
-                          toggleSidebar={this.toggleSidebar}
-                          setInstance={this.setInstance}
-                          {...this.props}
-                          licences={this.props.licences.fetchLicences}
-                          {...props}
-                          {...res}
-                          moveTo={this.moveTo}
-                        />
-                      )}
-                    </Query>
-                  );
-                } else {
-                  return "";
-                }
-              }}
-            />
-            {/*<Route
-            render={props => {
-              if (!this.props.location.pathname.includes("advisor")) {
-                return (
-                  <Navigation
-                    chatOpen={chatOpen}
-                    sidebarOpen={sidebarOpen}
-                    setApp={this.setApp}
-                    toggleChat={this.toggleChat}
-                    toggleSidebar={this.toggleSidebar}
-                    viewID={this.state.viewID}
-                    views={this.state.webviews}
-                    openInstances={this.state.openInstances}
-                    {...this.props}
-                    {...props}
+      <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <LoadingDiv text="Preparing Vipfy..." />;
+          }
+
+          if (error) {
+            return <ErrorPage />;
+          }
+          const licences = data.fetchUserLicenceAssignments;
+          return (
+            <div className="area" style={this.props.style}>
+              <SideBarContext.Provider value={this.state.sidebarOpen}>
+                <UserContext.Provider value={{ userid: this.props.id }}>
+                  <Route
+                    render={props => {
+                      if (!this.props.location.pathname.includes("advisor")) {
+                        return (
+                          <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
+                            {res => (
+                              <Sidebar
+                                sidebarOpen={sidebarOpen}
+                                setApp={this.setApp}
+                                viewID={this.state.viewID}
+                                views={this.state.webviews}
+                                openInstances={this.state.openInstances}
+                                toggleSidebar={this.toggleSidebar}
+                                setInstance={this.setInstance}
+                                {...this.props}
+                                licences={licences}
+                                {...props}
+                                {...res}
+                                moveTo={this.moveTo}
+                              />
+                            )}
+                          </Query>
+                        );
+                      } else {
+                        return "";
+                      }
+                    }}
                   />
-                );
-              } else {
-                return "";
-              }
-            }}
-          />*/}
-            <Route render={() => <HistoryButtons viewID={this.state.viewID} />} />
-            <Switch>
-              <Route
-                exact
-                path="/area/support"
-                render={props => <SupportPage {...this.state} {...this.props} {...props} />}
-              />
-
-              <Route
-                exact
-                path="/area/support/fromError"
-                render={() => <SupportPage {...this.state} fromErrorPage={true} />}
-              />
-
-              {routes.map(({ path, component, admin, addprops }) => {
-                const RouteComponent = component;
-                if (admin && !this.props.isadmin) {
-                  return;
-                } else {
-                  return (
+                  <Route render={() => <HistoryButtons viewID={this.state.viewID} />} />
+                  <Switch>
                     <Route
-                      key={path}
                       exact
-                      path={`/area/${path}`}
+                      path="/area/support"
+                      render={props => <SupportPage {...this.state} {...this.props} {...props} />}
+                    />
+
+                    <Route
+                      exact
+                      path="/area/support/fromError"
+                      render={() => <SupportPage {...this.state} fromErrorPage={true} />}
+                    />
+
+                    {routes.map(({ path, component, admin, addprops }) => {
+                      const RouteComponent = component;
+                      if (admin && !this.props.isadmin) {
+                        return;
+                      } else {
+                        return (
+                          <Route
+                            key={path}
+                            exact
+                            path={`/area/${path}`}
+                            render={props => (
+                              <div
+                                className={`${
+                                  !this.props.location.pathname.includes("advisor")
+                                    ? "full-working"
+                                    : ""
+                                } ${chatOpen ? "chat-open" : ""} ${
+                                  sidebarOpen && !props.location.pathname.includes("advisor")
+                                    ? "sidebar-open"
+                                    : ""
+                                }`}
+                                style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
+                                <ResizeAware>
+                                  <RouteComponent
+                                    setApp={this.setApp}
+                                    toggleAdmin={this.toggleAdmin}
+                                    adminOpen={this.state.adminOpen}
+                                    moveTo={this.moveTo}
+                                    {...addprops}
+                                    {...this.props}
+                                    {...props}
+                                    licences={licences}
+                                  />
+                                </ResizeAware>
+                              </div>
+                            )}
+                          />
+                        );
+                      }
+                    })}
+
+                    <Route
+                      exact
+                      path="/area/domains/"
+                      render={props => (
+                        <div
+                          className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                            sidebarOpen ? "sidebar-open" : ""
+                          }`}>
+                          <Domains setDomain={this.setDomain} {...this.props} {...props} />
+                        </div>
+                      )}
+                    />
+                    <Route
+                      exact
+                      path="/area/domains/:domain"
+                      render={props => (
+                        <div
+                          className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                            sidebarOpen ? "sidebar-open" : ""
+                          }`}>
+                          <Domains setDomain={this.setDomain} {...this.props} {...props} />
+                        </div>
+                      )}
+                    />
+
+                    <Route
+                      exact
+                      path="/area/app/:licenceid"
+                      render={props => {
+                        if (
+                          this.state.licenceID != props.match.params.licenceid ||
+                          this.state.viewID == -1
+                        ) {
+                          this.setApp(props.match.params.licenceid);
+                        }
+                        return "";
+                      }}
+                    />
+                    <Route
+                      key={"ERRORELSE"}
                       render={props => (
                         <div
                           className={`${
@@ -486,129 +508,44 @@ class Area extends React.Component<AreaProps, AreaState> {
                             sidebarOpen && !props.location.pathname.includes("advisor")
                               ? "sidebar-open"
                               : ""
-                          }`}
-                          style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
-                          <ResizeAware>
-                            <RouteComponent
-                              setApp={this.setApp}
-                              toggleAdmin={this.toggleAdmin}
-                              adminOpen={this.state.adminOpen}
-                              moveTo={this.moveTo}
-                              {...addprops}
-                              {...this.props}
-                              {...props}
-                            />
-                          </ResizeAware>
+                          }`}>
+                          <ErrorPage />
                         </div>
                       )}
                     />
-                  );
-                }
-              })}
-
-              <Route
-                exact
-                path="/area/domains/"
-                render={props => (
-                  <div
-                    className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                      sidebarOpen ? "sidebar-open" : ""
-                    }`}>
-                    <Domains setDomain={this.setDomain} {...this.props} {...props} />
-                  </div>
-                )}
-              />
-              <Route
-                exact
-                path="/area/domains/:domain"
-                render={props => (
-                  <div
-                    className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                      sidebarOpen ? "sidebar-open" : ""
-                    }`}>
-                    <Domains setDomain={this.setDomain} {...this.props} {...props} />
-                  </div>
-                )}
-              />
-
-              <Route
-                exact
-                path="/area/app/:licenceid"
-                render={props => {
-                  if (
-                    this.state.licenceID != props.match.params.licenceid ||
-                    this.state.viewID == -1
-                  ) {
-                    this.setApp(props.match.params.licenceid);
-                  }
-                  return "";
-                }}
-              />
-              {/*<Route
-            exact
-            path="/area/app/:licenceid/:url"
-            render={props => {
-              console.log("PROPSURL", props);
-              if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
-                this.setApp(props.match.params.licenceid);
-              }
-              this.setInstanceUrl(
-                parseInt(Object.keys(this.state.openInstances[props.match.params.licenceid])[0]),
-                props.match.params.url
-              );
-              return "";
-            }}
-          />*/}
-              <Route
-                key={"ERRORELSE"}
-                render={props => (
-                  <div
-                    className={`${
-                      !this.props.location.pathname.includes("advisor") ? "full-working" : ""
-                    } ${chatOpen ? "chat-open" : ""} ${
-                      sidebarOpen && !props.location.pathname.includes("advisor")
-                        ? "sidebar-open"
-                        : ""
-                    }`}>
-                    <ErrorPage />
-                  </div>
-                )}
-              />
-            </Switch>
-            <ViewHandler
-              showView={this.state.viewID}
-              views={this.state.webviews}
-              sidebarOpen={sidebarOpen}
-            />
-            <Tabs
-              tabs={this.state.webviews}
-              setInstance={this.setInstance}
-              viewID={this.state.viewID}
-              handleDragStart={this.handleDragStart}
-              handleDragOver={this.handleDragOver}
-              handleDragEnd={this.handleDragEnd}
-              handleDragLeave={this.handleDragLeave}
-              handleClose={this.handleClose}
-            />
-            {this.state.consentPopup && (
-              <Consent close={() => this.setState({ consentPopup: false })} />
-            )}
-            {this.props.needspasswordchange && (
-              <ForcedPasswordChange email={this.props.emails[0].email} />
-            )}
-          </UserContext.Provider>
-        </SideBarContext.Provider>
-      </div>
+                  </Switch>
+                  <ViewHandler
+                    showView={this.state.viewID}
+                    views={this.state.webviews}
+                    sidebarOpen={sidebarOpen}
+                  />
+                  <Tabs
+                    tabs={this.state.webviews}
+                    setInstance={this.setInstance}
+                    viewID={this.state.viewID}
+                    handleDragStart={this.handleDragStart}
+                    handleDragOver={this.handleDragOver}
+                    handleDragEnd={this.handleDragEnd}
+                    handleDragLeave={this.handleDragLeave}
+                    handleClose={this.handleClose}
+                  />
+                  {this.state.consentPopup && (
+                    <Consent close={() => this.setState({ consentPopup: false })} />
+                  )}
+                  {this.props.needspasswordchange && (
+                    <ForcedPasswordChange email={this.props.emails[0].email} />
+                  )}
+                  {this.props.isadmin &&
+                    this.props.tutorialprogress &&
+                    this.props.highlightReferences && <TutorialBase {...this.props} />}
+                </UserContext.Provider>
+              </SideBarContext.Provider>
+            </div>
+          );
+        }}
+      </Query>
     );
   }
 }
 
-export default compose(
-  graphql(fetchLicences, {
-    name: "licences"
-  }) /*
-  graphql(fetchRecommendedApps, {
-    name: "rcApps"
-  }),*/,
-  withApollo
-)(withRouter(Area));
+export default compose(withApollo)(withRouter(Area));

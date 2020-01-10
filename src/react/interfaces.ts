@@ -17,6 +17,7 @@ export interface Licence {
   delete: boolean;
   vacationstart?: number | Date;
   vacationend?: number | Date;
+  accountid: number;
 }
 
 export interface Unit {
@@ -61,6 +62,7 @@ export interface SecurityUser {
   banned: boolean;
   suspended: boolean;
   needspasswordchange: boolean;
+  needstwofa: boolean;
   twofactormethods: {
     twofaid: number;
     twofatype: string;

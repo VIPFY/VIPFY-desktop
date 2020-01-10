@@ -26,7 +26,7 @@ interface State {
   picture: File | null;
 }
 
-class EmployeeGerneralDataAdd extends React.Component<Props, State> {
+class EmployeeGeneralDataAdd extends React.Component<Props, State> {
   state = {
     name: (this.props.addpersonal && this.props.addpersonal.name) || "",
     birthday: (this.props.addpersonal && this.props.addpersonal.birthday) || "",
@@ -56,7 +56,7 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
         <div style={{ display: "flex", alignItems: "flex-end", marginBottom: "40px" }}>
           <UploadImage
             onDrop={file => this.setBothStates({ picture: file })}
-            picture={null}
+            picture={this.state.picture}
             name={this.state.name}
             className="profilepictureTeam"
             isadmin={this.props.isadmin}
@@ -203,4 +203,4 @@ class EmployeeGerneralDataAdd extends React.Component<Props, State> {
     );
   }
 }
-export default EmployeeGerneralDataAdd;
+export default EmployeeGeneralDataAdd;

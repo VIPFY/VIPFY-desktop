@@ -30,7 +30,7 @@ const suffix =
 
 if (!disableUpdater) {
   autoUpdater.setFeedURL({
-    url: `${DOMAIN}/VIPFY/98c61756053f11b6429ce49805bd7553/${process.platform}/${process.arch}${suffix}`,
+    url: `${DOMAIN}/VIPFY/4e2105365ea5c7e823cb7af42450b29a/${process.platform}/${process.arch}${suffix}`,
     serverType: "json"
   });
 
@@ -194,8 +194,16 @@ const createWindow = async () => {
 
   // Open the DevTools.
   if (isDevMode) {
-    await installExtension(REACT_DEVELOPER_TOOLS);
-    await installExtension(APOLLO_DEVELOPER_TOOLS);
+    try {
+      await installExtension(REACT_DEVELOPER_TOOLS);
+    } catch (err) {
+      console.log(err);
+    }
+    try {
+      await installExtension(APOLLO_DEVELOPER_TOOLS);
+    } catch (err) {
+      console.log(err);
+    }
     mainWindow.webContents.openDevTools();
   }
 

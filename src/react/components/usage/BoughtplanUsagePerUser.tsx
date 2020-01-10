@@ -129,6 +129,14 @@ class BoughtplanUsagePerUser extends React.Component<Props, State> {
                 value: (u.totalminutes / total) * 100
               }));
 
+            if (usage.length < 1) {
+              return (
+                <div style={{ margin: "20px" }} className="statistic-team-chart">
+                  No matches
+                </div>
+              );
+            }
+
             switch (this.state.sortBy) {
               case "Least Used":
                 usage = usage.sort((a, b) => a.value - b.value);
@@ -205,7 +213,7 @@ class BoughtplanUsagePerUser extends React.Component<Props, State> {
                           if (typeof x === "string") {
                             return x;
                           }
-                          return x.toFixed(0) + "%";
+                          return `${x.toFixed(x <= 10 ? 2 : 0)} %`;
                         }
                       }
                     },

@@ -2,79 +2,48 @@ import * as React from "react";
 
 interface Props {
   title: string;
-  child: { current: HTMLDivElement };
   className?: string;
   noResize?: boolean;
+  info?: string;
+  children?: any;
 }
 
-interface State {
-  show: boolean;
-}
+export default (props: Props) => {
+  const [show, setShow] = React.useState(true);
+  const [maxHeight, setHeight] = React.useState("1000px");
 
-class Collapsible extends React.Component<Props, State> {
-  state = { show: true };
+  const childrenRef = React.createRef<HTMLTextAreaElement>();
 
-  componentDidMount() {
-    window.addEventListener("resize", this.handleResize, true);
+  React.useEffect(() => {
+    if (childrenRef && childrenRef!.current) {
+      const { scrollHeight } = childrenRef!.current!;
 
-    if (this.props.child && this.props.child.current) {
-      // Needed to correctly render the height
-      setTimeout(() => this.setInitialHeight(), 800);
-      if (!this.props.noResize) {
-        setTimeout(() => this.setInitialHeight(), 2500);
+      if (parseInt(maxHeight.split("px")[0]) + 200 < scrollHeight) {
+        setHeight(`${scrollHeight + 200}px`);
       }
     }
-  }
+  });
 
-  componentDidUpdate(_prevProps, prevState) {
-    if (prevState.show !== this.state.show) {
-      const { current } = this.props.child;
-      const sectionHeight = current.scrollHeight;
-      current.style.height = `${sectionHeight + 20}px`;
+  return (
+    <section className={`collapsible ${props.className}`}>
+      <div
+        className="header"
+        title={props.info ? props.info : ""}
+        onClick={(): void => setShow(prevState => !prevState)}>
+        <i className={`button-hide fas fa-angle-left rotate-${show ? "left" : "down"}`} />
+        <span>{props.title}</span>
+      </div>
 
-      if (prevState.show) {
-        current.style.height = "0px";
-        current.classList.add("no-spacing");
-      } else {
-        current.classList.remove("no-spacing");
-      }
-    }
-  }
-
-  setInitialHeight = () => {
-    const sectionHeight = this.props.child.current.scrollHeight;
-    this.props.child.current.style.height = `${sectionHeight}px`;
-
-    if (!this.props.child.current.classList.contains("collapsible")) {
-      this.props.child.current.classList.add("collapsible");
-    }
-  };
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize, true);
-  }
-
-  handleResize = (): void => {
-    if (this.state.show) {
-      this.props.child.current.style.height = "unset";
-    }
-  };
-
-  toggle = (): void => this.setState(prevState => ({ show: !prevState.show }));
-
-  render() {
-    const { show } = this.state;
-
-    return (
-      <section className={`genericHolder ${this.props.className}`}>
-        <div className="header" onClick={this.toggle}>
-          <i className={`button-hide fas fa-angle-left rotate-${show ? "left" : "down"}`} />
-          <span>{this.props.title}</span>
-        </div>
-        {this.props.children}
-      </section>
-    );
-  }
-}
-
-export default Collapsible;
+      <div
+        ref={childrenRef}
+        className={show ? "children" : "no-spacing"}
+        style={{
+          height: "auto",
+          maxHeight: show ? maxHeight : "0",
+          transition: `all 300ms ease-${show ? "out" : "in"}`
+        }}>
+        {React.Children.map(props.children, child => child)}
+      </div>
+    </section>
+  );
+};

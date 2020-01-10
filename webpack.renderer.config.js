@@ -4,11 +4,11 @@ const CopyPlugin = require("copy-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 rules.push({
-  test: /\.s[ac]ss$/i,
+  test: /\.s?[ac]ss$/i,
   use: [
     { loader: "style-loader" },
     { loader: "css-loader" },
-    { loader: "resolve-url-loader" },
+    { loader: "resolve-url-loader", options: { removeCR: true } },
     { loader: "sass-loader" }
   ]
 });
@@ -42,7 +42,7 @@ rules.push({
 });
 
 plugins.push(new CopyPlugin([{ from: "src/ssoConfigPreload/", to: "ssoConfigPreload/" }]));
-plugins.push(new BundleAnalyzerPlugin());
+//plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = {
   // Put your normal webpack config below here
@@ -52,7 +52,10 @@ module.exports = {
   target: "electron-renderer",
   node: { global: true },
   plugins,
+  optimization: {
+    minimize: false
+  },
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".scss"]
+    extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".scss", ".node", ".json"]
   }
 };

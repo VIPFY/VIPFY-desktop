@@ -88,8 +88,6 @@ class Phones extends React.Component<Props, State> {
     oldPhone: null
   };
 
-  tableRef = React.createRef<HTMLTextAreaElement>();
-
   componentDidMount() {
     if (this.props.company) {
       this.setState({ variables: { company: true } });
@@ -219,8 +217,8 @@ class Phones extends React.Component<Props, State> {
     const phoneHeaders = ["Number", "Description", /*"Priority", "Verified",*/ ""];
 
     return (
-      <Collapsible child={this.tableRef} title="Phones">
-        <div className="inside-padding" ref={this.tableRef}>
+      <Collapsible title="Phones">
+        <div className="inside-padding">
           <Query
             pollInterval={60 * 10 * 1000 + 1000}
             query={FETCH_PHONES}

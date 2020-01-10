@@ -16,7 +16,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Tooltip from "react-tooltip-lite";
 import UploadImage from "../manager/universal/uploadImage";
-import { getImageUrlTeam } from "../../common/images";
+import { getImageUrlTeam, resizeImage } from "../../common/images";
 import Collapsible from "../../common/Collapsible";
 
 const UPDATE_PIC = gql`
@@ -46,11 +46,10 @@ class CompanyData extends React.Component<Props, State> {
     error: null
   };
 
-  companyRef = React.createRef<HTMLDivElement>();
-
   uploadPic = async picture => {
     try {
-      await this.props.updatePic({ variables: { file: picture }, refetchQueries: ["me"] });
+      const resizedImage = await resizeImage(picture);
+      await this.props.updatePic({ variables: { file: resizedImage }, refetchQueries: ["me"] });
 
       this.props.client.query({ query: me, fetchPolicy: "network-only" });
       this.props.client.query({
@@ -109,11 +108,8 @@ class CompanyData extends React.Component<Props, State> {
               const { fetchCompany } = data;
 
               return (
-                <Collapsible child={this.companyRef} title="Company Data">
-                  <div
-                    ref={this.companyRef}
-                    className="company-overview managerPage"
-                    style={{ padding: "0px" }}>
+                <Collapsible title="Company Data">
+                  <div className="company-overview managerPage" style={{ padding: "0px" }}>
                     <div className={"pic-holder"} style={{ margin: 0, marginBottom: "16px" }}>
                       <UploadImage
                         picture={{ preview: getImageUrlTeam(fetchCompany.profilepicture, 96) }}

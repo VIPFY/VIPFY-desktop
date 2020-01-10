@@ -23,7 +23,7 @@ interface Props {
   rcApps: any;
   setApp: Function;
   moveTo: Function;
-  licences: any;
+  licences: any[];
   placeid?: string;
   disableWelcome: Function;
   addressProposal?: object;
@@ -45,15 +45,15 @@ class Dashboard extends React.Component<Props, State> {
   favouriteListRef = React.createRef<HTMLDivElement>();
 
   dragStartFunction = (item: number): void => {
+    console.log("LOG: Dashboard -> item", item);
     this.setState({ dragItem: item, showDeletion: true });
   };
   dragEndFunction = (): void => this.setState({ dragItem: null, showDeletion: false });
   setApp = (licence: number) => this.props.setApp(licence);
 
   handleDrop = async (dropPosition: number) => {
-    const dragged = this.props.licences.fetchLicences.find(
-      licence => licence.id == this.state.dragItem
-    );
+    const dragged = this.props.licences.find(licence => licence.id == this.state.dragItem);
+    console.log("LOG: Dashboard -> handleDrop -> this.state.dragItem", this.state.dragItem);
 
     if (dropPosition != dragged.dashboard) {
       try {
@@ -120,9 +120,7 @@ class Dashboard extends React.Component<Props, State> {
   handleDelete = async e => {
     try {
       e.preventDefault();
-      const dragged = this.props.licences.fetchLicences.find(
-        licence => licence.id == this.state.dragItem
-      );
+      const dragged = this.props.licences.find(licence => licence.id == this.state.dragItem);
 
       if (dragged.dashboard !== null) {
         favourites[dragged.dashboard] = null;
@@ -145,14 +143,6 @@ class Dashboard extends React.Component<Props, State> {
   };
 
   render() {
-    if (this.props.licences.loading) {
-      return <LoadingDiv text="Fetching Licences..." />;
-    }
-
-    if (this.props.licences.error) {
-      return <ErrorComp error={filterError(this.props.licences.error)} />;
-    }
-
     const appLists: {
       "My Apps": Licence[];
       "Pending Apps": Licence[];
@@ -163,10 +153,10 @@ class Dashboard extends React.Component<Props, State> {
       "Temporary Apps": []
     };
 
-    const licenceCheck = this.props.licences && this.props.licences.fetchLicences.length > 0;
+    const licenceCheck = this.props.licences && this.props.licences.length > 0;
 
     if (licenceCheck) {
-      this.props.licences.fetchLicences.forEach(licence => {
+      this.props.licences.forEach(licence => {
         if (licence.dashboard !== null && licence.dashboard <= 8) {
           favourites[licence.dashboard] = licence;
         }
@@ -174,7 +164,11 @@ class Dashboard extends React.Component<Props, State> {
         if (licence.pending) {
           appLists["Pending Apps"].push(licence);
         } else if (licence.tags.length > 0) {
-          if (licence.vacationstart && moment().isBefore(moment(licence.vacationend))) {
+          if (
+            licence.tags.includes("vacation") &&
+            licence.vacationstart &&
+            moment().isBefore(moment(licence.vacationend))
+          ) {
             appLists["Temporary Apps"].push(licence);
           }
         } else {
@@ -184,35 +178,47 @@ class Dashboard extends React.Component<Props, State> {
     }
 
     return (
-      <div className="dashboard">
+      <div className="managerPage dashboard">
         <div className="heading">
           <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
         {!licenceCheck ? (
-          <div className="no-apps">
-            <div>This is your</div>
-            <h1>DASHBOARD</h1>
-            <div>
-              It's a central point of information about your connected services and licenses.
-            </div>
-            <img src={dashboardPic} alt="Cool pic of a dashboard" />
-            <div>You haven't integrated any services yet.</div>
-            <div>
-              Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
-              services.
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "64px" }}>
+            <div className="no-apps">
+              <div>This is your</div>
+              <h1>DASHBOARD</h1>
+              <div>
+                It's a central point of information about your connected services and licenses.
+              </div>
+              <img src={dashboardPic} alt="Cool pic of a dashboard" />
+              <div>You haven't integrated any services yet.</div>
+              <div>
+                Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
+                services.
+              </div>
             </div>
           </div>
         ) : (
           <React.Fragment>
-            <Collapsible noResize={true} child={this.favouriteListRef} title="Favourite Apps">
-              <div ref={this.favouriteListRef} className="favourite-apps">
+            {/*<Collapsible noResize={true}  title="Favourite Apps">*/}
+            <div className="section">
+              <div className="heading">
+                <h1>Favourite Apps</h1>
+              </div>
+              <div
+                /*ref={this.favouriteListRef} className="favourite-apps"*/ className="appGrid"
+                style={{
+                  gridColumnGap:
+                    24 +
+                    ((this.props.width - 64 - 64 + 24) % (128 + 24)) /
+                      (Math.floor((this.props.width - 64 - 64 + 24) / (128 + 24)) - 1)
+                }}>
                 {Object.values(favourites).map((favourite, key) => {
                   if (favourite !== null) {
                     return (
                       <AppTile
                         key={key}
-                        dragItem={this.state.dragItem}
                         dragStartFunction={this.dragStartFunction}
                         dragEndFunction={this.dragEndFunction}
                         handleDrop={this.handleDrop}
@@ -224,7 +230,6 @@ class Dashboard extends React.Component<Props, State> {
                     return (
                       <AppTile
                         key={key}
-                        dragItem={this.state.dragItem}
                         dragStartFunction={this.dragStartFunction}
                         dragEndFunction={this.dragEndFunction}
                         empty={true}
@@ -235,7 +240,7 @@ class Dashboard extends React.Component<Props, State> {
                           id: key,
                           boughtplanid: {
                             planid: { appid: { icon: "" } },
-                            alias: "Drag'n Drop a Licence"
+                            alias: "Drag'n'Drop a Licence"
                           }
                         }}
                       />
@@ -248,25 +253,35 @@ class Dashboard extends React.Component<Props, State> {
                   // Needed so that the element is allowed to accept drops
                   onDragOver={e => e.preventDefault()}
                   className={`delete-favourite ${
-                    this.state.showDeletion && Object.values(favourites).some(item => item)
+                    this.state.showDeletion &&
+                    Object.values(favourites).some(item => {
+                      if (!item) {
+                        return false;
+                      } else {
+                        return item.id == this.state.dragItem;
+                      }
+                    })
                       ? "show"
                       : ""
                   }`}>
                   <i className="fal fa-trash-alt fa-7x" />
                 </div>
               </div>
-            </Collapsible>
+              {/*</Collapsible>*/}
+            </div>
 
             {Object.keys(appLists).map(list => {
               if (appLists[list].length > 0) {
                 return (
                   <AppList
+                    key={list}
                     header={list}
                     dragStartFunction={this.dragStartFunction}
                     dragEndFunction={this.dragEndFunction}
                     search={this.state.search}
                     licences={filterLicences(appLists[list])}
                     setApp={this.setApp}
+                    width={this.props.width}
                   />
                 );
               } else {

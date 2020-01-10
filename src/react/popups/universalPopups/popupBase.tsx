@@ -1,5 +1,6 @@
 import * as React from "react";
 import { SideBarContext } from "../../common/context";
+import { AppContext } from "../../common/functions";
 
 interface Props {
   close?: Function; //Close function (on background and x), if there is no, there is no x and the popup can't be close via the background
@@ -16,6 +17,7 @@ interface Props {
   noSidebar?: boolean;
   styles?: Object;
   additionalclassName?: string;
+  innerRef?: any;
 }
 
 interface State {
@@ -113,7 +115,7 @@ class PopupBase extends React.Component<Props, State> {
           element &&
           element.type &&
           element.type.name &&
-          element.type.name == "UniversalButton"
+          element.type.name.endsWith("UniversalButton")
         ) {
           if (popupButtonArray.length > 0) {
             popupButtonArray.push(<div key={`${key}-sep`} className="buttonSeperator" />);
@@ -136,7 +138,7 @@ class PopupBase extends React.Component<Props, State> {
           element &&
           element.type &&
           element.type.name &&
-          element.type.name == "UniversalTextInput"
+          element.type.name.endsWith("UniversalTextInput")
         ) {
           if (popupFieldsArray.length > 0) {
             popupFieldsArray.push(<div key={`${key}-sep`} className="fieldsSeperator" />);
@@ -146,7 +148,7 @@ class PopupBase extends React.Component<Props, State> {
           element &&
           element.type &&
           element.type.name &&
-          element.type.name == "PopupBase"
+          element.type.name.endsWith("PopupBase")
         ) {
           popupElementArray.push(React.cloneElement(element, { closeall: () => this.closeall() }));
         } else {
@@ -216,11 +218,19 @@ class PopupBase extends React.Component<Props, State> {
                   this.props.dialog ? { maxWidth: "25rem" } : "",
                   this.props.styles ? this.props.styles : ""
                 )}
-                onClick={e => e.stopPropagation()}>
+                onClick={e => e.stopPropagation()}
+                ref={this.props.innerRef}>
                 {this.props.close && !(this.props.closeable == false) && (
-                  <div className="closePopup" onClick={() => this.close()}>
-                    <i className="fal fa-times" />
-                  </div>
+                  <AppContext.Consumer>
+                    {({ addRenderElement }) => (
+                      <div
+                        className="closePopup"
+                        onClick={() => this.close()}
+                        ref={el => addRenderElement({ key: "closePopup", element: el })}>
+                        <i className="fal fa-times" />
+                      </div>
+                    )}
+                  </AppContext.Consumer>
                 )}
                 <div
                   className={`contentPopup ${
@@ -239,4 +249,4 @@ class PopupBase extends React.Component<Props, State> {
     );
   }
 }
-export default PopupBase;
+export default React.forwardRef((props, ref) => <PopupBase innerRef={ref} {...props} />);

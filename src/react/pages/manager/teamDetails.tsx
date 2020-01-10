@@ -10,7 +10,7 @@ import TeamGeneralData from "../../components/manager/teamGeneralData";
 import EmployeeSection from "../../components/manager/teamDetails/employeeSection";
 import ServiceSection from "../../components/manager/serviceSection";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlTeam } from "../../common/images";
+import { getImageUrlTeam, resizeImage } from "../../common/images";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -47,7 +47,9 @@ class TeamDetails extends React.Component<Props, State> {
     await this.setState({ loading: true });
 
     try {
-      await this.props.updatePic({ variables: { file: picture, teamid } });
+      const resizedImage = await resizeImage(picture);
+
+      await this.props.updatePic({ variables: { file: resizedImage, teamid } });
 
       await this.setState({ loading: false });
     } catch (err) {
@@ -61,7 +63,7 @@ class TeamDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const teamid = this.props.match.params.teamid;
+    const { teamid } = this.props.match.params;
     return (
       <Query pollInterval={60 * 10 * 1000 + 200} query={fetchTeam} variables={{ teamid }}>
         {({ loading, error, data }) => {
@@ -77,18 +79,24 @@ class TeamDetails extends React.Component<Props, State> {
           return (
             <div className="managerPage">
               <div className="heading">
-                <span className="h1">
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("dmanager")}>
+                <span
+                  className="h1"
+                  style={{
+                    display: "block",
+                    maxWidth: "40vw",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    color: "rgba(37, 54, 71, 0.6)"
+                  }}>
+                  <span
+                    style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
+                    onClick={() => this.props.moveTo("dmanager")}>
                     Team Manager
                   </span>
                   <span className="h2">{team.name}</span>
                 </span>
 
-                <UniversalSearchBox
-                  getValue={v => {
-                    this.setState({ search: v });
-                  }}
-                />
+                <UniversalSearchBox getValue={v => this.setState({ search: v })} />
               </div>
               <div className="section">
                 <div className="heading">
@@ -112,6 +120,7 @@ class TeamDetails extends React.Component<Props, State> {
                       className="managerBigSquare"
                       uploadError={this.state.uploadError}
                       isadmin={this.props.isadmin}
+                      isteam={true}
                     />
                   </div>
                   <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
@@ -122,6 +131,7 @@ class TeamDetails extends React.Component<Props, State> {
                 </div>
               </div>
               <EmployeeSection
+                isadmin={this.props.isadmin}
                 employees={team.employees}
                 search={this.state.search}
                 team={team}

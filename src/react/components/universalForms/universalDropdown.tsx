@@ -26,6 +26,8 @@ interface Props {
   allowOther?: Boolean;
   trashstyle?: Object;
   labelstyle?: Object;
+  starttext?: String;
+  othertext?: String;
 }
 
 interface State {
@@ -132,6 +134,11 @@ class UniversalDropdown extends React.Component<Props, State> {
   };
 
   render() {
+    let trashstyle = this.props.trashstyle || { color: "#253647" };
+    if (this.props.children) {
+      trashstyle = { ...trashstyle, right: "26px" };
+    }
+
     return (
       <>
         <div style={this.props.labelstyle || {}}>{this.props.label}</div>
@@ -203,20 +210,22 @@ class UniversalDropdown extends React.Component<Props, State> {
             <select
               className="selectDropdown"
               id={this.props.id}
+              ref={ref => (this.dropdown = ref)}
               style={this.props.dropdownStyles || {}}
               onChange={e => this.changeValue(e)}
               value={this.state.value}>
               <option value="" style={this.props.dropdownOptionStyles || {}}>
-                Select Operation
+                {this.props.starttext || "Select Operation"}
               </option>
-              {this.props.options!.map(o => (
-                <option value={o.value} style={this.props.dropdownOptionStyles || {}}>
-                  {o.label}
-                </option>
-              ))}
+              {this.props.options &&
+                this.props.options!.map(o => (
+                  <option value={o.value} style={this.props.dropdownOptionStyles || {}}>
+                    {o.label}
+                  </option>
+                ))}
               {this.props.allowOther && (
                 <option value="other" style={this.props.dropdownOptionStyles || {}}>
-                  Other
+                  {this.props.othertext || "Other"}
                 </option>
               )}
             </select>
@@ -233,6 +242,15 @@ class UniversalDropdown extends React.Component<Props, State> {
                 <div className="explainLayerInner">{this.props.children}</div>
               </div>
             </button>
+          )}
+          {!this.state.other && (
+            <i
+              className="fas fa-caret-down inputInsideButton"
+              style={
+                this.props.children
+                  ? { right: "26px", pointerEvents: "none" }
+                  : { pointerEvents: "none" }
+              }></i>
           )}
           {this.props.type == "password" ? (
             this.state.eyeopen ? (
@@ -258,7 +276,7 @@ class UniversalDropdown extends React.Component<Props, State> {
               className="cleanup inputInsideButton"
               tabIndex={-1}
               onClick={() => this.changeValue("", true)}
-              style={this.props.trashstyle || { color: "#253647" }}>
+              style={trashstyle}>
               <i className="fal fa-trash-alt" />
             </button>
           )}

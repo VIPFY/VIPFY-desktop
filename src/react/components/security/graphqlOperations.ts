@@ -19,6 +19,7 @@ export const FETCH_USER_SECURITY_OVERVIEW = gql`
         profilepicture
         companyban
       }
+      needstwofa
       lastactive
       needspasswordchange
       passwordlength

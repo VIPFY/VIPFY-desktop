@@ -288,7 +288,24 @@ class SidebarApps extends React.Component<Props, State> {
                       <i className="carret fal fa-search" />
                     </div>
                   </Tooltip>
-                  {input(sidebarOpen ? "" : "-hide")}
+                  {sidebarOpen ? (
+                    input(sidebarOpen ? "" : "-hide")
+                  ) : (
+                    <div style={{ marginLeft: "8px", width: "calc(100% - 48px)" }}>
+                      <input
+                        value={this.state.searchString}
+                        onChange={e =>
+                          this.setState({ searchString: e.target.value, selected: -1 })
+                        }
+                        placeholder="Search Apps"
+                        className="sidebar-search-hide"
+                        onContextMenu={e => {
+                          e.preventDefault();
+                          this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
+                        }}
+                      />
+                    </div>
+                  )}
                   {this.state.context && (
                     <button
                       className="cleanup contextButton"
@@ -379,8 +396,8 @@ class SidebarApps extends React.Component<Props, State> {
                       openInstances={openInstances}
                       sidebarOpen={sidebarOpen}
                       active={
-                        openInstances && openInstances[licence.id]
-                          ? openInstances[licence.id][this.props.viewID]
+                        openInstances && openInstances[licence.accountid]
+                          ? openInstances[licence.accountid][this.props.viewID]
                           : false
                       }
                       setTeam={this.props.setApp}

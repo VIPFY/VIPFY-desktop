@@ -1,14 +1,194 @@
-$plan-background: #ccc;
-
 #billing-page {
-  /*display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(750px, 1fr));
-  grid-gap: 1.2rem;
-  grid-auto-flow: dense;
-  margin: 2rem;*/
   display: flex;
   flex-flow: column;
   padding: 48px;
+
+  .heading {
+    margin-bottom: 40px;
+  }
+
+  .credit-cards {
+    position: relative;
+
+    .floating-button {
+      right: -10px;
+    }
+  }
+
+  .floating-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+
+    div {
+      font-size: 12px;
+      line-height: 22px;
+      font-weight: 700;
+    }
+  }
+
+  .subsidiary-cards {
+    position: relative;
+    margin-top: 20px;
+    display: flex;
+    flex-flow: column;
+    min-height: 50px;
+    
+    .card-wrapper {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+
+      &:hover .delete-cc {
+        opacity: 1;
+      }
+    }
+
+    .delete-cc {
+      @extend .naked-button;
+      position: absolute;
+      top: 70px;
+      right: 1px;
+      font-size: 1.1rem;
+      opacity: 0;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+  }
+
+  .contentPopup {
+    h1 {
+      font-size: 24px;
+      display: block;
+      text-align: center;
+      padding-bottom: 24px;
+    }
+  }
+
+  #stripe-form {
+    padding: 0;
+    display: flex;
+    flex-flow: column;
+
+    .generic-button-holder {
+      position: initial;
+      margin-top: 30px;
+      display: flex;
+      justify-content: flex-end;
+
+      .cancel-button {
+        margin-right: 10px;
+      }
+    }
+
+    #loading-screen {
+      margin-top: 30px;
+      height: 100px;
+    }
+  }
+}
+
+.billing-pie-holder {
+  padding: 20px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+
+  h1 {
+    font-size: 1rem;
+    align-self: start;
+  }
+}
+
+.table-holder {
+  position: relative;
+  padding: 0;
+
+  .billing-period {
+    margin: 10px;
+    display: grid;
+    justify-content: space-between;
+    grid-template-columns: repeat(12, 1fr) 125px;
+    font-weight: bold;
+    background: #f5f5f5;
+
+    .naked-button {
+      color: #a19d9d;
+      transition: color 300ms ease-in-out;
+
+      &:hover {
+        color: $vipfy-darktext;
+      }
+    }
+
+    .current {
+      color: $vipfy-darktext;
+    }
+
+    .dropdown {
+      .naked-button {
+        color: $vipfy-darktext;
+      }
+    }
+  }
+
+  th,
+  td {
+    padding: 10px;
+  }
+  
+  thead {
+    .spacer {
+      height: 10px;
+    }
+  }
+  
+  tbody {
+    tr {
+      height: 56px;
+
+      &:hover {
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
+      }
+
+      &:hover i {
+        opacity: 1;
+      }
+
+      i {
+        opacity: 0;
+        line-height: 1rem;
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+    }
+
+    .billIcons {
+      i {
+        opacity: 1;
+      }
+    }
+  }
+
+  .email-list {
+    form {
+      margin: 10px 0;
+      max-height: 200px;
+      overflow-x: auto;
+
+      .generic-checkbox-holder {
+        margin-top: 10px;
+
+        .checkboxSquare,.checkboxSquareActive {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
 }
 
 .payment-data-holder {
@@ -37,29 +217,6 @@ $plan-background: #ccc;
   }
 }
 
-.payment-label {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #005;
-  width: 100%;
-  text-align: center;
-  background-color: #20BAA9;
-}
-
-.nextPaymentChart {
-  width: 100%;
-  height: 13rem;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.nextBillHeading{
-  width: 100%;
-  font-size: 1.5em;
-  text-align: center;
-}
-
 .change-plan {
   width: 100vh;
   padding: 1rem;
@@ -83,24 +240,6 @@ $plan-background: #ccc;
       border-bottom: 1px solid #20BAA9;
       font-family: 'Montserrat', sans-serif !important;
     }
-  }
-}
-
-.invoices {
-  display: flex;
-  justify-content: space-around;
-  flex-flow: row;
-  //width: 54%;
-
-  &-refunded {
-    @extend .invoices;
-    text-decoration: line-through;
-  }
-
-  &-item {
-    width: 100%;
-    height: 34rem;
-    margin-bottom: 1rem;
   }
 }
 

@@ -1,23 +1,14 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { Query, Mutation } from "react-apollo";
+import { Query } from "react-apollo";
 import { fetchCompanyTeams } from "../../queries/departments";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import gql from "graphql-tag";
 import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
-import AddTeamEmployeeData from "../../components/manager/addTeamEmployeeData";
-import AddTeamServices from "../../components/manager/addTeamServices";
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
-import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
-import ManageTeamEmployees from "../../components/manager/universal/managing/teamemployees";
-import ManageTeamServices from "../../components/manager/universal/managing/teamservices";
-import DeletePopup from "../../popups/universalPopups/deletePopup";
-import FormPopup from "../../popups/universalPopups/formPopup";
+import DeleteTeam from "../../components/manager/deleteTeam";
 
 interface Props {
   moveTo: Function;
@@ -32,24 +23,8 @@ interface State {
   addteam: Object;
   apps: { id: number; name: number; icon: string; needssubdomain: Boolean; options: Object }[];
   addemployees: any[];
-  saving: Boolean;
-  deleting: number | null;
   willdeleting: number | null;
-  keepLicences: { service: number; employee: number }[];
-  isadmin?: boolean;
 }
-
-const CREATE_TEAM = gql`
-  mutation createTeam($teamdata: JSON!, $addemployees: [JSON]!, $apps: [JSON]!) {
-    createTeam(team: $teamdata, addemployees: $addemployees, apps: $apps)
-  }
-`;
-
-const DELETE_TEAM = gql`
-  mutation deleteTeam($teamid: ID!, $keepLicences: [JSON!]) {
-    deleteTeam(teamid: $teamid, keepLicences: $keepLicences)
-  }
-`;
 
 class TeamOverview extends React.Component<Props, State> {
   state = {
@@ -101,112 +76,6 @@ class TeamOverview extends React.Component<Props, State> {
     return service.app.name.toUpperCase().includes(this.state.search.toUpperCase());
   }
 
-  printRemoveLicences(team) {
-    let RLicencesArray: JSX.Element[] = [];
-
-    team.services.forEach((service, int) => {
-      team.employees.forEach((employee, int2) => {
-        RLicencesArray.push(
-          <li key={`${int}-${int2}`}>
-            <UniversalCheckbox
-              name={`${int}-${int2}`}
-              startingvalue={true}
-              liveValue={v =>
-                v
-                  ? this.setState(prevState => {
-                      const keepLicencesNew = prevState.keepLicences.splice(
-                        prevState.keepLicences.findIndex(
-                          l => l.service == service.id && l.employee == employee.id
-                        ),
-                        1
-                      );
-                      return {
-                        keepLicences: keepLicencesNew
-                      };
-                    })
-                  : this.setState(prevState => {
-                      const keepLicencesNew = prevState.keepLicences;
-                      keepLicencesNew.push({ service: service.id, employee: employee.id });
-                      return {
-                        keepLicences: keepLicencesNew
-                      };
-                    })
-              }>
-              <span>
-                Delete {service.planid.appid.name}-licence of {employee.firstname}{" "}
-                {employee.lastname}
-              </span>
-            </UniversalCheckbox>
-          </li>
-        );
-      });
-    });
-    return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
-  }
-
-  addService(apps) {
-    this.setState({ apps, saving: true, add: false });
-  }
-
-  addProcess(refetch) {
-    switch (this.state.addStage) {
-      case 1:
-        return (
-          <PopupBase
-            small={true}
-            close={() => this.setState({ add: false })}
-            additionalclassName="formPopup">
-            <AddTeamGeneralData
-              savingFunction={data => this.setState({ addteam: data.content, addStage: 2 })}
-              close={() => this.setState({ add: false })}
-              addteam={this.state.addteam}
-              isadmin={this.props.isadmin}
-            />
-          </PopupBase>
-        );
-      case 2:
-        return (
-          <ManageTeamEmployees
-            team={this.state.addteam}
-            close={() => this.setState({ add: false })}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  this.setState({ add: false });
-                  refetch();
-                }}
-              />
-              <div className="buttonSeperator" />
-              <UniversalButton
-                label="Manage Services"
-                type="high"
-                onClick={() => this.setState({ addStage: 3 })}
-              />
-            </div>
-          </ManageTeamEmployees>
-        );
-      case 3:
-        return (
-          <ManageTeamServices team={this.state.addteam} close={() => this.setState({ add: false })}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => {
-                  this.setState({ add: false });
-                  refetch();
-                }}
-              />
-            </div>
-          </ManageTeamServices>
-        );
-      default:
-        return <div />;
-    }
-  }
-
   loading() {
     const amountFakes = Math.random() * 10 + 1;
     const fakeArray: JSX.Element[] = [];
@@ -239,16 +108,6 @@ class TeamOverview extends React.Component<Props, State> {
     return fakeArray;
   }
 
-  getKeepLicences(values) {
-    const keepLicences = [];
-    Object.keys(values).forEach(s => {
-      values[s].forEach(i => {
-        keepLicences.push({ service: s.substring(2), employee: i });
-      });
-    });
-    return keepLicences;
-  }
-
   render() {
     return (
       <div className="managerPage">
@@ -263,6 +122,26 @@ class TeamOverview extends React.Component<Props, State> {
         <div className="section">
           <div className="heading">
             <h1>Teams</h1>
+            <UniversalButton
+              type="high"
+              label="Add Team"
+              customStyles={{
+                fontSize: "12px",
+                lineHeight: "24px",
+                fontWeight: "700",
+                marginRight: "16px",
+                width: "92px"
+              }}
+              onClick={() =>
+                this.setState({
+                  add: true,
+                  addStage: 1,
+                  addemployees: [],
+                  addteam: {},
+                  apps: []
+                })
+              }
+            />
           </div>
           <Query
             pollInterval={60 * 10 * 1000 + 600}
@@ -290,28 +169,7 @@ class TeamOverview extends React.Component<Props, State> {
                           <h1>Services</h1>
                         </div>
                       </div>
-                      <div className="tableEnd">
-                        <UniversalButton
-                          type="high"
-                          label="Add Team"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "92px"
-                          }}
-                          onClick={() =>
-                            this.setState({
-                              add: true,
-                              addStage: 1,
-                              addemployees: [],
-                              addteam: {},
-                              apps: []
-                            })
-                          }
-                        />
-                      </div>
+                      <div className="tableEnd"></div>
                     </div>
                     {this.loading()}
                   </div>
@@ -474,31 +332,15 @@ class TeamOverview extends React.Component<Props, State> {
                         <div
                           className="tableColumnBig" //onClick={() => this.handleSortClick("Services")}
                         >
-                          <h1>Services</h1>
+                          <h1>Orbits</h1>
+                        </div>
+                        <div
+                          className="tableColumnBig" //onClick={() => this.handleSortClick("Services")}
+                        >
+                          {/*<h1>Shared Accounts</h1>*/}
                         </div>
                       </div>
-                      <div className="tableEnd">
-                        <UniversalButton
-                          type="high"
-                          label="Add Team"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "92px"
-                          }}
-                          onClick={() =>
-                            this.setState({
-                              add: true,
-                              addStage: 1,
-                              addemployees: [],
-                              addteam: {},
-                              apps: []
-                            })
-                          }
-                        />
-                      </div>
+                      <div className="tableEnd"></div>
                     </div>
                     {teams.length > 0 &&
                       teams.map(team => (
@@ -506,6 +348,7 @@ class TeamOverview extends React.Component<Props, State> {
                           id={team.name}
                           className="tableRow"
                           onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
+                          {console.log("TEAM", team)}
                           <div className="tableMain">
                             <div className="tableColumnBig">
                               <PrintTeamSquare team={team} />
@@ -518,6 +361,13 @@ class TeamOverview extends React.Component<Props, State> {
                             />
                             <ColumnServices
                               services={team.services}
+                              checkFunction={element =>
+                                !element.disabled && !element.planid.appid.disabled
+                              }
+                              appidFunction={element => element.planid.appid}
+                            />
+                            <ColumnServices
+                              services={team.licences}
                               checkFunction={element =>
                                 !element.disabled && !element.planid.appid.disabled
                               }
@@ -539,66 +389,33 @@ class TeamOverview extends React.Component<Props, State> {
                         </div>
                       ))}
                   </div>
-                  {this.state.add && this.addProcess(refetch)}
+                  {this.state.add && (
+                    <PopupBase
+                      small={true}
+                      close={() => this.setState({ add: false })}
+                      additionalclassName="formPopup">
+                      <AddTeamGeneralData
+                        savingFunction={data => {
+                          console.log("DATA", data);
+                          this.setState({ add: false });
+                          this.props.moveTo(`dmanager/${data.content.unitid.id}`);
+                        }}
+                        close={() => this.setState({ add: false })}
+                        addteam={this.state.addteam}
+                        isadmin={this.props.isadmin}
+                      />
+                    </PopupBase>
+                  )}
                 </>
               );
             }}
           </Query>
         </div>
-        {this.state.saving && (
-          <Mutation mutation={CREATE_TEAM}>
-            {createTeam => (
-              <PopupSelfSaving
-                savingmessage="Adding new team"
-                savedmessage="New team succesfully added"
-                saveFunction={async () => {
-                  await createTeam({
-                    variables: {
-                      teamdata: this.state.addteam,
-                      addemployees: this.state.addemployees,
-                      apps: this.state.apps
-                    },
-                    refetchQueries: [{ query: fetchCompanyTeams }]
-                  });
-                }}
-                closeFunction={() =>
-                  this.setState({
-                    saving: false,
-                    addemployees: [],
-                    apps: [],
-                    addteam: {},
-                    addStage: 1
-                  })
-                }
-              />
-            )}
-          </Mutation>
-        )}
         {this.state.willdeleting && (
-          <Mutation mutation={DELETE_TEAM}>
-            {deleteTeam => (
-              <DeletePopup
-                key="deleteTeam"
-                heading="Delete Team"
-                subHeading={`If you delete ${
-                  this.state.willdeleting!.name
-                }, you delete the following services of the following people`}
-                employees={this.state.willdeleting!.employees}
-                services={this.state.willdeleting!.services}
-                main="service"
-                close={() => this.setState({ willdeleting: null })}
-                submit={values =>
-                  deleteTeam({
-                    variables: {
-                      teamid: this.state.willdeleting!.unitid.id,
-                      keepLicences: this.getKeepLicences(values)
-                    },
-                    refetchQueries: [{ query: fetchCompanyTeams }]
-                  })
-                }
-              />
-            )}
-          </Mutation>
+          <DeleteTeam
+            team={this.state.willdeleting}
+            close={() => this.setState({ willdeleting: null })}
+          />
         )}
       </div>
     );

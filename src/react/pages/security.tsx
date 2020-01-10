@@ -7,39 +7,30 @@ interface Props {
   showPopup: Function;
   history: any;
   client: any;
-}
-
-interface State {
-  search: string;
+  id: number;
+  logMeOut: Function;
 }
 
 export const SecurityContext = React.createContext();
 
-class Security extends React.Component<Props, State> {
-  state = { search: "" };
+export default (props: Props) => {
+  const [search, setSearch] = React.useState("");
 
-  securityRef = React.createRef<HTMLTextAreaElement>();
-
-  render() {
-    return (
-      <SecurityContext.Provider value={{ history: this.props.history, client: this.props.client }}>
-        {
-          <div className="managerPage">
-            <div className="heading">
-              <h1>Security</h1>
-              <UniversalSearchBox getValue={v => this.setState({ search: v })} />
-            </div>
-
-            <Collapsible child={this.securityRef} title="Overview">
-              <div ref={this.securityRef}>
-                <UserSecurityTable search={this.state.search} />
-              </div>
-            </Collapsible>
+  return (
+    <SecurityContext.Provider
+      value={{ logOut: props.logMeOut, history: props.history, client: props.client }}>
+      {
+        <div className="managerPage">
+          <div className="heading">
+            <h1>Security</h1>
+            <UniversalSearchBox getValue={v => setSearch(v)} />
           </div>
-        }
-      </SecurityContext.Provider>
-    );
-  }
-}
 
-export default Security;
+          <Collapsible title="Overview">
+            <UserSecurityTable id={props.id} search={search} />
+          </Collapsible>
+        </div>
+      }
+    </SecurityContext.Provider>
+  );
+};

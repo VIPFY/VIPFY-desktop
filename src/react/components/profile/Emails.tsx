@@ -81,8 +81,6 @@ class Emails extends React.Component<Props, State> {
     oldEmail: null
   };
 
-  emailRef = React.createRef<HTMLTextAreaElement>();
-
   componentDidMount() {
     if (this.props.company) {
       this.setState({ variables: { company: true } });
@@ -232,12 +230,12 @@ class Emails extends React.Component<Props, State> {
     const emailHeaders = ["Email", "Description", /*"Priority", "Verified",*/ ""];
 
     return (
-      <Collapsible title="Emails" child={this.emailRef}>
-        <div ref={this.emailRef} className="inside-padding">
-            <Query
-              pollInterval={60 * 10 * 1000 + 100}
-              query={FETCH_EMAILS}
-              variables={this.state.variables}>
+      <Collapsible title="Emails">
+        <div className="inside-padding">
+          <Query
+            pollInterval={60 * 10 * 1000 + 100}
+            query={FETCH_EMAILS}
+            variables={this.state.variables}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv text="Fetching Email Addresses..." />;

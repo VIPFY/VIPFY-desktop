@@ -6,10 +6,9 @@ let config = {
   backendSSL: true,
   isDevelopment: !!process.env.DEVELOPMENT,
   stripeToken: process.env.stripeToken,
-
   showProfile: true,
   showMessageCenter: false,
-  showBilling: false,
+  showBilling: true,
   showTeams: false,
   showDomains: false,
   showMarketplace: false,

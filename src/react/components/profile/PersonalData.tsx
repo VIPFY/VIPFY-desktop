@@ -1,16 +1,12 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose, Query, withApollo } from "react-apollo";
-import Dropzone from "react-dropzone";
-
+import { graphql, Query, withApollo } from "react-apollo";
+import { ApolloClient } from "apollo-client";
 import LoadingDiv from "../../components/LoadingDiv";
 import Duration from "../../common/duration";
-
-import { CHANGE_PASSWORD } from "../../mutations/auth";
-import { AppContext, concatName, filterError } from "../../common/functions";
+import { AppContext, concatName, filterError, resizeImage } from "../../common/functions";
 import { me } from "../../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
@@ -18,6 +14,7 @@ import Consent from "../../popups/universalPopups/Consent";
 import { getImageUrlUser } from "../../common/images";
 import UploadImage from "../manager/universal/uploadImage";
 import Collapsible from "../../common/Collapsible";
+import { updatePassword } from "../../common/passwords";
 
 const UPDATE_PIC = gql`
   mutation UpdatePic($file: Upload!) {
@@ -34,6 +31,7 @@ interface Props {
   changePassword: Function;
   client: ApolloClient<InMemoryCache>;
   id: number;
+  isadmin?: boolean;
 }
 
 interface State {
@@ -61,8 +59,6 @@ class PersonalData extends React.Component<Props, State> {
     consentPopup: false
   };
 
-  profileRef = React.createRef<HTMLDivElement>();
-
   uploadPic = async (picture: File) => {
     try {
       await this.setState({ loading: true });
@@ -79,9 +75,8 @@ class PersonalData extends React.Component<Props, State> {
   uploadPassword = async values => {
     this.setState({ pwconfirm: true, networking: true });
     try {
-      const res = await this.props.changePassword({ variables: { ...values } });
+      await updatePassword(this.props.client, values.pw, values.newPw);
 
-      await localStorage.setItem("token", res.data.changePassword.token);
       this.setState({ networking: false, errorupdate: false });
       return true;
     } catch (err) {
@@ -95,7 +90,7 @@ class PersonalData extends React.Component<Props, State> {
       <Query pollInterval={60 * 10 * 1000 + 4000} query={me}>
         {({ data, loading, error }) => {
           if (loading) {
-            return <LoadingDiv text="Loading Data" />;
+            return <LoadingDiv />;
           }
           if (error) {
             return <div>Error loading data</div>;
@@ -113,7 +108,7 @@ class PersonalData extends React.Component<Props, State> {
 
           return (
             <AppContext.Consumer>
-              {({ addRenderElement, setreshowTutorial }) => {
+              {({ addRenderElement }) => {
                 const information = [
                   {
                     label: "Name",
@@ -124,11 +119,8 @@ class PersonalData extends React.Component<Props, State> {
                 ];
 
                 return (
-                  <Collapsible child={this.profileRef} title="Personal Data">
-                    <div
-                      className="inside-profile managerPage"
-                      style={{ padding: "0" }}
-                      ref={this.profileRef}>
+                  <Collapsible title="Personal Data">
+                    <div className="inside-profile managerPage" style={{ padding: "0" }}>
                       <div className="pic-holder" style={{ margin: 0, marginBottom: "16px" }}>
                         <UploadImage
                           picture={{ preview: getImageUrlUser(profilepicture, 96) }}
@@ -203,9 +195,7 @@ class PersonalData extends React.Component<Props, State> {
                             <button
                               ref={el => addRenderElement({ key: "changePassword", element: el })}
                               className="naked-button genericButton topright"
-                              onClick={() =>
-                                /*showPopup(passwordPopup)*/ this.setState({ pwchange: true })
-                              }>
+                              onClick={() => this.setState({ pwchange: true })}>
                               <i className="fal fa-key" />
                               <span className="textButtonInside">Change Password</span>
                             </button>
@@ -345,7 +335,4 @@ class PersonalData extends React.Component<Props, State> {
   }
 }
 
-export default compose(
-  graphql(CHANGE_PASSWORD, { name: "changePassword" }),
-  graphql(UPDATE_PIC, { name: "updatePic" })
-)(withApollo(PersonalData));
+export default graphql(UPDATE_PIC, { name: "updatePic" })(withApollo(PersonalData));
