@@ -50,7 +50,7 @@ export async function createEncryptedLicenceKeyObject(
     });
   }
   keys.push({
-    key: key.id,
+    key: d.data.fetchCompany.adminkey[0].publickey,
     belongsto: "admin",
     data: (
       await encryptLicence(key, Buffer.from(d.data.fetchCompany.adminkey[0].publickey, "hex"))
