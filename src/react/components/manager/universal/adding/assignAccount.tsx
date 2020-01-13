@@ -37,7 +37,7 @@ class AssignAccount extends React.Component<Props, State> {
 
           {!accounts || (accounts.length == 1 && !accounts[0]) ? (
             <UniversalButton
-              label="Create new Account"
+              label="Add new Account"
               onClick={() => this.setState({ newaccount: true })}
               type="high"
             />
@@ -89,7 +89,7 @@ class AssignAccount extends React.Component<Props, State> {
               startvalue=""
               livecode={c => this.props.continue(accounts.find(a => a.id == c))}
               livevalue={v => this.setState({ newaccountname: v })}
-              noresults="Create new account"
+              noresults="Add new account"
               noresultsClick={v => this.setState({ newaccount: true })}
               fewResults={true}
             />
@@ -117,7 +117,7 @@ class AssignAccount extends React.Component<Props, State> {
             <div className="listingDiv" key="new">
               <UniversalButton
                 type="low"
-                label="Create new Account"
+                label="Add new Account"
                 onClick={() => this.setState({ newaccount: true, showall: false })}
               />
             </div>

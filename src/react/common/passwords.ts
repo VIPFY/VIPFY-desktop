@@ -314,9 +314,7 @@ export async function decryptLicenceKey(client, licence) {
     const candidates = licence.key.encrypted.filter(
       e => e.belongsto == id || (isadmin && e.belongsto == "admin")
     );
-    console.log("candidates", candidates);
     for (const candidate of candidates) {
-      console.log("trying candidate", candidate);
       try {
         const d = await client.query({
           query: gql`
@@ -335,7 +333,6 @@ export async function decryptLicenceKey(client, licence) {
           console.error(d.error);
           throw new Error("can't fetch key");
         }
-        console.log(d);
         key = JSON.parse(
           (
             await decryptLicence(

@@ -12,6 +12,7 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 import CreateOrbit from "../../components/manager/universal/adding/orbit";
 import { now } from "moment";
 import { resizeImage } from "../../common/images";
+import { AppContext } from "../../common/functions";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -121,16 +122,16 @@ class ServiceDetails extends React.Component<Props, State> {
                   <span
                     style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
                     onClick={() => this.props.moveTo("lmanager")}>
-                    Account Manager
+                    Service Manager
                   </span>
                   <span className="h2">{service.app.name}</span>
                 </span>
 
-                <UniversalSearchBox
+                {/*<UniversalSearchBox
                   getValue={v => {
                     this.setState({ search: v });
                   }}
-                />
+                />*/}
               </div>
               <div className="section">
                 <div className="heading">
@@ -165,11 +166,16 @@ class ServiceDetails extends React.Component<Props, State> {
               <div className="section">
                 <div className="heading">
                   <h1>
-                    <UniversalButton
-                      type="high"
-                      label="Create Orbit"
-                      onClick={() => this.setState({ create: true })}
-                    />
+                    <AppContext.Consumer>
+                      {({ addRenderElement }) => (
+                        <UniversalButton
+                          innerRef={el => addRenderElement({ key: "createOrbit", element: el })}
+                          type="high"
+                          label="Create Orbit"
+                          onClick={() => this.setState({ create: true })}
+                        />
+                      )}
+                    </AppContext.Consumer>
                   </h1>
                 </div>
               </div>
