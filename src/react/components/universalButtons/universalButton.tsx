@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface Props {
   label: string;
+  innerRef?: any;
   type?: string; //high | low
   disabled?: Boolean;
   onClick?: Function;

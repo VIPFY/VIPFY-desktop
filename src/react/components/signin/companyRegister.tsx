@@ -3,11 +3,13 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
 import { shell } from "electron";
-import { graphql } from "react-apollo";
+import { graphql, withApollo, compose } from "react-apollo";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import { emailRegex } from "../../common/constants";
 import welcomeBack from "../../../images/welcome_back.png";
+import * as crypto from "../../common/crypto";
+import { computePasswordScore } from "../../common/passwords";
 
 const SIGNUP = gql`
   mutation onSignUp(
@@ -16,6 +18,11 @@ const SIGNUP = gql`
     $privacy: Boolean!
     $tOS: Boolean!
     $isPrivate: Boolean
+    $passkey: String!
+    $passwordMetrics: PasswordMetricsInput!
+    $personalKey: KeyInput!
+    $adminKey: KeyInput!
+    $passwordsalt: String!
   ) {
     signUp(
       email: $email
@@ -23,6 +30,11 @@ const SIGNUP = gql`
       privacy: $privacy
       termsOfService: $tOS
       isprivate: $isPrivate
+      passkey: $passkey
+      passwordMetrics: $passwordMetrics
+      personalKey: $personalKey
+      adminKey: $adminKey
+      passwordsalt: $passwordsalt
     ) {
       ok
       token
@@ -34,6 +46,7 @@ interface Props {
   continueFunction: Function;
   backFunction: Function;
   signUp: Function;
+  client: any;
 }
 
 interface State {
@@ -64,17 +77,43 @@ class RegisterCompany extends React.Component<Props, State> {
           await this.setState({ company: "Family" });
         }
         this.setState({ register: true, error: "" });
+
+        const password = "testaccoun";
+
+        const salt = await crypto.getRandomSalt();
+        const { loginkey, encryptionkey1 } = await crypto.hashPassword(
+          this.props.client,
+          this.state.email,
+          password,
+          salt
+        );
+        const passwordMetrics = {
+          passwordlength: password.length,
+          passwordstrength: computePasswordScore(password)
+        };
+
+        const personalKey = await crypto.generatePersonalKeypair(encryptionkey1);
+        const adminKey = await crypto.generateAdminKeypair(
+          Buffer.from(personalKey.publickey, "hex")
+        );
+
         const res = await this.props.signUp({
           variables: {
             email: this.state.email,
             name: this.state.company,
             privacy: this.state.privacy,
             tOS: this.state.tos,
-            isPrivate: this.state.isPrivate
+            isPrivate: this.state.isPrivate,
+            passkey: loginkey.toString("hex"),
+            passwordMetrics,
+            personalKey,
+            adminKey,
+            passwordsalt: salt
           }
         });
         const { token } = res.data.signUp;
-        await localStorage.setItem("token", token);
+        localStorage.setItem("token", token);
+        localStorage.setItem("key1", encryptionkey1.toString("hex"));
         this.props.continueFunction();
       } else {
         this.setState({ error: "Please accept our Terms of Service and Privacy Agreement" });
@@ -240,6 +279,9 @@ class RegisterCompany extends React.Component<Props, State> {
     );
   }
 }
-export default graphql(SIGNUP, {
-  name: "signUp"
-})(RegisterCompany);
+export default compose(
+  withApollo,
+  graphql(SIGNUP, {
+    name: "signUp"
+  })
+)(RegisterCompany);
