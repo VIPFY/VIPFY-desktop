@@ -4,11 +4,12 @@ import { getMyUnitId } from "./functions";
 import { encryptLicence } from "./crypto";
 export async function createEncryptedLicenceKeyObject(
   key: any,
-  forUser: string | null,
+  forUser: string | null | false,
   client: ApolloClient,
   allowFallback = true
 ) {
-  if (forUser === null) {
+  const addKeyForUser = forUser !== undefined;
+  if (forUser === null || forUser === false) {
     forUser = getMyUnitId(client);
   }
   const d = await client.query({
@@ -38,24 +39,24 @@ export async function createEncryptedLicenceKeyObject(
   if (!d.data.fetchCurrentKey && allowFallback) {
     return key;
   }
+  const keys: any[] = [];
+  if (addKeyForUser) {
+    keys.push({
+      key: d.data.fetchCurrentKey.id,
+      belongsto: "" + forUser,
+      data: (
+        await encryptLicence(key, Buffer.from(d.data.fetchCurrentKey.publickey, "hex"))
+      ).toString("base64")
+    });
+  }
+  keys.push({
+    key: d.data.fetchCompany.adminkey[0].publickey,
+    belongsto: "admin",
+    data: (
+      await encryptLicence(key, Buffer.from(d.data.fetchCompany.adminkey[0].publickey, "hex"))
+    ).toString("base64")
+  });
   return {
-    encrypted: [
-      {
-        key: d.data.fetchCurrentKey.id,
-        belongsto: "" + forUser,
-        data: (await encryptLicence(
-          key,
-          Buffer.from(d.data.fetchCurrentKey.publickey, "hex")
-        )).toString("base64")
-      },
-      {
-        key: d.data.fetchCompany.adminkey.id,
-        belongsto: "admin",
-        data: (await encryptLicence(
-          key,
-          Buffer.from(d.data.fetchCompany.adminkey.publickey, "hex")
-        )).toString("base64")
-      }
-    ]
+    encrypted: keys
   };
 }

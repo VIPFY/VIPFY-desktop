@@ -11,6 +11,8 @@ import gql from "graphql-tag";
 interface Props {
   employee: any;
   terminateAssignAccount: Function;
+
+  teamlicence: Boolean;
 }
 
 interface State {
@@ -44,7 +46,7 @@ class ShowAndDeleteEmployee extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("DATE", this.state.todate);
+    console.log("DATE", this.props.employee);
     return (
       <div
         style={{
@@ -86,12 +88,16 @@ class ShowAndDeleteEmployee extends React.Component<Props, State> {
           }}
         />
         <span style={{ lineHeight: "24px", marginLeft: "8px" }}>
-          {concatName(this.props.employee)}
+          {this.props.teamlicence
+            ? `${concatName(this.props.employee)} (Assigned via team)`
+            : concatName(this.props.employee)}
         </span>
-        <i
-          className="fal fa-trash-alt editbutton"
-          onClick={() => this.setState({ delete: true })}
-        />
+        {!this.props.teamlicence && (
+          <i
+            className="fal fa-trash-alt editbutton"
+            onClick={() => this.setState({ delete: true })}
+          />
+        )}
         {this.state.delete && (
           <PopupBase
             small={true}

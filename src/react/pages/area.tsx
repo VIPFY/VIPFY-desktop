@@ -49,6 +49,7 @@ import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
+import TutorialBase from "../tutorials/tutorialBase";
 import CryptoDebug from "../components/admin/crytpodebug";
 import Vacation from "./vacation";
 import { fetchUserLicences } from "../queries/departments";
@@ -68,6 +69,8 @@ interface AreaProps {
   style?: Object;
   needspasswordchange: boolean;
   emails: string[];
+  tutorialprogress?: any;
+  highlightReferences?: any;
 }
 
 interface AreaState {
@@ -530,6 +533,9 @@ class Area extends React.Component<AreaProps, AreaState> {
                   {this.props.needspasswordchange && (
                     <ForcedPasswordChange email={this.props.emails[0].email} />
                   )}
+                  {this.props.isadmin &&
+                    this.props.tutorialprogress &&
+                    this.props.highlightReferences && <TutorialBase {...this.props} />}
                 </UserContext.Provider>
               </SideBarContext.Provider>
             </div>

@@ -194,8 +194,16 @@ const createWindow = async () => {
 
   // Open the DevTools.
   if (isDevMode) {
-    await installExtension(REACT_DEVELOPER_TOOLS);
-    await installExtension(APOLLO_DEVELOPER_TOOLS);
+    try {
+      await installExtension(REACT_DEVELOPER_TOOLS);
+    } catch (err) {
+      console.log(err);
+    }
+    try {
+      await installExtension(APOLLO_DEVELOPER_TOOLS);
+    } catch (err) {
+      console.log(err);
+    }
     mainWindow.webContents.openDevTools();
   }
 

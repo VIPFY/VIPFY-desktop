@@ -487,8 +487,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         this.setState({
           error: `Please check your email address. Then try to reset your password in the service. ${
             this.props.isadmin
-              ? "Verify the correctness or update the data of the service in the Account Manager afterwards"
-              : "Please ask your admin to check the service in the Account Manager afterwards"
+              ? "Verify the correctness or update the data of the service in the Service Manager afterwards"
+              : "Please ask your admin to check the service in the Service Manager afterwards"
           }.`,
           errorshowed: true,
           loggedIn: true
@@ -512,8 +512,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         this.setState({
           error: `Please check your email address. Then try to reset your password in the service. ${
             this.props.isadmin
-              ? "Verify the correctness or update the data of the service in the Account Manager afterwards"
-              : "Please ask your admin to check the service in the Account Manager afterwards"
+              ? "Verify the correctness or update the data of the service in the Service Manager afterwards"
+              : "Please ask your admin to check the service in the Service Manager afterwards"
           }.`,
           errorshowed: true,
           loggedIn: true
@@ -573,8 +573,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           this.setState({
             error: `Please check your email address. Then try to reset your password in the service. ${
               this.props.isadmin
-                ? "Verify the correctness or update the data of the service in the Account Manager afterwards"
-                : "Please ask your admin to check the service in the Account Manager afterwards"
+                ? "Verify the correctness or update the data of the service in the Service Manager afterwards"
+                : "Please ask your admin to check the service in the Service Manager afterwards"
             }.`,
             errorshowed: true,
             loggedIn: true

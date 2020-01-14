@@ -13,6 +13,7 @@ import PrintServiceSquare from "../../components/manager/universal/squares/print
 import AssignServiceToUser from "../../components/manager/universal/adding/assignServiceToUser";
 import moment from "moment";
 import DeleteService from "../../components/manager/deleteService";
+import { AppContext } from "../../common/functions";
 
 interface Props {
   moveTo: Function;
@@ -64,7 +65,7 @@ class ServiceOverview extends React.Component<Props, State> {
   filterMotherfunction(service) {
     if (service.app.name.toUpperCase().includes(this.state.search.toUpperCase())) {
       return true;
-    } else if (service.teams && service.teams.filter(team => this.filterTeams(team)).length > 0) {
+    } /*else if (service.teams && service.teams.filter(team => this.filterTeams(team)).length > 0) {
       return true;
     } else if (
       service.licences.filter(
@@ -76,7 +77,7 @@ class ServiceOverview extends React.Component<Props, State> {
       ).length > 0
     ) {
       return true;
-    }
+    }*/
     return false;
   }
 
@@ -116,12 +117,6 @@ class ServiceOverview extends React.Component<Props, State> {
 
       service.orbitids.forEach(element => {
         if (element.endtime == null || moment(element.endtime).toDate() < new Date()) {
-          console.log(
-            element.id,
-            element,
-            element.endtime,
-            element.endtime && moment(element.endtime).toDate() < new Date()
-          );
           element.accounts.forEach(account => {
             if (
               account != null &&
@@ -234,7 +229,7 @@ class ServiceOverview extends React.Component<Props, State> {
     return (
       <div className="managerPage">
         <div className="heading">
-          <h1>Account Manager</h1>
+          <h1>Service Manager</h1>
           <UniversalSearchBox
             getValue={v => {
               this.setState({ search: v });
@@ -244,22 +239,27 @@ class ServiceOverview extends React.Component<Props, State> {
         <div className="section">
           <div className="heading">
             <h1>Services</h1>
-            <UniversalButton
-              type="high"
-              label="Add Service"
-              customStyles={{
-                fontSize: "12px",
-                lineHeight: "24px",
-                fontWeight: "700",
-                marginRight: "16px",
-                width: "120px"
-              }}
-              onClick={() =>
-                this.setState({
-                  add: true
-                })
-              }
-            />
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  innerRef={el => addRenderElement({ key: "addService", element: el })}
+                  type="high"
+                  label="Add Service"
+                  customStyles={{
+                    fontSize: "12px",
+                    lineHeight: "24px",
+                    fontWeight: "700",
+                    marginRight: "16px",
+                    width: "120px"
+                  }}
+                  onClick={() =>
+                    this.setState({
+                      add: true
+                    })
+                  }
+                />
+              )}
+            </AppContext.Consumer>
           </div>
           <Query pollInterval={60 * 10 * 1000 + 900} query={fetchCompanyServices}>
             {({ loading, error, data, refetch }) => {
@@ -312,7 +312,6 @@ class ServiceOverview extends React.Component<Props, State> {
               if (data && data.fetchCompanyServices) {
                 interservices = data.fetchCompanyServices;
                 let sortforward = this.state.sortforward;
-                console.log("SERVICES ALL", interservices);
 
                 //sortselection
                 switch (this.state.sort) {
@@ -385,22 +384,28 @@ class ServiceOverview extends React.Component<Props, State> {
                     {services.length > 0 && this.printServices(services)}
                   </div>
                   {this.state.add && (
-                    <PopupBase
-                      small={true}
-                      nooutsideclose={true}
-                      close={() => this.setState({ add: false })}
-                      additionalclassName="assignNewAccountPopup"
-                      buttonStyles={{ justifyContent: "space-between" }}>
-                      <h1>Choose Service</h1>
-                      <AssignServiceToUser
-                        continue={app => app && this.props.moveTo(`lmanager/${app.id}`)}
-                      />
-                      <UniversalButton
-                        type="low"
-                        label="Cancel"
-                        onClick={() => this.setState({ add: false })}
-                      />
-                    </PopupBase>
+                    <AppContext.Consumer>
+                      {({ addRenderElement }) => (
+                        <PopupBase
+                          innerRef={el => addRenderElement({ key: "addServicePopup", element: el })}
+                          small={true}
+                          nooutsideclose={true}
+                          close={() => this.setState({ add: false })}
+                          additionalclassName="assignNewAccountPopup"
+                          buttonStyles={{ justifyContent: "space-between" }}>
+                          <h1>Choose Service</h1>
+                          <AssignServiceToUser
+                            continue={app => app && this.props.moveTo(`lmanager/${app.id}`)}
+                          />
+                          <UniversalButton
+                            innerRef={el => addRenderElement({ key: "cancel", element: el })}
+                            type="low"
+                            label="Cancel"
+                            onClick={() => this.setState({ add: false })}
+                          />
+                        </PopupBase>
+                      )}
+                    </AppContext.Consumer>
                   )}
                 </>
               );

@@ -9,6 +9,7 @@ import {
   fetchCompanyService,
   fetchCompanyServices
 } from "../../../../queries/products";
+import { AppContext } from "../../../../common/functions";
 
 interface Props {
   service: any;
@@ -111,88 +112,99 @@ class CreateOrbit extends React.Component<Props, State> {
 
   render() {
     return (
-      <PopupBase
-        small={true}
-        nooutsideclose={true}
-        close={() => this.props.close()}
-        additionalclassName="assignNewAccountPopup"
-        buttonStyles={{ justifyContent: "space-between" }}>
-        <h1>Create Orbit</h1>
-        {this.props.service.needssubdomain && (
-          <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
-            <span style={{ lineHeight: "24px", width: "84px" }}>Domain:</span>
-            <UniversalTextInput
-              width="300px"
-              id="domain"
-              livevalue={v =>
-                this.props.alias || this.state.aliastouched
-                  ? this.setState({ domain: v })
-                  : this.setState({ domain: v, alias: v })
-              }
-            />
-          </div>
-        )}
-        <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
-          <span style={{ lineHeight: "24px", width: "84px" }}>Alias:</span>
-          <UniversalTextInput
-            width="300px"
-            id="alias"
-            livevalue={v => this.setState({ alias: v, aliastouched: true })}
-            startvalue={(!this.props.alias && this.state.domain) || this.props.alias || undefined}
-            update={!this.state.aliastouched}
-          />
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
-          <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />
-          <UniversalButton
-            type="high"
-            label="Save"
-            disabled={
-              !((!this.props.service.needssubdomain || this.state.domain) && this.state.alias)
-            }
-            onClick={() => this.handleSubmit(this.props.externalplan)}
-          />
-        </div>
-
-        {this.state.saving && (
-          <>
-            <div
-              className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
-                this.state.error ? "loadError" : ""
-              }`}>
-              <div
-                className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
-                  this.state.error ? "loadError" : ""
-                }`}></div>
-            </div>
-            <div
-              className={`circeSave ${this.state.saved ? "loadCompletes" : ""} ${
-                this.state.error ? "loadErrors" : ""
-              }`}>
-              <div
-                className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
-                  this.state.error ? "load-error" : ""
-                }`}>
-                <div
-                  className="checkmark draw"
-                  style={this.state.saved ? { display: "block" } : {}}
+      <AppContext.Consumer>
+        {({ addRenderElement }) => (
+          <PopupBase
+            innerRef={el => addRenderElement({ key: "createOrbitPopup", element: el })}
+            small={true}
+            nooutsideclose={true}
+            close={() => this.props.close()}
+            additionalclassName="assignNewAccountPopup"
+            buttonStyles={{ justifyContent: "space-between" }}>
+            <h1>Create Orbit</h1>
+            {this.props.service.needssubdomain && (
+              <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
+                <span style={{ lineHeight: "24px", width: "84px" }}>Domain:</span>
+                <UniversalTextInput
+                  width="300px"
+                  id="domain"
+                  livevalue={v =>
+                    this.props.alias || this.state.aliastouched
+                      ? this.setState({ domain: v })
+                      : this.setState({ domain: v, alias: v })
+                  }
                 />
-                <div className="cross draw" style={this.state.error ? { display: "block" } : {}} />
               </div>
-              <div
-                className="errorMessageHolder"
-                style={this.state.error ? { display: "block" } : {}}>
-                <div className="message">You found an error</div>
-                <button
-                  className="cleanup"
-                  onClick={() => this.setState({ error: false, saving: false, saved: false })}>
-                  Try again
-                </button>
-              </div>
+            )}
+            <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
+              <span style={{ lineHeight: "24px", width: "84px" }}>Alias:</span>
+              <UniversalTextInput
+                width="300px"
+                id="alias"
+                livevalue={v => this.setState({ alias: v, aliastouched: true })}
+                startvalue={
+                  (!this.props.alias && this.state.domain) || this.props.alias || undefined
+                }
+                update={!this.state.aliastouched}
+              />
             </div>
-          </>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
+              <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />
+              <UniversalButton
+                innerRef={el => addRenderElement({ key: "saveOrbit", element: el })}
+                type="high"
+                label="Save"
+                disabled={
+                  !((!this.props.service.needssubdomain || this.state.domain) && this.state.alias)
+                }
+                onClick={() => this.handleSubmit(this.props.externalplan)}
+              />
+            </div>
+
+            {this.state.saving && (
+              <>
+                <div
+                  className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
+                    this.state.error ? "loadError" : ""
+                  }`}>
+                  <div
+                    className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
+                      this.state.error ? "loadError" : ""
+                    }`}></div>
+                </div>
+                <div
+                  className={`circeSave ${this.state.saved ? "loadCompletes" : ""} ${
+                    this.state.error ? "loadErrors" : ""
+                  }`}>
+                  <div
+                    className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
+                      this.state.error ? "load-error" : ""
+                    }`}>
+                    <div
+                      className="checkmark draw"
+                      style={this.state.saved ? { display: "block" } : {}}
+                    />
+                    <div
+                      className="cross draw"
+                      style={this.state.error ? { display: "block" } : {}}
+                    />
+                  </div>
+                  <div
+                    className="errorMessageHolder"
+                    style={this.state.error ? { display: "block" } : {}}>
+                    <div className="message">You found an error</div>
+                    <button
+                      className="cleanup"
+                      onClick={() => this.setState({ error: false, saving: false, saved: false })}>
+                      Try again
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </PopupBase>
         )}
-      </PopupBase>
+      </AppContext.Consumer>
     );
   }
 }

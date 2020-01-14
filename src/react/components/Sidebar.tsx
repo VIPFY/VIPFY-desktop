@@ -413,7 +413,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "emanager"
       },
       {
-        label: "Account Manager",
+        label: "Service Manager",
         location: "lmanager",
         icon: "credit-card-blank",
         show: this.props.isadmin,
