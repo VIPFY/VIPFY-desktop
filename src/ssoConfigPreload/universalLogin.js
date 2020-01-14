@@ -93,6 +93,7 @@ ipcRenderer.once("loginData", async (e, key) => {
       }
 
       recaptcha = findRecaptcha();
+      console.log(recaptcha);
       if (recaptcha && !checkRecaptcha) {
         console.log("FOUND RECAPTCHA");
         await recaptchaClick(recaptcha);
@@ -156,14 +157,18 @@ ipcRenderer.once("loginData", async (e, key) => {
       await sleep(500);
     }
     if (emailEntered && passwordEntered && !stopped) {
-      recaptcha = findForm().querySelector('iframe[src*="/recaptcha/"]');
+      recaptcha = findForm().querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
       console.log("FIND recaptcha 2", findForm(), recaptcha);
       if (recaptcha && (recaptcha.scrollHeight != 0 || recaptcha.scrollWidth != 0)) {
         ipcRenderer.sendToHost("recaptcha", null);
       } else {
         // Special Case for Wrike
-        console.log("SPEZIAL");
-        clickButton(document.querySelector("[wrike-button-v2][data-application='login-remember']"));
+        if (document.querySelector("[wrike-button-v2][data-application='login-remember']")) {
+          console.log("SPEZIAL");
+          clickButton(
+            document.querySelector("[wrike-button-v2][data-application='login-remember']")
+          );
+        }
       }
     }
   }
@@ -493,7 +498,7 @@ function findCookieButton() {
   console.log("find Cookie Button");
   var t = Array.from(
     document.querySelectorAll(
-      "[class~=cc-compliance] > [class~=cc-dismiss], [class~='consent'] > a[class~='call'], [ba-click='{{allow()}}']"
+      "#onetrust-accept-btn-handler, [class~=cc-compliance] > [class~=cc-dismiss], [class~='consent'] > a[class~='call'], [ba-click='{{allow()}}']"
     )
   )
     .filter(e => !isHidden(e))
@@ -597,9 +602,9 @@ function verifyRecaptcha() {
 }
 
 function findRecaptcha() {
-  let t = document.querySelector('iframe[src*="/recaptcha/"]');
+  let t = document.querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
   console.log("button", t);
-  if (t == null) {
+  if (t && isHidden(t)) {
     /*let f = fetchFieldProps(appname);
     let recaptchaTag = f[0].fields.recaptcha;
     if (recaptchaTag) {
@@ -668,7 +673,10 @@ async function execute(operations, mainexecute = false) {
         }
         break;
       case "recaptcha":
-        await execute([{ operation: "waitfor", args }, { operation: "solverecaptcha", args }]);
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "solverecaptcha", args }
+        ]);
         break;
       case "waitandfill":
         await execute([

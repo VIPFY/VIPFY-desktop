@@ -403,7 +403,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               return false;
             };
           }
-          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar"],[]));
+          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings"],[]));
           console.log("LOGIN", loginarray)
           return loginarray.length > 0
         })();
@@ -503,7 +503,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               return false;
             };
           }
-          let errorarray = Array.from(document.querySelectorAll("*:not(:empty), .fa")).filter(filterDom(["error", "no-mail-icon", "danger", "validation-error"],["wrapper", "reset", "signup"]))
+          let errorarray = Array.from(document.querySelectorAll("*:not(:empty), .fa")).filter(filterDom(["error", "no-mail-icon", "danger", "validation-error"],["wrapper", "reset", "signup", "img__notification-error"]))
           console.log(errorarray)
           return errorarray.length > 0
         })();
@@ -597,7 +597,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       this.timeout = false;
       this.progress = 1;
       console.log("SENDRESULT 1");
-      this.sendResult(this.webview, 0);
+      //this.sendResult(this.webview, 0);
+      this.props.setResult({ loggedin: true, errorin: false, ...this.loginState }, "");
+      if (this.progressHandle) {
+        clearInterval(this.progressHandle);
+        this.progressHandle = undefined;
+      }
       //console.log("FINISHED");
     }
     if (
@@ -611,7 +616,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         this.timeout = false;
         this.progress = 1;
         //console.log("SENDRESULT 2");
-        this.sendResult(this.webview, 0);
+        //this.sendResult(this.webview, 0);
+        this.props.setResult({ loggedin: false, errorin: true, ...this.loginState }, "");
+        if (this.progressHandle) {
+          clearInterval(this.progressHandle);
+          this.progressHandle = undefined;
+        }
       }
     }
 

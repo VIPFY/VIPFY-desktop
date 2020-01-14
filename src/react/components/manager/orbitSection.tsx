@@ -72,7 +72,12 @@ const INITAL_STATE = {
 class OrbitSection extends React.Component<Props, State> {
   state = {
     ...INITAL_STATE,
-    loginurl: this.props.orbit.key && this.props.orbit.key.loginurl,
+    loginurl:
+      this.props.orbit.key &&
+      this.props.orbit.key.domain &&
+      this.props.orbit.key.domain
+        .replace(this.props.app.options.predomain, "")
+        .replace(this.props.app.options.afterdomain, ""),
     alias: this.props.orbit.alias,
     todate: this.props.orbit.endtime && moment(this.props.orbit.endtime).toDate()
   };
@@ -437,7 +442,9 @@ class OrbitSection extends React.Component<Props, State> {
                       variables: {
                         orbitid: orbit.id,
                         alias: this.state.alias,
-                        loginurl: this.props.app.needssubdomain ? this.state.loginurl : undefined,
+                        loginurl: this.props.app.needssubdomain
+                          ? `${this.props.app.options.predomain}${this.state.loginurl}${this.props.app.options.afterdomain}`
+                          : undefined,
                         endtime: this.state.todate
                       },
                       refetchQueries: [

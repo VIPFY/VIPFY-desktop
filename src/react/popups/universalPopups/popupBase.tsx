@@ -191,12 +191,12 @@ class PopupBase extends React.Component<Props, State> {
           <div
             className="backgroundPopup"
             style={this.state.isopen ? showBackground : hideBackground}
-            onClick={e => {
+            /*onClick={e => {
               e.stopPropagation();
               if (!this.props.nooutsideclose) {
                 this.close();
               }
-            }}
+            }}*/
             id={this.state.id}>
             <div
               className="sideReplicaPopup"
