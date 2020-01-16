@@ -53,7 +53,7 @@ class UniversalButton extends React.Component<Props> {
               this.props.disabled ? "disabled" : "useable"
             }`}
             tabIndex={-1}
-            ref={props.innerRef}
+            ref={this.props.innerRef}
             style={this.props.customStyles ? this.props.customStyles : {}}>
             {this.props.label}
           </div>
