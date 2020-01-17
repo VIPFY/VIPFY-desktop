@@ -41,7 +41,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: set DEVELOPMENT=$DEVELOPMENT
-      - run: set UNSIGNED="" # Signing the App will fail, so remove this build step
+      - run: set UNSIGNED=true # Signing the App will fail, so remove this build step
       - run: set SERVER_NAME=$SERVER_NAME
       - run: set CHANNEL_ID=$CHANNEL_ID
       - run:

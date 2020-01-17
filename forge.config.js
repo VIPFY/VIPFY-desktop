@@ -17,9 +17,10 @@ module.exports = {
         iconUrl: "https://vipfy.store/favicon.ico",
         loadingGif: "./src/images/Ladeanimation_Vipfy_transparent.gif",
         setupIcon: "./iconTransparent.ico",
-        signWithParams:
-          process.env.UNSIGNED ||
-          "/a /n VIPFY /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
+        // Yes, I am really doing this. Come up with a better solution
+        [`${
+          process.env.UNSIGNED ? "un" : ""
+        }signWithParams`]: "/a /n VIPFY /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
       }
     },
     {
