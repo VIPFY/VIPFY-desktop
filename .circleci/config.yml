@@ -40,11 +40,9 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      - run:
-          name: Set environment variables
-          command: setx DEVELOPMENT=$DEVELOPMENT |
-            setx SERVER_NAME=$SERVER_NAME |
-            setx CHANNEL_ID=$CHANNEL_ID
+      - run: setx DEVELOPMENT=$DEVELOPMENT
+      - run: setx SERVER_NAME=$SERVER_NAME
+      - run: setx CHANNEL_ID=$CHANNEL_ID
       - run:
           name: Publish the current version
           command: npm run publish-js
