@@ -17,9 +17,10 @@ module.exports = {
         iconUrl: "https://vipfy.store/favicon.ico",
         loadingGif: "./src/images/Ladeanimation_Vipfy_transparent.gif",
         setupIcon: "./iconTransparent.ico",
-        // Yes, I am really doing this. Come up with a better solution
+        // Yes, I am really doing this. Come up with a better solution if you
+        // don't like it.
         [`${
-          process.env.UNSIGNED ? "un" : ""
+          process.env.UNSIGNED == "true" ? "un" : ""
         }signWithParams`]: "/a /n VIPFY /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
       }
     },
