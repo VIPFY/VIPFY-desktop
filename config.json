@@ -1,0 +1,8 @@
+{
+  "channelID": "4e2105365ea5c7e823cb7af42450b29a",
+  "server": "api.vipfy.store",
+  "stripe": {
+    "live": "pk_live_OrfeIMTOFjG5o9S5zm9iYH0x",
+    "dev": "pk_test_W9VDDvYKZqcmbgaz7iAcUR9j"
+  }
+}

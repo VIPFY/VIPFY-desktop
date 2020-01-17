@@ -1,6 +1,5 @@
 import * as React from "react";
 import Login from "../components/signin/login";
-import PWReset from "../components/signin/pwreset";
 import ChangeAccount from "../components/dataForms/ChangeAccount";
 import AddMachineUser from "../components/signin/addMachineUser";
 
@@ -28,11 +27,7 @@ class SignIn extends React.Component<Props, State> {
   changeProgress(s) {
     this.props.resetError();
     const store = new Store();
-    if (
-      s != "pwreset" &&
-      s != "registercompany" &&
-      (!store.has("accounts") || store.get("accounts").length == 0)
-    ) {
+    if (s != "registercompany" && (!store.has("accounts") || store.get("accounts").length == 0)) {
       this.setState({ progress: "createuser" });
     } else {
       this.setState({ progress: s });
@@ -54,19 +49,11 @@ class SignIn extends React.Component<Props, State> {
         return (
           <Login
             type="login"
-            backFunction={() => this.changeProgress("pwreset")}
+            backFunction={() => null}
             continueFunction={(pw, email) => this.props.login(email, pw)}
             email={this.state.email}
             changeUser={() => this.changeProgress("selectuser")}
             error={this.props.error}
-          />
-        );
-      case "pwreset":
-        return (
-          <PWReset
-            continueFunction={email => this.setState({ progress: "login", email })}
-            type="pwreset"
-            backFunction={() => this.changeProgress("login")}
           />
         );
       case "selectuser":
@@ -100,7 +87,7 @@ class SignIn extends React.Component<Props, State> {
         return (
           <Login
             type="login"
-            backFunction={() => this.changeProgress("pwreset")}
+            backFunction={() => null}
             continueFunction={v => this.props.login(this.state.email, v)}
             email={this.state.email}
             changeUser={() => this.changeProgress("selectuser")}

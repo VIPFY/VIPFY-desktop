@@ -6,11 +6,6 @@ import {
   generateNewKeypair
 } from "./common/crypto";
 import { Buffer } from "buffer";
-
-/*
-extend Mutation {
-  addExternalAccountLicence()
-}*/
 export const typeDefs = gql`
   extend type Key {
     privatekeyDecrypted: String

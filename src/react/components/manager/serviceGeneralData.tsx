@@ -5,21 +5,10 @@ interface Props {
   accounts: any[];
 }
 
-interface State {
-  editpopup: Boolean;
-  name: string;
-  type: string;
-  error: string | null;
-}
+interface State {}
 
 class ServiceGeneralData extends React.Component<Props, State> {
-  state = {
-    editpopup: false,
-    name: this.props.servicedata.name || "",
-    type: (this.props.servicedata.features && this.props.servicedata.features.type) || "",
-    supportwebsite: this.props.servicedata.supportwebsite || "",
-    error: null
-  };
+  state = {};
 
   render() {
     return (
@@ -27,15 +16,17 @@ class ServiceGeneralData extends React.Component<Props, State> {
         <div className="tableMain">
           <div className="tableColumnSmall">
             <h1>Name</h1>
-            <h2>{this.state.name}</h2>
+            <h2>{this.props.servicedata.name}</h2>
           </div>
           <div className="tableColumnSmall">
             <h1>Industry</h1>
-            <h2>{this.state.type}</h2>
+            <h2>
+              {(this.props.servicedata.features && this.props.servicedata.features.type) || ""}
+            </h2>
           </div>
           <div className="tableColumnSmall">
             <h1>Supportwebsite</h1>
-            <h2>{this.state.supportwebsite}</h2>
+            <h2>{this.props.servicedata.supportwebsite || ""}</h2>
           </div>
           <div className="tableColumnSmall">
             <h1>Accounts in total</h1>
