@@ -25,8 +25,8 @@ orbs:
   win: circleci/windows@2.2.0
 jobs:
   windows: # This is the name of the build
-    <<: *defaults
     executor: win/default
+    <<: *defaults
     steps:
       - checkout # Checks out our code from Bitbucket and installs dependencies
       # Download and cache dependencies
@@ -44,9 +44,9 @@ jobs:
           name: Publish the current version
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID npm run publish-js
   mac:
-    <<: *defaults
     macos: # Build the Mac Version
       xcode: 11.3.0
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
