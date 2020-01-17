@@ -3,11 +3,6 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 defaults: &defaults
-  branches:
-    only:
-      - /custom-version-.*/
-    ignore:
-      - master
   docker:
     # specify the version you desire here
     - image: circleci/node:12.14.1
@@ -16,6 +11,14 @@ defaults: &defaults
     # documented at https://circleci.com/docs/2.0/circleci-images/
     # - image: circleci/mongo:3.4.4
   working_directory: ~/repo
+
+branches: &branches
+  filters:
+    branches:
+      only:
+        - /custom-version-.*/
+      ignore:
+        - master
 
 version: 2.1
 orbs:
@@ -65,4 +68,6 @@ workflows:
   build-workflows:
     jobs:
       - windows
+          <<: *branches
       - mac
+          <<: *branches
