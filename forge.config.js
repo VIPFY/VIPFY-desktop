@@ -17,7 +17,8 @@ module.exports = {
         iconUrl: "https://vipfy.store/favicon.ico",
         loadingGif: "./src/images/Ladeanimation_Vipfy_transparent.gif",
         setupIcon: "./iconTransparent.ico",
-        signWithParams: "/a /n VIPFY /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
+        dontsignWithParams:
+          "/a /n VIPFY /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
       }
     },
     {
