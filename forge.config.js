@@ -1,4 +1,4 @@
-console.log("LOG: process.env.UNSIGNED", process.env);
+console.log("LOG: process.env.UNSIGNED", process.env.UNSIGNED, typeof process.env.UNSIGNED);
 
 module.exports = {
   packagerConfig: {
@@ -22,7 +22,7 @@ module.exports = {
         // Yes, I am really doing this. Come up with a better solution if you
         // don't like it.
         [`${
-          process.env.UNSIGNED == "true" ? "un" : ""
+          process.env.UNSIGNED ? "un" : ""
         }signWithParams`]: "/a /n VIPFY /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
       }
     },

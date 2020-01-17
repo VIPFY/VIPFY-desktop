@@ -2,15 +2,6 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-defaults: &defaults
-  #docker:
-  # specify the version you desire here
-  #- image: circleci/node:12.14.1
-  # Specify service dependencies here if necessary
-  # CircleCI maintains a library of pre-built images
-  # documented at https://circleci.com/docs/2.0/circleci-images/
-  # - image: circleci/mongo:3.4.4
-
 
 branches: &branches
   filters:
@@ -42,7 +33,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: set DEVELOPMENT=$DEVELOPMENT
-      - run: set UNSIGNED=true # Signing the App will fail, so remove this build step
+      - run: set UNSIGNED=$UNSIGNED # Signing the App will fail, so remove this build step
       - run: set SERVER_NAME=$SERVER_NAME
       - run: set CHANNEL_ID=$CHANNEL_ID
       - run:
@@ -66,7 +57,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
           name: Publish the current version
-          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID npm run publish-js
+          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID UNSIGNED=$UNSIGNED npm run publish-js
 
 workflows:
   version: 2.1
