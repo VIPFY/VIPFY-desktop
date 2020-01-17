@@ -1,3 +1,5 @@
+console.log("LOG: process.env.UNSIGNED", process.env.UNSIGNED, typeof process.env.UNSIGNED);
+
 module.exports = {
   packagerConfig: {
     icon: "iconTransparent",
