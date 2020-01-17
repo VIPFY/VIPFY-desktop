@@ -26,7 +26,8 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-      - run: git config --global user.email "no-one@vipfy.store" user.name "Deploy Bot"
+      - run: git config --global user.email "no-one@vipfy.store"
+      - run: git config --global user.name "Deploy Bot"
       - run: npm version preminor
       - run: npm install
       - save_cache:
