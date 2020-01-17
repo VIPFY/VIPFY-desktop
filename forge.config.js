@@ -1,4 +1,4 @@
-console.log("LOG: process.env.UNSIGNED", process.env.UNSIGNED, typeof process.env.UNSIGNED);
+console.log("LOG: process.env.UNSIGNED", process.env);
 
 module.exports = {
   packagerConfig: {
