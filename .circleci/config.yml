@@ -67,14 +67,14 @@ workflows:
 
   build-workflows:
     jobs:
-      - windows
+      - windows:
           filters:
             branches:
               only:
                 - /custom-version-.*/
               ignore:
                 - master
-      - mac
+      - mac:
           filters:
             branches:
               only:
