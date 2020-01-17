@@ -41,8 +41,13 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
+          name: Set environment variables
+          command: setx DEVELOPMENT=$DEVELOPMENT |
+            setx SERVER_NAME=$SERVER_NAME |
+            setx CHANNEL_ID=$CHANNEL_ID
+      - run:
           name: Publish the current version
-          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID npm run publish-js
+          command: npm run publish-js
   mac:
     macos: # Build the Mac Version
       xcode: 11.3.0
@@ -59,13 +64,8 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
-          name: Set environment variables
-          command: setx DEVELOPMENT=$DEVELOPMENT |
-            setx SERVER_NAME=$SERVER_NAME |
-            setx CHANNEL_ID=$CHANNEL_ID
-      - run:
           name: Publish the current version
-          command: npm run publish-js
+          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID npm run publish-js
 
 workflows:
   version: 2.1
