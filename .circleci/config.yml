@@ -1,12 +1,68 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+defaults: &defaults
+  branches:
+  only:
+    - /custom-version-.*/
+  ignore:
+    - master
+  docker:
+    # specify the version you desire here
+    - image: circleci/node:12.14.1
+    # Specify service dependencies here if necessary
+    # CircleCI maintains a library of pre-built images
+    # documented at https://circleci.com/docs/2.0/circleci-images/
+    # - image: circleci/mongo:3.4.4
+  working_directory: ~/repo
+
 version: 2.1
+orbs:
+  win: circleci/windows@2.2.0
 jobs:
-  custom-version-*:
-    docker:
-      - image: circleci/node:12.14.1
+  windows: # This is the name of the build
+    <<: *defaults
+    executor: win/default
+    steps:
+      - checkout # Checks out our code from Bitbucket and installs dependencies
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Publish the current version
+          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID npm run publish-js
+  mac:
+    <<: *defaults
+    macos: # Build the Mac Version
+      xcode: 11.3.0
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
       - run:
-          name: Build the bundle files
-          command: |
-            echo 'Building the bundle!'
-            echo 'This is the delivery pipeline'
+          name: Publish the current version
+          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID npm run publish-js
+
+workflows:
+  version: 2.1
+
+  build-workflows:
+    jobs:
+      - windows
+      - mac
