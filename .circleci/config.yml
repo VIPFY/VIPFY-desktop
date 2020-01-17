@@ -12,13 +12,13 @@ defaults: &defaults
   # - image: circleci/mongo:3.4.4
   working_directory: ~/repo
 
-branches: &branches
-  filters:
-    branches:
-      only:
-        - /custom-version-.*/
-      ignore:
-        - master
+# branches: &branches
+#   filters:
+#     branches:
+#       only:
+#         - /custom-version-.*/
+#       ignore:
+#         - master
 
 version: 2.1
 orbs:
@@ -68,6 +68,16 @@ workflows:
   build-workflows:
     jobs:
       - windows
-        '<<': *branches
+          filters:
+            branches:
+              only:
+                - /custom-version-.*/
+              ignore:
+                - master
       - mac
-        '<<': *branches
+          filters:
+            branches:
+              only:
+                - /custom-version-.*/
+              ignore:
+                - master
