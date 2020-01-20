@@ -35,8 +35,11 @@ jobs:
       - run: set SERVER_NAME=$SERVER_NAME
       - run: set CHANNEL_ID=$CHANNEL_ID
       - run:
+          name: Create a custom tag for nucleus
+          command: npm run publish-prepare
+      - run:
           name: Build the current version for windows
-          command: npm run publish-js
+          command: npm run publish
       - run:
           name: Install jq to parse json responses
           command: sudo apt install jq -y
@@ -62,6 +65,9 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Create a custom tag for nucleus
+          command: npm run publish-prepare
       - run:
           name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID UNSIGNED=$UNSIGNED npm run publish-js

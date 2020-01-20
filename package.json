@@ -10,7 +10,8 @@
     "publish-js": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
     "start": "electron-forge start",
-    "publish": "npm-run-all build-css build-js"
+    "publish": "npm-run-all build-css build-js",
+    "publish-custom": "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json"
   },
   "keywords": [],
   "author": "Vipfy GmbH",
