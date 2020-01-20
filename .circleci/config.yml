@@ -40,7 +40,7 @@ jobs:
           shell: bash.exe
       - run:
           name: Build the current version for windows
-          command: npm run publish
+          command: npm run publish-js
       - run:
           name: Make our deploy script executable
           command: cd .circleci | chmod +x release-nucleus.sh
@@ -67,7 +67,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
           name: Create a custom tag for nucleus
-          command: npm run publish-prepare
+          command: npm run publish-js
       - run:
           name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID UNSIGNED=$UNSIGNED npm run publish-js
