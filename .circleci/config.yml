@@ -58,6 +58,9 @@ jobs:
       - run:
           name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID UNSIGNED=$UNSIGNED npm run publish-js
+      - run:
+          name: Release the version
+          command: echo"Let's release again"
 
 workflows:
   version: 2.1
