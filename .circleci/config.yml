@@ -47,7 +47,7 @@ jobs:
           shell: bash.exe
       - run:
           name: Log in to nucleus and release the previously built version
-          command: ./release-nucleus.sh $NUCLEUS_PW
+          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW
           shell: bash.exe
 
   mac:
