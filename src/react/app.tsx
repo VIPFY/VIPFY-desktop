@@ -416,31 +416,6 @@ class App extends React.Component<AppProps, AppState> {
         className="full-size">
         <HeaderNotificationProvider>
           {this.renderComponents()}
-          {/*sidebarloaded &&
-          localStorage.getItem("token") &&
-          
-            <Query query={tutorial}>
-            {({ data, loading, error }) => {
-              if (error) {
-                return null;
-              }
-
-              if (loading) {
-                return null;
-              }
-
-              return (
-                <Tutorial
-                  tutorialdata={data}
-                  renderElements={this.references}
-                  page={page}
-                  reshow={this.state.reshow}
-                  setreshowTutorial={this.setreshowTutorial}
-                />
-              );
-            }}
-          </Query>
-          }*/}
           {popup.show && (
             <Popup
               popupHeader={popup.header}

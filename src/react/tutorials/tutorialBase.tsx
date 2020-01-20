@@ -6,7 +6,6 @@ import { me } from "./../queries/auth";
 
 interface Props {
   tutorialId?: number;
-  tutorialPath?: string;
   closeTutorial: Function;
   highlightReferences: any[];
 }

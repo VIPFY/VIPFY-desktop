@@ -4,7 +4,6 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { ApolloProvider } from "react-apollo";
-import u2f from "./u2f-api.js";
 
 declare module "*.scss" {
   const content: any;
@@ -17,17 +16,12 @@ import PasswordReset from "./components/signin/PasswordReset";
 import OuterErrorBoundary from "./error";
 import * as is from "electron-is";
 import UpgradeError from "./upgradeerror";
-import fs from "fs";
 
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { sleep } from "./common/functions";
 import { remote } from "electron";
 const { session } = remote;
 import { version } from "../../package.json";
-
-import pjson from "pjson";
-import config from "../../configurationManager.ts";
 
 interface IndexProps {
   client: ApolloClient<InMemoryCache>;

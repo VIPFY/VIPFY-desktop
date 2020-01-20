@@ -8,7 +8,6 @@ interface Props {
   setApp: Function;
   isadmin: boolean;
   id: number;
-  showPopup: Function;
   licences: Licence;
 }
 
