@@ -38,8 +38,15 @@ jobs:
           name: Build the current version for windows
           command: npm run publish-js
       - run:
-          name: Release the version
-          command: echo"Releasing version"
+          name: Install jq to parse json responses
+          command: sudo apt install jq -y
+      - run:
+          name: Make our deploy script executable
+          command: cd .circleci | chmod +x release-nucleus.sh
+      - run:
+          name: Log in to nucleus and release the previously built version
+          command: ./release-nucleus.sh $NUCLEUS_PW
+
   mac:
     macos: # Build the Mac Version
       xcode: 11.3.0
