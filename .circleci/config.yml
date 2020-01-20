@@ -37,18 +37,18 @@ jobs:
       - run:
           name: Create a custom tag for nucleus
           command: npm run publish-prepare
+          shell: bash.exe
       - run:
           name: Build the current version for windows
           command: npm run publish
       - run:
-          name: Install jq to parse json responses
-          command: sudo apt install jq -y
-      - run:
           name: Make our deploy script executable
           command: cd .circleci | chmod +x release-nucleus.sh
+          shell: bash.exe
       - run:
           name: Log in to nucleus and release the previously built version
           command: ./release-nucleus.sh $NUCLEUS_PW
+          shell: bash.exe
 
   mac:
     macos: # Build the Mac Version
