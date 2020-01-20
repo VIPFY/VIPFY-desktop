@@ -35,8 +35,11 @@ jobs:
       - run: set SERVER_NAME=$SERVER_NAME
       - run: set CHANNEL_ID=$CHANNEL_ID
       - run:
-          name: Publish the current version
+          name: Build the current version for windows
           command: npm run publish-js
+      - run:
+          name: Release the version
+          command: echo"Releasing version"
   mac:
     macos: # Build the Mac Version
       xcode: 11.3.0
@@ -53,7 +56,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
-          name: Publish the current version
+          name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID UNSIGNED=$UNSIGNED npm run publish-js
 
 workflows:
