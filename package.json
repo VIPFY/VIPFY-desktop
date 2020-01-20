@@ -10,7 +10,7 @@
     "publish-js": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
     "start": "electron-forge start",
-    "publish": "npm-run-all build-css build-js",
+    "publish": "npm-run-all build-css build-js"
   },
   "keywords": [],
   "author": "Vipfy GmbH",
