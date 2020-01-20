@@ -43,7 +43,7 @@ jobs:
           command: npm run publish-js
       - run:
           name: Make our deploy script executable
-          command: cd .circleci | chmod +x release-nucleus.sh
+          command: chmod +x .circleci/release-nucleus.sh
           shell: bash.exe
       - run:
           name: Log in to nucleus and release the previously built version
