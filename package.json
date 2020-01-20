@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.11.7",
+  "version": "$(cat package.json | jq -r .version)-dev-$(date +\"%Y-%m-%d\")",
   "description": "The desktop client for vipfy.com",
   "main": ".webpack/main",
   "scripts": {
