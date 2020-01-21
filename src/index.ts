@@ -7,6 +7,7 @@ import path from "path";
 import Store from "electron-store";
 import * as is from "electron-is";
 import { logger } from "./logger";
+import configJSON from "../config.json";
 
 process.on("uncaughtException", error => {
   logger.error(error);
@@ -30,7 +31,7 @@ const suffix =
 
 if (!disableUpdater) {
   autoUpdater.setFeedURL({
-    url: `${DOMAIN}/VIPFY/4e2105365ea5c7e823cb7af42450b29a/${process.platform}/${process.arch}${suffix}`,
+    url: `${DOMAIN}/VIPFY/${configJSON.channelID}/${process.platform}/${process.arch}${suffix}`,
     serverType: "json"
   });
 
