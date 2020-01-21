@@ -10,7 +10,7 @@ curl -L -b cookies.txt -c cookies.txt -u jf:$PASSWORD http://release.vipfy.store
 
 # Get the previously built version and save the result in a Variable
 VERSION_ID=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq '.[0].id')
-VERSION_NAME=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq '.[0].version')
+VERSION_NAME=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq -r '.[0].version')
 
 # Trigger the Release
 curl -b cookies.txt -X POST http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases/$VERSION_ID/release
