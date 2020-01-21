@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.11.12",
+  "version": "0.11.13",
   "description": "The desktop client for vipfy.com",
   "main": ".webpack/main",
   "scripts": {
