@@ -507,14 +507,19 @@ class ChangeAccount extends React.Component<Props, State> {
                     ) {
                       this.setState({ saving: true });
                       try {
+                        const logindata = await createEncryptedLicenceKeyObject(
+                          {
+                            username: this.state.email,
+                            password: this.state.password
+                          },
+                          false,
+                          this.props.client
+                        );
                         await this.props.changeAccount({
                           variables: {
                             accountid: account.id,
                             alias: this.state.alias,
-                            logindata: {
-                              username: this.state.email,
-                              password: this.state.password
-                            },
+                            logindata,
                             endtime: this.state.todate || null,
                             isNull: !!(this.state.todate == null)
                           },
