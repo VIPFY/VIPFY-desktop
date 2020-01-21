@@ -36,7 +36,8 @@ jobs:
       - run: set CHANNEL_ID=$CHANNEL_ID
       - run:
           name: Set our development channel ID
-          command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
+          # prettier-ignore
+          command: "cat config.json | jq '.channelID = \"$CHANNEL_ID\"' config.json > config-temp.json && mv config-temp.json config.json"
       - run:
           name: Create a custom tag for nucleus
           command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
