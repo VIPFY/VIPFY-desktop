@@ -22,14 +22,12 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - windows-dependencies
       - run: npm install
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: windows-dependencies
       - run: set DEVELOPMENT=$DEVELOPMENT
       - run: set UNSIGNED=$UNSIGNED # Signing the App will fail, so remove this build step
       - run: set SERVER_NAME=$SERVER_NAME
@@ -62,13 +60,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
+            - mac-dependencies
       - run: npm install
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: mac-dependencies
       - run:
           name: Set our development channel ID
           command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
