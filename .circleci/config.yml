@@ -36,8 +36,7 @@ jobs:
       - run: set CHANNEL_ID=$CHANNEL_ID
       - run:
           name: Set our development channel ID
-          # prettier-ignore
-          command: cat config.json | jq ".channelID = $CHANNEL_ID" config.json > config-temp.json | mv config-temp.json config.json
+          command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
           shell: bash.exe
       - run:
           name: Create a custom tag for nucleus
@@ -52,7 +51,7 @@ jobs:
           shell: bash.exe
       - run:
           name: Log in to nucleus and release the previously built version
-          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW $CHANNEL_ID
+          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
           shell: bash.exe
 
   mac:
