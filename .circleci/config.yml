@@ -40,7 +40,7 @@ jobs:
           shell: bash.exe
       - run:
           name: Create a custom tag for nucleus
-          command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
+          command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-windows-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
           shell: bash.exe
       - run:
           name: Build the current version for windows
@@ -70,14 +70,24 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
+          name: Set our development channel ID
+          command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
+       #   shell: bash.exe
+      - run:
           name: Create a custom tag for nucleus
-          command: npm run publish-js
+          command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-mac-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
+      #    shell: bash.exe
       - run:
           name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID UNSIGNED=$UNSIGNED npm run publish-js
       - run:
-          name: Release the version
-          command: echo"Let's release again"
+          name: Make our deploy script executable
+          command: chmod +x .circleci/release-nucleus.sh
+      #    shell: bash.exe
+      - run:
+          name: Log in to nucleus and release the previously built version
+          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
+      #    shell: bash.exe
 
 workflows:
   version: 2.1
