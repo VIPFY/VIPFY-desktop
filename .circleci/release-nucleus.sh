@@ -14,6 +14,6 @@ VERSION_NAME=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/ch
 
 # Trigger the Release
 curl -b cookies.txt -X POST http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases/$VERSION_ID/release
-echo "The version is called $VERSION_NAME"
+
 # Set Rollout to 100%
-curl -b cookies.txt -H "Content-Type: application/json"  --request POST http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/rollout --data '{"version": $VERSION_NAME, "rollout": 100}'
+curl -b cookies.txt -H "Content-Type: application/json" --request POST http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/rollout --data "{\"version\": $VERSION_NAME, \"rollout\": 100}"

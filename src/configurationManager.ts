@@ -1,7 +1,8 @@
 require("dotenv").config();
+import configJSON from "../config.json";
 
 let config = {
-  backendHost: process.env.SERVER_NAME || "api.vipfy.store",
+  backendHost: process.env.SERVER_NAME || configJSON.server,
   backendPort: process.env.SERVER_PORT || 443,
   backendSSL:
     process.env.SERVER_SSL !== "0" &&
@@ -24,9 +25,7 @@ let config = {
 };
 
 if (!config.stripeToken) {
-  config.stripeToken = config.isDevelopment
-    ? "pk_test_W9VDDvYKZqcmbgaz7iAcUR9j"
-    : "pk_live_OrfeIMTOFjG5o9S5zm9iYH0x";
+  config.stripeToken = configJSON.stripe[config.isDevelopment ? "live" : "dev"];
 }
 
 export default config;
