@@ -91,7 +91,7 @@ workflows:
 
   build-workflows:
     jobs:
-      - windows
+     # - windows
         #  <<: *branches
       - mac
         #  <<: *branches
