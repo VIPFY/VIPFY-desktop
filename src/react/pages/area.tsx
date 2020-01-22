@@ -12,7 +12,6 @@ import Domains from "./domains";
 import Marketplace from "./marketplace";
 import MessageCenter from "./messagecenter";
 import Profile from "./profile";
-import Settings from "./settings";
 import AdminDashboard from "../components/admin/Dashboard";
 import ServiceCreation from "../components/admin/ServiceCreation";
 import Sidebar from "../components/Sidebar";
@@ -49,6 +48,10 @@ import TutorialBase from "../tutorials/tutorialBase";
 import CryptoDebug from "../components/admin/crytpodebug";
 import Vacation from "./vacation";
 import { fetchUserLicences } from "../queries/departments";
+import EmployeeDetails from "./manager/employeeDetails";
+import TeamOverview from "./manager/teamOverview";
+import ServiceOverview from "./manager/serviceOverview";
+import ServiceDetails from "./manager/serviceDetails";
 
 interface AreaProps {
   history: any[];
@@ -320,7 +323,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "", component: Dashboard },
       { path: "dashboard", component: Dashboard },
       { path: "dashboard/:overlay", component: Dashboard },
-      { path: "settings", component: Settings },
       { path: "profile", component: Profile },
       { path: "security", component: Security },
       { path: "messagecenter", component: MessageCenter },
