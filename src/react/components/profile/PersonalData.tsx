@@ -139,58 +139,6 @@ class PersonalData extends React.Component<Props, State> {
                               <span data-recording-sensitive>{data}</span>
                             </li>
                           ))}
-                          {/* <li>
-                            <label>Tutorials</label>
-                            <span>
-                              <button
-                                className="naked-button reshow-button"
-                                onClick={() => setreshowTutorial("welcome")}>
-                                Welcome
-                              </button>
-                              <button
-                                className="naked-button reshow-button"
-                                onClick={() => setreshowTutorial("sidebar")}>
-                                Sidebar
-                              </button>
-                              <button
-                                className="naked-button reshow-button"
-                                onClick={() => setreshowTutorial("dashboard")}
-                                ref={el => addRenderElement({ key: "tutorials", element: el })}>
-                                Dashboard
-                              </button>
-                              <button
-                                className="naked-button reshow-button"
-                                onClick={() => setreshowTutorial("profile")}>
-                                Profile
-                              </button>
-                              {/*<button
-                                className="naked-button reshow-button"
-                                onClick={() => setreshowTutorial(1)}>
-                                Billing
-                              </button>
-                              <button
-                                className="naked-button reshow-button"
-                                onClick={() => setreshowTutorial(1)}>
-                                Security
-                              </button>
-                              <button
-                                className="naked-button reshow-button"
-                                onClick={() => setreshowTutorial(1)}>
-                                Teams
-                              </button>
-                              <button
-                                className="naked-button reshow-button"
-                                onClick={() => setreshowTutorial(1)}>
-                                External Accounts
-                              </button>
-                              <button
-                                className="naked-button reshow-button"
-                                onClick={() => setreshowTutorial(1)}>
-                                Support
-                              </button>*&/}
-                            </span>
-                              </li> */}
-
                           <li>
                             <button
                               ref={el => addRenderElement({ key: "changePassword", element: el })}
