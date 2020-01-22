@@ -39,7 +39,6 @@ const UPDATE_DATA = gql`
 interface Props {
   querydata: any;
   createEmail: Function;
-  updateEmail: Function;
   deleteEmail: Function;
   createPhone: Function;
   deletePhone: Function;
@@ -49,21 +48,7 @@ interface Props {
 }
 
 interface State {
-  name: string;
-  birthday: number;
-  street: string;
-  zip: string;
-  city: string;
-  country: string;
-  phone1: string;
-  phone2: string;
   updating: Boolean;
-  hiredate: string;
-  position: string;
-  email: string;
-  email2: string;
-  workPhone: string;
-  workPhone2: string;
   error: string | null;
   edit: Object | null;
   editvalue: String | null;
@@ -71,7 +56,6 @@ interface State {
   idlist: Array<string>;
   idlistset: string;
   editvacation: Boolean;
-  editvacationid: number;
 }
 
 const CREATE_EMAIL = gql`
@@ -82,15 +66,6 @@ const CREATE_EMAIL = gql`
       priority
       verified
       tags
-    }
-  }
-`;
-
-const UPDATE_EMAIL = gql`
-  mutation onUpdateEmail($email: String!, $emailData: EmailUpdateInput!, $userid: ID) {
-    updateEmail08(email: $email, emailData: $emailData, userid: $userid) {
-      email
-      description
     }
   }
 `;
@@ -863,19 +838,7 @@ class PersonalDetails extends React.Component<Props, State> {
                                     }
                                   })
                                 );
-                              } /*else {
-                              promisesEmails.push(
-                                this.props.updateEmail({
-                                  variables: {
-                                    userid: querydata.id,
-                                    emailData: {
-                                      email: edit.email
-                                    },
-                                    email: edit.oldemail
-                                  }
-                                })
-                              );
-                            }*/
+                              }
                             }
                           });
                           await Promise.all(promisesEmails);
@@ -1033,7 +996,6 @@ class PersonalDetails extends React.Component<Props, State> {
 }
 export default compose(
   graphql(CREATE_EMAIL, { name: "createEmail" }),
-  graphql(UPDATE_EMAIL, { name: "updateEmail" }),
   graphql(DELETE_EMAIL, { name: "deleteEmail" }),
   graphql(CREATE_PHONE, { name: "createPhone" }),
   graphql(UPDATE_PHONE, { name: "updatePhone" }),

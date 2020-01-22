@@ -12,7 +12,6 @@ declare module "*.scss" {
 
 import App from "./app";
 import client, { setLogoutFunction, setUpgradeErrorHandler } from "./networkInterface";
-import PasswordReset from "./components/signin/PasswordReset";
 import OuterErrorBoundary from "./error";
 import * as is from "electron-is";
 import UpgradeError from "./upgradeerror";
@@ -82,7 +81,6 @@ class Application extends React.Component<IndexProps> {
         <OuterErrorBoundary>
           <Router>
             <Switch>
-              <Route exact path="/passwordreset" component={PasswordReset} />
               <Route exact path="/upgrade-error" component={UpgradeError} />
               <Route
                 path="/"

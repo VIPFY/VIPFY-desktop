@@ -8,7 +8,6 @@ import PopupBase from "./popupBase";
 import { me as ME } from "../../queries/auth";
 import { updatePassword } from "../../common/passwords";
 import { MutationLike } from "../../common/mutationlike";
-import { forgotPassword } from "../../mutations/auth";
 
 interface PasswordChangeProps {
   email: string;
@@ -112,54 +111,24 @@ class ForcedPasswordChange extends React.Component<PasswordChangeProps, Password
                 style={{ marginTop: "40px" }}
                 type="password"
               />
-
-              <Mutation
-                mutation={forgotPassword}
-                onCompleted={() => this.setState({ showForgotSuccess: true })}
-                onError={() => this.setState({ showError: true })}>
-                {(forgotPassword, { loading: l2, error: e2 }) => (
-                  <div className="buttonsPopup" style={{ justifyContent: "space-between" }}>
-                    <UniversalButton
-                      customStyles={{ width: "154px" }}
-                      disabled={loading || l2}
-                      label="forgot password"
-                      type="low"
-                      onClick={() => forgotPassword({ variables: { email: this.props.email } })}
-                    />
-
-                    <UniversalButton
-                      disabled={!this.canSubmit() || loading}
-                      customStyles={{ width: "96px" }}
-                      label="save"
-                      type="high"
-                      onClick={() => {
-                        updatePassword({
-                          variables: {
-                            pw: this.state.oldPassword,
-                            newPw: this.state.newPassword,
-                            confirmPw: this.state.repeatPassword
-                          }
-                        });
-                      }}
-                    />
-                  </div>
-                )}
-              </Mutation>
+              <div className="buttonsPopup" style={{ justifyContent: "flex-end" }}>
+                <UniversalButton
+                  disabled={!this.canSubmit() || loading}
+                  customStyles={{ width: "96px" }}
+                  label="save"
+                  type="high"
+                  onClick={() => {
+                    updatePassword({
+                      variables: {
+                        pw: this.state.oldPassword,
+                        newPw: this.state.newPassword,
+                        confirmPw: this.state.repeatPassword
+                      }
+                    });
+                  }}
+                />
+              </div>
             </section>
-
-            {this.state.showForgotSuccess && (
-              <PopupBase
-                additionalclassName="formPopup"
-                close={() => this.setState({ showForgotSuccess: false })}
-                small={true}>
-                <div>
-                  <h1>Forgot Password successful</h1>
-                  <div>{`A new Password was sent to ${this.props.email}`}</div>
-                </div>
-
-                <UniversalButton closingPopup={true} label="ok" type="high" />
-              </PopupBase>
-            )}
 
             {this.state.showError && (
               <PopupBase

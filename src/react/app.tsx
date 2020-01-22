@@ -359,9 +359,6 @@ class App extends React.Component<AppProps, AppState> {
       case "dashboard":
         this.moveTo("dashboard");
         break;
-      case "profile":
-        this.moveTo("profile");
-        break;
 
       default:
     }
