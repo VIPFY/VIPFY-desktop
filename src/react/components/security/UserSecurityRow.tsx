@@ -12,12 +12,23 @@ import SecurityPopup from "../../pages/manager/securityPopup";
 import { SecurityUser } from "../../interfaces";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
+import { decryptAdminKey } from "../../common/passwords";
+import { encryptLicence } from "../../common/crypto";
 
-const CHANGE_ADMIN_STATUS = gql`
-  mutation onChangeAdminStatus($id: ID!, $bool: Boolean!) {
-    changeAdminStatus(unitid: $id, admin: $bool) {
+const ADD_ADMIN = gql`
+  mutation onAddAdmin($id: ID!, $key: KeyInput!) {
+    addAdmin(unitid: $id, adminkey: $key) {
       id
-      status
+      isadmin
+    }
+  }
+`;
+
+const REMOVE_ADMIN = gql`
+  mutation onRemoveAdmin($id: ID!) {
+    removeAdmin(unitid: $id) {
+      id
+      isadmin
     }
   }
 `;
@@ -38,9 +49,19 @@ const UNBAN_EMPLOYEE = gql`
   }
 `;
 
+const FETCH_CURRENT_KEY = gql`
+  query fetchCurrentKey($unitid: ID!) {
+    fetchCurrentKey(unitid: $unitid) {
+      id
+      publickey
+    }
+  }
+`;
+
 interface Props {
   user: SecurityUser;
   id: number;
+  client: any;
 }
 
 interface State {
@@ -90,13 +111,13 @@ class UserSecurityRow extends React.Component<Props, State> {
         </td>
         <td>
           <Mutation
-            mutation={CHANGE_ADMIN_STATUS}
+            mutation={user.unitid.isadmin ? REMOVE_ADMIN : ADD_ADMIN}
             onCompleted={() => this.setState({ showAdminSuccess: true, showAdminRights: false })}
-            update={(proxy, { data: { changeAdminStatus } }) => {
+            update={proxy => {
               const data = proxy.readQuery({ query: FETCH_USER_SECURITY_OVERVIEW });
               const fetchUserSecurityOverview = data.fetchUserSecurityOverview.map(u => {
                 if (u.id == user.id) {
-                  return { ...u, unitid: { ...u.unitid, isadmin: changeAdminStatus.status } };
+                  return { ...u, unitid: { ...u.unitid, isadmin: !user.unitid.isadmin } };
                 } else {
                   return u;
                 }
@@ -113,7 +134,7 @@ class UserSecurityRow extends React.Component<Props, State> {
                   <input
                     disabled={loading}
                     onChange={() => this.setState({ showAdminRights: true })}
-                    checked={data ? data.changeAdminStatus.status : user.unitid.isadmin}
+                    checked={user.unitid.isadmin}
                     type="checkbox"
                   />
                   <span className="slider" />
@@ -142,9 +163,34 @@ class UserSecurityRow extends React.Component<Props, State> {
                         <UniversalButton
                           type="low"
                           label="yes"
-                          onClick={() =>
-                            mutate({ variables: { id: user.id, bool: !user.unitid.isadmin } })
-                          }
+                          onClick={async () => {
+                            if (user.unitid.isadmin) {
+                              return mutate({
+                                variables: { id: user.id }
+                              });
+                            } else {
+                              const key = await decryptAdminKey(this.props.client);
+                              const userKey = await this.props.client.query({
+                                query: FETCH_CURRENT_KEY,
+                                variables: { unitid: user.id }
+                              });
+                              key.privatekey = (
+                                await encryptLicence(
+                                  Buffer.from(key.privatekeyDecrypted, "hex"),
+                                  Buffer.from(userKey.data.fetchCurrentKey.publickey, "hex")
+                                )
+                              ).toString("hex");
+                              delete key.privatekeyDecrypted;
+                              delete key.__typename;
+                              delete key.createdat;
+                              delete key.id;
+                              key.encryptedby = userKey.data.fetchCurrentKey.publickey;
+
+                              return mutate({
+                                variables: { id: user.id, key }
+                              });
+                            }
+                          }}
                         />
                       </React.Fragment>
                     ) : (
