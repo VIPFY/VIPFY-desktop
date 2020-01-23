@@ -204,16 +204,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           <PopupBase small={true} close={() => this.setState({ confirm: false })}>
             Do you really want to create an Employee called {this.state.name}?
             <UniversalButton label="Cancel" type="low" closingPopup={true} />
-            <AppContext.Consumer>
-              {({ addRenderElement }) => (
-                <UniversalButton
-                  label="Confirm"
-                  type="high"
-                  onClick={() => this.handleConfirm()}
-                  /*innerRef={el => addRenderElement({ key: "saved", element: el })}*/
-                />
-              )}
-            </AppContext.Consumer>
+            <UniversalButton label="Confirm" type="high" onClick={() => this.handleConfirm()} />
           </PopupBase>
         )}
         {this.state.saving && (
