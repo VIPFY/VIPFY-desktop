@@ -1,7 +1,5 @@
 import * as React from "react";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
 import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
-import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import RemoveTeamMember from "./removeTeamMember";
 
 interface Props {
@@ -53,68 +51,6 @@ class EmployeeDetails extends React.Component<Props, State> {
         <div style={{ lineHeight: "28px" }}>{phones[1].number}</div>
       </div>
     );
-  }
-
-  printAssignments() {
-    const assignments: JSX.Element[] = [];
-    if (this.props.employee.assignments) {
-      this.props.employee.assignments.forEach((asa, k) => {
-        if (
-          asa &&
-          asa.assignoptions &&
-          asa.assignoptions.teamlicence == this.props.team.unitid.id
-        ) {
-          assignments.push(
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "16px"
-              }}>
-              <span
-                style={{
-                  lineHeight: "24px",
-                  width: "84px",
-                  display: "flex",
-                  justifyContent: "center"
-                }}>
-                <UniversalCheckbox
-                  name={`Assignments-${k}`}
-                  liveValue={v => {
-                    this.setState(oldstate => (oldstate.deleteArray[k] = v));
-                  }}
-                  startingvalue={this.state.deleteArray[k]}
-                />
-              </span>
-
-              <span
-                style={{
-                  lineHeight: "24px",
-                  alignItems: "center",
-                  width: "calc(100% - 84px)",
-                  display: "flex"
-                }}>
-                <PrintServiceSquare
-                  service={asa.boughtplanid.planid.appid}
-                  appidFunction={e => e}
-                  size={24}
-                  additionalStyles={{
-                    lineHeight: "24px",
-                    width: "24px",
-                    height: "24px",
-                    fontSize: "13px",
-                    marginTop: "0px",
-                    marginLeft: "0px"
-                  }}
-                />
-                <div style={{ marginLeft: "8px" }}>{asa.alias}</div>
-              </span>
-            </div>
-          );
-        }
-      });
-    }
-    return assignments;
   }
 
   render() {

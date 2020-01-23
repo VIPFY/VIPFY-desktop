@@ -17,18 +17,8 @@ const favourites: { [key: number]: Licence | null } = {};
 
 interface Props {
   id: string;
-  firstname: string;
-  history: any;
-  lastname: string;
-  rcApps: any;
   setApp: Function;
-  moveTo: Function;
   licences: any[];
-  placeid?: string;
-  disableWelcome: Function;
-  addressProposal?: object;
-  vatId: string;
-  statisticData: object;
   updateLayout: Function;
   switchLayout: Function;
 }
