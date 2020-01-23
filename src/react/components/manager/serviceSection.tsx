@@ -1,8 +1,5 @@
 import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import gql from "graphql-tag";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import TeamServiceDetails from "./teamserviceDetails";
 import AssignNewTeamOrbit from "./universal/adding/assignNewTeamOrbit";
 
@@ -13,74 +10,13 @@ interface Props {
 }
 
 interface State {
-  delete: Boolean;
-  confirm: Boolean;
-  network: Boolean;
-  deleted: Boolean;
   add: Boolean;
-  keepLicences: number[];
-  deleteerror: string | null;
-  savingObject: {
-    savedmessage: string;
-    savingmessage: string;
-    closeFunction: Function;
-    saveFunction: Function;
-  } | null;
 }
-
-const REMOVE_EMPLOYEE_FROM_TEAM = gql`
-  mutation removeFromTeam($teamid: ID!, $userid: ID!, $keepLicences: [ID!]) {
-    removeFromTeam(teamid: $teamid, userid: $userid, keepLicences: $keepLicences)
-  }
-`;
 
 class ServiceSection extends React.Component<Props, State> {
   state = {
-    delete: false,
-    confirm: false,
-    network: false,
-    deleted: false,
-    add: false,
-    keepLicences: [],
-    deleteerror: null,
-    savingObject: null
+    add: false
   };
-
-  printRemoveLicences(team) {
-    let RLicencesArray: JSX.Element[] = [];
-
-    team.services.forEach((service, int) => {
-      RLicencesArray.push(
-        <li key={int}>
-          <UniversalCheckbox
-            name={service.id}
-            startingvalue={true}
-            liveValue={v =>
-              v
-                ? this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences.splice(
-                      prevState.keepLicences.findIndex(l => l == service.id),
-                      1
-                    );
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-                : this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences;
-                    keepLicencesNew.push(service.id);
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-            }>
-            <span>Delete licence of {service.planid.appid.name}</span>
-          </UniversalCheckbox>
-        </li>
-      );
-    });
-    return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
-  }
 
   render() {
     let services: any[] = [];
@@ -89,7 +25,6 @@ class ServiceSection extends React.Component<Props, State> {
       interservices = this.props.team.services;
 
       interservices.sort(function(a, b) {
-        console.log("a", a, "b", b);
         let nameA = a.planid.appid.name.toUpperCase();
         let nameB = b.planid.appid.name.toUpperCase();
         if (nameA < nameB) {
@@ -114,12 +49,7 @@ class ServiceSection extends React.Component<Props, State> {
 
     services.forEach((service, k) => {
       serviceArray.push(
-        <TeamServiceDetails
-          service={service}
-          team={this.props.team}
-          deleteFunction={sO => this.setState({ savingObject: sO })}
-          moveTo={this.props.moveTo}
-        />
+        <TeamServiceDetails service={service} team={this.props.team} moveTo={this.props.moveTo} />
       );
     });
 
@@ -159,53 +89,12 @@ class ServiceSection extends React.Component<Props, State> {
               </div>
               <div className="tableColumnSmall">{/*<h1>Average Usage</h1>*/}</div>
             </div>
-            <div className="tableEnd">
-              {/*<UniversalButton
-                type="high"
-                label="Manage Services"
-                customStyles={{
-                  fontSize: "12px",
-                  lineHeight: "24px",
-                  fontWeight: "700",
-                  marginRight: "16px",
-                  width: "120px"
-                }}
-                onClick={() => {
-                  this.setState({ add: true });
-                }}
-              />*/}
-            </div>
+            <div className="tableEnd"></div>
           </div>
           {serviceArray}
         </div>
-        {/*this.state.add && (
-          <ManageTeamServices
-            close={sO => {
-              this.setState({ add: false, savingObject: sO });
-            }}
-            team={this.props.team}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => this.setState({ add: false })}
-              />
-            </div>
-          </ManageTeamServices>
-          )*/}
         {this.state.add && (
           <AssignNewTeamOrbit team={this.props.team} close={() => this.setState({ add: false })} />
-        )}
-        {this.state.savingObject && (
-          <PopupSelfSaving
-            savedmessage={this.state.savingObject!.savedmessage}
-            savingmessage={this.state.savingObject!.savingmessage}
-            closeFunction={() => {
-              this.setState({ savingObject: null });
-            }}
-            saveFunction={async () => await this.state.savingObject!.saveFunction()}
-            maxtime={5000}
-          />
         )}
       </div>
     );

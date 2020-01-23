@@ -37,14 +37,12 @@ interface Props {
 interface State {
   loading: boolean;
   showSecurityPopup: boolean;
-  showTimeAway: Boolean;
 }
 
 class EmployeeDetails extends React.Component<Props, State> {
   state = {
     loading: false,
-    showSecurityPopup: false,
-    showTimeAway: false
+    showSecurityPopup: false
   };
 
   uploadPic = async (picture: File) => {
@@ -166,22 +164,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                       <div
                         className="tableEnd"
                         style={{ alignItems: "flex-start", marginLeft: "16px" }}>
-                        <div className="personalEditButtons">
-                          {/* this.props.isadmin && (
-                            <UniversalButton
-                              type="high"
-                              label="Manage Absence"
-                              customStyles={{
-                                width: "120px",
-                                fontWeight: "700",
-                                fontSize: "12px",
-                                lineHeight: "24px",
-                                marginTop: "8px"
-                              }}
-                              onClick={() => this.setState({ showTimeAway: true })}
-                            />
-                            ) */}
-                        </div>
+                        <div className="personalEditButtons"></div>
                       </div>
                     </div>
                   </div>
