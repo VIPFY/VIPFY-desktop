@@ -73,6 +73,7 @@ class RegisterCompany extends React.Component<Props, State> {
       if (this.state.privacy && this.state.tos) {
         this.setState({ register: true, error: "" });
 
+        // TODO: VIP-959 don't always use the same password
         const password = "testaccoun";
 
         const salt = await crypto.getRandomSalt();
