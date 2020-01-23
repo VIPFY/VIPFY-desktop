@@ -198,12 +198,16 @@ class Dashboard extends React.Component<Props, State> {
               </div>
               <div
                 /*ref={this.favouriteListRef} className="favourite-apps"*/ className="appGrid"
-                style={{
-                  gridColumnGap:
-                    24 +
-                    ((this.props.width - 64 - 64 + 24) % (128 + 24)) /
-                      (Math.floor((this.props.width - 64 - 64 + 24) / (128 + 24)) - 1)
-                }}>
+                style={
+                  this.props.width
+                    ? {
+                        gridColumnGap:
+                          24 +
+                          ((this.props.width - 64 - 64 + 24) % (128 + 24)) /
+                            (Math.floor((this.props.width - 64 - 64 + 24) / (128 + 24)) - 1)
+                      }
+                    : {}
+                }>
                 {Object.values(favourites).map((favourite, key) => {
                   if (favourite !== null) {
                     return (

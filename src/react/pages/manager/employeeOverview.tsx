@@ -51,7 +51,7 @@ class EmployeeOverview extends React.Component<Props, State> {
 
     for (let index = 0; index < amountFakes; index++) {
       fakeArray.push(
-        <div className="tableRow">
+        <div className="tableRow" key={`trl-${index}`}>
           <div className="tableMain">
             <div className="tableColumnBig" style={{ width: "20%" }}>
               <PrintEmployeeSquare employee={{}} fake={true} />
