@@ -5,11 +5,13 @@ import Dropzone from "react-dropzone";
 import EmployeeGerneralDataAdd from "./universal/adding/employeeGeneralDataAdd";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import { compose, graphql } from "react-apollo";
+import { compose, graphql, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import { randomPassword } from "../../common/passwordgen";
 import { filterError, AppContext } from "../../common/functions";
+import * as crypto from "../../common/crypto";
+import { computePasswordScore } from "../../common/passwords";
 
 interface Props {
   close: Function;
@@ -18,6 +20,7 @@ interface Props {
   heading?: string;
   createEmployee: Function;
   isadmin?: boolean;
+  client: any;
 }
 
 interface State {
@@ -53,9 +56,13 @@ const CREATE_EMPLOYEE = gql`
     $address: AddressInput
     $position: String
     $phones: [PhoneInput]
-    $password: String!
+    $password: String
     $needpasswordchange: Boolean
     $picture: Upload
+    $passkey: String!
+    $passwordMetrics: PasswordMetricsInput!
+    $personalKey: KeyInput!
+    $passwordsalt: String!
   ) {
     createEmployee(
       name: $name
@@ -68,6 +75,10 @@ const CREATE_EMPLOYEE = gql`
       phones: $phones
       password: $password
       needpasswordchange: $needpasswordchange
+      passkey: $passkey
+      passwordMetrics: $passwordMetrics
+      personalKey: $personalKey
+      passwordsalt: $passwordsalt
     ) {
       id
       profilepicture
@@ -245,6 +256,25 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
               } = this.state;
               const parsedName = parseName(name);
               try {
+                // TODO VIP-960 make these parameters configurable
+                const password = "testaccoun";
+                const emailPassword = false;
+                const needpasswordchange = false;
+
+                const salt = await crypto.getRandomSalt();
+                const { loginkey, encryptionkey1 } = await crypto.hashPassword(
+                  this.props.client,
+                  wmail1,
+                  password,
+                  salt
+                );
+                const passwordMetrics = {
+                  passwordlength: password.length,
+                  passwordstrength: computePasswordScore(password)
+                };
+
+                const personalKey = await crypto.generatePersonalKeypair(encryptionkey1);
+
                 const unitid = await this.props.createEmployee({
                   variables: {
                     ...state,
@@ -262,9 +292,14 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                       { number: wphone2, tags: ["work"] }
                     ],
                     emails: [{ email: wmail1 }, { email: wmail2 }],
-                    password: await randomPassword(),
+                    password: emailPassword ? password : null,
                     hiredate: hiredate != "" ? hiredate : null,
-                    birthday: birthday != "" ? birthday : null
+                    birthday: birthday != "" ? birthday : null,
+                    passkey: loginkey.toString("hex"),
+                    passwordMetrics,
+                    personalKey,
+                    passwordsalt: salt,
+                    needpasswordchange
                   }
                 });
                 this.setState({
@@ -291,6 +326,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     );
   }
 }
-export default compose(graphql(CREATE_EMPLOYEE, { name: "createEmployee" }))(
-  AddEmployeePersonalData
-);
+export default compose(
+  graphql(CREATE_EMPLOYEE, { name: "createEmployee" }),
+  withApollo
+)(AddEmployeePersonalData);
