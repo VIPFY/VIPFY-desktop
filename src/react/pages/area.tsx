@@ -406,7 +406,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                             path={`/area/${path}`}
                             render={props => (
                               <div
-                                className={`${chatOpen ? "chat-open" : ""} ${
+                                className={`full-working ${chatOpen ? "chat-open" : ""} ${
                                   sidebarOpen ? "sidebar-open" : ""
                                 }`}
                                 style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
@@ -471,7 +471,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                       key={"ERRORELSE"}
                       render={props => (
                         <div
-                          className={`${chatOpen ? "chat-open" : ""} ${
+                          className={`full-working ${chatOpen ? "chat-open" : ""} ${
                             sidebarOpen ? "sidebar-open" : ""
                           }`}>
                           <ErrorPage />
