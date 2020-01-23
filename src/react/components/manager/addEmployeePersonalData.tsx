@@ -45,6 +45,9 @@ interface State {
   error: String | null;
   picture: File | null;
   employee: any;
+  password: string;
+  sendingemail: boolean;
+  passwordChange: boolean;
 }
 
 const CREATE_EMPLOYEE = gql`
@@ -113,7 +116,10 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     parsedName: null,
     error: null,
     picture: null,
-    employee: null
+    employee: null,
+    password: "",
+    sendingemail: false,
+    passwordChange: true
   };
 
   handleConfirm() {
@@ -247,21 +253,16 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
               } = this.state;
               const parsedName = parseName(name);
               try {
-                // TODO VIP-960 make these parameters configurable
-                const password = "testaccoun";
-                const emailPassword = false;
-                const needpasswordchange = false;
-
                 const salt = await crypto.getRandomSalt();
                 const { loginkey, encryptionkey1 } = await crypto.hashPassword(
                   this.props.client,
                   wmail1,
-                  password,
+                  this.state.password,
                   salt
                 );
                 const passwordMetrics = {
-                  passwordlength: password.length,
-                  passwordstrength: computePasswordScore(password)
+                  passwordlength: this.state.password.length,
+                  passwordstrength: computePasswordScore(this.state.password)
                 };
 
                 const personalKey = await crypto.generatePersonalKeypair(encryptionkey1);
@@ -283,14 +284,14 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                       { number: wphone2, tags: ["work"] }
                     ],
                     emails: [{ email: wmail1 }, { email: wmail2 }],
-                    password: emailPassword ? password : null,
+                    password: this.state.sendingemail ? this.state.password : null,
                     hiredate: hiredate != "" ? hiredate : null,
                     birthday: birthday != "" ? birthday : null,
                     passkey: loginkey.toString("hex"),
                     passwordMetrics,
                     personalKey,
                     passwordsalt: salt,
-                    needpasswordchange
+                    needpasswordchange: this.state.passwordChange
                   }
                 });
                 this.setState({

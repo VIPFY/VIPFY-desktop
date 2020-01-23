@@ -15,12 +15,20 @@ interface Props {
   tabIndex?: number;
 }
 
-class UniversalButton extends React.Component<Props> {
-  click = e => {
-    const child = this.props.children;
-    if (!this.props.disabled) {
+interface State {
+  saving: Boolean;
+}
+
+class UniversalButton extends React.Component<Props, State> {
+  state = {
+    saving: false
+  };
+  click = async e => {
+    if (!this.state.saving && !this.props.disabled) {
       if (this.props.onClick) {
-        this.props.onClick(e);
+        this.setState({ saving: true });
+        await this.props.onClick(e);
+        this.setState({ saving: false });
       }
       if (this.props.additionalClickFunction) {
         this.props.additionalClickFunction();
@@ -50,12 +58,12 @@ class UniversalButton extends React.Component<Props> {
           tabIndex={this.props.tabIndex}>
           <div
             className={`cleanup universalButton ${this.props.type ? this.props.type : ""} ${
-              this.props.disabled ? "disabled" : "useable"
+              this.state.saving || this.props.disabled ? "disabled" : "useable"
             }`}
             tabIndex={-1}
             ref={this.props.innerRef}
             style={this.props.customStyles ? this.props.customStyles : {}}>
-            {this.props.label}
+            {this.state.saving ? <i className="fal fa-spinner fa-spin" /> : this.props.label}
           </div>
         </button>
         {this.printChildren(this.props.children)}
