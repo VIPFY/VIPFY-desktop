@@ -21,88 +21,7 @@
     "jsxBracketSameLine": true
   },
   "config": {
-    "forge": {
-      "packagerConfig": {
-        "icon": "iconTransparent",
-        "asar": false,
-        "appCopyright": "©2018 VIPFY GmbH",
-        "osxSign": {
-          "platform": "darwin",
-          "type": "distribution",
-          "identity": "Developer ID Application: VIPFY GmbH (RD6VS27844)"
-        }
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "vipfydesktop",
-            "iconUrl": "https://vipfy.store/favicon.ico",
-            "loadingGif": "./src/images/Ladeanimation_Vipfy_transparent.gif",
-            "setupIcon": "./iconTransparent.ico",
-            "signWithParams": "/a /n VIPFY /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "linux",
-            "darwin",
-            "win32"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-dmg",
-          "config": {
-            "icon": "./iconTransparent.icns",
-            "background": "./dmgBackground.png"
-          }
-        }
-      ],
-      "plugins": [
-        [
-          "@electron-forge/plugin-webpack",
-          {
-            "mainConfig": "./webpack.main.config.js",
-            "renderer": {
-              "config": "./webpack.renderer.config.js",
-              "entryPoints": [
-                {
-                  "html": "./src/index.html",
-                  "js": "./src/react/index.tsx",
-                  "name": "main_window",
-                  "prefixedEntries": [
-                    "./src/windowcontrols.js",
-                    "./node_modules/regenerator-runtime/runtime.js"
-                  ]
-                }
-              ]
-            }
-          },
-          "@electron-forge/plugin-auto-unpack-natives",
-          {}
-        ]
-      ],
-      "publishers": [
-        {
-          "name": "@electron-forge/publisher-nucleus",
-          "config": {
-            "host": "http://release.vipfy.store:3030",
-            "appId": "1",
-            "channelId": "4e2105365ea5c7e823cb7af42450b29a",
-            "token": "4a3db0e625fbb3aec657f0e033bb8dd1"
-          }
-        }
-      ]
-    }
+    "forge": "./forge.config.js"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.3",
@@ -150,6 +69,7 @@
     "jsonwebtoken": "^8.5.1",
     "log4js": "^4.5.1",
     "moment": "^2.24.0",
+    "moment-feiertage": "^1.1.5",
     "nivo": "^0.31.0",
     "node-abi": "^2.13.0",
     "npm": "^6.10.3",
@@ -160,6 +80,7 @@
     "react": "^16.7.0",
     "react-apexcharts": "^1.2.1",
     "react-apollo": "^2.5.8",
+    "react-calendar": "^2.19.2",
     "react-credit-cards": "^0.7.0",
     "react-dom": "^16.7.0",
     "react-draft-wysiwyg": "^1.13.1",
@@ -194,20 +115,20 @@
     "@babel/plugin-transform-regenerator": "^7.7.4",
     "@babel/plugin-transform-runtime": "^7.7.4",
     "@babel/preset-react": "^7.7.4",
-    "@electron-forge/cli": "6.0.0-beta.45",
-    "@electron-forge/maker-deb": "6.0.0-beta.45",
-    "@electron-forge/maker-dmg": "6.0.0-beta.45",
-    "@electron-forge/maker-rpm": "6.0.0-beta.45",
-    "@electron-forge/maker-squirrel": "6.0.0-beta.45",
-    "@electron-forge/maker-zip": "6.0.0-beta.45",
-    "@electron-forge/plugin-auto-unpack-natives": "^6.0.0-beta.45",
-    "@electron-forge/plugin-webpack": "6.0.0-beta.45",
-    "@electron-forge/publisher-nucleus": "6.0.0-beta.45",
+    "@electron-forge/cli": "6.0.0-beta.46",
+    "@electron-forge/maker-deb": "6.0.0-beta.46",
+    "@electron-forge/maker-dmg": "6.0.0-beta.46",
+    "@electron-forge/maker-rpm": "6.0.0-beta.46",
+    "@electron-forge/maker-squirrel": "6.0.0-beta.46",
+    "@electron-forge/maker-zip": "6.0.0-beta.46",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.0.0-beta.46",
+    "@electron-forge/plugin-webpack": "6.0.0-beta.46",
+    "@electron-forge/publisher-nucleus": "6.0.0-beta.46",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
     "@types/react-dropzone": "^4.2.2",
     "copy-webpack-plugin": "^5.0.4",
     "css-loader": "^3.2.0",
-    "electron": "7.1.4",
+    "electron": "8.0.0-beta.4",
     "file-loader": "^4.2.0",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
     "jscrambler-webpack-plugin": "^5.4.0",

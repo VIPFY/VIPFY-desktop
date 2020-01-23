@@ -4,7 +4,6 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { shell } from "electron";
 import path from "path";
-
 import moment from "moment";
 import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
 
@@ -95,8 +94,9 @@ export const filterError = error => {
     return "";
   }
 
+  const regex = /Error:|GraphQL/gi;
   if (typeof error == "string") {
-    return error;
+    return error.replace(regex, "").trim();
   }
 
   if (error.networkError) {
@@ -104,7 +104,7 @@ export const filterError = error => {
   } else if (error.graphQLErrors) {
     return error.graphQLErrors["0"].message;
   } else {
-    return error.message;
+    return error.message.replace(regex, "").trim();
   }
 };
 
@@ -309,6 +309,90 @@ export async function getMyEmail(client: any): Promise<string> {
             emails {
               email
             }
+          }
+        }
+      `
+    })
+  ).data.me.emails[0].email;
+}
+
+const currentYear = moment().get("year");
+
+/**
+ * Computes the vacation days an employee has in a year
+ * @param {object} employee
+ */
+export const computeFullDays = employee =>
+  employee.vacationDaysPerYear[currentYear] + (computeLeftOverDays(employee) || 0);
+
+/**
+ * Computes the vacation days an employee has already taken this year
+ * @param {object} employee
+ */
+export const computeTakenDays = ({ vacationRequests }) => {
+  if (vacationRequests.length < 1) {
+    return 0;
+  } else {
+    let days = 0;
+
+    vacationRequests.forEach(request => {
+      if (request.status == "CONFIRMED" && moment(request.requested).get("year") == currentYear) {
+        days += request.days;
+      }
+    });
+
+    return days;
+  }
+};
+
+/**
+ * Computes the vacation days an employee has left over from the last years
+ * @param {object} employee
+ */
+export const computeLeftOverDays = ({ vacationDaysPerYear, vacationRequests }) => {
+  const copy = { ...vacationDaysPerYear };
+  delete copy[currentYear];
+
+  const remainingVacationDays: number = Object.values(copy).reduce((acc, cV) => acc + cV, 0);
+
+  const requestsLastYears = vacationRequests.filter(({ status }) => status == "CONFIRMED");
+
+  return (
+    remainingVacationDays - requestsLastYears.map(t => t.days).reduce((acc, cV) => acc + cV, 0)
+  );
+};
+
+/**
+ * Renders an icon for a given status
+ * @param {string} status Either PENDING, REJECTED or CONFIRMED
+ */
+export const renderIcon = status => {
+  switch (status) {
+    case "PENDING":
+      return "clock";
+
+    case "REJECTED":
+      return "times";
+
+    case "CONFIRMED":
+      return "check";
+
+    default:
+      return "secret";
+  }
+};
+
+export async function getMe(client: any): Promise<string> {
+  return (
+    await client.query({
+      query: gql`
+        {
+          me {
+            id
+            profilepicture
+            firstname
+            middlename
+            lastname
           }
         }
       `

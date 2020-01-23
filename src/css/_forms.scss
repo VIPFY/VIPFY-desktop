@@ -724,6 +724,8 @@
       font-size: 13px;
       color: $vipfy-lighttext;
       cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       &:hover{
           line-height: 28px;

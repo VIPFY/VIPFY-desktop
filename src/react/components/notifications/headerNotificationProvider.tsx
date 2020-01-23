@@ -65,7 +65,7 @@ class HeaderNotificationProvider extends React.Component<Props, State> {
       if (
         noDuplicates &&
         (notifications.findIndex(n => n.key == key) > -1 ||
-          pastnotifications.findIndex(n => n.key == key) > -1)
+          (pastnotifications && pastnotifications.findIndex(n => n && n.key == key) > -1))
       ) {
         return;
       }

@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface Props {
   label: string;
+  innerRef?: any;
   type?: string; //high | low
   disabled?: Boolean;
   onClick?: Function;
@@ -11,29 +12,13 @@ interface Props {
   customStyles?: Object;
   form?: string;
   className?: string;
+  tabIndex?: number;
 }
 
-interface State {
-  confirmpopup: Boolean;
-}
-
-class UniversalButton extends React.Component<Props, State> {
-  state = {
-    confirmpopup: false
-  };
-
-  click(e) {
+class UniversalButton extends React.Component<Props> {
+  click = e => {
     const child = this.props.children;
     if (!this.props.disabled) {
-      if (
-        child &&
-        !Array.isArray(child) &&
-        child.type &&
-        child.type.name.endsWith("ConfirmationPopup")
-      ) {
-        this.setState({ confirmpopup: true });
-        return;
-      }
       if (this.props.onClick) {
         this.props.onClick(e);
       }
@@ -41,19 +26,19 @@ class UniversalButton extends React.Component<Props, State> {
         this.props.additionalClickFunction();
       }
     }
-  }
+  };
 
-  printChildren(children) {
+  printChildren = children => {
     if (children && !Array.isArray(children)) {
-      return "";
+      return children;
     } else {
       return "";
     }
-  }
+  };
 
   render() {
     return (
-      <React.Fragment>
+      <>
         <button
           type={this.props.form ? "submit" : "button"}
           form={this.props.form}
@@ -61,18 +46,20 @@ class UniversalButton extends React.Component<Props, State> {
           onClick={e => this.click(e)}
           style={
             this.props.customStyles ? {} : { width: this.props.label.length > 6 ? undefined : 90 }
-          }>
+          }
+          tabIndex={this.props.tabIndex}>
           <div
             className={`cleanup universalButton ${this.props.type ? this.props.type : ""} ${
               this.props.disabled ? "disabled" : "useable"
             }`}
             tabIndex={-1}
+            ref={this.props.innerRef}
             style={this.props.customStyles ? this.props.customStyles : {}}>
             {this.props.label}
           </div>
         </button>
         {this.printChildren(this.props.children)}
-      </React.Fragment>
+      </>
     );
   }
 }

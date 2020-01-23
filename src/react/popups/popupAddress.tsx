@@ -269,6 +269,7 @@ class PopupAddress extends React.Component<Props, State> {
             label="Country"
             livecode={value => this.setState({ country: value })}
             noresults="No matches"
+            noNoResults={true}
             width="200px"
             startvalue={this.props.oldvalues ? this.props.oldvalues.country : ""}
           />
@@ -301,7 +302,12 @@ class PopupAddress extends React.Component<Props, State> {
             startvalue={this.props.oldvalues ? this.props.oldvalues.description : ""}
           />
         </div>
-        <UniversalButton type="low" closingPopup={true} label="Cancel" />
+        <UniversalButton
+          onClick={() => this.props.close()}
+          type="low"
+          closingPopup={true}
+          label="Cancel"
+        />
         <UniversalButton
           type="high"
           label={this.props.oldvalues ? "Save" : "Confirm"}

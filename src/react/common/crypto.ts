@@ -1,12 +1,54 @@
 import gql from "graphql-tag";
 import { SodiumPlus, CryptographyKey, X25519PublicKey, X25519SecretKey } from "sodium-plus";
 import { Buffer } from "buffer";
+import crypto from "crypto";
 let sodium: SodiumPlus;
+
+/**
+ * returns network representation of a brand new key
+ *
+ * @param encryptionkey1 the encryption key that the key should be encrypted with
+ */
+export async function generatePersonalKeypair(
+  encryptionkey1: Buffer
+): Promise<{ privatekey: string; publickey: string; encryptedby: string }> {
+  const { publicKey, privateKey } = await generateNewKeypair();
+  const encPrivateKey = await encryptPrivateKey(privateKey, encryptionkey1);
+  privateKey.fill(0); // overwrite it for security
+
+  return {
+    privatekey: encPrivateKey.toString("hex"),
+    publickey: publicKey.toString("hex"),
+    encryptedby: null
+  };
+}
+
+export async function generateAdminKeypair(
+  encryptingPublicKey: Buffer
+): Promise<{ privatekey: string; publickey: string; encryptedby: string }> {
+  const { publicKey, privateKey } = await generateNewKeypair();
+  const encPrivateKey = await encryptLicence(privateKey, encryptingPublicKey);
+  privateKey.fill(0); // overwrite it for security
+
+  return {
+    privatekey: encPrivateKey.toString("hex"),
+    publickey: publicKey.toString("hex"),
+    encryptedby: encryptingPublicKey.toString("hex")
+  };
+}
+
+export async function getRandomSalt(): Promise<string> {
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
+  return crypto.randomBytes(sodium.CRYPTO_PWHASH_SALTBYTES).toString("hex");
+}
 
 export async function hashPassword(
   client: any,
   email: string,
-  password: string
+  password: string,
+  salt?: string
 ): Promise<{ loginkey: Buffer; encryptionkey1: Buffer }> {
   const pwParams = await client.query({
     query: gql`
@@ -23,6 +65,9 @@ export async function hashPassword(
     fetchPolicy: "network-only"
   });
   console.log(pwParams);
+  if (salt) {
+    pwParams.data.fetchPwParams.salt = salt;
+  }
   return await hashPasswordWithParams(password, pwParams.data.fetchPwParams);
 }
 
@@ -42,7 +87,9 @@ export async function hashPasswordWithParams(
   const salt = Buffer.from(params.salt, "hex");
   if (salt.length !== sodium.CRYPTO_PWHASH_SALTBYTES) {
     console.log("salt", salt, salt.length);
-    throw new Error("Invalid salt length");
+    throw new Error(
+      `Invalid salt length, expected ${sodium.CRYPTO_PWHASH_SALTBYTES}  but got ${salt.length}`
+    );
   }
   const ops = params.ops;
   if (typeof ops !== "number" || ops < 2 || ops > 6) {

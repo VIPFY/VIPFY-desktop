@@ -6,10 +6,12 @@ import UniversalButton from "../universalButtons/universalButton";
 import { randomPassword } from "../../common/passwordgen";
 
 import gql from "graphql-tag";
-import { graphql, compose, withApollo } from "react-apollo";
+import { graphql, compose, withApollo, Query } from "react-apollo";
 import { me, fetchLicences } from "../../queries/auth";
 import { getBgImageApp } from "../../common/images";
 import { createEncryptedLicenceKeyObject } from "../../common/licences";
+import AssignNewAccount from "../manager/universal/adding/assignNewAccount";
+import LoadingDiv from "../LoadingDiv";
 
 interface Props {
   id: number;
@@ -20,6 +22,7 @@ interface Props {
   options: JSON;
   addExternalPlan: Function;
   addExternalApp: Function;
+  icon: string;
 }
 
 interface State {
@@ -134,142 +137,43 @@ class AppCardIntegrations extends React.Component<Props, State> {
   };
 
   render() {
-    const { id, logo, name, teaserdescription, needssubdomain, options } = this.props;
+    const { id, logo, name } = this.props;
     return (
-      <div className="appIntegration" key={id}>
-        <div
-          className="appIntegrationLogo"
-          style={{
-            backgroundImage: getBgImageApp(logo, 128)
-          }}
-        />
-        <div className="captionIntegration">
-          <h3>{name}</h3>
+      <>
+        <div className="appIntegration" key={id}>
+          <div
+            className="appIntegrationLogo"
+            style={{
+              backgroundImage: getBgImageApp(logo, 128)
+            }}
+          />
+          <div className="captionIntegration">
+            <h3>{name}</h3>
+          </div>
+          <button className="button-external" onClick={() => this.setState({ popup: true })}>
+            <i className="fas fa-boxes" /> Add as External
+          </button>
         </div>
-        <button className="button-external" onClick={() => this.setState({ popup: true })}>
-          <i className="fas fa-boxes" /> Add as External
-        </button>
-        {this.state.popup ? (
-          <PopupBase
-            small={true}
-            close={() => this.setState({ popup: false, email: "", password: "", subdomain: "" })}>
-            <div>
-              <h1 className="cleanup lightHeading">
-                Only two simple steps to integrate your existing account for {name} into VIPFY
-              </h1>
-            </div>
-            <div>
-              <h2 className="cleanup boldHeading">1. Change your password</h2>
-            </div>
-            <p className="light">
-              Please log into your existing account and change the password into a secure one.
-            </p>
-            <p className="error small">
-              Do not use any password you use anywhere else nor a weak one (e.g. 1234)
-            </p>
-            <p className="bold small">Good examples are:</p>
-            <ul>
-              {[this.state.pw1, this.state.pw2, this.state.pw3].map((pw, key) => (
-                <li
-                  key={key}
-                  className="cleanup small"
-                  title="Click to copy to clipboard"
-                  onClick={() => clipboard.writeText(pw)}>
-                  {pw}
-                </li>
-              ))}
-            </ul>
-            <div style={{ width: "100px", height: "40px" }} />
-            <div>
-              <h2 className="cleanup boldHeading">2. Enter account details</h2>
-            </div>
-
-            {needssubdomain ? (
-              <UniversalTextInput
-                id={`${name}-subdomain`}
-                label="Subdomain"
-                livevalue={value => this.setState({ subdomain: value })}>
-                <span className="small">
-                  Please insert your subdomain.
-                  <br />
-                  {options.predomain}YOUR SUBDOMAIN{options.afterdomain}
-                </span>
-              </UniversalTextInput>
-            ) : (
-              ""
-            )}
-
-            <UniversalTextInput
-              id={`${name}-email`}
-              label="Username/Email"
-              livevalue={value => this.setState({ email: value })}
-            />
-            <UniversalTextInput
-              id={`${name}-password`}
-              label="Password"
-              type="password"
-              livevalue={value => this.setState({ password: value })}
-            />
-            <UniversalButton type="low" closingPopup={true} label="Cancel" />
-            <UniversalButton
-              type="high"
-              label="Confirm"
-              disabled={
-                this.state.email == "" ||
-                this.state.password == "" ||
-                (this.props.needssubdomain && this.state.subdomain == "")
+        {this.state.popup && (
+          <Query query={me}>
+            {({ data, loading, error }) => {
+              if (loading) {
+                return <LoadingDiv />;
               }
-              onClick={() => this.addAccount()}
-            />
-            {this.state.confirm ? (
-              <PopupBase
-                close={() => this.setState({ confirm: false, integrating: true })}
-                small={true}
-                closeable={false}
-                autoclosing={5}
-                autoclosingFunction={() => this.setState({ integrating: false })}>
-                {this.state.integrating ? (
-                  <div>
-                    <div style={{ fontSize: "32px", textAlign: "center" }}>
-                      <i className="fal fa-spinner fa-spin" />
-                      <div style={{ marginTop: "32px", fontSize: "16px" }}>
-                        Your account is currently being integrated
-                      </div>
-                    </div>
-                  </div>
-                ) : this.state.integrated ? (
-                  <React.Fragment>
-                    <div>Your account has been successfully integrated</div>
-                    <UniversalButton
-                      type="high"
-                      closingPopup={true}
-                      label="Ok"
-                      closingAllPopups={true}
-                    />
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment>
-                    <div>
-                      It takes a little bit longer to integrate your account. We will inform you
-                      when it is done.
-                    </div>
-                    <UniversalButton
-                      type="high"
-                      closingPopup={true}
-                      label="Ok"
-                      closingAllPopups={true}
-                    />
-                  </React.Fragment>
-                )}
-              </PopupBase>
-            ) : (
-              ""
-            )}
-          </PopupBase>
-        ) : (
-          ""
+              if (error) {
+                return <div>Error loading data</div>;
+              }
+              return (
+                <AssignNewAccount
+                  employee={data.me}
+                  close={() => this.setState({ popup: false })}
+                  service={this.props}
+                />
+              );
+            }}
+          </Query>
         )}
-      </div>
+      </>
     );
   }
 }

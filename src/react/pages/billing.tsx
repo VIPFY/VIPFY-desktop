@@ -17,6 +17,11 @@ interface Props {
 
 export default (props: Props) => (
   <section id="billing-page">
+    <div className="heading">
+      <h1>Billing</h1>
+      {/* <UniversalSearchBox getValue={v => this.setState({ search: v })} /> */}
+    </div>
+
     <Collapsible title="Billing Emails" info="Invoices will be sent to these Email addresses">
       <EmailList tag="billing" />
     </Collapsible>

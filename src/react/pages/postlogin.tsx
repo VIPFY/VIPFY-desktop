@@ -126,6 +126,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
               <div style={{ display: "flex", flexFlow: "column", alignItems: "center" }}>
                 <h1>Please set up Two-Factor Authentication</h1>
                 <GoogleAuth
+                  dontClose={true}
                   finishSetup={() => {
                     refetch();
                     clearProps.history.push("/area/dashboard");
@@ -159,6 +160,12 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                         `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
                         { type: "error", key: "expire" }
                       );
+                    } else if (
+                      moment()
+                        .add(3, "months")
+                        .isBefore(expiry)
+                    ) {
+                      // nothing to do
                     } else {
                       context.addHeaderNotification(
                         `${moment().to(expiry, true)} left on ${vipfyPlan}`,

@@ -33,7 +33,7 @@ export const resolvers = {
       if (
         !key.privatekey ||
         key.encryptedby === undefined ||
-        (key.encryptedby && !key.encryptedby.id)
+        (key.encryptedby && (!key.encryptedby[0] || !key.encryptedby[0].id))
       ) {
         const d = await client.query({
           query: gql`
@@ -58,45 +58,54 @@ export const resolvers = {
         key.encryptedby = d.data.fetchKey.encryptedby;
       }
 
-      if (!key.encryptedby) {
+      if (!key.encryptedby || !key.encryptedby.length) {
         const symmetricEncryptionKey = localStorage.key1;
 
         if (symmetricEncryptionKey == null) {
           throw new Error("not logged in");
         }
 
-        const n = await generateNewKeypair();
-
-        return (await decryptPrivateKey(
-          Buffer.from(key.privatekey, "hex"),
-          Buffer.from(symmetricEncryptionKey, "hex")
-        )).toString("hex");
+        return (
+          await decryptPrivateKey(
+            Buffer.from(key.privatekey, "hex"),
+            Buffer.from(symmetricEncryptionKey, "hex")
+          )
+        ).toString("hex");
       } else {
-        const d = await client.query({
-          query: gql`
-            query onFetchKey($id: ID!) {
-              fetchKey(id: $id) {
-                id
-                publickey
-                privatekey
-                encryptedby {
+        //TODO: optimize
+        for (let encryptedby of key.encryptedby) {
+          const d = await client.query({
+            query: gql`
+              query onFetchKey($id: ID!) {
+                fetchKey(id: $id) {
                   id
+                  publickey
+                  privatekey
+                  encryptedby {
+                    id
+                  }
+                  privatekeyDecrypted @client
                 }
-                privatekeyDecrypted @client
               }
-            }
-          `,
-          variables: { id: key.encryptedby.id },
-          fetchPolicy: forceFetch ? "network-only" : "cache-first"
-        });
-        if (!d.data || !d.data.fetchKey == null) {
-          throw new Error(d.error);
+            `,
+            variables: { id: encryptedby.id },
+            fetchPolicy: forceFetch ? "network-only" : "cache-first"
+          });
+          if (!d.data || !d.data.fetchKey == null) {
+            throw new Error(d.error);
+          }
+
+          try {
+            return (
+              await decryptLicence(
+                Buffer.from(key.privatekey, "hex"),
+                Buffer.from(d.data.fetchKey.publickey, "hex"),
+                Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
+              )
+            ).toString("hex");
+          } catch {}
         }
-        return (await decryptLicence(
-          Buffer.from(key.privatekey, "hex"),
-          Buffer.from(d.data.fetchKey.publickey, "hex"),
-          Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
-        )).toString("hex");
+        throw new Error("unable to decrypt key");
       }
     }
   },

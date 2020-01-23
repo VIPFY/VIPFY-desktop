@@ -3,7 +3,6 @@ import zxcvbn from "zxcvbn";
 import { encryptPrivateKey, generateNewKeypair } from "./crypto";
 import gql from "graphql-tag";
 import { getMyEmail } from "./functions";
-import { string } from "prop-types";
 
 // replaces CHANGE_PASSWORD
 export async function updatePassword(client, oldPw: string, newPw: string) {
@@ -28,7 +27,7 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
         });
         return r;
       } catch (error) {
-        console.error(error);
+        throw new Error(error);
       }
     }
     // encryption
@@ -315,9 +314,7 @@ export async function decryptLicenceKey(client, licence) {
     const candidates = licence.key.encrypted.filter(
       e => e.belongsto == id || (isadmin && e.belongsto == "admin")
     );
-    console.log("candidates", candidates);
     for (const candidate of candidates) {
-      console.log("trying candidate", candidate);
       try {
         const d = await client.query({
           query: gql`
@@ -336,7 +333,6 @@ export async function decryptLicenceKey(client, licence) {
           console.error(d.error);
           throw new Error("can't fetch key");
         }
-        console.log(d);
         key = JSON.parse(
           (
             await decryptLicence(

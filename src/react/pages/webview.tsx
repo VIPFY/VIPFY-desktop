@@ -1,19 +1,16 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
 import { parse } from "url";
 import WebView from "react-electron-web-view";
-import { shell, remote } from "electron";
+import { remote } from "electron";
 const { session } = remote;
 import { withApollo, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 
 import LoadingDiv from "../components/LoadingDiv";
-import { STATUS_CODES } from "http";
 import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
-import { randomPassword } from "../common/passwordgen";
 import HeaderNotificationContext from "../components/notifications/headerNotificationContext";
 import { getPreloadScriptPath } from "../common/functions";
 import { decryptLicenceKey } from "../common/passwords";
@@ -27,8 +24,6 @@ const LOG_SSO_ERROR = gql`
 export type WebViewState = {
   setUrl: string;
   currentUrl: string;
-  inspirationalText: string;
-  legalText: string;
   showLoadingScreen: boolean;
   t: number;
   licenceId: number;
@@ -65,21 +60,9 @@ export type WebViewProps = {
 export class Webview extends React.Component<WebViewProps, WebViewState> {
   static defaultProps = { app: -1 };
 
-  static loadingQuotes = [
-    "Loading...",
-    "Connecting to the World",
-    "Constructing Pylons",
-    "Did you know that Vipfy is cool",
-    "Just a second",
-    "Vipfy loves you",
-    "Almost there"
-  ];
-
   state = {
     setUrl: "",
     currentUrl: "",
-    inspirationalText: "Loading...",
-    legalText: "Legal Text",
     showLoadingScreen: true,
     t: performance.now(),
     licenceId: this.props.licenceID,
@@ -185,12 +168,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
   }
 
-  showPopup = type => {
-    this.setState({ popup: type });
-  };
-  closePopup = () => {
-    this.setState({ popup: null, error: null, errorshowed: true });
-  };
+  showPopup = type => this.setState({ popup: type });
+
+  closePopup = () => this.setState({ popup: null, error: null, errorshowed: true });
 
   timer1m = () => {
     const now = new Date();
@@ -252,7 +232,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   private async switchApp(): Promise<void> {
     const timeSpent: number[] = [];
     timeSpent[this.state.licenceId] = 0;
-    console.log(this.state.licenceId);
+
     this.sendTimeSpent(timeSpent);
     let result = await this.props.client.query({
       query: gql`
@@ -356,8 +336,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   showLoadingScreen(): void {
     this.setState({
       showLoadingScreen: true,
-      inspirationalText:
-        Webview.loadingQuotes[Math.floor(Math.random() * Webview.loadingQuotes.length)],
       t: performance.now()
     });
   }
@@ -507,9 +485,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           console.error(err);
         }
         this.setState({
-          error:
-            // tslint:disable-next-line:max-line-length
-            "Please check your email address. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+          error: `Please check your email address. Then try to reset your password in the service. ${
+            this.props.isadmin
+              ? "Verify the correctness or update the data of the service in the Service Manager afterwards"
+              : "Please ask your admin to check the service in the Service Manager afterwards"
+          }.`,
           errorshowed: true,
           loggedIn: true
         });
@@ -530,9 +510,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           console.error(err);
         }
         this.setState({
-          error:
-            // tslint:disable-next-line:max-line-length
-            "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+          error: `Please check your email address. Then try to reset your password in the service. ${
+            this.props.isadmin
+              ? "Verify the correctness or update the data of the service in the Service Manager afterwards"
+              : "Please ask your admin to check the service in the Service Manager afterwards"
+          }.`,
           errorshowed: true,
           loggedIn: true
         });
@@ -589,8 +571,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           }
 
           this.setState({
-            error:
-              "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+            error: `Please check your email address. Then try to reset your password in the service. ${
+              this.props.isadmin
+                ? "Verify the correctness or update the data of the service in the Service Manager afterwards"
+                : "Please ask your admin to check the service in the Service Manager afterwards"
+            }.`,
             errorshowed: true,
             loggedIn: true
           });
@@ -655,19 +640,14 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.plain) {
       cssClass = "";
     }
-    //console.log("OPEN SERVICE", this.state.setUrl , this.state.options.universallogin)
+
     return (
       <HeaderNotificationContext.Consumer>
         {context => {
           return (
             <div className={cssClass} id={`webview-${this.props.viewID}`}>
-              {this.state.showLoadingScreen && (
-                <LoadingDiv
-                  text={this.state.inspirationalText}
-                  legalText={this.state.legalText}
-                  progress={this.state.progress}
-                />
-              )}
+              {this.state.showLoadingScreen && <LoadingDiv progress={this.state.progress} />}
+
               {this.state.options.universallogin ? (
                 <UniversalLoginExecutor
                   loginUrl={this.state.setUrl}
@@ -680,6 +660,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   setResult={({ loggedin, emailEntered, passwordEntered }) => {
                     if (loggedin && emailEntered && passwordEntered) {
                       this.hideLoadingScreen();
+                    } else if (!loggedin && !emailEntered && !passwordEntered) {
+                      this.setState({
+                        progress: 1,
+                        error:
+                          "Sorry, Login was not possible. Please go back to your Dashboard and retry or contact our support if the problem persists.",
+                        errorshowed: true
+                      });
                     }
                   }}
                   progress={progress => this.setState({ progress })}
@@ -731,17 +718,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
                 />
               )}
-              {this.state.error ? (
+              {this.state.error && (
                 //TODO VIP-411 Replace old Popup with new PopupBase
                 <Popup
-                  popupHeader={"Uupps, sorry it seems that we can't log you in"}
+                  popupHeader={"Ooopps, sorry it seems that we can't log you in"}
                   popupBody={ErrorPopup}
                   bodyProps={{ sentence: this.state.error }}
                   onClose={this.closePopup}
                 />
-              ) : (
-                ""
               )}
+
               {this.state.popup && (
                 //TODO VIP-411 Replace old Popup with new PopupBase
                 <Popup

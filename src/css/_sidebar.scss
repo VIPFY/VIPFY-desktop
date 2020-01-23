@@ -76,7 +76,6 @@
   }
 
   .small-profile-pic {
-   // transform: translate(-5px, -6px);
     width: 24px;
     height: 24px;
     line-height: 24px;
@@ -88,14 +87,14 @@
   }
 
   .showMore {
- //   transform: translateX(8px);
-    & > i{transition: transform 300ms ease-in-out;}
+    & > i{
+      transition: transform 300ms ease-in-out;
+    }
 
-      & > .open {
-        transform: rotate(180deg);
-       }
+    & > .open {
+      transform: rotate(180deg);
+    }
     
-
     &-small {
       transition: all 600ms ease-in-out;
 
@@ -115,13 +114,10 @@
     overflow-y: auto;
     
     &::-webkit-scrollbar-thumb {
-      //background: $vipfy-primary-color;
       background: rgba(37, 54, 71, 0.5);
     }
 
     &::-webkit-scrollbar-track {
-      //background: $vipfy-secondary-color;
-      //#253647ff
       background: rgba(255,255,255,0.5);
     }
     &::-webkit-scrollbar {
@@ -158,9 +154,6 @@
     list-style: none;
     margin: 8px 8px;
     position: relative;
-    //height: 28px;
-   // transform: translateX(9px);
-    //transition: all 600ms ease-in-out;
 
     .highlight {
       z-index: -1;
@@ -171,17 +164,12 @@
       border-radius: 4px;
     }
 
-   /* &:hover .highlight {
-      height: 25px;
-      width: 218px;
-    }*/
-
     &-small {
       @extend .sidebar-link;
       //padding: 0;
       //width: 30px;
 
-      & > .itemHolder{
+      & > .itemHolder {
         width: 32px;
       }
       /*&:hover .highlight {
@@ -234,13 +222,11 @@
     }
 
     &-caption {
-      white-space: nowrap;
-  //    animation: caption-grow 600ms ease-in-out forwards;
-     // transition: all 0.6s ease-in-out;
+      @include hide-overflowing-text;
       font-size: 16px;
       font-weight: 300;
       margin-left: 8px;
-      overflow: hidden;
+      max-width: 185px;
     }
   
     .show-more {
@@ -407,7 +393,6 @@
 }
 
 .context-menu {
-  height: 72px;
   width: 192px;
   position: fixed;
   bottom: 8px;

@@ -6,6 +6,8 @@ import { ErrorComp } from "../common/functions";
 import UniversalButton from "./universalButtons/universalButton";
 import PopupBase from "../popups/universalPopups/popupBase";
 import UniversalCheckbox from "./universalForms/universalCheckbox";
+import UniversalTextInput from "./universalForms/universalTextInput";
+import { emailRegex } from "../common/constants";
 
 const FETCH_EMAILS = gql`
   {
@@ -15,6 +17,12 @@ const FETCH_EMAILS = gql`
       verified
       tags
     }
+  }
+`;
+
+const CREATE_NEW_EMAIL = gql`
+  mutation onCreateNewBillingEmail($email: String!) {
+    createNewBillingEmail(email: $email)
   }
 `;
 
@@ -32,12 +40,13 @@ export default (props: Props) => {
   const [showAddTag, setAddTag] = React.useState(false);
   const [showRemoveTag, setRemoveTag] = React.useState(false);
   const [tags, setTags] = React.useState([]);
+  const [newEmail, setEmail] = React.useState("");
 
   return (
     <Query pollInterval={60 * 10 * 1000} query={FETCH_EMAILS}>
       {({ data, loading, error }) => {
         if (loading) {
-          return <LoadingDiv text="Fetching Emails..." />;
+          return <LoadingDiv />;
         }
 
         if (error || !data) {
@@ -48,10 +57,24 @@ export default (props: Props) => {
           tags ? tags.find(tag => tag == props.tag) : false
         );
 
+        const possibleEmails = data.fetchEmails.filter(({ tags }) => {
+          if (!tags || tags.length == 0) {
+            return true;
+          } else {
+            const found = tags.find(tag => tag == props.tag);
+
+            if (found) {
+              return false;
+            } else {
+              return true;
+            }
+          }
+        });
+
         const billingEmailCheck = fetchEmailList.length < 2 && props.tag == "billing";
 
         return (
-          <div className="billing-table-holder">
+          <div className="table-holder">
             <table>
               <thead>
                 <tr>
@@ -100,7 +123,7 @@ export default (props: Props) => {
 
             {showAddTag && (
               <Mutation
-                mutation={UPDATE_EMAIL_TAG}
+                mutation={possibleEmails.length > 0 ? UPDATE_EMAIL_TAG : CREATE_NEW_EMAIL}
                 update={cache => {
                   const cachedData = cache.readQuery({ query: FETCH_EMAILS });
                   const fetchEmails = cachedData.fetchEmails.map(item => {
@@ -115,17 +138,31 @@ export default (props: Props) => {
                     return item;
                   });
 
+                  if (possibleEmails.length < 1) {
+                    fetchEmails.push({
+                      email: newEmail,
+                      description: null,
+                      verified: false,
+                      tags: ["billing"],
+                      __typename: "email"
+                    });
+
+                    setEmail("");
+                  }
+
                   cache.writeQuery({ query: FETCH_EMAILS, data: { fetchEmails } });
                 }}>
-                {(createEmailTag, { loading, error: e2 }) => (
-                  <PopupBase close={() => setAddTag(false)} small={true}>
+                {(mutate, { loading, error: e2 }) => (
+                  <PopupBase
+                    buttonStyles={{ justifyContent: "space-between" }}
+                    close={() => setAddTag(false)}
+                    small={true}>
                     <section className="email-list">
                       <h1>Add Billing Email</h1>
                       <div>Please select Emails which should be used for billing</div>
                       <form>
-                        {data.fetchEmails
-                          .filter(({ tags }) => (tags ? !tags.find(tag => tag == props.tag) : true))
-                          .map(({ email }) => (
+                        {possibleEmails.length > 0 ? (
+                          possibleEmails.map(({ email }) => (
                             <UniversalCheckbox
                               key={email}
                               name={email}
@@ -143,7 +180,18 @@ export default (props: Props) => {
                               }}>
                               {email}
                             </UniversalCheckbox>
-                          ))}
+                          ))
+                        ) : (
+                          <UniversalTextInput
+                            width="360px"
+                            errorEvaluation={!newEmail.match(emailRegex)}
+                            errorhint="This is not a valid email"
+                            style={{ margin: "20px 0" }}
+                            id="new-email"
+                            livevalue={v => setEmail(v)}
+                            label="New Billing Email"
+                          />
+                        )}
                       </form>
                       <ErrorComp error={e2} />
                     </section>
@@ -157,16 +205,25 @@ export default (props: Props) => {
                       type="low"
                       label="Cancel"
                     />
-                    <UniversalButton
-                      disabled={loading}
-                      onClick={async () => {
-                        const promises = tags.map(emailTag =>
-                          createEmailTag({
-                            variables: { email: emailTag, emailData: { addTags: [props.tag] } }
-                          })
-                        );
 
-                        await Promise.all(promises);
+                    <UniversalButton
+                      disabled={
+                        loading || (possibleEmails.length < 1 && !newEmail.match(emailRegex))
+                      }
+                      onClick={async e => {
+                        e.preventDefault();
+
+                        if (possibleEmails.length > 0) {
+                          const promises = tags.map(emailTag =>
+                            mutate({
+                              variables: { email: emailTag, emailData: { addTags: [props.tag] } }
+                            })
+                          );
+
+                          await Promise.all(promises);
+                        } else {
+                          mutate({ variables: { email: newEmail } });
+                        }
                         setAddTag(false);
                       }}
                       type="high"

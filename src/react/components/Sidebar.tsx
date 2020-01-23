@@ -8,7 +8,7 @@ import * as moment from "moment";
 import * as ReactDOM from "react-dom";
 import Notification from "../components/Notification";
 import { sleep, refetchQueries } from "../common/functions";
-import { fetchLicences, me } from "../queries/auth";
+import { me } from "../queries/auth";
 import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { FETCH_CARDS } from "../queries/billing";
 import SidebarApps from "./SidebarApps";
@@ -132,7 +132,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     notify: false
   };
 
-  //references: { key; element }[] = [];
+  // references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
   addReferences = (key, element, addRenderElement) => {
@@ -164,10 +164,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
       switch (category) {
         case "ownLicences":
-          await client.query({
-            query: fetchLicences,
-            ...options
-          });
+          refetchQueries(client, ["fetchUsersOwnLicences"]);
           break;
 
         case "employees":
@@ -175,6 +172,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
             query: FETCH_EMPLOYEES,
             ...options
           });
+          break;
+
+        case "companyServices":
+          await refetchQueries(client, ["fetchCompanyService"]);
           break;
 
         case "domains":
@@ -185,11 +186,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "foreignLicences":
-          await refetchQueries(client, ["fetchUnitApps", "fetchUsersOwnLicences"]);
+          await refetchQueries(client, ["onFetchUnitApps", "fetchUsersOwnLicences"]);
           break;
 
         case "invoices":
-          await refetchQueries(client, ["FETCH_BILLS"]);
+          await refetchQueries(client, ["onFetchBills"]);
           break;
 
         case "paymentMethods":
@@ -204,6 +205,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
             query: FETCH_CREDIT_DATA,
             ...options
           });
+          break;
+
+        case "vacationRequest":
+          await refetchQueries(client, ["onFetchVacationRequests"]);
           break;
 
         case "me":
@@ -443,6 +448,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
         icon: "dragon",
         show: false,
         highlight: "ssotest"
+      },
+      {
+        label: "Vacation Requests",
+        location: "vacation",
+        icon: "umbrella-beach",
+        show: config.showVacationRequests,
+        highlight: "vacation"
       }
     ];
 
@@ -461,9 +473,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
           (!licence.disabled &&
             !licence.pending &&
             licence.vacationstart &&
-              licence.vacationstart <= moment.now() &&
-              ((licence.vacationend && licence.vacationend > moment.now()) ||
-                licence.vacationend == null))
+            licence.vacationstart <= moment.now() &&
+            ((licence.vacationend && licence.vacationend > moment.now()) ||
+              licence.vacationend == null))
         )
       ) {
         return false;
@@ -610,7 +622,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 setInstance={this.props.setInstance}
                 sidebarOpen={sidebarOpen}
                 openInstances={this.props.openInstances}
-                licences={filteredLicences.filter(({ tags }) => tags.length < 1)}
+                licences={filteredLicences.filter(
+                  ({ tags }) => tags.length < 1 || !tags.includes("vacation")
+                )}
                 viewID={this.props.viewID}
               />
 
@@ -624,7 +638,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 openInstances={this.props.openInstances}
                 licences={filteredLicences.filter(
                   ({ vacationend, vacationstart, tags }) =>
-                    tags.length > 0 && vacationstart && moment().isBefore(moment(vacationend))
+                    tags.length > 0 &&
+                    tags.includes("vacation") &&
+                    vacationstart &&
+                    moment().isBefore(moment(vacationend))
                 )}
                 viewID={this.props.viewID}
               />
@@ -656,7 +673,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 </span>
               </button>
             </li>
-            {console.log(this.props.data)}
             {this.state.showNotification && (
               <Notification
                 //sidebar={"1"}
@@ -708,6 +724,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 sidebarOpen={this.props.sidebarOpen}
                 history={this.props.history}
                 id={this.props.id}
+                isadmin={this.props.isadmin}
                 logMeOut={this.props.logMeOut}
                 goTo={location => {
                   this.goTo(location);

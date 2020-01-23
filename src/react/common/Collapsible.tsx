@@ -5,6 +5,7 @@ interface Props {
   className?: string;
   noResize?: boolean;
   info?: string;
+  children?: any;
 }
 
 export default (props: Props) => {
@@ -36,7 +37,11 @@ export default (props: Props) => {
       <div
         ref={childrenRef}
         className={show ? "children" : "no-spacing"}
-        style={{ height: "auto", maxHeight: show ? maxHeight : "0" }}>
+        style={{
+          height: "auto",
+          maxHeight: show ? maxHeight : "0",
+          transition: `all 300ms ease-${show ? "out" : "in"}`
+        }}>
         {React.Children.map(props.children, child => child)}
       </div>
     </section>

@@ -16,7 +16,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Tooltip from "react-tooltip-lite";
 import UploadImage from "../manager/universal/uploadImage";
-import { getImageUrlTeam } from "../../common/images";
+import { getImageUrlTeam, resizeImage } from "../../common/images";
 import Collapsible from "../../common/Collapsible";
 
 const UPDATE_PIC = gql`
@@ -48,7 +48,8 @@ class CompanyData extends React.Component<Props, State> {
 
   uploadPic = async picture => {
     try {
-      await this.props.updatePic({ variables: { file: picture }, refetchQueries: ["me"] });
+      const resizedImage = await resizeImage(picture);
+      await this.props.updatePic({ variables: { file: resizedImage }, refetchQueries: ["me"] });
 
       this.props.client.query({ query: me, fetchPolicy: "network-only" });
       this.props.client.query({

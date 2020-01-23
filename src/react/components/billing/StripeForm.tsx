@@ -76,7 +76,7 @@ class StripeForm extends React.Component<Props, State> {
             <Query query={FETCH_BILLING_DATA} variables={{ company: true, tag: "billing" }}>
               {({ data, loading, error }) => {
                 if (loading) {
-                  return <LoadingDiv text="Preparing Credit Card Form..." />;
+                  return <LoadingDiv />;
                 }
 
                 if (error) {
@@ -87,7 +87,7 @@ class StripeForm extends React.Component<Props, State> {
                   <StripeBody
                     {...this.props}
                     addresses={data.fetchAddresses}
-                    emails={data.fetchEmailList}
+                    emails={data.fetchEmails}
                     hasCard={this.props.hasCard}
                     firstname={data.me.firstname}
                     lastname={data.me.lastname}
@@ -99,7 +99,7 @@ class StripeForm extends React.Component<Props, State> {
         </StripeProvider>
       );
     } else {
-      return <LoadingDiv text="Initialising Stripe..." />;
+      return <LoadingDiv />;
     }
   }
 }

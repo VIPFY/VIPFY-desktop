@@ -193,11 +193,19 @@ const createWindow = async () => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  //if (isDevMode) {
-  //await installExtension(REACT_DEVELOPER_TOOLS);
-  //await installExtension(APOLLO_DEVELOPER_TOOLS);
-  mainWindow.webContents.openDevTools();
-  //}
+  if (isDevMode) {
+    try {
+      await installExtension(REACT_DEVELOPER_TOOLS);
+    } catch (err) {
+      console.log(err);
+    }
+    try {
+      await installExtension(APOLLO_DEVELOPER_TOOLS);
+    } catch (err) {
+      console.log(err);
+    }
+    mainWindow.webContents.openDevTools();
+  }
 
   mainWindow.on("close", () => {
     try {

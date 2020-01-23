@@ -9,12 +9,12 @@ import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import { randomPassword } from "../../common/passwordgen";
-import { filterError } from "../../common/functions";
+import { filterError, AppContext } from "../../common/functions";
 
 interface Props {
   close: Function;
   continue: Function;
-  addpersonal: any;
+  addpersonal?: any;
   heading?: string;
   createEmployee: Function;
   isadmin?: boolean;
@@ -41,10 +41,11 @@ interface State {
   parsedName: any;
   error: String | null;
   picture: File | null;
+  employee: any;
 }
 
 const CREATE_EMPLOYEE = gql`
-  mutation createEmployee09(
+  mutation createEmployee(
     $name: HumanName!
     $emails: [EmailInput!]!
     $birthday: Date
@@ -56,7 +57,7 @@ const CREATE_EMPLOYEE = gql`
     $needpasswordchange: Boolean
     $picture: Upload
   ) {
-    createEmployee09(
+    createEmployee(
       name: $name
       emails: $emails
       file: $picture
@@ -67,32 +68,41 @@ const CREATE_EMPLOYEE = gql`
       phones: $phones
       password: $password
       needpasswordchange: $needpasswordchange
-    )
+    ) {
+      id
+      profilepicture
+      firstname
+      middlename
+      lastname
+      title
+      suffix
+    }
   }
 `;
 
 class AddEmployeePersonalData extends React.Component<Props, State> {
   state = {
-    name: this.props.addpersonal.name || "",
-    birthday: this.props.addpersonal.birthday || "",
-    hiredate: this.props.addpersonal.hiredate || "",
-    street: this.props.addpersonal.street || "",
-    zip: this.props.addpersonal.zip || "",
-    city: this.props.addpersonal.city || "",
-    pphone1: this.props.addpersonal.pphone1 || "",
-    pphone2: this.props.addpersonal.pphone2 || "",
-    position: this.props.addpersonal.position || "",
-    wmail1: this.props.addpersonal.wmail1 || "",
-    wmail2: this.props.addpersonal.wmail2 || "",
-    wphone1: this.props.addpersonal.wphone1 || "",
-    wphone2: this.props.addpersonal.wphone2 || "",
+    name: (this.props.addpersonal && this.props.addpersonal.name) || "",
+    birthday: (this.props.addpersonal && this.props.addpersonal.birthday) || "",
+    hiredate: (this.props.addpersonal && this.props.addpersonal.hiredate) || "",
+    street: (this.props.addpersonal && this.props.addpersonal.street) || "",
+    zip: (this.props.addpersonal && this.props.addpersonal.zip) || "",
+    city: (this.props.addpersonal && this.props.addpersonal.city) || "",
+    pphone1: (this.props.addpersonal && this.props.addpersonal.pphone1) || "",
+    pphone2: (this.props.addpersonal && this.props.addpersonal.pphone2) || "",
+    position: (this.props.addpersonal && this.props.addpersonal.position) || "",
+    wmail1: (this.props.addpersonal && this.props.addpersonal.wmail1) || "",
+    wmail2: (this.props.addpersonal && this.props.addpersonal.wmail2) || "",
+    wphone1: (this.props.addpersonal && this.props.addpersonal.wphone1) || "",
+    wphone2: (this.props.addpersonal && this.props.addpersonal.wphone2) || "",
     confirm: false,
     saving: false,
     success: true,
     unitid: null,
     parsedName: null,
     error: null,
-    picture: null
+    picture: null,
+    employee: null
   };
 
   handleConfirm() {
@@ -102,7 +112,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
   }
 
   handleCreate() {
-    if (this.props.addpersonal.unitid) {
+    if (this.props.addpersonal && this.props.addpersonal.unitid) {
       this.props.continue(this.state);
     } else {
       this.setState({ confirm: true });
@@ -163,22 +173,47 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           />
 
           <div className="buttonsPopup" style={{ justifyContent: "space-between" }}>
-            <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />
-            <UniversalButton
-              label="Continue"
-              type="high"
-              disabled={
-                this.state.name == "" || this.state.wmail1 == "" || !this.state.wmail1.includes("@")
-              }
-              onClick={() => this.handleCreate()}
-            />
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  label="Cancel"
+                  type="low"
+                  onClick={() => this.props.close()}
+                  innerRef={el => addRenderElement({ key: "cancel", element: el })}
+                />
+              )}
+            </AppContext.Consumer>
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  label="Continue"
+                  type="high"
+                  disabled={
+                    this.state.name == "" ||
+                    this.state.wmail1 == "" ||
+                    !this.state.wmail1.includes("@")
+                  }
+                  onClick={() => this.handleCreate()}
+                  innerRef={el => addRenderElement({ key: "continueAdd", element: el })}
+                />
+              )}
+            </AppContext.Consumer>
           </div>
         </div>
         {this.state.confirm && (
           <PopupBase small={true} close={() => this.setState({ confirm: false })}>
             Do you really want to create an Employee called {this.state.name}?
             <UniversalButton label="Cancel" type="low" closingPopup={true} />
-            <UniversalButton label="Confirm" type="high" onClick={() => this.handleConfirm()} />
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  label="Confirm"
+                  type="high"
+                  onClick={() => this.handleConfirm()}
+                  /*innerRef={el => addRenderElement({ key: "saved", element: el })}*/
+                />
+              )}
+            </AppContext.Consumer>
           </PopupBase>
         )}
         {this.state.saving && (
@@ -234,14 +269,15 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                 });
                 this.setState({
                   success: true,
-                  unitid: unitid.data.createEmployee09,
+                  unitid: unitid.data.createEmployee.id,
                   parsedName: {
                     title: parsedName.salutation || "",
                     firstname: parsedName.firstName || "",
                     middlename: parsedName.middleName || "",
                     lastname: parsedName.lastName || "",
                     suffix: parsedName.suffix || ""
-                  }
+                  },
+                  employee: unitid.data.createEmployee
                 });
               } catch (err) {
                 console.log("ERR", err);

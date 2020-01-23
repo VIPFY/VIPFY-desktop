@@ -31,11 +31,11 @@ interface Props {
 }
 
 export default (props: Props) => {
-  const [show, setShow] = React.useState(null);
+  const [show, setShow] = React.useState("");
 
   const backFunction = () => {
     if (show == "show2FA") {
-      setShow(null);
+      setShow("");
     } else {
       props.closeFunction();
     }
@@ -99,7 +99,7 @@ export default (props: Props) => {
       header: "Impersonate Account",
       text: "As Admin you can impersonate other accounts",
       state: "showSudo",
-      button: "set it up"
+      button: "Impersonate"
     });
 
     links.reverse();
@@ -110,8 +110,7 @@ export default (props: Props) => {
       styles={{ maxWidth: "656px" }}
       small={true}
       buttonStyles={{ marginTop: "56px" }}
-      close={props.closeFunction}
-      closeable={true}>
+      close={props.closeFunction}>
       <section className="security-settings">
         <h1>Security Settings</h1>
         <div className="sub-header">
@@ -126,7 +125,13 @@ export default (props: Props) => {
               <p className="settings-info">{link.text}</p>
               <p className="settings-message" />
               {link.button ? (
-                <UniversalButton className="button-end" type="high" label={link.button} />
+                <UniversalButton
+                  // Workaround so that the button does not use the custom width
+                  customStyles={{}}
+                  className="button-end"
+                  type="high"
+                  label={link.button}
+                />
               ) : (
                 <i className="fal fa-pen end" />
               )}
@@ -174,7 +179,7 @@ export default (props: Props) => {
                   </li> */}
             </ul>
 
-            <UniversalButton type="low" label="back" onClick={() => setShow(null)} />
+            <UniversalButton type="low" label="back" onClick={() => setShow("")} />
           </PopupBase>
         )}
 
@@ -188,7 +193,7 @@ export default (props: Props) => {
         {show == "showGoogleAuth" && <GoogleAuth user={user} close={() => setShow(null)} />}
 
         {show == "showPasswordUpdate" && (
-          <PasswordUpdate unitid={user.id} closeFunction={() => setShow(null)} />
+          <PasswordUpdate unitid={user.id} closeFunction={() => setShow("")} />
         )}
 
         {show == "showSudo" && <Impersonate unitid={user.id} closeFunction={() => setShow(null)} />}
@@ -197,16 +202,16 @@ export default (props: Props) => {
           <TwoFactorForce
             status={user.needstwofa}
             unitid={user.id}
-            closeFunction={() => setShow(null)}
+            closeFunction={() => setShow("")}
           />
         )}
 
         {show == "show2FADeactivate" && (
-          <TwoFADeactivate unitid={user.id} closeFunction={() => setShow(null)} />
+          <TwoFADeactivate unitid={user.id} closeFunction={() => setShow("")} />
         )}
 
         {show == "showPasswordForce" && (
-          <PasswordForce unitids={[user.id]} closeFunction={() => setShow(null)} />
+          <PasswordForce unitids={[user.id]} closeFunction={() => setShow("")} />
         )}
 
         {show == "showPasswordForce4All" && (
@@ -224,7 +229,7 @@ export default (props: Props) => {
                 <PasswordForce
                   bulk={true}
                   unitids={data.fetchUserSecurityOverview.map(securityUser => securityUser.id)}
-                  closeFunction={() => setShow(null)}
+                  closeFunction={() => setShow("")}
                 />
               );
             }}
@@ -242,7 +247,7 @@ export default (props: Props) => {
               variables={{ userid: user.id }}>
               {({ data, loading, error }) => {
                 if (loading) {
-                  return <LoadingDiv text="Fetching data..." />;
+                  return <LoadingDiv />;
                 }
 
                 if (error || !data) {
@@ -262,7 +267,7 @@ export default (props: Props) => {
                 );
               }}
             </Query>
-            <UniversalButton type="low" label="back" onClick={() => setShow(null)} />
+            <UniversalButton type="low" label="back" onClick={() => setShow("")} />
           </PopupBase>
         )}
       </section>

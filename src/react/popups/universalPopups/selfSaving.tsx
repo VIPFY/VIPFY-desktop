@@ -1,6 +1,7 @@
 import * as React from "react";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
+import { AppContext } from "../../common/functions";
 
 interface Props {
   savingmessage?: string;
@@ -95,7 +96,16 @@ class PopupSelfSaving extends React.Component<Props, State> {
               {this.props.errormessage ||
                 "There was an error. Please try again or contact support."}
             </div>
-            <UniversalButton type="high" label="Ok" onClick={() => this.close("error")} />
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  type="high"
+                  label="Ok"
+                  onClick={() => this.close("error")}
+                  /*innerRef={el => addRenderElement({ key: "errorNext", element: el })}*/
+                />
+              )}
+            </AppContext.Consumer>
           </>
         ) : this.state.saved ? (
           <div>
@@ -104,12 +114,17 @@ class PopupSelfSaving extends React.Component<Props, State> {
               <div style={{ marginTop: "32px", fontSize: "16px" }}>
                 {this.props.savedmessage || "Saved"}
               </div>
-              <UniversalButton
-                type="high"
-                label="Continue"
-                onClick={() => this.close("sucess")}
-                customStyles={{ marginTop: "16px" }}
-              />
+              <AppContext.Consumer>
+                {context => (
+                  <UniversalButton
+                    type="high"
+                    label="Continue"
+                    onClick={() => this.close("sucess")}
+                    customStyles={{ marginTop: "16px" }}
+                    innerRef={el => context.addRenderElement({ key: "saved", element: el })}
+                  />
+                )}
+              </AppContext.Consumer>
             </div>
           </div>
         ) : (

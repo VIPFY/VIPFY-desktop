@@ -1,9 +1,7 @@
 import * as React from "react";
 import AppTile from "../../components/AppTile";
 import { Licence } from "../../interfaces";
-import Collapsible from "../../common/Collapsible";
 import DropDown from "../../common/DropDown";
-import * as moment from "moment";
 
 interface Props {
   setApp?: Function;
@@ -11,14 +9,13 @@ interface Props {
   licences: Licence[];
   search?: string;
   header?: string;
-  updateLayout: Function;
   bulkUpdateLayout: Function;
   dragStartFunction: Function;
   dragEndFunction: Function;
 }
 
 export default (props: Props) => {
-  const [sortBy, setSortBy] = React.useState("Oldest");
+  const [sortBy, setSortBy] = React.useState("A-Z");
 
   const handleName = licence =>
     licence.boughtplanid.alias

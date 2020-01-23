@@ -118,7 +118,7 @@ const tutorial = gql`
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
 
-  references: { key; element }[] = [];
+  references: { key; element; listener?; action? }[] = [];
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
@@ -257,7 +257,7 @@ class App extends React.Component<AppProps, AppState> {
         <Query query={me} fetchPolicy="network-only">
           {({ data, loading, error, refetch }) => {
             if (loading) {
-              return <LoadingDiv text="Preparing Vipfy for you" />;
+              return <LoadingDiv />;
             }
 
             if (error || !data || !data.me) {
@@ -317,6 +317,7 @@ class App extends React.Component<AppProps, AppState> {
                       employees={data.me.company.employees}
                       profilepicture={data.me.profilepicture}
                       context={context}
+                      highlightReferences={this.references}
                     />
                   );
                 }}
@@ -368,13 +369,32 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   addRenderElement = reference => {
+    const oldreferences = [...this.references];
     let index = this.references.findIndex(e => e.key == reference.key);
+    let oldref;
     if (index !== -1) {
-      this.references.splice(index, 1);
+      oldref = this.references.splice(index, 1);
     }
 
     if (!this.references.find(e => e.key === reference.key)) {
+      if (oldref && oldref.listener && oldref.action) {
+        reference.element.addEventListener(oldref.listener, oldref.action);
+      }
       this.references.push(reference);
+    }
+    if (oldreferences.length != this.references.length) {
+      this.forceUpdate();
+    }
+  };
+
+  addRenderAction = ({ key, listener, action }) => {
+    let index = this.references.findIndex(e => e.key == key);
+    if (index !== -1 && this.references[index].listener != listener) {
+      const oldref = this.references.splice(index, 1);
+      if (oldref.element) {
+        const newref = { key: oldref.key, element: oldref.element, listener, action };
+        this.references.push(newref);
+      }
     }
   };
 
@@ -389,7 +409,9 @@ class App extends React.Component<AppProps, AppState> {
           renderTutorial: e => this.renderTutorial(e),
           setrenderElements: e => this.setrenderElements(e),
           addRenderElement: e => this.addRenderElement(e),
-          setreshowTutorial: this.setreshowTutorial
+          addRenderAction: e => this.addRenderAction(e),
+          setreshowTutorial: this.setreshowTutorial,
+          references: this.references
         }}
         className="full-size">
         <HeaderNotificationProvider>

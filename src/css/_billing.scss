@@ -3,6 +3,10 @@
   flex-flow: column;
   padding: 48px;
 
+  .heading {
+    margin-bottom: 40px;
+  }
+
   .credit-cards {
     position: relative;
 
@@ -15,6 +19,7 @@
     position: absolute;
     top: 10px;
     right: 10px;
+    z-index: 1;
 
     div {
       font-size: 12px;
@@ -99,7 +104,7 @@
   }
 }
 
-.billing-table-holder {
+.table-holder {
   position: relative;
   padding: 0;
 

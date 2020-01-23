@@ -74,7 +74,11 @@ class ChangeAccount extends React.Component<Props, State> {
             </div>
             <div
               className="accountHolderText"
-              style={{ lineHeight: "19px", paddingTop: "19px", fontSize: "14px" }}>
+              style={{
+                lineHeight: "19px",
+                paddingTop: "19px",
+                fontSize: "14px"
+              }}>
               Add account
             </div>
           </div>
@@ -87,7 +91,9 @@ class ChangeAccount extends React.Component<Props, State> {
                 onMouseLeave={() => this.setState({ hover: "" })}
                 onClick={() => this.props.selectAccount(a.email)}>
                 <PrintEmployeeSquare employee={a} className="accountHolderBullet" size={20} />
-                <div className="accountHolderText" style={{ paddingTop: "11px" }}>
+                <div
+                  className="accountHolderText"
+                  style={{ paddingTop: "11px", maxWidth: "210px" }}>
                   <div>{a.fullname}</div>
                   <div style={{ fontSize: "12px" }}>{a.email}</div>
                 </div>
@@ -112,14 +118,16 @@ class ChangeAccount extends React.Component<Props, State> {
             onClick={() => this.props.registerCompany()}
           />
         </div>
+
         {this.state.confirm && (
-          <PopupBase
-            small={true}
-            close={() => this.setState({ confirm: false })}
-            noSidebar={true}
-            closeable={false}>
+          <PopupBase small={true} close={() => this.setState({ confirm: false })} noSidebar={true}>
+            <h1>Delete Account from Machine</h1>
             <p>Do you really want to delete this account from this machine?</p>
-            <UniversalButton type="low" closingPopup={true} label="Cancel" />
+            <UniversalButton
+              type="low"
+              onClick={() => this.setState({ confirm: false })}
+              label="Cancel"
+            />
             <UniversalButton
               type="low"
               closingAllPopups={true}

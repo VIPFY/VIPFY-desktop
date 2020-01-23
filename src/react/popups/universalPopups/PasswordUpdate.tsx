@@ -10,6 +10,8 @@ import { UserContext } from "../../common/context";
 import { MutationLike } from "../../common/mutationlike";
 import { updatePassword } from "../../common/passwords";
 import { updateEmployeePassword } from "../../common/passwords";
+import IconButton from "../../common/IconButton";
+import { SecurityContext } from "../../pages/security";
 
 interface Password {
   score: number;
@@ -20,29 +22,30 @@ interface Password {
 interface Props {
   closeFunction: Function;
   unitid: number;
-  client: any;
+  client: any; // from withApollo
 }
 
 interface State {
   password: null | Password;
   passwordRepeat: null | Password;
   currentPassword: null | Password;
+  showPassword: boolean;
 }
 
 class PasswordUpdate extends React.Component<Props, State> {
-  state = { password: null, passwordRepeat: null, currentPassword: null };
+  state = { password: null, passwordRepeat: null, currentPassword: null, showPassword: false };
 
   handlePasswordChange = (name, values) => this.setState({ [name]: values });
 
   render() {
     const { password, passwordRepeat, currentPassword } = this.state;
-    const { unitid } = this.props;
+    const { unitid, client } = this.props;
 
     return (
       <UserContext.Consumer>
         {({ userid }) => (
           <MutationLike
-            client={this.props.client}
+            client={client}
             mutation={unitid == userid ? updatePassword : updateEmployeePassword}>
             {(updatePassword, { loading, error, data }) => (
               <PopupBase
@@ -84,20 +87,39 @@ class PasswordUpdate extends React.Component<Props, State> {
                         />
                       )}
 
-                      <ReactPasswordStrength
-                        className="passwordStrength"
-                        minLength={PW_MIN_LENGTH}
-                        minScore={2}
-                        scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                        tooShortWord={"too short"}
-                        inputProps={{
-                          name: "password_input",
-                          autoComplete: "off",
-                          placeholder: "New Password",
-                          className: "cleanup universalTextInput"
-                        }}
-                        changeCallback={state => this.handlePasswordChange("password", state)}
-                      />
+                      <div className="password-container">
+                        <ReactPasswordStrength
+                          className="passwordStrength"
+                          minLength={PW_MIN_LENGTH}
+                          minScore={2}
+                          scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+                          tooShortWord={"too short"}
+                          inputProps={{
+                            name: "password_input",
+                            autoComplete: "off",
+                            placeholder: "New Password",
+                            className: "cleanup universalTextInput toggle-password"
+                          }}
+                          changeCallback={state => this.handlePasswordChange("password", state)}
+                        />
+
+                        <IconButton
+                          icon={`eye${this.state.showPassword ? "" : "-slash"}`}
+                          onClick={() =>
+                            this.setState(prevState => {
+                              const passwordField = document.querySelector(".toggle-password");
+
+                              if (prevState.showPassword) {
+                                passwordField.type = "password";
+                              } else {
+                                passwordField.type = "text";
+                              }
+
+                              return { ...prevState, showPassword: !prevState.showPassword };
+                            })
+                          }
+                        />
+                      </div>
 
                       <ReactPasswordStrength
                         className="passwordStrength not-show-bar"
@@ -163,9 +185,13 @@ class PasswordUpdate extends React.Component<Props, State> {
                         if (password.password !== passwordRepeat.password) {
                           return null;
                         }
-                        return updatePassword(this.props.client, pw, newPw);
+                        return updatePassword(
+                          client,
+                          currentPassword?.password,
+                          password?.password
+                        );
                       }
-                      return updatePassword(this.props.client, unitid, password.password);
+                      return updatePassword(client, unitid, password.password);
                     }}
                     label="Update Password"
                   />

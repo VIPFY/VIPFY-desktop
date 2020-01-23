@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment from "moment";
+import moment, { now } from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
@@ -8,6 +8,7 @@ import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import { concatName } from "../../common/functions";
+import EditVacations from "./universal/editVacations";
 
 const UPDATE_DATA = gql`
   mutation updateEmployee($user: EmployeeInput!) {
@@ -44,6 +45,7 @@ interface Props {
   deletePhone: Function;
   updatePhone: Function;
   refetch: Function;
+  isadmin: Boolean;
 }
 
 interface State {
@@ -68,6 +70,8 @@ interface State {
   editvalueArray: Object[];
   idlist: Array<string>;
   idlistset: string;
+  editvacation: Boolean;
+  editvacationid: number;
 }
 
 const CREATE_EMAIL = gql`
@@ -177,7 +181,9 @@ class PersonalDetails extends React.Component<Props, State> {
     editvalue: null,
     editvalueArray: [],
     idlist: [""],
-    idlistset: ""
+    idlistset: "",
+    editvacation: false,
+    editvacationid: 0
   };
 
   async handleConfirm() {
@@ -304,6 +310,7 @@ class PersonalDetails extends React.Component<Props, State> {
               newemail || (!email.emaildeleted && (email.email == null || email.email == ""));
             emailforms.push(
               <UniversalTextInput
+                key={`${this.state.edit.id}-${email.oldemail || email.email}`}
                 id={`${this.state.edit.id}-${email.oldemail || email.email}`}
                 label={this.state.edit.label}
                 livevalue={v =>
@@ -321,20 +328,8 @@ class PersonalDetails extends React.Component<Props, State> {
                   (this.state.editvalueArray.length == 0 &&
                     this.props.querydata.emails.length > 1) ||
                   (this.state.editvalueArray.length > 0 &&
-                    this.state.editvalueArray.length -
-                      this.state.editvalueArray.reduce((a, e) => {
-                        if (
-                          e &&
-                          (e.emaildeleted == true ||
-                            e.email == null ||
-                            (e.email && !e.email.includes("@")))
-                        ) {
-                          return a + 1;
-                        } else {
-                          return a;
-                        }
-                      }, 0) >
-                      1)
+                    this.props.querydata.emails.length - 1 >
+                      this.state.editvalueArray.filter(a => a && a.emaildeleted).length)
                     ? () => {
                         this.setState(({ editvalueArray }) => {
                           editvalueArray[index] = { emaildeleted: true, oldemail: email.email };
@@ -551,7 +546,20 @@ class PersonalDetails extends React.Component<Props, State> {
   }
 
   render() {
-    const { querydata } = this.props;
+    const querydata = this.props.querydata;
+    if (querydata.vacations) {
+      querydata.vacations = querydata.vacations
+        .filter(v => v && v.endtime >= now())
+        .sort((a, b) => {
+          if (a.starttime > b.starttime) {
+            return 1;
+          }
+          if (a.starttime < b.starttime) {
+            return -1;
+          }
+          return 0;
+        });
+    }
 
     return (
       <React.Fragment>
@@ -560,6 +568,7 @@ class PersonalDetails extends React.Component<Props, State> {
             className="tableColumnSmallOne editable"
             onClick={() =>
               this.setState({
+                editvalue: concatName(querydata),
                 edit: {
                   id: "name",
                   label: "Name",
@@ -579,10 +588,12 @@ class PersonalDetails extends React.Component<Props, State> {
             className="tableColumnSmallOne editable"
             onClick={() =>
               this.setState({
+                editvalue: querydata.position,
                 edit: {
                   id: "position",
                   label: "Position",
-                  startvalue: querydata.position
+                  startvalue: querydata.position,
+                  checking: true
                 }
               })
             }>
@@ -736,21 +747,42 @@ class PersonalDetails extends React.Component<Props, State> {
               <i className="fal fa-pen editbuttons" />
             </div>
           </div>
-          <div className="tableColumnSmallOne">
-            {/*<h1>Address</h1>
-              <h2>
-                {querydata.addresses[0] &&
-                  querydata.addresses[0].address &&
-                  querydata.addresses[0].address.street}
-              </h2>
-              <h2 className="second">
-                {querydata.addresses[0] &&
-                  querydata.addresses[0].address &&
-                  querydata.addresses[0].address.zip}{" "}
-                {querydata.addresses[0] &&
-                  querydata.addresses[0].address &&
-                  querydata.addresses[0].address.city}
-                </h2>*/}
+          {/* <div className="tableColumnSmallOne" style={{ cursor: "inital" }}></div> */}
+          <div
+            className={`tableColumnSmallOne ${this.props.isadmin && "editable"}`}
+            onClick={() =>
+              this.props.isadmin &&
+              this.setState({
+                editvacation: true
+              })
+            }>
+            <h1>
+              Vacations{" "}
+              <span className="morehint">
+                {querydata.vacations.length > 2 && `+${querydata.vacations.length - 2} more`}
+              </span>
+            </h1>
+            <h2>
+              {querydata.vacations[0] &&
+                querydata.vacations[0].starttime &&
+                querydata.vacations[0].endtime &&
+                `${moment(querydata.vacations[0].starttime).format("DD.MM.YYYY")} - ${moment(
+                  querydata.vacations[0].endtime
+                ).format("DD.MM.YYYY")}`}
+            </h2>
+            <h2 className="second">
+              {querydata.vacations[1] &&
+                querydata.vacations[1].starttime &&
+                querydata.vacations[1].endtime &&
+                `${moment(querydata.vacations[1].starttime).format("DD.MM.YYYY")} - ${moment(
+                  querydata.vacations[1].endtime
+                ).format("DD.MM.YYYY")}`}
+            </h2>
+            {this.props.isadmin && (
+              <div className="profileEditButton">
+                <i className="fal fa-pen editbuttons" />
+              </div>
+            )}
           </div>
         </div>
         {this.state.edit && (
@@ -772,18 +804,13 @@ class PersonalDetails extends React.Component<Props, State> {
                   disabled={
                     this.state.edit!.checking &&
                     (!(
-                      this.state.editvalue != null &&
-                      this.state.editvalue != "" &&
-                      this.state.editvalue!.trim() != ""
-                    ) ||
+                      (this.state.editvalue != null &&
+                        this.state.editvalue != "" &&
+                        this.state.editvalue!.trim() != "") ||
                       (this.state.editvalueArray != null &&
-                        this.state.editvalueArray.some(v => v != null && v != ""))) &&
-                    !(
-                      (this.state.editvalue == null || this.state.editvalue == "") &&
-                      (this.state.edit!.startvalue != null ||
-                        this.state.edit!.startvalue != "" ||
-                        this.state.edit!.startvalue!.trim() != "")
-                    )
+                        this.state.editvalueArray.some(v => v != null && v != ""))
+                    ) ||
+                      this.state.editvalue == this.state.edit!.startvalue)
                   }
                   onClick={() => this.handleConfirm()}
                 />
@@ -992,6 +1019,13 @@ class PersonalDetails extends React.Component<Props, State> {
               </PopupBase>
             )}
           </Mutation>
+        )}
+        {this.state.editvacation && this.props.isadmin && (
+          <EditVacations
+            querydata={querydata}
+            close={() => this.setState({ editvacation: false })}
+            refetch={this.props.refetch}
+          />
         )}
       </React.Fragment>
     );

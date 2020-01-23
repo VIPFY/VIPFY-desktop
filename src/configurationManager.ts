@@ -19,8 +19,8 @@ let config = {
   showAdmin: true,
   showSsoConfig: false,
   showUniversalLoginDebug: false,
-
-  allowDevTools: true
+  showVacationRequests: !!process.env.DEVELOPMENT,
+  allowDevTools: !!process.env.DEVELOPMENT
 };
 
 if (!config.stripeToken) {

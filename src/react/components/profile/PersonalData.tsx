@@ -1,15 +1,12 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { graphql, Query, withApollo } from "react-apollo";
-import Dropzone from "react-dropzone";
-
+import { ApolloClient } from "apollo-client";
 import LoadingDiv from "../../components/LoadingDiv";
 import Duration from "../../common/duration";
-
-import { AppContext, concatName, filterError } from "../../common/functions";
+import { AppContext, concatName, filterError, resizeImage } from "../../common/functions";
 import { me } from "../../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
@@ -34,6 +31,7 @@ interface Props {
   changePassword: Function;
   client: ApolloClient<InMemoryCache>;
   id: number;
+  isadmin?: boolean;
 }
 
 interface State {
@@ -77,9 +75,8 @@ class PersonalData extends React.Component<Props, State> {
   uploadPassword = async values => {
     this.setState({ pwconfirm: true, networking: true });
     try {
-      const res = await updatePassword(this.props.client, values.pw, values.newPw);
+      await updatePassword(this.props.client, values.pw, values.newPw);
 
-      //await localStorage.setItem("token", res.data.changePassword.token);
       this.setState({ networking: false, errorupdate: false });
       return true;
     } catch (err) {
@@ -93,7 +90,7 @@ class PersonalData extends React.Component<Props, State> {
       <Query pollInterval={60 * 10 * 1000 + 4000} query={me}>
         {({ data, loading, error }) => {
           if (loading) {
-            return <LoadingDiv text="Loading Data" />;
+            return <LoadingDiv />;
           }
           if (error) {
             return <div>Error loading data</div>;
@@ -111,7 +108,7 @@ class PersonalData extends React.Component<Props, State> {
 
           return (
             <AppContext.Consumer>
-              {({ addRenderElement, setreshowTutorial }) => {
+              {({ addRenderElement }) => {
                 const information = [
                   {
                     label: "Name",
@@ -198,9 +195,7 @@ class PersonalData extends React.Component<Props, State> {
                             <button
                               ref={el => addRenderElement({ key: "changePassword", element: el })}
                               className="naked-button genericButton topright"
-                              onClick={() =>
-                                /*showPopup(passwordPopup)*/ this.setState({ pwchange: true })
-                              }>
+                              onClick={() => this.setState({ pwchange: true })}>
                               <i className="fal fa-key" />
                               <span className="textButtonInside">Change Password</span>
                             </button>

@@ -39,7 +39,7 @@ export default (props: Props) => {
     <Query query={FETCH_CARDS}>
       {({ data, loading, error }) => {
         if (loading) {
-          return <LoadingDiv text="Fetching data..." />;
+          return <LoadingDiv />;
         }
 
         if (error || !data) {
@@ -51,7 +51,7 @@ export default (props: Props) => {
         }
 
         const paymentData = data.fetchPaymentData;
-        let mainCard;
+        let mainCard = null;
         let normalizedCards;
 
         if (paymentData && paymentData.length > 0) {
@@ -62,7 +62,7 @@ export default (props: Props) => {
         return (
           <div className=" inside-padding">
             <div className="credit-cards">
-              <h1>Your currently active card</h1>
+              <h1>Primary Card</h1>
               {mainCard ? <CreditCard {...mainCard} /> : "Please add a Credit Card"}
 
               {normalizedCards && normalizedCards.length > 0 && (
@@ -79,7 +79,13 @@ export default (props: Props) => {
             </div>
 
             <div className="credit-cards subsidiary-cards">
-              <h1>Your other cards</h1>
+              <h1>
+                Alternative Cards{" "}
+                <i
+                  className="fal fa-info-circle"
+                  title="If there is a problem with your primary card, these alternative cards will be used in descending order to pay your invoices."
+                />
+              </h1>
               {normalizedCards &&
                 normalizedCards.length > 0 &&
                 normalizedCards.map(card => (

@@ -96,6 +96,18 @@ const cache = new InMemoryCache({
         } else {
           return null;
         }
+      case "LicenceAssignment":
+        if (object.assignmentid !== undefined) {
+          return `LicenceAssignment:${object.assignmentid}`;
+        } else {
+          return null;
+        }
+      case "TerminateAssignment":
+        if (object.assignmentid !== undefined) {
+          return `LicenceAssignment:${object.assignmentid}`;
+        } else {
+          return null;
+        }
       default:
         return defaultDataIdFromObject(object);
     }

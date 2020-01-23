@@ -5,10 +5,12 @@ import ResizeAware from "react-resize-aware";
 import moment, { Moment } from "moment";
 import LoadingDiv from "../LoadingDiv";
 import { FETCH_UNIT_APPS } from "../../queries/billing";
+import UniversalButton from "../universalButtons/universalButton";
 
 interface State {
   differentCurrencies: boolean;
   currency: string;
+  showAll: boolean;
 }
 
 interface Props {
@@ -24,7 +26,7 @@ interface CalculateData {
 }
 
 class BillingHistoryChart extends React.Component<Props, State> {
-  state = { differentCurrencies: false, currency: "USD" };
+  state = { differentCurrencies: false, currency: "USD", showAll: false };
 
   componentDidMount() {
     // TODO: [VIP-789] Implement https://fixer.io/ in the backend and exchange currencies
@@ -119,42 +121,52 @@ class BillingHistoryChart extends React.Component<Props, State> {
     let monthlyMax: number = Math.max(...monthlySum);
 
     return (
-      <Chart
-        height={this.props.height}
-        width={this.props.width}
-        type="bar"
-        series={data}
-        options={{
-          chart: { stacked: true },
-          toolbar: { show: true },
-          dataLabels: {
-            formatter: y =>
-              y === 0 ? "" : `${y.toFixed(2).padStart(3, " ")} ${this.state.currency}`
-          },
-          colors: data.map(d => d.color),
-          xaxis: {
-            categories: labels,
-            labels: {
-              formatter: x => {
-                return x.length > 4 ? moment(x).format("MMM") : x;
-              }
-            }
-          },
-          yaxis: {
-            labels: {
-              formatter: y => `${y.toFixed(0).padStart(3, " ")} ${this.state.currency}`
-            },
-            max: monthlyMax % 6 === 0 ? monthlyMax : Math.ceil(monthlyMax / 6) * 6
-          },
-          tooltip: {
-            x: { formatter: x => moment(x).format("MMMM YYYY") },
-            y: {
+      <div style={{ padding: "20px 0" }}>
+        <UniversalButton
+          onClick={() =>
+            this.setState(prevState => ({ ...prevState, showAll: !prevState.showAll }))
+          }
+          type="high"
+          label={this.state.showAll ? "Last 6 months" : "Show all"}
+          className="floating-button"
+        />
+        <Chart
+          height={this.props.height}
+          width={this.props.width}
+          type="bar"
+          series={data}
+          options={{
+            chart: { stacked: true },
+            toolbar: { show: true },
+            dataLabels: {
               formatter: y =>
                 y === 0 ? "" : `${y.toFixed(2).padStart(3, " ")} ${this.state.currency}`
+            },
+            colors: data.map(d => d.color),
+            xaxis: {
+              categories: labels,
+              labels: {
+                formatter: x => {
+                  return x.length > 4 ? moment(x).format("MMM") : x;
+                }
+              }
+            },
+            yaxis: {
+              labels: {
+                formatter: y => `${y.toFixed(0).padStart(3, " ")} ${this.state.currency}`
+              },
+              max: monthlyMax % 6 === 0 ? monthlyMax : Math.ceil(monthlyMax / 6) * 6
+            },
+            tooltip: {
+              x: { formatter: x => moment(x).format("MMMM YYYY") },
+              y: {
+                formatter: y =>
+                  y === 0 ? "" : `${y.toFixed(2).padStart(3, " ")} ${this.state.currency}`
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
+      </div>
     );
   }
 }

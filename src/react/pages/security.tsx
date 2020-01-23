@@ -7,6 +7,8 @@ interface Props {
   showPopup: Function;
   history: any;
   client: any;
+  id: number;
+  logMeOut: Function;
 }
 
 export const SecurityContext = React.createContext();
@@ -15,7 +17,8 @@ export default (props: Props) => {
   const [search, setSearch] = React.useState("");
 
   return (
-    <SecurityContext.Provider value={{ history: props.history, client: props.client }}>
+    <SecurityContext.Provider
+      value={{ logOut: props.logMeOut, history: props.history, client: props.client }}>
       {
         <div className="managerPage">
           <div className="heading">
@@ -24,7 +27,7 @@ export default (props: Props) => {
           </div>
 
           <Collapsible title="Overview">
-            <UserSecurityTable search={search} />
+            <UserSecurityTable id={props.id} search={search} />
           </Collapsible>
         </div>
       }

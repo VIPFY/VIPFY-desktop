@@ -6,7 +6,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 rules.push({
-  test: /\.s[ac]ss$/i,
+  test: /\.s?[ac]ss$/i,
   use: [
     { loader: "style-loader" },
     { loader: "css-loader" },

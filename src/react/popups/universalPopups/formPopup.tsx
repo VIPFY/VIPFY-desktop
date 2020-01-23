@@ -3,6 +3,7 @@ import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import PopupSelfSaving from "./selfSaving";
+import UniversalDropdown from "../../components/universalForms/universalDropdown";
 
 interface Props {
   key: string;
@@ -95,19 +96,33 @@ class FormPopup extends React.Component<Props, State> {
           </div>
         )}
         {fields &&
-          fields.map(field => (
-            <UniversalTextInput
-              key={field.id}
-              id={field.id}
-              {...field.options}
-              livevalue={v => {
-                this.setState(oldstate => ({
-                  values: { ...oldstate.values, [field.id]: v }
-                }));
-              }}
-              width="100%"
-            />
-          ))}
+          fields.map(field =>
+            field.type == "dropdown" ? (
+              <UniversalDropdown
+                key={field.id}
+                id={field.id}
+                {...field.options}
+                livevalue={v => {
+                  this.setState(oldstate => ({
+                    values: { ...oldstate.values, [field.id]: v }
+                  }));
+                }}
+                width="100%"
+              />
+            ) : (
+              <UniversalTextInput
+                key={field.id}
+                id={field.id}
+                {...field.options}
+                livevalue={v => {
+                  this.setState(oldstate => ({
+                    values: { ...oldstate.values, [field.id]: v }
+                  }));
+                }}
+                width="100%"
+              />
+            )
+          )}
         <UniversalButton
           type="low"
           onClick={() => {

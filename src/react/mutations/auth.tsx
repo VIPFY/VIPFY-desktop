@@ -61,18 +61,6 @@ export const addEmployee = gql`
   }
 `;
 
-export const distributeLicence = gql`
-  mutation distributeLicence($licenceid: ID!, $unitid: ID!, $departmentid: ID!) {
-    distributeLicence(licenceid: $licenceid, unitid: $unitid, departmentid: $departmentid) {
-      ok
-      error {
-        code
-        message
-      }
-    }
-  }
-`;
-
 export const updateUser = gql`
   mutation UpdateUser($user: UserInput!) {
     updateUser(user: $user) {
@@ -127,5 +115,11 @@ export const REDEEM_SETUPTOKEN = gql`
       ok
       token
     }
+  }
+`;
+
+export const CLOSE_TUTORIAL = gql`
+  mutation closeTutorial($tutorial: String!) {
+    closeTutorial(tutorial: $tutorial)
   }
 `;
