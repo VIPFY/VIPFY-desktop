@@ -244,6 +244,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           key
           boughtPlan: boughtplanid {
             id,
+            key,
             plan: planid {
               id
               app: appid {
@@ -292,6 +293,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
     let key = await decryptLicenceKey(this.props.client, licence);
     let loginurl = licence.boughtPlan.plan.app.loginurl;
+    if (licence.boughtPlan.key && licence.boughtPlan.key.domain) {
+      loginurl = licence.boughtPlan.key.domain;
+    }
     if (key && key.loginurl) {
       loginurl = key.loginurl;
     }
@@ -640,7 +644,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.plain) {
       cssClass = "";
     }
-
     return (
       <HeaderNotificationContext.Consumer>
         {context => {

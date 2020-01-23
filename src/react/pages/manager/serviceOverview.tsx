@@ -142,7 +142,7 @@ class ServiceOverview extends React.Component<Props, State> {
 
       serviceArray.push(
         <div
-          key={service.name}
+          key={service.app.name}
           className="tableRow"
           onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
           <div className="tableMain">
@@ -203,7 +203,7 @@ class ServiceOverview extends React.Component<Props, State> {
 
     for (let index = 0; index < amountFakes; index++) {
       fakeArray.push(
-        <div className="tableRow">
+        <div className="tableRow" key={`trl-${index}`}>
           <div className="tableMain">
             <div className="tableColumnBig">
               <PrintServiceSquare appidFunction={s => s.app} service={{}} fake={true} />
@@ -265,7 +265,7 @@ class ServiceOverview extends React.Component<Props, State> {
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return (
-                  <div className="table">
+                  <div className="table" key="table-fake-key">
                     <div className="tableHeading">
                       <div className="tableMain">
                         <div
@@ -349,7 +349,7 @@ class ServiceOverview extends React.Component<Props, State> {
               }
               return (
                 <>
-                  <div className="table" key="table">
+                  <div className="table" key="table-fake-key">
                     <div className="tableHeading">
                       <div className="tableMain">
                         <div

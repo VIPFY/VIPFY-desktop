@@ -35,7 +35,7 @@ class ColumnEmployees extends React.Component<Props, State> {
       for (fakecounter = 0; fakecounter < Math.min(amount, 6); fakecounter++) {
         employeesArray.push(
           <div
-            key={`key-${fakecounter}`}
+            key={`fake-${fakecounter}`}
             className="managerSquare animateLoading"
             style={{
               color: "#253647",
@@ -77,7 +77,7 @@ class ColumnEmployees extends React.Component<Props, State> {
         } else {
           employeesArray.push(
             <PrintEmployeeSquare
-              key={`employee-${counter}`}
+              key={`employee-${employee.id}`}
               employee={employee}
               overlayFunction={this.props.overlayFunction}
             />
