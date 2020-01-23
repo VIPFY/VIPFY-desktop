@@ -110,13 +110,7 @@ class Login extends React.Component<Props, State> {
               />
             </div>
 
-            <div className="login-buttons">
-              <UniversalButton
-                label="Forgot Password"
-                type="low"
-                onClick={() => this.props.backFunction()}
-              />
-
+            <div className="login-buttons" style={{ justifyContent: "flex-end" }}>
               <UniversalButton
                 label={this.state.submitting ? <i className="fal fa-spinner fa-spin" /> : "login"}
                 type="high"
