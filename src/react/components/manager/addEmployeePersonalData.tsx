@@ -119,7 +119,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     }
   }
 
-  listenKeyboard = e => {
+  /*listenKeyboard = e => {
     const { name, wmail1 } = this.state;
     this.handleConfirm();
     if (e.key === "Escape" || e.keyCode === 27) {
@@ -159,7 +159,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
 
   componentWillUnmount() {
     window.removeEventListener("keydown", this.listenKeyboard, true);
-  }
+  }*/
 
   render() {
     return (
