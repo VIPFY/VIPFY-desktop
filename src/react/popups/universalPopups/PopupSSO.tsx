@@ -1,19 +1,8 @@
 import * as React from "react";
-import gql from "graphql-tag";
 import PopupBase from "./popupBase";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import Dropzone from "react-dropzone";
-import Tooltip from "react-tooltip-lite";
-
-const UPDATE_PIC = gql`
-  mutation UpdatePic($file: Upload!) {
-    updateProfilePic(file: $file) {
-      id
-      profilepicture
-    }
-  }
-`;
 
 interface Props {
   cancel: Function;

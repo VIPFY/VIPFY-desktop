@@ -149,67 +149,6 @@ li {
   width: 100%;
 }
 
-.login-holder {
-  /*background-color: rgba(255, 255, 255, 0.7);*/
-  background-image: url('../images/vipfy-logo_hell.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  /*border: 1px solid #771a1c;
-  box-shadow: inset 2px 2px 10px 2px #aaa;*/
-  font-size: 1.5em;
-  padding: 1em;
-  width: 25rem;
-
-  background-color: white;
-    border-radius: 10px;
-    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
-    z-index: 2;
-}
-
-.button-new-user{
-    background-color: #ddd;
-    padding: 0.5rem !important;
-    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
-    border-radius: 0px 0px 10px 10px;
-}
-.button-already{
-    background-color: #ddd;
-    padding: 0.5rem !important;
-    box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-    border-radius: 10px 10px 0px 0px;
-}
-
-/*label {
-  display: block;
-  font-weight: 300;
-}*/
-
-.form-heading {
-  font-weight: 500;
-  line-height: 2em;
-  text-align: center;
-  text-shadow: 0 0 5px white;
-}
-
-.inputField {
-  background-color: rgba(255, 255, 255, 0.7);
-  border: 1px solid #aaa;
-  border: 0;
-  font-size: 0.75em;
-  font-style: italic;
-  font-weight: 500;
-  margin-bottom: 0.6em;
-  padding: 5px;
-  width: 20em;
-
-  &:focus {
-    border-bottom: 2px solid #771a1c !important;
-    outline: 0;
-    padding-bottom: 4px !important;
-  }
-}
-
 .formError {
   background-color: #771a1c;
   color: white;
@@ -230,58 +169,9 @@ li {
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
 }
-
-.navigation{
-  height: 3em;
-  display: flex;
-  justify-content: space-between;
-  background-color: #f5f5f5;
-  margin-left: 3rem;
-  transition: margin-left 0.6s ease-in-out;
-  position: relative;
-  z-index: 200;
-  user-select: none;
-
-  .impersonator {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-  }
-}
-
-.info-admin {
-  background-color: lightcoral;
-}
-
 .sidebar-open {
   margin-left: 15rem !important;
 }
-
-// .navigation {
-//   height: 3em;
-//   display: flex;
-//   justify-content: space-between;
-//   background-color: #f5f5f5;
-//   margin-left: 3rem;
-//   transition: margin-left 0.6s ease-in-out;
-//   position: relative;
-//   z-index: 200;
-//   user-select: none;
-// }
-
-.navigationButton{
-  font-size: 2em;
-  line-height: 1em;
-  padding: 0.5em 0.5em;
-  cursor: pointer;
-}
-
-.navigationButton:hover{
-  color: #771a1c;
-  background-color: white;
-}
-
 .searchbar {
   font-size: 0.8rem;
   width: 70%;
@@ -320,59 +210,10 @@ li {
   background-color: #f5f5f5;
   transition: all 300ms ease-in-out;
 }
-
-.navigationButtonHolder{
-    display: flex;
-}
-
-.navigationLogoHolder{
-    width: 4em;
-    overflow: hidden;
-}
-.navigationLogo{
-    height: 6em;
-    border: 0px;
-    border-radius: 0px;
-    position: relative;
-    top: -1em;
-    left: -1em;
-    cursor: pointer;
-}
-.appLogoHolder{
-    display: flex;
-}
-
-.appLogo {
-  background-color: white;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  border: 0;
-  border-radius: 0;
-  cursor: pointer;
-  height: 3em;
-  padding: 0.5em;
-  width: 3em;
-
-  &:hover {
-    background-color: #771a1c;
-  }
-}
-
 .centerText {
   display: flex;
   justify-content: center;
 }
-
-.inspirationalText {
-  color: rgb(141, 0, 0);
-  font-size: 1.5rem;
-}
-
-.legalText {
-    font-size: 0.7rem;
-}
-
 .loadingTextBlock {
     /*position:relative;
     top:70%;
@@ -390,17 +231,6 @@ li {
 .newMainPosition{
     height: 100%
 }
-.newMainPositionFull{
-    height: 100%;
-    position: absolute;
-    width: 100%;
-}
-
-.pic-and-name {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 #loading-screen {
   background-image: url('../images/Ladeanimation_Vipfy_transparent.gif');
@@ -417,32 +247,6 @@ li {
   flex-wrap: wrap;
 }
 
-.loadingLogoHolder{
-    position: relative;
-    width: 5rem;
-    height: 5rem;
-}
-.loadingLogo{
-    background-image: url(../images/Vipfy_Logo_008.svg);
-    background-repeat: no-repeat;
-    background-position: center center;
-    height: 5rem;
-    width: 5rem;
-    background-color: #117f91;
-    border-radius: 5rem;
-    background-size: 4rem;
-    position: absolute;
-
-    -webkit-animation: loading-bounce 2.0s infinite ease-in-out;
-    animation: loading-bounce 2.0s infinite ease-in-out;
-}
-
-.loadingLogo2 {
-    -webkit-animation-delay: -1.0s;
-    animation-delay: -1.0s;
-    background-color: #20BAA9;
-  }
-
 @keyframes loading-bounce {
     0%, 100% {
       transform: scale(0.0);
@@ -453,26 +257,6 @@ li {
     }
   }
 
-.welcomeHolderNew{
-    padding: 3em;
-    text-align: center;
-    .logo{
-        height: 5rem;
-        width: 5rem;
-        background-image: url(../images/Vipfy_Logo_008.svg);
-        background-repeat: no-repeat;
-        background-position: center center;
-        background-color: #117f91;
-        border-radius: 5rem;
-        background-size: 4rem;
-        display: inline-block;
-        margin-bottom: 2rem;
-    }
-}
-.welcomeHolder{
-  padding: 5em;
-}
-
 .welcomeImage{
     height: 7em;
     width: 7em;
@@ -480,90 +264,6 @@ li {
     margin: auto;
     margin-bottom: 2em;
 }
-.welcomeMessage{
-    display: flex;
-    font-size: 2em;
-    justify-content: center;
-}
-.useableApps{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 2em;
-    position: relative;
-}
-.useableAppsTitle{
-    width: 20em;
-    height: 20em;
-    display: flex;
-    text-align: center;
-    align-items: center;
-    /*border: 5px solid #333;*/
-}
-
-.useableAppsLogo{
-    width: 20em;
-    height: 20em;
-    /*border: 5px solid #333;*/
-    cursor: pointer;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    position: relative;
-    background-position: center;
-    border-radius: 0.3rem;
-    box-shadow: 0 0 10px #e8e8e8;
-}
-
-.recommendedApps{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 2em;
-}
-
-.recommendedAppsTitle{
-    width: 7em;
-    height: 7em;
-    display: flex;
-    text-align: center;
-    align-items: center;
-    border: 5px solid #771a1c;
-}
-
-.recommendedAppsLogo {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  border: 5px solid #771a1c;
-  cursor: pointer;
-  height: 7em;
-  position: relative;
-  width: 7em;
-}
-
-.useable-service-name {
-  background-color: #333;
-  bottom: 0;
-  color: white;
-  font-size: 1.2em;
-  font-weight: bold;
-  position: absolute;
-  text-align: center;
-  width: 100%;
-}
-
-.recommended-service-name {
-  background-color: #771a1c;
-  bottom: 0;
-  color: white;
-  font-size: 1.2em;
-  font-weight: bold;
-  position: absolute;
-  text-align: center;
-  width: 100%;
-}
-
 .full-working {
   /*background: linear-gradient(to right, #ddd 0%, #fff 20%, #FFF 80%, #ddd 100%);*/
   //background-color: $fullworking-background;
@@ -588,85 +288,6 @@ li {
     //background-image: radial-gradient(farthest-corner at 0px 100%, #20BAA9 0%, #117f91 100%);
     background-color: #357aa5;
 }
-
-.editHolder{
-    margin: auto;
-    max-width: 40em;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.editSquare{
-    height: 2em;
-    width: 2em;
-    position: relative;
-    font-size: 4em;
-    background-color: #333;
-    cursor: pointer;
-    border: solid 5px #333;
-}
-
-.editLogo {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    line-height: 2em !important;
-    text-align: center !important;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: white;
-}
-
-.editExplain {
-    position: absolute;
-    bottom: 0em;
-    font-size: 0.3em;
-    text-align: center;
-    width: 100%;
-    left: 0;
-    color: white;
-    background-color: #333;
-    font-weight: bold;
-}
-
-.editSettingForm {
-    min-height: 4em;
-    width: 16em;
-    font-size: 2em;
-    border: 5px solid #333;
-    text-align: center;
-}
-
-.editSettingLabel{
-    margin-top: 0.5em;
-}
-
-.editSettingInput{
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 500;
-    font-size: 0.75em;
-    font-style: italic;
-    margin-bottom: 0.6em;
-    border: 0;
-    width: 20em;
-    background-color: rgba(255,255,255,0.7);
-    border: 1px solid #aaa;
-    padding: 5px;
-    width: 8em;
-}
-
-.editSettingInput:focus{
-    outline: 0;
-    border-bottom: 2px solid #771a1c !important;
-    padding-bottom: 4px !important;
-}
-
-.editActive{
-    border: 5px solid #771a1c;
-}
-
 .marketplace {
   display: grid;
   height: calc(100% - 2rem);
@@ -674,7 +295,6 @@ li {
   grid-gap: 1rem;
   margin: 2rem;
 }
-
 .appThumbnail{
   height: 18em;
   width: 18em;
@@ -691,8 +311,6 @@ li {
     box-shadow: 1px 3px 6px 0px rgba(0, 0, 0, 0.4);
   }
 }
-
-
 .app-thumbnail-logo {
   width: 90%;
   height: 4em;
@@ -714,17 +332,6 @@ li {
     padding: 5vh 10%;
     height: calc(90vh - 4rem);
 }
-.appHeaderHolder {
-    display: flex;
-    margin-bottom: 3em;
-}
-.appLogoLarge{
-    height: 6em;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 80%;
-}
 .halfStarHolder{
     position: relative;
 }
@@ -734,54 +341,8 @@ li {
     left: 0;
     top: 2px;
 }
-.appHeaderShortHolder {
-    text-align: center;
-    width: 20%;
-    box-shadow: 2px 2px 10px #aaa;
-    background-color: white;
-}
-.appHeaderLink{
-    color: #771a1c;
-    text-decoration: underline;
-    line-height: 2em;
-    cursor: pointer;
-}
-.appHeaderLink:hover{
-    box-shadow: inset 2px 2px 5px #aaa;
-}
 .appHeaderStars{
     line-height: 2em;
-}
-.appHeaderImportantLink{
-    background-color: #771a1c;
-    text-decoration: underline;
-    line-height: 2em;
-    cursor: pointer;
-    color: white;
-    font-weight: bold;
-}
-.appHeaderImportantLink:hover {
-    box-shadow: inset 2px 2px 5px #771a1c;
-    background-color: #C32B2E;
-}
-.appGallery  {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-.galleryImage {
-    width: 20%;
-    margin: 2.5%;
-    text-align: center;
-}
-.galleryView {
-    max-height: 30em;
-    max-width: 100%;
-    cursor: pointer;
-}
-.galleryBig {
-    width: 80%;
 }
 .detail-fulldescription{
 	padding: 20px;
@@ -810,78 +371,6 @@ li {
     box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
     border-radius: 10px;
 }
-.planSingleHolder {
-    width: 30%;
-    /*margin: 1em;*/
-    text-align: center;
-    background-color: white;
-    /*box-shadow: 2px 2px 10px #aaa;
-    border: 1px solid #771a1c;*/
-    position: relative;
-    /*padding-bottom: 2em;*/
-    min-width: 11em;
-}
-.planHeader {
-    padding: 0.5em;
-}
-.planTitle {
-    font-size: 1.5em;
-    font-weight: bold;
-}
-.planNumberSelector {
-    text-align: center;
-    margin-bottom: 2em;
-}
-.planNumberSelectorInput {
-    font-family: 'Quicksand', sans-serif;
-    padding: 0.2em;
-    text-align: center;
-    font-size: 1.2em;
-    background-color: rgba(255,255,255,0.7);
-    border: 1px solid #aaa;
-    font-style: italic;
-    margin-bottom: calc(0.6em + 1px);
-    font-weight: 500;
-}
-.planNumberSelectorInput:focus{
-    outline: 0;
-    border-bottom: 2px solid #771a1c !important;
-    padding-bottom: 4px !important;
-    margin-bottom: 0.6em;
-}
-.planNumberSelectorLabel {
-    font-size: 1.5em;
-}
-.planPriceBefore{
-    font-size: 0.75em;
-}
-.billInput:focus {
-    outline: 0;
-    border-bottom: 2px solid #771a1c !important;
-    padding-bottom: 4px !important;
-    margin-bottom: 0.6em;
-}
-.billInput {
-    font-family: 'Quicksand', sans-serif;
-    padding: 0.2em;
-    text-align: center;
-    font-size: 1.2em;
-    background-color: rgba(255,255,255,0.7);
-    border: 1px solid #aaa;
-    font-style: italic;
-    margin-bottom: calc(0.6em + 1px);
-    font-weight: 500;
-    width: 2em;
-}
-.planCosts {
-    background-color: #771a1c;
-    /*position: absolute;*/
-    bottom: 0px;
-    line-height: 1.5em;
-    color: white;
-    width: 100%;
-    cursor: pointer;
-}
 .detail-comments{
 }
 .detail-comments-heading{
@@ -892,11 +381,6 @@ li {
     grid-template-columns: 10rem 1fr 1fr;
     height: 20rem;
     margin-bottom: 3rem;
-}
-.topCommentsHolder{
-    display: flex;
-    max-height: 20rem;
-    justify-content: space-evenly;
 }
 .detail-comments-oversizeholder{
 	display: flex;
@@ -957,16 +441,6 @@ li {
 	word-wrap: break-word;
 	text-align: left;
 }
-.detail-informations{
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	padding: 10px;
-}
-.detail-information-holder{
-	padding: 10px;
-}
-
 .area{
     height: 100%;
     transition: 400ms ease-in-out height;
@@ -977,79 +451,6 @@ li {
     line-height: 2em;
     margin-top: 2em;
 }
-.advisorInputHeading {
-    font-size: 2rem;
-    text-align: center;
-    line-height: 1.5em;
-}
-.advisorInputInput {
-    font-family: 'Quicksand', sans-serif;
-    padding: 0.2em;
-    text-align: center;
-    font-size: 1.2em;
-    background-color: rgba(255,255,255,0.7);
-    border: 1px solid #aaa;
-    font-style: italic;
-    margin-bottom: 1px;
-    font-weight: 500;
-    width: calc(100% - 0.4em);
-    margin-top: 1em;
-}
-.advisorInputInput:focus {
-    outline: 0;
-    border-bottom: 2px solid #771a1c !important;
-    margin-bottom: 0px;
-}
-.advisorNext {
-    text-align: center;
-    font-size: 1.5em;
-    line-height: 2em;
-    margin-top: 1em;
-}
-
-.advisorHolder {
-    font-size: 1.5em;
-    padding: 1em;
-    border: 1px solid #771a1c;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: rgba(255,255,255,0.7);
-    box-shadow: inset 2px 2px 10px 2px #aaa;
-    /*width: 25rem;*/
-}
-.advisorSkip {
-    text-align: center;
-}
-.advisorOptionHolder {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1em;
-    margin-top: 1em;
-}
-.advisorOption {
-    line-height: 2em;
-    padding: 0.5em;
-    background-color: #eee;
-    cursor: pointer;
-    border: 1px solid #771a1c;
-    margin-left: 0.25em;
-    margin-right: 0.25em;
-}
-.registerInfo {
-    font-size: 0.6em;
-    line-height: 2em;
-}
-/*fonts
-
-    font-family: 'Dosis', sans-serif;
-
-    font-family: 'Fjalla One', sans-serif;
-
-    font-family: 'Quicksand', sans-serif;
-
-*/
-
 .chatBar {
     width: 15rem;
     position: fixed;
@@ -1059,60 +460,9 @@ li {
     background-color: #333;
     height: 100vh;
 }
-
 .chat-open {
   margin-right: 15rem;
 }
-
-.right-infos {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  /*min-width: 30rem;*/
-}
-
-.navigation-right-infos{
-  font-size: 1.5rem;
-  padding: 0.5rem;
-  margin: 0.25rem;
-  cursor: pointer;
-}
-
-.right-profile-holder {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  float: left;
-  cursor: pointer;
-  margin: 0.5rem;
-  position: relative;
-}
-
-.right-profile-image {
-  height: 2rem;
-  width: 2rem;
-  margin-right: 0.5rem;
-  border-radius: 1rem;
-  background-color: #eee;
-  margin-left: 2px;
-  margin-top: 2px;
-  text-align: center;
-  line-height: 2rem;
-  color: white
-}
-
-.right-profile-first-name {
-  font-size: 0.8rem;
-  padding-right: 0.2rem;
-  padding-top: 0.2rem;
-}
-
-.right-profile-last-name {
-  font-size: 0.9rem;
-  padding-top: 0.1rem;
-  font-weight: bold;
-}
-
 .notify-user {
   animation: notify 2s ease-in-out 0s 2;
 
@@ -1141,74 +491,6 @@ li {
     }
   }
 }
-
-.right-profile-caret {
-  display: inline-block;
-  width: 0;
-  height: 0;
-  vertical-align: middle;
-  border-top: 0.3rem dashed;
-  border-left: 0.3rem solid transparent;
-  border-right: 0.3rem solid transparent;
-  margin-left: 0.3rem;
-}
-
-.possible-addresses {
-  z-index: 5;
-  top: 2rem;
-  overflow-y: auto;
-  position: absolute;
-  display: flex;
-  flex-flow: column;
-  align-items: start;
-  justify-content: space-around;
-  transition: all 300ms ease-in-out;
-
-  &-show {
-    @extend .possible-addresses;
-    width: 25rem;
-    max-height: 11rem;
-  }
-
-  &-hide {
-    @extend .possible-addresses;
-    width: 25rem;
-    max-height: 0;
-  }
-
-  &-item {
-    width: 100%;
-    padding: 0.5rem 0;
-    background: #eee;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    transition: all 300ms ease-in-out;
-
-    i {
-      margin: 0 0.5rem;
-    }
-
-    span {
-      font-size: 0.8rem;
-      display: flex;
-      flex-flow: row wrap;
-    }
-
-    &:hover {
-      background: #aaa;
-      transition: background 300ms ease-in-out;
-    }
-  }
-
-  &-close-button {
-    @extend .naked-button;
-    position: absolute;
-    top: -3px;
-    right: 0px;
-  }
-}
-
 .proposal-holder {
   margin-top: 1rem;
 
@@ -1220,152 +502,6 @@ li {
       font-weight: bold;
     }
   }
-}
-
-.welcomeTile{
-    margin: 2.5%;
-    width: 25%;
-    min-width: 10rem;
-    max-width: 15rem;
-    min-height: 20rem;
-    background-color: #333 !important;
-    color: white;
-    box-shadow: 0 0 4rem #f0f3ff;
-    border-radius: 0.2rem;
-    position: relative;
-}
-.welcomeIcon {
-    text-align: center;
-    width: 100%;
-    color: #ffc247;
-    font-size: 4rem;
-    line-height: 6rem !important;
-}
-.welcomeText {
-    display: block;
-    padding: 2rem;
-    padding-top: 0;
-}
-.welcomeSentence {
-    padding: 1rem;
-    bottom: 0px;
-    position: absolute;
-    text-align: center;
-    width: calc(100% - 2rem);
-}
-
-.serviceTile {
-    min-width: 5rem;
-    max-width: 15rem;
-    margin: 2.5%;
-    background-color: white;
-    width: 25%;
-    box-shadow: 0 0 4rem #f0f3ff;
-    border-radius: 0.2rem;
-    position: relative;
-}
-.serviceTileHeader {
-    background-color: #ffc247 !important;
-    padding: 2rem;
-    min-height: 6rem;
-}
-.serviceTileHeaderText {
-    font-weight: bold;
-    color: white;
-    font-size: 1.25rem;
-}
-.serviceUserHeader {
-    margin-top: -1.6rem;
-    border-bottom: 0.5rem solid transparent;
-}
-.serviceUserIconBackground {
-    margin-left: 1rem;
-    float: left;
-    margin-right: 0.5rem;
-}
-.serviceUserIcon {
-    width: 3rem;
-    border-radius: 2rem;
-    border: 0.2rem solid white;
-}
-.serviceUserName {
-    font-size: 0.8rem;
-    display: block;
-    line-height: 2rem;
-    color: white;
-    font-weight: bold;
-}
-.serviceTime {
-    font-size: 0.6rem;
-}
-.serviceText {
-    padding: 1rem;
-}
-.barIcon {
-    font-size: 1em;
-    cursor: pointer;
-    line-height: 2em !important;
-    padding-left: 1em;
-    width: 16px;
-    margin-top: 3em;
-    text-align: center;
-}
-
-.leftNavigation{
-  display: flex;
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: 1.2em;
-}
-
-.informationTile {
-    min-width: 5rem;
-    max-width: 15rem;
-    margin: 2.5%;
-    background-color: #547fff;
-    width: 25%;
-    box-shadow: 0 0 4rem #f0f3ff;
-    border-radius: 0.2rem;
-    position: relative;
-    color: white;
-}
-.informationTileHeader {
-    padding: 2rem;
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-.informationText {
-    padding: 1rem;
-    bottom: 0;
-    /*position: absolute;*/
-}
-.informationGraph {
-    max-width: 30rem;
-    margin: 2.5%;
-    background-color: #fff;
-    width: 50%;
-    box-shadow: 0 0 4rem #f0f3ff;
-    border-radius: 0.2rem;
-    position: relative;
-    color: #253647;
-}
-.informationGraphHeader {
-    font-size: 1.5rem;
-    padding: 1rem;
-    text-align: center;
-}
-.informationGraphHeader {
-    font-size: 1.5rem;
-    padding: 1rem;
-    text-align: center;
-}
-.informationGraphContent {
-    width: 100%;
-    height: 15rem;
-    position: relative;
-    display: flex;
-    justify-content: center;
 }
 .appBreadCromp {
     margin-bottom: 1.5rem;
@@ -1426,20 +562,6 @@ li {
     padding-right: 1rem;
     width: calc(100% - 2rem);
 }
-.appHeaderSelectDepartment {
-    position: relative;
-    padding: 0.5rem;
-    background-color: #e9ecef;
-    cursor: pointer;
-    font-size: 0.8rem;
-    border-radius: .25rem;
-    border: 1px solid #e9ecef;
-    margin-top: 0.25rem;
-}
-.appHeaderSelectDepartmentOptionHolder {
-    position: absolute;
-    display: none;
-}
 .appHeaderBuyButton {
     position: relative;
     padding: 0.5rem;
@@ -1470,10 +592,6 @@ li {
     border: 1px solid #e9ecef;
     margin-top: 0.25rem;
 }
-.appHeaderSelectPlanOptionHolder {
-    position: absolute;
-    display: none;
-}
 .caretApp{
     /*margin-left: 1rem;*/
     float: right;
@@ -1503,26 +621,6 @@ li {
 .appDescriptionLink{
     cursor: pointer;
     text-decoration: underline;
-}
-.appHeading {
-    font-size: 1.25rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-align: center;
-    line-height: 3rem;
-}
-.rcLogoAppsTile {
-    margin: 1rem;
-    min-height: 4rem;
-    min-width: 4rem;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-color: white;
-    border-radius: 0.2rem;
-    box-shadow: 0 0 1rem #f0f3ff;
-    cursor: pointer;
-    position: relative;
 }
 .galleryDots {
     position: absolute;
@@ -1583,89 +681,6 @@ li {
 .galleryRight:hover{
     opacity: 1;
 }
-.UMS {
-    max-width: 60rem;
-    margin: auto;
-    margin-top: 5rem;
-    padding: 1rem;
-    background-color: white;
-    box-shadow: 0 0 4rem #f0f3ff;
-    border-radius: 0.2rem;
-    position: relative;
-}
-.departmentHolder {
-    display: flex;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-.departmentIcon {
-    height: 3rem;
-    width: 3rem;
-    background-color: #547fff;
-    text-align: center;
-    line-height: 3rem;
-    font-weight: bold;
-    color: white;
-    text-transform: uppercase;
-}
-.departmentName {
-    width: 8.75rem;
-    line-height: 3rem;
-    padding-left: 0.25rem;
-    border-bottom: 1px solid #d6dee5;
-    height: calc(3rem - 2px);
-    border-top: 1px solid #d6dee5;
-    position: relative;
-}
-.employeeHolder {
-    border: 1px solid #d6dee5;
-    width: calc(100% - 13rem);
-    min-height: calc(3rem - 2px);
-    display: flex;
-    flex-wrap: wrap;
-}
-.serviceHolder {
-    border: 1px solid #d6dee5;
-    border-top: 0px;
-    width: calc(100% - 13rem);
-    height: calc(3rem - 1px);
-    display: flex;
-    align-items: center;
-}
-.addEmployee {
-    margin: 0.5rem;
-    height: calc(2rem - 2px);
-    width: 2rem;
-    text-align: center;
-    background-color: #e9ecef;
-    line-height: 2rem !important;
-    cursor: pointer;
-}
-.employeeName {
-    font-size: 0.75rem;
-    font-weight: bold;
-    float: left;
-    line-height: 36px;
-    max-width: 100px;
-    height: 36px;
-}
-.employeeTags {
-    font-size: 0.75rem;
-}
-.employee {
-    width: 9rem;
-    margin-top: 0.5rem;
-    position: relative;
-}
-.addHolderAll{
-    width: 0;
-    height: 0;
-    overflow: hidden;
-}
-.addEmployeeHolder {
-    position: relative;
-}
 .addHolderAll {
     width: 11rem;
     height: auto;
@@ -1680,109 +695,7 @@ li {
     border: 1px solid #e9ecef;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
     cursor: default;
-}
-.addItem {
-    height: 2rem;
-    margin: 0.5rem;
-}
-.addName {
-    line-height: 2rem;
-}
-.addHolderAllNone {
-    display: none;
-}
-.employeeInfo {
-    width: 11rem;
-    height: auto;
-    background-color: white;
-    position: absolute;
-    z-index: 1000;
-    min-width: 15rem;
-    top: 2.5rem;
-    margin: 0.125rem 0 0;
-    background-clip: padding-box;
-    border: 1px solid #e9ecef;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
-    cursor: default;
-}
-.employeeInfoNone {
-    display: none;
-}
-.departmentEdit {
-    float: right;
-    line-height: calc(3rem - 2px) !important;
-    margin-right: 0.5rem;
-    cursor: pointer;
-}
-.departmentAddInfoNone{
-    display: none;
-}
-.departmentAddInfo{
-    width: 11rem;
-    height: auto;
-    background-color: white;
-    position: absolute;
-    z-index: 1000;
-    min-width: 15rem;
-    top: 2.5rem;
-    margin: 0.125rem 0 0;
-    background-clip: padding-box;
-    border: 1px solid #e9ecef;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
-    cursor: default;
-}
-
-/*.PApp {
-    width: 9rem;
-    margin-top: 0.5rem;
-    position: relative;
     overflow: hidden;
-}*/
-.addHolder{
-    max-height: 10rem;
-    overflow-y: scroll;
-}
-
-.subaddholder-holder{
-    position: relative;
-}
-.subaddholder{
-    position: absolute;
-    top: -1rem;
-    left: 15rem;
-    background-color: white;
-    z-index: 1000;
-    min-width: 15rem;
-    margin: 0.125rem 0 0;
-    background-clip: padding-box;
-    border: 1px solid #e9ecef;
-    max-height: 10rem;
-    overflow-y: scroll;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
-}
-.periodSwitch > .Selected{
-    background-color: red;
-}
-.planHeaderHolder{
-    display: flex;
-    justify-content: center;
-}
-.planFeatureHolder{
-    display: flex;
-    justify-content: center;
-}
-.planFeature{
-    width: 30%;
-    min-width: 11rem;
-}
-.pFeature{
-    height: 3rem;
-    display: flex;
-    align-items: center;
-}
-.planFeatureHeader{
-    text-align: center;
-    line-height: 2rem;
 }
 select{
     background-color: transparent;
@@ -1922,30 +835,6 @@ option{
 .journeyCircle:hover{
     background-color: #3389BF;
 }
-.journeyLeftBottomLine{
-    display: block;
-    position: absolute;
-    height: 2rem;
-    width: 6.5rem;
-    left: 3rem;
-    border-bottom: dotted white;
-    top: 9rem;
-    border-radius: 0rem 1rem;
-}
-.advisorBottomPageButtonsHolder {
-    display: flex;
-    justify-content: space-around;
-}
-.advisorBottomPageButtonNext {
-    border: none;
-    background: none;
-    background-color: #357AA5;
-    color: white;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    font-family: 'Montserrat', sans-serif;
-    cursor: pointer;
-}
 .inputBoxHolder{
     display: flex;
     align-items: center;
@@ -1959,17 +848,6 @@ option{
     position: absolute;
     right: 0;
     color: #A52C2C;
-}
-.inputBoxAdvisorError {
-    color: #A52C2C;
-    border: solid 1px #A52C2C;
-    left: calc(100% + 1rem);
-    position: absolute;
-    top: 1.25rem;
-    width: 16em;
-    text-align: center;
-    padding: 0.25rem;
-    background-color: white;
 }
 .lawbox{
     overflow-y: scroll;
@@ -2164,15 +1042,6 @@ option{
 .orderAddressHolder{
     margin: 0.5rem;
 }
-/*h1{
-    text-align: center;
-    font-size: 25px;
-    line-height: 32px;
-    padding-top: 70px;
-    a{
-      color: #20BAA9;
-    }
-  }*/
 
   .price-table-wrapper{
     /*text-align: center;
@@ -2423,13 +1292,6 @@ option{
   margin-bottom: 0.5rem;
   align-items: center;
 }
-.changeInformation{
-  span{
-      font-size: 0.7rem;
-      text-decoration: underline;
-      margin: 0.2rem;
-  }
-}
 .acceptLicenceHolder{
     padding: 3rem;
     .checkOrderHolderButton{
@@ -2437,235 +1299,7 @@ option{
         right: 3rem;
     }
 }
-.teamHolder{
-    padding: 2rem;
-    overflow-y: scroll;
-    
-    .companyHeader{
-        display: flex;
-        //justify-content: center;
-        margin-bottom: 20px;
-        max-width: 60rem;
-        margin-left: auto;
-        margin-right: auto;
-        .companyLogo > img{
-            height: 5rem;
-            //padding: 2.5rem;
-        }
-        .companyName{
-            //line-height: 10rem;
-            line-height: 5rem;
-            font-size: 2rem;
-        }
-    }
 
-    .companyEmployees{
-      .Cemployee {
-        display: flex;
-        justify-content: start;
-        margin-bottom: 2rem;
-        border: 1px solid #C8C8C8;
-        border-radius: 3px;
-
-        .infoHolder {
-          width: 10rem;
-          display: flex;
-          flex-flow: column;
-          align-items: center;
-          background-color: #fff;
-          border-radius: 3px;
-          height: 8rem;
-          cursor: pointer;
-
-          .picutre {
-              margin: 0.5rem;
-              height: 5rem;
-              width: 5rem;
-          }
-        }
-
-          .apps {
-            display: grid;
-            grid-template-rows: repeat(auto-fill, 2.3rem);
-            grid-template-columns: repeat(auto-fill, 9rem);
-            grid-gap: 0.5rem;
-            margin-left: 1rem;
-            height: 100%;
-            width: 100%;
-
-            .EApp {
-              position: relative;
-              overflow: hidden;
-              background-color: white;
-              padding: 0.25rem;
-              box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
-                
-              .revokelicence {
-                cursor: pointer;
-                font-size: 0.5rem
-              }
-
-              img {
-                user-drag: none;
-                user-select: none;
-                -moz-user-select: none;
-                -webkit-user-drag: none;
-                -webkit-user-select: none;
-                -ms-user-select: none;
-              }
-            }
-              .dragable {
-                cursor: move;
-                transition: all 300ms ease-in-out;
-
-                &:hover {
-                    box-shadow: 3px 11px 19px -3px rgba(0, 0, 0, 0.36);
-                    transform: translateY(-5px);
-                  }
-              }
-            }
-        }
-    }
-}
-    .availableApps{
-      text-align: center;
-      background-color: white;
-      /*border-right: 1px solid;
-      border-image: linear-gradient(to bottom, #20BAA9, #117f91) 0 100%;*/
-
-      text-align: center;
-    border-left: 1px solid ;
-    border-image: linear-gradient(to bottom, #20BAA9, #117f91) 0 100%;
-    z-index: 2;
-    background-color: white;
-    position: fixed;
-    padding: 20px;
-    right: 0;
-    height: calc(100vh - 120px);
-    overflow-y: scroll;
-    width: 15em;
-
-      .heading{
-          display: none;
-      }
-       
-      .appHolder {
-        margin-top: 32px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-
-      .PApp {
-        width: 11rem;
-        position: relative;
-        overflow: hidden;
-        background-color: white;
-        //padding: 0.25rem;
-        //margin-bottom: 0.2rem;
-        margin-left: 0.5em;
-        margin-right: 0.5em;
-        cursor: -webkit-grab;
-        //box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-        text-align: left;
-        transition: all 300ms ease-in-out;
-
-        &:hover {
-          box-shadow: 3px 11px 19px -3px rgba(0, 0, 0, 0.36);
-          transform: translateY(-5px);
-          transition: all 300ms ease-in-out;
-        }
-
-        img {
-          user-drag: none;
-          user-select: none;
-          -moz-user-select: none;
-          -webkit-user-drag: none;
-          -webkit-user-select: none;
-          -ms-user-select: none;
-        }
-
-        .explain {
-          font-size: 0.6rem;
-          display: none;
-        }
-
-        .menuteam {
-            /*position: absolute;
-            right: 0em;
-            top: 0em;*/
-            padding: 0.5em;
-            cursor: pointer;
-            float: right;
-        }
-      }
-
-      .heading {
-        font-size: 0.8rem;
-        font-weight: bold;
-        padding-bottom: 0.5rem;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-        margin-top: 3rem;
-      }
-      }
-.addEmployeeHolderP{
-    text-align: center;
-    padding: 2rem;
-    .heading{
-        font-size: 0.8rem;
-        padding-bottom: 1rem;
-        display: inline-block;
-    }
-    .field{
-        display: grid;
-        grid-template-columns: 0.8fr 0.8fr 0.4fr;
-        margin-bottom: 1rem;
-        position: relative;
-        .emailError{
-            position: absolute;
-            font-size: 0.8rem;
-            border: 1px solid red;
-            padding: 0.25rem;
-            border-radius: 3px;
-        }
-    }
-    .label{
-        margin-right: 1rem;
-        text-align: right;
-    }
-    div > .inputBoxField{
-        border-bottom: 1px solid;
-        padding: 0px;
-    }
-}
-
-.addEmployeeButton{
-    background-color: #20BAA9;
-    color: white;
-    width: 10rem;
-    text-align: center;
-    border-radius: 3px;
-    height: 2rem;
-    cursor: pointer;
-    line-height: 2rem;
-    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
-    transition: all 0.6s ease-in-out;
-    &:hover{
-        background-color: #117f91;
-        transition: all 0.6s ease-in-out;
-    }
-}
-.teamPageHolder{
-    /*display: grid;
-    grid-template-columns: 1fr 5fr;
-    height: 100%;*/
-    display: grid;
-    grid-template-columns: 1fr calc(15em + 40px);
-    height: calc(100vh - 80px);
-}
 .spinner {
     float: left;
     position: relative;
@@ -2705,9 +1339,7 @@ option{
       -webkit-transform: scale(1.0);
     }
   }
-.noApp{
-    margin-top: 1rem;
-}
+
 .presideHolder {
     width: 40rem;
     height: 21rem;
@@ -3038,23 +1670,6 @@ option{
         transition: all 0.6s ease-in-out;
     }
 }
-/*.nothingHere{
-    width: 20rem;
-    height: 20rem;
-    border-radius: 10rem;
-    background-image: radial-gradient(#20BAA9 0%, #117f91 100%);
-    color: white;
-    text-align: center;
-    .h1{
-        margin-top: 6.5rem;
-        font-size: 2rem;
-    }
-    .h2{
-        margin-top: 2rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-}*/
 .editorMainHolder{
     margin-bottom: 3rem;
     height: 13rem;
@@ -3091,14 +1706,6 @@ option{
 .domainHolderMargin{
     position: relative;
     margin-bottom: 2rem;
-}
-
-@keyframes stretch-out {
-  from {
-    font-size: 0;
-  } to {
-    font-size: 0.75rem;
-  }
 }
 
 .active-app {
@@ -3169,47 +1776,6 @@ option{
     }
   }
 
-  .ribbon-small {
-    width: 1rem;
-    height: 1rem;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
-
-  .ribbon-small-top-right span {
-    left: -0.2rem;
-    top: 0.1rem;
-    transform: rotate(45deg);
-    position: absolute;
-    display: block;
-    width: 2rem;
-    font-size: 0rem;
-    padding: 0.25rem;
-    background-color: $vipfy-primary-color;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    color: #fff;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-    text-transform: uppercase;
-    text-align: center;
-}
-
-.dragging {
-  border: 1px dashed #111;
-  opacity: 0.5;
-  transition: all 300ms ease-in-out;
-}
-  
-.apexcharts-yaxis-label {
-  white-space: pre-wrap;
-  font-family: "Roboto Mono", monospace
-}
-
-.apexcharts-datalabel {
-  white-space: pre-wrap;
-  font-family: "Roboto Mono", monospace
-}
 .loadingBuying{
     text-align: center;
 
@@ -3241,109 +1807,6 @@ option{
     padding: 0.5em;
     cursor: pointer;
   }
-}
-.domainInputHolder{
-    display: flex;
-
-    .domainInput{
-        width: 100%;
-
-        &Field{
-            border-bottom: 1px solid;
-        }
-    }
-    button{
-        background-color: $vipfy-primary-color;
-        color: white;
-        border: none;
-        cursor: pointer;
-        transition: all 0.6s ease-in-out;
-
-        &:focus{
-            outline: none;
-        }
-        &:hover{
-            background-color: #117f91;
-        }
-    }
-}
-.tldHolder{
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8em;
-    margin-top: 0.5em;
-
-    .tldItem{
-        width: 100%;
-        text-align: center;
-
-        .tld{
-        font-weight: bold;
-        margin-right: 0.25em;
-        }
-
-        .tldItemSmall{
-            padding: 0.25em;
-            cursor: pointer;
-            transition: all 0.6s ease-in-out;
-
-            &:hover{
-                background-color: #20BAA9;
-            }
-        }
-
-        .selectedTld{
-            padding: 0.25em;
-            background-color: #20BAA9
-        }
-    }
-}
-.whoisPrivacyBox{
-    margin-top: 1em;
-
-    .whoisPrivacy{
-        font-size: 0.8rem;
-        margin-left: 0.4rem;
-        top: -0.26rem;
-        position: relative;
-    }
-}
-.buyDomainButtonHolder{
-    margin-top: 2em;
-    display: flex;
-    justify-content: space-evenly;
-
-    button{
-        background-color: #20BAA9;
-        color: white;
-        border: none;
-        cursor: pointer;
-        transition: all 0.6s ease-in-out;
-        padding: 0.5em 1em;
-        border-radius: 0.3em;
-        font-weight: bold;
-
-        &:focus{
-            outline: none;
-        }
-        &:hover{
-            background-color: #117f91;
-        }
-    }
-    .__cancel{
-        background-color: #c73544;
-
-        &:hover{
-            background-color: #991b78;
-        }
-    }
-    .__greyed{
-        background-color: grey;
-
-        &:hover{
-            background-color: grey;
-        }
-    }
 }
 
 .genericHolder {
@@ -3413,10 +1876,6 @@ option{
             grid-template-columns: 80px calc(100% - 100px);
         }
     }
-
-    /*label{
-        font-weight: 500;
-    }*/
 }
 
 .imagehoverable{
@@ -3547,90 +2006,6 @@ option{
     right: 20px;
 }
 
-.addresses{
-    margin-left: 20px;
-
-    & > .header{
-        padding-left: 20px;
-        border-top-left-radius: 3px;
-        position: relative;
-        text-align: left;
-        background-color: #f5f5f5;
-        height: 32px;
-        line-height: 32px;
-        padding-left: 20px;
-        font-weight: 500;
-        font-size: 15px;
-        cursor: pointer;
-
-        &:hover > .button-hide{
-            color: #20BAA9;
-        }
-
-        .button-hide{
-            right: 20px;
-        }
-    }
-
-    & > .inside{
-        margin: 20px;
-
-        table{
-            width: 100%;
-            margin-bottom: 20px;
-            thead{
-                font-size: 13px;
-                font-weight: 500;
-            }
-            th{
-                text-align: left;
-                padding-bottom: 10px;
-            }
-        }
-    }
-}
-.phones{
-    margin-left: 20px;
-
-    & > .header{
-        padding-left: 20px;
-        border-top-left-radius: 3px;
-        position: relative;
-        text-align: left;
-        background-color: #f5f5f5;
-        height: 32px;
-        line-height: 32px;
-        padding-left: 20px;
-        font-weight: 500;
-        font-size: 15px;
-        cursor: pointer;
-
-        &:hover > .button-hide{
-            color: #20BAA9;
-        }
-
-        .button-hide{
-            right: 20px;
-        }
-    }
-
-    & > .inside{
-        margin: 20px;
-
-        table{
-            width: 100%;
-            margin-bottom: 20px;
-            thead{
-                font-size: 13px;
-                font-weight: 500;
-            }
-            th{
-                text-align: left;
-                padding-bottom: 10px;
-            }
-        }
-    }
-}
 .editButton{
     width: 20px;
     cursor: pointer;
@@ -3648,137 +2023,11 @@ option{
     text-align: left
 }
 
-.genericInsideHolder{
-    margin-left: 20px;
-
-    & > .header{
-        padding-left: 20px;
-        border-top-left-radius: 3px;
-        position: relative;
-        text-align: left;
-        background-color: #f5f5f5;
-        height: 32px;
-        line-height: 32px;
-        padding-left: 20px;
-        font-weight: 500;
-        font-size: 15px;
-        cursor: pointer;
-
-        &:hover > .button-hide{
-            color: #20BAA9;
-        }
-
-        .button-hide{
-            right: 20px;
-        }
-    }
-
-    & > .inside{
-        margin: 20px;
-
-        table{
-            margin-bottom: 20px;
-        }
-    }
-}
 table{
     width: 100%;
     text-align: left;
 }
 
-.team-app-holders{
-    display: flex;
-flex-wrap: wrap;
-    margin-bottom: -8px;
-    margin-top: -8px;
-
-    .EApp{
-        //width: 11rem;
-        position: relative;
-        overflow: hidden;
-        background-color: white;
-        cursor: move;
-        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-        text-align: left;
-        transition: all 300ms ease-in-out;
-        margin: 8px;
-        width: 160px;
-        height: 36px;
-
-    .revokelicence {
-        cursor: pointer;
-        font-size: 0.5rem
-      }
-
-      img {
-        user-drag: none;
-        user-select: none;
-        -moz-user-select: none;
-        -webkit-user-drag: none;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-      }
-    }
-
-    .bought-plan {
-      position: relative;
-      overflow: hidden;
-      border: none;
-      background-color: white;
-      cursor: pointer;
-      box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-      text-align: left;
-      transition: all 300ms ease-in-out;
-      margin: 8px;
-      width: 160px;
-      height: 32px;
-
-      &:hover {
-        box-shadow: 3px 11px 19px -5px rgba(0, 0, 0, 0.36);
-        transform: translateY(-2px);
-        transition: all 300ms ease-in-out;
-      }
-
-      img {
-        user-drag: none;
-        user-select: none;
-        -moz-user-select: none;
-        -webkit-user-drag: none;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-      }
-    }
-
-    .selected {
-      background-color: #ececec;
-      box-shadow: 3px 11px 19px -5px rgba(0, 0, 0, 0.36);
-      transform: translateY(-2px);
-      border: none;
-
-      &:focus {
-        outline: none;
-      }
-    }
-
-    .disabled-button {
-      cursor: not-allowed;
-
-      &:hover {
-        transform: translateY(0);
-        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-      }
-    }
-
-      .dragable {
-        cursor: move;
-        transition: all 300ms ease-in-out;
-
-        &:hover {
-            box-shadow: 3px 11px 19px -3px rgba(0, 0, 0, 0.36);
-            transform: translateY(-5px);
-          }
-      }
-}
 .company-overview{
     display: grid;
             grid-template-columns: 2fr 7fr;
@@ -3885,214 +2134,10 @@ progress[value] {
     width: 30%;
     text-align: center;
 }
-.agreementBoxReg{
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-}
-.agreementSentenceReg{
-    font-size: 0.8rem;
-    margin-left: 0.4rem;
-  }
-  .externalSearch {
-    max-width: 60rem;
-    margin: auto;
-    margin-bottom: 1rem;
-    display: flex;
 
-    button{
-        width: 32px;
-        overflow: initial;
-    }
-
-    input{
-        margin-left: 8px;
-        border-bottom: 1px solid;
-        padding: 0px;
-    }
-
-    .fa-paper-plane{
-        transition: all 300ms ease-in-out;
-    }
-
-    button:hover{
-        .fa-paper-plane{
-            transform: rotateZ(45deg);
-        }
-    }
-}
-.pwexample{
-    background-color: #eee;
-    padding: 0.3em;
-    border-radius: 3px;
-    cursor: pointer;
-}
 .inputBoxUnderline{
     border-bottom: 1px solid;
     padding: 0px;
-}
-.domainAroundLeft{
-    line-height: 1.5em;
-    padding: 2px;
-    margin-bottom: 1px;
-    background-color: #eee;
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-}
-.domainAroundRight{
-    line-height: 1.5em;
-    padding: 2px;
-    margin-bottom: 1px;
-    background-color: #eee;
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-.textRight{
-    text-align: right;
-}
-.inputBoxFieldTeams{
-    float: left;
-    width: calc(100% - 40px);
-    line-height: 31px;
-    padding: 0;
-    border: 0px;
-    color: #357AA5;
-    font-family: 'Montserrat', sans-serif;
-    border-bottom: 1px solid;
-    padding-left: 8px;
-}
-.PAppSearch{
-    width: 11rem;
-    position: relative;
-    overflow: hidden;
-    background-color: white;
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-    cursor: move;
-    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-    text-align: left;
-    transition: all 300ms ease-in-out;
-}
-.ribbonHeaderHolder {
-    top: 0px;
-    right: 0px;
-    position: absolute;
-    overflow: hidden;
-    height: 2rem;
-    width: 2rem;
-    border-radius: 3px;
-  }
-  .ribbonHeader {
-    height: 2em;
-    overflow: hidden;
-    position: absolute;
-    width: 5em;
-    font-size: 0.75rem;
-    padding: 0.25rem;
-    background-color: #34b3a4;
-    color: #34b3a4;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-    text-transform: uppercase;
-    text-align: center;
-    top: -1rem;
-    right: -1.7rem;
-    transform: rotate(45deg);
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-  }
-  .employeeShower{
-    position: relative;
-    overflow: hidden;
-    background-color: white;
-    cursor: pointer;
-    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-    text-align: left;
-    transition: all 300ms ease-in-out;
-    margin: 8px;
-    width: 160px;
-    height: 36px;
-
-    .img{
-        float: left;
-        height: 2rem;
-    width: 2rem;
-    margin-right: 0.5rem;
-    border-radius: 1rem;
-    background-color: #eee;
-    margin-left: 2px;
-    margin-top: 2px;
-    user-drag: none;
-    user-select: none;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    }
-    .name{
-        font-size: 0.75rem;
-    font-weight: bold;
-    float: left;
-    line-height: 36px;
-    max-width: 100px;
-    height: 36px;
-    }
-  }
-
-.switchHolder{
-    display: flex;
-    line-height: 30px;
-    justify-content: center;
-}
-.switchOption{
-    width: 8em;
-}
-.onoffswitch {
-    position: relative; width: 90px;
-    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
-    margin-left: 20px;
-    margin-right: 20px;
-
-    &-checkbox {
-    display: none;
-    }
-    &-label {
-    display: block; overflow: hidden; cursor: pointer; border-radius: 3px;
-    }
-    &-inner {
-        display: block; width: 200%; margin-left: -100%;
-        transition: margin 0.3s ease-in 0s;
-
-        &:before, &:after {
-            display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
-            font-size: 14px; color: white;
-            box-sizing: border-box;
-        }
-        &:before {
-            content: "Delete";
-            padding-left: 10px;
-            background-color: #c73544; color: white;
-        }
-        &:after {
-            content: "Keep";
-            padding-right: 10px;
-            background-color: #20BAA9; color: white;
-            text-align: right;
-        }
-    }
-    &-switch {
-        display: block; width: 18px; margin: 6px;
-        background: #FFFFFF;
-        position: absolute; top: 0; bottom: 0;
-        right: 56px; border-radius: 3px;
-        transition: all 0.3s ease-in 0s; 
-    }
-}
-.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
-    margin-left: 0;
-}
-.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
-    right: 0px; 
 }
 
 .welcome {
@@ -4163,372 +2208,6 @@ progress[value] {
       }
     }
   }
-}
-
-.remove-checkbox{
-    display: flex;
-    justify-content: start;
-    width: 300px;
-    margin-top: 20px;
-
-    &:last-child{
-        margin-bottom: 20px;
-    }
-
-    &::before{
-        position: absolute;
-        top: -14px;
-        left: -14px;
-    }
-
-    span{
-        line-height: 18px;
-        margin-right: 0;
-        margin-left: 5px;
-    }
-}
-
-.r-checkbox {
-    opacity: 0;
-    position: absolute;
-
-    &:checked + .generic-form-checkbox {
-      svg {
-        stroke: #117f91;
-
-        path {
-          stroke-dashoffset: 0 !important;
-          transition: stroke-dashoffset 0.3s linear;
-        }
-
-        polyline {
-          stroke-dashoffset: 42 !important;
-          transition: stroke-dashoffset 0.2s linear;
-          transition-delay: 0.15s;
-        }
-      }
-    }
-  }
-
-
-.welcomeBackground{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: calc(100vh - 32px);
-    background-color: #f5f5f5;
-}
-.welcomeModal{
-    box-shadow: 0px 0px 19px -3px rgba(0,0,0,0.36);
-    width: 1000px;
-    height: 75%;
-    border-radius: 10px;
-    background-color: white;
-    overflow: hidden;
-    display: flex;
-    position: relative;
-
-    .left{
-        width: 50%;
-        height: 100%;
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .mapIcon{
-            height: 100px;
-            width: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            background-image: linear-gradient(to top right, #34b3a4, #357AA5);
-            color: white;
-            border-radius: 3px;
-        }
-    }
-
-    .right{
-        width: 50%;
-        height: 100%;
-        position: relative;
-        background-color: #253647;
-        color: white;
-
-        h2{
-            font-weight: 300;
-        }
-
-        .logo{
-            background-image: url(../images/Vipfy_Logo_Links_Weiss_HG_Dunkel.svg);
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: contain;
-            height: 20px;
-            top: 50px;
-            position: absolute;
-            width: 100px;
-            left: 50px;
-        }
-
-        .formHolder{
-            margin-top: 110px;
-            margin-left: 50px;
-            position: relative;
-            height: calc(100% - 120px);
-
-            .selectHolder{
-                max-height: calc(100% - 165px);
-                max-width: 400px;
-                overflow-y: auto;
-
-                &::-webkit-scrollbar-thumb {
-                    background: #20BAA9;
-                }
-                &::-webkit-scrollbar-track {
-                    background: #117f91;
-                }
-                &::-webkit-scrollbar {
-                    width: 5px;
-                }
-
-                .selectOption{
-                    line-height: 20px;
-                    cursor: pointer;
-                    padding-right: 5px;
-                    padding-bottom: 2px;
-                    padding-top: 2px;
-                    padding-left: 5px;
-                    display: flex;
-                    align-items: center;
-                    font-size: 13px;
-                    max-width: 400px;
-                    position: relative;
-                    padding-left: 30px;
-                    min-height: 40px;
-
-                    &:hover{
-                        background-color: #34b3a4;
-                    }
-
-                    .selectInputHolder{
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        width: calc(100% - 20px);
-
-                        .selectSpan{
-                            font-size: 10px;
-                        }
-
-                        .selectInput {
-                            padding: 0;
-                            background-color: transparent;
-                            border: none;
-                            width: 65%;
-                            border-bottom: 1px solid white;
-                            color: white;
-                            font-family: "Roboto";
-
-                            &:focus{
-                                outline: 0;
-                            }
-
-                            &::-webkit-input-placeholder{
-                                color: #f5f5f5
-                            }
-                        }
-                    }
-                    .selectCheck {
-                        height: 20px;
-                        width: 20px;
-                        margin-right: 5px;
-                        border-radius: 3px;
-                        border: 1px solid white;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        position: absolute;
-                        left: 0;
-                    }
-                    .dropzoneWelcome{
-
-                        border-color: #f5f5f5;
-                        border-radius: 3px;
-                        /*border-style: dashed;*/
-                        cursor: pointer;
-                        height: 100px;
-                        width: 100px;
-                        border-width: 2px;
-
-                        input{
-                            width: 100px;
-                        }
-
-                        .previewUpload{
-                            position: relative;
-                            width: 100px;
-                            height: 100px;
-                            border-radius: 3px;
-                        }
-
-                        .textUpload{
-                            bottom: 5px;
-                            color: white;
-                            position: absolute;
-                            width: 100%;
-                            font-size: 10px;
-                            text-align: center;
-                            line-height: 12px;
-                        }
-
-                        .profileimagePlaceholder{
-                            height: 100px;
-                            width: 100px;
-                            border-radius: 3px;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            font-size: 30px;
-                            background-image: linear-gradient(to top right, #34b3a4, #357AA5);
-                            color: white;
-
-                            &:hover{
-                                i{
-                                -webkit-animation: upload-bounce 1.0s infinite ease-in-out;
-                                animation: upload-bounce 1.0s infinite ease-in-out;
-                                }
-                            }
-
-                            @keyframes upload-bounce {
-                                0%, 100% {
-                                    margin-bottom: 0px;
-                                } 50% {
-                                    margin-bottom: 20px;
-                                }
-                              }
-                        }
-                        .deleteProfileimage{
-                            position: absolute;
-                            top: 5px;
-                            right: 5px;
-
-                            &:hover{
-                                color: #34b3a4;
-                            }
-                        }
-                    }
-
-                    .nextWelcome{
-                        height: 125px;
-                        width: 125px;
-                        .previewUpload{
-                            height: 125px;
-                            width: 125px;
-                            .profileimagePlaceholder{
-                                height: 125px;
-                                width: 125px;
-                                font-size: 30px;
-                            }
-                            .textUpload{
-                                font-size: 11px;
-                                margin: 5px;
-                                width: 115px;
-                            }
-                        }
-                    }
-                }
-                .active{
-                    background-color: #357AA5;
-                }
-
-                .noSelect{
-                    cursor: initial;
-
-                    &:hover{
-                    background: none !important;
-                    }
-                }
-            }
-        }
-
-        .welcomeButtons{
-            position: absolute;
-            display: flex;
-            bottom: 50px;
-            left: 50px;
-            width: 400px;
-            justify-content: space-between;
-
-            .sameWidthButton{
-                /*width: 50px;*/
-                display: flex;
-                justify-content: center;
-            }
-
-            .buttonDisabled{
-                background-color: #f5f5f5;
-                border-radius: 3px;
-                color: #253647;
-                display: flex;
-                align-items: center;
-                transition: all 0.2s ease-in-out;
-                position: relative;
-                overflow: hidden;
-            }
-        }
-        .genericInputField{
-            border: 0;
-            padding-left: 0.2rem;
-            padding-right: 0.2rem;
-            padding-top: 0;
-            padding-bottom: 0;
-            width: 20em;
-            border-bottom: 1px solid #20BAA9;
-            background-color: transparent;
-            color: white;
-            font-family: "Roboto";
-            font-weight: 300;
-
-            &::placeholder {
-                color: white;
-            }
-
-            &:focus{
-                outline: 0;
-            }
-        }
-        .smallButton{
-            font-size: 12px;
-            margin-top: 20px;
-        }
-    }
-    .welcomeProgress{
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 10px;
-        display: flex;
-        
-        .element {
-            width: calc(1000px / 4);
-            height: 10px;
-            border-right: 1px solid white;
-            border-left: 1px solid white;
-            /*background-color: #20baa9;*/
-            background-color: #f5f5f5;
-            transition: 500ms ease-in-out;
-        }
-    }
-}
-.welcomeError{
-    position: absolute;
-    bottom: 100px;
-    right: 50px;
-    font-size: 14px;
-    color: #c73544;
 }
 
 .highlightElement{
@@ -4763,25 +2442,6 @@ progress[value] {
     }
 }
 
-.PApp {
-  .dragAppTeam{
-    opacity: 0;
-    position: absolute;
-    bottom: 3px;
-    font-size: 12px;
-    width: 12px;
-    height: 12px;
-    left: calc(50% - 6px);
-    transition: all 0.6s ease-in-out;
-  }
-
-  &:hover{
-    .dragAppTeam{
-      opacity: 1;
-    }
-  }
-}
-
 .ssoWebview {
   height: 300px
 }
@@ -4893,15 +2553,6 @@ progress[value] {
       font-size: 16px;
     }
 }
-.medHeading{
-    font-size: 24px;
-    font-weight: 400;
-    display: inline-block;
-    margin-bottom: 40px;
-    @at-root h2#{&} {
-        font-size: 16px;
-    }
-}
 .boldHeading{
     font-size: 24px;
     font-weight: 800;
@@ -4910,10 +2561,6 @@ progress[value] {
     @at-root h2#{&} {
         font-size: 16px;
     }
-}
-.spaceHeading{
-    padding-left: 10px;
-    padding-right: 10px;
 }
 .universalButton{
     line-height: 34px;
@@ -5026,105 +2673,6 @@ progress[value] {
     grid-template-columns: 300px 300px;
     grid-template-rows: 56px 56px 56px;
 }
-
-.no-element {
-  font-size: 13px;
-  color: #1C2935FF;
-  padding: 11px 16px;
-  font-weight: bold;
-}
-
-.genericPage{
-    display: flex;
-    flex-flow: column;
-    padding: 48px;
-    position: relative;
-
-    .genericPageName{
-        margin: auto;
-        max-width: 60rem;
-        margin-bottom: 2rem;
-        width: 100%;
-        font-size: 20px;
-        display: flex;
-        line-height: 40px;
-        height: 40px;
-
-        .pageMainTitle{
-            font-weight: bold;
-        }
-
-        .pagePreTitle{
-            font-family: "Roboto";
-            font-weight: 300;
-            color: #415E72;
-            cursor: pointer;
-        }
-
-        .pageArrowTitle{
-            margin-left: 10px;
-            margin-right: 10px;
-            color: #415E72;
-            font-weight: bold;
-        }
-    }
-
-    .genericOneLineHolder{
-        background: #fff;
-        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-        margin: auto;
-        max-width: 60rem;
-        border-radius: 3px;
-        margin-bottom: 2rem;
-        width: 100%;
-        overflow: hidden;
-        font-size: 13px;
-    }
-}
-
-.genericNotificationCircle{
-    position: absolute;
-    font-size: 10px;
-    height: 16px;
-    line-height: 16px;
-    width: 16px;
-    text-align: center;
-    border-radius: 16px;
-
-    &.topRightCircle{
-        top: 0px;
-        right: -25px;
-    
-    }
-
-    &.bottomRightCircle{
-        bottom: 0px;
-        right: -25px;
-    
-    }
-}
-.genericSmallNotificationCircle{
-        position: absolute;
-        text-align: center;
-        border-radius: 16px;
-        height: 12px;
-        line-height: 12px;
-        width: 12px;
-        font-size: 7px;
-
-    &.topRightCircle{
-            top: 0px;
-            right: 0px;
-        
-    }
-
-    &.bottomRightCircle{
-            bottom: 0px;
-            right: 0px;
-        
-    }
-  
-}
 .genericSearchHolder{
     .genericSearchBox{
         height: 40px;
@@ -5206,500 +2754,6 @@ progress[value] {
             }
         }
     }
-}
-
-.roundedNotification{
-    border-radius: 15px;
-    font-size: 10px;
-    line-height: 15px;
-    text-align: center;
-    position: absolute;
-    width: 100%;
-    color: white;
-
-    &.online{
-        background-color: $vipfy-positive;
-    }
-
-    &.offline{
-        background-color: $vipfy-negative;
-    }
-
-    &.status{
-        background-color: $vipfy-infoblue;
-    }
-
-    &.button{
-        background-color: #20BAA9;
-        box-shadow: $vipfy-lightshadow;
-        border-radius: 3px;
-
-        &:hover{
-            background-color: #1697A5;
-            box-shadow: $vipfy-shadow;
-        }
-    }
-}
-
-.employeeManager{
-    .genericOneLineHolder{
-        display: grid;
-        //grid-template-columns: 20px 40px 5px 55px 45px 1fr 1fr 150px 80px 20px;
-        grid-template-columns: 15px 40px 5px 55px 45px 1fr 1fr 150px 15px;
-        grid-template-rows: 32px 5px 32px 40px 20px;
-        align-items: center;
-        overflow: visible;
-
-        .heading{
-            grid-column: 1/11;
-            position: relative;
-            background-color: #f0f0f0;
-            height: 32px;
-            line-height: 32px;
-            font-weight: 500;
-            font-size: 15px;
-            padding-left: 15px;
-
-            display: flex;
-            justify-content: space-between;
-            transition: box-shadow 300ms;
-
-            &:hover{
-                box-shadow: $vipfy-shadow;
-            }
-        }
-        .headingOneLine{
-            line-height: 32px;
-            font-weight: bold;
-        }
-
-        .genericError{
-            width: 100%;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            background-color: $vipfy-grey;
-            border-radius: 3px;
-
-            span{
-                margin-left: 5px;
-            }
-        }
-
-        .moreHolder{
-            cursor: pointer;
-            display: flex;
-            width: 100%;
-            height: 35px;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-        }
-
-        .box35{
-            cursor: pointer;
-        }
-
-        .overText{
-            transition: opacity 300ms;
-            position: relative;
-            background-color: $vipfy-lightgrey;
-            border: 1px solid $vipfy-grey;
-            padding: 3px;
-            box-shadow: $vipfy-lightshadow;
-            border-radius: 3px;
-
-            &:after, &:before {
-                bottom: 100%;
-                left: 14px;
-                border: solid transparent;
-                content: " ";
-                height: 0;
-                width: 0;
-                position: absolute;
-                pointer-events: none;
-            }
-            
-            &:after {
-                border-bottom-color: $vipfy-lightgrey;
-                border-width: 5px;
-                margin-left: -5px;
-            }
-            &:before {
-                border-bottom-color: $vipfy-grey;
-                border-width: 6px;
-                margin-left: -6px;
-            }
-            .additionalServices:hover{
-                background-color: $vipfy-grey;
-                cursor: pointer;
-            }
-            .additionalDepartments:hover{
-                background-color: $vipfy-grey;
-                cursor: pointer;
-            }
-        }
-    }
-
-    .adminToolButton{
-        top: 20px;
-        right: 20px;
-        position: absolute;
-    }
-}
-
-.genericFlexHolder{
-    display: flex;
-    position: relative;
-    height: 35px;
-}
-
-.hex {
-    margin-right: 5px;
-    margin-top: 8.66px;
-    //width: 17.32px;
-    //height: 30px;
-    width: 30px;
-    height: 17.32px;
-    position: relative;
-    line-height: 17.32px;
-    text-align: center;
-    cursor: pointer;
-
-    &.alias{
-        color: white
-    }
-
-
-    &:before{
-        /*content: " ";
-        width: 0;
-        height: 0;
-        position: absolute;
-        left: -8.66px;
-        border-style: solid;
-        border-width: 15px 8.66px 15px 0;
-        border-top-color: transparent;
-        border-bottom-color: transparent;
-        border-right-color: inherit;*/
-        content: " ";
-        width: 0;
-        height: 0;
-        position: absolute;
-        top: -8.66px;
-        border-style: solid;
-        border-width: 0px 15px 8.66px 15px;
-        border-right-color: transparent;
-        border-left-color: transparent;
-        border-bottom-color: inherit;
-        left: 0px;
-    }
-
-    &:after{
-        /*content: "";
-        width: 0;
-        position: absolute;
-        right: -8.66px;
-        border-style: solid;
-        border-width: 15px 0 15px 8.66px;
-        border-top-color: transparent;
-        border-bottom-color: transparent;
-        border-left-color: inherit;*/
-        content: " ";
-        width: 0;
-        height: 0;
-        position: absolute;
-        bottom: -8.66px;
-        border-style: solid;
-        border-width: 8.66px 15px 0px 15px;
-        border-right-color: transparent;
-        border-left-color: transparent;
-        border-top-color: inherit;
-        left: 0px;
-    }
-}
-
-.egeneral{
-    .roundedNotification{
-        position: relative;
-        width: 80px;
-        line-height: 15px;
-        height: 15px;
-        padding: 0px;
-
-        &.button{
-            height: 20px;
-            line-height: 20px;
-        }
-    }
-    .heading{
-        font-weight: bold;
-        display: flex;
-        align-items: flex-end;
-
-        &.disabled{
-            color: $vipfy-disabledtext;
-        }
-    }
-    .text{
-        position: relative;
-        display: flex;
-        align-items: flex-end;
-        &.link{
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        &.disabled{
-            color: $vipfy-disabledtext;
-        }
-    }
-}
-
-.searchButtonHeading{
-    margin-left: 20px;
-    margin-right: 20px;
-    font-size: 15px;
-    line-height: 28px;
-    background-color: #f5f5f5;
-    width: 28px;
-    text-align: center;
-    border-radius: 30px;
-    font-weight: bold;
-    border: 1px solid;
-}
-
-.titleBox{
-    position: fixed;
-    background-color: #fff;
-    border: 1px solid;
-    padding: 5px;
-    line-height: 13px;
-}
-.appExplain{
-    display: grid;
-    align-items: center;
-    grid-template-columns: 60px 200px 125px 150px 125px 1fr;
-    margin-bottom: 10px;
-}
-
-.adminToolHolder{
-    position: absolute;
-    top: 80px;
-    right: -15rem;
-    width: 15rem;
-    height: calc(100vh - 80px);
-    background-color: red;
-    transition: right 0.6s ease-in-out
-}
-
-.adminButton{
-    padding: 5px;
-    border-radius: 40px;
-    box-shadow: $vipfy-lightshadow;
-    background-color: $vipfy-buttongreen;
-    transition: all 0.2s ease-in-out;
-    color: white;
-    font-size: 10px;
-    cursor: pointer;
-    margin-right: 5px;
-
-    &:hover {
-        box-shadow: $vipfy-shadow;
-        background-color: $vipfy-buttondarkgreen;
-    }
-}
-
-.adminInlineButton{
-    position: absolute;
-    left: -20px;
-    cursor: pointer;
-    line-height: 15px;
-}
-.deleteInlineButton{
-    position: absolute;
-    left: -40px;
-    cursor: pointer;
-    line-height: 15px;
-
-    &.disabled{
-        cursor: inherit;
-        color: $vipfy-disabledtext;
-    }
-}
-.revertInlineButton{
-    position: absolute;
-    left: -60px;
-    cursor: pointer;
-    line-height: 15px;
-}
-.unsavedInline{
-    position: absolute;
-    left: 0;
-    top: 15px;
-    line-height: 15px;
-    color: #DF3F19;
-    font-size: 10px;
-    background-color: rgba(255,255,255,0.9);
-    z-index: 100;
-    padding-right: 5px;
-    box-shadow: 1px 2px 1px 0px rgba(255,255,255,0.9);
-}
-
-.inlineInput{
-    line-height: 14px;
-    border: 0px;
-    border-bottom: 1px solid $vipfy-normaltext;
-    outline: none;
-    color: $vipfy-normaltext;
-}
-.twoLineContent{
-    height: 20px;
-    display: flex;
-    align-items: flex-end;
-    grid-template-columns: 60px 200px 1fr;
-    margin-bottom: 10px;
-}
-
-.adminToolHolder{
-    position: absolute;
-    top: 80px;
-    right: -15rem;
-    width: 15rem;
-    height: calc(100vh - 80px);
-    background-color: red;
-    transition: right 0.6s ease-in-out
-}
-
-.adminButton{
-    padding: 5px;
-    border-radius: 40px;
-    box-shadow: $vipfy-lightshadow;
-    background-color: $vipfy-buttongreen;
-    transition: all 0.2s ease-in-out;
-    color: white;
-    font-size: 10px;
-    cursor: pointer;
-    margin-right: 5px;
-
-    &:hover {
-        box-shadow: $vipfy-shadow;
-        background-color: $vipfy-buttondarkgreen;
-    }
-}
-
-.adminInlineButton{
-    position: absolute;
-    left: -20px;
-    cursor: pointer;
-    line-height: 15px;
-}
-.deleteInlineButton{
-    position: absolute;
-    left: -40px;
-    cursor: pointer;
-    line-height: 15px;
-
-    &.disabled{
-        cursor: inherit;
-        color: $vipfy-disabledtext;
-    }
-}
-.revertInlineButton{
-    position: absolute;
-    left: -60px;
-    cursor: pointer;
-    line-height: 15px;
-}
-.unsavedInline{
-    position: absolute;
-    left: 0;
-    top: 15px;
-    line-height: 15px;
-    color: #DF3F19;
-    font-size: 10px;
-    background-color: rgba(255,255,255,0.9);
-    z-index: 100;
-    padding-right: 5px;
-    box-shadow: 1px 2px 1px 0px rgba(255,255,255,0.9);
-}
-
-.inlineInput{
-    line-height: 14px;
-    border: 0px;
-    border-bottom: 1px solid $vipfy-normaltext;
-    outline: none;
-    color: $vipfy-normaltext;
-}
-.twoLineContent{
-    height: 20px;
-    display: flex;
-    align-items: flex-end;
-}
-
-.employee-option {
-  display: flex;
-
-  i {
-    margin-right: 5px;
-    width: 16px;
-    height: 16px;
-    display: grid;
-    font-size: 10px;
-    background: #fff;
-    place-content: center;
-  }
-
-  .options-pic {
-    width: 16px;
-    height: 16px;
-    margin-right: 5px;
-    object-fit: cover;
-  }
-
-  span {
-    @include hide-overflowing-text;
-    max-width: 73px;
-  }
-}
-
-.popup-lic {
-  width: calc(100% - 14px) !important;
-
-  .tableColumnSmall {
-    flex: 2;
-    
-    &:nth-child(2) {
-      flex: 1;
-    }
-  }
-}
-
-.table-licences {
-  height: 448px;
-  border-radius: 4px;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
-
-  .tableRow {
-    &:hover .table-cancel {
-      display: inherit;
-      position: absolute;
-      color: red;
-      left: 50px;
-      z-index: 10;
-    }
-
-    .table-column-small {
-      position: relative;
-    }
-
-    .table-cancel {
-      display: none;
-    }
-  }
 }
 
 .promocode-holder {

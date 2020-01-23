@@ -8,7 +8,7 @@ const TimeTrackerContext = React.createContext({ tracker: null } as ContextValue
 
 interface Position {
   user: string | null;
-  path: (string)[];
+  path: string[];
 }
 
 enum PathComponents {
@@ -98,12 +98,6 @@ class TimeTracker {
   updatePath(path: string[]): void {
     if (path != this.currentTimestamp.value.path) {
       this.updatePosition({ ...this.currentTimestamp.value, path });
-    }
-  }
-
-  updateUser(user: string | null): void {
-    if (user != this.currentTimestamp.value.user) {
-      this.updatePosition({ ...this.currentTimestamp.value, user });
     }
   }
 

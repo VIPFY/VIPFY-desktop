@@ -1,6 +1,4 @@
 import * as React from "react";
-import UniversalCheckbox from "../../universalForms/universalCheckbox";
-import gql from "graphql-tag";
 import moment from "moment";
 import PrintTeamSquare from "../universal/squares/printTeamSquare";
 import RemoveTeamMember from "../removeTeamMember";
@@ -8,64 +6,18 @@ import RemoveTeamMember from "../removeTeamMember";
 interface Props {
   employee: any;
   team: any;
-  deleteFunction: Function;
   moveTo: Function;
   isadmin?: Boolean;
 }
 
 interface State {
-  keepLicences: number[];
   delete: Boolean;
-  savingObject: {
-    savedmessage: string;
-    savingmessage: string;
-    closeFunction: Function;
-    saveFunction: Function;
-  } | null;
 }
 
 class Team extends React.Component<Props, State> {
   state = {
-    keepLicences: [],
-    delete: false,
-    savingObject: null
+    delete: false
   };
-
-  printRemoveLicences(team) {
-    let RLicencesArray: JSX.Element[] = [];
-
-    team.services.forEach((service, int) => {
-      RLicencesArray.push(
-        <li key={int}>
-          <UniversalCheckbox
-            name={service.id}
-            startingvalue={true}
-            liveValue={v =>
-              v
-                ? this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences.splice(
-                      prevState.keepLicences.findIndex(l => l == service.id),
-                      1
-                    );
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-                : this.setState(prevState => {
-                    const keepLicencesNew = prevState.keepLicences;
-                    keepLicencesNew.push(service.id);
-                    return {
-                      keepLicences: keepLicencesNew
-                    };
-                  })
-            }>
-            <span>Delete licence of {service.planid.appid.name}</span>
-          </UniversalCheckbox>
-        </li>
-      );
-    });
-    return RLicencesArray != [] ? <ul style={{ marginTop: "20px" }}>{RLicencesArray}</ul> : "";
-  }
 
   render() {
     const { team } = this.props;

@@ -39,7 +39,7 @@ class ColumnTeams extends React.Component<Props, State> {
       for (fakecounter = 0; fakecounter < Math.min(amount, this.state.numteams); fakecounter++) {
         teamsArray.push(
           <div
-            key={`key-${fakecounter}`}
+            key={`fake-${fakecounter}`}
             className="managerSquare animateLoading"
             style={{
               color: "#253647",

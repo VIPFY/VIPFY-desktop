@@ -44,13 +44,6 @@ class Notification extends React.Component<Props, State> {
     hover: false
   };
 
-  handleClickOnNotification(id /* , link */) {
-    /* if(link) {
-      this.props.moveTo(link);
-    } */
-    this.markAsRead(id);
-  }
-
   componentDidMount() {
     document.addEventListener("click", this.handleClickOutside, true);
   }

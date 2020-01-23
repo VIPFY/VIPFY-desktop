@@ -63,38 +63,6 @@ export default (props: Props) => {
     cssClass += " sidebar-open";
   }
 
-  // const items = [
-  //   {
-  //     header: "External App Help",
-  //     body: "If you need help with an App integrated into VIPFY",
-  //     form: "app"
-  //   },
-  //   {
-  //     header: "VIPFY App Help",
-  //     body: "If you need help with the functionality of VIPFY",
-  //     form: "vipfy"
-  //   }
-  // ];
-
-  // let options = [
-  //   { id: "dashboard", name: "Dashboard" },
-  //   { id: "accountIntegrator", name: "Account Integrator" },
-  //   { id: "notifications", name: "Notifications" },
-  //   { id: "profile", name: "Profile" }
-  // ];
-
-  // if (props.isadmin) {
-  //   options = [
-  //     ...options,
-  //     { id: "billing", name: "Billing" },
-  //     { id: "security", name: "Security" },
-  //     { id: "usageStatistics", name: "Usage Statistics" },
-  //     { id: "teamManager", name: "Team Manager" },
-  //     { id: "employeeManager", name: "Employee Manager" },
-  //     { id: "serviceManager", name: "Service Manager" }
-  //   ];
-  // }
-
   const onIpcMessage = e => {
     switch (e.channel) {
       case "get-email":
