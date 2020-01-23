@@ -354,3 +354,63 @@ export async function decryptLicenceKey(client, licence) {
   }
   return key;
 }
+
+export async function decryptAdminKey(
+  client: any
+): Promise<{
+  publickey: string;
+  privatekey: string;
+  privatekeyDecrypted: string;
+  createdat: Date;
+  encryptedby: { id: string };
+}> {
+  const candidates = (
+    await client.query({
+      query: gql`
+        query onFetchAdminKey {
+          me {
+            id
+            company {
+              unitid {
+                id
+              }
+              adminkey {
+                id
+              }
+            }
+          }
+        }
+      `
+    })
+  ).data.me.company.adminkey;
+  for (const candidate of candidates) {
+    try {
+      const d = await client.query({
+        query: gql`
+          query onFetchKey($id: ID!) {
+            fetchKey(id: $id) {
+              id
+              publickey
+              privatekey
+              privatekeyDecrypted @client
+              createdat
+              encryptedby {
+                id
+              }
+            }
+          }
+        `,
+        variables: { id: candidate.id }
+      });
+      if (d.error) {
+        console.log(d.error);
+        throw new Error("can't fetch key");
+      }
+      return d.data.fetchKey;
+    } catch (error) {
+      console.log("failed decrypting, trying next candidate", candidate, error);
+    }
+  }
+
+  throw new Error("failed finding decryptable AdminKey");
+}
