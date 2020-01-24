@@ -9,10 +9,11 @@
         "forceAllTransforms": true
       }
     ],
-    "@babel/preset-react",
-    "@babel/typescript"
+    "@babel/typescript",
+    "@babel/preset-react"
   ],
   "plugins": [
+    ["babel-plugin-shake-class-properties"],
     "@babel/plugin-syntax-dynamic-import",
     "@babel/proposal-class-properties",
     "@babel/plugin-transform-classes",
@@ -22,7 +23,8 @@
     ],
     "@babel/plugin-transform-async-to-generator",
     "@babel/plugin-proposal-async-generator-functions",
-    "@babel/plugin-transform-regenerator"
+    "@babel/plugin-transform-regenerator",
+    ["@babel/transform-runtime"]
     // ["@babel/plugin-transform-runtime",
     //   {
     //   "corejs": false,

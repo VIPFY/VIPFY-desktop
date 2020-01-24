@@ -5,9 +5,9 @@ import * as is from "electron-is";
 import { app } from "electron";
 
 let activeAppenders = []; //["logstash_filtered"];
-if (config.isDevelopment) {
-  activeAppenders.push("stdout");
-}
+//if (config.isDevelopment) {
+activeAppenders.push("stdout");
+//}
 if (config.isDevelopment || config.allowDevTools) {
   activeAppenders.push("console");
 }

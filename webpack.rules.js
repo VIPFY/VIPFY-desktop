@@ -28,7 +28,7 @@ module.exports = [
       //   }
       // }
     ]
-    //include: /(node_modules)/
+    // include: /(node_modules)/
   }
   // {
   //   test: /\.tsx?$/,
