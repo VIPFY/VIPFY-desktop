@@ -222,7 +222,7 @@ export default (props: Props) => {
         {show == "showPasswordForce" && (
           <PasswordForce unitids={[user.id]} closeFunction={() => setShow("")} />
         )}
-        {console.log(props)}
+
         {show == "showPasswordForce4All" && (
           <Query pollInterval={60 * 10 * 1000 + 7000} query={FETCH_USER_SECURITY_OVERVIEW}>
             {({ data, loading, error }) => {
