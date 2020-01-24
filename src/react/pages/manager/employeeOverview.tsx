@@ -12,6 +12,7 @@ import ColumnTeams from "../../components/manager/universal/columns/columnTeams"
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
 import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
+import { concatName } from "../../common/functions";
 
 interface Props {
   moveTo: Function;
@@ -334,7 +335,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                           <div className="tableMain">
                             <div className="tableColumnBig" style={{ width: "20%" }}>
                               <PrintEmployeeSquare employee={employee} className="managerSquare" />
-                              <span className="name">
+                              <span className="name" title={concatName(employee)}>
                                 {employee.firstname} {employee.lastname}
                               </span>
                             </div>
