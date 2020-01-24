@@ -66,6 +66,7 @@ class LicencesSection extends React.Component<Props, State> {
               ) {
                 appArray.push(
                   <ServiceDetails
+                    key={e.id}
                     e={e}
                     employeeid={employeeid}
                     employeename={this.props.employeename}

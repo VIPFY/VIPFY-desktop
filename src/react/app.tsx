@@ -128,7 +128,9 @@ class App extends React.Component<AppProps, AppState> {
     //     return;
     //   }
     // });
-    this.props.history.push("/area");
+    if (this.props.history.location.pathname != "/area") {
+      this.props.history.push("/area");
+    }
     //this.redeemSetupToken();
   }
 

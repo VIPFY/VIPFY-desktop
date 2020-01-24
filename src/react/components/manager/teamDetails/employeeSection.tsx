@@ -71,10 +71,10 @@ class EmployeeSection extends React.Component<Props, State> {
     }
 
     const employeeArray: JSX.Element[] = [];
-
     employees.forEach((employee, k) => {
       employeeArray.push(
         <EmployeeDetails
+          key={employee.id}
           employee={employee}
           team={this.props.team}
           deleteFunction={sO => this.setState({ savingObject: sO })}
@@ -120,22 +120,7 @@ class EmployeeSection extends React.Component<Props, State> {
                 <h1>Position</h1>
               </div>
             </div>
-            <div className="tableEnd">
-              {/* <UniversalButton
-                type="high"
-                label="Manage Employees"
-                customStyles={{
-                  fontSize: "12px",
-                  lineHeight: "24px",
-                  fontWeight: "700",
-                  marginRight: "16px",
-                  width: "128px"
-                }}
-                onClick={() => {
-                  this.setState({ add: true });
-                }}
-              />*/}
-            </div>
+            <div className="tableEnd"></div>
           </div>
           {employeeArray}
         </div>

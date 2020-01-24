@@ -140,7 +140,6 @@ class OrbitSection extends React.Component<Props, State> {
 
   render() {
     const orbit = this.props.orbit;
-    console.log("ACCOUNTS", orbit.accounts);
     return (
       <div className="section">
         <div className="heading">
@@ -187,6 +186,7 @@ class OrbitSection extends React.Component<Props, State> {
               .filter(account => account && (account.endtime == null || account.endtime > now()))
               .map(account => (
                 <AccountRow
+                  key={account.id}
                   account={account}
                   orbit={orbit}
                   app={this.props.app}
@@ -229,7 +229,6 @@ class OrbitSection extends React.Component<Props, State> {
             app={this.props.app}
             closeChange={backelement => {
               if (backelement) {
-                console.log("BACK", backelement);
                 this.setState({ newaccount: false, addUsers: backelement });
               } else {
                 this.setState({ newaccount: false });

@@ -40,6 +40,7 @@ class Login extends React.Component<Props, State> {
     if (props.email != state.prevEmail) {
       return { ...state, email: props.email, prevEmail: props.email };
     }
+    return state;
   }
 
   render() {
@@ -116,7 +117,7 @@ class Login extends React.Component<Props, State> {
                 type="high"
                 disabled={this.state.field2 == "" || this.state.submitting}
                 onClick={async () => {
-                  await this.setState({ submitting: true });
+                  this.setState({ submitting: true });
                   const hasError = await this.props.continueFunction(
                     this.state.field2,
                     this.state.email
@@ -125,9 +126,8 @@ class Login extends React.Component<Props, State> {
                   if (hasError) {
                     this.setState({ showError: true });
                     setTimeout(() => this.setState({ showError: false }), 2250);
+                    this.setState({ submitting: false });
                   }
-
-                  await this.setState({ submitting: false });
                 }}
               />
             </div>
