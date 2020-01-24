@@ -1,6 +1,7 @@
 import * as React from "react";
 import moment from "moment";
 import RemoveTeamOrbit from "./removeTeamOrbit";
+import PrintServiceSquare from "./universal/squares/printServiceSquare";
 
 interface Props {
   service: any;
@@ -72,31 +73,22 @@ class TeamServiceDetails extends React.Component<Props, State> {
         onClick={() => this.props.moveTo(`lmanager/${service.planid.appid.id}`)}>
         <div className="tableMain">
           <div className="tableColumnSmall">
-            <div
-              className="managerSquare"
-              style={
-                service.planid.appid.icon
-                  ? {
-                      backgroundImage:
-                        service.planid.appid.icon.indexOf("/") != -1
-                          ? `url(https://s3.eu-central-1.amazonaws.com/appimages.vipfy.store/${encodeURI(
-                              service.planid.appid.icon
-                            )})`
-                          : `url(https://storage.googleapis.com/vipfy-imagestore-01/icons/${encodeURI(
-                              service.planid.appid.icon
-                            )})`,
-                      backgroundColor: "unset"
-                    }
-                  : {}
-              }>
-              {service.planid.appid.icon ? "" : service.planid.appid.name.slice(0, 1)}
-              {service.options && service.options.nosetup && (
-                <div className="licenceError">
-                  <i className="fal fa-exclamation-circle" />
-                </div>
-              )}
-            </div>
-            <span className="name">{service.planid.appid.name}</span>
+            <PrintServiceSquare
+              service={service}
+              appidFunction={s => s.planid.appid}
+              size={32}
+              overlayFunction={service =>
+                service.options &&
+                service.options.nosetup && (
+                  <div className="licenceError">
+                    <i className="fal fa-exclamation-circle" />
+                  </div>
+                )
+              }
+            />
+            <span className="name" title={service.planid.appid.name}>
+              {service.planid.appid.name}
+            </span>
           </div>
           <div className="tableColumnSmall content">
             {/*moment(service.buytime).format("DD.MM.YYYY")*/}
