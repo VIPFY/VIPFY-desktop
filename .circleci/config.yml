@@ -2,11 +2,11 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 
-branches: &branches
-  filters:
-    branches:
-      only:
-        - /custom-version-.*/
+# branches: &branches
+#   filters:
+#     branches:
+#       only:
+#         - /custom-version-.*/
 
 version: 2.1
 orbs:
@@ -86,6 +86,12 @@ workflows:
   build-workflows:
     jobs:
       - windows:
-          <<: *branches
+          filters:
+            branches:
+              only:
+                - /custom-version-.*/
       - mac:
-          <<: *branches
+          filters:
+            branches:
+              only:
+                - /custom-version-.*/
