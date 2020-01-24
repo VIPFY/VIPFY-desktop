@@ -432,7 +432,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
-        show: this.props.isadmin && config.showAdmin && this.props.company.unit.id == 14,
+        show: this.props.isadmin && config.showAdmin,
         highlight: "adminelement"
       },
       {

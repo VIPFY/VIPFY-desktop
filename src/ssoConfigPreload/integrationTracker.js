@@ -6,14 +6,15 @@ let cookiefound = false;
 let recaptchaConfirmOnce = false;
 let checkRecaptcha = false;
 let bot = false;
+let webview;
 
 var listeners = [];
 
 const asktypes = ["input", "textbox"];
 
-(function() {
+(function () {
   Element.prototype._addEventListener = Element.prototype.addEventListener;
-  Element.prototype.addEventListener = function(a, b, c) {
+  Element.prototype.addEventListener = function (a, b, c) {
     if (c == undefined) c = false;
     this._addEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -22,12 +23,12 @@ const asktypes = ["input", "textbox"];
     this.eventListenerList[a].push({ listener: b, useCapture: c });
   };
 
-  Element.prototype.getEventListeners = function(a) {
+  Element.prototype.getEventListeners = function (a) {
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) return this.eventListenerList;
     return this.eventListenerList[a];
   };
-  Element.prototype.clearEventListeners = function(a) {
+  Element.prototype.clearEventListeners = function (a) {
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) {
       for (var x in this.getEventListeners()) this.clearEventListeners(x);
@@ -42,7 +43,7 @@ const asktypes = ["input", "textbox"];
   };
 
   Element.prototype._removeEventListener = Element.prototype.removeEventListener;
-  Element.prototype.removeEventListener = function(a, b, c) {
+  Element.prototype.removeEventListener = function (a, b, c) {
     if (c == undefined) c = false;
     this._removeEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -63,7 +64,7 @@ const asktypes = ["input", "textbox"];
 })();
 
 Object.defineProperty(String.prototype, "includesAny", {
-  value: function(searches) {
+  value: function (searches) {
     for (const search of searches) {
       if (this.indexOf(search) !== -1) {
         return true;
@@ -74,7 +75,7 @@ Object.defineProperty(String.prototype, "includesAny", {
 });
 
 Object.defineProperty(String.prototype, "includesAnyRegExp", {
-  value: function(searches) {
+  value: function (searches) {
     for (const search of searches) {
       if (search.test(this)) {
         return true;
@@ -140,9 +141,9 @@ ipcRenderer.on("delockItem", async (e, args1) => {
   element.clearEventListeners(); //entferne das perventDefault
   const listeners1 =
     listeners[
-      listeners.findIndex(elemente => {
-        return elemente[0] == element;
-      })
+    listeners.findIndex(elemente => {
+      return elemente[0] == element;
+    })
     ][1];
   Object.keys(listeners1).forEach(key => {
     listeners1[key].forEach(i => element.addEventListener(key, i));
@@ -228,12 +229,11 @@ function findAllIframes(doc) {
   iframes.forEach(iframe => giveIframeEvents(iframe, true, true));
 }
 
-let webview;
 //console.log(webview[0]);
 
 var config = { attributes: true, childList: true, subtree: true };
 
-var callback1 = function(mutationsList, observer) {
+var callback1 = function (mutationsList, observer) {
   //console.log(iframeList);
   //var newChilds = [];
   for (var mutation of mutationsList) {
@@ -265,7 +265,7 @@ var callback1 = function(mutationsList, observer) {
   //return newChilds;
 };
 
-var callback2 = function(mutationsList, observer) {
+var callback2 = function (mutationsList, observer) {
   //console.log("Callback2 called");
   for (var mutation of mutationsList) {
     if (mutation.type == "childList") {
@@ -311,15 +311,32 @@ var callback2 = function(mutationsList, observer) {
         console.log("EVENT", e)
     }
 }) */
-window.addEventListener("load", () => {
+
+
+
+/// **
+window.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.sendToHost("loaded");
-  //webview = document.getElementById("LoginFinder");
   document.addEventListener("click", findTarget, true);
   document.addEventListener("keyup", findTarget, true);
   document.addEventListener("input", findTarget, true);
   document.addEventListener("paste", findTarget, true);
   findAllIframes(document);
 });
+
+
+
+// window.addEventListener("load", () => {
+//   ipcRenderer.sendToHost("loaded");
+//   //webview = document.getElementById("LoginFinder");
+//   document.addEventListener("click", findTarget, true);
+//   document.addEventListener("keyup", findTarget, true);
+//   document.addEventListener("input", findTarget, true);
+//   document.addEventListener("paste", findTarget, true);
+//   findAllIframes(document);
+// });
+
+
 //document.addEventListener("click", findTarget);
 var observer = new MutationObserver(callback1);
 observer.observe(document, config);
@@ -683,7 +700,7 @@ async function start() {
           setInterval(verifyRecaptcha, 200);
         }
       } else {
-        ipcRenderer.sendToHost("recaptchaSuccess");
+        // ipcRenderer.sendToHost("recaptchaSuccess");
       }
     }
     console.log("TEST2");
@@ -757,7 +774,7 @@ const attributes = [
 function filterDom(includesAny, excludesAll) {
   includesAny = includesAny.map(i => new RegExp(i));
   excludesAll = excludesAll.map(i => new RegExp(i));
-  return function(element) {
+  return function (element) {
     if (!element.hasAttributes()) {
       return false;
     }

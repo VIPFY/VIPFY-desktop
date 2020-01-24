@@ -22,6 +22,7 @@ import { TSCustomNodeFactory } from "./diagrams/custom-node-ts/TSCustomNodeFacto
 import { JSCustomNodeModel } from "./diagrams/custom-node-js/JSCustomNodeModel";
 import { TSCustomNodeModel } from "./diagrams/custom-node-ts/TSCustomNodeModel";
 import { BodyWidget } from "./diagrams/BodyWidget";
+import { ipcRenderer } from "electron";
 
 // capture the session for reset reasons
 const { session } = remote;
@@ -94,6 +95,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
   handleSiteChange(e) {
     console.log("SITE CHANGE", e);
     if (!e.url.includes("google")) {
+      // so if webview is not google then track it.
       this.state.cantrack = true;
     }
   }
@@ -103,7 +105,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   async trySiteLoading() {
-    clearTimeout(this.timeoutSave);
+    await clearTimeout(this.timeoutSave);
+
     if (
       /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm.test(
         this.state.searchurl
@@ -131,14 +134,17 @@ class ServiceIntegrator extends React.Component<Props, State> {
       }
       this.shallSearch = false;
       if (this.state.url == searchvalue) {
+        console.log("else if: invalid url");
         await this.setState({ url: "about:blank" });
         this.searchattampts--;
         setTimeout(() => this.trySiteLoading(), 1000);
       } else {
-        this.setState({ url: searchvalue });
-        this.timeoutSave = setTimeout(() => this.searchOnGoogle(), 20000);
+        console.log("valid url: " + +this.state.searchurl);
+        await this.setState({ url: searchvalue });
+        // this.timeoutSave = setTimeout(() => this.searchOnGoogle(), 20000);
       }
     } else {
+      console.log("else: invalid url");
       this.shallSearch = true;
       this.searchOnGoogle();
     }
@@ -175,7 +181,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     this.setState({ executionPlan: [] });
   }
 
-  async aktualisiereDivList() {
+  async updateDivList() {
     if (this.aktDivListState.divHold) {
       this.aktDivListState.divHoldRepeat = true;
       return;
@@ -628,6 +634,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         <form
           onSubmit={e => {
             e.preventDefault();
+            console.log("Filling plan.");
             fillPlans.forEach(planid => {
               this.setState(oldstate => {
                 oldstate.executionPlan.find(plan => {
@@ -640,7 +647,22 @@ class ServiceIntegrator extends React.Component<Props, State> {
             this.sendExecuteFinal();
           }}>
           {inputList.map(e => e)}
-          <UniversalButton type="high" label="submit"></UniversalButton>
+          <UniversalButton
+            onClick={() => {
+              console.log("Filling plan.");
+              fillPlans.forEach(planid => {
+                this.setState(oldstate => {
+                  oldstate.executionPlan.find(plan => {
+                    return plan.args.id == planid;
+                  })!.value = document.getElementById(planid + "input")!.value;
+                  return oldstate;
+                });
+              });
+              this.setState({ divList: [] });
+              this.sendExecuteFinal();
+            }}
+            type="high"
+            label="submit"></UniversalButton>
         </form>
         <UniversalButton
           onClick={e => {
@@ -663,7 +685,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
     this.setState(oldstate => {
       oldstate.divList.push(popup);
-
       return oldstate;
     });
   }
@@ -689,8 +710,10 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   async onIpcMessage(e): Promise<void> {
+    console.log("IPC called");
     switch (e.channel) {
       case "sendMessage":
+        console.log("sendMessage");
         console.log(e.channel); //, e.args[0], e.args[1], e.args[2], e.args[3], e.args[4],
         let i = 0;
         while (e.args[i] != null) {
@@ -700,6 +723,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "sendEvent":
+        console.log("selection");
+        // incase of selection of any element.
+
         if (this.state.test) {
           break;
         }
@@ -765,14 +791,17 @@ class ServiceIntegrator extends React.Component<Props, State> {
         });
         break;
 
-      case "aktualisiereDivList":
-        this.aktualisiereDivList();
+      case "updateDivList":
+        console.log("cancel of selection");
+        this.updateDivList();
         break;
 
       case "sendClick":
+        console.log("sendClick");
         break;
 
       case "givePosition":
+        console.log("givePosition");
         switch (e.args[5]) {
           case 0:
             this.tickDiv([e.args[0], e.args[1], e.args[2], e.args[3], e.args[4]]);
@@ -789,6 +818,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "loaded":
+        // here html is loaded first and this function is called later and hence the popup appears login/signup PROZESS appears later
+
+        console.log("shallsearch in IPC  case loaded: " + this.shallSearch);
         if (this.state.logInOrSignUp && !this.state.test && !this.state.end) {
           let popup = (
             <PopupBase
@@ -864,7 +896,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             console.log("makeNext = true");
             this.loginState.makeNext = false;
             e.channel = "loaded";
-            this.onIpcMessage(e);
+            await this.onIpcMessage(e);
           }
           console.log(
             "Blablacar",
@@ -1086,7 +1118,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
   render() {
     console.log("Anfang Render", this.state.executionPlan);
-    if (this.state.url === this.startUrl) {
+    // ?
+    if (this.state.url === this.state.searchurl) {
       session.fromPartition("followLogin").clearStorageData();
     }
     return (
@@ -1106,8 +1139,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
               livevalue={v => this.setState({ searchurl: v })}
               style={{ color: "black", borderColor: "white" }}
               width="100%"
-              onEnter={() => {
-                this.setState({
+              onEnter={async () => {
+                await this.setState({
                   logInOrSignUp: true,
                   isLogin: true,
                   end: false,
@@ -1118,7 +1151,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   urlBevorChange: "",
                   finalexecutionPlan: [],
                   executionPlan: [],
-                  searchurl: "",
+                  searchurl: this.state.searchurl,
                   targetpage: "",
                   test: false
                 });
@@ -1127,8 +1160,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 this.trySiteLoading();
               }}></UniversalTextInput>
             <button
-              onClick={() => {
-                this.setState({
+              onClick={async () => {
+                await this.setState({
                   logInOrSignUp: true,
                   isLogin: true,
                   end: false,
@@ -1139,7 +1172,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   urlBevorChange: "",
                   finalexecutionPlan: [],
                   executionPlan: [],
-                  searchurl: "",
+                  searchurl: this.state.searchurl,
                   targetpage: "",
                   test: false
                 });
@@ -1220,7 +1253,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             </div>
           </div>
         </div>
-        <div
+        {/* <div
           style={{
             background: "yellow",
             float: "left",
@@ -1249,7 +1282,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             Klick mich!
           </button>
           {this.state.bodyWidget && <BodyWidget engine={engine} />}
-        </div>
+        </div> */}
         <div
           style={{
             float: "left",
@@ -1266,7 +1299,13 @@ class ServiceIntegrator extends React.Component<Props, State> {
             src={this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
             partition="followLogin"
             style={{ width: "100%", height: "100%" }}
-            onIpcMessage={e => this.onIpcMessage(e)}
+            onIpcMessage={async e => {
+              // osama. if we are searching google dont communicate.
+              console.log("e channel value" + e.channel);
+              if (!this.shallSearch) {
+                await this.onIpcMessage(e);
+              }
+            }}
             onNewWindow={e => {
               this.handleNewWindow(e);
             }}
