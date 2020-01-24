@@ -156,26 +156,6 @@ class AssignServiceToUser extends React.Component<Props, State> {
                           </div>
                         </div>
                       ))}
-                      {/*<div
-                        key="new"
-                        className="space"
-                        onClick={() => this.setState({ service: -1 })}
-                        /*style={
-                            this.state.choosenApp == -1
-                            ? {
-                                outline: "2px solid #20baa9",
-                                boxShadow: "0px 0px 10px 3px #20baa9"
-                                }
-                            : {}
-                        }*&/
-                      >
-                        <div
-                          className="image"
-                          style={{ backgroundColor: "#F5F5F5", color: "#20BAA9" }}>
-                          <i className="fal fa-plus" />
-                        </div>
-                        <div className="name">Integrate new service</div>
-                    </div>*/}
                     </div>
                   </div>
                   <UniversalButton type="low" label="Cancel" closingPopup={true} />

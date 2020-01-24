@@ -272,6 +272,7 @@ class OrbitSection extends React.Component<Props, State> {
                 />
 
                 <UniversalButton
+                  innerRef={el => addRenderElement({ key: "saveAssign", element: el })}
                   type="low"
                   label="Cancel"
                   onClick={() => this.setState(INITAL_STATE)}
