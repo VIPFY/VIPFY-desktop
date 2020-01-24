@@ -111,7 +111,7 @@ class LicencesSection extends React.Component<Props, State> {
                         <h1>Accountalias</h1>
                       </div>
                       <div className="tableColumnSmall">
-                        <h1>min/Month</h1>
+                        {this.props.isadmin && <h1>min/Month</h1>}
                       </div>
                       <div className="tableColumnSmall">{/*<h1>Price</h1>*/}</div>
                     </div>
