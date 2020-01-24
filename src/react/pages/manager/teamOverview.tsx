@@ -352,7 +352,9 @@ class TeamOverview extends React.Component<Props, State> {
                           <div className="tableMain">
                             <div className="tableColumnBig">
                               <PrintTeamSquare team={team} />
-                              <span className="name">{team.name}</span>
+                              <span className="name" title={team.name}>
+                                {team.name}
+                              </span>
                             </div>
                             <ColumnEmployees
                               employees={team.employees}

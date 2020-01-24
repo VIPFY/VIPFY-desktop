@@ -34,7 +34,9 @@ class Team extends React.Component<Props, State> {
         <div className="tableMain">
           <div className="tableColumnSmall">
             <PrintTeamSquare team={team} />
-            <span className="name">{team.name}</span>
+            <span className="name" title={team.name}>
+              {team.name}
+            </span>
           </div>
           <div className="tableColumnSmall content">
             {moment(team.createdate - 0).format("DD.MM.YYYY")}

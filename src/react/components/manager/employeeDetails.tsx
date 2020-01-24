@@ -1,6 +1,7 @@
 import * as React from "react";
 import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
 import RemoveTeamMember from "./removeTeamMember";
+import { concatName } from "../../common/functions";
 
 interface Props {
   employee: any;
@@ -60,7 +61,7 @@ class EmployeeDetails extends React.Component<Props, State> {
         <div className="tableMain">
           <div className="tableColumnSmall">
             <PrintEmployeeSquare employee={employee} />
-            <span className="name">
+            <span className="name" title={concatName(employee)}>
               {employee.firstname} {employee.lastname}
             </span>
           </div>
