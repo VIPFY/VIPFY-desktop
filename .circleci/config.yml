@@ -7,8 +7,6 @@ branches: &branches
     branches:
       only:
         - /custom-version-.*/
-      ignore:
-        - master
 
 version: 2.1
 orbs:
@@ -91,4 +89,3 @@ workflows:
           <<: *branches
       - mac:
           <<: *branches
-
