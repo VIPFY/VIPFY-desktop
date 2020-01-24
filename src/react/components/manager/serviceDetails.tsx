@@ -10,6 +10,7 @@ interface Props {
   employeeid: number;
   moveTo: Function;
   employee: any;
+  isadmin: boolean;
 }
 
 interface State {
@@ -80,7 +81,9 @@ class ServiceDetails extends React.Component<Props, State> {
       <div
         className="tableRow"
         key={`div-${e.id}`}
-        onClick={() => this.props.moveTo(`lmanager/${e.boughtplanid.planid.appid.id}`)}>
+        onClick={() =>
+          this.props.isadmin && this.props.moveTo(`lmanager/${e.boughtplanid.planid.appid.id}`)
+        }>
         <div className="tableMain">
           <div
             className="tableColumnSmall"
@@ -156,77 +159,79 @@ class ServiceDetails extends React.Component<Props, State> {
           <div className="tableColumnSmall content">{e.alias}</div>
 
           <div className="tableColumnSmall content">
-            <Query
-              //pollInterval={60 * 10 * 1000 + 500}
-              query={gql`
-                query fetchBoughtplanUsagePerUser(
-                  $starttime: Date!
-                  $endtime: Date!
-                  $boughtplanid: ID!
-                ) {
-                  fetchBoughtplanUsagePerUser(
-                    starttime: $starttime
-                    endtime: $endtime
-                    boughtplanid: $boughtplanid
+            {this.props.isadmin && (
+              <Query
+                //pollInterval={60 * 10 * 1000 + 500}
+                query={gql`
+                  query fetchBoughtplanUsagePerUser(
+                    $starttime: Date!
+                    $endtime: Date!
+                    $boughtplanid: ID!
                   ) {
-                    unit {
-                      id
+                    fetchBoughtplanUsagePerUser(
+                      starttime: $starttime
+                      endtime: $endtime
+                      boughtplanid: $boughtplanid
+                    ) {
+                      unit {
+                        id
+                      }
+                      totalminutes
                     }
-                    totalminutes
                   }
-                }
-              `}
-              variables={{
-                starttime: moment()
-                  .subtract(4, "weeks")
-                  .format("LL"),
-                endtime: moment().format("LL"),
-                boughtplanid: e.boughtplanid.id
-              }}>
-              {({ data, loading, error }) => {
-                if (loading) {
-                  return <div>Loading</div>;
-                }
-                if (error) {
-                  return <div>Error fetching data</div>;
-                }
-                if (data && Object.keys(data).length > 0) {
-                  //console.log("LOG: ServiceDetails -> render -> data", data);
-                  const percent = data.fetchBoughtplanUsagePerUser.find(
-                    e => e.unit.id == this.props.employeeid
-                  )
-                    ? Math.ceil(
-                        data.fetchBoughtplanUsagePerUser.find(
-                          e => e.unit.id == this.props.employeeid
-                        ).totalminutes /
-                          20 /
-                          8 /
-                          60
-                      )
-                    : 0;
-
-                  return (
-                    <React.Fragment>
-                      <div className="percentage">
-                        {data &&
-                        data.fetchBoughtplanUsagePerUser &&
-                        data.fetchBoughtplanUsagePerUser.find(
-                          e => e.unit.id == this.props.employeeid
+                `}
+                variables={{
+                  starttime: moment()
+                    .subtract(4, "weeks")
+                    .format("LL"),
+                  endtime: moment().format("LL"),
+                  boughtplanid: e.boughtplanid.id
+                }}>
+                {({ data, loading, error }) => {
+                  if (loading) {
+                    return <div>Loading</div>;
+                  }
+                  if (error) {
+                    return <div>Error fetching data</div>;
+                  }
+                  if (data && Object.keys(data).length > 0) {
+                    //console.log("LOG: ServiceDetails -> render -> data", data);
+                    const percent = data.fetchBoughtplanUsagePerUser.find(
+                      e => e.unit.id == this.props.employeeid
+                    )
+                      ? Math.ceil(
+                          data.fetchBoughtplanUsagePerUser.find(
+                            e => e.unit.id == this.props.employeeid
+                          ).totalminutes /
+                            20 /
+                            8 /
+                            60
                         )
-                          ? data.fetchBoughtplanUsagePerUser.find(
-                              e => e.unit.id == this.props.employeeid
-                            ).totalminutes
-                          : 0}
-                      </div>
-                      <div className="percantageBar">
-                        <div className="percantageInline" style={{ width: percent }} />
-                      </div>
-                    </React.Fragment>
-                  );
-                }
-                return "";
-              }}
-            </Query>
+                      : 0;
+
+                    return (
+                      <React.Fragment>
+                        <div className="percentage">
+                          {data &&
+                          data.fetchBoughtplanUsagePerUser &&
+                          data.fetchBoughtplanUsagePerUser.find(
+                            e => e.unit.id == this.props.employeeid
+                          )
+                            ? data.fetchBoughtplanUsagePerUser.find(
+                                e => e.unit.id == this.props.employeeid
+                              ).totalminutes
+                            : 0}
+                        </div>
+                        <div className="percantageBar">
+                          <div className="percantageInline" style={{ width: percent }} />
+                        </div>
+                      </React.Fragment>
+                    );
+                  }
+                  return "";
+                }}
+              </Query>
+            )}
           </div>
           <div
             className="tableColumnSmall content"

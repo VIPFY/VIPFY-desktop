@@ -247,15 +247,13 @@ class EmployeeDetails extends React.Component<Props, State> {
                   employee={querydata}
                 />
 
-                {this.props.isadmin && (
-                  <LicencesSection
-                    employeeid={employeeid}
-                    employeename={`${querydata.firstname} ${querydata.lastname}`}
-                    moveTo={this.props.moveTo}
-                    employee={querydata}
-                    isadmin={this.props.isadmin}
-                  />
-                )}
+                <LicencesSection
+                  employeeid={employeeid}
+                  employeename={`${querydata.firstname} ${querydata.lastname}`}
+                  moveTo={this.props.moveTo}
+                  employee={querydata}
+                  isadmin={this.props.isadmin}
+                />
 
                 {this.state.changepicture && (
                   <PopupSelfSaving
