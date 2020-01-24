@@ -11,6 +11,7 @@ import {
 } from "../../components/security/graphqlOperations";
 import { ErrorComp } from "../../common/functions";
 import { SecurityContext } from "../../pages/security";
+import os from "os";
 
 interface Props {
   session: {
@@ -52,9 +53,9 @@ export default (props: Props) => {
           <div className="device-add-info">
             <span>Name</span>
             {/* TODO: [VIP-585] Somehow get the name of the device */}
-            <span>-</span>
+            <span>{os.hostname()}</span>
 
-            <span>Logged in at</span>
+            <span>Logged in</span>
             <span>{moment(session.loggedInAt).format("LLL")}</span>
 
             <Mutation

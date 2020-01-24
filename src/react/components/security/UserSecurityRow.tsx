@@ -83,7 +83,7 @@ class UserSecurityRow extends React.Component<Props, State> {
 
   render() {
     const { user } = this.props;
-
+    console.log(this.props);
     return (
       <tr onClick={() => this.setState(prevState => ({ showEdit: !prevState.showEdit }))}>
         <td colSpan={2} className="data-recording-sensitive">
@@ -320,6 +320,7 @@ class UserSecurityRow extends React.Component<Props, State> {
           {this.state.showEdit && (
             <SecurityPopup
               securityPage={true}
+              id={this.props.id}
               closeFunction={() => this.setState({ showEdit: false })}
               user={user}
             />
