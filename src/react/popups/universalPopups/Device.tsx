@@ -52,7 +52,6 @@ export default (props: Props) => {
 
           <div className="device-add-info">
             <span>Name</span>
-            {/* TODO: [VIP-585] Somehow get the name of the device */}
             <span>{os.hostname()}</span>
 
             <span>Logged in</span>
