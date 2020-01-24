@@ -83,7 +83,7 @@ class UserSecurityRow extends React.Component<Props, State> {
 
   render() {
     const { user } = this.props;
-    console.log(this.props);
+
     return (
       <tr onClick={() => this.setState(prevState => ({ showEdit: !prevState.showEdit }))}>
         <td colSpan={2} className="data-recording-sensitive">
