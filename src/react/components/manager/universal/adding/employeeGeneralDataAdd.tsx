@@ -33,6 +33,7 @@ interface State {
   password: string;
   sendingemail: boolean;
   passwordChange: boolean;
+  passwordScore: number;
 }
 
 class EmployeeGeneralDataAdd extends React.Component<Props, State> {
@@ -55,7 +56,8 @@ class EmployeeGeneralDataAdd extends React.Component<Props, State> {
     showPassword: true,
     password: "",
     sendingemail: false,
-    passwordChange: true
+    passwordChange: true,
+    passwordScore: 0
   };
 
   setBothStates = s => {
@@ -110,7 +112,9 @@ class EmployeeGeneralDataAdd extends React.Component<Props, State> {
               className: "cleanup universalTextInput toggle-password",
               style: { width: "100%", padding: "0px" }
             }}
-            changeCallback={state => this.setBothStates({ password: state.password })}
+            changeCallback={state =>
+              this.setBothStates({ password: state.password, passwordScore: state.score })
+            }
           />
 
           <IconButton

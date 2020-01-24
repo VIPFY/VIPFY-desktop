@@ -48,6 +48,7 @@ interface State {
   password: string;
   sendingemail: boolean;
   passwordChange: boolean;
+  passwordScore: number;
 }
 
 const CREATE_EMPLOYEE = gql`
@@ -119,7 +120,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     employee: null,
     password: "",
     sendingemail: false,
-    passwordChange: true
+    passwordChange: true,
+    passwordScore: 0
   };
 
   handleConfirm() {
@@ -135,48 +137,6 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
       this.setState({ confirm: true });
     }
   }
-
-  /*listenKeyboard = e => {
-    const { name, wmail1 } = this.state;
-    this.handleConfirm();
-    if (e.key === "Escape" || e.keyCode === 27) {
-      this.props.close();
-    } else if (
-      !(
-        e.target &&
-        e.target.id &&
-        [
-          "name",
-          "wmail1",
-          "wmail2",
-          "birthday",
-          "hiredate",
-          "pphone1",
-          "pphone2",
-          "position",
-          "wphone1",
-          "wphone2"
-        ].includes(e.target.id)
-      )
-    ) {
-      return; // Check if one of the Textfields is focused
-    } else if (
-      (e.key === "Enter" || e.keyCode === 13) &&
-      name &&
-      wmail1 &&
-      e.srcElement.textContent != "Cancel"
-    ) {
-      this.handleCreate();
-    }
-  };
-
-  componentDidMount() {
-    window.addEventListener("keydown", this.listenKeyboard, true);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("keydown", this.listenKeyboard, true);
-  }*/
 
   render() {
     return (
@@ -208,7 +168,9 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                   disabled={
                     this.state.name == "" ||
                     this.state.wmail1 == "" ||
-                    !this.state.wmail1.includes("@")
+                    !this.state.wmail1.includes("@") ||
+                    this.state.password == "" ||
+                    this.state.passwordScore < 2
                   }
                   onClick={() => this.handleCreate()}
                   innerRef={el => addRenderElement({ key: "continueAdd", element: el })}

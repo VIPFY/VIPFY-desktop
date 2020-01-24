@@ -82,7 +82,7 @@ class TeamOverview extends React.Component<Props, State> {
 
     for (let index = 0; index < amountFakes; index++) {
       fakeArray.push(
-        <div className="tableRow">
+        <div className="tableRow" key={`fake-${index}`}>
           <div className="tableMain">
             <div className="tableColumnBig">
               <PrintTeamSquare team={{}} fake={true} />
@@ -150,7 +150,7 @@ class TeamOverview extends React.Component<Props, State> {
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return (
-                  <div className="table">
+                  <div className="table" key="table">
                     <div className="tableHeading">
                       <div className="tableMain">
                         <div
@@ -303,7 +303,7 @@ class TeamOverview extends React.Component<Props, State> {
               }
               return (
                 <>
-                  <div className="table">
+                  <div className="table" key="table">
                     <div className="tableHeading">
                       <div className="tableMain">
                         <div
@@ -345,10 +345,10 @@ class TeamOverview extends React.Component<Props, State> {
                     {teams.length > 0 &&
                       teams.map(team => (
                         <div
+                          key={team.name}
                           id={team.name}
                           className="tableRow"
                           onClick={() => this.props.moveTo(`dmanager/${team.unitid.id}`)}>
-                          {console.log("TEAM", team)}
                           <div className="tableMain">
                             <div className="tableColumnBig">
                               <PrintTeamSquare team={team} />

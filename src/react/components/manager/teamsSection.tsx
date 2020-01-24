@@ -55,6 +55,7 @@ class TeamsSection extends React.Component<Props, State> {
             data.fetchTeams.forEach(team => {
               teamArray.push(
                 <Team
+                  key={team.name}
                   employee={this.props.employee}
                   team={team}
                   moveTo={this.props.moveTo}
