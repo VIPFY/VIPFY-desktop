@@ -3,14 +3,9 @@
     [
       "@babel/preset-env",
       {
-        "targets": {
-          "uglify": true
-        },
         "forceAllTransforms": true
       }
-    ],
-    "@babel/typescript",
-    "@babel/preset-react"
+    ]
   ],
   "plugins": [
     ["babel-plugin-shake-class-properties"],
