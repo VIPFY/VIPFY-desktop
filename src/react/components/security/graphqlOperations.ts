@@ -43,6 +43,7 @@ const fragment = gql`
     id
     system
     loggedInAt
+    host
     location {
       city
       country

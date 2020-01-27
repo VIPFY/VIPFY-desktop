@@ -320,6 +320,7 @@ class UserSecurityRow extends React.Component<Props, State> {
           {this.state.showEdit && (
             <SecurityPopup
               securityPage={true}
+              id={this.props.id}
               closeFunction={() => this.setState({ showEdit: false })}
               user={user}
             />

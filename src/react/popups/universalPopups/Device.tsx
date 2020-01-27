@@ -17,6 +17,7 @@ interface Props {
     id: number;
     system: string;
     loggedInAt: string;
+    host: string;
     location: {
       city: string;
       country: string;
@@ -51,10 +52,9 @@ export default (props: Props) => {
 
           <div className="device-add-info">
             <span>Name</span>
-            {/* TODO: [VIP-585] Somehow get the name of the device */}
-            <span>-</span>
+            <span>{session.host}</span>
 
-            <span>Logged in at</span>
+            <span>Logged in</span>
             <span>{moment(session.loggedInAt).format("LLL")}</span>
 
             <Mutation
@@ -66,6 +66,7 @@ export default (props: Props) => {
                 }
 
                 const data = store.readQuery({ query: FETCH_SESSIONS, variables });
+                console.log("LOG: data", data);
 
                 const fetchUsersSessions = data.fetchUsersSessions.filter(el => {
                   return session.id != el.id;
