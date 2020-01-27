@@ -11,13 +11,13 @@ import {
 } from "../../components/security/graphqlOperations";
 import { ErrorComp } from "../../common/functions";
 import { SecurityContext } from "../../pages/security";
-import os from "os";
 
 interface Props {
   session: {
     id: number;
     system: string;
     loggedInAt: string;
+    host: string;
     location: {
       city: string;
       country: string;
@@ -52,7 +52,7 @@ export default (props: Props) => {
 
           <div className="device-add-info">
             <span>Name</span>
-            <span>{os.hostname()}</span>
+            <span>{session.host}</span>
 
             <span>Logged in</span>
             <span>{moment(session.loggedInAt).format("LLL")}</span>
@@ -66,6 +66,7 @@ export default (props: Props) => {
                 }
 
                 const data = store.readQuery({ query: FETCH_SESSIONS, variables });
+                console.log("LOG: data", data);
 
                 const fetchUsersSessions = data.fetchUsersSessions.filter(el => {
                   return session.id != el.id;
