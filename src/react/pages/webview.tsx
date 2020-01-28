@@ -320,7 +320,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     Object.assign(optionsobject, licence.options);
     //console.log("BP", licence.boughtPlan, optionsobject);
     this.setState({
-      setUrl: licence?.boughtPlan?.key?.domain || loginurl,
+      setUrl: loginurl,
       unitId: licence.unit.id,
       options: optionsobject,
       loginspeed: optionsobject.loginspeed
