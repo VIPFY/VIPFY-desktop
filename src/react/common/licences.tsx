@@ -5,7 +5,7 @@ import { encryptLicence } from "./crypto";
 import { decryptLicenceKey } from "./passwords";
 export async function createEncryptedLicenceKeyObject(
   key: any,
-  forUser: string | null | false,
+  forUser: string | null | false | undefined,
   client: ApolloClient,
   allowFallback = true
 ) {
@@ -88,6 +88,35 @@ async function encryptForAdmin(key: Object, client: any): Promise<boolean | Obje
       await encryptLicence(key, Buffer.from(d.data.fetchCompany.adminkey[0].publickey, "hex"))
     ).toString("base64")
   };
+}
+
+export async function createLicenceKeyFragmentForUser(
+  licenceid: string,
+  unitid: string,
+  client: any
+): Promise<Object | null> {
+  const licence = (
+    await client.query({
+      query: gql`
+        query fetchLicenceKey($licenceid: ID!) {
+          fetchLicences(licenceid: $licenceid) {
+            id
+            key
+          }
+        }
+      `,
+      fetchPolicy: "network-only",
+      variables: { licenceid }
+    })
+  ).data.fetchLicences[0];
+
+  let originalKey = await decryptLicenceKey(client, licence);
+
+  if (!licence.key.encrypted) {
+    return null;
+  }
+
+  return encryptForUser(unitid, originalKey, client) || null;
 }
 
 export async function reencryptLicenceKeyObject(
