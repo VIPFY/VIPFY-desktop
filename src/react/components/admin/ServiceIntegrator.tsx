@@ -23,6 +23,7 @@ import { JSCustomNodeModel } from "./diagrams/custom-node-js/JSCustomNodeModel";
 import { TSCustomNodeModel } from "./diagrams/custom-node-ts/TSCustomNodeModel";
 import { BodyWidget } from "./diagrams/BodyWidget";
 import { ipcRenderer } from "electron";
+import { clipboard } from "electron";
 
 // capture the session for reset reasons
 const { session } = remote;
@@ -42,7 +43,6 @@ interface State {
   logInOrSignUp: boolean;
   isLogin: boolean;
   end: boolean;
-  sendTarget: any; //die Webview
   divList: JSX.Element[];
   showDivList: boolean;
   url: string;
@@ -70,7 +70,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
     logInOrSignUp: true,
     isLogin: true,
     end: false,
-    sendTarget: null,
     divList: [],
     showDivList: true,
     url: "",
@@ -85,6 +84,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
   shallSearch: boolean = true;
   timeoutSave: any;
   searchattampts: number = 0;
+
+  webview: any = undefined;
 
   handleClosing(e) {
     if (this.state.urlBevorChange !== "") {
@@ -128,6 +129,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         } else if (this.searchattampts == 2) {
           this.searchattampts = 3;
         } else {
+          console.log("SEARCH ON GOOGLE 1");
           this.searchOnGoogle();
           return;
         }
@@ -146,6 +148,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     } else {
       console.log("else: invalid url");
       this.shallSearch = true;
+      console.log("SEARCH ON GOOGLE 2");
       this.searchOnGoogle();
     }
   }
@@ -158,6 +161,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
       if (this.searchattampts >= 1) {
         this.trySiteLoading();
       } else {
+        console.log("SEARCH ON GOOGLE 3");
         this.searchOnGoogle();
       }
     } else {
@@ -196,7 +200,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     this.aktDivListState.divHold = true;
     for (let i = 0; i < 15; i++) {
       this.state.executionPlan.forEach(element => {
-        this.state.sendTarget!.send("givePosition", element.args.selector, element.args.id, 1);
+        this.webview!.send("givePosition", element.args.selector, element.args.id, 1);
       });
       await sleep(50);
       await this.setState({ divList: this.aktDivListState.divListHold });
@@ -215,7 +219,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         return element.args.id == id;
       }) != -1
     ) {
-      this.state.sendTarget!.send(
+      this.webview!.send(
         "delockItem",
         this.state.executionPlan[
           this.state.executionPlan.findIndex(element => {
@@ -409,7 +413,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     if (this.state.test || this.state.end || !this.state.showDivList) {
       return;
     } else if (onOff) {
-      this.state.sendTarget!.send(
+      this.webview!.send(
         "givePosition",
         this.state.executionPlan[
           this.state.executionPlan.findIndex(element => {
@@ -435,7 +439,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         return oldstate;
       });
     } else {
-      this.state.sendTarget!.send(
+      this.webview!.send(
         "givePosition",
         this.state.executionPlan[
           this.state.executionPlan.findIndex(element => {
@@ -673,7 +677,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
       </PopupBase>
     );
     this.state.executionPlan.forEach(plan => {
-      this.state.sendTarget!.send(
+      this.webview!.send(
         "delockItem",
         this.state.executionPlan[
           this.state.executionPlan.findIndex(element => {
@@ -706,12 +710,15 @@ class ServiceIntegrator extends React.Component<Props, State> {
       ]
     });
     console.log("sending execute");
-    this.state.sendTarget!.send("execute", this.state.executionPlan);
+    this.webview!.send("execute", this.state.executionPlan);
   }
 
   async onIpcMessage(e): Promise<void> {
     console.log("IPC called");
     switch (e.channel) {
+      case "hello":
+        this.webview = e.target;
+
       case "sendMessage":
         console.log("sendMessage");
         console.log(e.channel); //, e.args[0], e.args[1], e.args[2], e.args[3], e.args[4],
@@ -728,9 +735,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
         if (this.state.test) {
           break;
-        }
-        if (this.state.sendTarget == null) {
-          this.setState({ sendTarget: e.target });
         }
         console.log(
           "sendEvent\n",
@@ -859,15 +863,17 @@ class ServiceIntegrator extends React.Component<Props, State> {
           this.loginState.listen
         );
 
-        if (this.state.test && this.state.url != "about:blank") {
+        /*if (this.state.test && this.state.url != "about:blank") {
+          await session.fromPartition("followLogin").clearStorageData();
           let exx = [];
           this.state.finalexecutionPlan.forEach(element => {
             if (element.step == this.loginState.step) {
               exx.push(element);
             }
           });
-          this.state.sendTarget!.send("execute", exx);
-        } else if (
+          console.log("SEND EXECUTE 2");
+          this.webview!.send("execute", exx);
+        } else*/ if (
           !this.loginState.didLoadOnSteps.includes(this.loginState.step) &&
           this.loginState.listen
         ) {
@@ -886,7 +892,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         if (this.state.end) {
           let targetpage = this.webview.url;
           this.setState({ end: false, test: true, targetpage });
-          session.fromPartition("followLogin").clearStorageData();
+          await session.fromPartition("followLogin").clearStorageData();
           this.loginState.step = 0;
           this.loginState.listen = false;
           console.log("step = 0", this.loginState.step, this.state.finalexecutionPlan);
@@ -1144,14 +1150,12 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   logInOrSignUp: true,
                   isLogin: true,
                   end: false,
-                  sendTarget: null,
                   divList: [],
                   showDivList: true,
                   url: "",
                   urlBevorChange: "",
                   finalexecutionPlan: [],
                   executionPlan: [],
-                  searchurl: this.state.searchurl,
                   targetpage: "",
                   test: false
                 });
@@ -1165,14 +1169,12 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   logInOrSignUp: true,
                   isLogin: true,
                   end: false,
-                  sendTarget: null,
                   divList: [],
                   showDivList: true,
                   url: "",
                   urlBevorChange: "",
                   finalexecutionPlan: [],
                   executionPlan: [],
-                  searchurl: this.state.searchurl,
                   targetpage: "",
                   test: false
                 });
@@ -1183,7 +1185,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
               Go!
             </button>
           </div>
-          <div style={{ overflowY: "scroll", width: "100%", height: "90%" }}>
+          <div style={{ overflowY: "scroll", width: "100%", height: "80%" }}>
             {this.state.executionPlan.map((o, k) => (
               <div
                 id={o.args.id + "side"}
@@ -1224,7 +1226,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             <div style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
               Every thing selected?
               <button
-                disabled={this.state.sendTarget == undefined}
+                disabled={this.webview == undefined}
                 onClick={async () => {
                   await this.setState({ showDivList: false });
                   this.loginState.listen = true;
@@ -1234,7 +1236,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 Then try to go to a next step
               </button>
               <button
-                disabled={this.state.sendTarget == undefined}
+                disabled={this.webview == undefined}
                 onClick={async () => {
                   if (!this.state.isLogin) {
                     await this.setState(oldstate => {
@@ -1250,6 +1252,40 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 style={{ width: "100px" }}>
                 or finish the login process
               </button>
+            </div>
+          </div>
+          <div style={{ height: "10%" }}>
+            <textarea
+              value={JSON.stringify(this.state.finalexecutionPlan)}
+              style={{ width: "100%", height: "50%" }}
+              onChange={v => this.setState({ finalexecutionPlan: JSON.parse(v.target.value) })}
+            />
+            <div style={{ display: "flex" }}>
+              <UniversalButton
+                type="high"
+                label="Clipboard"
+                onClick={() => clipboard.writeText(JSON.stringify(this.state.finalexecutionPlan))}
+              />
+              <UniversalButton
+                type="high"
+                label="Execute"
+                onClick={async () => {
+                  //set url back to null
+                  await this.setState({ url: "", test: true });
+                  await session.fromPartition("followLogin").clearStorageData();
+                  await sleep(100);
+                  await this.trySiteLoading();
+                  await sleep(500);
+                  if (this.webview) {
+                    console.log("SEND");
+                    this.webview.send("execute", this.state.finalexecutionPlan);
+                  } else {
+                    console.log("WEBVIEW not there...");
+                  }
+
+                  console.log("STATE", this.state);
+                }}
+              />
             </div>
           </div>
         </div>

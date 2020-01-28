@@ -91,7 +91,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   };
 
   static defaultProps = {
-    speed: 1,
+    speed: 10,
     partition: "universalLogin",
     progress: () => null,
     takeScreenshot: true,
@@ -351,6 +351,52 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             }
           });
         }
+
+        function isEqualOrChild(child, parent) {
+          if (child == parent) return true;
+          if (child === null || parent === null) return false;
+          while (child.parentElement !== null) {
+            child = child.parentElement;
+            if (child == parent) return true;
+          }
+          return false;
+        }
+        
+        function getMidPoint(e, doc) {
+          var rect = e.getBoundingClientRect();
+          const style = window.getComputedStyle(e);
+          var dx = 0;
+          var dy = 0;
+          if (doc) {
+            var iframe = document.querySelector(args.document);
+            var drect = iframe.getBoundingClientRect();
+            dx = drect.x;
+            dy = drect.y;
+          }
+          return {
+            x:
+              dx +
+              rect.x +
+              parseInt(style.paddingLeft) +
+              (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
+            y:
+              dy +
+              rect.y +
+              parseInt(style.paddingTop) +
+              (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
+          }; // bias to the left
+        }
+        
+        function isHidden(elem) {
+          if (!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length)) return true;
+          const style = window.getComputedStyle(elem);
+          if (style.display === "none" || style.opacity === 0 || style.visibility === "hidden") return true;
+          const pos = getMidPoint(elem);
+          const e = document.elementFromPoint(pos.x, pos.y);
+          return !isEqualOrChild(e, elem);
+        }
+
+
           let attributes = [
             "name",
             "id",
@@ -379,8 +425,11 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               if (!element.hasAttributes()) {
                 return false;
               }
-              if (element.offsetHeight == 0 || element.offsetWidth == 0) {
+              /*if (element.offsetHeight == 0 || element.offsetWidth == 0) {
                 return false; //don't select elements that aren't visible
+              }*/
+              if (isHidden(element)){
+                return false;
               }
               for (const attribute of attributes) {
                 const attr = element.attributes.getNamedItem(attribute);
@@ -403,7 +452,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               return false;
             };
           }
-          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings"],[]));
+          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/"],[]));
           console.log("LOGIN", loginarray)
           return loginarray.length > 0
         })();
@@ -453,6 +502,51 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             }
           });
         }
+
+        function isEqualOrChild(child, parent) {
+          if (child == parent) return true;
+          if (child === null || parent === null) return false;
+          while (child.parentElement !== null) {
+            child = child.parentElement;
+            if (child == parent) return true;
+          }
+          return false;
+        }
+        
+        function getMidPoint(e, doc) {
+          var rect = e.getBoundingClientRect();
+          const style = window.getComputedStyle(e);
+          var dx = 0;
+          var dy = 0;
+          if (doc) {
+            var iframe = document.querySelector(args.document);
+            var drect = iframe.getBoundingClientRect();
+            dx = drect.x;
+            dy = drect.y;
+          }
+          return {
+            x:
+              dx +
+              rect.x +
+              parseInt(style.paddingLeft) +
+              (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
+            y:
+              dy +
+              rect.y +
+              parseInt(style.paddingTop) +
+              (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
+          }; // bias to the left
+        }
+        
+        function isHidden(elem) {
+          if (!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length)) return true;
+          const style = window.getComputedStyle(elem);
+          if (style.display === "none" || style.opacity === 0 || style.visibility === "hidden") return true;
+          const pos = getMidPoint(elem);
+          const e = document.elementFromPoint(pos.x, pos.y);
+          return !isEqualOrChild(e, elem);
+        }
+
           let attributes = [
             "name",
             "id",
@@ -479,8 +573,11 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               if (!element.hasAttributes()) {
                 return false;
               }
-              if (element.offsetHeight == 0 || element.offsetWidth == 0) {
+              /*if (element.offsetHeight == 0 || element.offsetWidth == 0) {
                 return false; //don't select elements that aren't visible
+              }*/
+              if (isHidden(element)){
+                return false;
               }
               for (const attribute of attributes) {
                 const attr = element.attributes.getNamedItem(attribute);
@@ -579,7 +676,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   async progressCallback() {
-    console.log("progressCallback");
+    //console.log("progressCallback");
     if (this.progressCallbackRunning) {
       return;
     }
@@ -686,6 +783,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         break;
       case "loaded":
         {
+          console.log("SEND");
           this.loginState.unloaded = false;
         }
         break;
@@ -750,11 +848,13 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         {
           console.log("GET LOGIN DATA", this.state.errorin);
           if (await this.isLoggedIn(e.target)) {
+            console.log("LOGGED IN", this.state, e.target);
             //this.sendResult(this.webview, 0);
             return; //we are done with login
           }
           //console.log("ERRORIN", this.state.errorin);
           if (this.state.errorin) {
+            console.log("ERROR", this.state);
             return;
           }
           await sleep(50);

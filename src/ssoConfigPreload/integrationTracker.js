@@ -12,9 +12,9 @@ var listeners = [];
 
 const asktypes = ["input", "textbox"];
 
-(function () {
+(function() {
   Element.prototype._addEventListener = Element.prototype.addEventListener;
-  Element.prototype.addEventListener = function (a, b, c) {
+  Element.prototype.addEventListener = function(a, b, c) {
     if (c == undefined) c = false;
     this._addEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -23,12 +23,12 @@ const asktypes = ["input", "textbox"];
     this.eventListenerList[a].push({ listener: b, useCapture: c });
   };
 
-  Element.prototype.getEventListeners = function (a) {
+  Element.prototype.getEventListeners = function(a) {
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) return this.eventListenerList;
     return this.eventListenerList[a];
   };
-  Element.prototype.clearEventListeners = function (a) {
+  Element.prototype.clearEventListeners = function(a) {
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) {
       for (var x in this.getEventListeners()) this.clearEventListeners(x);
@@ -43,7 +43,7 @@ const asktypes = ["input", "textbox"];
   };
 
   Element.prototype._removeEventListener = Element.prototype.removeEventListener;
-  Element.prototype.removeEventListener = function (a, b, c) {
+  Element.prototype.removeEventListener = function(a, b, c) {
     if (c == undefined) c = false;
     this._removeEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -64,7 +64,7 @@ const asktypes = ["input", "textbox"];
 })();
 
 Object.defineProperty(String.prototype, "includesAny", {
-  value: function (searches) {
+  value: function(searches) {
     for (const search of searches) {
       if (this.indexOf(search) !== -1) {
         return true;
@@ -75,7 +75,7 @@ Object.defineProperty(String.prototype, "includesAny", {
 });
 
 Object.defineProperty(String.prototype, "includesAnyRegExp", {
-  value: function (searches) {
+  value: function(searches) {
     for (const search of searches) {
       if (search.test(this)) {
         return true;
@@ -117,9 +117,13 @@ function createObjFromDom(elem) {
   return o;
 }
 var i = 0;
-ipcRenderer.on("execute", (e, args1) => onExecute(args1, true));
+ipcRenderer.on("execute", async (e, args1) => {
+  console.log("RECEIVE EXECUTE", args1);
+  await onExecute(args1, true);
+});
 
 async function onExecute(args1, booler) {
+  console.log("ON EXECUTE", args1, booler);
   await execute(args1, booler);
   //reset everything
   await ipcRenderer.sendToHost("readyForNextStep");
@@ -141,9 +145,9 @@ ipcRenderer.on("delockItem", async (e, args1) => {
   element.clearEventListeners(); //entferne das perventDefault
   const listeners1 =
     listeners[
-    listeners.findIndex(elemente => {
-      return elemente[0] == element;
-    })
+      listeners.findIndex(elemente => {
+        return elemente[0] == element;
+      })
     ][1];
   Object.keys(listeners1).forEach(key => {
     listeners1[key].forEach(i => element.addEventListener(key, i));
@@ -233,7 +237,7 @@ function findAllIframes(doc) {
 
 var config = { attributes: true, childList: true, subtree: true };
 
-var callback1 = function (mutationsList, observer) {
+var callback1 = function(mutationsList, observer) {
   //console.log(iframeList);
   //var newChilds = [];
   for (var mutation of mutationsList) {
@@ -265,7 +269,7 @@ var callback1 = function (mutationsList, observer) {
   //return newChilds;
 };
 
-var callback2 = function (mutationsList, observer) {
+var callback2 = function(mutationsList, observer) {
   //console.log("Callback2 called");
   for (var mutation of mutationsList) {
     if (mutation.type == "childList") {
@@ -312,8 +316,6 @@ var callback2 = function (mutationsList, observer) {
     }
 }) */
 
-
-
 /// **
 window.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.sendToHost("loaded");
@@ -324,8 +326,6 @@ window.addEventListener("DOMContentLoaded", () => {
   findAllIframes(document);
 });
 
-
-
 // window.addEventListener("load", () => {
 //   ipcRenderer.sendToHost("loaded");
 //   //webview = document.getElementById("LoginFinder");
@@ -335,7 +335,6 @@ window.addEventListener("DOMContentLoaded", () => {
 //   document.addEventListener("paste", findTarget, true);
 //   findAllIframes(document);
 // });
-
 
 //document.addEventListener("click", findTarget);
 var observer = new MutationObserver(callback1);
@@ -667,6 +666,9 @@ function findCookieButton() {
 } */
 
 async function start() {
+  //First say Hello
+  ipcRenderer.sendToHost("hello");
+
   console.log("TEST");
   await sleep(300);
   totaltime = 0;
@@ -774,7 +776,7 @@ const attributes = [
 function filterDom(includesAny, excludesAll) {
   includesAny = includesAny.map(i => new RegExp(i));
   excludesAll = excludesAll.map(i => new RegExp(i));
-  return function (element) {
+  return function(element) {
     if (!element.hasAttributes()) {
       return false;
     }
@@ -863,66 +865,6 @@ async function recaptchaClick(recap) {
 
 start();
 
-//Script based login functions
-
-async function execute(operations) {
-  bot = true;
-  let doc;
-  for ({ operation, args } of operations) {
-    console.log("EXECUTE", operation, args);
-    doc = document;
-    switch (operation) {
-      case "sleep":
-        let randomrange = args.randomrange || args.seconds / 5;
-        await sleep(Math.max(0, args.seconds + Math.random() * randomrange - randomrange / 2));
-        break;
-      case "waitfor":
-        doc = args.document || document;
-        console.log("waitfor", doc.querySelector(args.selector));
-        while (!doc.querySelector(args.selector)) {
-          await sleep(95 + Math.random() * 10);
-        }
-        break;
-      case "click":
-        await execute([{ operation: "waitfor", args }]);
-        doc = args.document || document;
-        console.log("CLICK", doc.querySelector(args.selector));
-        await clickButton(doc.querySelector(args.selector));
-        break;
-      case "fill":
-        doc = args.document || document;
-        await fillFormField(doc.querySelector(args.selector), args.fillkey);
-        break;
-      case "solverecaptcha":
-        doc = args.document || document;
-        await recaptchaClick(doc.querySelector(args.selector));
-        if (!recaptchaConfirmOnce) {
-          setInterval(verifyRecaptcha, 100);
-        }
-        break;
-      case "recaptcha":
-        await execute([
-          { operation: "waitfor", args },
-          { operation: "solverecaptcha", args }
-        ]);
-      case "waitandfill":
-        await execute([
-          { operation: "waitfor", args },
-          { operation: "click", args },
-          { operation: "fill", args }
-        ]);
-        break;
-      case "repeatFill": //same as waitandfill but here to retain the information of the repeat
-        await execute([
-          { operation: "waitfor", args },
-          { operation: "click", args },
-          { operation: "fill", args }
-        ]);
-    }
-  }
-  return;
-}
-
 async function fillFormField(target, fillkey) {
   //console.log("FILL", target, content);
   //if (stopped) throw new Error("abort");
@@ -942,10 +884,10 @@ async function fillFormField(target, fillkey) {
 
 async function execute(operations, mainexecute = false) {
   bot = true;
-  console.log("Hier1", operations);
+  console.log("Hier1", operations, mainexecute);
   let doc;
   if (mainexecute) {
-    ipcRenderer.sendToHost("executeStep");
+    await ipcRenderer.sendToHost("executeStep");
   }
   for ({ operation, args = {} } of operations) {
     console.log("EXECUTE", operation, args);

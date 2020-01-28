@@ -89,7 +89,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     loggedIn: false,
     errorshowed: false,
     progress: undefined,
-    loginspeed: 1,
+    loginspeed: 10,
     errorScreen: false,
     oldspeed: undefined,
     key: null
@@ -314,17 +314,17 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       loginurl = key.loginurl;
     }
     let optionsobject = Object.assign({}, licence.boughtPlan.plan.app.options);
-    console.log("BP", licence.boughtPlan);
     Object.assign(optionsobject, licence.options);
+    console.log("BP", licence.boughtPlan, optionsobject);
     this.setState({
       setUrl: licence?.boughtPlan?.key?.domain || loginurl,
       unitId: licence.unit.id,
       options: optionsobject,
       loginspeed: optionsobject.loginspeed
-        ? optionsobject.loginspeed + 1 < optionsobject.loginfailed
+        ? !optionsobject.loginfailed || optionsobject.loginspeed + 1 < optionsobject.loginfailed
           ? optionsobject.loginspeed + 1
           : optionsobject.loginspeed
-        : 1,
+        : 10,
       appid: licence.boughtPlan.plan.app.id,
       key: { ...key, domain: licence.boughtPlan.key.domain },
       oldspeed: undefined,
@@ -673,7 +673,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       cssClass = "";
     }
 
-    console.log("STATE", this.state);
+    //console.log("STATE", this.state);
+    console.log("Opening Licence ", this.state.licenceId, " with speed ", this.state.loginspeed);
     return (
       <HeaderNotificationContext.Consumer>
         {context => {
@@ -710,17 +711,25 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                     if (loggedin && emailEntered && passwordEntered) {
                       console.log("Loggin detected");
                       this.hideLoadingScreen();
-                      /*await this.props.updateLicenceSpeed({ variables: { licenceid: this.props.licenceID,
-                  speed: this.state.loginspeed,
-                  working: true } });*/
+                      await this.props.updateLicenceSpeed({
+                        variables: {
+                          licenceid: this.props.licenceID,
+                          speed: this.state.loginspeed,
+                          working: true
+                        }
+                      });
                     }
                     if (errorin) {
                       if (this.state.loginspeed == 1) {
                         this.showErrorScreen();
-                        /*await this.props.updateLicenceSpeed({ variables: { licenceid: this.props.licenceID,
-                    speed: this.state.loginspeed,
-                    oldspeed: this.state.oldspeed,
-                    working: false } });*/
+                        await this.props.updateLicenceSpeed({
+                          variables: {
+                            licenceid: this.props.licenceID,
+                            speed: this.state.loginspeed,
+                            oldspeed: this.state.oldspeed,
+                            working: false
+                          }
+                        });
                         console.log("REAL PROBLEM!", this.state.setUrl);
                         this.setState({
                           progress: 1,
@@ -734,9 +743,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                           this.state.setUrl,
                           this.state.loginspeed
                         );
-                        /*await this.props.updateLicenceSpeed({ variables: { licenceid: this.props.licenceID,
-                    speed: this.state.loginspeed,
-                    working: false } });*/
+                        await this.props.updateLicenceSpeed({
+                          variables: {
+                            licenceid: this.props.licenceID,
+                            speed: this.state.loginspeed,
+                            working: false
+                          }
+                        });
                         this.setState(s => {
                           return { loginspeed: 1, oldspeed: s.loginspeed };
                         });

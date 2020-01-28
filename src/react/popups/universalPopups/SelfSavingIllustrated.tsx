@@ -115,6 +115,7 @@ class SelfSaving extends React.Component<Props, State> {
       }, this.props.maxTime);
     }
 
+    console.log("TESTING STATE", this.state);
     const errorMessage = "Sorry, this seems to take additional time. Our Support will take a look.";
     return (
       <PopupBase styles={{ maxWidth: "432px" }} nooutsideclose={true} fullmiddle={true}>
@@ -167,6 +168,7 @@ class SelfSaving extends React.Component<Props, State> {
                         timeout={40000}
                         takeScreenshot={false}
                         setResult={async (result: Result) => {
+                          console.log("SETRESULT", { ...result });
                           if (loading || data) {
                             return;
                           }
@@ -207,6 +209,7 @@ class SelfSaving extends React.Component<Props, State> {
                     <LogoExtractor
                       url={this.props.sso.loginurl!}
                       setResult={async (icon, color) => {
+                        console.log("ICON", icon, color);
                         if (loading || data) {
                           return;
                         }
