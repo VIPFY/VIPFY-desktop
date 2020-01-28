@@ -318,7 +318,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
     let optionsobject = Object.assign({}, licence.boughtPlan.plan.app.options);
     Object.assign(optionsobject, licence.options);
-    console.log("BP", licence.boughtPlan, optionsobject);
+    //console.log("BP", licence.boughtPlan, optionsobject);
     this.setState({
       setUrl: licence?.boughtPlan?.key?.domain || loginurl,
       unitId: licence.unit.id,
@@ -575,7 +575,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             showLoadingScreen,
             t
           } = this.state;
-          console.log("PROPS", this.props, licences);
+          //console.log("PROPS", this.props, licences);
           const licence = licences.fetchLicences.find(l => l.id == licenceId);
 
           const data = {
@@ -677,15 +677,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
 
     //console.log("STATE", this.state);
-    console.log("Opening Licence ", this.state.licenceId, " with speed ", this.state.loginspeed);
+    //console.log("Opening Licence ", this.state.licenceId, " with speed ", this.state.loginspeed);
     return (
       <HeaderNotificationContext.Consumer>
         {context => {
           return (
             <div className={cssClass} id={`webview-${this.props.viewID}`}>
-              {this.state.showLoadingScreen && (
-                <LoadingDiv progress={this.state.progress} style={{ height: "100px" }} />
-              )}
+              {this.state.showLoadingScreen && <LoadingDiv progress={this.state.progress} />}
 
               {this.state.options.universallogin ? (
                 <UniversalLoginExecutor
@@ -701,7 +699,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   className={cssClassWeb}
                   showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
                   setResult={async ({ loggedin, errorin, emailEntered, passwordEntered }) => {
-                    console.log(
+                    /*console.log(
                       "SETRESULT",
                       loggedin,
                       "| ",
@@ -710,9 +708,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                       emailEntered,
                       "|",
                       passwordEntered
-                    );
+                    );*/
                     if (loggedin && emailEntered && passwordEntered) {
-                      console.log("Loggin detected");
+                      //console.log("Loggin detected");
                       this.hideLoadingScreen();
                       await this.props.updateLicenceSpeed({
                         variables: {
@@ -733,7 +731,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                             working: false
                           }
                         });
-                        console.log("REAL PROBLEM!", this.state.setUrl);
+                        //console.log("REAL PROBLEM!", this.state.setUrl);
                         this.setState({
                           progress: 1,
                           error:
@@ -741,11 +739,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                           errorshowed: true
                         });
                       } else {
-                        console.log(
+                        /*console.log(
                           "SET LOGINSPEED TO 1",
                           this.state.setUrl,
                           this.state.loginspeed
-                        );
+                        );*/
                         await this.props.updateLicenceSpeed({
                           variables: {
                             licenceid: this.props.licenceID,
