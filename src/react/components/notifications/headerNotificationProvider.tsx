@@ -62,9 +62,10 @@ class HeaderNotificationProvider extends React.Component<Props, State> {
 
     let opennew = false;
     await this.setState(({ notifications, pastnotifications }) => {
+      console.log(pastnotifications);
       if (
         noDuplicates &&
-        (notifications.findIndex(n => n.key == key) > -1 ||
+        ((notifications && notifications.findIndex(n => n && n.key == key) > -1) ||
           (pastnotifications && pastnotifications.findIndex(n => n && n.key == key) > -1))
       ) {
         return;

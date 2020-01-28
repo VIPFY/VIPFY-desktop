@@ -5,6 +5,7 @@ import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../../queries/billing";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import CreateOrbit from "./orbit";
+import moment from "moment";
 
 interface Props {
   service: any;
@@ -30,7 +31,9 @@ class AssignOrbit extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error.message}`;
           }
-          let orbits = data.fetchBoughtPlansOfCompany;
+          let orbits = data.fetchBoughtPlansOfCompany.filter(o => {
+            return o.endtime == null || moment(o.endtime).toDate() >= moment().toDate();
+          });
 
           orbits.sort(function(a, b) {
             let nameA = a.alias.toUpperCase(); // ignore upper and lowercase

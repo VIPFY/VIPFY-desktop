@@ -20,6 +20,7 @@ interface Props {
   service?: any;
 
   refetch?: Function;
+  noServiceEdit?: Boolean;
 }
 
 interface State {
@@ -130,10 +131,12 @@ class AssignNewAccount extends React.Component<Props, State> {
               <span style={{ lineHeight: "24px", marginLeft: "8px" }}>
                 {this.state.service.name}
               </span>
-              <i
-                className="fal fa-pen editbutton"
-                onClick={() => this.setState({ service: null, orbit: null, account: null })}
-              />
+              {!this.props.noServiceEdit && (
+                <i
+                  className="fal fa-pen editbutton"
+                  onClick={() => this.setState({ service: null, orbit: null, account: null })}
+                />
+              )}
             </div>
             {this.state.orbit ? (
               <>

@@ -34,6 +34,8 @@ export const FETCH_ALL_BOUGHTPLANS = gql`
       id
       alias
       key
+      buytime
+      endtime
       plan: planid {
         id
         app: appid {
@@ -52,6 +54,8 @@ export const FETCH_ALL_BOUGHTPLANS_LICENCES = gql`
       id
       alias
       key
+      buytime
+      endtime
       licences {
         id
         options
