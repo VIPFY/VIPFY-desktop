@@ -21,6 +21,12 @@ const LOG_SSO_ERROR = gql`
   }
 `;
 
+const UPDATE_LICENCE_SPEED = gql`
+  mutation updateLicenceSpeed($licenceid: ID!, $speed: Int!, $working: Boolean!) {
+    updateLicenceSpeed(licenceid: $licenceid, speed: $speed, working: $working)
+  }
+`;
+
 export type WebViewState = {
   setUrl: string;
   currentUrl: string;
@@ -40,6 +46,9 @@ export type WebViewState = {
   loggedIn: boolean;
   errorshowed: boolean;
   progress?: number;
+  loginspeed: number;
+  errorScreen: boolean;
+  oldspeed: number;
   key: any;
 };
 
@@ -52,6 +61,7 @@ export type WebViewProps = {
   setViewTitle: Function;
   viewID: number;
   logError: Function;
+  updateLicenceSpeed: Function;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -79,6 +89,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     loggedIn: false,
     errorshowed: false,
     progress: undefined,
+    loginspeed: 10,
+    errorScreen: false,
+    oldspeed: undefined,
     key: null
   };
 
@@ -99,15 +112,17 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
   }
 
-  /*shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps, nextState) {
     //console.log("COMPARE PROPS", this.props, nextProps);
     //console.log("COMPARE STATE", this.state, nextState);
     const props = this.props;
+    let update = false;
     Object.keys(this.props).forEach(function(key) {
       if (props[key] == nextProps[key]) {
         //console.log("Same", key, props[key]);
       } else {
-        console.log("WEBVIEW DIFFERENT PROPS", key, props[key], nextProps[key]);
+        //console.log("WEBVIEW DIFFERENT PROPS", key, props[key], nextProps[key]);
+        update = true;
       }
     });
     const state = this.state;
@@ -115,11 +130,12 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       if (state[key] == nextState[key]) {
         //console.log("Same", key, props[key]);
       } else {
-        console.log("WEBVIEW DIFFERENT STATE", key, state[key], nextState[key]);
+        //console.log("WEBVIEW DIFFERENT STATE", key, state[key], nextState[key]);
+        update = true;
       }
     });
-    return true;
-  }*/
+    return update;
+  }
 
   componentDidMount() {
     let intervalId = setInterval(() => this.timer1m(), 60000);
@@ -242,9 +258,10 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           agreed
           disabled
           key
+          options
           boughtPlan: boughtplanid {
-            id,
-            key,
+            id
+            key
             plan: planid {
               id
               app: appid {
@@ -299,12 +316,21 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (key && key.loginurl) {
       loginurl = key.loginurl;
     }
+    let optionsobject = Object.assign({}, licence.boughtPlan.plan.app.options);
+    Object.assign(optionsobject, licence.options);
+    console.log("BP", licence.boughtPlan, optionsobject);
     this.setState({
-      setUrl: loginurl,
+      setUrl: licence?.boughtPlan?.key?.domain || loginurl,
       unitId: licence.unit.id,
-      options: licence.boughtPlan.plan.app.options,
+      options: optionsobject,
+      loginspeed: optionsobject.loginspeed
+        ? !optionsobject.loginfailed || optionsobject.loginspeed + 1 < optionsobject.loginfailed
+          ? optionsobject.loginspeed + 1
+          : optionsobject.loginspeed
+        : 10,
       appid: licence.boughtPlan.plan.app.id,
-      key,
+      key: { ...key, domain: licence.boughtPlan.key.domain },
+      oldspeed: undefined,
       progress: undefined
     });
   }
@@ -335,6 +361,10 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   hideLoadingScreen(): void {
     this.setState({ showLoadingScreen: false });
+  }
+
+  showErrorScreen(): void {
+    this.setState({ errorScreen: true });
   }
 
   showLoadingScreen(): void {
@@ -501,7 +531,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         break;
       }
       case "falseLogin": {
-        console.log("falseLogin");
+        //console.log("falseLogin");
         const { logError, client, ...saveprops } = this.props;
         const data = {
           error: "falseLogin",
@@ -545,6 +575,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             showLoadingScreen,
             t
           } = this.state;
+          console.log("PROPS", this.props, licences);
           const licence = licences.fetchLicences.find(l => l.id == licenceId);
 
           const data = {
@@ -644,36 +675,99 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.plain) {
       cssClass = "";
     }
+
+    //console.log("STATE", this.state);
+    console.log("Opening Licence ", this.state.licenceId, " with speed ", this.state.loginspeed);
     return (
       <HeaderNotificationContext.Consumer>
         {context => {
           return (
             <div className={cssClass} id={`webview-${this.props.viewID}`}>
-              {this.state.showLoadingScreen && <LoadingDiv progress={this.state.progress} />}
+              {this.state.showLoadingScreen && (
+                <LoadingDiv progress={this.state.progress} style={{ height: "100px" }} />
+              )}
 
               {this.state.options.universallogin ? (
                 <UniversalLoginExecutor
+                  key={`${this.state.setUrl}-${this.state.loginspeed}`}
+                  //keylog={`${this.state.setUrl}-${this.state.loginspeed}`}
                   loginUrl={this.state.setUrl}
                   username={this.state.key.email || this.state.key.username}
                   password={this.state.key.password}
+                  domain={this.state.key.domain}
                   timeout={60000}
                   takeScreenshot={false}
                   partition={`service-${this.state.licenceId}`}
                   className={cssClassWeb}
-                  setResult={({ loggedin, emailEntered, passwordEntered }) => {
+                  showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
+                  setResult={async ({ loggedin, errorin, emailEntered, passwordEntered }) => {
+                    console.log(
+                      "SETRESULT",
+                      loggedin,
+                      "| ",
+                      errorin,
+                      "|",
+                      emailEntered,
+                      "|",
+                      passwordEntered
+                    );
                     if (loggedin && emailEntered && passwordEntered) {
+                      console.log("Loggin detected");
                       this.hideLoadingScreen();
-                    } else if (!loggedin && !emailEntered && !passwordEntered) {
+                      await this.props.updateLicenceSpeed({
+                        variables: {
+                          licenceid: this.props.licenceID,
+                          speed: this.state.loginspeed,
+                          working: true
+                        }
+                      });
+                    }
+                    if (errorin) {
+                      if (this.state.loginspeed == 1) {
+                        this.showErrorScreen();
+                        await this.props.updateLicenceSpeed({
+                          variables: {
+                            licenceid: this.props.licenceID,
+                            speed: this.state.loginspeed,
+                            oldspeed: this.state.oldspeed,
+                            working: false
+                          }
+                        });
+                        console.log("REAL PROBLEM!", this.state.setUrl);
+                        this.setState({
+                          progress: 1,
+                          error:
+                            "Sorry, Login was not possible. Please go back to your Dashboard and retry or contact our support if the problem persists.",
+                          errorshowed: true
+                        });
+                      } else {
+                        console.log(
+                          "SET LOGINSPEED TO 1",
+                          this.state.setUrl,
+                          this.state.loginspeed
+                        );
+                        await this.props.updateLicenceSpeed({
+                          variables: {
+                            licenceid: this.props.licenceID,
+                            speed: this.state.loginspeed,
+                            working: false
+                          }
+                        });
+                        this.setState(s => {
+                          return { loginspeed: 1, oldspeed: s.loginspeed };
+                        });
+                      }
+                      /*} else if (!loggedin && !emailEntered && !passwordEntered) {
                       this.setState({
                         progress: 1,
                         error:
                           "Sorry, Login was not possible. Please go back to your Dashboard and retry or contact our support if the problem persists.",
                         errorshowed: true
-                      });
+                      });*/
                     }
                   }}
                   progress={progress => this.setState({ progress })}
-                  speed={this.state.options.loginspeed || 10}
+                  speed={this.state.loginspeed || 1}
                   style={
                     context.isActive
                       ? { height: "calc(100vh - 32px - 40px)" }
@@ -684,6 +778,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                     interactions[this.state.planId] = new Date();
                     this.setState({ interactions });
                   }}
+                  execute={this.state.options.execute}
                 />
               ) : (
                 <WebView
@@ -704,7 +799,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                     if (isMain) {
                       //this.hideLoadingScreen();
                     }
-                    console.log(`failed loading ${url}: ${code} ${desc}`);
+                    //console.log(`failed loading ${url}: ${code} ${desc}`);
                   }}
                   onLoadCommit={e => this.onLoadCommit(e)}
                   onNewWindow={e => this.onNewWindow(e)}
@@ -748,4 +843,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 }
 
-export default compose(withApollo, graphql(LOG_SSO_ERROR, { name: "logError" }))(Webview);
+export default compose(
+  withApollo,
+  graphql(LOG_SSO_ERROR, { name: "logError" }),
+  graphql(UPDATE_LICENCE_SPEED, { name: "updateLicenceSpeed" })
+)(Webview);
