@@ -1,5 +1,6 @@
 import * as React from "react";
 import Dropzone from "react-dropzone";
+import { parseName } from "humanparser";
 
 interface Props {
   onDrop: Function;
@@ -38,6 +39,17 @@ class UploadImage extends React.Component<Props, State> {
     this.props.onDrop(file);
   };
 
+  getShort = parsedName => {
+    let short = "";
+    if (parsedName.firstName) {
+      short += parsedName.firstName.slice(0, 1);
+    }
+    if (parsedName.lastName) {
+      short += parsedName.lastName.slice(0, 1);
+    }
+    return short;
+  };
+
   render() {
     const { picture, name } = this.state;
     let formStyles = this.props.formstyles || {};
@@ -54,6 +66,8 @@ class UploadImage extends React.Component<Props, State> {
       formStyles = { ...formStyles, backgroundColor: this.props.isteam ? "#9C13BC" : "#5D76FF" };
     }
 
+    const parsedName = parseName(name);
+
     return (
       <form className={`profilepicture ${this.props.mainClassName}`} style={this.props.formstyles}>
         <label>
@@ -66,7 +80,7 @@ class UploadImage extends React.Component<Props, State> {
             ) : (
               name && name.slice(0, 1)
             )*/}
-            {!(picture && picture.preview) && name && name.slice(0, 1)}
+            {!(picture && picture.preview) && name && this.getShort(parsedName)}
 
             {!(picture && picture.preview) && !name && (
               <i className="fal fa-pen" style={{ color: "#253647" }} />

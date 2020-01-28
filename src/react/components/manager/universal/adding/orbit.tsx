@@ -149,7 +149,12 @@ class CreateOrbit extends React.Component<Props, State> {
               />
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
-              <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />
+              <UniversalButton
+                innerRef={el => addRenderElement({ key: "cancel", element: el })}
+                type="low"
+                label="Cancel"
+                onClick={() => this.props.close()}
+              />
               <UniversalButton
                 innerRef={el => addRenderElement({ key: "saveOrbit", element: el })}
                 type="high"

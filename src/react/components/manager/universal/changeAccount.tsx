@@ -433,6 +433,7 @@ class ChangeAccount extends React.Component<Props, State> {
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
               <UniversalButton
+                innerRef={el => addRenderElement({ key: "cancel", element: el })}
                 type="low"
                 label="Cancel"
                 onClick={() => {

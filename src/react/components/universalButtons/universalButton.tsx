@@ -15,30 +15,28 @@ interface Props {
   tabIndex?: number;
 }
 
-export default (props: Props) => {
-  const [confirmPopup, setPopup] = React.useState(false);
+interface State {
+  saving: Boolean;
+}
 
-  const click = e => {
-    const child = props.children;
-    if (!props.disabled) {
-      if (
-        child &&
-        !Array.isArray(child) &&
-        child.type &&
-        child.type.name.endsWith("ConfirmationPopup")
-      ) {
-        return setPopup(true);
+class UniversalButton extends React.Component<Props, State> {
+  state = {
+    saving: false
+  };
+  click = async e => {
+    if (!this.state.saving && !this.props.disabled) {
+      if (this.props.onClick) {
+        this.setState({ saving: true });
+        await this.props.onClick(e);
+        this.setState({ saving: false });
       }
-      if (props.onClick) {
-        props.onClick(e);
-      }
-      if (props.additionalClickFunction) {
-        props.additionalClickFunction();
+      if (this.props.additionalClickFunction) {
+        this.props.additionalClickFunction();
       }
     }
   };
 
-  const printChildren = children => {
+  printChildren = children => {
     if (children && !Array.isArray(children)) {
       return children;
     } else {
@@ -46,26 +44,31 @@ export default (props: Props) => {
     }
   };
 
-  return (
-    <React.Fragment>
-      <button
-        type={props.form ? "submit" : "button"}
-        form={props.form}
-        className={`cleanup universalCoverButton ${props.className}`}
-        onClick={e => click(e)}
-        style={props.customStyles ? {} : { width: props.label.length > 6 ? undefined : 90 }}
-        tabIndex={props.tabIndex}>
-        <div
-          className={`cleanup universalButton ${props.type ? props.type : ""} ${
-            props.disabled ? "disabled" : "useable"
-          }`}
-          tabIndex={-1}
-          style={props.customStyles ? props.customStyles : {}}
-          ref={props.innerRef}>
-          {props.label}
-        </div>
-      </button>
-      {printChildren(props.children)}
-    </React.Fragment>
-  );
-};
+  render() {
+    return (
+      <>
+        <button
+          type={this.props.form ? "submit" : "button"}
+          form={this.props.form}
+          className={`cleanup universalCoverButton ${this.props.className}`}
+          onClick={e => this.click(e)}
+          style={
+            this.props.customStyles ? {} : { width: this.props.label.length > 6 ? undefined : 90 }
+          }
+          tabIndex={this.props.tabIndex}>
+          <div
+            className={`cleanup universalButton ${this.props.type ? this.props.type : ""} ${
+              this.state.saving || this.props.disabled ? "disabled" : "useable"
+            }`}
+            tabIndex={-1}
+            ref={this.props.innerRef}
+            style={this.props.customStyles ? this.props.customStyles : {}}>
+            {this.state.saving ? <i className="fal fa-spinner fa-spin" /> : this.props.label}
+          </div>
+        </button>
+        {this.printChildren(this.props.children)}
+      </>
+    );
+  }
+}
+export default UniversalButton;

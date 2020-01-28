@@ -453,7 +453,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Vacation Requests",
         location: "vacation",
         icon: "umbrella-beach",
-        show: true,
+        show: config.showVacationRequests,
         highlight: "vacation"
       }
     ];

@@ -56,7 +56,6 @@ interface State {
   tos: boolean;
   register: Boolean;
   error: string;
-  isPrivate: boolean;
 }
 
 class RegisterCompany extends React.Component<Props, State> {
@@ -66,18 +65,15 @@ class RegisterCompany extends React.Component<Props, State> {
     privacy: false,
     tos: false,
     register: false,
-    error: "",
-    isPrivate: false
+    error: ""
   };
 
   continue = async () => {
     try {
       if (this.state.privacy && this.state.tos) {
-        if (this.state.isPrivate) {
-          await this.setState({ company: "Family" });
-        }
         this.setState({ register: true, error: "" });
 
+        // TODO: VIP-959 don't always use the same password
         const password = "testaccoun";
 
         const salt = await crypto.getRandomSalt();
@@ -103,7 +99,8 @@ class RegisterCompany extends React.Component<Props, State> {
             name: this.state.company,
             privacy: this.state.privacy,
             tOS: this.state.tos,
-            isPrivate: this.state.isPrivate,
+            // Registration for private persons is currently not possible
+            isPrivate: false,
             passkey: loginkey.toString("hex"),
             passwordMetrics,
             personalKey,
@@ -127,7 +124,7 @@ class RegisterCompany extends React.Component<Props, State> {
   };
 
   render() {
-    const { isPrivate, email } = this.state;
+    const { email } = this.state;
 
     return (
       <div className="dataGeneralForm">
@@ -136,35 +133,7 @@ class RegisterCompany extends React.Component<Props, State> {
           <img src={welcomeBack} className="illustration-login" />
 
           <div className="holder-right">
-            <h1>Register a Company</h1>
-
-            <div className="status-select">
-              <button
-                onClick={() => this.setState({ isPrivate: false })}
-                className={`naked-button ${isPrivate ? "status-unselected" : "status-selected"}`}>
-                Company
-              </button>
-
-              <label className="switch-equal">
-                <input
-                  onChange={() => {
-                    this.setState(prevState => ({
-                      ...prevState,
-                      isPrivate: !prevState.isPrivate
-                    }));
-                  }}
-                  checked={isPrivate}
-                  type="checkbox"
-                />
-                <span className="slider-equal" />
-              </label>
-
-              <button
-                onClick={() => this.setState({ isPrivate: true })}
-                className={`naked-button ${isPrivate ? "status-selected" : "status-unselected"}`}>
-                Private
-              </button>
-            </div>
+            <h1>Register your Company</h1>
 
             <div className="UniversalInputHolder">
               <UniversalTextInput
@@ -179,11 +148,8 @@ class RegisterCompany extends React.Component<Props, State> {
               />
             </div>
 
-            <div
-              style={isPrivate ? { transition: "all 300ms ease-in-out", opacity: 0 } : {}}
-              className="UniversalInputHolder">
+            <div className="UniversalInputHolder">
               <UniversalTextInput
-                disabled={isPrivate}
                 id="companyreg"
                 width="312px"
                 label="Companyname"
@@ -236,8 +202,7 @@ class RegisterCompany extends React.Component<Props, State> {
                 type="high"
                 disabled={
                   !this.state.email.match(emailRegex) ||
-                  this.state.email == "" ||
-                  (this.state.company == "" && !isPrivate) ||
+                  !this.state.email ||
                   !this.state.privacy ||
                   !this.state.tos
                 }
@@ -248,7 +213,6 @@ class RegisterCompany extends React.Component<Props, State> {
               <PopupBase
                 close={() => this.setState({ register: false, error: "" })}
                 small={true}
-                closeable={false}
                 fullMiddle={true}
                 noSidebar={true}>
                 {this.state.error != "" ? (
@@ -279,6 +243,7 @@ class RegisterCompany extends React.Component<Props, State> {
     );
   }
 }
+
 export default compose(
   withApollo,
   graphql(SIGNUP, {

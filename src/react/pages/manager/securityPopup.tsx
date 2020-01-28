@@ -1,4 +1,5 @@
 import * as React from "react";
+import gql from "graphql-tag";
 import UniversalButton from "../../components/universalButtons/universalButton";
 //import Yubikey from "../../popups/universalPopups/Yubikey";
 import GoogleAuth from "../../popups/universalPopups/GoogleAuth";
@@ -9,13 +10,20 @@ import PasswordForce from "../../popups/universalPopups/PasswordReset";
 import PasswordUpdate from "../../popups/universalPopups/PasswordUpdate";
 import TwoFactorForce from "../../popups/universalPopups/TwoFactorForce";
 import UserName from "../../components/UserName";
-import { Query } from "react-apollo";
+import { Query, Mutation } from "react-apollo";
 import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/graphqlOperations";
 import LoadingDiv from "../../components/LoadingDiv";
 import { ErrorComp } from "../../common/functions";
 import { FETCH_SESSIONS } from "../../components/security/graphqlOperations";
 import Device from "../../popups/universalPopups/Device";
 import TwoFADeactivate from "../../popups/universalPopups/TwoFADeactivate";
+import { SecurityContext } from "../security";
+
+const SIGN_OUT_EVERYWHERE = gql`
+  mutation onSignOutEverywhere($userid: ID!) {
+    signOutEverywhere(userid: $userid)
+  }
+`;
 
 interface Link {
   header: string;
@@ -28,6 +36,7 @@ interface Props {
   closeFunction: Function;
   user: SecurityUser;
   securityPage?: boolean;
+  id: number;
 }
 
 export default (props: Props) => {
@@ -190,13 +199,13 @@ export default (props: Props) => {
             />
           )} */}
 
-        {show == "showGoogleAuth" && <GoogleAuth user={user} close={() => setShow(null)} />}
+        {show == "showGoogleAuth" && <GoogleAuth user={user} close={() => setShow("")} />}
 
         {show == "showPasswordUpdate" && (
           <PasswordUpdate unitid={user.id} closeFunction={() => setShow("")} />
         )}
 
-        {show == "showSudo" && <Impersonate unitid={user.id} closeFunction={() => setShow(null)} />}
+        {show == "showSudo" && <Impersonate unitid={user.id} closeFunction={() => setShow("")} />}
 
         {show == "showForce2FA" && (
           <TwoFactorForce
@@ -237,40 +246,73 @@ export default (props: Props) => {
         )}
 
         {show == "showSessions" && (
-          <PopupBase styles={{ maxWidth: "656px" }} small={true} close={() => setShow(null)}>
-            <h1>Current Devices</h1>
-            <div className="sub-header">See on which devices you are logged in</div>
+          <SecurityContext.Consumer>
+            {({ logOut }) => (
+              <Mutation mutation={SIGN_OUT_EVERYWHERE}>
+                {(mutate, { loading, error }) => (
+                  <PopupBase
+                    buttonStyles={{ justifyContent: "space-between" }}
+                    styles={{ maxWidth: "656px" }}
+                    small={true}
+                    close={() => setShow("")}>
+                    <h1>Current Devices</h1>
+                    <div className="sub-header">See on which devices you are logged in</div>
 
-            <Query
-              query={FETCH_SESSIONS}
-              fetchPolicy="network-only"
-              variables={{ userid: user.id }}>
-              {({ data, loading, error }) => {
-                if (loading) {
-                  return <LoadingDiv />;
-                }
+                    <Query
+                      query={FETCH_SESSIONS}
+                      fetchPolicy="network-only"
+                      variables={{ userid: user.id }}>
+                      {({ data, loading, error }) => {
+                        if (loading) {
+                          return <LoadingDiv />;
+                        }
 
-                if (error || !data) {
-                  return <ErrorComp error={error} />;
-                }
+                        if (error || !data) {
+                          return <ErrorComp error={error} />;
+                        }
 
-                if (data.fetchUsersSessions.length < 1) {
-                  return <div>The User has no active Sessions</div>;
-                }
+                        if (data.fetchUsersSessions.length < 1) {
+                          return <div>The User has no active Sessions</div>;
+                        }
 
-                return (
-                  <div className="devices">
-                    {data.fetchUsersSessions.map(session => (
-                      <Device key={session.id} session={session} userid={user.id} />
-                    ))}
-                  </div>
-                );
-              }}
-            </Query>
-            <UniversalButton type="low" label="back" onClick={() => setShow("")} />
-          </PopupBase>
+                        return (
+                          <div className="devices">
+                            {data.fetchUsersSessions.map(session => (
+                              <Device key={session.id} session={session} userid={user.id} />
+                            ))}
+                          </div>
+                        );
+                      }}
+                    </Query>
+
+                    <ErrorComp error={error} />
+                    <UniversalButton
+                      type="low"
+                      disabled={loading}
+                      label="Log out everywhere"
+                      onClick={() => {
+                        mutate({ variables: { userid: user.id } });
+
+                        if (user.id == props.id) {
+                          logOut();
+                        }
+                      }}
+                    />
+
+                    <UniversalButton
+                      disabled={loading}
+                      type="low"
+                      label="back"
+                      onClick={() => setShow("")}
+                    />
+                  </PopupBase>
+                )}
+              </Mutation>
+            )}
+          </SecurityContext.Consumer>
         )}
       </section>
+
       <UniversalButton type="low" label="back" onClick={backFunction} />
     </PopupBase>
   );

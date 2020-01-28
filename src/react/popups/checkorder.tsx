@@ -465,9 +465,6 @@ class CheckOrder extends React.Component<Props, State> {
                                   <div className="orderAddressLine">
                                     {billingAddresses[0].address.zip}
                                   </div>
-                                  {/*<div className="changeInformation">
-                                <span>Change Address</span><span>Change Payment</div>
-                              </div>*/}
                                 </div>
                                 <div className="orderCardHolder">
                                   {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
@@ -495,9 +492,6 @@ class CheckOrder extends React.Component<Props, State> {
                               <div className="orderInformationHolder">
                                 <div className="orderAddressHolder">
                                   Please add a billing address.
-                                  {/*<div className="changeInformation">
-                            <span>Change Address</span><span>Change Payment</div>
-                    </div>*/}
                                 </div>
                                 <div className="orderCardHolder">
                                   {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (

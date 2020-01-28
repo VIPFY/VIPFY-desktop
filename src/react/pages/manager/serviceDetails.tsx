@@ -105,8 +105,6 @@ class ServiceDetails extends React.Component<Props, State> {
               }
             });
           });
-
-          console.log("SERVICE", service);
           return (
             <div className="managerPage">
               <div className="heading">
@@ -161,7 +159,7 @@ class ServiceDetails extends React.Component<Props, State> {
               {service.orbitids
                 .filter(o => o.endtime == null || o.endtime > now())
                 .map(orbit => (
-                  <OrbitSection orbit={orbit} app={service.app} refetch={refetch} />
+                  <OrbitSection key={orbit.id} orbit={orbit} app={service.app} refetch={refetch} />
                 ))}
               <div className="section">
                 <div className="heading">
