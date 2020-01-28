@@ -11,7 +11,10 @@ import { compose, graphql, withApollo } from "react-apollo";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../queries/billing";
 import { fetchCompanyService } from "../../../queries/products";
 import { AppContext } from "../../../common/functions";
-import { createEncryptedLicenceKeyObject } from "../../../common/licences";
+import {
+  createEncryptedLicenceKeyObject,
+  reencryptLicenceKeyObject
+} from "../../../common/licences";
 
 interface Props {
   account: any;
@@ -505,12 +508,14 @@ class ChangeAccount extends React.Component<Props, State> {
                       this.state.changedp ||
                       this.state.changedt
                     ) {
+                      console.log("ACCOUNT", this.props.account);
                       this.setState({ saving: true });
                       try {
-                        const logindata = await createEncryptedLicenceKeyObject(
+                        const logindata = await reencryptLicenceKeyObject(
+                          account.id,
                           {
-                            username: this.state.email,
-                            password: this.state.password
+                            username: this.state.email ?? "",
+                            password: this.state.password ?? ""
                           },
                           false,
                           this.props.client
@@ -539,6 +544,7 @@ class ChangeAccount extends React.Component<Props, State> {
                           this.props.closeChange();
                         }, 1000);
                       } catch (err) {
+                        console.error(err);
                         this.setState({ error: err });
                       }
                     } else {
