@@ -17,7 +17,10 @@ import UniversalDropDownInput from "../../components/universalForms/universalDro
 import { concatName, sleep } from "../../common/functions";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
-import { createEncryptedLicenceKeyObject } from "../../common/licences";
+import {
+  createEncryptedLicenceKeyObject,
+  createLicenceKeyFragmentForUser
+} from "../../common/licences";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../queries/billing";
 
 const FAILED_INTEGRATION = gql`
@@ -58,6 +61,7 @@ const ASSIGN_ACCOUNT = gql`
     $tags: [String]
     $starttime: Date
     $endtime: Date
+    $keyfragment: JSON
   ) {
     assignAccount(
       licenceid: $licenceid
@@ -66,6 +70,7 @@ const ASSIGN_ACCOUNT = gql`
       tags: $tags
       starttime: $starttime
       endtime: $endtime
+      keyfragment: $keyfragment
     )
   }
 `;
@@ -194,7 +199,7 @@ class SelfSaving extends React.Component<Props, State> {
                 username: this.props.sso.email,
                 password: this.props.sso.password
               },
-              false,
+              undefined,
               this.props.client
             );
             const account = await this.props.createAccount({
@@ -214,11 +219,17 @@ class SelfSaving extends React.Component<Props, State> {
             });
 
             try {
+              const keyfragment = await createLicenceKeyFragmentForUser(
+                account.data.createAccount.id,
+                this.state.user?.id,
+                this.props.client
+              );
               await this.props.assignAccount({
                 variables: {
                   licenceid: account.data.createAccount.id,
                   userid: this.state.user?.id,
-                  rights: { view: true, use: true }
+                  rights: { view: true, use: true },
+                  keyfragment
                 }
               });
               this.props.closeFunction({
