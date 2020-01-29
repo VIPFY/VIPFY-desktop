@@ -28,7 +28,7 @@ export function showStars(stars, maxStars = 5) {
           </span>
         );
       } else {
-        starsArray.push(<i key={`star${n}`} className="fas fa-star star-empty" />);
+        starsArray.push(<i key={`star${n}`} className="far fa-star star-empty" />);
       }
     }
   } else {

@@ -15,6 +15,7 @@ import { getImageUrlUser, resizeImage } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
 import moment from "moment";
+import { showStars } from "../../common/functions";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -214,8 +215,14 @@ class EmployeeDetails extends React.Component<Props, State> {
                             ? moment(querydata.lastactive - 0).format("DD.MM.YYYY HH:mm:ss")
                             : "Never"}
                         </div>
-                        <div className="tableColumnSmall content">{querydata.passwordlength}</div>
-                        <div className="tableColumnSmall content">{querydata.passwordstrength}</div>
+                        <div className="tableColumnSmall content">
+                          {querydata.passwordlength ?? "unknown"}
+                        </div>
+                        <div className="tableColumnSmall content">
+                          {querydata.passwordstrength === null
+                            ? "unknown"
+                            : showStars(querydata.passwordstrength, 4)}
+                        </div>
                         <div className="tableColumnSmall content">
                           {querydata.isadmin ? "Yes" : "No"}
                         </div>
