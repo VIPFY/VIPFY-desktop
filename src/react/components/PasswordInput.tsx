@@ -1,7 +1,9 @@
 import React, { Component } from "react";
+import { clipboard } from "electron";
 import zxcvbn from "zxcvbn";
 import PropTypes from "prop-types";
 import { randomPassword } from "../common/passwordgen";
+import IconButton from "../common/IconButton";
 
 const isTooShort = (password, minLength) => password.length < minLength;
 
@@ -40,7 +42,8 @@ export default class PasswordInput extends Component {
   state = {
     score: 0,
     isValid: false,
-    password: ""
+    password: "",
+    showPassword: false
   };
 
   componentDidMount = async () => {
@@ -53,6 +56,8 @@ export default class PasswordInput extends Component {
     if (defaultValue.length > 0) {
       this.setState({ password: defaultValue }, this.handleChange);
     }
+
+    this.setState({ showPassword: this.props.showPassword });
   };
 
   clear = () => {
@@ -133,18 +138,43 @@ export default class PasswordInput extends Component {
     }
 
     return (
-      <div className={wrapperClasses.join(" ")} style={style}>
-        <input
-          type={this.props.showPassword ? "text" : "password"}
-          {...inputProps}
-          className={inputClasses.join(" ")}
-          onChange={this.handleChange}
-          ref={ref => (this.reactPasswordStrengthInput = ref)}
-          value={password}
-        />
+      <div className="password-container" style={style}>
+        <div className={wrapperClasses.join(" ")} style={{ width: "calc(100% - 70px)" }}>
+          <input
+            type={this.state.showPassword ? "text" : "password"}
+            {...inputProps}
+            className={inputClasses.join(" ")}
+            onChange={this.handleChange}
+            ref={ref => (this.reactPasswordStrengthInput = ref)}
+            value={password}
+          />
 
-        <div className={`${namespaceClassName}-strength-bar`} />
-        <span className={`${namespaceClassName}-strength-desc`}>{strengthDesc}</span>
+          <div className={`${namespaceClassName}-strength-bar`} />
+          <span className={`${namespaceClassName}-strength-desc`}>{strengthDesc}</span>
+        </div>
+        <IconButton
+          icon={`eye${this.state.showPassword ? "" : "-slash"}`}
+          onClick={() =>
+            this.setState(prevState => {
+              return { ...prevState, showPassword: !prevState.showPassword };
+            })
+          }
+          style={{ position: "absolute", right: "45px" }}
+          title={this.state.showPassword ? "Hide Password" : "Show Password"}
+        />
+        <IconButton
+          icon="dice"
+          onClick={async () =>
+            this.setState({ password: await randomPassword() }, this.handleChange)
+          }
+          style={{ position: "absolute", right: "20px" }}
+          title={"Generate Random Password"}
+        />
+        <IconButton
+          icon="paste"
+          onClick={() => clipboard.writeText(this.state.password)}
+          title={"Copy to Clipboard"}
+        />
       </div>
     );
   }
