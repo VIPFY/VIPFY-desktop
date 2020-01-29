@@ -49,7 +49,7 @@ async function encryptForUser(unitid: string, key: Object, client: any): Promise
     return false;
   }
   return {
-    key: d.data.fetchCurrentKey.id,
+    key: d.data.fetchCurrentKey.publickey,
     belongsto: "" + unitid,
     data: (
       await encryptLicence(key, Buffer.from(d.data.fetchCurrentKey.publickey, "hex"))

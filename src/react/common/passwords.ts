@@ -318,8 +318,8 @@ export async function decryptLicenceKey(client, licence) {
       try {
         const d = await client.query({
           query: gql`
-            query onFetchKey($id: ID!) {
-              fetchKey(id: $id) {
+            query onFetchKeys($publickey: ID!) {
+              fetchKeys(publickey: $publickey) {
                 id
                 publickey
                 privatekey
@@ -327,22 +327,33 @@ export async function decryptLicenceKey(client, licence) {
               }
             }
           `,
-          variables: { id: candidate.key }
+          variables: { publickey: candidate.key }
         });
         if (d.error) {
           console.error(d.error);
           throw new Error("can't fetch key");
         }
-        key = JSON.parse(
-          (
-            await decryptLicence(
-              Buffer.from(candidate.data, "base64"),
-              Buffer.from(d.data.fetchKey.publickey, "hex"),
-              Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
-            )
-          ).toString("utf8")
-        );
-        break; // success
+        let found = false;
+        for (const k of d.data.fetchKeys) {
+          try {
+            key = JSON.parse(
+              (
+                await decryptLicence(
+                  Buffer.from(candidate.data, "base64"),
+                  Buffer.from(k.publickey, "hex"),
+                  Buffer.from(k.privatekeyDecrypted, "hex")
+                )
+              ).toString("utf8")
+            );
+            found = true;
+            break; // success
+          } catch (error) {
+            console.log("trying decrypting", error);
+          }
+          if (found) {
+            break;
+          }
+        }
       } catch (error) {
         console.error("failed decrypting, trying next candidate", candidate, error);
       }
