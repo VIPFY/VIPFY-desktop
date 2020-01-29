@@ -10,12 +10,14 @@ import { fetchDepartmentsData } from "../../../queries/departments";
 import { concatName } from "../../../common/functions";
 import PrintEmployeeSquare from "./squares/printEmployeeSquare";
 import AddEmployeePersonalData from "../addEmployeePersonalData";
+import { createLicenceKeyFragmentForUser } from "../../../common/licences";
 
 interface Props {
   account: any;
   assignAccount: Function;
 
   refetch?: Function;
+  client: any;
 }
 
 interface State {
@@ -320,13 +322,19 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                     onClick={async () => {
                       this.setState({ saving: true });
                       try {
+                        const keyfragment = await createLicenceKeyFragmentForUser(
+                          this.props.account.id,
+                          this.state.user!.id,
+                          this.props.client
+                        );
                         await this.props.assignAccount({
                           variables: {
                             licenceid: this.props.account.id,
                             userid: this.state.user!.id,
                             rights: { view: true, use: true },
                             starttime: this.state.fromdate || undefined,
-                            endtime: this.state.todate || undefined
+                            endtime: this.state.todate || undefined,
+                            keyfragment
                           }
                         });
                         if (this.props.refetch) {
