@@ -35,6 +35,51 @@ const DELETE_SERVICE = gql`
   }
 `;
 
+const COMPANY_SERVICES_OPTIONS = gql`
+  query fetchCompanyServices {
+    fetchCompanyServices {
+      app {
+        id
+        name
+        icon
+        disabled
+        options
+      }
+      orbitids {
+        id
+        alias
+        buytime
+        endtime
+        accounts {
+          id
+          alias
+          starttime
+          endtime
+          assignments {
+            assignmentid
+            starttime
+            endtime
+            unitid {
+              id
+              firstname
+              lastname
+              profilepicture
+            }
+          }
+        }
+        teams {
+          id
+          unitid {
+            id
+          }
+          name
+          profilepicture
+        }
+      }
+    }
+  }
+`;
+
 class ServiceOverview extends React.Component<Props, State> {
   state = {
     search: "",
@@ -107,38 +152,41 @@ class ServiceOverview extends React.Component<Props, State> {
       const accounts = [];
       const singleAccounts = [];
 
-      service.orbitids.forEach(element => {
-        element.teams.forEach(team => {
-          if (team != null) {
-            teams.push(team);
-          }
-        });
-      });
-
-      service.orbitids.forEach(element => {
-        if (element.endtime == null || moment(element.endtime).toDate() < new Date()) {
-          element.accounts.forEach(account => {
-            if (
-              account != null &&
-              (account.endtime == null || moment(account.endtime).toDate() > new Date()) &&
-              moment(account.starttime).toDate() < new Date()
-            ) {
-              accounts.push(account);
-              account.assignments.forEach(checkunit => {
-                if (
-                  checkunit &&
-                  (checkunit.endtime == null || moment(checkunit.endtime).toDate() > new Date()) &&
-                  !singleAccounts.find(
-                    s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
-                  )
-                ) {
-                  singleAccounts.push(checkunit.unitid);
-                }
-              });
+      if (!service.app.options.pending) {
+        service.orbitids.forEach(element => {
+          element.teams.forEach(team => {
+            if (team != null) {
+              teams.push(team);
             }
           });
-        }
-      });
+        });
+
+        service.orbitids.forEach(element => {
+          if (element.endtime == null || moment(element.endtime).toDate() < new Date()) {
+            element.accounts.forEach(account => {
+              if (
+                account != null &&
+                (account.endtime == null || moment(account.endtime).toDate() > new Date()) &&
+                moment(account.starttime).toDate() < new Date()
+              ) {
+                accounts.push(account);
+                account.assignments.forEach(checkunit => {
+                  if (
+                    checkunit &&
+                    (checkunit.endtime == null ||
+                      moment(checkunit.endtime).toDate() > new Date()) &&
+                    !singleAccounts.find(
+                      s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
+                    )
+                  ) {
+                    singleAccounts.push(checkunit.unitid);
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
 
       serviceArray.push(
         <div
@@ -150,18 +198,33 @@ class ServiceOverview extends React.Component<Props, State> {
               <PrintServiceSquare appidFunction={s => s.app} service={service} />
               <span className="name">{service.app.name}</span>
             </div>
-            <div className="tableColumnSmall">
-              <div
-                className="managerSquare"
-                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
-                {service.orbitids.length}
+            {service.app.options.pending ? (
+              <div className="tableColumnSmall">
+                <span
+                  className="managerSquare"
+                  style={{
+                    width: "auto",
+                    backgroundColor: "rgb(219, 77, 63)",
+                    paddingLeft: "8px",
+                    paddingRight: "8px"
+                  }}>
+                  pending
+                </span>
               </div>
-              <div
-                className="managerSquare"
-                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
-                {accounts.length}
+            ) : (
+              <div className="tableColumnSmall">
+                <div
+                  className="managerSquare"
+                  style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                  {service.orbitids.length}
+                </div>
+                <div
+                  className="managerSquare"
+                  style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                  {accounts.length}
+                </div>
               </div>
-            </div>
+            )}
             <ColumnTeams teams={teams} teamidFunction={team => team} />
             <ColumnEmployees
               employees={singleAccounts}
@@ -261,7 +324,7 @@ class ServiceOverview extends React.Component<Props, State> {
               )}
             </AppContext.Consumer>
           </div>
-          <Query pollInterval={60 * 10 * 1000 + 900} query={fetchCompanyServices}>
+          <Query pollInterval={60 * 10 * 1000 + 900} query={COMPANY_SERVICES_OPTIONS}>
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return (
