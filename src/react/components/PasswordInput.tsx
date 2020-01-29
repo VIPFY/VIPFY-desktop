@@ -163,7 +163,7 @@ export default class PasswordInput extends Component {
           title={this.state.showPassword ? "Hide Password" : "Show Password"}
         />
         <IconButton
-          icon={"dice"}
+          icon="dice"
           onClick={async () =>
             this.setState({ password: await randomPassword() }, this.handleChange)
           }
