@@ -112,7 +112,7 @@ class CreateAccount extends React.Component<Props, State> {
                         username: this.state.email,
                         password: this.state.password
                       },
-                      false,
+                      undefined,
                       this.props.client
                     );
                     const account = await this.props.createAccount({
