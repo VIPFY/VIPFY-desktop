@@ -44,6 +44,7 @@ const ASSIGN_ACCOUNT = gql`
     $tags: [String]
     $starttime: Date
     $endtime: Date
+    $keyfragment: JSON
   ) {
     assignAccount(
       licenceid: $licenceid
@@ -52,6 +53,7 @@ const ASSIGN_ACCOUNT = gql`
       tags: $tags
       starttime: $starttime
       endtime: $endtime
+      keyfragment: $keyfragment
     )
   }
 `;
