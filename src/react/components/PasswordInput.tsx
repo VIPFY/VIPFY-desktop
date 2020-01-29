@@ -171,7 +171,7 @@ export default class PasswordInput extends Component {
           title={"Generate Random Password"}
         />
         <IconButton
-          icon={"paste"}
+          icon="paste"
           onClick={() => clipboard.writeText(this.state.password)}
           title={"Copy to Clipboard"}
         />
