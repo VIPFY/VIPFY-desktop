@@ -7,6 +7,9 @@ import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
 import { Query } from "react-apollo";
 import { fetchApps } from "../../../../queries/products";
+import PopupSSO from "../../../../popups/universalPopups/PopupSSO";
+import SelfSavingIllustrated from "../../../../popups/universalPopups/SelfSavingIllustrated";
+import { BrowserView } from "electron";
 
 interface Props {
   continue: Function;
@@ -15,12 +18,20 @@ interface Props {
 interface State {
   service: number;
   showall: Boolean;
+  ownSSO: any;
+  popupSSO: Boolean;
+  showLoading: Boolean;
+  appname: String;
 }
 
 class AssignServiceToUser extends React.Component<Props, State> {
   state = {
     service: 0,
-    showall: false
+    showall: false,
+    ownSSO: null,
+    popupSSO: false,
+    showLoading: false,
+    appname: ""
   };
 
   render() {
@@ -123,7 +134,7 @@ class AssignServiceToUser extends React.Component<Props, State> {
                   startvalue={this.state.service ? this.state.service + "" : ""}
                   livecode={c => this.props.continue(apps.find(a => a.id == c))}
                   noresults="Integrate as new service"
-                  noresultsClick={v => console.log("NEW SERVICE", v)}
+                  noresultsClick={v => this.setState({ popupSSO: true, appname: v })}
                   fewResults={true}
                 />
               </div>
@@ -160,6 +171,34 @@ class AssignServiceToUser extends React.Component<Props, State> {
                   </div>
                   <UniversalButton type="low" label="Cancel" closingPopup={true} />
                 </PopupBase>
+              )}
+              {this.state.popupSSO && (
+                <React.Fragment>
+                  <PopupSSO
+                    appname={this.state.appname}
+                    cancel={() => this.setState({ popupSSO: false })}
+                    add={values => {
+                      if (values.logo) {
+                        values.images = [values.logo, values.logo];
+                      }
+                      delete values.logo;
+
+                      this.setState({ ownSSO: { ...values }, showLoading: true });
+                    }}
+                  />
+
+                  {this.state.showLoading && (
+                    <SelfSavingIllustrated
+                      sso={this.state.ownSSO}
+                      closeFunction={data => {
+                        this.setState({ showLoading: false, popupSSO: false });
+                        if (data.success) {
+                          this.props.continue({ id: data.appid });
+                        }
+                      }}
+                    />
+                  )}
+                </React.Fragment>
               )}
             </>
           );
