@@ -156,7 +156,6 @@ export default class PasswordInput extends Component {
           icon={`eye${this.state.showPassword ? "" : "-slash"}`}
           onClick={() =>
             this.setState(prevState => {
-              console.log("test");
               return { ...prevState, showPassword: !prevState.showPassword };
             })
           }
