@@ -497,9 +497,10 @@ class Area extends React.Component<AreaProps, AreaState> {
                   {this.state.consentPopup && (
                     <Consent close={() => this.setState({ consentPopup: false })} />
                   )}
-                  {this.props.needspasswordchange && (
-                    <ForcedPasswordChange email={this.props.emails[0].email} />
-                  )}
+                  {this.props.needspasswordchange &&
+                    !localStorage.getItem("impersonator-token") && (
+                      <ForcedPasswordChange email={this.props.emails[0].email} />
+                    )}
                   {this.props.isadmin &&
                     this.props.tutorialprogress &&
                     this.props.highlightReferences && <TutorialBase {...this.props} />}
