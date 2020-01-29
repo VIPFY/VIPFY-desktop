@@ -152,7 +152,7 @@ class Dashboard extends React.Component<Props, State> {
         }
 
         if (licence.pending) {
-          appLists["Pending Apps"].push(licence);
+          //appLists["Pending Apps"].push(licence);
         } else if (licence.tags.length > 0) {
           if (
             licence.tags.includes("vacation") &&
@@ -191,79 +191,6 @@ class Dashboard extends React.Component<Props, State> {
           </div>
         ) : (
           <React.Fragment>
-            {/*<Collapsible noResize={true}  title="Favourite Apps">*/}
-            <div className="section">
-              <div className="heading">
-                <h1>Favourite Apps</h1>
-              </div>
-              <div
-                /*ref={this.favouriteListRef} className="favourite-apps"*/ className="appGrid"
-                style={
-                  this.props.width
-                    ? {
-                        gridColumnGap:
-                          24 +
-                          ((this.props.width - 64 - 64 + 24) % (128 + 24)) /
-                            (Math.floor((this.props.width - 64 - 64 + 24) / (128 + 24)) - 1)
-                      }
-                    : {}
-                }>
-                {Object.values(favourites).map((favourite, key) => {
-                  if (favourite !== null) {
-                    return (
-                      <AppTile
-                        key={key}
-                        dragStartFunction={this.dragStartFunction}
-                        dragEndFunction={this.dragEndFunction}
-                        handleDrop={this.handleDrop}
-                        licence={favourite}
-                        setTeam={this.setApp}
-                      />
-                    );
-                  } else {
-                    return (
-                      <AppTile
-                        key={key}
-                        dragStartFunction={this.dragStartFunction}
-                        dragEndFunction={this.dragEndFunction}
-                        empty={true}
-                        handleDrop={this.handleDrop}
-                        tileTitle="Drag and Drop your favourite App here"
-                        // A fake Licence so that the component works
-                        licence={{
-                          id: key,
-                          boughtplanid: {
-                            planid: { appid: { icon: "" } },
-                            alias: "Drag'n'Drop a Licence"
-                          }
-                        }}
-                      />
-                    );
-                  }
-                })}
-
-                <div
-                  onDrop={this.handleDelete}
-                  // Needed so that the element is allowed to accept drops
-                  onDragOver={e => e.preventDefault()}
-                  className={`delete-favourite ${
-                    this.state.showDeletion &&
-                    Object.values(favourites).some(item => {
-                      if (!item) {
-                        return false;
-                      } else {
-                        return item.id == this.state.dragItem;
-                      }
-                    })
-                      ? "show"
-                      : ""
-                  }`}>
-                  <i className="fal fa-trash-alt fa-7x" />
-                </div>
-              </div>
-              {/*</Collapsible>*/}
-            </div>
-
             {Object.keys(appLists).map(list => {
               if (appLists[list].length > 0) {
                 return (
