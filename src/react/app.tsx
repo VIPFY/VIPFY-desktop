@@ -173,12 +173,21 @@ class App extends React.Component<AppProps, AppState> {
         const res = await this.props.endImpersonation({
           variables: { token: impersonated }
         });
+
+        // restore original local storage (fixes VIP-1003)
+        const impersonatorLocalStorage = JSON.parse(
+          localStorage.getItem("impersonator-localStorage") ?? "{}"
+        );
+        localStorage.clear();
+        for (const key in impersonatorLocalStorage) {
+          localStorage.setItem(key, impersonatorLocalStorage[key]);
+        }
+
         await localStorage.setItem("token", res.endImpersonation);
       } catch (err) {
         localStorage.removeItem("token");
         console.error("LOG: logMeOut -> err", err);
       }
-      await localStorage.removeItem("impersonator-token");
 
       await this.props.history.push("/area/dashboard");
       await this.props.client.cache.reset(); // clear graphql cache

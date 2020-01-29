@@ -25,6 +25,7 @@ export default (props: Props) => (
         mutation={IMPERSONATE}
         onCompleted={async data => {
           const token = localStorage.getItem("token");
+          localStorage.setItem("impersonator-localStorage", JSON.stringify(localStorage));
           localStorage.setItem("token", data.impersonate);
           localStorage.setItem("impersonator-token", token!);
 
