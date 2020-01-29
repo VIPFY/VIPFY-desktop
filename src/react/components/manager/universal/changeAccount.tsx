@@ -508,8 +508,8 @@ class ChangeAccount extends React.Component<Props, State> {
                       this.state.changedp ||
                       this.state.changedt
                     ) {
-                      console.log("ACCOUNT", this.props.account);
-                      this.setState({ saving: true });
+
+this.setState({ saving: true });
                       try {
                         const logindata = await reencryptLicenceKeyObject(
                           account.id,
