@@ -14,11 +14,6 @@ import * as moment from "moment";
 interface Props {
   sidebarOpen: boolean;
   licences: Licence[];
-  openInstances: any;
-  setInstance: Function;
-  setApp: (licence: number) => void;
-  viewID: number;
-  updateLayout: Function;
   header?: string;
   icon?: string;
 }
@@ -70,44 +65,6 @@ class SidebarApps extends React.Component<Props, State> {
       ...prevState,
       showApps: !prevState.showApps
     }));
-
-  handleDrop = async (targetId, draggedId) => {
-    if (targetId == draggedId) {
-      return;
-    }
-
-    const { licences } = this.props;
-    const newLicences = layoutUpdate(
-      // Make sure they have the same order as when rendered
-      licences.sort((a, b) => a.sidebar - b.sidebar),
-      draggedId,
-      targetId
-    );
-
-    const layouts = newLicences
-      .map(({ id, sidebar }) => ({ id, sidebar }))
-      .filter((licence, key) => licence.sidebar != licences[key].sidebar);
-
-    try {
-      const update = cache => {
-        cache.writeQuery({ query: fetchLicences, data: { fetchLicences: newLicences } });
-      };
-
-      const p1 = this.props.updateLayout({
-        variables: { layout: layouts[0] },
-        update
-      });
-
-      const p2 = this.props.updateLayout({
-        variables: { layout: layouts[1] },
-        update
-      });
-
-      await Promise.all([p1, p2]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   handleArrowKeys(key) {
     switch (key) {
@@ -402,8 +359,6 @@ class SidebarApps extends React.Component<Props, State> {
                       setTeam={this.props.setApp}
                       setInstance={this.props.setInstance}
                       viewID={this.props.viewID}
-                      handleDragStart={null}
-                      handleDrop={this.handleDrop}
                       isSearching={this.state.searchString === ""}
                       selected={this.state.selected == index}
                     />
@@ -445,4 +400,4 @@ class SidebarApps extends React.Component<Props, State> {
   }
 }
 
-export default graphql(UPDATE_LAYOUT, { name: "updateLayout" })(SidebarApps);
+export default SidebarApps;
