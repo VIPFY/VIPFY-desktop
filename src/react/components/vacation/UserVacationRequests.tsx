@@ -83,8 +83,8 @@ const UserVacationRequest = ({ userid, request }: PopupProps) => {
 
   return (
     <tr>
-      <td>{moment(request.startdate).format("LL")}</td>
-      <td>{moment(request.enddate).format("LL")}</td>
+      <td>{moment(request.startdate).format("DD. MMM YYYY")}</td>
+      <td>{moment(request.enddate).format("DD. MMM YYYY")}</td>
       <td>{request.days}</td>
       <td className="show-icons">
         <i title={request.status} className={`fal fa-user-${renderIcon(request.status)}`} />

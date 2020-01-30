@@ -129,7 +129,7 @@ export default (props: Props) => {
                     <DatePicker
                       minDate={moment().format("YYYY-MM-DD")}
                       maxDate={moment(`${moment().year()}-12-31`)}
-                      style={{ position: "absolute", top: "50px", left: "-20px" }}
+                      style={{ position: "absolute", top: "-150px" }}
                       value={startDate}
                       handleChange={v => setDate(v, key, "startDate")}
                       useHolidays={true}
@@ -137,7 +137,7 @@ export default (props: Props) => {
                     <span>Till</span>
                     <DatePicker
                       maxDate={moment(`${moment().year()}-12-31`)}
-                      style={{ position: "absolute", top: "50px", left: "-20px" }}
+                      style={{ position: "absolute", top: "-150px" }}
                       value={endDate}
                       handleChange={v => setDate(v, key, "endDate")}
                       useHolidays={true}
