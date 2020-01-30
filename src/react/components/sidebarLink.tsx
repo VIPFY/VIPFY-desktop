@@ -29,8 +29,8 @@ class SidebarLink extends React.Component<Props, State> {
   };
 
   showInstances = (licence: Licence) => {
-    if (this.props.openInstances && this.props.openInstances[licence.accountid]) {
-      const instances = Object.keys(this.props.openInstances[licence.accountid]);
+    if (this.props.openInstances && this.props.openInstances[licence.id]) {
+      const instances = Object.keys(this.props.openInstances[licence.id]);
       if (instances.length > 1) {
         return (
           <React.Fragment>
@@ -56,24 +56,20 @@ class SidebarLink extends React.Component<Props, State> {
               {instances.map(e => {
                 return (
                   <div
-                    key={this.props.openInstances[licence.accountid][e].instanceId}
+                    key={this.props.openInstances[licence.id][e].instanceId}
                     className="instance"
                     style={{
                       backgroundColor:
-                        this.props.viewID ===
-                        this.props.openInstances[licence.accountid][e].instanceId
+                        this.props.viewID === this.props.openInstances[licence.id][e].instanceId
                           ? "#20BAA9"
                           : ""
                     }}
                     onClick={() =>
-                      this.props.viewID ===
-                      this.props.openInstances[licence.accountid][e].instanceId
+                      this.props.viewID === this.props.openInstances[licence.id][e].instanceId
                         ? null
-                        : this.props.setInstance(
-                            this.props.openInstances[licence.accountid][e].instanceId
-                          )
+                        : this.props.setInstance(this.props.openInstances[licence.id][e].instanceId)
                     }>
-                    {this.props.openInstances[licence.accountid][e].instanceTitle}
+                    {this.props.openInstances[licence.id][e].instanceTitle}
                   </div>
                 );
               })}
@@ -101,7 +97,7 @@ class SidebarLink extends React.Component<Props, State> {
 
     return (
       <li
-        id={licence.accountid}
+        id={licence.id}
         className={`${cssClass} ${this.state.dragging ? "hold" : ""} ${
           this.state.entered ? "hovered" : ""
         }`}
@@ -112,11 +108,11 @@ class SidebarLink extends React.Component<Props, State> {
           type="button"
           onClick={
             this.props.openInstances &&
-            (!this.props.openInstances[licence.accountid] ||
-              (this.props.openInstances[licence.accountid] &&
-                Object.keys(openInstances[licence.accountid]).length == 1))
+            (!this.props.openInstances[licence.id] ||
+              (this.props.openInstances[licence.id] &&
+                Object.keys(openInstances[licence.id]).length == 1))
               ? () => {
-                  setTeam(licence.accountid);
+                  setTeam(licence.id);
                 }
               : () => null
           }
@@ -134,7 +130,7 @@ class SidebarLink extends React.Component<Props, State> {
                     licence.boughtplanid.planid.appid.icon &&
                     getBgImageApp(licence.boughtplanid.planid.appid.icon, 24)
                 }}>
-                {this.props.openInstances[this.props.licence.accountid] && (
+                {this.props.openInstances[this.props.licence.id] && (
                   <i className="fa fa-circle active-app" />
                 )}
               </span>

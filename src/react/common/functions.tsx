@@ -299,6 +299,24 @@ export function getMyUnitId(client: any): string {
   }).me.id;
 }
 
+export function getMyCompaniesUnitId(client: any): string {
+  return client.readQuery({
+    // read from cache
+    query: gql`
+      {
+        me {
+          id
+          company {
+            unitid {
+              id
+            }
+          }
+        }
+      }
+    `
+  }).me.company.unitid.id;
+}
+
 export async function getMyEmail(client: any): Promise<string> {
   return (
     await client.query({
