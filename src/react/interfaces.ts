@@ -9,8 +9,6 @@ export interface Licence {
   key: JSON;
   boughtplanid: BoughtPlan;
   unitid: User;
-  sidebar: number;
-  dashboard: number;
   tags: string[];
   edit: boolean;
   view: boolean;
