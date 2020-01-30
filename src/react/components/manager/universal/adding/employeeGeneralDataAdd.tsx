@@ -3,7 +3,6 @@ import UniversalTextInput from "../../../universalForms/universalTextInput";
 import UploadImage from "../uploadImage";
 import ReactPasswordStrength from "react-password-strength";
 import { PW_MIN_LENGTH } from "../../../../common/constants";
-import IconButton from "../../../../common/IconButton";
 import { randomPassword } from "../../../../common/passwordgen";
 import PasswordInput from "../../../../components/PasswordInput";
 
@@ -96,36 +95,27 @@ class EmployeeGeneralDataAdd extends React.Component<Props, State> {
           startvalue={this.state.wmail1}
           width="100%"
         />
-        <div className="password-container">
-          <PasswordInput
-            className="passwordStrength addEmployeePassword"
-            minLength={PW_MIN_LENGTH}
-            minScore={2}
-            scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-            tooShortWord={"too short"}
-            randomValue={true}
-            showPassword={this.state.showPassword}
-            inputProps={{
-              name: "password_input",
-              autoComplete: "off",
-              placeholder: "New Password",
-              className: "cleanup universalTextInput toggle-password",
-              style: { width: "100%", padding: "0px" }
-            }}
-            changeCallback={state =>
-              this.setBothStates({ password: state.password, passwordScore: state.score })
-            }
-          />
 
-          <IconButton
-            icon={`eye${this.state.showPassword ? "" : "-slash"}`}
-            onClick={() =>
-              this.setState(prevState => {
-                return { ...prevState, showPassword: !prevState.showPassword };
-              })
-            }
-          />
-        </div>
+        <PasswordInput
+          className="passwordStrength addEmployeePassword"
+          minLength={PW_MIN_LENGTH}
+          minScore={2}
+          scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+          tooShortWord={"too short"}
+          randomValue={true}
+          showPassword={this.state.showPassword}
+          inputProps={{
+            name: "password_input",
+            autoComplete: "off",
+            placeholder: "New Password",
+            className: "cleanup universalTextInput toggle-password",
+            style: { width: "100%", padding: "0px" }
+          }}
+          changeCallback={state =>
+            this.setBothStates({ password: state.password, passwordScore: state.score })
+          }
+        />
+
         <div style={{ marginBottom: "40px", display: "flex", alignItems: "center" }}>
           <label className="switch">
             <input

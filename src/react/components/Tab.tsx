@@ -71,7 +71,7 @@ class Tab extends React.Component<Props, State> {
     const { title, licenceid, active, viewID, setInstance, activeViewId, index } = this.props;
     return (
       <>
-        {index > 0 && (!active && activeViewId != index) ? (
+        {index > 0 && !active && activeViewId != index ? (
           <span className="tabSeperator" style={{ backgroundColor: "#30475D" }} />
         ) : (
           <span className="tabSeperator" />
@@ -125,7 +125,7 @@ class Tab extends React.Component<Props, State> {
             return (
               <li
                 className={`titlebar-tab ${active ? "active" : ""}`}
-                draggable={true}
+                //draggable={true}
                 // Workaround because clicking the middle button to close a tab caused the event to be
                 // fired twice.
                 onMouseEnter={e => {
@@ -136,7 +136,7 @@ class Tab extends React.Component<Props, State> {
                   e.preventDefault();
                   this.setState({ mouseOver: false });
                 }}
-                onDragStart={() => this.props.handleDragStart(viewID)}
+                /*onDragStart={() => this.props.handleDragStart(viewID)}
                 onDragOver={e => {
                   e.preventDefault();
 
@@ -150,7 +150,7 @@ class Tab extends React.Component<Props, State> {
                   }
                 }}
                 onDragEnd={() => this.props.handleDragEnd()}
-                onDrop={() => this.props.handleDragOver(viewID)}
+                onDrop={() => this.props.handleDragOver(viewID)}*/
                 title={title}
                 onClick={() => setInstance(viewID)}>
                 <img src={getImageUrlApp(icon, 25)} srcSet={getSourceSetApp(icon, 25)} />

@@ -2140,6 +2140,25 @@ progress[value] {
     padding: 0px;
 }
 
+.register-company-holder {
+  .UniversalInputHolder {
+    margin-top: 15px;
+    width: 312px;
+  }
+
+  .password-container {
+    margin-top: 30px;
+    
+    input {
+      width: 312px;
+    }
+
+    i {
+      right: 123px;
+    }
+  }
+}
+
 .welcome {
   background: #2536471a;
   display: flex;

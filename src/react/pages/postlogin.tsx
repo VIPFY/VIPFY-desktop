@@ -51,6 +51,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
   reachedArea = false;
 
   render() {
+    const isImpersonating = !!localStorage.getItem("impersonator-token");
     return (
       <Query query={me}>
         {({ data, loading, error, refetch }) => {
@@ -83,8 +84,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           addToLoggerContext("companyid", data.me.company.unit.id);
           addToLoggerContext("companyname", data.me.company.name);
 
-          const adminToken = localStorage.getItem("impersonator-token");
-          if (adminToken) {
+          if (isImpersonating) {
             context.addHeaderNotification(
               `You are impersonating the User ${concatName(this.props)}`,
               {
@@ -108,7 +108,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
             );
           }
 
-          if (data.me.firstlogin && !this.state.firstLogin) {
+          if (data.me.firstlogin && !this.state.firstLogin && !isImpersonating) {
             return (
               <FirstLogin
                 setFirstLogin={() => this.setState({ firstLogin: true })}
@@ -117,7 +117,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
             );
           }
 
-          if (data.me.needspasswordchange && !this.reachedArea) {
+          if (data.me.needspasswordchange && !this.reachedArea && !isImpersonating) {
             return <PasswordChange firstLogin={this.state.firstLogin} {...clearProps} />;
           }
 

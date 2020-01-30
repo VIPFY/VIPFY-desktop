@@ -9,6 +9,7 @@ interface Props {
   add: Function;
   nooutsideclose?: Boolean;
   inmanager?: Boolean;
+  appname?: string;
 }
 
 interface State {
@@ -24,7 +25,7 @@ interface State {
 
 class PopupSSO extends React.Component<Props, State> {
   state = {
-    name: "",
+    name: this.props.appname || "",
     url: "",
     email: "",
     password: "",
@@ -138,7 +139,7 @@ class PopupSSO extends React.Component<Props, State> {
             width="100%"
             id="name"
             label="Servicename"
-            startvalue=""
+            startvalue={this.props.appname || ""}
             livevalue={value => this.setState({ name: value })}
           />
 

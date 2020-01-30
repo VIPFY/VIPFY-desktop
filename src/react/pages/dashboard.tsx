@@ -6,9 +6,6 @@ import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError, filterLicences } from "../common/functions";
 import UniversalSearchBox from "../components/universalSearchBox";
 import { Link } from "react-router-dom";
-import Collapsible from "../common/Collapsible";
-import AppTile from "../components/AppTile";
-import { UPDATE_LAYOUT, SWITCH_APPS_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
 import dashboardPic from "../../images/dashboard.png";
 
@@ -19,7 +16,6 @@ interface Props {
   id: string;
   setApp: Function;
   licences: any[];
-  updateLayout: Function;
   switchLayout: Function;
 }
 
@@ -41,97 +37,6 @@ class Dashboard extends React.Component<Props, State> {
   dragEndFunction = (): void => this.setState({ dragItem: null, showDeletion: false });
   setApp = (licence: number) => this.props.setApp(licence);
 
-  handleDrop = async (dropPosition: number) => {
-    const dragged = this.props.licences.find(licence => licence.id == this.state.dragItem);
-    console.log("LOG: Dashboard -> handleDrop -> this.state.dragItem", this.state.dragItem);
-
-    if (dropPosition != dragged.dashboard) {
-      try {
-        if (dragged.dashboard !== null && favourites[dropPosition]) {
-          const app1 = { id: dragged.id, dashboard: dragged.dashboard };
-          const app2 = { id: favourites[dropPosition]!.id, dashboard: dropPosition };
-
-          await this.props.switchLayout({
-            variables: { app1, app2 },
-            optimisticResponse: {
-              __typename: "Mutation",
-              switchAppsLayout: [
-                {
-                  id: app1.id,
-                  unitid: { id: this.props.id, __typename: "SemiPublicUser" },
-                  dashboard: app2.dashboard,
-                  __typename: "Licence"
-                },
-                {
-                  id: app2.id,
-                  unitid: { id: this.props.id, __typename: "SemiPublicUser" },
-                  dashboard: app1.dashboard,
-                  __typename: "Licence"
-                }
-              ]
-            }
-          });
-        } else {
-          if (Object.values(favourites).find(item => item && item!.id == this.state.dragItem)) {
-            favourites[dragged.dashboard] = null;
-          }
-
-          const promises = [
-            this.props.updateLayout({
-              variables: { layout: { id: this.state.dragItem, dashboard: dropPosition } },
-              optimisticResponse: {
-                __typename: "Mutation",
-                updateLayout: {
-                  id: this.state.dragItem,
-                  unitid: { id: this.props.id, __typename: "SemiPublicUser" },
-                  dashboard: dropPosition,
-                  __typename: "Licence"
-                }
-              }
-            })
-          ];
-
-          if (favourites[dropPosition]) {
-            promises.push(
-              this.props.updateLayout({
-                variables: { layout: { id: favourites[dropPosition]!.id, dashboard: null } }
-              })
-            );
-          }
-
-          await Promise.all(promises);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
-  handleDelete = async e => {
-    try {
-      e.preventDefault();
-      const dragged = this.props.licences.find(licence => licence.id == this.state.dragItem);
-
-      if (dragged.dashboard !== null) {
-        favourites[dragged.dashboard] = null;
-        await this.props.updateLayout({
-          variables: { layout: { id: this.state.dragItem, dashboard: null } },
-          optimisticResponse: {
-            __typename: "Mutation",
-            updateLayout: {
-              id: this.state.dragItem,
-              unitid: { id: this.props.id, __typename: "SemiPublicUser" },
-              dashboard: null,
-              __typename: "Licence"
-            }
-          }
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   render() {
     const appLists: {
       "My Apps": Licence[];
@@ -152,7 +57,7 @@ class Dashboard extends React.Component<Props, State> {
         }
 
         if (licence.pending) {
-          appLists["Pending Apps"].push(licence);
+          //appLists["Pending Apps"].push(licence);
         } else if (licence.tags.length > 0) {
           if (
             licence.tags.includes("vacation") &&
@@ -191,79 +96,6 @@ class Dashboard extends React.Component<Props, State> {
           </div>
         ) : (
           <React.Fragment>
-            {/*<Collapsible noResize={true}  title="Favourite Apps">*/}
-            <div className="section">
-              <div className="heading">
-                <h1>Favourite Apps</h1>
-              </div>
-              <div
-                /*ref={this.favouriteListRef} className="favourite-apps"*/ className="appGrid"
-                style={
-                  this.props.width
-                    ? {
-                        gridColumnGap:
-                          24 +
-                          ((this.props.width - 64 - 64 + 24) % (128 + 24)) /
-                            (Math.floor((this.props.width - 64 - 64 + 24) / (128 + 24)) - 1)
-                      }
-                    : {}
-                }>
-                {Object.values(favourites).map((favourite, key) => {
-                  if (favourite !== null) {
-                    return (
-                      <AppTile
-                        key={key}
-                        dragStartFunction={this.dragStartFunction}
-                        dragEndFunction={this.dragEndFunction}
-                        handleDrop={this.handleDrop}
-                        licence={favourite}
-                        setTeam={this.setApp}
-                      />
-                    );
-                  } else {
-                    return (
-                      <AppTile
-                        key={key}
-                        dragStartFunction={this.dragStartFunction}
-                        dragEndFunction={this.dragEndFunction}
-                        empty={true}
-                        handleDrop={this.handleDrop}
-                        tileTitle="Drag and Drop your favourite App here"
-                        // A fake Licence so that the component works
-                        licence={{
-                          id: key,
-                          boughtplanid: {
-                            planid: { appid: { icon: "" } },
-                            alias: "Drag'n'Drop a Licence"
-                          }
-                        }}
-                      />
-                    );
-                  }
-                })}
-
-                <div
-                  onDrop={this.handleDelete}
-                  // Needed so that the element is allowed to accept drops
-                  onDragOver={e => e.preventDefault()}
-                  className={`delete-favourite ${
-                    this.state.showDeletion &&
-                    Object.values(favourites).some(item => {
-                      if (!item) {
-                        return false;
-                      } else {
-                        return item.id == this.state.dragItem;
-                      }
-                    })
-                      ? "show"
-                      : ""
-                  }`}>
-                  <i className="fal fa-trash-alt fa-7x" />
-                </div>
-              </div>
-              {/*</Collapsible>*/}
-            </div>
-
             {Object.keys(appLists).map(list => {
               if (appLists[list].length > 0) {
                 return (
@@ -289,7 +121,4 @@ class Dashboard extends React.Component<Props, State> {
   }
 }
 
-export default compose(
-  graphql(SWITCH_APPS_LAYOUT, { name: "switchLayout" }),
-  graphql(UPDATE_LAYOUT, { name: "updateLayout" })
-)(Dashboard);
+export default Dashboard;

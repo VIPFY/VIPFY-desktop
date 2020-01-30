@@ -37,7 +37,6 @@ import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
 import UniversalLogin from "./universalLogin";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest";
-import PendingIntegrations from "../components/admin/PendingIntegrations";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
@@ -499,9 +498,10 @@ class Area extends React.Component<AreaProps, AreaState> {
                   {this.state.consentPopup && (
                     <Consent close={() => this.setState({ consentPopup: false })} />
                   )}
-                  {this.props.needspasswordchange && (
-                    <ForcedPasswordChange email={this.props.emails[0].email} />
-                  )}
+                  {this.props.needspasswordchange &&
+                    !localStorage.getItem("impersonator-token") && (
+                      <ForcedPasswordChange email={this.props.emails[0].email} />
+                    )}
                   {this.props.isadmin &&
                     this.props.tutorialprogress &&
                     this.props.highlightReferences && <TutorialBase {...this.props} />}

@@ -453,7 +453,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             };
           }
           let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/"],[]));
-          console.log("LOGIN", loginarray)
+          //console.log("LOGIN", loginarray)
           return loginarray.length > 0
         })();
         `
@@ -601,7 +601,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             };
           }
           let errorarray = Array.from(document.querySelectorAll("*:not(:empty), .fa")).filter(filterDom(["error", "no-mail-icon", "danger", "validation-error"],["wrapper", "reset", "signup", "img__notification-error"]))
-          console.log(errorarray)
+          //console.log(errorarray)
           return errorarray.length > 0
         })();
         `

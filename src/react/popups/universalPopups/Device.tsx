@@ -52,7 +52,7 @@ export default (props: Props) => {
 
           <div className="device-add-info">
             <span>Name</span>
-            <span>{session.host}</span>
+            <span>{session.host || "-"}</span>
 
             <span>Logged in</span>
             <span>{moment(session.loggedInAt).format("LLL")}</span>

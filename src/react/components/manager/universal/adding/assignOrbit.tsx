@@ -32,7 +32,6 @@ class AssignOrbit extends React.Component<Props, State> {
             return `Error! ${error.message}`;
           }
           let orbits = data.fetchBoughtPlansOfCompany.filter(o => {
-            console.log("Testing:", o, o.endtime, o.endtime >= moment.now(), moment(o.endtime));
             return o.endtime == null || moment(o.endtime).toDate() >= moment().toDate();
           });
 

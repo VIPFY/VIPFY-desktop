@@ -34,7 +34,6 @@ export interface User {
   title: string;
   sex: string;
   birthday: string;
-  resetoption: number;
   language: string;
   banned: boolean;
   deleted: boolean;

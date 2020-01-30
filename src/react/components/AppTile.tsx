@@ -23,9 +23,9 @@ export default (props: Props) => {
     <div
       className={`dashboard-app ${entered ? "hovered" : ""}`}
       title={props.tileTitle || name}
-      draggable={!empty}
+      //draggable={!empty}
       onClick={() => (props.setTeam ? props.setTeam(accountid) : "")}
-      onDrag={() => props.dragStartFunction(id)}
+      /*onDrag={() => props.dragStartFunction(id)}
       onDragOver={e => {
         e.preventDefault();
 
@@ -45,7 +45,8 @@ export default (props: Props) => {
       onDrop={async () => {
         setEntered(false);
         await props.handleDrop(empty ? id : props.licence.dashboard);
-      }}>
+      }}*/
+    >
       {empty ? (
         <div className="favourite">
           <i className="fal fa-plus" />

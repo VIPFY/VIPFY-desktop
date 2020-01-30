@@ -11,8 +11,6 @@ interface Props {
   setTeam: Function;
   setInstance: Function;
   viewID: number;
-  handleDrop: Function;
-  handleDragStart: Function | null;
   isSearching: boolean;
   selected: boolean;
 }
@@ -109,27 +107,6 @@ class SidebarLink extends React.Component<Props, State> {
         }`}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        // onDrop={event => {
-        //      this.setState({ entered: false });
-        //      this.props.handleDrop(
-        //        licence.accountid,
-        //       event.dataTransfer.getData("text")
-        // event.pageY - event.currentTarget.getBoundingClientRect().top <=
-        //   event.currentTarget.getBoundingClientRect().height / 2
-        //      );
-        //    }}
-        //  draggable={this.props.isSearching}
-        //   onDragStart={event => {
-        //     event.dataTransfer.setData("text", licence.accountid);
-        //     this.props.handleDragStart(event);
-        //    this.setState({ dragging: true });
-        //  }}
-        // onDragOver={e => {
-        //    e.preventDefault();
-        //    this.setState({ entered: true });
-        //  }}
-        // onDragLeave={() => this.setState({ entered: false })}
-        // onDragEnd={() => this.setState({ dragging: false })}
         ref={el => (this.el = el)}>
         <button
           type="button"

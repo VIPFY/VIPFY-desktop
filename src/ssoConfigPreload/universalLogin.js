@@ -57,10 +57,10 @@ let recaptchaConfirmOnce = false;
 let checkRecaptcha = false;
 
 ipcRenderer.once("loginData", async (e, key) => {
-  console.log("LOGIN DATA WEBSEITE", stopped, emailEntered, passwordEntered, key);
+  //console.log("LOGIN DATA WEBSEITE", stopped, emailEntered, passwordEntered, key);
   if (key.execute) {
     //Use execute method
-    console.log("EXECUTEARRAY", key.execute.slice(key.step));
+    //console.log("EXECUTEARRAY", key.execute.slice(key.step));
     execute(key.execute.slice(key.step), true);
   } else {
     //Use universal Login
@@ -71,7 +71,7 @@ ipcRenderer.once("loginData", async (e, key) => {
     speed = key.speed || 1;
     let didAnything = false;
     while (!emailEntered || !passwordEntered || stopped) {
-      console.log("LOGIN DATA", !emailEntered, !passwordEntered, stopped);
+      //console.log("LOGIN DATA", !emailEntered, !passwordEntered, stopped);
       await sleep(100);
       let totaltime = 100;
       let email = findEmailField();
@@ -93,9 +93,9 @@ ipcRenderer.once("loginData", async (e, key) => {
       }
 
       recaptcha = findRecaptcha();
-      console.log(recaptcha);
+      //console.log(recaptcha);
       if (recaptcha && !checkRecaptcha) {
-        console.log("FOUND RECAPTCHA");
+        //console.log("FOUND RECAPTCHA");
         await recaptchaClick(recaptcha);
         await sleep(100);
         document.querySelector("html").style.visibility = "hidden";
@@ -105,7 +105,7 @@ ipcRenderer.once("loginData", async (e, key) => {
         checkRecaptcha = true;
 
         if (!recaptchaConfirmOnce) {
-          console.log("SOLVED RECAPTCHA");
+          //console.log("SOLVED RECAPTCHA");
           setInterval(verifyRecaptcha, 100);
         }
       }
@@ -114,25 +114,18 @@ ipcRenderer.once("loginData", async (e, key) => {
         await sleep(100);
         if (key.domainNeeded) {
           domain = findDomainField();
-          console.log("Domain FOUND", domain, !domainEntered);
           if (domain && !domainEntered) {
-            console.log("DOMAIN CLICK");
             await clickButton(domain);
-            console.log("FILL Domain");
             await fillFormField(domain, "domain");
-            console.log("did Domain", domain);
             domainEntered = true;
             didAnything = true;
           }
         }
         await sleep(100);
         email = findEmailField();
-        console.log("EMAIL FOUND", email, !emailEntered);
         if (email && !emailEntered) {
           await clickButton(email);
-          console.log("FILL EMAIL");
           await fillFormField(email, "username");
-          console.log("did Email", email);
           emailEntered = true;
           didAnything = true;
         }
@@ -142,15 +135,12 @@ ipcRenderer.once("loginData", async (e, key) => {
           await clickButton(password);
           await fillFormField(password, "password");
           passwordEntered = true;
-          console.log("did Password");
           didAnything = true;
         }
         await sleep(100);
         button = findConfirmButton();
-        console.log("Button Check", button, didAnything);
         if (button && didAnything) {
           await clickButton(button);
-          console.log("did Button");
           didAnything = true;
         }
       }
@@ -158,13 +148,12 @@ ipcRenderer.once("loginData", async (e, key) => {
     }
     if (emailEntered && passwordEntered && !stopped) {
       recaptcha = findForm().querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
-      console.log("FIND recaptcha 2", findForm(), recaptcha);
       if (recaptcha && (recaptcha.scrollHeight != 0 || recaptcha.scrollWidth != 0)) {
         ipcRenderer.sendToHost("recaptcha", null);
       } else {
         // Special Case for Wrike
         if (document.querySelector("[wrike-button-v2][data-application='login-remember']")) {
-          console.log("SPEZIAL");
+          //console.log("SPEZIAL");
           clickButton(
             document.querySelector("[wrike-button-v2][data-application='login-remember']")
           );
@@ -333,7 +322,14 @@ function findEmailField() {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("EMAIL", t);
+  return t[0];
+}
+
+function findDomainField() {
+  let t = Array.from(findForm().querySelectorAll("input"))
+    .filter(filterDom(["account", "domain"], ["pw", "pass", "email"]))
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
   return t[0];
 }
 
@@ -587,13 +583,13 @@ function verifyRecaptcha() {
       if (grecaptcha.getResponse().length !== 0) {
         //alert("Recaptcha verified");
         recaptchaConfirmOnce = true;
-        console.log("VERIFY RECAP");
+        //console.log("VERIFY RECAP");
         ipcRenderer.sendToHost("recaptchaSuccess");
       }
     } catch (error) {
       console.error("Recaptcha ERROR:", error);
       if (String(error).includes("No reCAPTCHA clients exist")) {
-        console.log("No Recaptcha");
+        //console.log("No Recaptcha");
         recaptchaConfirmOnce = true;
         ipcRenderer.sendToHost("recaptchaSuccess");
       }
@@ -603,7 +599,7 @@ function verifyRecaptcha() {
 
 function findRecaptcha() {
   let t = document.querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
-  console.log("button", t);
+  //console.log("button", t);
   if (t && isHidden(t)) {
     /*let f = fetchFieldProps(appname);
     let recaptchaTag = f[0].fields.recaptcha;
@@ -620,7 +616,7 @@ function findRecaptcha() {
 }
 
 async function recaptchaClick(recap) {
-  console.log("LET CLICK", recap);
+  //console.log("LET CLICK", recap);
   if (!checkRecaptcha) {
     recap.scrollIntoView();
     recap.focus();
@@ -635,7 +631,7 @@ async function recaptchaClick(recap) {
 async function execute(operations, mainexecute = false) {
   let doc;
   for ({ operation, args = {} } of operations) {
-    console.log("EXECUTE", operation, args);
+    //console.log("EXECUTE", operation, args);
     if (mainexecute) {
       ipcRenderer.sendToHost("executeStep");
     }
@@ -658,15 +654,15 @@ async function execute(operations, mainexecute = false) {
         await p;
         break;
       case "click":
-        console.log("CLICK", doc.querySelector(args.selector));
+        //console.log("CLICK", doc.querySelector(args.selector));
         await clickButton(doc.querySelector(args.selector), args.document);
         break;
       case "fill":
-        console.log("fill", doc.querySelector(args.selector), args.fillkey);
+        //console.log("fill", doc.querySelector(args.selector), args.fillkey);
         await fillFormField(doc.querySelector(args.selector), args.fillkey);
         break;
       case "solverecaptcha":
-        console.log("solverecaptcha", doc.querySelector(args.selector));
+        //console.log("solverecaptcha", doc.querySelector(args.selector));
         await recaptchaClick(doc.querySelector(args.selector));
         if (!recaptchaConfirmOnce) {
           setInterval(verifyRecaptcha, 100);
@@ -689,9 +685,9 @@ async function execute(operations, mainexecute = false) {
         let cookiebutton = null;
 
         let totaltime = 0;
-        console.log("EXECUTE COOKIE");
+        //console.log("EXECUTE COOKIE");
         while (totaltime < 5000) {
-          console.log(doc.querySelector(args.selector), cookiebutton);
+          //console.log(doc.querySelector(args.selector), cookiebutton);
           if (args.selector ? doc.querySelector(args.selector) : cookiebutton) {
             //Wait for animations
             let oldposx,
