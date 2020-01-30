@@ -101,7 +101,7 @@ class LicencesSection extends React.Component<Props, State> {
                       {/*<div className="tableColumnSmall">
                         <h1>App</h1>
                   </div>*/}
-                      <div className="tableColumnSmall">
+                      <div className="tableColumnBig">
                         <h1>Orbit</h1>
                       </div>
                       <div className="tableColumnSmall">
