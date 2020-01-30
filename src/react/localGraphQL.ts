@@ -98,7 +98,9 @@ export const resolvers = {
                 Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
               )
             ).toString("hex");
-          } catch {}
+          } catch (err) {
+            console.log("try decrypting key", encryptedby.id, err);
+          }
         }
         throw new Error("unable to decrypt key");
       }

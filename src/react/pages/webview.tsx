@@ -253,7 +253,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     let result = await this.props.client.query({
       query: gql`
       {
-        fetchLicences(licenceid: ${this.state.licenceId}) {
+        fetchLicenceAssignment(assignmentid: "${this.state.licenceId}") {
           id
           agreed
           disabled
@@ -280,7 +280,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       `,
       fetchPolicy: "network-only"
     });
-    let licence = result.data.fetchLicences[0];
+    let licence = result.data.fetchLicenceAssignment;
     if (!licence) {
       return;
     }

@@ -312,7 +312,7 @@ export async function decryptLicenceKey(client, licence) {
     }).me;
 
     const candidates = licence.key.encrypted.filter(
-      e => e.belongsto == id || (isadmin && e.belongsto == "admin")
+      e => e.belongsto == id || e.belongsto == "admin"
     );
     for (const candidate of candidates) {
       try {
@@ -321,9 +321,6 @@ export async function decryptLicenceKey(client, licence) {
             query onFetchKeys($publickey: ID!) {
               fetchKeys(publickey: $publickey) {
                 id
-                publickey
-                privatekey
-                privatekeyDecrypted @client
               }
             }
           `,
@@ -336,12 +333,25 @@ export async function decryptLicenceKey(client, licence) {
         let found = false;
         for (const k of d.data.fetchKeys) {
           try {
+            const d = await client.query({
+              query: gql`
+                query onFetchKey($id: ID!) {
+                  fetchKey(id: $id) {
+                    id
+                    publickey
+                    privatekey
+                    privatekeyDecrypted @client
+                  }
+                }
+              `,
+              variables: { id: k.id }
+            });
             key = JSON.parse(
               (
                 await decryptLicence(
                   Buffer.from(candidate.data, "base64"),
-                  Buffer.from(k.publickey, "hex"),
-                  Buffer.from(k.privatekeyDecrypted, "hex")
+                  Buffer.from(d.data.fetchKey.publickey, "hex"),
+                  Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
                 )
               ).toString("utf8")
             );
@@ -350,9 +360,9 @@ export async function decryptLicenceKey(client, licence) {
           } catch (error) {
             console.log("trying decrypting", error);
           }
-          if (found) {
-            break;
-          }
+        }
+        if (found) {
+          break;
         }
       } catch (error) {
         console.error("failed decrypting, trying next candidate", candidate, error);
