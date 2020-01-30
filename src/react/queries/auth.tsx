@@ -45,8 +45,6 @@ export const fetchLicences = gql`
       starttime
       endtime
       disabled
-      sidebar
-      dashboard
       options
       pending
       boughtplanid {
