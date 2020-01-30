@@ -2,6 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
+import { shell } from "electron";
 
 interface Props {
   notification: any;
@@ -29,7 +30,7 @@ class HeaderNotificationItem extends Component<Props, State> {
   }
 
   render() {
-    const { message, type, open, dismissButton } = this.props.notification;
+    const { message, type, open, dismissButton, actionButton } = this.props.notification;
 
     let classes = "headerNotification";
 
@@ -90,21 +91,42 @@ class HeaderNotificationItem extends Component<Props, State> {
             </Query>
           )}
         </div>
-        {dismissButton && (
-          <button
-            className="naked-button headerNotificationButton"
-            onClick={() => {
-              if (dismissButton) {
-                if (dismissButton.dismissFunction) {
-                  dismissButton.dismissFunction();
+        <div style={{ top: "0px", right: "24px", position: "absolute" }}>
+          {actionButton && (
+            <button
+              className="naked-button headerNotificationButton"
+              onClick={() => {
+                if (actionButton) {
+                  if (actionButton.actionFunction) {
+                    actionButton.actionFunction();
+                  }
+                  if (actionButton.openExternal) {
+                    shell.openExternal(actionButton.openExternal);
+                  }
+                  if (!actionButton.nodissmiss) {
+                    this.props.dismiss();
+                  }
                 }
-              }
+              }}>
+              {actionButton.label}
+            </button>
+          )}
+          {dismissButton && (
+            <button
+              className="naked-button headerNotificationButton"
+              onClick={() => {
+                if (dismissButton) {
+                  if (dismissButton.dismissFunction) {
+                    dismissButton.dismissFunction();
+                  }
+                }
 
-              this.props.dismiss();
-            }}>
-            {dismissButton.label}
-          </button>
-        )}
+                this.props.dismiss();
+              }}>
+              {dismissButton.label}
+            </button>
+          )}
+        </div>
       </div>
     );
   }
