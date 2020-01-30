@@ -201,12 +201,15 @@ class ServiceOverview extends React.Component<Props, State> {
             {service.app.options.pending ? (
               <div className="tableColumnSmall">
                 <span
-                  className="managerSquare"
+                  className="status"
                   style={{
-                    width: "auto",
+                    width: "40px",
                     backgroundColor: "rgb(219, 77, 63)",
                     paddingLeft: "8px",
-                    paddingRight: "8px"
+                    paddingRight: "8px",
+                    marginTop: "18px",
+                    marginLeft: "8px",
+                    display: "block"
                   }}>
                   pending
                 </span>
