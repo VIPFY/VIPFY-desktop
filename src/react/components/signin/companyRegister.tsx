@@ -1,4 +1,5 @@
 import * as React from "react";
+import ReactPasswordStrength from "react-password-strength";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
@@ -6,10 +7,11 @@ import { shell } from "electron";
 import { graphql, withApollo, compose } from "react-apollo";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import { emailRegex } from "../../common/constants";
+import { emailRegex, PW_MIN_LENGTH } from "../../common/constants";
 import welcomeBack from "../../../images/welcome_back.png";
 import * as crypto from "../../common/crypto";
 import { computePasswordScore } from "../../common/passwords";
+import IconButton from "../../common/IconButton";
 
 const SIGNUP = gql`
   mutation onSignUp(
@@ -55,26 +57,44 @@ interface State {
   privacy: Boolean;
   tos: boolean;
   register: Boolean;
+  passwordData: Password;
   error: string;
+}
+
+interface Password {
+  score: number;
+  password: string;
+  isValid: boolean;
+  show?: boolean;
 }
 
 class RegisterCompany extends React.Component<Props, State> {
   state = {
     email: "",
     company: "",
+    passwordData: {
+      password: "",
+      score: 0,
+      isValid: false,
+      show: false
+    },
     privacy: false,
     tos: false,
     register: false,
     error: ""
   };
 
+  handlePasswordChange({ score, password, isValid }: Password): void {
+    this.setState({ passwordData: { password, score, isValid } });
+  }
+
   continue = async () => {
     try {
       if (this.state.privacy && this.state.tos) {
         this.setState({ register: true, error: "" });
-
-        // TODO: VIP-959 don't always use the same password
-        const password = "testaccoun";
+        const {
+          passwordData: { password }
+        } = this.state;
 
         const salt = await crypto.getRandomSalt();
         const { loginkey, encryptionkey1 } = await crypto.hashPassword(
@@ -83,6 +103,7 @@ class RegisterCompany extends React.Component<Props, State> {
           password,
           salt
         );
+
         const passwordMetrics = {
           passwordlength: password.length,
           passwordstrength: computePasswordScore(password)
@@ -132,7 +153,7 @@ class RegisterCompany extends React.Component<Props, State> {
           <div className="logo" />
           <img src={welcomeBack} className="illustration-login" />
 
-          <div className="holder-right">
+          <div className="holder-right register-company-holder">
             <h1>Register your Company</h1>
 
             <div className="UniversalInputHolder">
@@ -156,6 +177,47 @@ class RegisterCompany extends React.Component<Props, State> {
                 livevalue={v => this.setState({ company: v })}
               />
             </div>
+
+            <div className="password-container">
+              <ReactPasswordStrength
+                className="passwordStrength"
+                minLength={PW_MIN_LENGTH}
+                minScore={2}
+                scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+                tooShortWord={"too short"}
+                inputProps={{
+                  name: "password_input",
+                  autoComplete: "off",
+                  placeholder: "New Password",
+                  className: "cleanup universalTextInput toggle-password"
+                }}
+                changeCallback={state => this.handlePasswordChange(state)}
+              />
+
+              <IconButton
+                icon={`eye${this.state.passwordData.show ? "" : "-slash"}`}
+                onClick={() =>
+                  this.setState(prevState => {
+                    const passwordField = document.querySelector(".toggle-password");
+
+                    if (prevState.passwordData.show) {
+                      passwordField.type = "password";
+                    } else {
+                      passwordField.type = "text";
+                    }
+
+                    return {
+                      ...prevState,
+                      passwordData: {
+                        ...prevState.passwordData,
+                        show: !prevState.passwordData.show
+                      }
+                    };
+                  })
+                }
+              />
+            </div>
+
             <div
               className="agreementBox"
               style={{
@@ -204,7 +266,8 @@ class RegisterCompany extends React.Component<Props, State> {
                   !this.state.email.match(emailRegex) ||
                   !this.state.email ||
                   !this.state.privacy ||
-                  !this.state.tos
+                  !this.state.tos ||
+                  this.state.passwordData.score < 2
                 }
                 onClick={this.continue}
               />
