@@ -2,7 +2,6 @@ import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query } from "react-apollo";
 import { fetchTeams } from "../../queries/departments";
-import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import Team from "./employeeDetails/team";
 import AssignNewTeamMemberFromMember from "./universal/adding/assignNewTeamMemberFromMember";
 
@@ -15,31 +14,12 @@ interface Props {
 }
 
 interface State {
-  delete: Boolean;
-  confirm: Boolean;
-  network: Boolean;
-  deleted: Boolean;
   add: Boolean;
-  keepLicences: number[];
-  deleteerror: string | null;
-  savingObject: {
-    savedmessage: string;
-    savingmessage: string;
-    closeFunction: Function;
-    saveFunction: Function;
-  } | null;
 }
 
 class TeamsSection extends React.Component<Props, State> {
   state = {
-    delete: false,
-    confirm: false,
-    network: false,
-    deleted: false,
-    add: false,
-    keepLicences: [],
-    deleteerror: null,
-    savingObject: null
+    add: false
   };
 
   render() {
@@ -75,9 +55,9 @@ class TeamsSection extends React.Component<Props, State> {
             data.fetchTeams.forEach(team => {
               teamArray.push(
                 <Team
+                  key={team.name}
                   employee={this.props.employee}
                   team={team}
-                  deleteFunction={sO => this.setState({ savingObject: sO })}
                   moveTo={this.props.moveTo}
                   isadmin={this.props.isadmin}
                 />
@@ -119,24 +99,7 @@ class TeamsSection extends React.Component<Props, State> {
                       <div className="tableColumnSmall">{/*<h1>#Shared Licences</h1>*/}</div>
                       <div className="tableColumnSmall">{/*<h1>Leader</h1>*/}</div>
                     </div>
-                    <div className="tableEnd">
-                      {/*this.props.isadmin && (
-                        <UniversalButton
-                          type="high"
-                          label="Manage Teams"
-                          customStyles={{
-                            fontSize: "12px",
-                            lineHeight: "24px",
-                            fontWeight: "700",
-                            marginRight: "16px",
-                            width: "120px"
-                          }}
-                          onClick={() => {
-                            this.setState({ add: true });
-                          }}
-                        />
-                        )*/}
-                    </div>
+                    <div className="tableEnd"></div>
                   </div>
                   {teamArray}
                 </div>
@@ -144,15 +107,6 @@ class TeamsSection extends React.Component<Props, State> {
                   <AssignNewTeamMemberFromMember
                     employee={this.props.employee}
                     close={() => this.setState({ add: false })}
-                  />
-                )}
-                {this.state.savingObject && (
-                  <PopupSelfSaving
-                    savedmessage={this.state.savingObject!.savedmessage}
-                    savingmessage={this.state.savingObject!.savingmessage}
-                    closeFunction={() => this.setState({ savingObject: null })}
-                    saveFunction={async () => await this.state.savingObject!.saveFunction()}
-                    maxtime={5000}
                   />
                 )}
               </div>

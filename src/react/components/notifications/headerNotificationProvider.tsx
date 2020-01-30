@@ -27,7 +27,9 @@ class HeaderNotificationProvider extends React.Component<Props, State> {
 
   componentWillMount = async () => {
     try {
-      let response = await fetch("https://vipfy.store/maintenance.json");
+      let response = await fetch("https://vipfy.store/maintenance.json", {
+        cache: "reload"
+      }); /*"http://localhost/test.json"*/
       let responseJson = await response.json();
 
       for (let i = 0; i < responseJson.length; i++) {
@@ -39,7 +41,10 @@ class HeaderNotificationProvider extends React.Component<Props, State> {
         ) {
           continue;
         }
-        this.addHeaderNotification(element.message, { ...element });
+        setTimeout(
+          () => this.addHeaderNotification(element.message, { ...element }),
+          element.timeout || 0
+        );
       }
     } catch (error) {
       console.log(error);
@@ -62,9 +67,10 @@ class HeaderNotificationProvider extends React.Component<Props, State> {
 
     let opennew = false;
     await this.setState(({ notifications, pastnotifications }) => {
+      console.log(pastnotifications);
       if (
         noDuplicates &&
-        (notifications.findIndex(n => n.key == key) > -1 ||
+        ((notifications && notifications.findIndex(n => n && n.key == key) > -1) ||
           (pastnotifications && pastnotifications.findIndex(n => n && n.key == key) > -1))
       ) {
         return;

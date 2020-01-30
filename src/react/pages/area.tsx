@@ -4,15 +4,12 @@ import { withRouter, Switch } from "react-router";
 import { ipcRenderer } from "electron";
 import { graphql, compose, Query, withApollo } from "react-apollo";
 
-import Advisor from "./advisor";
 import AppPage from "./apppage";
 import Billing from "./billing";
 import Dashboard from "./dashboard";
 import Domains from "./domains";
 import Marketplace from "./marketplace";
 import MessageCenter from "./messagecenter";
-import Profile from "./profile";
-import Settings from "./settings";
 import AdminDashboard from "../components/admin/Dashboard";
 import ServiceCreation from "../components/admin/ServiceCreation";
 import Sidebar from "../components/Sidebar";
@@ -36,15 +33,10 @@ import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
 import { SideBarContext, UserContext } from "../common/context";
 import EmployeeOverview from "./manager/employeeOverview";
-import EmployeeDetails from "./manager/employeeDetails";
-import TeamOverview from "./manager/teamOverview";
 import TeamDetails from "./manager/teamDetails";
-import ServiceOverview from "./manager/serviceOverview";
-import ServiceDetails from "./manager/serviceDetails";
 import Consent from "../popups/universalPopups/Consent";
 import UniversalLogin from "./universalLogin";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest";
-import PendingIntegrations from "../components/admin/PendingIntegrations";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
@@ -53,18 +45,14 @@ import TutorialBase from "../tutorials/tutorialBase";
 import CryptoDebug from "../components/admin/crytpodebug";
 import Vacation from "./vacation";
 import { fetchUserLicences } from "../queries/departments";
+import EmployeeDetails from "./manager/employeeDetails";
+import TeamOverview from "./manager/teamOverview";
+import ServiceOverview from "./manager/serviceOverview";
+import ServiceDetails from "./manager/serviceDetails";
 
 interface AreaProps {
   history: any[];
-  fetchLicences: any;
-  login: boolean;
-  logMeOut: () => void;
-  location: any;
-  userData: any;
-  userid: number;
-  client: ApolloClient<InMemoryCache>;
   moveTo: Function;
-  sidebarloaded: Function;
   consent?: boolean;
   style?: Object;
   needspasswordchange: boolean;
@@ -80,8 +68,6 @@ interface AreaState {
   chatOpen: boolean;
   sidebarOpen: boolean;
   domain: string;
-  script: Element | null;
-  script3: Element | null;
   webviews: any[];
   oldWebViews: any[];
   openInstances: any;
@@ -98,8 +84,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     chatOpen: false,
     sidebarOpen: true,
     domain: "",
-    script: null,
-    script3: null,
     webviews: [],
     oldWebViews: [],
     openInstances: {},
@@ -324,14 +308,10 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "", component: Dashboard },
       { path: "dashboard", component: Dashboard },
       { path: "dashboard/:overlay", component: Dashboard },
-      { path: "settings", component: Settings },
-      { path: "profile", component: Profile },
       { path: "security", component: Security },
       { path: "messagecenter", component: MessageCenter },
       { path: "messagecenter/:person", component: MessageCenter },
       { path: "billing", component: Billing },
-      { path: "advisor", component: Advisor },
-      { path: "advisor/:typeid", component: Advisor },
       { path: "marketplace", component: Marketplace },
       { path: "marketplace/:appid/", component: AppPage },
       { path: "marketplace/:appid/:action", component: AppPage },
@@ -345,7 +325,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
-      { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
       { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },
@@ -377,30 +356,26 @@ class Area extends React.Component<AreaProps, AreaState> {
                 <UserContext.Provider value={{ userid: this.props.id }}>
                   <Route
                     render={props => {
-                      if (!this.props.location.pathname.includes("advisor")) {
-                        return (
-                          <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
-                            {res => (
-                              <Sidebar
-                                sidebarOpen={sidebarOpen}
-                                setApp={this.setApp}
-                                viewID={this.state.viewID}
-                                views={this.state.webviews}
-                                openInstances={this.state.openInstances}
-                                toggleSidebar={this.toggleSidebar}
-                                setInstance={this.setInstance}
-                                {...this.props}
-                                licences={licences}
-                                {...props}
-                                {...res}
-                                moveTo={this.moveTo}
-                              />
-                            )}
-                          </Query>
-                        );
-                      } else {
-                        return "";
-                      }
+                      return (
+                        <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
+                          {res => (
+                            <Sidebar
+                              sidebarOpen={sidebarOpen}
+                              setApp={this.setApp}
+                              viewID={this.state.viewID}
+                              views={this.state.webviews}
+                              openInstances={this.state.openInstances}
+                              toggleSidebar={this.toggleSidebar}
+                              setInstance={this.setInstance}
+                              {...this.props}
+                              licences={licences}
+                              {...props}
+                              {...res}
+                              moveTo={this.moveTo}
+                            />
+                          )}
+                        </Query>
+                      );
                     }}
                   />
                   <Route render={() => <HistoryButtons viewID={this.state.viewID} />} />
@@ -429,14 +404,8 @@ class Area extends React.Component<AreaProps, AreaState> {
                             path={`/area/${path}`}
                             render={props => (
                               <div
-                                className={`${
-                                  !this.props.location.pathname.includes("advisor")
-                                    ? "full-working"
-                                    : ""
-                                } ${chatOpen ? "chat-open" : ""} ${
-                                  sidebarOpen && !props.location.pathname.includes("advisor")
-                                    ? "sidebar-open"
-                                    : ""
+                                className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                                  sidebarOpen ? "sidebar-open" : ""
                                 }`}
                                 style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
                                 <ResizeAware>
@@ -500,12 +469,8 @@ class Area extends React.Component<AreaProps, AreaState> {
                       key={"ERRORELSE"}
                       render={props => (
                         <div
-                          className={`${
-                            !this.props.location.pathname.includes("advisor") ? "full-working" : ""
-                          } ${chatOpen ? "chat-open" : ""} ${
-                            sidebarOpen && !props.location.pathname.includes("advisor")
-                              ? "sidebar-open"
-                              : ""
+                          className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                            sidebarOpen ? "sidebar-open" : ""
                           }`}>
                           <ErrorPage />
                         </div>
@@ -530,9 +495,10 @@ class Area extends React.Component<AreaProps, AreaState> {
                   {this.state.consentPopup && (
                     <Consent close={() => this.setState({ consentPopup: false })} />
                   )}
-                  {this.props.needspasswordchange && (
-                    <ForcedPasswordChange email={this.props.emails[0].email} />
-                  )}
+                  {this.props.needspasswordchange &&
+                    !localStorage.getItem("impersonator-token") && (
+                      <ForcedPasswordChange email={this.props.emails[0].email} />
+                    )}
                   {this.props.isadmin &&
                     this.props.tutorialprogress &&
                     this.props.highlightReferences && <TutorialBase {...this.props} />}

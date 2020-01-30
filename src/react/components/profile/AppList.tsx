@@ -9,7 +9,6 @@ interface Props {
   licences: Licence[];
   search?: string;
   header?: string;
-  bulkUpdateLayout: Function;
   dragStartFunction: Function;
   dragEndFunction: Function;
 }
@@ -47,12 +46,16 @@ export default (props: Props) => {
       </div>
       <div
         /*ref={this.favouriteListRef} className="favourite-apps"*/ className="appGrid"
-        style={{
-          gridColumnGap:
-            24 +
-            ((props.width - 64 - 64 + 24) % (128 + 24)) /
-              (Math.floor((props.width - 64 - 64 + 24) / (128 + 24)) - 1)
-        }}>
+        style={
+          props.width
+            ? {
+                gridColumnGap:
+                  24 +
+                  ((props.width - 64 - 64 + 24) % (128 + 24)) /
+                    (Math.floor((props.width - 64 - 64 + 24) / (128 + 24)) - 1)
+              }
+            : {}
+        }>
         {props.licences
           .filter(licence => {
             if (props.search) {

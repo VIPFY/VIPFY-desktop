@@ -35,6 +35,51 @@ const DELETE_SERVICE = gql`
   }
 `;
 
+const COMPANY_SERVICES_OPTIONS = gql`
+  query fetchCompanyServices {
+    fetchCompanyServices {
+      app {
+        id
+        name
+        icon
+        disabled
+        options
+      }
+      orbitids {
+        id
+        alias
+        buytime
+        endtime
+        accounts {
+          id
+          alias
+          starttime
+          endtime
+          assignments {
+            assignmentid
+            starttime
+            endtime
+            unitid {
+              id
+              firstname
+              lastname
+              profilepicture
+            }
+          }
+        }
+        teams {
+          id
+          unitid {
+            id
+          }
+          name
+          profilepicture
+        }
+      }
+    }
+  }
+`;
+
 class ServiceOverview extends React.Component<Props, State> {
   state = {
     search: "",
@@ -107,42 +152,45 @@ class ServiceOverview extends React.Component<Props, State> {
       const accounts = [];
       const singleAccounts = [];
 
-      service.orbitids.forEach(element => {
-        element.teams.forEach(team => {
-          if (team != null) {
-            teams.push(team);
-          }
-        });
-      });
-
-      service.orbitids.forEach(element => {
-        if (element.endtime == null || moment(element.endtime).toDate() < new Date()) {
-          element.accounts.forEach(account => {
-            if (
-              account != null &&
-              (account.endtime == null || moment(account.endtime).toDate() > new Date()) &&
-              moment(account.starttime).toDate() < new Date()
-            ) {
-              accounts.push(account);
-              account.assignments.forEach(checkunit => {
-                if (
-                  checkunit &&
-                  (checkunit.endtime == null || moment(checkunit.endtime).toDate() > new Date()) &&
-                  !singleAccounts.find(
-                    s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
-                  )
-                ) {
-                  singleAccounts.push(checkunit.unitid);
-                }
-              });
+      if (!service.app.options.pending) {
+        service.orbitids.forEach(element => {
+          element.teams.forEach(team => {
+            if (team != null) {
+              teams.push(team);
             }
           });
-        }
-      });
+        });
+
+        service.orbitids.forEach(element => {
+          if (element.endtime == null || moment(element.endtime).toDate() < new Date()) {
+            element.accounts.forEach(account => {
+              if (
+                account != null &&
+                (account.endtime == null || moment(account.endtime).toDate() > new Date()) &&
+                moment(account.starttime).toDate() < new Date()
+              ) {
+                accounts.push(account);
+                account.assignments.forEach(checkunit => {
+                  if (
+                    checkunit &&
+                    (checkunit.endtime == null ||
+                      moment(checkunit.endtime).toDate() > new Date()) &&
+                    !singleAccounts.find(
+                      s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
+                    )
+                  ) {
+                    singleAccounts.push(checkunit.unitid);
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
 
       serviceArray.push(
         <div
-          key={service.name}
+          key={service.app.name}
           className="tableRow"
           onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
           <div className="tableMain">
@@ -150,18 +198,36 @@ class ServiceOverview extends React.Component<Props, State> {
               <PrintServiceSquare appidFunction={s => s.app} service={service} />
               <span className="name">{service.app.name}</span>
             </div>
-            <div className="tableColumnSmall">
-              <div
-                className="managerSquare"
-                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
-                {service.orbitids.length}
+            {service.app.options.pending ? (
+              <div className="tableColumnSmall">
+                <span
+                  className="status"
+                  style={{
+                    width: "40px",
+                    backgroundColor: "rgb(219, 77, 63)",
+                    paddingLeft: "8px",
+                    paddingRight: "8px",
+                    marginTop: "18px",
+                    marginLeft: "8px",
+                    display: "block"
+                  }}>
+                  pending
+                </span>
               </div>
-              <div
-                className="managerSquare"
-                style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
-                {accounts.length}
+            ) : (
+              <div className="tableColumnSmall">
+                <div
+                  className="managerSquare"
+                  style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                  {service.orbitids.length}
+                </div>
+                <div
+                  className="managerSquare"
+                  style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                  {accounts.length}
+                </div>
               </div>
-            </div>
+            )}
             <ColumnTeams teams={teams} teamidFunction={team => team} />
             <ColumnEmployees
               employees={singleAccounts}
@@ -203,7 +269,7 @@ class ServiceOverview extends React.Component<Props, State> {
 
     for (let index = 0; index < amountFakes; index++) {
       fakeArray.push(
-        <div className="tableRow">
+        <div className="tableRow" key={`trl-${index}`}>
           <div className="tableMain">
             <div className="tableColumnBig">
               <PrintServiceSquare appidFunction={s => s.app} service={{}} fake={true} />
@@ -261,11 +327,11 @@ class ServiceOverview extends React.Component<Props, State> {
               )}
             </AppContext.Consumer>
           </div>
-          <Query pollInterval={60 * 10 * 1000 + 900} query={fetchCompanyServices}>
+          <Query pollInterval={60 * 10 * 1000 + 900} query={COMPANY_SERVICES_OPTIONS}>
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return (
-                  <div className="table">
+                  <div className="table" key="table-fake-key">
                     <div className="tableHeading">
                       <div className="tableMain">
                         <div
@@ -349,7 +415,7 @@ class ServiceOverview extends React.Component<Props, State> {
               }
               return (
                 <>
-                  <div className="table" key="table">
+                  <div className="table" key="table-fake-key">
                     <div className="tableHeading">
                       <div className="tableMain">
                         <div
@@ -418,26 +484,6 @@ class ServiceOverview extends React.Component<Props, State> {
             service={this.state.willdeleting}
             close={() => this.setState({ willdeleting: null })}
           />
-          /*<PopupBase
-            fullmiddle={true}
-            dialog={true}
-            close={() => this.setState({ willdeleting: null })}
-            closeable={false}>
-            <p>Do you really want to delete the service and all its licences?</p>
-            <UniversalButton type="low" closingPopup={true} label="Cancel" />
-            <UniversalButton
-              type="low"
-              label="Delete"
-              onClick={() => {
-                this.setState(prevState => {
-                  return {
-                    willdeleting: null,
-                    deleting: prevState.willdeleting!.id
-                  };
-                });
-              }}
-            />
-          </PopupBase>*/
         )}
         {this.state.deleting && (
           <Mutation mutation={DELETE_SERVICE}>

@@ -1,6 +1,10 @@
 import * as React from "react";
 import UniversalTextInput from "../../../universalForms/universalTextInput";
 import UploadImage from "../uploadImage";
+import ReactPasswordStrength from "react-password-strength";
+import { PW_MIN_LENGTH } from "../../../../common/constants";
+import { randomPassword } from "../../../../common/passwordgen";
+import PasswordInput from "../../../../components/PasswordInput";
 
 interface Props {
   setOuterState: Function;
@@ -24,6 +28,11 @@ interface State {
   wphone2: string;
   showall: boolean;
   picture: File | null;
+  showPassword: boolean;
+  password: string;
+  sendingemail: boolean;
+  passwordChange: boolean;
+  passwordScore: number;
 }
 
 class EmployeeGeneralDataAdd extends React.Component<Props, State> {
@@ -42,7 +51,12 @@ class EmployeeGeneralDataAdd extends React.Component<Props, State> {
     wphone1: (this.props.addpersonal && this.props.addpersonal.wphone1) || "",
     wphone2: (this.props.addpersonal && this.props.addpersonal.wphone2) || "",
     showall: false,
-    picture: null
+    picture: null,
+    showPassword: true,
+    password: "",
+    sendingemail: false,
+    passwordChange: true,
+    passwordScore: 0
   };
 
   setBothStates = s => {
@@ -81,6 +95,57 @@ class EmployeeGeneralDataAdd extends React.Component<Props, State> {
           startvalue={this.state.wmail1}
           width="100%"
         />
+
+        <PasswordInput
+          className="passwordStrength addEmployeePassword"
+          minLength={PW_MIN_LENGTH}
+          minScore={2}
+          scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+          tooShortWord={"too short"}
+          randomValue={true}
+          showPassword={this.state.showPassword}
+          inputProps={{
+            name: "password_input",
+            autoComplete: "off",
+            placeholder: "New Password",
+            className: "cleanup universalTextInput toggle-password",
+            style: { width: "100%", padding: "0px" }
+          }}
+          changeCallback={state =>
+            this.setBothStates({ password: state.password, passwordScore: state.score })
+          }
+        />
+
+        <div style={{ marginBottom: "40px", display: "flex", alignItems: "center" }}>
+          <label className="switch">
+            <input
+              onChange={() =>
+                this.setBothStates(prevState => {
+                  return { ...prevState, sendingemail: !prevState.sendingemail };
+                })
+              }
+              checked={this.state.sendingemail}
+              type="checkbox"
+            />
+            <span className="slider" />
+          </label>
+          <span style={{ marginLeft: "8px" }}>Sending Email with password to employee</span>
+        </div>
+        <div style={{ marginBottom: "40px", display: "flex", alignItems: "center" }}>
+          <label className="switch">
+            <input
+              onChange={() =>
+                this.setBothStates(prevState => {
+                  return { ...prevState, passwordChange: !prevState.passwordChange };
+                })
+              }
+              checked={this.state.passwordChange}
+              type="checkbox"
+            />
+            <span className="slider" />
+          </label>
+          <span style={{ marginLeft: "8px" }}>Employee needs to change password</span>
+        </div>
         <button
           className="naked-button"
           style={{

@@ -11,7 +11,10 @@ import { compose, graphql, withApollo } from "react-apollo";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../queries/billing";
 import { fetchCompanyService } from "../../../queries/products";
 import { AppContext } from "../../../common/functions";
-import { createEncryptedLicenceKeyObject } from "../../../common/licences";
+import {
+  createEncryptedLicenceKeyObject,
+  reencryptLicenceKeyObject
+} from "../../../common/licences";
 
 interface Props {
   account: any;
@@ -433,6 +436,7 @@ class ChangeAccount extends React.Component<Props, State> {
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
               <UniversalButton
+                innerRef={el => addRenderElement({ key: "cancel", element: el })}
                 type="low"
                 label="Cancel"
                 onClick={() => {
@@ -504,16 +508,23 @@ class ChangeAccount extends React.Component<Props, State> {
                       this.state.changedp ||
                       this.state.changedt
                     ) {
-                      this.setState({ saving: true });
+
+this.setState({ saving: true });
                       try {
+                        const logindata = await reencryptLicenceKeyObject(
+                          account.id,
+                          {
+                            username: this.state.email ?? "",
+                            password: this.state.password ?? ""
+                          },
+                          false,
+                          this.props.client
+                        );
                         await this.props.changeAccount({
                           variables: {
                             accountid: account.id,
                             alias: this.state.alias,
-                            logindata: {
-                              username: this.state.email,
-                              password: this.state.password
-                            },
+                            logindata,
                             endtime: this.state.todate || null,
                             isNull: !!(this.state.todate == null)
                           },
@@ -533,6 +544,7 @@ class ChangeAccount extends React.Component<Props, State> {
                           this.props.closeChange();
                         }, 1000);
                       } catch (err) {
+                        console.error(err);
                         this.setState({ error: err });
                       }
                     } else {

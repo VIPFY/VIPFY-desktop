@@ -168,6 +168,7 @@ class AppCardIntegrations extends React.Component<Props, State> {
                   employee={data.me}
                   close={() => this.setState({ popup: false })}
                   service={this.props}
+                  noServiceEdit={true}
                 />
               );
             }}

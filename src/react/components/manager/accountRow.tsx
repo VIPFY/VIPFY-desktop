@@ -3,7 +3,6 @@ import ColumnEmployees from "./universal/columns/columnEmployee";
 import moment, { now } from "moment";
 import ChangeAccount from "./universal/changeAccount";
 import ColumnTeams from "./universal/columns/columnTeams";
-import { Query } from "react-apollo";
 
 interface Props {
   account: any;

@@ -1,15 +1,17 @@
 import { ApolloClient } from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
+import { setContext } from "apollo-link-context";
 import { WebSocketLink } from "apollo-link-ws";
 import { createUploadLink } from "apollo-upload-client";
 import { RetryLink } from "apollo-link-retry";
 import { onError } from "apollo-link-error";
+import { inspect } from "util";
+import os from "os";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
 import { logger } from "../logger";
 import { typeDefs, resolvers } from "./localGraphQL";
-import { inspect } from "util";
 
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
@@ -137,6 +139,10 @@ const afterwareLink = new ApolloLink((operation, forward) => {
   });
 });
 
+const middlewareLink = setContext(() => ({
+  headers: { "X-USER-HOST": os.hostname() }
+}));
+
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
 const wsLink = new WebSocketLink({
   uri: "wss://websockets.vipfy.store/subscriptions",
@@ -221,7 +227,9 @@ const retryLink = new RetryLink({
 });
 
 // Concatenate the created links together
-const httpLinkWithMiddleware = retryLink.concat(errorLink.concat(afterwareLink.concat(httpLink)));
+const httpLinkWithMiddleware = retryLink.concat(
+  errorLink.concat(afterwareLink.concat(middlewareLink.concat(httpLink)))
+);
 
 // Split the links, so that each can be used for the defined operation
 const link = split(

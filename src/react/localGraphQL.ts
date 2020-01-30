@@ -6,11 +6,6 @@ import {
   generateNewKeypair
 } from "./common/crypto";
 import { Buffer } from "buffer";
-
-/*
-extend Mutation {
-  addExternalAccountLicence()
-}*/
 export const typeDefs = gql`
   extend type Key {
     privatekeyDecrypted: String
@@ -74,28 +69,28 @@ export const resolvers = {
       } else {
         //TODO: optimize
         for (let encryptedby of key.encryptedby) {
-          const d = await client.query({
-            query: gql`
-              query onFetchKey($id: ID!) {
-                fetchKey(id: $id) {
-                  id
-                  publickey
-                  privatekey
-                  encryptedby {
-                    id
-                  }
-                  privatekeyDecrypted @client
-                }
-              }
-            `,
-            variables: { id: encryptedby.id },
-            fetchPolicy: forceFetch ? "network-only" : "cache-first"
-          });
-          if (!d.data || !d.data.fetchKey == null) {
-            throw new Error(d.error);
-          }
-
           try {
+            const d = await client.query({
+              query: gql`
+                query onFetchKey($id: ID!) {
+                  fetchKey(id: $id) {
+                    id
+                    publickey
+                    privatekey
+                    encryptedby {
+                      id
+                    }
+                    privatekeyDecrypted @client
+                  }
+                }
+              `,
+              variables: { id: encryptedby.id },
+              fetchPolicy: forceFetch ? "network-only" : "cache-first"
+            });
+            if (!d.data || !d.data.fetchKey == null) {
+              throw new Error(d.error);
+            }
+
             return (
               await decryptLicence(
                 Buffer.from(key.privatekey, "hex"),

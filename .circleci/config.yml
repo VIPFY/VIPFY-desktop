@@ -1,12 +1,97 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+
+# branches: &branches
+#   filters:
+#     branches:
+#       only:
+#         - /custom-version-.*/
+
 version: 2.1
+orbs:
+  win: circleci/windows@2.2.0
 jobs:
-  custom-version-*:
-    docker:
-      - image: circleci/node:12.14.1
+  windows: # This is the name of the build
+    executor: win/default
+    working_directory: ~/repo
+    steps:
+      - checkout # Checks out our code from Bitbucket and installs dependencies
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - windows-dependencies
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: windows-dependencies
+      - run: set DEVELOPMENT=$DEVELOPMENT
+      - run: set UNSIGNED=$UNSIGNED # Signing the App will fail, so remove this build step
+      - run: set SERVER_NAME=$SERVER_NAME
+      - run: set CHANNEL_ID=$CHANNEL_ID
+      - run:
+          name: Set our development channel ID
+          command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
+          shell: bash.exe
+      - run:
+          name: Create a custom tag for nucleus
+          command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-windows-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
+          shell: bash.exe
+      - run:
+          name: Build the current version for windows
+          command: npm run publish-js
+      - run:
+          name: Make our deploy script executable
+          command: chmod +x .circleci/release-nucleus.sh
+          shell: bash.exe
+      - run:
+          name: Log in to nucleus and release the previously built version
+          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
+          shell: bash.exe
+
+  mac:
+    macos: # Build the Mac Version
+      xcode: 11.3.0
+    working_directory: ~/repo
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - mac-dependencies
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: mac-dependencies
       - run:
-          name: Build the bundle files
-          command: |
-            echo 'Building the bundle!'
-            echo 'This is the delivery pipeline'
+          name: Set our development channel ID
+          command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
+      - run:
+          name: Create a custom tag for nucleus
+          command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-mac-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
+      - run:
+          name: Build the current version for Mac
+          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID UNSIGNED=$UNSIGNED npm run publish-js
+      - run:
+          name: Make our deploy script executable
+          command: chmod +x .circleci/release-nucleus.sh
+      - run:
+          name: Log in to nucleus and release the previously built version
+          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
+
+workflows:
+  version: 2.1
+
+  build-workflows:
+    jobs:
+      - windows:
+          filters:
+            branches:
+              only:
+                - /custom-version-.*/
+      - mac:
+          filters:
+            branches:
+              only:
+                - /custom-version-.*/

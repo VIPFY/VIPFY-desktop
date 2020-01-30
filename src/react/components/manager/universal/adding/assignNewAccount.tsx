@@ -7,11 +7,12 @@ import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
 import AssignOrbit from "./assignOrbit";
-import { graphql, compose } from "react-apollo";
+import { graphql, compose, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { fetchUserLicences } from "../../../../queries/departments";
 import Calendar from "react-calendar";
 import moment, { now } from "moment";
+import { createLicenceKeyFragmentForUser } from "../../../../common/licences";
 
 interface Props {
   employee: any;
@@ -20,6 +21,8 @@ interface Props {
   service?: any;
 
   refetch?: Function;
+  noServiceEdit?: Boolean;
+  client: any;
 }
 
 interface State {
@@ -43,6 +46,7 @@ const ASSIGN_ACCOUNT = gql`
     $tags: [String]
     $starttime: Date
     $endtime: Date
+    $keyfragment: JSON
   ) {
     assignAccount(
       licenceid: $licenceid
@@ -51,6 +55,7 @@ const ASSIGN_ACCOUNT = gql`
       tags: $tags
       starttime: $starttime
       endtime: $endtime
+      keyfragment: $keyfragment
     )
   }
 `;
@@ -130,10 +135,12 @@ class AssignNewAccount extends React.Component<Props, State> {
               <span style={{ lineHeight: "24px", marginLeft: "8px" }}>
                 {this.state.service.name}
               </span>
-              <i
-                className="fal fa-pen editbutton"
-                onClick={() => this.setState({ service: null, orbit: null, account: null })}
-              />
+              {!this.props.noServiceEdit && (
+                <i
+                  className="fal fa-pen editbutton"
+                  onClick={() => this.setState({ service: null, orbit: null, account: null })}
+                />
+              )}
             </div>
             {this.state.orbit ? (
               <>
@@ -295,13 +302,19 @@ class AssignNewAccount extends React.Component<Props, State> {
             onClick={async () => {
               this.setState({ saving: true });
               try {
+                const keyfragment = await createLicenceKeyFragmentForUser(
+                  this.state.account!.id,
+                  this.props.employee.id,
+                  this.props.client
+                );
                 await this.props.assignAccount({
                   variables: {
                     licenceid: this.state.account!.id,
                     userid: this.props.employee.id,
                     rights: { view: true, use: true },
                     starttime: this.state.fromdate || undefined,
-                    endtime: this.state.todate || undefined
+                    endtime: this.state.todate || undefined,
+                    keyfragment
                   },
                   refetchQueries: [
                     {
@@ -367,4 +380,4 @@ export default compose(
   graphql(ASSIGN_ACCOUNT, {
     name: "assignAccount"
   })
-)(AssignNewAccount);
+)(withApollo(AssignNewAccount));

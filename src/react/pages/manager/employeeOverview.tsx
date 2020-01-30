@@ -6,15 +6,13 @@ import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queri
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
-import { randomPassword } from "../../common/passwordgen";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
-import DeletePopup from "../../popups/universalPopups/deletePopup";
 import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
+import { concatName } from "../../common/functions";
 
 interface Props {
   moveTo: Function;
@@ -28,12 +26,6 @@ interface State {
   add: Boolean;
   willdeleting: number | null;
 }
-
-const DELETE_EMPLOYEE = gql`
-  mutation onDeleteEmployee($employeeid: ID!) {
-    deleteEmployee(employeeid: $employeeid)
-  }
-`;
 
 class EmployeeOverview extends React.Component<Props, State> {
   state = {
@@ -60,7 +52,7 @@ class EmployeeOverview extends React.Component<Props, State> {
 
     for (let index = 0; index < amountFakes; index++) {
       fakeArray.push(
-        <div className="tableRow">
+        <div className="tableRow" key={`trl-${index}`}>
           <div className="tableMain">
             <div className="tableColumnBig" style={{ width: "20%" }}>
               <PrintEmployeeSquare employee={{}} fake={true} />
@@ -343,7 +335,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                           <div className="tableMain">
                             <div className="tableColumnBig" style={{ width: "20%" }}>
                               <PrintEmployeeSquare employee={employee} className="managerSquare" />
-                              <span className="name">
+                              <span className="name" title={concatName(employee)}>
                                 {employee.firstname} {employee.lastname}
                               </span>
                             </div>
@@ -512,26 +504,6 @@ class EmployeeOverview extends React.Component<Props, State> {
             user={this.state.willdeleting}
             close={() => this.setState({ willdeleting: null })}
           />
-          /*<Mutation mutation={DELETE_EMPLOYEE}>
-            {deleteEmployee => (
-              <DeletePopup
-                key="removeEmployee"
-                heading="Remove Employee"
-                subHeading="By removing the employee from the company, you remove all accounts aswell"
-                services={[]}
-                employees={[]}
-                close={() => this.setState({ willdeleting: null })}
-                submit={() =>
-                  deleteEmployee({
-                    variables: {
-                      employeeid: this.state.willdeleting
-                    },
-                    refetchQueries: [{ query: fetchDepartmentsData }]
-                  })
-                }
-              />
-            )}
-          </Mutation>*/
         )}
       </div>
     );

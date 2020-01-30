@@ -10,24 +10,6 @@ const fragment = gql`
   }
 `;
 
-export const UPDATE_LAYOUT = gql`
-  mutation onUpdateLayout($layout: LayoutInput!) {
-    updateLayout(layout: $layout) {
-      ...LicenceParts
-    }
-  }
-  ${fragment}
-`;
-
-export const SWITCH_APPS_LAYOUT = gql`
-  mutation onSwitchAppsLayout($app1: LayoutInput!, $app2: LayoutInput!) {
-    switchAppsLayout(app1: $app1, app2: $app2) {
-      ...LicenceParts
-    }
-  }
-  ${fragment}
-`;
-
 export const signInUser = gql`
   mutation SignInUser($email: String!, $password: String, $passkey: String) {
     signIn(email: $email, password: $password, passkey: $passkey) {
@@ -53,44 +35,10 @@ export const editDepartment = gql`
   }
 `;
 
-export const addEmployee = gql`
-  mutation addEmployee($unitid: ID!, $departmentid: ID!) {
-    addEmployee(unitid: $unitid, departmentid: $departmentid) {
-      ok
-    }
-  }
-`;
-
-export const updateUser = gql`
-  mutation UpdateUser($user: UserInput!) {
-    updateUser(user: $user) {
-      ok
-    }
-  }
-`;
-
-export const CHANGE_PASSWORD = gql`
-  mutation onChangePassword($pw: String!, $newPw: String!, $confirmPw: String!) {
-    changePassword(pw: $pw, newPw: $newPw, confirmPw: $confirmPw) {
-      ok
-      token
-    }
-  }
-`;
-
 export const agreeTos = gql`
   mutation AgreeTos {
     agreeTos {
       ok
-    }
-  }
-`;
-
-export const forgotPassword = gql`
-  mutation onForgotPassword($email: String!) {
-    forgotPassword(email: $email) {
-      ok
-      email
     }
   }
 `;

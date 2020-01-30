@@ -43,9 +43,6 @@
             border-radius: 4px;
             padding: 0px 10px;
             transition: 200ms background-color, 200ms color;
-            position: absolute;
-            right: 32px;
-            top: 4px;
             &:hover{
                 background-color: rgba(255,255,255,0.5);
                 //color: white;

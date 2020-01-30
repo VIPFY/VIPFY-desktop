@@ -40,6 +40,7 @@ class Login extends React.Component<Props, State> {
     if (props.email != state.prevEmail) {
       return { ...state, email: props.email, prevEmail: props.email };
     }
+    return state;
   }
 
   render() {
@@ -110,19 +111,13 @@ class Login extends React.Component<Props, State> {
               />
             </div>
 
-            <div className="login-buttons">
-              <UniversalButton
-                label="Forgot Password"
-                type="low"
-                onClick={() => this.props.backFunction()}
-              />
-
+            <div className="login-buttons" style={{ justifyContent: "flex-end" }}>
               <UniversalButton
                 label={this.state.submitting ? <i className="fal fa-spinner fa-spin" /> : "login"}
                 type="high"
                 disabled={this.state.field2 == "" || this.state.submitting}
                 onClick={async () => {
-                  await this.setState({ submitting: true });
+                  this.setState({ submitting: true });
                   const hasError = await this.props.continueFunction(
                     this.state.field2,
                     this.state.email
@@ -131,9 +126,8 @@ class Login extends React.Component<Props, State> {
                   if (hasError) {
                     this.setState({ showError: true });
                     setTimeout(() => this.setState({ showError: false }), 2250);
+                    this.setState({ submitting: false });
                   }
-
-                  await this.setState({ submitting: false });
                 }}
               />
             </div>

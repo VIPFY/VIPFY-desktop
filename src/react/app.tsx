@@ -128,7 +128,9 @@ class App extends React.Component<AppProps, AppState> {
     //     return;
     //   }
     // });
-    this.props.history.push("/area");
+    if (this.props.history.location.pathname != "/area") {
+      this.props.history.push("/area");
+    }
     //this.redeemSetupToken();
   }
 
@@ -171,12 +173,21 @@ class App extends React.Component<AppProps, AppState> {
         const res = await this.props.endImpersonation({
           variables: { token: impersonated }
         });
+
+        // restore original local storage (fixes VIP-1003)
+        const impersonatorLocalStorage = JSON.parse(
+          localStorage.getItem("impersonator-localStorage") ?? "{}"
+        );
+        localStorage.clear();
+        for (const key in impersonatorLocalStorage) {
+          localStorage.setItem(key, impersonatorLocalStorage[key]);
+        }
+
         await localStorage.setItem("token", res.endImpersonation);
       } catch (err) {
         localStorage.removeItem("token");
         console.error("LOG: logMeOut -> err", err);
       }
-      await localStorage.removeItem("impersonator-token");
 
       await this.props.history.push("/area/dashboard");
       await this.props.client.cache.reset(); // clear graphql cache
@@ -359,9 +370,6 @@ class App extends React.Component<AppProps, AppState> {
       case "dashboard":
         this.moveTo("dashboard");
         break;
-      case "profile":
-        this.moveTo("profile");
-        break;
 
       default:
     }
@@ -416,31 +424,6 @@ class App extends React.Component<AppProps, AppState> {
         className="full-size">
         <HeaderNotificationProvider>
           {this.renderComponents()}
-          {/*sidebarloaded &&
-          localStorage.getItem("token") &&
-          
-            <Query query={tutorial}>
-            {({ data, loading, error }) => {
-              if (error) {
-                return null;
-              }
-
-              if (loading) {
-                return null;
-              }
-
-              return (
-                <Tutorial
-                  tutorialdata={data}
-                  renderElements={this.references}
-                  page={page}
-                  reshow={this.state.reshow}
-                  setreshowTutorial={this.setreshowTutorial}
-                />
-              );
-            }}
-          </Query>
-          }*/}
           {popup.show && (
             <Popup
               popupHeader={popup.header}

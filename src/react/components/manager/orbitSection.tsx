@@ -72,7 +72,12 @@ const INITAL_STATE = {
 class OrbitSection extends React.Component<Props, State> {
   state = {
     ...INITAL_STATE,
-    loginurl: this.props.orbit.key && this.props.orbit.key.loginurl,
+    loginurl:
+      this.props.orbit.key &&
+      this.props.orbit.key.domain &&
+      this.props.orbit.key.domain
+        .replace(this.props.app.options.predomain, "")
+        .replace(this.props.app.options.afterdomain, ""),
     alias: this.props.orbit.alias,
     todate: this.props.orbit.endtime && moment(this.props.orbit.endtime).toDate()
   };
@@ -140,7 +145,6 @@ class OrbitSection extends React.Component<Props, State> {
 
   render() {
     const orbit = this.props.orbit;
-    console.log("ACCOUNTS", orbit.accounts);
     return (
       <div className="section">
         <div className="heading">
@@ -187,6 +191,7 @@ class OrbitSection extends React.Component<Props, State> {
               .filter(account => account && (account.endtime == null || account.endtime > now()))
               .map(account => (
                 <AccountRow
+                  key={account.id}
                   account={account}
                   orbit={orbit}
                   app={this.props.app}
@@ -229,7 +234,6 @@ class OrbitSection extends React.Component<Props, State> {
             app={this.props.app}
             closeChange={backelement => {
               if (backelement) {
-                console.log("BACK", backelement);
                 this.setState({ newaccount: false, addUsers: backelement });
               } else {
                 this.setState({ newaccount: false });
@@ -273,6 +277,7 @@ class OrbitSection extends React.Component<Props, State> {
                 />
 
                 <UniversalButton
+                  innerRef={el => addRenderElement({ key: "saveAssign", element: el })}
                   type="low"
                   label="Cancel"
                   onClick={() => this.setState(INITAL_STATE)}
@@ -437,7 +442,9 @@ class OrbitSection extends React.Component<Props, State> {
                       variables: {
                         orbitid: orbit.id,
                         alias: this.state.alias,
-                        loginurl: this.props.app.needssubdomain ? this.state.loginurl : undefined,
+                        loginurl: this.props.app.needssubdomain
+                          ? `${this.props.app.options.predomain}${this.state.loginurl}${this.props.app.options.afterdomain}`
+                          : undefined,
                         endtime: this.state.todate
                       },
                       refetchQueries: [

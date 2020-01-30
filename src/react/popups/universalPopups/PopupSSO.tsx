@@ -1,25 +1,15 @@
 import * as React from "react";
-import gql from "graphql-tag";
 import PopupBase from "./popupBase";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import Dropzone from "react-dropzone";
-import Tooltip from "react-tooltip-lite";
-
-const UPDATE_PIC = gql`
-  mutation UpdatePic($file: Upload!) {
-    updateProfilePic(file: $file) {
-      id
-      profilepicture
-    }
-  }
-`;
 
 interface Props {
   cancel: Function;
   add: Function;
   nooutsideclose?: Boolean;
   inmanager?: Boolean;
+  appname?: string;
 }
 
 interface State {
@@ -35,7 +25,7 @@ interface State {
 
 class PopupSSO extends React.Component<Props, State> {
   state = {
-    name: "",
+    name: this.props.appname || "",
     url: "",
     email: "",
     password: "",
@@ -149,7 +139,7 @@ class PopupSSO extends React.Component<Props, State> {
             width="100%"
             id="name"
             label="Servicename"
-            startvalue=""
+            startvalue={this.props.appname || ""}
             livevalue={value => this.setState({ name: value })}
           />
 

@@ -79,34 +79,33 @@ class ServiceDetails extends React.Component<Props, State> {
           const teams = [];
           const accounts = [];
           const singleAccounts = [];
-
-          service.orbitids.forEach(element => {
-            element.teams.forEach(team => {
-              if (team != null) {
-                teams.push(team);
-              }
+          if (!service.app.options.pending) {
+            service.orbitids.forEach(element => {
+              element.teams.forEach(team => {
+                if (team != null) {
+                  teams.push(team);
+                }
+              });
             });
-          });
 
-          service.orbitids.forEach(element => {
-            element.accounts.forEach(account => {
-              if (account != null && (account.endtime > now() || account.endtime == null)) {
-                accounts.push(account);
-                account.assignments.forEach(checkunit => {
-                  if (
-                    checkunit &&
-                    !singleAccounts.find(
-                      s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
-                    )
-                  ) {
-                    singleAccounts.push(checkunit.unitid);
-                  }
-                });
-              }
+            service.orbitids.forEach(element => {
+              element.accounts.forEach(account => {
+                if (account != null && (account.endtime > now() || account.endtime == null)) {
+                  accounts.push(account);
+                  account.assignments.forEach(checkunit => {
+                    if (
+                      checkunit &&
+                      !singleAccounts.find(
+                        s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
+                      )
+                    ) {
+                      singleAccounts.push(checkunit.unitid);
+                    }
+                  });
+                }
+              });
             });
-          });
-
-          console.log("SERVICE", service);
+          }
           return (
             <div className="managerPage">
               <div className="heading">
@@ -158,11 +157,17 @@ class ServiceDetails extends React.Component<Props, State> {
                   </div>
                 </div>
               </div>
-              {service.orbitids
-                .filter(o => o.endtime == null || o.endtime > now())
-                .map(orbit => (
-                  <OrbitSection orbit={orbit} app={service.app} refetch={refetch} />
-                ))}
+              {!service.app.options.pending &&
+                service.orbitids
+                  .filter(o => o.endtime == null || o.endtime > now())
+                  .map(orbit => (
+                    <OrbitSection
+                      key={orbit.id}
+                      orbit={orbit}
+                      app={service.app}
+                      refetch={refetch}
+                    />
+                  ))}
               <div className="section">
                 <div className="heading">
                   <h1>
@@ -171,6 +176,7 @@ class ServiceDetails extends React.Component<Props, State> {
                         <UniversalButton
                           innerRef={el => addRenderElement({ key: "createOrbit", element: el })}
                           type="high"
+                          disabled={service.app.options.pending}
                           label="Create Orbit"
                           onClick={() => this.setState({ create: true })}
                         />

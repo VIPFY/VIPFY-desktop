@@ -1,7 +1,7 @@
-import { ipcRenderer } from "electron";
-import ICO from "icojs";
-import { PNG } from "pngjs";
-import palette from "get-rgba-palette";
+let ipcRenderer = require("electron").ipcRenderer;
+let ICO = require("icojs");
+let { PNG } = require("pngjs");
+let palette = require("get-rgba-palette");
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {

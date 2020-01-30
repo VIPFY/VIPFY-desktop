@@ -1,8 +1,7 @@
 import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import ServiceDetails from "../../components/manager/serviceDetails";
-import { graphql, compose, Query } from "react-apollo";
-import gql from "graphql-tag";
+import { Query } from "react-apollo";
 import { fetchUserLicences } from "../../queries/departments";
 import { now } from "moment";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
@@ -11,7 +10,6 @@ import AssignNewAccount from "./universal/adding/assignNewAccount";
 interface Props {
   employeeid: number;
   employeename: string;
-  addExternalBoughtPlan: Function;
   moveTo: Function;
   employee: any;
   isadmin: Boolean;
@@ -19,83 +17,11 @@ interface Props {
 
 interface State {
   add: Boolean;
-  search: string;
-  drag: {
-    id: number;
-    name: number;
-    icon: string;
-    needssubdomain: Boolean;
-    options: Object;
-    integrating?: Boolean;
-    error?: Boolean;
-    email?: string;
-    password?: string;
-    subdomain?: string;
-  } | null;
-  integrateApp: any;
-  popup: Boolean;
-  email: string;
-  password: string;
-  subdomain: string;
-  confirm: Boolean;
-  integrating: Boolean;
-  integrated: Boolean;
-  apps: {
-    id: number;
-    name: number;
-    icon: string;
-    needssubdomain: Boolean;
-    options: Object;
-    integrating?: Boolean;
-    error?: Boolean;
-    email?: string;
-    password?: string;
-    subdomain?: string;
-  }[];
-  network: Boolean;
-  finished: Boolean;
-  error: String | null;
-  savingObject: {
-    savedmessage: string;
-    savingmessage: string;
-    closeFunction: Function;
-    saveFunction: Function;
-  } | null;
-  service: number;
-  showall: Boolean;
-  choosenApp: number;
 }
-
-const ADD_EXTERNAL_PLAN = gql`
-  mutation onAddExternalBoughtPlan($appid: ID!, $alias: String, $price: Float, $loginurl: String) {
-    addExternalBoughtPlan(appid: $appid, alias: $alias, price: $price, loginurl: $loginurl) {
-      id
-      alias
-    }
-  }
-`;
 
 class LicencesSection extends React.Component<Props, State> {
   state = {
-    add: false,
-    search: "",
-    drag: null,
-    integrateApp: {},
-    popup: false,
-    email: "",
-    password: "",
-    subdomain: "",
-    confirm: false,
-    integrating: true,
-    integrated: false,
-    apps: [],
-    network: false,
-    finished: false,
-    error: null,
-    savingObject: null,
-    service: 0,
-    showall: false,
-    choosenApp: 0
+    add: false
   };
 
   render() {
@@ -140,12 +66,12 @@ class LicencesSection extends React.Component<Props, State> {
               ) {
                 appArray.push(
                   <ServiceDetails
+                    key={e.id}
                     e={e}
                     employeeid={employeeid}
                     employeename={this.props.employeename}
                     moveTo={this.props.moveTo}
                     employee={this.props.employee}
-                    deleteFunction={sO => this.setState({ savingObject: sO })}
                     isadmin={this.props.isadmin}
                   />
                 );
@@ -175,7 +101,7 @@ class LicencesSection extends React.Component<Props, State> {
                       {/*<div className="tableColumnSmall">
                         <h1>App</h1>
                   </div>*/}
-                      <div className="tableColumnSmall">
+                      <div className="tableColumnBig">
                         <h1>Orbit</h1>
                       </div>
                       <div className="tableColumnSmall">
@@ -185,7 +111,7 @@ class LicencesSection extends React.Component<Props, State> {
                         <h1>Accountalias</h1>
                       </div>
                       <div className="tableColumnSmall">
-                        <h1>min/Month</h1>
+                        {this.props.isadmin && <h1>min/Month</h1>}
                       </div>
                       <div className="tableColumnSmall">{/*<h1>Price</h1>*/}</div>
                     </div>
@@ -201,19 +127,6 @@ class LicencesSection extends React.Component<Props, State> {
                     refetch={refetch}
                   />
                 )}
-
-                {this.state.savingObject && (
-                  <PopupSelfSaving
-                    savedmessage={this.state.savingObject!.savedmessage}
-                    savingmessage={this.state.savingObject!.savingmessage}
-                    closeFunction={() => {
-                      this.state.savingObject!.closeFunction();
-                      this.setState({ savingObject: null });
-                    }}
-                    saveFunction={async () => await this.state.savingObject!.saveFunction()}
-                    maxtime={5000}
-                  />
-                )}
               </div>
             );
           }
@@ -223,8 +136,4 @@ class LicencesSection extends React.Component<Props, State> {
     );
   }
 }
-export default compose(
-  graphql(ADD_EXTERNAL_PLAN, {
-    name: "addExternalBoughtPlan"
-  })
-)(LicencesSection);
+export default LicencesSection;
