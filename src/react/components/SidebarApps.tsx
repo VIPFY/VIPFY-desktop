@@ -388,7 +388,6 @@ class SidebarApps extends React.Component<Props, State> {
                   if (licence.sidebar === null) {
                     licence.sidebar = maxValue + 1;
                   }
-
                   return (
                     <SidebarLink
                       key={`ServiceLogo-${licence.id}`}

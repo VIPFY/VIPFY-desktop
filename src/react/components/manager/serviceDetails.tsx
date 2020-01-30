@@ -86,13 +86,13 @@ class ServiceDetails extends React.Component<Props, State> {
         }>
         <div className="tableMain">
           <div
-            className="tableColumnSmall"
+            className="tableColumnBig"
             style={
               e.rightscount > 1 || e.tags
                 ? {
                     display: "grid",
                     alignItems: "center",
-                    gridTemplateColumns: "32px 1fr 50px"
+                    gridTemplateColumns: "32px 1fr 150px"
                   }
                 : { display: "grid", alignItems: "center", gridTemplateColumns: "32px 1fr" }
             }>
@@ -126,30 +126,32 @@ class ServiceDetails extends React.Component<Props, State> {
               {/*e.boughtplanid.planid.appid.name*/}
               {e.boughtplanid.alias}
             </span>
-            {!(e.tags && e.tags.includes("vacation")) && e.rightscount > 1 && (
-              <span
-                className="infoTag share"
-                style={{ marginLeft: "8px", textAlign: "center" }}
-                title="This account is shared between multiple users">
-                Shared
-              </span>
-            )}
-            {e.tags && e.tags.includes("vacation") && (
-              <span
-                className="infoTag vacationTag"
-                style={{ marginLeft: "8px", textAlign: "center" }}
-                title="This account is a vacation access">
-                Holiday
-              </span>
-            )}
-            {e.tags && e.tags.includes("teamlicence") && (
-              <span
-                className="infoTag teamTag"
-                style={{ marginLeft: "8px", textAlign: "center" }}
-                title="This account is a assigned through a team">
-                Team
-              </span>
-            )}
+            <span>
+              {!(e.tags && e.tags.includes("vacation")) && e.rightscount > 1 && (
+                <span
+                  className="infoTag share"
+                  style={{ marginLeft: "8px", textAlign: "center" }}
+                  title="This account is shared between multiple users">
+                  Shared
+                </span>
+              )}
+              {e.tags && e.tags.includes("vacation") && (
+                <span
+                  className="infoTag vacationTag"
+                  style={{ marginLeft: "8px", textAlign: "center" }}
+                  title="This account is a vacation access">
+                  Holiday
+                </span>
+              )}
+              {e.tags && e.tags.includes("teamlicence") && (
+                <span
+                  className="infoTag teamTag"
+                  style={{ marginLeft: "8px", textAlign: "center" }}
+                  title="This account is a assigned through a team">
+                  Team
+                </span>
+              )}
+            </span>
           </div>
           {/*<div className="tableColumnSmall content">{e.boughtplanid.alias}</div>*/}
           <div className="tableColumnSmall content">
