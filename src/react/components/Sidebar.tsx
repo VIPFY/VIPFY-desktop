@@ -98,7 +98,6 @@ export type SidebarProps = {
   logMeOut: () => void;
   isadmin: boolean;
   toggleSidebar: Function;
-  updateLayout: Function;
   moveTo: Function;
   viewID: number;
   openInstances: any;

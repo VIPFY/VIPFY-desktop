@@ -9,7 +9,6 @@ interface Props {
   licences: Licence[];
   search?: string;
   header?: string;
-  bulkUpdateLayout: Function;
   dragStartFunction: Function;
   dragEndFunction: Function;
 }

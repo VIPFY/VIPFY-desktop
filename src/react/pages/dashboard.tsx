@@ -6,9 +6,6 @@ import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp, filterError, filterLicences } from "../common/functions";
 import UniversalSearchBox from "../components/universalSearchBox";
 import { Link } from "react-router-dom";
-import Collapsible from "../common/Collapsible";
-import AppTile from "../components/AppTile";
-import { UPDATE_LAYOUT, SWITCH_APPS_LAYOUT } from "../mutations/auth";
 import { Licence } from "../interfaces";
 import dashboardPic from "../../images/dashboard.png";
 
@@ -19,7 +16,6 @@ interface Props {
   id: string;
   setApp: Function;
   licences: any[];
-  updateLayout: Function;
   switchLayout: Function;
 }
 
@@ -40,97 +36,6 @@ class Dashboard extends React.Component<Props, State> {
   };
   dragEndFunction = (): void => this.setState({ dragItem: null, showDeletion: false });
   setApp = (licence: number) => this.props.setApp(licence);
-
-  handleDrop = async (dropPosition: number) => {
-    const dragged = this.props.licences.find(licence => licence.id == this.state.dragItem);
-    console.log("LOG: Dashboard -> handleDrop -> this.state.dragItem", this.state.dragItem);
-
-    if (dropPosition != dragged.dashboard) {
-      try {
-        if (dragged.dashboard !== null && favourites[dropPosition]) {
-          const app1 = { id: dragged.id, dashboard: dragged.dashboard };
-          const app2 = { id: favourites[dropPosition]!.id, dashboard: dropPosition };
-
-          await this.props.switchLayout({
-            variables: { app1, app2 },
-            optimisticResponse: {
-              __typename: "Mutation",
-              switchAppsLayout: [
-                {
-                  id: app1.id,
-                  unitid: { id: this.props.id, __typename: "SemiPublicUser" },
-                  dashboard: app2.dashboard,
-                  __typename: "Licence"
-                },
-                {
-                  id: app2.id,
-                  unitid: { id: this.props.id, __typename: "SemiPublicUser" },
-                  dashboard: app1.dashboard,
-                  __typename: "Licence"
-                }
-              ]
-            }
-          });
-        } else {
-          if (Object.values(favourites).find(item => item && item!.id == this.state.dragItem)) {
-            favourites[dragged.dashboard] = null;
-          }
-
-          const promises = [
-            this.props.updateLayout({
-              variables: { layout: { id: this.state.dragItem, dashboard: dropPosition } },
-              optimisticResponse: {
-                __typename: "Mutation",
-                updateLayout: {
-                  id: this.state.dragItem,
-                  unitid: { id: this.props.id, __typename: "SemiPublicUser" },
-                  dashboard: dropPosition,
-                  __typename: "Licence"
-                }
-              }
-            })
-          ];
-
-          if (favourites[dropPosition]) {
-            promises.push(
-              this.props.updateLayout({
-                variables: { layout: { id: favourites[dropPosition]!.id, dashboard: null } }
-              })
-            );
-          }
-
-          await Promise.all(promises);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
-  handleDelete = async e => {
-    try {
-      e.preventDefault();
-      const dragged = this.props.licences.find(licence => licence.id == this.state.dragItem);
-
-      if (dragged.dashboard !== null) {
-        favourites[dragged.dashboard] = null;
-        await this.props.updateLayout({
-          variables: { layout: { id: this.state.dragItem, dashboard: null } },
-          optimisticResponse: {
-            __typename: "Mutation",
-            updateLayout: {
-              id: this.state.dragItem,
-              unitid: { id: this.props.id, __typename: "SemiPublicUser" },
-              dashboard: null,
-              __typename: "Licence"
-            }
-          }
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   render() {
     const appLists: {
@@ -216,7 +121,4 @@ class Dashboard extends React.Component<Props, State> {
   }
 }
 
-export default compose(
-  graphql(SWITCH_APPS_LAYOUT, { name: "switchLayout" }),
-  graphql(UPDATE_LAYOUT, { name: "updateLayout" })
-)(Dashboard);
+export default Dashboard;
