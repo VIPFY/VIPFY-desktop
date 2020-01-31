@@ -1,13 +1,16 @@
-import { configure, getLogger } from "log4js";
+import log4js from "log4js";
+import * as logstashudp from "@log4js-node/logstashudp";
 import config from "./configurationManager";
 import * as os from "os";
 import * as is from "electron-is";
-import { app } from "electron";
 
-let activeAppenders = []; //["logstash_filtered"];
+const { configure, getLogger } = log4js;
+let activeAppenders = ["logstash_filtered"];
+
 if (config.isDevelopment) {
   activeAppenders.push("stdout");
 }
+
 if (config.isDevelopment || config.allowDevTools) {
   activeAppenders.push("console");
 }
@@ -22,9 +25,13 @@ configure({
     //   keepFileExt: true
     // },
     console: { type: "console", layout: { type: "messagePassThrough" } },
-    stdout: { type: "stdout", layout: { type: "coloured" } }
-    //logstash: { type: "@log4js-node/logstash-http", url: "https://clientlogs.vipfy.store/_bulk" },
-    //logstash_filtered: { type: "logLevelFilter", appender: "logstash", level: "info" }
+    stdout: { type: "stdout", layout: { type: "coloured" } },
+    logstash: {
+      type: logstashudp,
+      host: "clientlogs.vipfy.store",
+      port: 80
+    },
+    logstash_filtered: { type: "logLevelFilter", appender: "logstash", level: "info" }
   },
   categories: { default: { appenders: activeAppenders, level: "trace", enableCallStack: true } }
 });
