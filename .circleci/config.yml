@@ -30,7 +30,7 @@ jobs:
           shell: bash.exe
       - run:
           name: Create a custom tag for nucleus
-          command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-windows-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
+          command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-win-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
           shell: bash.exe
       - run:
           name: Build the current version for windows
@@ -84,8 +84,8 @@ workflows:
             branches:
               only:
                 - /custom-version-.*/
-      - mac:
-          filters:
-            branches:
-              only:
-                - /custom-version-.*/
+      # - mac:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /custom-version-.*/
