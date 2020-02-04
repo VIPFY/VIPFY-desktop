@@ -8,7 +8,7 @@ interface Props {
   postfix?: string | null;
 }
 
-const shortEnglishHumanizer = humanizeDuration.humanizer({
+export const shortEnglishHumanizer = humanizeDuration.humanizer({
   language: "shortEn",
   languages: {
     shortEn: {

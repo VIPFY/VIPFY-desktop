@@ -109,21 +109,21 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.props.moveTo(path);
   };
 
-  setApp = (boughtplan: number) => {
-    if (this.state.openInstances[boughtplan]) {
+  setApp = (assignmentId: number) => {
+    if (this.state.openInstances[assignmentId]) {
       this.setState(prevState => {
         const newstate = {
           ...prevState,
-          app: boughtplan,
-          licenceID: boughtplan,
-          viewID: Object.keys(prevState.openInstances[boughtplan])[0]
+          app: assignmentId,
+          licenceID: assignmentId,
+          viewID: Object.keys(prevState.openInstances[assignmentId])[0]
         };
         return newstate;
       });
-      this.props.history.push(`/area/app/${boughtplan}`);
+      this.props.history.push(`/area/app/${assignmentId}`);
     } else {
-      this.addWebview(boughtplan, true);
-      this.props.history.push(`/area/app/${boughtplan}`);
+      this.addWebview(assignmentId, true);
+      this.props.history.push(`/area/app/${assignmentId}`);
     }
   };
 
@@ -154,9 +154,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   addWebview = (licenceID, opendirect = false) => {
-    const webviews = this.state.webviews;
-    const l = { licenceID: licenceID, plain: true, setViewTitle: this.setViewTitle };
-    const newview = <Webview {...this.state} {...this.props} {...l} />;
     this.setState(prevState => {
       const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
       const l = { licenceID: licenceID, plain: true, setViewTitle: this.setViewTitle, viewID };

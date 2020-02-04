@@ -1,7 +1,5 @@
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-var JavaScriptObfuscator = require("webpack-obfuscator");
 const webpack = require("webpack");
-const JscramblerWebpack = require("jscrambler-webpack-plugin");
 
 module.exports = [
   // new ForkTsCheckerWebpackPlugin({

@@ -32,7 +32,8 @@ export type WebViewState = {
   currentUrl: string;
   showLoadingScreen: boolean;
   t: number;
-  licenceId: number;
+  licenceId: string;
+  accountId: string;
   previousLicenceId: number;
   unitId: number;
   popup: any;
@@ -48,7 +49,7 @@ export type WebViewState = {
   progress?: number;
   loginspeed: number;
   errorScreen: boolean;
-  oldspeed: number;
+  oldspeed: number | undefined;
   key: any;
 };
 
@@ -215,7 +216,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       this.props.client.mutate({
         mutation: gql`
           mutation trackMinutesSpent($licenceid: ID!, $minutes: Int!) {
-            trackMinutesSpent(licenceid: $licenceid, minutes: $minutes) {
+            trackMinutesSpent(assignmentid: $licenceid, minutes: $minutes) {
               ok
             }
           }
@@ -253,12 +254,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     let result = await this.props.client.query({
       query: gql`
       {
-        fetchLicences(licenceid: ${this.state.licenceId}) {
+        fetchLicenceAssignment(assignmentid: "${this.state.licenceId}") {
           id
           agreed
           disabled
           key
           options
+          accountid
           boughtPlan: boughtplanid {
             id
             key
@@ -280,7 +282,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       `,
       fetchPolicy: "network-only"
     });
-    let licence = result.data.fetchLicences[0];
+    let licence = result.data.fetchLicenceAssignment;
     if (!licence) {
       return;
     }
@@ -331,7 +333,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       appid: licence.boughtPlan.plan.app.id,
       key: { ...key, domain: licence.boughtPlan.key.domain },
       oldspeed: undefined,
-      progress: undefined
+      progress: undefined,
+      accountId: licence.accountid
     });
   }
 
