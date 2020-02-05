@@ -7,10 +7,9 @@ let config = {
   backendHost: process.env.SERVER_NAME || configJSON.server,
   backendPort: process.env.SERVER_PORT || configJSON.serverPort,
   backendSSL:
-    (process.env.SERVER_SSL !== "0" &&
-      process.env.SERVER_SSL !== "false" &&
-      process.env.SERVER_SSL !== "FALSE") ||
-    configJSON.serverSSL,
+    process.env.SERVER_SSL !== "0" &&
+    process.env.SERVER_SSL !== "false" &&
+    process.env.SERVER_SSL !== "FALSE",
   isDevelopment: devCheck,
   stripeToken: process.env.stripeToken,
   showProfile: true,
