@@ -116,6 +116,7 @@ class UserSecurityRow extends React.Component<Props, State> {
             update={proxy => {
               const data = proxy.readQuery({ query: FETCH_USER_SECURITY_OVERVIEW });
               const fetchUserSecurityOverview = data.fetchUserSecurityOverview.map(u => {
+                console.log(u);
                 if (u.id == user.id) {
                   return { ...u, unitid: { ...u.unitid, isadmin: !user.unitid.isadmin } };
                 } else {

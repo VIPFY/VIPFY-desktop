@@ -145,14 +145,15 @@ class ServiceOverview extends React.Component<Props, State> {
   printServices(services) {
     const serviceArray: JSX.Element[] = [];
     services.forEach(service => {
-      if (service.app.id == 66) {
+      if (service.app.id == "aeb28408-464f-49f7-97f1-6a512ccf46c2") {
         return;
       }
+
       const teams = [];
       const accounts = [];
       const singleAccounts = [];
 
-      if (!service.app.options.pending) {
+      if (service.app.options && !service.app.options.pending) {
         service.orbitids.forEach(element => {
           element.teams.forEach(team => {
             if (team != null) {

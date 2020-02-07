@@ -50,7 +50,10 @@ class ServiceDetails extends React.Component<Props, State> {
 
     try {
       const resizedImage = await resizeImage(picture);
-      await this.props.updatePic({ variables: { file: resizedImage, teamid } });
+      await this.props.updatePic({
+        context: { hasUpload: true },
+        variables: { file: resizedImage, teamid }
+      });
 
       await this.setState({ loading: false });
     } catch (err) {
