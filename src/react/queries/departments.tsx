@@ -497,7 +497,7 @@ export const fetchCompanyTeams = gql`
 `;
 
 export const fetchUserLicences = gql`
-  query fetchUsersOwnLicences($unitid: ID!) {
+  query onFetchUserLicences($unitid: ID!) {
     fetchUserLicenceAssignments(unitid: $unitid) {
       id
       disabled

@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.11.17",
+  "version": "0.11.18",
   "description": "The desktop client for vipfy.com",
   "main": ".webpack/main",
   "scripts": {
@@ -41,6 +41,7 @@
     "apexcharts": "^3.8.3",
     "apollo-cache-inmemory": "^1.4.2",
     "apollo-client": "^2.6.4",
+    "apollo-link-batch-http": "^1.2.13",
     "apollo-link-context": "^1.0.14",
     "apollo-link-error": "^1.1.7",
     "apollo-link-http": "^1.5.11",

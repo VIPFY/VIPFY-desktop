@@ -6,10 +6,11 @@ const devCheck = !!process.env.DEVELOPMENT || configJSON.development;
 let config = {
   backendHost: process.env.SERVER_NAME || configJSON.server,
   backendPort: process.env.SERVER_PORT || configJSON.serverPort,
-  backendSSL:
-    process.env.SERVER_SSL !== "0" &&
-    process.env.SERVER_SSL !== "false" &&
-    process.env.SERVER_SSL !== "FALSE",
+  backendSSL: process.env.hasOwnProperty("SERVER_SSL")
+    ? process.env.SERVER_SSL !== "0" &&
+      process.env.SERVER_SSL !== "false" &&
+      process.env.SERVER_SSL !== "FALSE"
+    : configJSON.serverSSL,
   isDevelopment: devCheck,
   stripeToken: process.env.stripeToken,
   showProfile: true,

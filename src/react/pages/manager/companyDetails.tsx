@@ -82,7 +82,10 @@ class CompanyDetails extends React.Component<Props, State> {
     try {
       const resizedImage = await resizeImage(picture);
 
-      await this.props.updatePic({ variables: { file: resizedImage, unitid: userid } });
+      await this.props.updatePic({
+        context: { hasUpload: true },
+        variables: { file: resizedImage, unitid: userid }
+      });
 
       await this.setState({ loading: false });
     } catch (err) {
