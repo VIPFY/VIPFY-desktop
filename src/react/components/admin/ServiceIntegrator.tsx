@@ -22,8 +22,12 @@ import { TSCustomNodeFactory } from "./diagrams/custom-node-ts/TSCustomNodeFacto
 import { JSCustomNodeModel } from "./diagrams/custom-node-js/JSCustomNodeModel";
 import { TSCustomNodeModel } from "./diagrams/custom-node-ts/TSCustomNodeModel";
 import { BodyWidget } from "./diagrams/BodyWidget";
-import { ipcRenderer } from "electron";
+import { ipcRenderer, TouchBarScrubber } from "electron";
 import { clipboard } from "electron";
+import { Query, compose, graphql } from "react-apollo";
+import gql from "graphql-tag";
+import ExecuteAppEdit from "./ExecuteAppEdit";
+import { enhanceErrorWithDocument } from "apollo-cache-inmemory";
 
 // capture the session for reset reasons
 const { session } = remote;
@@ -37,10 +41,12 @@ engine.getNodeFactories().registerFactory(new TSCustomNodeFactory());
 
 interface Props {
   functionupper: Function;
+  createApp: Function;
+  saveExecutionPlan: Function;
 }
 
 interface State {
-  logInOrSignUp: boolean;
+  tracking: boolean;
   isLogin: boolean;
   end: boolean;
   divList: JSX.Element[];
@@ -52,14 +58,54 @@ interface State {
   searchurl: string;
   targetpage: string;
   test: boolean;
+  executing: number;
+  webviewid: string;
+  step: number;
+  app: any;
+  editexecute: boolean;
+  newApp: boolean;
+  showLoading: boolean;
+  saveExe: boolean;
+  saveKey: string;
+  showExtend: boolean;
 }
+
+const FETCH_EXECUTIONAPPS = gql`
+  query fetchExecutionApps($appid: ID) {
+    fetchExecutionApps(appid: $appid) {
+      id
+      disabled
+      name
+      loginurl
+      needssubdomain
+      features
+      options
+      internaldata
+    }
+  }
+`;
+
+const CREATE_APP = gql`
+  mutation onCreateApp($app: AppInput!, $options: AppOptions) {
+    createApp(app: $app, options: $options)
+  }
+`;
+
+const SAVE_EXECUTION_PLAN = gql`
+  mutation saveExecutionPlan($appid: ID!, $key: String!, $script: JSON!) {
+    saveExecutionPlan(appid: $appid, key: $key, script: $script) {
+      id
+      internaldata
+    }
+  }
+`;
 
 class ServiceIntegrator extends React.Component<Props, State> {
   loginState = {
-    listen: false,
     makeNext: false,
     didLoadOnSteps: [],
-    step: 0
+    step: 0,
+    executing: 0
   };
   aktDivListState = {
     divListHold: [],
@@ -67,7 +113,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     divHoldRepeat: false
   };
   state = {
-    logInOrSignUp: true,
+    tracking: false,
     isLogin: true,
     end: false,
     divList: [],
@@ -78,7 +124,17 @@ class ServiceIntegrator extends React.Component<Props, State> {
     executionPlan: [],
     searchurl: "",
     targetpage: "",
-    test: false
+    test: false,
+    executing: 0,
+    webviewid: Math.round(Math.random() * 10000000000).toString(),
+    step: 0,
+    app: null,
+    editexecute: false,
+    newApp: false,
+    showLoading: false,
+    saveExe: false,
+    saveKey: "",
+    showExtend: false
   };
   savevalue: string;
   shallSearch: boolean = true;
@@ -98,10 +154,16 @@ class ServiceIntegrator extends React.Component<Props, State> {
     if (!e.url.includes("google")) {
       // so if webview is not google then track it.
       this.state.cantrack = true;
+      this.setState({
+        webviewid: Math.round(Math.random() * 10000000000).toString(),
+        divList: [],
+        test: false
+      });
     }
   }
 
   handleNewWindow(e) {
+    console.log("NEW WINDOW", e);
     this.setState({ urlBevorChange: e.target.src, url: e.url });
   }
 
@@ -518,6 +580,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
         plan.value = Math.round(Math.random() * 10000000000).toString();
         break;
     }
+    console.log("PLAN", plan);
+    return plan;
   }
 
   sendExecute() {
@@ -563,15 +627,18 @@ class ServiceIntegrator extends React.Component<Props, State> {
       });
       return oldstate;
     });
-    var inputList: JSX.Element[] = [];
-    var fillPlans: number[] = [];
+    const inputList: JSX.Element[] = [];
+    const fillPlans: number[] = [];
     this.setState(oldstate => {
-      oldstate.executionPlan.forEach(plan => {
+      const newExecutionPlan = oldstate.finalexecutionPlan;
+
+      newExecutionPlan.forEach(plan => {
+        console.log(oldstate.executionPlan);
         if (plan.operation == "waitandfill" && !this.state.isLogin) {
-          this.wuerfelWerte(plan);
+          plan = this.wuerfelWerte(plan);
         } else if (plan.operation == "waitandfill" && this.state.isLogin) {
           fillPlans.push(plan.args.id);
-          var input = (
+          const input = (
             <div margin-bottom="20px">
               {plan.args.fillkey[0].toUpperCase() +
                 plan.args.fillkey.substring(1, 10000).toLowerCase()}
@@ -626,9 +693,10 @@ class ServiceIntegrator extends React.Component<Props, State> {
           inputList.push(input);
         }
       });
-      return oldstate;
+      console.log("CHANGE 3");
+      return { ...oldstate, finalexecutionPlan: newExecutionPlan };
     });
-    var popup = (
+    const popup = (
       <PopupBase
         id="inputPopup"
         small={true}
@@ -656,6 +724,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
               console.log("Filling plan.");
               fillPlans.forEach(planid => {
                 this.setState(oldstate => {
+                  console.log("OLDSTATE", this.state);
                   oldstate.executionPlan.find(plan => {
                     return plan.args.id == planid;
                   })!.value = document.getElementById(planid + "input")!.value;
@@ -710,18 +779,30 @@ class ServiceIntegrator extends React.Component<Props, State> {
       ]
     });
     console.log("sending execute");
-    this.webview!.send("execute", this.state.executionPlan);
+    this.webview!.send("execute", this.state.finalexecutionPlan);
   }
 
   async onIpcMessage(e): Promise<void> {
-    console.log("IPC called");
+    console.log("IPC called", e.channel);
+    const currentexe = this.loginState.executing;
     switch (e.channel) {
       case "hello":
+        console.log("SAY HELLO", this.state);
+        this.loginState.executing++;
         this.webview = e.target;
-
+        if (this.state.executing > 0) {
+          const plan = this.state.finalexecutionPlan;
+          const shortedPlan = plan.slice(this.state.step);
+          console.log("SEND EXECUTE 2", shortedPlan, this.state);
+          await sleep(500);
+          if (this.webview) {
+            this.webview!.send("execute", shortedPlan);
+          }
+        }
+        break;
       case "sendMessage":
-        console.log("sendMessage");
-        console.log(e.channel); //, e.args[0], e.args[1], e.args[2], e.args[3], e.args[4],
+        //console.log("sendMessage");
+        //console.log(e.channel); //, e.args[0], e.args[1], e.args[2], e.args[3], e.args[4],
         let i = 0;
         while (e.args[i] != null) {
           console.log(e.args[i]);
@@ -730,15 +811,15 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "sendEvent":
-        console.log("selection");
+        //console.log("selection");
         // incase of selection of any element.
 
         if (this.state.test) {
           break;
         }
-        console.log(
+        /*console.log(
           "sendEvent\n",
-          /* this.state.url, e.args[7], */ e.args[0],
+          e.args[0],
           e.args[1],
           e.args[2],
           e.args[3],
@@ -747,7 +828,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
           e.args[6],
           e.args[7],
           e.args[8]
-        );
+        );*/
 
         //generate Execution Plan
         this.setState(oldstate => {
@@ -767,7 +848,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
               plan[plan.length - 1].args.document == e.args[8]
             )
           ) {
-            console.log("LC", e.args[0].toLowerCase());
+            //console.log("LC", e.args[0].toLowerCase());
             switch (e.args[0].toLowerCase()) {
               case "input":
                 plan.push({
@@ -786,7 +867,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 });
                 break;
             }
-            console.log("executionplan", plan);
+            //console.log("executionplan", plan);
             e.target.send("givePosition", plan[plan.length - 1].args.selector, id, 1);
 
             return { ...oldstate, executionPlan: plan };
@@ -796,16 +877,16 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "updateDivList":
-        console.log("cancel of selection");
+        //console.log("cancel of selection");
         this.updateDivList();
         break;
 
       case "sendClick":
-        console.log("sendClick");
+        //console.log("sendClick");
         break;
 
       case "givePosition":
-        console.log("givePosition");
+        //console.log("givePosition");
         switch (e.args[5]) {
           case 0:
             this.tickDiv([e.args[0], e.args[1], e.args[2], e.args[3], e.args[4]]);
@@ -821,14 +902,14 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
         break;
 
-      case "loaded":
+      case "loadedDIS":
         // here html is loaded first and this function is called later and hence the popup appears login/signup PROZESS appears later
 
-        console.log("shallsearch in IPC  case loaded: " + this.shallSearch);
-        if (this.state.logInOrSignUp && !this.state.test && !this.state.end) {
+        //console.log("shallsearch in IPC  case loaded: " + this.shallSearch);
+        if (this.state.tracking && !this.state.test && !this.state.end) {
           let popup = (
             <PopupBase
-              id="logInOrSignUp"
+              id="tracking"
               small={true}
               styles={{ textAlign: "center" }}
               buttonStyles={{ justifyContent: "space-around" }}
@@ -837,14 +918,14 @@ class ServiceIntegrator extends React.Component<Props, State> {
               <UniversalButton
                 onClick={e => {
                   e.preventDefault();
-                  this.setState({ isLogin: true, divList: [], logInOrSignUp: false });
+                  this.setState({ isLogin: true, divList: [], tracking: false });
                 }}
                 type="high"
                 label="Login Prozess"></UniversalButton>
               <UniversalButton
                 onClick={e => {
                   e.preventDefault();
-                  this.setState({ isLogin: false, divList: [], logInOrSignUp: false });
+                  this.setState({ isLogin: false, divList: [], tracking: false });
                 }}
                 type="high"
                 label="SignUp Prozess"></UniversalButton>
@@ -856,12 +937,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
             return oldstate;
           });
         }
-        console.log(
+        /*console.log(
           "loaded first",
           this.loginState.didLoadOnSteps,
-          this.loginState.step,
-          this.loginState.listen
-        );
+          this.loginState.step
+        );*/
 
         /*if (this.state.test && this.state.url != "about:blank") {
           await session.fromPartition("followLogin").clearStorageData();
@@ -874,8 +954,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
           console.log("SEND EXECUTE 2");
           this.webview!.send("execute", exx);
         } else*/ if (
-          !this.loginState.didLoadOnSteps.includes(this.loginState.step) &&
-          this.loginState.listen
+          !this.loginState.didLoadOnSteps.includes(this.loginState.step)
         ) {
           this.loginState.didLoadOnSteps.push(this.loginState.step);
         }
@@ -892,25 +971,24 @@ class ServiceIntegrator extends React.Component<Props, State> {
         if (this.state.end) {
           let targetpage = this.webview.url;
           this.setState({ end: false, test: true, targetpage });
-          await session.fromPartition("followLogin").clearStorageData();
+          //await session.fromPartition("followLogin").clearStorageData();
           this.loginState.step = 0;
-          this.loginState.listen = false;
-          console.log("step = 0", this.loginState.step, this.state.finalexecutionPlan);
+          //console.log("step = 0", this.loginState.step, this.state.finalexecutionPlan);
           this.trySiteLoading();
         } else if (this.state.test) {
           if (this.loginState.makeNext) {
-            console.log("makeNext = true");
+            //console.log("makeNext = true");
             this.loginState.makeNext = false;
             e.channel = "loaded";
             await this.onIpcMessage(e);
           }
-          console.log(
+          /*console.log(
             "Blablacar",
             this.state.finalexecutionPlan.findIndex(element => {
               return element.step == this.loginState.step;
             }),
             this.loginState.step
-          );
+          );*/
           if (
             this.state.finalexecutionPlan.findIndex(element => {
               return element.step == this.loginState.step;
@@ -919,7 +997,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             if (this.state.isLogin == false) {
               let popup = (
                 <PopupBase
-                  id="logInOrSignUp"
+                  id="tracking"
                   small={true}
                   styles={{ textAlign: "center" }}
                   buttonStyles={{ justifyContent: "space-around" }}
@@ -964,6 +1042,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "reset":
+        //this.loginState.executing = 0;
         let w = e.target;
         console.log("RESET TRACKER");
         w.send("done");
@@ -971,10 +1050,20 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
       case "click":
         {
+          console.log("CLICKED", e);
           let w = e.target;
+          if (this.loginState.executing != currentexe) {
+            console.log("BREAKOUT 1", this.loginState.executing, currentexe);
+            break;
+          }
           w.sendInputEvent({ type: "mouseMove", x: e.args[0], y: e.args[1] });
           //console.log("CONSENT", e.args[0], e.args[1]);
           await sleep(Math.random() * 30 + 200);
+          if (this.loginState.executing != currentexe) {
+            console.log("BREAKOUT 2", this.loginState.executing, currentexe);
+            break;
+          }
+          console.log("mouseDown", currentexe);
           w.sendInputEvent({
             type: "mouseDown",
             x: e.args[0],
@@ -983,6 +1072,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
             clickCount: 1
           });
           await sleep(Math.random() * 30 + 50);
+          if (this.loginState.executing != currentexe) {
+            console.log("BREAKOUT 3", this.loginState.executing, currentexe);
+            break;
+          }
+          console.log("mouseUp", currentexe);
           w.sendInputEvent({
             type: "mouseUp",
             x: e.args[0],
@@ -1098,26 +1192,33 @@ class ServiceIntegrator extends React.Component<Props, State> {
         if (this.state.url != "about:blank") {
           console.log(
             "Step++",
-            this.loginState.step,
+            this.state.step,
             " -> ",
-            this.loginState.step + 1,
+            this.state.step + 1,
             this.state.finalexecutionPlan
           );
           if (
             this.state.finalexecutionPlan.findIndex(element => {
-              return element.step == this.loginState.step;
+              return element.step == this.state.step;
             }) != -1 &&
-            !this.loginState.didLoadOnSteps.includes(this.loginState.step + 1)
+            !this.loginState.didLoadOnSteps.includes(this.state.step + 1)
           ) {
             this.loginState.makeNext = true;
           }
-          this.loginState.step -= -1;
+          this.setState(oldstate => {
+            return { ...oldstate, step: oldstate.step + 1 };
+          });
         } else {
           console.log("about:blank triggert");
         }
         break;
+
+      case "unload": {
+        console.log("UNLOAD", this.webview);
+        this.webview = null;
+      }
       default:
-        console.log("No case applied", e.channel);
+        //console.log("No case applied", e.channel);
         break;
     }
   }
@@ -1125,171 +1226,313 @@ class ServiceIntegrator extends React.Component<Props, State> {
   render() {
     console.log("Anfang Render", this.state.executionPlan);
     // ?
-    if (this.state.url === this.state.searchurl) {
+    /*if (this.state.url === this.state.searchurl) {
       session.fromPartition("followLogin").clearStorageData();
+    }*/
+    if ((this.state.newApp || this.state.app) && !this.state.editexecute) {
+      return (
+        <ExecuteAppEdit
+          app={this.state.app}
+          editExecute={() => this.setState({ editexecute: true })}
+        />
+      );
     }
-    return (
-      <div>
-        <div
-          style={{
-            float: "left",
-            width: "200px",
-            height: "calc(100vh - 72px)",
-            backgroundColor: "#30475D"
-          }}>
-          <div style={{ height: "10%" }}>
-            <h4 style={{ color: "white" }}>Please enter the Login-Url</h4>
-            <UniversalTextInput
-              /* autofocus="true" */
-              id="url"
-              livevalue={v => this.setState({ searchurl: v })}
-              style={{ color: "black", borderColor: "white" }}
-              width="100%"
-              onEnter={async () => {
-                await this.setState({
-                  logInOrSignUp: true,
-                  isLogin: true,
-                  end: false,
-                  divList: [],
-                  showDivList: true,
-                  url: "",
-                  urlBevorChange: "",
-                  finalexecutionPlan: [],
-                  executionPlan: [],
-                  targetpage: "",
-                  test: false
-                });
-                session.fromPartition("followLogin").clearStorageData();
-                this.searchattampts = 0;
-                this.trySiteLoading();
-              }}></UniversalTextInput>
-            <button
-              onClick={async () => {
-                await this.setState({
-                  logInOrSignUp: true,
-                  isLogin: true,
-                  end: false,
-                  divList: [],
-                  showDivList: true,
-                  url: "",
-                  urlBevorChange: "",
-                  finalexecutionPlan: [],
-                  executionPlan: [],
-                  targetpage: "",
-                  test: false
-                });
-                session.fromPartition("followLogin").clearStorageData();
-                this.searchattampts = 0;
-                this.trySiteLoading();
-              }}>
-              Go!
-            </button>
-          </div>
-          <div style={{ overflowY: "scroll", width: "100%", height: "80%" }}>
-            {this.state.executionPlan.map((o, k) => (
-              <div
-                id={o.args.id + "side"}
-                onMouseEnter={() => this.zeigeElement(true, o.args.id)}
-                onMouseLeave={() => this.zeigeElement(false, o.args.id)}
-                style={{ border: "1px solid red", marginTop: "10px" }}>
-                <ClickElement
-                  id={`ce-${k}`}
-                  startvalue={o.operation}
-                  onChange={(operation, value) => this.updateSelection(o.args.id, operation, value)}
-                  isLogin={this.state.isLogin}
+    if (!this.state.editexecute) {
+      return (
+        <Query query={FETCH_EXECUTIONAPPS}>
+          {({ data, loading, error, refetch }) => {
+            if (loading) {
+              return <div>LOADING</div>;
+            }
+
+            if (error) {
+              return <div>ERROR</div>;
+            }
+            const executionApps: JSX.Element[] = [];
+            data.fetchExecutionApps.forEach(e =>
+              executionApps.push(
+                <div>
+                  <span>{e.name}</span>
+                  <UniversalButton
+                    type="high"
+                    onClick={() => this.setState({ app: e })}
+                    label="Edit"
+                  />
+                </div>
+              )
+            );
+            return (
+              <div>
+                {executionApps}
+                <UniversalButton
+                  label="Create new App"
+                  type="high"
+                  onClick={() => this.setState({ newApp: true })}
                 />
-                <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
-                <div /* style={{ float: "left" }} */>
-                  {!this.state.isLogin ? (
-                    <span>
-                      <input
-                        type="checkbox"
-                        id={"paralelOption" + o.args.id}
-                        onChange={e => {
-                          o.isParalelOption = e.target.checked;
-                          this.forceUpdate();
+              </div>
+            );
+          }}
+        </Query>
+      );
+    } else {
+      return (
+        <div>
+          <div
+            style={{
+              float: "left",
+              width: "200px",
+              height: "calc(100vh - 72px)",
+              backgroundColor: "#30475D"
+            }}>
+            <div style={{ height: "15%" }}>
+              <h4 style={{ color: "white" }}>
+                Please enter Url
+                <button onClick={() => this.setState({ editexecute: false })}>Overview</button>
+              </h4>
+              <UniversalTextInput
+                /* autofocus="true" */
+                id="url"
+                livevalue={v => this.setState({ searchurl: v })}
+                style={{ color: "black", borderColor: "white" }}
+                width="100%"
+                onEnter={async () => {
+                  console.log("CHANGE 4");
+                  await this.setState({
+                    isLogin: true,
+                    end: false,
+                    divList: [],
+                    showDivList: true,
+                    url: "",
+                    urlBevorChange: "",
+                    finalexecutionPlan: [],
+                    executionPlan: [],
+                    targetpage: "",
+                    test: false
+                  });
+                  session.fromPartition("followLogin").clearStorageData();
+                  this.searchattampts = 0;
+                  this.trySiteLoading();
+                }}></UniversalTextInput>
+              <UniversalButton
+                type="high"
+                label="Load Site"
+                onClick={() => {
+                  console.log("CHANGE 5");
+                  this.loginState.step = 0;
+                  this.setState({
+                    end: false,
+                    divList: [],
+                    showDivList: true,
+                    url: "",
+                    urlBevorChange: "",
+                    finalexecutionPlan: [],
+                    executionPlan: [],
+                    targetpage: "",
+                    test: false
+                  });
+                  session.fromPartition("followLogin").clearStorageData();
+                  this.searchattampts = 0;
+                  this.trySiteLoading();
+                }}
+              />
+              {this.state.tracking ? (
+                <UniversalButton
+                  type="high"
+                  onClick={async () => {
+                    this.setState({ tracking: false, test: true });
+                    this.webview!.send("removeTracking", {});
+                  }}
+                  label="Stop Tracking"
+                />
+              ) : (
+                <UniversalButton
+                  type="high"
+                  onClick={async () => {
+                    this.setState({ tracking: true, test: false, divList: [] });
+                    this.webview!.send("startTracking", {});
+                  }}
+                  label="Start Tracking"
+                />
+              )}
+            </div>
+            <div style={{ overflowY: "scroll", width: "100%", height: "65%" }}>
+              {console.log("STATE", this.state)}
+              {this.state.executionPlan.map((o, k) => (
+                <div
+                  id={o.args.id + "side"}
+                  onMouseEnter={() => this.zeigeElement(true, o.args.id)}
+                  onMouseLeave={() => this.zeigeElement(false, o.args.id)}
+                  style={{ border: "1px solid red", marginTop: "10px" }}>
+                  <ClickElement
+                    id={`ce-${k}`}
+                    startvalue={o.operation}
+                    onChange={(operation, value) =>
+                      this.updateSelection(o.args.id, operation, value)
+                    }
+                    isLogin={this.state.isLogin}
+                  />
+                  <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
+                  <div /* style={{ float: "left" }} */>
+                    {!this.state.isLogin ? (
+                      <span>
+                        <input
+                          type="checkbox"
+                          id={"paralelOption" + o.args.id}
+                          onChange={e => {
+                            o.isParalelOption = e.target.checked;
+                            this.forceUpdate();
+                          }}
+                        />
+                        <div style={{ color: "white" }}>Is Paralel Option</div>
+                      </span>
+                    ) : null}
+                    <input
+                      style={{ visibility: o.isParalelOption ? "visible" : "collapse" }}
+                      id={"team" + o.args.id}
+                      onChange={e => {
+                        o.paralelTeam = document.getElementById("team" + o.args.id)!.value;
+                      }}></input>
+                  </div>
+                </div>
+              ))}
+
+              <div
+                style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
+                Everything selected?
+                <UniversalButton
+                  type="high"
+                  disabled={this.webview == undefined}
+                  onClick={async () => {
+                    await this.setState(oldstate => {
+                      console.log("CHANGE 6");
+                      return {
+                        ...oldstate,
+                        tracking: false,
+                        executionPlan: [],
+                        divList: [],
+                        test: true,
+                        finalexecutionPlan: oldstate.executionPlan
+                      };
+                    });
+                    this.sendExecute();
+                  }}
+                  style={{ width: "100px" }}
+                  label="EXECUTE Tracked"></UniversalButton>
+              </div>
+            </div>
+            <div style={{ height: "20%" }}>
+              <textarea
+                value={JSON.stringify(this.state.finalexecutionPlan)}
+                style={{ width: "100%", height: "50%" }}
+                onChange={v => {
+                  console.log("CHANGE 1");
+                  this.setState({ finalexecutionPlan: JSON.parse(v.target.value) });
+                }}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <UniversalButton
+                  type="high"
+                  label="Extend"
+                  onClick={() => this.setState({ showExtend: true })}
+                />
+                <UniversalButton
+                  type="high"
+                  label="Execute"
+                  onClick={async () => {
+                    //set url back to null
+                    console.log("EXECUTE BUTTON");
+                    this.setState({ executing: 1, step: 0, test: true });
+                    this.sendExecuteFinal();
+                    console.log("STATE", this.state);
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", marginTop: "10px", justifyContent: "space-between" }}>
+                <UniversalButton
+                  type="high"
+                  label="Load"
+                  onClick={() => this.setState({ showLoading: true })}
+                />
+                <UniversalButton
+                  type="high"
+                  label="SAVE"
+                  onClick={async () => {
+                    this.setState({ saveExe: true });
+                  }}
+                />
+                {this.state.saveExe && (
+                  <PopupBase close={() => this.setState({ saveExe: false })}>
+                    <div>
+                      <UniversalTextInput
+                        id="saveKey"
+                        livevalue={v => this.setState({ saveKey: v })}
+                      />
+                      <UniversalButton
+                        label="SAVE"
+                        onClick={async () => {
+                          const appupdate = await this.props.saveExecutionPlan({
+                            variables: {
+                              appid: this.state.app.id,
+                              key: this.state.saveKey,
+                              script: JSON.stringify(this.state.finalexecutionPlan)
+                            }
+                          });
+                          this.setState(oldstate => {
+                            return {
+                              saveExe: false,
+                              saveKey: "",
+                              app: {
+                                ...oldstate.app,
+                                internaldata: appupdate.data.saveExecutionPlan.internaldata
+                              }
+                            };
+                          });
                         }}
                       />
-                      <div style={{ color: "white" }}>Is Paralel Option</div>
-                    </span>
-                  ) : null}
-                  <input
-                    style={{ visibility: o.isParalelOption ? "visible" : "collapse" }}
-                    id={"team" + o.args.id}
-                    onChange={e => {
-                      o.paralelTeam = document.getElementById("team" + o.args.id)!.value;
-                    }}></input>
-                </div>
+                    </div>
+                  </PopupBase>
+                )}
               </div>
-            ))}
-
-            <div style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
-              Every thing selected?
-              <button
-                disabled={this.webview == undefined}
-                onClick={async () => {
-                  await this.setState({ showDivList: false });
-                  this.loginState.listen = true;
-                  this.sendExecute();
-                }}
-                style={{ width: "100px" }}>
-                Then try to go to a next step
-              </button>
-              <button
-                disabled={this.webview == undefined}
-                onClick={async () => {
-                  if (!this.state.isLogin) {
-                    await this.setState(oldstate => {
-                      oldstate.finalexecutionPlan.forEach(object => {
-                        this.wuerfelWerte(object);
-                      });
-                    });
-                  }
-                  this.loginState.listen = true;
-                  await this.setState({ end: true, showDivList: false });
-                  this.sendExecute();
-                }}
-                style={{ width: "100px" }}>
-                or finish the login process
-              </button>
             </div>
+            {(this.state.showLoading || this.state.showExtend) && (
+              <PopupBase close={() => this.setState({ showLoading: false, showExtend: false })}>
+                <div>
+                  {this.state.app.internaldata.execute.length > 0 ? (
+                    this.state.app.internaldata.execute.map(e => (
+                      <div
+                        onClick={() =>
+                          this.setState(oldstate => {
+                            console.log("CHANGE 2", oldstate, e);
+                            let finalexecutionPlan: Object[] = [];
+                            if (oldstate.showExtend) {
+                              oldstate.finalexecutionPlan.push({
+                                operation: "function",
+                                args: {
+                                  functionname: e.key
+                                }
+                              });
+                              finalexecutionPlan = oldstate.finalexecutionPlan;
+                            } else {
+                              finalexecutionPlan = JSON.parse(e.script);
+                            }
+                            return {
+                              finalexecutionPlan,
+                              showLoading: false,
+                              showExtend: false
+                            };
+                          })
+                        }>
+                        {e.key}
+                      </div>
+                    ))
+                  ) : (
+                    <div>No Functions</div>
+                  )}
+                </div>
+              </PopupBase>
+            )}
           </div>
-          <div style={{ height: "10%" }}>
-            <textarea
-              value={JSON.stringify(this.state.finalexecutionPlan)}
-              style={{ width: "100%", height: "50%" }}
-              onChange={v => this.setState({ finalexecutionPlan: JSON.parse(v.target.value) })}
-            />
-            <div style={{ display: "flex" }}>
-              <UniversalButton
-                type="high"
-                label="Clipboard"
-                onClick={() => clipboard.writeText(JSON.stringify(this.state.finalexecutionPlan))}
-              />
-              <UniversalButton
-                type="high"
-                label="Execute"
-                onClick={async () => {
-                  //set url back to null
-                  await this.setState({ url: "", test: true });
-                  await session.fromPartition("followLogin").clearStorageData();
-                  await sleep(100);
-                  await this.trySiteLoading();
-                  await sleep(500);
-                  if (this.webview) {
-                    console.log("SEND");
-                    this.webview.send("execute", this.state.finalexecutionPlan);
-                  } else {
-                    console.log("WEBVIEW not there...");
-                  }
-
-                  console.log("STATE", this.state);
-                }}
-              />
-            </div>
-          </div>
-        </div>
-        {/* <div
+          {/* <div
           style={{
             background: "yellow",
             float: "left",
@@ -1319,41 +1562,46 @@ class ServiceIntegrator extends React.Component<Props, State> {
           </button>
           {this.state.bodyWidget && <BodyWidget engine={engine} />}
         </div> */}
-        <div
-          style={{
-            float: "left",
-            height: "calc(100vh - 72px)",
-            width: "calc(100% - 200px)"
-          }}>
-          {this.state.divList.map(e => e)}
-          <WebView
-            id="LoginFinder"
-            ref={element => (this.webview = element)}
-            preload={getPreloadScriptPath("integrationTracker.js")}
-            webpreferences="webSecurity=no"
-            className="newMainPosition"
-            src={this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
-            partition="followLogin"
-            style={{ width: "100%", height: "100%" }}
-            onIpcMessage={async e => {
-              // osama. if we are searching google dont communicate.
-              console.log("e channel value" + e.channel);
-              if (!this.shallSearch) {
-                await this.onIpcMessage(e);
-              }
-            }}
-            onNewWindow={e => {
-              this.handleNewWindow(e);
-            }}
-            onClose={e => this.handleClosing(e)}
-            onDidNavigateInPage={e => this.handleSiteChange(e)}
-            onDidNavigate={e => this.handleSiteChange(e)}
-            onDidFailLoad={e => this.didFailLoad(e)}
-          />
+          <div
+            style={{
+              float: "left",
+              height: "calc(100vh - 72px)",
+              width: "calc(100% - 200px)"
+            }}>
+            {this.state.divList.map(e => e)}
+            <WebView
+              id="Webview-1" //{this.state.webviewid}
+              ref={element => (this.webview = element)}
+              preload={getPreloadScriptPath("integrationTracker.js")}
+              webpreferences="webSecurity=false"
+              className="newMainPosition"
+              useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.123 Safari/537.36"
+              src={this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
+              partition="followLogin"
+              style={{ width: "100%", height: "100%" }}
+              onIpcMessage={async e => {
+                // osama. if we are searching google dont communicate.
+                //console.log("e channel value" + e.channel);
+                if (!this.shallSearch) {
+                  await this.onIpcMessage(e);
+                }
+              }}
+              onNewWindow={e => {
+                this.handleNewWindow(e);
+              }}
+              onClose={e => this.handleClosing(e)}
+              onDidNavigateInPage={e => this.handleSiteChange(e)}
+              onDidNavigate={e => this.handleSiteChange(e)}
+              onDidFailLoad={e => this.didFailLoad(e)}
+            />
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 }
 
-export default ServiceIntegrator;
+export default compose(
+  graphql(CREATE_APP, { name: "createApp" }),
+  graphql(SAVE_EXECUTION_PLAN, { name: "saveExecutionPlan" })
+)(ServiceIntegrator);

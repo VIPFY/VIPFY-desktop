@@ -116,17 +116,12 @@ function createObjFromDom(elem) {
   o.hash = hash(o);
   return o;
 }
-var i = 0;
-ipcRenderer.on("execute", async (e, args1) => {
-  console.log("RECEIVE EXECUTE", args1);
-  await onExecute(args1, true);
-});
 
 async function onExecute(args1, booler) {
   console.log("ON EXECUTE", args1, booler);
   await execute(args1, booler);
   //reset everything
-  await ipcRenderer.sendToHost("readyForNextStep");
+  //await ipcRenderer.sendToHost("readyForNextStep");
   listeners = [];
   iframeList = [];
   stopped = false;
@@ -186,17 +181,21 @@ function giveIframeEvents(iframe, list, events) {
   }
   if (events) {
     console.log("IDocument", iframe.contentWindow.document);
-    iframe.contentWindow.document.addEventListener("click", e => findTarget(e, iframe), true);
-    iframe.contentWindow.document.addEventListener("keyup", e => findTarget(e, iframe), true);
-    iframe.contentWindow.document.addEventListener("input", e => findTarget(e, iframe), true);
-    iframe.contentWindow.document.addEventListener("paste", e => findTarget(e, iframe), true);
+    if (iframe.contentDocument) {
+      iframe.contentWindow.document.addEventListener("click", e => findTarget(e, iframe), true);
+      iframe.contentWindow.document.addEventListener("keyup", e => findTarget(e, iframe), true);
+      iframe.contentWindow.document.addEventListener("input", e => findTarget(e, iframe), true);
+      iframe.contentWindow.document.addEventListener("paste", e => findTarget(e, iframe), true);
+    }
     console.log("LOAD FIRST", iframe);
     iframe.addEventListener("load", e => {
       console.log("LOAD", e, iframe);
-      iframe.contentWindow.document.addEventListener("keyup", e => findTarget(e, iframe), true);
-      iframe.contentWindow.document.addEventListener("input", e => findTarget(e, iframe), true);
-      iframe.contentWindow.document.addEventListener("click", e => findTarget(e, iframe), true);
-      iframe.contentWindow.document.addEventListener("paste", e => findTarget(e, iframe), true);
+      if (iframe.contentDocument) {
+        iframe.contentWindow.document.addEventListener("keyup", e => findTarget(e, iframe), true);
+        iframe.contentWindow.document.addEventListener("input", e => findTarget(e, iframe), true);
+        iframe.contentWindow.document.addEventListener("click", e => findTarget(e, iframe), true);
+        iframe.contentWindow.document.addEventListener("paste", e => findTarget(e, iframe), true);
+      }
     });
     /* iframe.contentWindow.document.addEventListener("DOMSubtreeModified", e => {
       console.log(e.target, e.target.contentWindow.document);
@@ -217,10 +216,74 @@ function giveIframeEvents(iframe, list, events) {
     */
 }
 
-function findAllIframes(doc) {
+function removeIframeEvents(iframe, list, events) {
+  console.log("iframe", iframe, list, events);
+  if (list) {
+    iframeList.push(iframe);
+  }
+  if (events) {
+    console.log("IDocument", iframe.contentWindow.document);
+    if (iframe.contentDocument) {
+      iframe.contentWindow.document.removeEventListener("click", e => findTarget(e, iframe), true);
+      iframe.contentWindow.document.removeEventListener("keyup", e => findTarget(e, iframe), true);
+      iframe.contentWindow.document.removeEventListener("input", e => findTarget(e, iframe), true);
+      iframe.contentWindow.document.removeEventListener("paste", e => findTarget(e, iframe), true);
+    }
+    console.log("LOAD FIRST", iframe);
+    iframe.removeEventListener("load", e => {
+      console.log("LOAD", e, iframe);
+      if (iframe.contentDocument) {
+        iframe.contentWindow.document.removeEventListener(
+          "keyup",
+          e => findTarget(e, iframe),
+          true
+        );
+        iframe.contentWindow.document.removeEventListener(
+          "input",
+          e => findTarget(e, iframe),
+          true
+        );
+        iframe.contentWindow.document.removeEventListener(
+          "click",
+          e => findTarget(e, iframe),
+          true
+        );
+        iframe.contentWindow.document.removeEventListener(
+          "paste",
+          e => findTarget(e, iframe),
+          true
+        );
+      }
+    });
+    /* iframe.contentWindow.document.addEventListener("DOMSubtreeModified", e => {
+      console.log(e.target, e.target.contentWindow.document);
+    });*/
+  }
+  var observer = new MutationObserver(callback2);
+  observer.observe(iframe, config);
+  /*iframe.contentWindow.document.addEventListener("DOMSubtreeModified", (e) => {
+   if (e.target.tagName=="IFRAME"){
+        console.log("IFRAME ALL", e);
+        e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
+        e.target.contentWindow.document.addEventListener("input", findTarget,true);
+        e.target.contentWindow.document.addEventListener("click", findTarget,true);
+        e.target.contentWindow.document.addEventListener("paste", findTarget,true);
+        findAllIframes(e.target.contentWindow.document);
+    }
+  })
+    */
+}
+
+function findAllIframes(doc, remove = false) {
   //console.log("findAllIframes called");
   let iframes = doc.querySelectorAll("iframe");
-  iframes.forEach(iframe => findAllIframes(iframe.contentWindow.document));
+  //console.log("IFRAMES", iframes, doc);
+  iframes.forEach(iframe => {
+    //console.log("IFRAME", iframe, isHidden(iframe));
+    if (!isHidden(iframe) && iframe.contentDocument) {
+      findAllIframes(iframe.contentWindow.document);
+    }
+  });
   let machKaputt = [];
   for (let i = 0; i < iframes.length; i++) {
     const iframe = iframes[i];
@@ -230,7 +293,11 @@ function findAllIframes(doc) {
   }
   iframes = machKaputt;
   //console.log("New iframes", iframes)
-  iframes.forEach(iframe => giveIframeEvents(iframe, true, true));
+  if (remove) {
+    iframes.forEach(iframe => removeIframeEvents(iframe, true, true));
+  } else {
+    iframes.forEach(iframe => giveIframeEvents(iframe, true, true));
+  }
 }
 
 //console.log(webview[0]);
@@ -317,14 +384,14 @@ var callback2 = function(mutationsList, observer) {
 }) */
 
 /// **
-window.addEventListener("DOMContentLoaded", () => {
+/*window.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.sendToHost("loaded");
   document.addEventListener("click", findTarget, true);
   document.addEventListener("keyup", findTarget, true);
   document.addEventListener("input", findTarget, true);
   document.addEventListener("paste", findTarget, true);
-  findAllIframes(document);
-});
+  //findAllIframes(document);
+});*/
 
 // window.addEventListener("load", () => {
 //   ipcRenderer.sendToHost("loaded");
@@ -342,13 +409,22 @@ observer.observe(document, config);
 
 const attributesSelector = [
   "name",
+  "id",
+  "aria-label",
+  "aria-roledescription",
+  "placeholder",
   "ng-model",
   "data-ng-model",
   "data-callback",
   "data-name",
+  "class",
+  "value",
+  "alt",
   "data-testid",
+  "href",
   "data-event-click-target",
-  "data-ng-click"
+  "data-ng-click",
+  "data-track-properties"
 ];
 
 function findTarget(event, iframe) {
@@ -365,7 +441,6 @@ function findTarget(event, iframe) {
   //console.log("CLONE", element1)
   var rect = event.target.getBoundingClientRect();
   const style = window.getComputedStyle(event.target);
-  console.log("RECT/STYLE", rect, style);
 
   var obj = createObjFromDom(element1);
   if (iframe) {
@@ -395,7 +470,7 @@ function findTarget(event, iframe) {
   }
 
   var els = [];
-  var a = button;
+  var a = button.parentNode;
   while (a) {
     els.unshift(a);
     a = a.parentNode;
@@ -418,7 +493,7 @@ function findTarget(event, iframe) {
     selector = element1.tagName;
     console.log(obj.attr);
     for (key of Object.keys(obj.attr)) {
-      if (["name", "type", "id", "for", "data-qa"].includes(key)) {
+      if (attributesSelector.includes(key)) {
         selector += "[" + key + "='" + obj.attr[key] + "']";
       }
     }
@@ -432,6 +507,7 @@ function findTarget(event, iframe) {
       var pt;
       var pselector;
       while (parent) {
+        console.log("PARENT", parent, selector);
         pobj = createObjFromDom(parent);
         pt = Array.from(doc.querySelectorAll("#" + pobj.attr.id));
         if (pt.length == 1) {
@@ -440,7 +516,7 @@ function findTarget(event, iframe) {
         }
         pselector = parent.tagName;
         for (key of Object.keys(pobj.attr)) {
-          if (["name", "type", "id", "for", "data-qa"].includes(key)) {
+          if (attributesSelector.includes(key)) {
             pselector += "[" + key + "='" + pobj.attr[key] + "']";
           }
         }
@@ -471,7 +547,7 @@ function findTarget(event, iframe) {
       iselector = iframe.tagName;
       console.log(iobj.attr);
       for (key of Object.keys(iobj.attr)) {
-        if (["name", "type", "id", "for"].includes(key)) {
+        if (attributesSelector.includes(key)) {
           iselector += "[" + key + "='" + iobj.attr[key] + "']";
         }
       }
@@ -493,7 +569,7 @@ function findTarget(event, iframe) {
           }
           ipselector = iparent.tagName;
           for (key of Object.keys(ipobj.attr)) {
-            if (["name", "type", "id", "for"].includes(key)) {
+            if (attributesSelector.includes(key)) {
               ipselector += "[" + key + "='" + ipobj.attr[key] + "']";
             }
           }
@@ -665,18 +741,41 @@ function findCookieButton() {
   return t;
 } */
 
+window.addEventListener("beforeunload", () => {
+  stopped = true;
+  console.log("UNLOAD");
+  ipcRenderer.sendToHost("unload", null);
+});
+
+ipcRenderer.on("startTracking", () => {
+  document.addEventListener("click", findTarget, true);
+  document.addEventListener("keyup", findTarget, true);
+  document.addEventListener("input", findTarget, true);
+  document.addEventListener("paste", findTarget, true);
+  findAllIframes(document);
+});
+
+ipcRenderer.on("removeTracking", () => {
+  document.removeEventListener("click", findTarget, true);
+  document.removeEventListener("keyup", findTarget, true);
+  document.removeEventListener("input", findTarget, true);
+  document.removeEventListener("paste", findTarget, true);
+  findAllIframes(document, true);
+});
+
 async function start() {
   //First say Hello
+  console.log("SAY HELLO");
+  //await sleep(300);
   ipcRenderer.sendToHost("hello");
 
-  console.log("TEST");
-  await sleep(300);
+  /*console.log("TEST");
   totaltime = 0;
   //stopped = true;
   while (!stopped && !checkRecaptcha && totaltime < 5000) {
     if (!cookiefound) {
       let cookiebutton = findCookieButton();
-      console.log("FIND", cookiebutton);
+      console.log("FIND COOKIE", cookiebutton);
       if (cookiebutton) {
         await sleep(300);
         await clickButton(cookiebutton);
@@ -709,7 +808,7 @@ async function start() {
     await sleep(100);
     totaltime += 100;
   }
-  console.log("TEST NACH");
+  console.log("TEST NACH");*/
 
   /*await execute([
     { operation: "waitandfill", args: { selector: "#customerUrl", fillkey: "domain" } },
@@ -719,6 +818,11 @@ async function start() {
     { operation: "click", args: { selector: "input[type='submit'][name='commit']" } }
   ]);*/
 }
+
+ipcRenderer.on("execute", async (e, args1) => {
+  console.log("RECEIVE EXECUTE", args1);
+  onExecute(args1, true);
+});
 
 function clickButton(targetNode) {
   var rect = getMidPoint(targetNode, 0.5, 0.5);
@@ -737,7 +841,6 @@ function clickButton(targetNode) {
 function getMidPoint(e, px = 0.2, py = 0.5) {
   var rect = e.getBoundingClientRect();
   const style = window.getComputedStyle(e);
-  console.log("STYLES", rect, style);
   return {
     x:
       rect.x +
@@ -770,7 +873,8 @@ const attributes = [
   "data-testid",
   "href",
   "data-event-click-target",
-  "data-ng-click"
+  "data-ng-click",
+  "data-track-properties"
 ];
 
 function filterDom(includesAny, excludesAll) {
@@ -882,14 +986,19 @@ async function fillFormField(target, fillkey) {
   return p;
 }
 
-async function execute(operations, mainexecute = false) {
+async function execute(executeoperations, mainexecute = false) {
   bot = true;
-  console.log("Hier1", operations, mainexecute);
+  console.log("Hier1", executeoperations, mainexecute);
+  await sleep(500);
   let doc;
-  if (mainexecute) {
-    await ipcRenderer.sendToHost("executeStep");
-  }
-  for ({ operation, args = {} } of operations) {
+  for ({ operation, args = {} } of executeoperations) {
+    if (stopped) {
+      break;
+    }
+    if (mainexecute) {
+      console.log("executeStep", executeoperations.length);
+      await ipcRenderer.sendToHost("executeStep");
+    }
     console.log("EXECUTE", operation, args);
 
     doc = args.document ? document.querySelector(args.document).contentWindow.document : document;
