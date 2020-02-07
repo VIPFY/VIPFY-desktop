@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import moment from "moment";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import TerminateAssignedAccount from "./universal/adding/terminateAssignedAccount";
+import { shortEnglishHumanizer } from "../../common/duration";
 
 interface Props {
   e: any;
@@ -165,29 +166,24 @@ class ServiceDetails extends React.Component<Props, State> {
               <Query
                 //pollInterval={60 * 10 * 1000 + 500}
                 query={gql`
-                  query fetchBoughtplanUsagePerUser(
+                  query fetchTotalUsageMinutes(
                     $starttime: Date!
-                    $endtime: Date!
-                    $boughtplanid: ID!
+                    $assignmentid: ID!
+                    $unitid: ID!
                   ) {
-                    fetchBoughtplanUsagePerUser(
+                    assignment: fetchTotalUsageMinutes(
                       starttime: $starttime
-                      endtime: $endtime
-                      boughtplanid: $boughtplanid
-                    ) {
-                      unit {
-                        id
-                      }
-                      totalminutes
-                    }
+                      assignmentid: $assignmentid
+                    )
+                    total: fetchTotalUsageMinutes(starttime: $starttime, unitid: $unitid)
                   }
                 `}
                 variables={{
                   starttime: moment()
                     .subtract(4, "weeks")
                     .format("LL"),
-                  endtime: moment().format("LL"),
-                  boughtplanid: e.boughtplanid.id
+                  assignmentid: e.id,
+                  unitid: this.props.employeeid
                 }}>
                 {({ data, loading, error }) => {
                   if (loading) {
@@ -196,36 +192,22 @@ class ServiceDetails extends React.Component<Props, State> {
                   if (error) {
                     return <div>Error fetching data</div>;
                   }
-                  if (data && Object.keys(data).length > 0) {
+                  if (data) {
                     //console.log("LOG: ServiceDetails -> render -> data", data);
-                    const percent = data.fetchBoughtplanUsagePerUser.find(
-                      e => e.unit.id == this.props.employeeid
-                    )
-                      ? Math.ceil(
-                          data.fetchBoughtplanUsagePerUser.find(
-                            e => e.unit.id == this.props.employeeid
-                          ).totalminutes /
-                            20 /
-                            8 /
-                            60
-                        )
-                      : 0;
+                    const percent = (data.assignment / data.total) * 100;
 
                     return (
                       <React.Fragment>
                         <div className="percentage">
-                          {data &&
-                          data.fetchBoughtplanUsagePerUser &&
-                          data.fetchBoughtplanUsagePerUser.find(
-                            e => e.unit.id == this.props.employeeid
-                          )
-                            ? data.fetchBoughtplanUsagePerUser.find(
-                                e => e.unit.id == this.props.employeeid
-                              ).totalminutes
+                          {data && data.assignment
+                            ? shortEnglishHumanizer(data.assignment * 60000, {
+                                largest: 2,
+                                round: true
+                              })
                             : 0}
                         </div>
                         <div className="percantageBar">
-                          <div className="percantageInline" style={{ width: percent }} />
+                          <div className="percantageInline" style={{ width: `${percent}%` }} />
                         </div>
                       </React.Fragment>
                     );
