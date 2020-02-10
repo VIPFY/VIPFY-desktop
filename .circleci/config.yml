@@ -63,7 +63,7 @@ jobs:
           command: echo $Certificates
       - run:
           name: Decode Certificates
-          command: base64 -D -o Certificates.p12 '<<<' $Certificates
+          command: base64 -D -o Certificates.p12 \<\<\< $Certificates
       - run:
           name: Set our development channel ID
           command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
