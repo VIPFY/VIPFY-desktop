@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 
-version: 2
+version: 2.1
 orbs:
   win: circleci/windows@2.2.0
 jobs:
@@ -55,7 +55,7 @@ jobs:
             - mac-dependencies
       - run:
           name: Get the base64 encoded certificate back
-          command: base64 -D -o Certificates.p12 <<< $ENCODED_CERTIFICATE
+          command: base64 -D -o Certificates.p12 <\<< $ENCODED_CERTIFICATE
       - run:
           name: Create the Keychain for for the build process
           command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
