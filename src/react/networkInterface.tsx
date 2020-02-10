@@ -3,6 +3,7 @@ import { ApolloLink, split } from "apollo-link";
 import { setContext } from "apollo-link-context";
 import { WebSocketLink } from "apollo-link-ws";
 import { createUploadLink } from "apollo-upload-client";
+import { BatchHttpLink } from "apollo-link-batch-http";
 import { RetryLink } from "apollo-link-retry";
 import { onError } from "apollo-link-error";
 import { inspect } from "util";
@@ -42,6 +43,8 @@ const cache = new InMemoryCache({
       case "Department":
         if (object.unitid !== undefined && object.unitid.id !== undefined) {
           return `${object.__typename}:${object.unitid.id}`;
+        } else if (object.unit !== undefined && object.unit.id !== undefined) {
+          return `${object.__typename}:${object.unit.id}`;
         } else {
           return null;
         }
@@ -121,16 +124,19 @@ const cache = new InMemoryCache({
     }
   }
 });
-const httpLink = createUploadLink({
+
+const uploadLink = createUploadLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
   credentials: "include"
 });
-// const httpLink = new BatchHttpLink({
-//   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
-//   //uri: `https://us-central1-vipfy-148316.cloudfunctions.net/backend/graphql`,
-//   credentials: "same-origin",
-//   batchMax: 100
-// });
+
+const batchLink = new BatchHttpLink({
+  uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
+  credentials: "same-origin",
+  batchMax: 100
+});
+
+const httpLink = split(operation => operation.getContext().hasUpload, uploadLink, batchLink);
 
 const afterwareLink = new ApolloLink((operation, forward) => {
   return forward!(operation).map(response => {

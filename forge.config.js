@@ -2,7 +2,7 @@ module.exports = {
   packagerConfig: {
     icon: "iconTransparent",
     asar: false,
-    appCopyright: "©2018 VIPFY GmbH",
+    appCopyright: "©2020 VIPFY GmbH",
     osxSign: {
       platform: "darwin",
       type: "distribution",
