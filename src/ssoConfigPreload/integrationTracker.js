@@ -748,19 +748,19 @@ window.addEventListener("beforeunload", () => {
 });
 
 ipcRenderer.on("startTracking", () => {
-  document.addEventListener("click", findTarget, true);
+  /*document.addEventListener("click", findTarget, true);
   document.addEventListener("keyup", findTarget, true);
   document.addEventListener("input", findTarget, true);
   document.addEventListener("paste", findTarget, true);
-  findAllIframes(document);
+  findAllIframes(document);*/
 });
 
 ipcRenderer.on("removeTracking", () => {
-  document.removeEventListener("click", findTarget, true);
+  /*document.removeEventListener("click", findTarget, true);
   document.removeEventListener("keyup", findTarget, true);
   document.removeEventListener("input", findTarget, true);
   document.removeEventListener("paste", findTarget, true);
-  findAllIframes(document, true);
+  findAllIframes(document, true);*/
 });
 
 async function start() {

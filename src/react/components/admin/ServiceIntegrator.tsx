@@ -54,6 +54,7 @@ interface State {
   url: string;
   urlBevorChange: string;
   finalexecutionPlan: Object[];
+  processedfinalexecutionPlan: Object[];
   executionPlan: Object[];
   searchurl: string;
   targetpage: string;
@@ -68,6 +69,7 @@ interface State {
   saveExe: boolean;
   saveKey: string;
   showExtend: boolean;
+  webviewReady: boolean;
 }
 
 const FETCH_EXECUTIONAPPS = gql`
@@ -121,6 +123,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     url: "",
     urlBevorChange: "",
     finalexecutionPlan: [],
+    processedfinalexecutionPlan: [],
     executionPlan: [],
     searchurl: "",
     targetpage: "",
@@ -134,7 +137,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
     showLoading: false,
     saveExe: false,
     saveKey: "",
-    showExtend: false
+    showExtend: false,
+    webviewReady: false
   };
   savevalue: string;
   shallSearch: boolean = true;
@@ -693,7 +697,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
           inputList.push(input);
         }
       });
-      console.log("CHANGE 3");
       return { ...oldstate, finalexecutionPlan: newExecutionPlan };
     });
     const popup = (
@@ -704,35 +707,35 @@ class ServiceIntegrator extends React.Component<Props, State> {
         buttonStyles={{ justifyContent: "space-around" }}
         closeable={false}>
         <form
-          onSubmit={e => {
+          onSubmit={async e => {
             e.preventDefault();
             console.log("Filling plan.");
             fillPlans.forEach(planid => {
               this.setState(oldstate => {
-                oldstate.executionPlan.find(plan => {
+                oldstate.finalexecutionPlan.find(plan => {
                   return plan.args.id == planid;
                 })!.value = document.getElementById(planid + "input")!.value;
                 return oldstate;
               });
             });
             this.setState({ divList: [] });
-            this.sendExecuteFinal();
+            await this.sendExecuteFinal();
           }}>
           {inputList.map(e => e)}
           <UniversalButton
-            onClick={() => {
+            onClick={async () => {
               console.log("Filling plan.");
               fillPlans.forEach(planid => {
                 this.setState(oldstate => {
                   console.log("OLDSTATE", this.state);
-                  oldstate.executionPlan.find(plan => {
+                  oldstate.finalexecutionPlan.find(plan => {
                     return plan.args.id == planid;
                   })!.value = document.getElementById(planid + "input")!.value;
                   return oldstate;
                 });
               });
               this.setState({ divList: [] });
-              this.sendExecuteFinal();
+              await this.sendExecuteFinal();
             }}
             type="high"
             label="submit"></UniversalButton>
@@ -745,11 +748,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
           label="Abbrechen"></UniversalButton>
       </PopupBase>
     );
-    this.state.executionPlan.forEach(plan => {
+    this.state.finalexecutionPlan.forEach(plan => {
       this.webview!.send(
         "delockItem",
-        this.state.executionPlan[
-          this.state.executionPlan.findIndex(element => {
+        this.state.finalexecutionPlan[
+          this.state.finalexecutionPlan.findIndex(element => {
             return element.args.id == plan.args.id;
           })
         ].args.selector
@@ -762,7 +765,47 @@ class ServiceIntegrator extends React.Component<Props, State> {
     });
   }
 
-  sendExecuteFinal() {
+  processstep = operation => {
+    let result = [];
+    switch (operation.operation) {
+      case "function":
+        const functionArray = JSON.parse(
+          this.state.app.internaldata.execute.find(f => f.key == operation.args.functionname).script
+        );
+        functionArray.forEach(s => {
+          const testing2 = this.processstep(s);
+          result = result.concat(testing2);
+        });
+        break;
+
+      case "loadurl":
+        console.log("OPERATION", operation);
+        if (operation.args.resetSession) {
+          console.log("RESET SESSION");
+          session.fromPartition("followLogin").clearStorageData();
+        }
+        this.setState({ searchurl: operation.args.url });
+        this.trySiteLoading();
+        break;
+
+      default:
+        result.push(operation);
+        break;
+    }
+    return result;
+  };
+
+  sendExecuteFinal = async () => {
+    let processedfinalexecutionPlan = [];
+    let awaked = false;
+    console.log("SENDEXECUTEFINAL", this.state, processedfinalexecutionPlan);
+    this.state.finalexecutionPlan.forEach(fep => {
+      console.log("FEP", fep);
+      const operationArray = this.processstep(fep);
+      console.log("TESTING", operationArray);
+      processedfinalexecutionPlan = processedfinalexecutionPlan.concat(operationArray);
+    });
+    console.log("TESTING 2", processedfinalexecutionPlan);
     this.setState({
       divList: [
         <div
@@ -776,11 +819,15 @@ class ServiceIntegrator extends React.Component<Props, State> {
             zIndex: 5,
             opacity: 0
           }}></div>
-      ]
+      ],
+      processedfinalexecutionPlan
     });
-    console.log("sending execute");
-    this.webview!.send("execute", this.state.finalexecutionPlan);
-  }
+    console.log("CHECKING", this.state.webviewReady, processedfinalexecutionPlan);
+    if (this.state.webviewReady && processedfinalexecutionPlan.length > 0) {
+      console.log("EXECUTE 1", processedfinalexecutionPlan);
+      this.webview!.send("execute", processedfinalexecutionPlan);
+    }
+  };
 
   async onIpcMessage(e): Promise<void> {
     console.log("IPC called", e.channel);
@@ -790,8 +837,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
         console.log("SAY HELLO", this.state);
         this.loginState.executing++;
         this.webview = e.target;
+        this.setState({ webviewReady: true });
         if (this.state.executing > 0) {
-          const plan = this.state.finalexecutionPlan;
+          const plan = this.state.processedfinalexecutionPlan;
           const shortedPlan = plan.slice(this.state.step);
           console.log("SEND EXECUTE 2", shortedPlan, this.state);
           await sleep(500);
@@ -963,7 +1011,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
       case "readyForNextStep":
         this.setState(oldstate => {
           oldstate.executionPlan.forEach(element => {
-            oldstate.finalexecutionPlan.push(element);
+            oldstate.processedfinalexecutionPlan.push(element);
           });
           return oldstate;
         });
@@ -990,7 +1038,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             this.loginState.step
           );*/
           if (
-            this.state.finalexecutionPlan.findIndex(element => {
+            this.state.processedfinalexecutionPlan.findIndex(element => {
               return element.step == this.loginState.step;
             }) == -1
           ) {
@@ -1028,7 +1076,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             break;
           }
           if (this.state.targetpage == this.webview.url) {
-            console.log("Yea did it", this.state.finalexecutionPlan);
+            console.log("Yea did it", this.state.processedfinalexecutionPlan);
             //doSomething with finalexecutionPlan
           } else {
             throw "Execution fehlgeschlagen";
@@ -1130,24 +1178,17 @@ class ServiceIntegrator extends React.Component<Props, State> {
           ); */
           console.log(
             "fillField",
-            this.state.finalexecutionPlan,
-            this.state.executionPlan.find(element => {
+            this.state.processedfinalexecutionPlan,
+            this.state.processedfinalexecutionPlan.find(element => {
               return element.args.fillkey == e.args[0];
             }),
             e.args[0]
           );
           //if (this.state.isLogin) {
-          if (!this.state.test) {
-            var text = this.state.executionPlan.find(element => {
-              //console.log("E", element, element.args.fillkey, e.args[0]);
-              return element.args.fillkey == e.args[0];
-            })!.value;
-          } else {
-            var text = this.state.finalexecutionPlan.find(element => {
-              //console.log("E", element, element.args.fillkey, e.args[0]);
-              return element.args.fillkey == e.args[0];
-            })!.value;
-          }
+          var text = this.state.processedfinalexecutionPlan.find(element => {
+            //console.log("E", element, element.args.fillkey, e.args[0]);
+            return element.args.fillkey == e.args[0];
+          })!.value;
           /* } else {
             var text;
             switch (e.args[0]) {
@@ -1173,9 +1214,13 @@ class ServiceIntegrator extends React.Component<Props, State> {
             }
           } */
 
+          console.log("TYPING", text);
+
           for await (const c of text) {
+            console.log("Letter", c);
             const shift = c.toLowerCase() != c;
             const modifiers = shift ? ["shift"] : [];
+            console.log("WEBVIEW", w);
             w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
             w.sendInputEvent({ type: "char", modifiers, keyCode: c });
             await sleep(Math.random() * 20 + 50);
@@ -1195,10 +1240,10 @@ class ServiceIntegrator extends React.Component<Props, State> {
             this.state.step,
             " -> ",
             this.state.step + 1,
-            this.state.finalexecutionPlan
+            this.state.processedfinalexecutionPlan
           );
           if (
-            this.state.finalexecutionPlan.findIndex(element => {
+            this.state.processedfinalexecutionPlan.findIndex(element => {
               return element.step == this.state.step;
             }) != -1 &&
             !this.loginState.didLoadOnSteps.includes(this.state.step + 1)
@@ -1215,6 +1260,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
       case "unload": {
         console.log("UNLOAD", this.webview);
+        this.setState({ webviewReady: false });
         this.webview = null;
       }
       default:
@@ -1224,7 +1270,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("Anfang Render", this.state.executionPlan);
     // ?
     /*if (this.state.url === this.state.searchurl) {
       session.fromPartition("followLogin").clearStorageData();
@@ -1296,7 +1341,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 style={{ color: "black", borderColor: "white" }}
                 width="100%"
                 onEnter={async () => {
-                  console.log("CHANGE 4");
                   await this.setState({
                     isLogin: true,
                     end: false,
@@ -1305,6 +1349,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
                     url: "",
                     urlBevorChange: "",
                     finalexecutionPlan: [],
+                    processedfinalexecutionPlan: [],
                     executionPlan: [],
                     targetpage: "",
                     test: false
@@ -1317,7 +1362,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 type="high"
                 label="Load Site"
                 onClick={() => {
-                  console.log("CHANGE 5");
                   this.loginState.step = 0;
                   this.setState({
                     end: false,
@@ -1356,7 +1400,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
               )}
             </div>
             <div style={{ overflowY: "scroll", width: "100%", height: "65%" }}>
-              {console.log("STATE", this.state)}
               {this.state.executionPlan.map((o, k) => (
                 <div
                   id={o.args.id + "side"}
@@ -1404,7 +1447,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   disabled={this.webview == undefined}
                   onClick={async () => {
                     await this.setState(oldstate => {
-                      console.log("CHANGE 6");
                       return {
                         ...oldstate,
                         tracking: false,
@@ -1425,7 +1467,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 value={JSON.stringify(this.state.finalexecutionPlan)}
                 style={{ width: "100%", height: "50%" }}
                 onChange={v => {
-                  console.log("CHANGE 1");
                   this.setState({ finalexecutionPlan: JSON.parse(v.target.value) });
                 }}
               />
@@ -1442,8 +1483,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
                     //set url back to null
                     console.log("EXECUTE BUTTON");
                     this.setState({ executing: 1, step: 0, test: true });
-                    this.sendExecuteFinal();
-                    console.log("STATE", this.state);
+                    console.log(await this.sendExecuteFinal());
                   }}
                 />
               </div>
@@ -1502,7 +1542,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
                       <div
                         onClick={() =>
                           this.setState(oldstate => {
-                            console.log("CHANGE 2", oldstate, e);
                             let finalexecutionPlan: Object[] = [];
                             if (oldstate.showExtend) {
                               oldstate.finalexecutionPlan.push({
@@ -1514,6 +1553,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
                               finalexecutionPlan = oldstate.finalexecutionPlan;
                             } else {
                               finalexecutionPlan = JSON.parse(e.script);
+                              console.log("finalexecutionPlan", finalexecutionPlan, e.script);
                             }
                             return {
                               finalexecutionPlan,
@@ -1573,7 +1613,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
               id="Webview-1" //{this.state.webviewid}
               ref={element => (this.webview = element)}
               preload={getPreloadScriptPath("integrationTracker.js")}
-              webpreferences="webSecurity=false"
+              webpreferences="webSecurity=no"
               className="newMainPosition"
               useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.123 Safari/537.36"
               src={this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
@@ -1591,7 +1631,9 @@ class ServiceIntegrator extends React.Component<Props, State> {
               }}
               onClose={e => this.handleClosing(e)}
               onDidNavigateInPage={e => this.handleSiteChange(e)}
-              onDidNavigate={e => this.handleSiteChange(e)}
+              onDidNavigate={e => {
+                this.handleSiteChange(e);
+              }}
               onDidFailLoad={e => this.didFailLoad(e)}
             />
           </div>
