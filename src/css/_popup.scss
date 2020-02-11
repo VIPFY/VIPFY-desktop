@@ -1,18 +1,18 @@
-$modal-z: 10000;
+$modal-z: 2000000;
 $modal-wh: 50%;
 
 #overlay {
   align-items: center;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 32px);
   justify-content: center;
   left: 0;
   position: fixed;
-  top: 0;
+  top: 32px;
   width: 100vw;
   z-index: $modal-z;
-  animation: lay-over 100ms ease-in;
+  /*animation: lay-over 100ms ease-in;
 
   @keyframes lay-over {
     from {
@@ -22,7 +22,7 @@ $modal-wh: 50%;
     to {
       transform: translateY(0);
     }
-  }
+  }*/
 }
 
 #popup {
@@ -112,10 +112,10 @@ $modal-wh: 50%;
 
 .backgroundPopup{
   position: fixed;
-  top: 0;
+  top: 32px;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 32px);
   z-index: 1000000;
   background-color: rgba($vipfy_mainColor, 0.1);
   display: flex;
@@ -130,8 +130,10 @@ $modal-wh: 50%;
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
+  //align-items: center;
   justify-content: center;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .universalPopup{
@@ -143,22 +145,31 @@ $modal-wh: 50%;
   position: relative;
   height: auto;
   //transform: scale(0);
-  margin-bottom: 50px;
-  max-height: 80vh;
+  //margin-bottom: 50px;
+  //max-height: 80vh;
   overflow: auto;
+  margin-top: 56px; //+32px == 88px
+  margin-bottom: 88px;
+  max-height: calc(100vh - 88px - 88px);
 }
 
 .closePopup{
   position: absolute;
-  right: 5px;
-  top: 5px;
-  width: 30px;
-  line-height: 30px;
+  //right: 5px;
+  //top: 5px;
+  //width: 30px;
+  //line-height: 30px;
   text-align: center;
-  font-size: 15px;
+  //font-size: 15px;
   cursor: pointer;
   border-radius: $vipfy_smallradius;
   transition: background-color 200ms ease-in-out;
+
+  right: 8px;
+  top: 8px;
+  width: 24px;
+  line-height: 24px;
+  font-size: 16px;
 
   &:hover{
     background-color: rgba($vipfy_mainColor, 0.15);
@@ -166,7 +177,8 @@ $modal-wh: 50%;
 }
 
 .contentPopup{
-  margin: 40px;
+  //margin: 40px;
+  margin: 32px 48px 24px 48px;
   cursor: initial;
 }
 
@@ -193,7 +205,7 @@ $modal-wh: 50%;
     flex-flow: column;
     justify-content: space-between;
     align-items: center;
-    height: 341px;
+    /*height: 341px;*/
 
     h3 {
       display: flex;
@@ -208,6 +220,367 @@ $modal-wh: 50%;
       opacity: 1;
       position: absolute;
       overflow: hidden;
+    }
+  }
+}
+
+.formPopup{
+  h1{
+    font-size: 24px;
+    display: block;
+    text-align: center;
+    padding-bottom: 24px;
+    margin-block-start: unset;
+    margin-block-end: unset;
+    margin-inline-start: unset;
+    margin-inline-end: unset;
+  }
+  h2{
+    font-size: 16px;
+    display: block;
+    text-align: center;
+    padding-bottom: 48px;
+    margin-block-start: unset;
+    margin-block-end: unset;
+    margin-inline-start: unset;
+    margin-inline-end: unset;
+    font-weight: 400;
+  }
+  h3{
+    font-weight: 400;
+    font-size: 14px;
+  }
+  .universalLabelInput{
+    width: 100%;
+    margin-bottom: 40px;
+  }
+  .buttonsPopup{
+    margin-top: 56px;
+    justify-content: space-between;
+  }
+  .serviceIconHolderTeamAdd{
+    position: relative;
+    width: 100%;
+    height: 48px;
+    display: flex;
+    margin-bottom: 24px;
+  }
+  .coll{
+    transition: height 300ms ease-in-out, margin-top 0ms ease-in-out 300ms;
+    overflow: hidden;
+  }
+  .chevron{
+    margin-right: 8px;
+    line-height: 24px;
+    transition: transform 300ms ease-in-out;
+  }
+}
+.assignNewAccountPopup{
+  h1{
+    font-size: 24px;
+    display: block;
+    text-align: center;
+    padding-bottom: 48px;
+    margin-block-start: unset;
+    margin-block-end: unset;
+    margin-inline-start: unset;
+    margin-inline-end: unset;
+  }
+  h2{
+    font-size: 16px;
+    padding-top: 48px;
+    margin-block-start: unset;
+    margin-block-end: unset;
+    margin-inline-start: unset;
+    margin-inline-end: unset;
+    font-weight: 400;
+  }
+  h3{
+    font-weight: 400;
+    font-size: 14px;
+  }
+  .searchResult{
+    line-height: 42px;
+    font-size: 15px;
+
+    .managerSquare{
+      margin-top: 5px;
+      margin-right: 8px;
+      
+    }
+
+    &:hover{
+      line-height: 40px;
+
+      .managerSquare{
+        margin-top: 4px;
+      }
+    }
+  }
+  .editbutton{
+    position: absolute;
+    top: -1px;
+    right: 0px;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover{
+      background-color: #f5f5f5;
+    }
+  }
+
+  .listingDiv:not(:first-of-type){
+    margin-top: 16px;
+  }
+
+  .chooseButton{
+    line-height: 24px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: solid 1px;
+
+    &:hover{
+      background-color: rgba(32, 186, 169, 0.1);
+    }
+  }
+  .disclaimerShare{
+    position: absolute;
+    color:  red;
+    font-size: 10px;
+    right: 0;
+    bottom: -12px;
+  }
+  .warning{
+    position: absolute;
+    top: -1px;
+    right: 26px;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    .warningTitle{
+      position: absolute;
+      color: #253647;
+      font-weight: normal;
+      font-size: 12px;
+      top: -16px;
+      right: 30px;
+      width: 120px;
+      background-color: white;
+      padding: 5px;
+      font-family: "Roboto";
+      display: none;
+    }
+
+    &:hover{
+      .warningTitle{
+        display: block;
+      }
+    }
+  }
+  .coll{
+    transition: height 300ms ease-in-out, margin-top 0ms ease-in-out 300ms;
+    overflow: hidden;
+  }
+  .chevron{
+    margin-right: 8px;
+    line-height: 24px;
+    transition: transform 300ms ease-in-out;
+  }
+}
+
+.circeSave{
+  $brand-success: #20baa9;
+  $brand-error: #db4d3f;
+  $loader-size: 7em;
+  $check-height: $loader-size/2;
+  $check-width: $check-height/2;
+  $check-left: ($loader-size/6 + $loader-size/12);
+  $check-thickness: 5px;
+  $check-color: $brand-success;
+
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(21, 122, 111, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 1000ms linear;
+  flex-flow: column;
+  overflow: hidden;
+
+  
+  &.inner{
+    width: 200%;
+    height: 200%;
+    border-radius: 50%;
+    top: -50%;
+    left: -50%;
+    &.loadComplete{
+      //background-color: $brand-success;
+      box-shadow: 0px 0px 500px 500px inset $brand-success;
+    }
+  
+    &.loadError{
+      //background-color: $brand-error;
+      box-shadow: 0px 0px 500px 500px inset $brand-error;
+    }
+  }
+
+  .errorMessageHolder{
+    display: none;
+    position: absolute;
+    bottom: 20px;
+    text-align: center;
+
+    .message {
+      color: #f5f5f5;
+      padding: 10px 20px;
+      border-radius: 4px;
+    }
+
+    button{
+      background-color: #f5f5f5;
+      padding: 10px 20px;
+      border-radius: 4px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+  }
+
+  // Define vars we'll be using
+
+  .circle-loader {
+    margin-bottom: 20%;
+    border: 5px solid #eee;
+    border-left-color: $check-color;
+    //border-left-width: 5px;
+    //box-shadow: 0px 0px 5px 0px #eee, #eee 0px 0px 5px 0px inset;
+    animation: loader-spin 1.2s infinite linear;
+    position: relative;
+    display: inline-block;
+    border-radius: 50%;
+    width: $loader-size;
+    height: $loader-size;
+  }
+
+  .load-complete {
+    -webkit-animation: none;
+    animation: none;
+    border-color: $check-color;
+    transition: border 500ms ease-out;
+  }
+
+  .load-error {
+    -webkit-animation: none;
+    animation: none;
+    border-color: #eee;
+    transition: border 500ms ease-out;
+  }
+
+  .checkmark {
+    display: none;
+    
+    &.draw:after {
+      animation-duration: 800ms;
+      animation-timing-function: ease;
+      animation-name: checkmark;
+      transform: scaleX(-1) rotate(135deg);
+    }
+    
+    &:after {
+      opacity: 1;
+      height: $check-height;
+      width: $check-width;
+      transform-origin: left top;
+      border-right: $check-thickness solid $check-color;
+      border-top: $check-thickness solid $check-color;
+      content: '';
+      left: $check-left;
+      top: $check-height;
+      position: absolute;
+    }
+  }
+
+  .cross {
+    display: none;
+    
+    &.draw:after {
+      //animation-duration: 800ms;
+      //animation-timing-function: ease;
+      //animation-name: checkmark;
+      transform: scaleX(-1) rotate(135deg);
+    }
+    
+    &:after {
+      opacity: 1;
+      height: 50px;
+      width: 50px;
+      transform-origin: left top;
+      //border-right: $check-thickness solid #eee;
+      border-top: $check-thickness solid #eee;
+      content: '';
+      left: 37px;
+      top: 40px;
+      position: absolute;
+    }
+
+    &.draw:before {
+      //animation-duration: 800ms;
+      //animation-timing-function: ease;
+      //animation-name: checkmark;
+      transform: scaleX(-1) rotate(45deg);
+    }
+    
+    &:before {
+      opacity: 1;
+      height: 50px;
+      width: 50px;
+      transform-origin: left top;
+      //border-right: $check-thickness solid #eee;
+      border-bottom: $check-thickness solid #eee;
+      content: '';
+      left: 37px;
+      top: 1px;
+      position: absolute;
+    }
+  }
+
+  @keyframes loader-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes checkmark {
+    0% {
+      height: 0;
+      width: 0;
+      opacity: 1;
+    }
+    20% {
+      height: 0;
+      width: $check-width;
+      opacity: 1;
+    }
+    40% {
+      height: $check-height;
+      width: $check-width;
+      opacity: 1;
+    }
+    100% {
+      height: $check-height;
+      width: $check-width;
+      opacity: 1;
     }
   }
 }

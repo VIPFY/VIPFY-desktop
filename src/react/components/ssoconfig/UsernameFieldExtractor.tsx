@@ -1,5 +1,6 @@
 import * as React from "react";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
+import { getPreloadScriptPath } from "../../common/functions";
 
 interface Props {
   url: string;
@@ -21,7 +22,7 @@ class UsernameFieldExtractor extends React.PureComponent<Props, State> {
   render() {
     return (
       <WebView
-        preload="./ssoConfigPreload/findUsernameField.js"
+        preload={getPreloadScriptPath("findUsernameField.js")}
         webpreferences="webSecurity=no"
         src={this.props.url || ""}
         partition="ssoconfig"
@@ -32,7 +33,6 @@ class UsernameFieldExtractor extends React.PureComponent<Props, State> {
   }
 
   onIpcMessage(e) {
-    console.log("ipc", e);
     switch (e.channel) {
       case "emailobject":
         {

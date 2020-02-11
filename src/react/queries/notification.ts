@@ -7,6 +7,7 @@ export const FETCH_NOTIFICATIONS = gql`
       sendtime
       message
       icon
+      link
     }
   }
 `;

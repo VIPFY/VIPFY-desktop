@@ -1,33 +1,34 @@
 require("dotenv").config();
+import configJSON from "../config.json";
+
+const devCheck = !!process.env.DEVELOPMENT || configJSON.development;
 
 let config = {
-  backendHost: process.env.SERVER_NAME || "api.vipfy.store",
-  backendPort: process.env.SERVER_PORT || 443,
-  backendSSL:
-    process.env.SERVER_SSL !== "0" &&
-    process.env.SERVER_SSL !== "false" &&
-    process.env.SERVER_SSL !== "FALSE",
-  isDevelopment: !!process.env.DEVELOPMENT,
+  backendHost: process.env.SERVER_NAME || configJSON.server,
+  backendPort: process.env.SERVER_PORT || configJSON.serverPort,
+  backendSSL: process.env.hasOwnProperty("SERVER_SSL")
+    ? process.env.SERVER_SSL !== "0" &&
+      process.env.SERVER_SSL !== "false" &&
+      process.env.SERVER_SSL !== "FALSE"
+    : configJSON.serverSSL,
+  isDevelopment: devCheck,
   stripeToken: process.env.stripeToken,
-
   showProfile: true,
   showMessageCenter: false,
-  showBilling: false,
+  showBilling: true,
   showTeams: false,
   showDomains: false,
   showMarketplace: false,
   showAppAdmin: false,
-  showAdmin: true,
+  showAdmin: devCheck,
   showSsoConfig: false,
   showUniversalLoginDebug: false,
-
-  allowDevTools: true
+  showVacationRequests: devCheck,
+  allowDevTools: devCheck
 };
 
 if (!config.stripeToken) {
-  config.stripeToken = config.isDevelopment
-    ? "pk_test_W9VDDvYKZqcmbgaz7iAcUR9j"
-    : "pk_live_OrfeIMTOFjG5o9S5zm9iYH0x";
+  config.stripeToken = configJSON.stripe[config.isDevelopment ? "live" : "dev"];
 }
 
 export default config;

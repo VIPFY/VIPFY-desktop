@@ -9,6 +9,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
 import { ADD_PROMOCODE } from "../../mutations/auth";
+import welcomeBack from "../../../images/welcome_back.png";
 
 interface Props {
   setupFinished: Function;
@@ -71,7 +72,7 @@ class DataNameForm extends React.Component<Props, State> {
       await this.props.client.query({ query: me, fetchPolicy: "network-only" });
       this.props.moveTo("dashboard");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       this.setState({ error: "Could not set your name. Please try again." });
     }
   };
@@ -83,15 +84,12 @@ class DataNameForm extends React.Component<Props, State> {
       <div className="dataGeneralForm">
         <div className="holder">
           <div className="logo" />
-          <img
-            src={`${__dirname}/../../../images/welcome_back.png`}
-            className="illustration-login"
-          />
+          <img src={welcomeBack} className="illustration-login" />
 
           <div className="holder-right">
             <h1>Welcome to VIPFY</h1>
             <p style={{ display: "flex", flexFlow: "column", alignItems: "start" }}>
-              <span>Now that you signed up, let's personalize your experience.</span> <br />
+              <span>Let's personalize your experience.</span>
               <span>First of all, what's your name?</span>
             </p>
 
@@ -125,7 +123,7 @@ class DataNameForm extends React.Component<Props, State> {
                         }))
                       }>
                       {`${showPromoInput ? "Hide promocode" : "Do you have a promocode?"}`}{" "}
-                      <span>Click here</span> <i className="fal fa-money-bill-wave" />
+                      <span>Click here</span>
                     </button>
 
                     {showPromoInput ? (
@@ -157,7 +155,7 @@ class DataNameForm extends React.Component<Props, State> {
                       <UniversalButton
                         label="Continue"
                         type="high"
-                        disabled={this.state.name == ""}
+                        disabled={!this.state.name || this.state.name.trim() == ""}
                         onClick={() => this.continue()}
                       />
                     </div>
@@ -180,7 +178,8 @@ class DataNameForm extends React.Component<Props, State> {
                 close={() => this.setState({ register: false, error: "" })}
                 small={true}
                 closeable={false}
-                nosidebar={true}>
+                fullMiddle={true}
+                noSidebar={true}>
                 {this.state.error != "" ? (
                   <React.Fragment>
                     <div>{this.state.error}</div>

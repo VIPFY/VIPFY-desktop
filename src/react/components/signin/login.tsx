@@ -1,8 +1,9 @@
 import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
-import Store = require("electron-store");
+import Store from "electron-store";
 import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
+import welcomeBack from "../../../images/welcome_back.png";
 
 interface Props {
   type: string;
@@ -19,6 +20,8 @@ interface State {
   changed: Boolean;
   email: string;
   changeEmail: boolean;
+  submitting: boolean;
+  showError: boolean;
 }
 
 class Login extends React.Component<Props, State> {
@@ -28,13 +31,16 @@ class Login extends React.Component<Props, State> {
     changed: false,
     email: "",
     changeEmail: false,
-    prevEmail: ""
+    prevEmail: "",
+    submitting: false,
+    showError: false
   };
 
   static getDerivedStateFromProps(props, state) {
     if (props.email != state.prevEmail) {
       return { ...state, email: props.email, prevEmail: props.email };
     }
+    return state;
   }
 
   render() {
@@ -55,10 +61,7 @@ class Login extends React.Component<Props, State> {
       <div className="dataGeneralForm">
         <div className="holder">
           <div className="logo" />
-          <img
-            src={`${__dirname}/../../../images/welcome_back.png`}
-            className="illustration-login"
-          />
+          <img src={welcomeBack} className="illustration-login" />
 
           <div className="holder-right">
             <h1>{`Welcome ${user ? `back, ${user.name}` : ""}`}</h1>
@@ -94,10 +97,10 @@ class Login extends React.Component<Props, State> {
                 width="312px"
                 type="password"
                 label="Password"
-                livevalue={v => this.setState({ field2: v, changed: true })}
+                livevalue={v => this.setState({ field2: v, changed: true, showError: false })}
                 errorEvaluation={this.props.error && this.state.changed}
                 errorhint={
-                  this.props.error && this.state.changed ? (
+                  this.props.error && this.state.changed && this.state.showError ? (
                     <React.Fragment>
                       <i className="fal fa-exclamation-circle" />
                       <span>{this.props.error}</span>
@@ -108,18 +111,24 @@ class Login extends React.Component<Props, State> {
               />
             </div>
 
-            <div className="login-buttons">
+            <div className="login-buttons" style={{ justifyContent: "flex-end" }}>
               <UniversalButton
-                label="Forgot Password"
-                type="low"
-                onClick={() => this.props.backFunction()}
-              />
-
-              <UniversalButton
-                label="Login"
+                label={this.state.submitting ? <i className="fal fa-spinner fa-spin" /> : "login"}
                 type="high"
-                disabled={this.state.field2 == ""}
-                onClick={() => this.props.continueFunction(this.state.field2, this.state.email)}
+                disabled={this.state.field2 == "" || this.state.submitting}
+                onClick={async () => {
+                  this.setState({ submitting: true });
+                  const hasError = await this.props.continueFunction(
+                    this.state.field2,
+                    this.state.email
+                  );
+
+                  if (hasError) {
+                    this.setState({ showError: true });
+                    setTimeout(() => this.setState({ showError: false }), 2250);
+                    this.setState({ submitting: false });
+                  }
+                }}
               />
             </div>
           </div>

@@ -1,76 +1,65 @@
 import * as React from "react";
 import { Route } from "react-router-dom";
-import { withRouter } from "react-router";
-
+import { withRouter, Switch } from "react-router";
+import { ipcRenderer } from "electron";
 import { graphql, compose, Query, withApollo } from "react-apollo";
 
-import Advisor from "./advisor";
 import AppPage from "./apppage";
 import Billing from "./billing";
 import Dashboard from "./dashboard";
 import Domains from "./domains";
 import Marketplace from "./marketplace";
 import MessageCenter from "./messagecenter";
-import Navigation from "./navigation";
-import Profile from "./profile";
-import Settings from "./settings";
 import AdminDashboard from "../components/admin/Dashboard";
 import ServiceCreation from "../components/admin/ServiceCreation";
 import Sidebar from "../components/Sidebar";
-import Team from "./team";
 import Webview from "./webview";
 import ErrorPage from "./error";
 import UsageStatistics from "./usagestatistics";
 import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 
-import { fetchLicences, me } from "../queries/auth";
-// import { fetchRecommendedApps } from "../queries/products";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
 import Security from "./security";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
-import EManager from "./emanager";
-import LManager from "./lmanager";
-import DManager from "./dmanager";
-import EShower from "./eshower";
-import LShower from "./lshower";
-import DShower from "./dshower";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
 import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
-import AppAdmin from "./appadmin";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
-import { SideBarContext } from "../common/context";
+import { SideBarContext, UserContext } from "../common/context";
 import ClickTracker from "../components/ClickTracker";
-import EManagerAdmin from "./emanageradmin";
-import EShowerAdmin from "./eshoweradmin";
 import EmployeeOverview from "./manager/employeeOverview";
-import EmployeeDetails from "./manager/employeeDetails";
-import TeamOverview from "./manager/teamOverview";
 import TeamDetails from "./manager/teamDetails";
-import ServiceOverview from "./manager/serviceOverview";
-import ServiceDetails from "./manager/serviceDetails";
 import Consent from "../popups/universalPopups/Consent";
 import UniversalLogin from "./universalLogin";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest";
+import ResizeAware from "react-resize-aware";
+import HistoryButtons from "../components/HistoryButtons";
+import CompanyDetails from "./manager/companyDetails";
+import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
+import TutorialBase from "../tutorials/tutorialBase";
+import CryptoDebug from "../components/admin/crytpodebug";
+import Vacation from "./vacation";
+import { fetchUserLicences } from "../queries/departments";
+import EmployeeDetails from "./manager/employeeDetails";
+import TeamOverview from "./manager/teamOverview";
+import ServiceOverview from "./manager/serviceOverview";
+import ServiceDetails from "./manager/serviceDetails";
 
 interface AreaProps {
   history: any[];
-  fetchLicences: any;
-  login: boolean;
-  logMeOut: () => void;
-  location: any;
-  userData: any;
-  userid: number;
-  client: ApolloClient<InMemoryCache>;
   moveTo: Function;
-  sidebarloaded: Function;
   consent?: boolean;
+  style?: Object;
+  needspasswordchange: boolean;
+  emails: string[];
+  tutorialprogress?: any;
+  highlightReferences?: any;
 }
 
 interface AreaState {
@@ -80,8 +69,6 @@ interface AreaState {
   chatOpen: boolean;
   sidebarOpen: boolean;
   domain: string;
-  script: Element | null;
-  script3: Element | null;
   webviews: any[];
   oldWebViews: any[];
   openInstances: any;
@@ -98,8 +85,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     chatOpen: false,
     sidebarOpen: true,
     domain: "",
-    script: null,
-    script3: null,
     webviews: [],
     oldWebViews: [],
     openInstances: {},
@@ -109,76 +94,37 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidMount = async () => {
-    require("electron").ipcRenderer.on("change-page", (event, page) => {
+    ipcRenderer.on("change-page", (_event, page) => {
       this.props.history.push(page);
     });
 
-    /*const meme = await this.props.client.query({ query: me });
-
-    const script = document.createElement("script");
-
-    script.src =
-      "https://static.zdassets.com/ekr/snippet.js?key=dae43c43-7726-40fb-be8a-7468a19337e0";
-    script.id = "ze-snippet";
-    script.async = false;
-    script.onload = () => {
-      const script3 = document.createElement("script");
-
-      const datascript = JSON.stringify({
-        name: `${meme.data.me.firstname} ${meme.data.me.lastname}`,
-        email: `${meme.data.me.emails[0].email}`,
-        organization: `${meme.data.me.company.name}`
-      });
-      script3.innerHTML = `zE(function() {zE.identify(${datascript});});`;
-      script3.id = "ze-snippet3";
-      script3.async = false;
-
-      document.head.appendChild(script3);
-
-      this.setState({ script3 });
-    };
-    this.setState({ script });
-    document.head.appendChild(script);*/
-
-    console.log("LOG: Area -> componentDidMount -> this.props.consent", this.props.consent);
     if (this.props.consent === null) {
       this.setState({ consentPopup: true });
     }
   };
 
-  componentWillUnmount() {
-    //console.log("AREA UNMOUNT");
-    /*if (this.state.script) {
-      console.log(this.state.script);
-      document.head.removeChild(this.state.script);
-    }*/
-  }
-
   moveTo = path => {
     if (!path.startsWith("app")) {
       this.setState({ viewID: -1 });
     }
-    /*if (!(this.props.location.pathname === path)) {
-      this.props.history.push(path);
-    }*/
     this.props.moveTo(path);
   };
 
-  setApp = (boughtplan: number) => {
-    if (this.state.openInstances[boughtplan]) {
+  setApp = (assignmentId: number) => {
+    if (this.state.openInstances[assignmentId]) {
       this.setState(prevState => {
         const newstate = {
           ...prevState,
-          app: boughtplan,
-          licenceID: boughtplan,
-          viewID: Object.keys(prevState.openInstances[boughtplan])[0]
+          app: assignmentId,
+          licenceID: assignmentId,
+          viewID: Object.keys(prevState.openInstances[assignmentId])[0]
         };
         return newstate;
       });
-      this.props.history.push(`/area/app/${boughtplan}`);
+      this.props.history.push(`/area/app/${assignmentId}`);
     } else {
-      this.addWebview(boughtplan, true);
-      this.props.history.push(`/area/app/${boughtplan}`);
+      this.addWebview(assignmentId, true);
+      this.props.history.push(`/area/app/${assignmentId}`);
     }
   };
 
@@ -188,7 +134,8 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   componentDidCatch(error, info) {
-    this.moveTo("/area/error");
+    console.error(error, info);
+    this.moveTo("error");
   }
 
   setSidebar = value => {
@@ -208,9 +155,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   addWebview = (licenceID, opendirect = false) => {
-    const webviews = this.state.webviews;
-    const l = { licenceID: licenceID, plain: true, setViewTitle: this.setViewTitle };
-    const newview = <Webview {...this.state} {...this.props} {...l} />;
     this.setState(prevState => {
       const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
       const l = { licenceID: licenceID, plain: true, setViewTitle: this.setViewTitle, viewID };
@@ -337,6 +281,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           return tab;
         }
       });
+
       return { webviews };
     });
   };
@@ -361,223 +306,209 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "", component: Dashboard },
       { path: "dashboard", component: Dashboard },
       { path: "dashboard/:overlay", component: Dashboard },
-      { path: "settings", component: Settings },
-      { path: "profile", component: Profile },
-      { path: "team", component: Team },
       { path: "security", component: Security },
       { path: "messagecenter", component: MessageCenter },
       { path: "messagecenter/:person", component: MessageCenter },
       { path: "billing", component: Billing },
-      { path: "advisor", component: Advisor },
-      { path: "advisor/:typeid", component: Advisor },
       { path: "marketplace", component: Marketplace },
       { path: "marketplace/:appid/", component: AppPage },
       { path: "marketplace/:appid/:action", component: AppPage },
       { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan },
-      //{ path: "support", component: SupportPage },
+      { path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
+      { path: "vacation", component: Vacation },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
-      { path: "ssoconfig", component: SsoConfigurator },
-      { path: "ssotest", component: SsoTester },
-      { path: "emanager", component: EmployeeOverview },
-      { path: "lmanager", component: ServiceOverview },
-      { path: "dmanager", component: TeamOverview },
-      { path: "emanager/:userid", component: EmployeeDetails },
-      { path: "lmanager/:serviceid", component: ServiceDetails },
-      { path: "dmanager/:teamid", component: TeamDetails },
+      { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
+      { path: "ssoconfig", component: SsoConfigurator, admin: true },
+      { path: "ssotest", component: SsoTester, admin: true },
+      { path: "emanager", component: EmployeeOverview, admin: true },
+      { path: "lmanager", component: ServiceOverview, admin: true },
+      { path: "dmanager", component: TeamOverview, admin: true },
+      { path: "emanager/:userid", component: EmployeeDetails, admin: true },
+      { path: "profile/:userid", component: EmployeeDetails, addprops: { profile: true } },
+      { path: "lmanager/:serviceid", component: ServiceDetails, admin: true },
+      { path: "dmanager/:teamid", component: TeamDetails, admin: true },
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
-      { path: "universallogin", component: UniversalLogin }
+      { path: "universallogin", component: UniversalLogin },
+      { path: "company", component: CompanyDetails, admin: true }
     ];
-
-    if (this.props.licences.loading) {
-      return <LoadingDiv text="Preparing Vipfy..." />;
-    }
-
     return (
-      <div className="area">
-        <ClickTracker />
-        <SideBarContext.Provider value={this.state.sidebarOpen}>
-          <Route
-            render={props => {
-              if (!this.props.location.pathname.includes("advisor")) {
-                return (
-                  <Sidebar
-                    sidebarOpen={sidebarOpen}
-                    setApp={this.setApp}
-                    viewID={this.state.viewID}
-                    views={this.state.webviews}
-                    openInstances={this.state.openInstances}
-                    toggleSidebar={this.toggleSidebar}
-                    setInstance={this.setInstance}
-                    {...this.props}
-                    licences={this.props.licences.fetchLicences}
-                    {...props}
-                    moveTo={this.moveTo}
+      <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <LoadingDiv text="Preparing Vipfy..." />;
+          }
+
+          if (error) {
+            return <ErrorPage />;
+          }
+          const licences = data.fetchUserLicenceAssignments;
+          return (
+            <div className="area" style={this.props.style}>
+              <ClickTracker />
+              <SideBarContext.Provider value={this.state.sidebarOpen}>
+                <UserContext.Provider value={{ userid: this.props.id }}>
+                  <Route
+                    render={props => {
+                      return (
+                        <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
+                          {res => (
+                            <Sidebar
+                              sidebarOpen={sidebarOpen}
+                              setApp={this.setApp}
+                              viewID={this.state.viewID}
+                              views={this.state.webviews}
+                              openInstances={this.state.openInstances}
+                              toggleSidebar={this.toggleSidebar}
+                              setInstance={this.setInstance}
+                              {...this.props}
+                              licences={licences}
+                              {...props}
+                              {...res}
+                              moveTo={this.moveTo}
+                            />
+                          )}
+                        </Query>
+                      );
+                    }}
                   />
-                );
-              } else {
-                return "";
-              }
-            }}
-          />
-          <Route
-            render={props => {
-              if (!this.props.location.pathname.includes("advisor")) {
-                return (
-                  <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
-                    {res => (
-                      <Navigation
-                        chatOpen={chatOpen}
-                        sidebarOpen={sidebarOpen}
-                        setApp={this.setApp}
-                        toggleChat={this.toggleChat}
-                        toggleSidebar={this.toggleSidebar}
-                        viewID={this.state.viewID}
-                        views={this.state.webviews}
-                        openInstances={this.state.openInstances}
-                        {...this.props}
-                        {...props}
-                        {...res}
-                      />
-                    )}
-                  </Query>
-                );
-              } else {
-                return "";
-              }
-            }}
-          />
-          <Route
-            exact
-            path="/area/support"
-            render={props => <SupportPage {...this.state} {...this.props} {...props} />}
-          />
+                  <Route render={() => <HistoryButtons viewID={this.state.viewID} />} />
+                  <Switch>
+                    <Route
+                      exact
+                      path="/area/support"
+                      render={props => <SupportPage {...this.state} {...this.props} {...props} />}
+                    />
 
-          {routes.map(({ path, component, admincomponent, admin }) => {
-            const RouteComponent = component;
-            const AdminComponent = admincomponent;
+                    <Route
+                      exact
+                      path="/area/support/fromError"
+                      render={() => <SupportPage {...this.state} fromErrorPage={true} />}
+                    />
 
-            if (admin && this.props.company.unit.id != 14) {
-              return;
-            } else {
-              return (
-                <Route
-                  key={path}
-                  exact
-                  path={`/area/${path}`}
-                  render={props => (
-                    <div
-                      className={`${
-                        !this.props.location.pathname.includes("advisor") ? "full-working" : ""
-                      } ${chatOpen ? "chat-open" : ""} ${
-                        sidebarOpen && !props.location.pathname.includes("advisor")
-                          ? "sidebar-open"
-                          : ""
-                      }`}
-                      style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
-                      <RouteComponent
-                        setApp={this.setApp}
-                        toggleAdmin={this.toggleAdmin}
-                        adminOpen={this.state.adminOpen}
-                        {...this.props}
-                        {...props}
-                        moveTo={this.moveTo}
-                      />
-                    </div>
+                    {routes.map(({ path, component, admin, addprops }) => {
+                      const RouteComponent = component;
+                      if (admin && !this.props.isadmin) {
+                        return;
+                      } else {
+                        return (
+                          <Route
+                            key={path}
+                            exact
+                            path={`/area/${path}`}
+                            render={props => (
+                              <div
+                                className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                                  sidebarOpen ? "sidebar-open" : ""
+                                }`}
+                                style={{ marginRight: this.state.adminOpen ? "15rem" : "" }}>
+                                <ResizeAware>
+                                  <RouteComponent
+                                    setApp={this.setApp}
+                                    toggleAdmin={this.toggleAdmin}
+                                    adminOpen={this.state.adminOpen}
+                                    moveTo={this.moveTo}
+                                    {...addprops}
+                                    {...this.props}
+                                    {...props}
+                                    licences={licences}
+                                  />
+                                </ResizeAware>
+                              </div>
+                            )}
+                          />
+                        );
+                      }
+                    })}
+
+                    <Route
+                      exact
+                      path="/area/domains/"
+                      render={props => (
+                        <div
+                          className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                            sidebarOpen ? "sidebar-open" : ""
+                          }`}>
+                          <Domains setDomain={this.setDomain} {...this.props} {...props} />
+                        </div>
+                      )}
+                    />
+                    <Route
+                      exact
+                      path="/area/domains/:domain"
+                      render={props => (
+                        <div
+                          className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                            sidebarOpen ? "sidebar-open" : ""
+                          }`}>
+                          <Domains setDomain={this.setDomain} {...this.props} {...props} />
+                        </div>
+                      )}
+                    />
+
+                    <Route
+                      exact
+                      path="/area/app/:licenceid"
+                      render={props => {
+                        if (
+                          this.state.licenceID != props.match.params.licenceid ||
+                          this.state.viewID == -1
+                        ) {
+                          this.setApp(props.match.params.licenceid);
+                        }
+                        return "";
+                      }}
+                    />
+                    <Route
+                      key={"ERRORELSE"}
+                      render={props => (
+                        <div
+                          className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                            sidebarOpen ? "sidebar-open" : ""
+                          }`}>
+                          <ErrorPage />
+                        </div>
+                      )}
+                    />
+                  </Switch>
+                  <ViewHandler
+                    showView={this.state.viewID}
+                    views={this.state.webviews}
+                    sidebarOpen={sidebarOpen}
+                  />
+                  <Tabs
+                    tabs={this.state.webviews}
+                    setInstance={this.setInstance}
+                    viewID={this.state.viewID}
+                    handleDragStart={this.handleDragStart}
+                    handleDragOver={this.handleDragOver}
+                    handleDragEnd={this.handleDragEnd}
+                    handleDragLeave={this.handleDragLeave}
+                    handleClose={this.handleClose}
+                  />
+                  {this.state.consentPopup && (
+                    <Consent close={() => this.setState({ consentPopup: false })} />
                   )}
-                />
-              );
-            }
-          })}
-
-          <Route
-            exact
-            path="/area/domains/"
-            render={props => (
-              <div
-                className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                  sidebarOpen ? "sidebar-open" : ""
-                }`}>
-                <Domains setDomain={this.setDomain} {...this.props} {...props} />
-              </div>
-            )}
-          />
-          <Route
-            exact
-            path="/area/domains/:domain"
-            render={props => (
-              <div
-                className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                  sidebarOpen ? "sidebar-open" : ""
-                }`}>
-                <Domains setDomain={this.setDomain} {...this.props} {...props} />
-              </div>
-            )}
-          />
-
-          <Route
-            exact
-            path="/area/app/:licenceid"
-            render={props => {
-              console.log("PROPS", props);
-              if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
-                this.setApp(props.match.params.licenceid);
-              }
-              return "";
-            }}
-          />
-          {/*<Route
-            exact
-            path="/area/app/:licenceid/:url"
-            render={props => {
-              console.log("PROPSURL", props);
-              if (this.state.licenceID != props.match.params.licenceid || this.state.viewID == -1) {
-                this.setApp(props.match.params.licenceid);
-              }
-              this.setInstanceUrl(
-                parseInt(Object.keys(this.state.openInstances[props.match.params.licenceid])[0]),
-                props.match.params.url
-              );
-              return "";
-            }}
-          />*/}
-
-          <ViewHandler
-            showView={this.state.viewID}
-            views={this.state.webviews}
-            sidebarOpen={sidebarOpen}
-          />
-          <Tabs
-            tabs={this.state.webviews}
-            setInstance={this.setInstance}
-            viewID={this.state.viewID}
-            handleDragStart={this.handleDragStart}
-            handleDragOver={this.handleDragOver}
-            handleDragEnd={this.handleDragEnd}
-            handleDragLeave={this.handleDragLeave}
-            handleClose={this.handleClose}
-          />
-
-          {this.state.consentPopup && (
-            <Consent close={() => this.setState({ consentPopup: false })} />
-          )}
-        </SideBarContext.Provider>
-      </div>
+                  {this.props.needspasswordchange &&
+                    !localStorage.getItem("impersonator-token") && (
+                      <ForcedPasswordChange email={this.props.emails[0].email} />
+                    )}
+                  {this.props.isadmin &&
+                    this.props.tutorialprogress &&
+                    this.props.highlightReferences && <TutorialBase {...this.props} />}
+                </UserContext.Provider>
+              </SideBarContext.Provider>
+            </div>
+          );
+        }}
+      </Query>
     );
   }
 }
 
-export default compose(
-  graphql(fetchLicences, {
-    name: "licences"
-  }) /*
-  graphql(fetchRecommendedApps, {
-    name: "rcApps"
-  }),*/,
-  withApollo
-)(withRouter(Area));
+export default compose(withApollo)(withRouter(Area));

@@ -10,7 +10,7 @@ const lzma = require("lzma");
 const screen = require("electron").remote.screen;
 
 const browserWindow = require("electron").remote.BrowserWindow;
-const HID = require("node-hid");
+// const HID = require("node-hid");
 
 interface Props {
   userid: string;
@@ -117,23 +117,23 @@ class ClickTrackerInner extends PureComponent<Props, State> {
         console.log("WM", i, x, y, z, screen.getCursorScreenPoint(), performance.now())
       );
     }*/
-    const devices = HID.devices();
-    console.log(inspect(devices));
-    console.log(
-      inspect(
-        unique(
-          devices
-            .filter(d => mice.some(m => d.usagePage == m[0] && d.usage == m[1]))
-            .map(d => ({
-              vendor: d.vendorId,
-              product: d.productId,
-              usagePage: d.usagePage,
-              usage: d.usage,
-              release: d.release
-            }))
-        )
-      )
-    );
+    // const devices = HID.devices();
+    // console.log(inspect(devices));
+    // console.log(
+    //   inspect(
+    //     unique(
+    //       devices
+    //         .filter(d => mice.some(m => d.usagePage == m[0] && d.usage == m[1]))
+    //         .map(d => ({
+    //           vendor: d.vendorId,
+    //           product: d.productId,
+    //           usagePage: d.usagePage,
+    //           usage: d.usage,
+    //           release: d.release
+    //         }))
+    //     )
+    //   )
+    // );
     /*const device = new HID.HID(0x046d, 0xc52b);
     if (device) {
       //console.log(inspect(device.getFeatureReport()));

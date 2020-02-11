@@ -1,12 +1,12 @@
 import * as React from "react";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
-import * as Dropzone from "react-dropzone";
 import UploadImage from "../uploadImage";
 
 interface Props {
   setOuterState: Function;
   picture: any;
   name: string;
+  isadmin?: boolean;
 }
 
 interface State {
@@ -14,7 +14,7 @@ interface State {
   picture: any;
 }
 
-class TeamGerneralDataAdd extends React.Component<Props, State> {
+class TeamGeneralDataAdd extends React.Component<Props, State> {
   state = {
     name: this.props.name || "",
     picture: this.props.picture || null
@@ -28,20 +28,23 @@ class TeamGerneralDataAdd extends React.Component<Props, State> {
   render() {
     const { picture, name } = this.props;
     return (
-      <div className="gridNewEmployeePersonal">
+      <div style={{ display: "flex", alignItems: "flex-end" }}>
         <UploadImage
           picture={picture}
           onDrop={file => this.setBothStates({ picture: file })}
           name={name}
-          className={"profilepicture big"}
+          className="profilepictureTeam"
+          isadmin={this.props.isadmin}
+          mainClassName="profilepictureTeam"
         />
         <UniversalTextInput
-          label="Name (Required)"
+          label="Team name"
           id="name"
           livevalue={v => this.setBothStates({ name: v })}
           focus={true}
           startvalue={name}
-          required={true}
+          style={{ marginBottom: "0px", marginLeft: "32px", width: "264px" }}
+          width="264px"
         />
         {
           //TODO reimplement leader
@@ -57,4 +60,4 @@ class TeamGerneralDataAdd extends React.Component<Props, State> {
     );
   }
 }
-export default TeamGerneralDataAdd;
+export default TeamGeneralDataAdd;

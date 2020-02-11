@@ -1,20 +1,17 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.8.0-dev1",
+  "version": "0.11.18",
   "description": "The desktop client for vipfy.com",
-  "main": "src/index.ts",
+  "main": ".webpack/main",
   "scripts": {
-    "start-js": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish-js": "electron-forge publish",
+    "build-linux": "bash ./build-linux.sh && DEVELOPMENT=true electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
-    "build-css": "node-sass-chokidar src/ -o src/",
-    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
-    "start": "npm-run-all -p watch-css start-js",
-    "publish": "npm-run-all build-css build-js",
-    "postinstall": "electron-rebuild --force"
+    "start": "electron-forge start",
+    "publish": "npm-run-all build-css build-js"
   },
   "keywords": [],
   "author": "Vipfy GmbH",
@@ -25,72 +22,12 @@
     "jsxBracketSameLine": true
   },
   "config": {
-    "forge": {
-      "packagerConfig": {
-        "icon": "iconTransparent",
-        "asar": true,
-        "appCopyright": "©2018 VIPFY GmbH",
-        "osxSign": {
-          "platform": "darwin",
-          "type": "distribution",
-          "identity": "Developer ID Application: VIPFY GmbH (RD6VS27844)"
-        }
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "vipfydesktop",
-            "iconUrl": "https://vipfy.store/favicon.ico",
-            "loadingGif": "./src/images/Ladeanimation_Vipfy_transparent.gif",
-            "setupIcon": "./iconTransparent.ico",
-            "signWithParams": "/a /n VIPFY /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "linux",
-            "darwin",
-            "win32"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-dmg",
-          "config": {
-            "icon": "./iconTransparent.icns",
-            "background": "./dmgBackground.png"
-          }
-        }
-      ],
-      "plugins": [
-        [
-          "@electron-forge/plugin-compile",
-          {}
-        ]
-      ],
-      "publishers": [
-        {
-          "name": "@electron-forge/publisher-nucleus",
-          "config": {
-            "host": "http://release.vipfy.store:3030",
-            "appId": "1",
-            "channelId": "4e2105365ea5c7e823cb7af42450b29a",
-            "token": "4a3db0e625fbb3aec657f0e033bb8dd1"
-          }
-        }
-      ]
-    }
+    "forge": "./forge.config.js"
   },
   "dependencies": {
+    "@apollo/react-hooks": "^3.1.3",
+    "@log4js-node/logstash-http": "^1.0.0",
+    "@log4js-node/logstashudp": "^1.2.1",
     "@nivo/bar": "^0.49.1",
     "@personare/react-freshdesk-widget": "^0.3.0",
     "@types/electron-devtools-installer": "^2.2.0",
@@ -101,22 +38,24 @@
     "@types/react-router": "^4.4.3",
     "@types/react-router-dom": "^4.3.1",
     "@types/uuid": "^3.4.4",
-    "apexcharts": "^3.2.2",
+    "@types/zxcvbn": "^4.4.0",
+    "apexcharts": "^3.8.3",
     "apollo-cache-inmemory": "^1.4.2",
-    "apollo-client": "^2.4.12",
+    "apollo-client": "^2.6.4",
+    "apollo-link-batch-http": "^1.2.13",
     "apollo-link-context": "^1.0.14",
     "apollo-link-error": "^1.1.7",
     "apollo-link-http": "^1.5.11",
+    "apollo-link-retry": "^2.2.14",
     "apollo-link-ws": "^1.0.14",
     "apollo-upload-client": "^9.1.0",
-    "axios": "^0.18.0",
     "dotenv": "^5.0.1",
     "draft-js": "^0.10.5",
     "draftjs-to-html": "0.8.3",
-    "electron-compile": "^6.4.4",
     "electron-context-menu": "^0.11.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-is": "^3.0.0",
+    "electron-is-dev": "^1.1.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^2.0.0",
     "get-rgba-palette": "^2.0.1",
@@ -125,22 +64,24 @@
     "humanize-duration": "^3.17.0",
     "humanparser": "^1.10.0",
     "icojs": "^0.12.2",
-    "lodash": "^4.17.11",
+    "jsonwebtoken": "^8.5.1",
+    "log4js": "^6.1.1",
     "lzma": "^2.3.2",
     "moment": "^2.24.0",
+    "moment-feiertage": "^1.1.5",
     "nivo": "^0.31.0",
-    "node-abi": "^2.7.0",
+    "node-abi": "^2.13.0",
     "node-gzip": "^1.1.2",
-    "node-hid": "^0.7.8",
-    "node-sass-chokidar": "^1.3.4",
-    "npm": "^6.7.0",
+    "npm": "^6.10.3",
     "object-hash": "^1.3.1",
     "pjson": "^1.0.9",
     "pngjs": "^3.3.3",
+    "prop-types": "^15.7.2",
     "random-number-csprng": "^1.0.2",
     "react": "^16.7.0",
     "react-apexcharts": "^1.2.1",
-    "react-apollo": "^2.4.1",
+    "react-apollo": "^2.5.8",
+    "react-calendar": "^2.19.2",
     "react-credit-cards": "^0.7.0",
     "react-dom": "^16.7.0",
     "react-draft-wysiwyg": "^1.13.1",
@@ -155,27 +96,42 @@
     "react-tooltip-lite": "^1.9.3",
     "react-vis": "^1.11.2",
     "recharts": "^1.3.2",
+    "semver": "^6.3.0",
+    "sodium-plus": "0.4.2",
+    "streamroller": "^2.2.2",
     "subscriptions-transport-ws": "^0.9.15",
     "tslib": "^1.9.3",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@electron-forge/cli": "6.0.0-beta.32",
-    "@electron-forge/maker-deb": "6.0.0-beta.32",
-    "@electron-forge/maker-dmg": "6.0.0-beta.32",
-    "@electron-forge/maker-rpm": "6.0.0-beta.32",
-    "@electron-forge/maker-squirrel": "6.0.0-beta.32",
-    "@electron-forge/maker-zip": "6.0.0-beta.32",
-    "@electron-forge/plugin-auto-unpack-natives": "^6.0.0-beta.32",
-    "@electron-forge/plugin-compile": "6.0.0-beta.32",
-    "@electron-forge/publisher-nucleus": "6.0.0-beta.32",
+    "@electron-forge/cli": "6.0.0-beta.46",
+    "@electron-forge/maker-deb": "6.0.0-beta.46",
+    "@electron-forge/maker-dmg": "6.0.0-beta.46",
+    "@electron-forge/maker-rpm": "6.0.0-beta.46",
+    "@electron-forge/maker-squirrel": "6.0.0-beta.46",
+    "@electron-forge/maker-zip": "6.0.0-beta.46",
+    "@electron-forge/plugin-auto-unpack-natives": "6.0.0-beta.46",
+    "@electron-forge/plugin-webpack": "6.0.0-beta.46",
+    "@electron-forge/publisher-nucleus": "6.0.0-beta.46",
+    "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
     "@types/react-dropzone": "^4.2.2",
-    "electron-prebuilt-compile": "4.0.0",
-    "electron-rebuild": "^1.8.5",
+    "copy-webpack-plugin": "^5.0.4",
+    "css-loader": "^3.2.0",
+    "electron": "8.0.0-beta.7",
+    "file-loader": "^4.2.0",
+    "fork-ts-checker-webpack-plugin": "^1.5.0",
+    "node-loader": "^0.6.0",
+    "node-sass": "^4.12.0",
     "npm-run-all": "^4.1.5",
-    "nucleus-uploader": "^2.0.0",
-    "tslint": "^5.12.1",
-    "typescript": "~3.3.1",
-    "typescript-eslint-parser": "^22.0.0"
+    "resolve-url-loader": "^3.1.0",
+    "sass-loader": "^8.0.0",
+    "style-loader": "^1.0.1",
+    "ts-loader": "^6.1.2",
+    "tslint": "^6.0.0",
+    "typescript": "^3.7.5",
+    "typescript-eslint-parser": "^22.0.0",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack-bundle-analyzer": "^3.5.2"
   }
 }

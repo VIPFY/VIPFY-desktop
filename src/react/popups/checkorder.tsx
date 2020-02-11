@@ -2,14 +2,14 @@ import * as React from "react";
 
 import { graphql, compose, Query } from "react-apollo";
 import gql from "graphql-tag";
+import { shell } from "electron";
 import { AppContext } from "../common/functions";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
 import CreditCard from "../components/billing/CreditCard";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
 import UserName from "../components/UserName";
 
-import { distributeLicence } from "../mutations/auth";
 import { fetchBuyingInput } from "../queries/products";
 
 interface Props {
@@ -51,7 +51,7 @@ class CheckOrder extends React.Component<Props, State> {
   }
 
   openExternal(url) {
-    require("electron").shell.openExternal(url);
+    shell.openExternal(url);
   }
 
   changeOption(index, value, plan) {
@@ -235,7 +235,6 @@ class CheckOrder extends React.Component<Props, State> {
   }
 
   accept = async (plan, planInputs, company, addresses) => {
-    console.log(plan, planInputs, company, addresses);
     if (this.state.agreement) {
       this.setState({ agreementError: false, errordc: null });
       let index = 0;
@@ -314,7 +313,6 @@ class CheckOrder extends React.Component<Props, State> {
             planInputsSending
           );
           this.setState({ buying: 2 });
-          console.log("OK");
         } catch (err) {
           console.log("ERR", err);
         }
@@ -355,7 +353,7 @@ class CheckOrder extends React.Component<Props, State> {
 
               let possibleDomains: JSX.Element[] = [];
               possibleDomains.push(
-                <option key="DNCAD" value={}>
+                <option key="DNCAD" value={undefined}>
                   Do not connect any domain
                 </option>
               );
@@ -467,9 +465,6 @@ class CheckOrder extends React.Component<Props, State> {
                                   <div className="orderAddressLine">
                                     {billingAddresses[0].address.zip}
                                   </div>
-                                  {/*<div className="changeInformation">
-                                <span>Change Address</span><span>Change Payment</div>
-                              </div>*/}
                                 </div>
                                 <div className="orderCardHolder">
                                   {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
@@ -497,9 +492,6 @@ class CheckOrder extends React.Component<Props, State> {
                               <div className="orderInformationHolder">
                                 <div className="orderAddressHolder">
                                   Please add a billing address.
-                                  {/*<div className="changeInformation">
-                            <span>Change Address</span><span>Change Payment</div>
-                    </div>*/}
                                 </div>
                                 <div className="orderCardHolder">
                                   {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
@@ -625,8 +617,4 @@ class CheckOrder extends React.Component<Props, State> {
     }
   }
 }
-export default compose(
-  graphql(distributeLicence, {
-    name: "distributeLicence"
-  })
-)(CheckOrder);
+export default CheckOrder;

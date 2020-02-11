@@ -21,8 +21,9 @@ interface Props {
     id: number;
   };
   updateAddress: Function;
-  delete?: Boolean;
+  delete?: boolean;
   deleteAddress: Function;
+  tag?: string;
 }
 
 interface State {
@@ -75,18 +76,24 @@ class PopupAddress extends React.Component<Props, State> {
       this.props.deleteAddress({
         variables: { id: this.props.oldvalues!.id, department: true },
         update: proxy => {
-          // Read the data from our cache for this query.
+          const variables: { company: boolean; tag?: string } = { company: true };
+
+          if (this.props.tag) {
+            variables.tag = this.props.tag;
+          }
+
           const cachedData = proxy.readQuery({
             query: FETCH_ADDRESSES,
-            variables: { company: true }
+            variables
           });
+
           const filteredAddresses = cachedData.fetchAddresses.filter(
             address => address.id != this.props.oldvalues!.id
           );
-          // Write our data back to the cache.
+
           proxy.writeQuery({
             query: FETCH_ADDRESSES,
-            variables: { company: true },
+            variables,
             data: { fetchAddresses: filteredAddresses }
           });
         }
@@ -102,17 +109,7 @@ class PopupAddress extends React.Component<Props, State> {
     this.setState({ confirm: true, networking: true });
     if (this.props.oldvalues) {
       try {
-        console.log("UPDATE", {
-          address: {
-            street: this.state.street,
-            zip: this.state.zip,
-            city: this.state.city,
-            country: this.state.country,
-            description: this.state.description
-          },
-          id: this.props.oldvalues.id
-        });
-        const res = await this.props.updateAddress({
+        await this.props.updateAddress({
           variables: {
             address: {
               street: this.state.street,
@@ -125,7 +122,6 @@ class PopupAddress extends React.Component<Props, State> {
             id: this.props.oldvalues.id
           }
         });
-        console.log("RES", res);
         this.setState({ networking: false, networkerror: false });
       } catch (err) {
         this.setState({ networking: false, networkerror: true });
@@ -133,28 +129,42 @@ class PopupAddress extends React.Component<Props, State> {
       }
     } else {
       try {
-        await this.props.createAddress({
-          variables: {
-            addressData: {
-              street: this.state.street,
-              zip: this.state.zip,
-              city: this.state.city,
-              country: this.state.country,
-              description: this.state.description
-            },
-            department: true
+        const variables = {
+          addressData: {
+            street: this.state.street,
+            zip: this.state.zip,
+            city: this.state.city,
+            country: this.state.country,
+            description: this.state.description
           },
+          department: true
+        };
+
+        if (this.props.tag) {
+          variables.addressData.tags = [this.props.tag];
+        }
+
+        await this.props.createAddress({
+          variables,
           update: (proxy, { data: { createAddress } }) => {
-            // Read the data from our cache for this query.
+            /**
+             * @type {{company: boolean, [tag]: string}} - Whether it's a personal or a company address
+             */
+            const variables: { company: boolean; tag?: string } = { company: true };
+
+            if (this.props.tag) {
+              variables.tag = this.props.tag;
+            }
+
             const cachedData = proxy.readQuery({
               query: FETCH_ADDRESSES,
-              variables: { company: true }
+              variables
             });
             cachedData.fetchAddresses.push(createAddress);
-            // Write our data back to the cache.
+
             proxy.writeQuery({
               query: FETCH_ADDRESSES,
-              variables: { company: true },
+              variables,
               data: cachedData
             });
           }
@@ -170,8 +180,8 @@ class PopupAddress extends React.Component<Props, State> {
   render() {
     if (this.props.delete) {
       return (
-        <PopupBase close={() => this.props.close()} small={true} closeable={false}>
-          <h2 className="lightHeading">Do you really want to delete this adress?</h2>
+        <PopupBase close={this.props.close} small={true}>
+          <h1>Do you really want to delete this adress?</h1>
           <div>
             <p>
               <span className="bold light">Country: </span>
@@ -197,13 +207,8 @@ class PopupAddress extends React.Component<Props, State> {
             </p>
           </div>
           <UniversalButton type="low" closingPopup={true} label="Cancel" />
-          <UniversalButton
-            type="low"
-            label="Delete"
-            onClick={() => {
-              this.delete();
-            }}
-          />
+          <UniversalButton type="high" label="Delete" onClick={this.delete} />
+
           {this.state.confirm ? (
             <PopupBase
               close={() => this.setState({ confirm: false, networking: true })}
@@ -254,16 +259,17 @@ class PopupAddress extends React.Component<Props, State> {
       );
     }
     return (
-      <PopupBase close={() => this.props.close()}>
-        <h2 className="lightHeading">
+      <PopupBase styles={{ width: "600px" }} close={() => this.props.close()}>
+        <h1>
           {this.props.oldvalues ? "Please change your address" : "Please insert your address"}
-        </h2>
+        </h1>
         <div className="addressLayout">
           <UniversalDropDownInput
             id="country"
             label="Country"
             livecode={value => this.setState({ country: value })}
             noresults="No matches"
+            noNoResults={true}
             width="200px"
             startvalue={this.props.oldvalues ? this.props.oldvalues.country : ""}
           />
@@ -296,7 +302,12 @@ class PopupAddress extends React.Component<Props, State> {
             startvalue={this.props.oldvalues ? this.props.oldvalues.description : ""}
           />
         </div>
-        <UniversalButton type="low" closingPopup={true} label="Cancel" />
+        <UniversalButton
+          onClick={() => this.props.close()}
+          type="low"
+          closingPopup={true}
+          label="Cancel"
+        />
         <UniversalButton
           type="high"
           label={this.props.oldvalues ? "Save" : "Confirm"}
@@ -311,7 +322,7 @@ class PopupAddress extends React.Component<Props, State> {
             small={true}
             closeable={false}
             autoclosing={10}
-            autoclosingFunction={() => this.setState({ networking: false, networkerror: true })}
+            autoclosingFunction={() => this.setState({ networking: false, networkerror: false })}
             notimer={true}>
             {this.state.networking ? (
               <div>
@@ -342,8 +353,8 @@ class PopupAddress extends React.Component<Props, State> {
               <React.Fragment>
                 <div>
                   {this.props.oldvalues
-                    ? "Your Adress has been successfully updated"
-                    : "Your Adress has been successfully created"}
+                    ? "Your Address has been successfully updated"
+                    : "Your Address has been successfully created"}
                 </div>
                 <UniversalButton
                   type="high"

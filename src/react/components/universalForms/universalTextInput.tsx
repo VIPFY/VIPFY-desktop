@@ -1,5 +1,5 @@
 import * as React from "react";
-import UniversalButton from "../universalButtons/universalButton";
+import { clipboard } from "electron";
 
 interface Props {
   id: string;
@@ -18,6 +18,9 @@ interface Props {
   onEnter?: Function;
   modifyValue?: Function;
   required?: Boolean;
+  deleteFunction?: Function;
+  style?: Object;
+  update?: Boolean;
 }
 
 interface State {
@@ -63,13 +66,23 @@ class UniversalTextInput extends React.Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps = props => {
+  UNSAFE_componentWillReceiveProps = props => {
     if (this.props.id != "" && this.props.id != props.id) {
       this.setState({ value: "", currentid: props.id });
     }
 
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.update) {
+      if (prevProps.startvalue != this.props.startvalue) {
+        this.setState({
+          value: this.props.startvalue || ""
+        });
+      }
+    }
+  }
 
   toggleInput = bool => {
     this.setState({ inputFocus: bool });
@@ -96,6 +109,10 @@ class UniversalTextInput extends React.Component<Props, State> {
       value = this.props.modifyValue(value);
     }
 
+    if (this.props.type == "date" && value == "") {
+      value = " ";
+    }
+
     this.setState({ value, notypeing: false });
     this.timeout = setTimeout(() => this.setState({ notypeing: true }), 400);
   }
@@ -107,13 +124,15 @@ class UniversalTextInput extends React.Component<Props, State> {
   };
 
   render() {
-    const { clipboard } = require("electron");
     return (
       <div
         className={`universalLabelInput ${this.props.disabled ? "disabled" : ""} ${
           this.props.className
         }`}
-        style={this.props.width ? { width: this.props.width } : {}}
+        style={Object.assign(
+          { ...this.props.style },
+          this.props.width ? { width: this.props.width } : {}
+        )}
         onContextMenu={e => {
           e.preventDefault();
           if (!this.props.disabled) {
@@ -214,6 +233,15 @@ class UniversalTextInput extends React.Component<Props, State> {
           )
         ) : (
           ""
+        )}
+        {this.props.deleteFunction && (
+          <button
+            className="cleanup inputInsideButton"
+            tabIndex={-1}
+            onClick={() => this.props.deleteFunction()}
+            style={{ color: "#253647" }}>
+            <i className="fal fa-trash-alt" />
+          </button>
         )}
         {this.state.context && (
           <button

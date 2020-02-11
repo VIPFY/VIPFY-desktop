@@ -11,7 +11,15 @@
         justify-content: space-between;
         align-items: center;
         height: 40px;
-        margin-bottom: 32px;
+        //margin-bottom: 32px;
+
+        position: sticky;
+        top: 0px;
+        background-color: white;
+        z-index: 1000;
+        padding: 10px;
+        margin-bottom: 22px;
+        margin-left: -10px;
 
         & > h1{
             all: unset;
@@ -24,11 +32,22 @@
                 margin-left: 8px;
             }
         }
+
+        & > .h1{
+            font-size: 20px;
+            font-weight: 700;
+            & > .h2{
+                font-size: 20px;
+                font-weight: 400;
+                margin-left: 12px;
+                color: rgba(37, 54, 71,0.6);
+            }
+        }
     }
     .section{
         border-radius: 4px;
         box-shadow: 0px 0px 3px rgba(0,0,0,0.14);
-        &:not(:first-child){
+        &:not(:first-of-type){
             margin-top: 32px;
         }
 
@@ -92,6 +111,43 @@
                 }
               }
 
+            .noHover{
+                cursor: inherit;
+                &:hover {
+                box-shadow: none;
+
+                    .editOptions{
+                        opacity: 1;
+
+                        
+                        &:hover .editbuttons:not(:hover){
+                            background-color: transparent;
+                        }
+                        
+                        .editbuttons:first-child{
+                            background-color: transparent;
+                        }
+                        .editbuttons{
+                            cursor: pointer;
+
+                            &:hover{
+                                background-color: #f5f5f5;
+                            }
+                        }
+                    }
+                }
+            }
+            
+
+            .tableRowShow{
+            border-radius: 4px; 
+            height: 56px ;
+            display: flex;
+            cursor: pointer;
+            transition: box-shadow 150ms ease-in-out;
+            position: relative;
+            }
+
             .tableEnd{
                 width: 128px;
                 height: 100%;
@@ -136,10 +192,13 @@
                 }
                 h2 {
                     all: unset;
-                    display: block;
+                    /*display: block;*/
                     font-size: 13px;
                     line-height: 80px;
                     position: absolute;
+                    overflow: hidden;
+                    width: calc(100% - 16px);
+                    text-overflow: ellipsis;
 
                     &.second{
                         line-height: 40px;
@@ -163,6 +222,22 @@
                 line-height: 56px;
                 display: flex;
                 align-items: center;
+            }
+            .twoline{
+                height: 128px;
+                flex-flow: column;
+                padding-left: 0px;
+                overflow: unset;
+                margin-top: 8px;
+            }
+            .tableColumnSmallOne{
+                width: calc(100% - 16px);
+                height: 100%;
+                padding-left: 16px;
+                position: relative;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
             .employeeOnline{
                 float: right;
@@ -192,6 +267,12 @@
                     margin-right: 4px;
                 }
             }
+        }
+        .appGrid{
+            padding: 26px 32px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, 128px);
+            grid-row-gap: 16px;
         }
     }
     .profilepicture{
@@ -232,9 +313,26 @@
             justify-content: center;
             align-items: center;
             flex-flow: column;
-
+            
             &>span{
                 font-size: 13px;
+            }
+        }
+
+        &Team{
+            @extend .profilepicture;
+            margin-top: 0px;
+            margin-left: 0px;
+            width: 88px;
+            height: 88px;
+            text-align: center;
+            font-size: 44px;
+            line-height: 88px;
+            color: white;
+
+            .imagehover{
+                font-size: 16px;
+                line-height: normal;
             }
         }
 
@@ -359,10 +457,12 @@
    
         .addgrid{
             display: grid;
-            grid-template-columns: 104px 104px 104px 104px;
+            //grid-template-columns: 104px 104px 104px 104px;
             //justify-content: space-between;
-            grid-gap: 16px;
+            //grid-gap: 16px;
             margin: 24px;
+            grid-template-columns: repeat( auto-fit, minmax(104px, 1fr));
+            grid-gap: 16px 8px;
             .space{
                 background-color: white;
                 box-shadow: 0px 0px 2px rgba(0,0,0,0.14);
@@ -370,6 +470,7 @@
                 height: 120px;
                 position: relative;
                 border-radius: 4px;
+                margin: auto;
                 
                 .fakeimage{
                     position: absolute;
@@ -507,6 +608,8 @@
             height: 100%;
             background-color: rgba(255,255,255,0.7);
             position: absolute;
+            top: 0;
+            left: 0;
         }
     }
     .licenceError{
@@ -667,4 +770,111 @@
 
 .whitetext{
     color: white;
+}
+
+.editable{
+    position: relative;
+
+    & > .profileEditButton{
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    &:hover{
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.14);
+
+        & > .profileEditButton{
+            opacity: 1;
+        }
+    }
+}
+.personalEditButtons{
+    grid-column: 2;
+    grid-row: 1;
+    grid-row-end: 3;
+}
+.morehint{
+    font-size: 10px;
+    font-weight: 400;
+    margin-left: 4px;
+    color: rgba(37, 54, 71, 0.6);
+}
+
+@keyframes placeHolderShimmer{
+    0%{
+        background-position: -468px 0
+    }
+    100%{
+        background-position: 468px 0
+    }
+}
+
+.animated-background {
+    animation-duration: 1.25s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    background: #F6F6F6;
+    background: linear-gradient(to right, #F6F6F6 8%, #F0F0F0 18%, #F6F6F6 33%);
+    background-size: 800px 104px;
+    height: 96px;
+    position: relative;
+}
+
+.animateLoading {
+  height: 32px;
+  width: 32px;
+//  background: #F6F6F6;
+  @extend .animated-background;
+}
+
+.warningColor{
+    --fa-secondary-opacity: 1.0;
+    --fa-primary-color: #253647;
+    --fa-secondary-color: #FFC15D;
+}
+
+.infoTag{
+    padding: 2px 5px;
+    font-size: 10px;
+    border-radius: 4px;
+    &.share{
+        background-color: #253647;
+        color: white;
+    }
+    &.vacationTag{
+        background-color: #FFC15D;
+        color: #253647;
+    }
+    &.teamTag{
+        background-color: #9c13bc;
+        color: white;
+    }
+}
+.calendarEdit{
+    border: none;
+    font-family: "Roboto";
+
+    button[disabled]{
+        background-color: #f5f5f5;
+    }
+    .react-calendar__navigation button[disabled]{
+        opacity: 0;
+    }
+
+    abbr[title]{
+        text-decoration: none;
+    }
+    
+    .react-calendar__month-view__days__day--weekend{
+        color: #c73544
+    }
+
+    .react-calendar__tile--active:enabled:hover, .react-calendar__tile--active:enabled:focus{
+        background: rgb(93, 118, 255);
+    }
 }

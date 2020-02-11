@@ -1,17 +1,19 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
-import WebView = require("react-electron-web-view");
-const { shell, remote } = require("electron");
+import { parse } from "url";
+import WebView from "react-electron-web-view";
+import { remote } from "electron";
 const { session } = remote;
 import { withApollo, compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 
 import LoadingDiv from "../components/LoadingDiv";
-import { STATUS_CODES } from "http";
 import Popup from "../components/Popup";
 import AcceptLicence from "../popups/acceptLicence";
 import ErrorPopup from "../popups/errorPopup";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
+import HeaderNotificationContext from "../components/notifications/headerNotificationContext";
+import { getPreloadScriptPath } from "../common/functions";
+import { decryptLicenceKey } from "../common/passwords";
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -19,14 +21,19 @@ const LOG_SSO_ERROR = gql`
   }
 `;
 
+const UPDATE_LICENCE_SPEED = gql`
+  mutation updateLicenceSpeed($licenceid: ID!, $speed: Int!, $working: Boolean!) {
+    updateLicenceSpeed(licenceid: $licenceid, speed: $speed, working: $working)
+  }
+`;
+
 export type WebViewState = {
   setUrl: string;
   currentUrl: string;
-  inspirationalText: string;
-  legalText: string;
   showLoadingScreen: boolean;
   t: number;
-  licenceId: number;
+  licenceId: string;
+  accountId: string;
   previousLicenceId: number;
   unitId: number;
   popup: any;
@@ -39,6 +46,11 @@ export type WebViewState = {
   error: string | null;
   loggedIn: boolean;
   errorshowed: boolean;
+  progress?: number;
+  loginspeed: number;
+  errorScreen: boolean;
+  oldspeed: number | undefined;
+  key: any;
 };
 
 export type WebViewProps = {
@@ -50,6 +62,7 @@ export type WebViewProps = {
   setViewTitle: Function;
   viewID: number;
   logError: Function;
+  updateLicenceSpeed: Function;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -58,21 +71,9 @@ export type WebViewProps = {
 export class Webview extends React.Component<WebViewProps, WebViewState> {
   static defaultProps = { app: -1 };
 
-  static loadingQuotes = [
-    "Loading...",
-    "Connecting to the World",
-    "Constructing Pylons",
-    "Did you know that Vipfy is cool",
-    "Just a second",
-    "Vipfy loves you",
-    "Almost there"
-  ];
-
   state = {
     setUrl: "",
     currentUrl: "",
-    inspirationalText: "Loading...",
-    legalText: "Legal Text",
     showLoadingScreen: true,
     t: performance.now(),
     licenceId: this.props.licenceID,
@@ -87,33 +88,66 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     appid: -1,
     error: null,
     loggedIn: false,
-    errorshowed: false
+    errorshowed: false,
+    progress: undefined,
+    loginspeed: 10,
+    errorScreen: false,
+    oldspeed: undefined,
+    key: null
   };
 
   static getDerivedStateFromProps(
     nextProps: WebViewProps,
     prevState: WebViewState
   ): WebViewState | null {
-    //console.log("DERIVEDSTATE", prevState, nextProps);
     if (nextProps.licenceID !== prevState.licenceId) {
       return {
         ...prevState,
         previousLicenceId: prevState.licenceId,
         licenceId: nextProps.licenceID,
-        showLoadingScreen: true
+        showLoadingScreen: true,
+        progress: undefined
       };
     } else {
       return prevState;
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    //console.log("COMPARE PROPS", this.props, nextProps);
+    //console.log("COMPARE STATE", this.state, nextState);
+    const props = this.props;
+    let update = false;
+    Object.keys(this.props).forEach(function(key) {
+      if (props[key] == nextProps[key]) {
+        //console.log("Same", key, props[key]);
+      } else {
+        //console.log("WEBVIEW DIFFERENT PROPS", key, props[key], nextProps[key]);
+        update = true;
+      }
+    });
+    const state = this.state;
+    Object.keys(this.state).forEach(function(key) {
+      if (state[key] == nextState[key]) {
+        //console.log("Same", key, props[key]);
+      } else {
+        //console.log("WEBVIEW DIFFERENT STATE", key, state[key], nextState[key]);
+        update = true;
+      }
+    });
+    return update;
+  }
+
   componentDidMount() {
-    //console.log("webview mounted");
     let intervalId = setInterval(() => this.timer1m(), 60000);
     let intervalId2 = setInterval(() => this.sendTimeSpent(), 600000);
     this.setState({ intervalId, intervalId2 });
+    if (this.state.previousLicenceId !== this.state.licenceId) {
+      this.setState({
+        previousLicenceId: this.state.licenceId
+      });
+    }
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
-    //console.log("DIDMOUNT");
     this.switchApp();
     setTimeout(async () => {
       if (this.state.loggedIn) {
@@ -142,23 +176,18 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
   async componentDidUpdate(prevProps: WebViewProps, prevState: WebViewState) {
     if (this.state.previousLicenceId !== this.state.licenceId) {
-      //console.log("CHECK", this.state.previousLicenceId, this.state.licenceId);
       await this.setState({
         previousLicenceId: this.state.licenceId
       });
 
       // At this point, we're in the "commit" phase, so it's safe to load the new data.
-      //console.log("DIDUPDATE");
       this.switchApp();
     }
   }
 
-  showPopup = type => {
-    this.setState({ popup: type });
-  };
-  closePopup = () => {
-    this.setState({ popup: null, error: null, errorshowed: true });
-  };
+  showPopup = type => this.setState({ popup: type });
+
+  closePopup = () => this.setState({ popup: null, error: null, errorshowed: true });
 
   timer1m = () => {
     const now = new Date();
@@ -187,7 +216,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       this.props.client.mutate({
         mutation: gql`
           mutation trackMinutesSpent($licenceid: ID!, $minutes: Int!) {
-            trackMinutesSpent(licenceid: $licenceid, minutes: $minutes) {
+            trackMinutesSpent(assignmentid: $licenceid, minutes: $minutes) {
               ok
             }
           }
@@ -211,28 +240,30 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       });
       this.closePopup();
       this.setState({ previousLicenceId: -1 });
-      console.log("ACCEPT");
       this.switchApp();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
   private async switchApp(): Promise<void> {
-    console.log(`SWITCH APP webview-${this.props.viewID}`, this.state);
     const timeSpent: number[] = [];
     timeSpent[this.state.licenceId] = 0;
+
     this.sendTimeSpent(timeSpent);
     let result = await this.props.client.query({
       query: gql`
       {
-        fetchLicences(licenceid: ${this.state.licenceId}) {
+        fetchLicenceAssignment(assignmentid: "${this.state.licenceId}") {
           id
           agreed
           disabled
           key
+          options
+          accountid
           boughtPlan: boughtplanid {
-            id,
+            id
+            key
             plan: planid {
               id
               app: appid {
@@ -251,7 +282,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       `,
       fetchPolicy: "network-only"
     });
-    let licence = result.data.fetchLicences[0];
+    let licence = result.data.fetchLicenceAssignment;
     if (!licence) {
       return;
     }
@@ -278,41 +309,48 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         });
       });
     }*/
+
+    let key = await decryptLicenceKey(this.props.client, licence);
     let loginurl = licence.boughtPlan.plan.app.loginurl;
-    if (licence.key && licence.key.loginurl) {
-      loginurl = licence.key.loginurl;
+    if (licence.boughtPlan.key && licence.boughtPlan.key.domain) {
+      loginurl = licence.boughtPlan.key.domain;
     }
+    if (key && key.loginurl) {
+      loginurl = key.loginurl;
+    }
+    let optionsobject = Object.assign({}, licence.boughtPlan.plan.app.options);
+    Object.assign(optionsobject, licence.options);
+    //console.log("BP", licence.boughtPlan, optionsobject);
     this.setState({
       setUrl: loginurl,
       unitId: licence.unit.id,
-      options: licence.boughtPlan.plan.app.options,
+      options: optionsobject,
+      loginspeed: optionsobject.loginspeed
+        ? !optionsobject.loginfailed || optionsobject.loginspeed + 1 < optionsobject.loginfailed
+          ? optionsobject.loginspeed + 1
+          : optionsobject.loginspeed
+        : 10,
       appid: licence.boughtPlan.plan.app.id,
-      key: licence.key
+      key: { ...key, domain: licence.boughtPlan.key.domain },
+      oldspeed: undefined,
+      progress: undefined,
+      accountId: licence.accountid
     });
   }
 
   onDidNavigate(url: string): void {
-    console.log("DidNavigate", url);
     //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(url)}`);
     //this.setState(prevState => (prevState.currentUrl != url ? { currentUrl: url } : null));
     //this.showLoadingScreen();
   }
 
   onDidNavigateInPage(url: string): void {
-    console.log("DidNavigateInPage", url);
     //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(url)}`);
     //this.setState(prevState => (prevState.currentUrl != url ? { currentUrl: url } : null));
     //this.showLoadingScreen();
   }
 
   onLoadCommit(event: any): void {
-    /*console.log(
-      "LoadCommit",
-      event,
-      this,
-      event.srcElement ? event.srcElement.getURL().substring(this.state.setUrl.length) : ""
-    );*/
-
     this.props.setViewTitle(
       event.srcElement ? event.srcElement.getURL() : "",
       this.props.viewID,
@@ -325,16 +363,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   hideLoadingScreen(): void {
-    //console.log("Loading Screen Hidden", performance.now() - this.state.t);
     this.setState({ showLoadingScreen: false });
   }
 
+  showErrorScreen(): void {
+    this.setState({ errorScreen: true });
+  }
+
   showLoadingScreen(): void {
-    //console.log("Show Loading Screen");
     this.setState({
       showLoadingScreen: true,
-      inspirationalText:
-        Webview.loadingQuotes[Math.floor(Math.random() * Webview.loadingQuotes.length)],
       t: performance.now()
     });
   }
@@ -361,13 +399,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   onNewWindow(e): void {
     //if webview tries to open new window, open it in default browser
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
-    console.log("onNewWindow", e);
-    const protocol = require("url").parse(e.url).protocol;
+    const protocol = parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
       //  shell.openExternal(e.url);
 
       //TODO HISTORY
-      console.log("PUSH HISTORY");
       //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
 
       if (e.url.indexOf("wchat") == -1) {
@@ -377,24 +413,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   async onIpcMessage(e): Promise<void> {
-    console.log("onIpcMessage", e, e.senderId);
-
+    //console.log("IPCMessage", e.channel)
     switch (e.channel) {
       case "getLoginData":
         {
-          let app = e.args[0];
-          let result = await this.props.client.query({
-            query: gql`
-          {
-            fetchLicences(licenceid: ${this.state.licenceId}) {
-              key
-            }
-          }
-          `
-          });
-
-          console.log("LICENCE FETCHED");
-          let { key } = result.data.fetchLicences[0];
+          let { key } = this.state;
           if (key === null) {
             window.alert("invalid licence");
           }
@@ -425,9 +448,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
 
       case "interactionHappened":
         {
-          /*let interactions = this.state.interactions;
+          let interactions = this.state.interactions;
           interactions[this.state.planId] = new Date();
-          await this.setState({ interactions });*/
+          await this.setState({ interactions });
         }
         break;
       case "showLoading": {
@@ -447,7 +470,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       }
 
       case "errorDetected": {
-        console.log("errorDetected");
+        console.log("errorDetected 434");
         // Create the error object
         /*const { logError, client, ...saveprops } = this.props;
         const data = {
@@ -456,14 +479,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           props: saveprops
         }; */
 
-        const {
-          id,
-          isadmin,
-          licences
-          sidebBarOpen,
-          tutorialprogess,
-          viewID
-        } = this.props;
+        const { id, isadmin, licences, sidebBarOpen, tutorialprogess, viewID } = this.props;
         const {
           appid,
           currentUrl,
@@ -506,9 +522,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           console.error(err);
         }
         this.setState({
-          error:
-            // tslint:disable-next-line:max-line-length
-            "Please check your email address. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+          error: `Please check your email address. Then try to reset your password in the service. ${
+            this.props.isadmin
+              ? "Verify the correctness or update the data of the service in the Service Manager afterwards"
+              : "Please ask your admin to check the service in the Service Manager afterwards"
+          }.`,
           errorshowed: true,
           loggedIn: true
         });
@@ -516,7 +534,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         break;
       }
       case "falseLogin": {
-        console.log("falseLogin");
+        //console.log("falseLogin");
         const { logError, client, ...saveprops } = this.props;
         const data = {
           error: "falseLogin",
@@ -526,12 +544,14 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         try {
           await this.props.logError({ variables: { data } });
         } catch (err) {
-          console.log(err);
+          console.error(err);
         }
         this.setState({
-          error:
-            // tslint:disable-next-line:max-line-length
-            "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+          error: `Please check your email address. Then try to reset your password in the service. ${
+            this.props.isadmin
+              ? "Verify the correctness or update the data of the service in the Service Manager afterwards"
+              : "Please ask your admin to check the service in the Service Manager afterwards"
+          }.`,
           errorshowed: true,
           loggedIn: true
         });
@@ -539,23 +559,12 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         break;
       }
       case "startLoginIn": {
-        console.log("StartLoginIN");
         break;
       }
       case "getLoginDetails": {
-        console.log("GETDETAILS");
         let round = e.args[0];
         if (round > 10) {
-          console.log("STOP RETRY Webview");
-
-          const {
-            id,
-            isadmin,
-            licences
-            sidebBarOpen,
-            tutorialprogess,
-            viewID
-          } = this.props;
+          const { id, isadmin, licences, sidebBarOpen, tutorialprogess, viewID } = this.props;
           const {
             appid,
             currentUrl,
@@ -569,8 +578,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             showLoadingScreen,
             t
           } = this.state;
+          //console.log("PROPS", this.props, licences);
           const licence = licences.fetchLicences.find(l => l.id == licenceId);
-  
+
           const data = {
             id,
             isadmin,
@@ -591,35 +601,26 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             licence,
             message: "STOP RETRY"
           };
-  
+
           try {
             await this.props.logError({ variables: { data } });
           } catch (err) {
             console.error(err);
           }
 
-
           this.setState({
-            error:
-              "Please check your email adress. Then try to reset your password in the service. In your dashboard in VIPFY click on the pencil below the serviceicon to change the password.",
+            error: `Please check your email address. Then try to reset your password in the service. ${
+              this.props.isadmin
+                ? "Verify the correctness or update the data of the service in the Service Manager afterwards"
+                : "Please ask your admin to check the service in the Service Manager afterwards"
+            }.`,
             errorshowed: true,
             loggedIn: true
           });
           this.hideLoadingScreen();
         }
-        console.log(round);
-        let result = await this.props.client.query({
-          query: gql`
-        {
-          fetchLicences(licenceid: ${this.state.licenceId}) {
-            key
-          }
-        }
-        `
-        });
 
-        console.log("LICENCE FETCHED");
-        let { key } = result.data.fetchLicences[0];
+        let { key } = this.state;
         if (key === null) {
           window.alert("invalid licence");
         }
@@ -645,8 +646,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   render() {
-    console.log(`RENDER webview-${this.props.viewID}`, this.state, this.props);
-
     let cssClass = "marginLeft";
     if (this.props.chatOpen) {
       cssClass += " chat-open";
@@ -674,89 +673,179 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         );
     }
 
-    //console.log("setUrl", this.state.setUrl);
     //initWebContentContextMenu();
 
     if (this.props.plain) {
       cssClass = "";
     }
 
+    //console.log("STATE", this.state);
+    //console.log("Opening Licence ", this.state.licenceId, " with speed ", this.state.loginspeed);
     return (
-      <div className={cssClass} id={`webview-${this.props.viewID}`}>
-        {this.state.showLoadingScreen && (
-          <LoadingDiv text={this.state.inspirationalText} legalText={this.state.legalText} />
-        )}
-        {this.state.options.universallogin ? (
-          <UniversalLoginExecutor
-            loginUrl={this.state.setUrl}
-            username={this.state.key.email}
-            password={this.state.key.password}
-            timeout={60000}
-            takeScreenshot={false}
-            partition="services"
-            className={cssClassWeb}
-            setResult={({ loggedin, emailEntered, passwordEntered }) => {
-              if (loggedin && emailEntered && passwordEntered) {
-                this.hideLoadingScreen();
-              }
-            }}
-            speed={10}
-          />
-        ) : (
-          <WebView
-            id={`webview-${this.props.viewID}`}
-            preload="./preload-launcher.js"
-            webpreferences="webSecurity=no"
-            className={cssClassWeb}
-            src={this.state.currentUrl || this.state.setUrl}
-            partition="services"
-            onDidNavigate={e => this.onDidNavigate(e.target.src)}
-            //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
-            onDidFailLoad={(code, desc, url, isMain) => {
-              if (isMain) {
-                //this.hideLoadingScreen();
-              }
-              console.log(`failed loading ${url}: ${code} ${desc}`);
-            }}
-            onLoadCommit={e => this.onLoadCommit(e)}
-            onNewWindow={e => this.onNewWindow(e)}
-            onDidStartNavigation={e => console.log("DidStartNavigation", e.target.src)}
-            onDomReady={e => {
-              if (!e.target.isDevToolsOpened()) {
-                //e.target.openDevTools();
-              }
-            }}
-            //onDialog={e => console.log("Dialog", e)}
-            onIpcMessage={e => this.onIpcMessage(e)}
-            //onConsoleMessage={e => console.log("LOGCONSOLE", e.message)}
-            onDidNavigateInPage={e => this.onDidNavigateInPage(e.target.src)}
-            useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
-          />
-        )}
-        {this.state.error ? (
-          <Popup
-            popupHeader={"Uupps, sorry it seems that we can't look you in"}
-            popupBody={ErrorPopup}
-            bodyProps={{ sentence: this.state.error }}
-            onClose={this.closePopup}
-          />
-        ) : (
-          ""
-        )}
-        {this.state.popup && (
-          <Popup
-            popupHeader={this.state.popup.type}
-            popupBody={AcceptLicence}
-            bodyProps={this.state.popup}
-            onClose={this.closePopup}
-          />
-        )}
-      </div>
+      <HeaderNotificationContext.Consumer>
+        {context => {
+          return (
+            <div className={cssClass} id={`webview-${this.props.viewID}`}>
+              {this.state.showLoadingScreen && <LoadingDiv progress={this.state.progress} />}
+
+              {this.state.options.universallogin ? (
+                <UniversalLoginExecutor
+                  key={`${this.state.setUrl}-${this.state.loginspeed}`}
+                  //keylog={`${this.state.setUrl}-${this.state.loginspeed}`}
+                  loginUrl={this.state.setUrl}
+                  username={this.state.key.email || this.state.key.username}
+                  password={this.state.key.password}
+                  domain={this.state.key.domain}
+                  timeout={60000}
+                  takeScreenshot={false}
+                  partition={`service-${this.state.licenceId}`}
+                  className={cssClassWeb}
+                  showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
+                  setResult={async ({ loggedin, errorin, emailEntered, passwordEntered }) => {
+                    /*console.log(
+                      "SETRESULT",
+                      loggedin,
+                      "| ",
+                      errorin,
+                      "|",
+                      emailEntered,
+                      "|",
+                      passwordEntered
+                    );*/
+                    if (loggedin && emailEntered && passwordEntered) {
+                      //console.log("Loggin detected");
+                      this.hideLoadingScreen();
+                      await this.props.updateLicenceSpeed({
+                        variables: {
+                          licenceid: this.props.licenceID,
+                          speed: this.state.loginspeed,
+                          working: true
+                        }
+                      });
+                    }
+                    if (errorin) {
+                      if (this.state.loginspeed == 1) {
+                        this.showErrorScreen();
+                        await this.props.updateLicenceSpeed({
+                          variables: {
+                            licenceid: this.props.licenceID,
+                            speed: this.state.loginspeed,
+                            oldspeed: this.state.oldspeed,
+                            working: false
+                          }
+                        });
+                        //console.log("REAL PROBLEM!", this.state.setUrl);
+                        this.setState({
+                          progress: 1,
+                          error:
+                            "Sorry, Login was not possible. Please go back to your Dashboard and retry or contact our support if the problem persists.",
+                          errorshowed: true
+                        });
+                      } else {
+                        /*console.log(
+                          "SET LOGINSPEED TO 1",
+                          this.state.setUrl,
+                          this.state.loginspeed
+                        );*/
+                        await this.props.updateLicenceSpeed({
+                          variables: {
+                            licenceid: this.props.licenceID,
+                            speed: this.state.loginspeed,
+                            working: false
+                          }
+                        });
+                        this.setState(s => {
+                          return { loginspeed: 1, oldspeed: s.loginspeed };
+                        });
+                      }
+                      /*} else if (!loggedin && !emailEntered && !passwordEntered) {
+                      this.setState({
+                        progress: 1,
+                        error:
+                          "Sorry, Login was not possible. Please go back to your Dashboard and retry or contact our support if the problem persists.",
+                        errorshowed: true
+                      });*/
+                    }
+                  }}
+                  progress={progress => this.setState({ progress })}
+                  speed={this.state.loginspeed || 1}
+                  style={
+                    context.isActive
+                      ? { height: "calc(100vh - 32px - 40px)" }
+                      : { height: "calc(100vh - 32px)" }
+                  }
+                  interactionHappenedCallback={() => {
+                    let interactions = this.state.interactions;
+                    interactions[this.state.planId] = new Date();
+                    this.setState({ interactions });
+                  }}
+                  execute={this.state.options.execute}
+                />
+              ) : (
+                <WebView
+                  id={`webview-${this.props.viewID}`}
+                  preload={getPreloadScriptPath("preload.js")}
+                  webpreferences="webSecurity=no"
+                  className={cssClassWeb}
+                  src={this.state.currentUrl || this.state.setUrl}
+                  partition="services"
+                  onDidNavigate={e => this.onDidNavigate(e.target.src)}
+                  style={
+                    context.isActive
+                      ? { height: "calc(100vh - 32px - 40px)" }
+                      : { height: "calc(100vh - 32px)" }
+                  }
+                  //style={{ visibility: this.state.showLoadingScreen && false ? "hidden" : "visible" }}
+                  onDidFailLoad={(code, desc, url, isMain) => {
+                    if (isMain) {
+                      //this.hideLoadingScreen();
+                    }
+                    //console.log(`failed loading ${url}: ${code} ${desc}`);
+                  }}
+                  onLoadCommit={e => this.onLoadCommit(e)}
+                  onNewWindow={e => this.onNewWindow(e)}
+                  onDidStartNavigation={e => console.log("DidStartNavigation", e.target.src)}
+                  onDomReady={e => {
+                    if (!e.target.isDevToolsOpened()) {
+                      //e.target.openDevTools();
+                    }
+                  }}
+                  //onDialog={e => console.log("Dialog", e)}
+                  onIpcMessage={e => this.onIpcMessage(e)}
+                  //onConsoleMessage={e => console.log("LOGCONSOLE", e.message)}
+                  onDidNavigateInPage={e => this.onDidNavigateInPage(e.target.src)}
+                  useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
+                />
+              )}
+              {this.state.error && (
+                //TODO VIP-411 Replace old Popup with new PopupBase
+                <Popup
+                  popupHeader={"Ooopps, sorry it seems that we can't log you in"}
+                  popupBody={ErrorPopup}
+                  bodyProps={{ sentence: this.state.error }}
+                  onClose={this.closePopup}
+                />
+              )}
+
+              {this.state.popup && (
+                //TODO VIP-411 Replace old Popup with new PopupBase
+                <Popup
+                  popupHeader={this.state.popup.type}
+                  popupBody={AcceptLicence}
+                  bodyProps={this.state.popup}
+                  onClose={this.closePopup}
+                />
+              )}
+            </div>
+          );
+        }}
+      </HeaderNotificationContext.Consumer>
     );
   }
 }
 
 export default compose(
   withApollo,
-  graphql(LOG_SSO_ERROR, { name: "logError" })
+  graphql(LOG_SSO_ERROR, { name: "logError" }),
+  graphql(UPDATE_LICENCE_SPEED, { name: "updateLicenceSpeed" })
 )(Webview);

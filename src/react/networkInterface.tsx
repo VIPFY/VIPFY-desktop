@@ -1,12 +1,18 @@
 import { ApolloClient } from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
-import { WebSocketLink } from "apollo-link-ws";
 import { setContext } from "apollo-link-context";
+import { WebSocketLink } from "apollo-link-ws";
 import { createUploadLink } from "apollo-upload-client";
+import { BatchHttpLink } from "apollo-link-batch-http";
+import { RetryLink } from "apollo-link-retry";
 import { onError } from "apollo-link-error";
+import { inspect } from "util";
+import os from "os";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
+import { logger } from "../logger";
+import { typeDefs, resolvers } from "./localGraphQL";
 
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
@@ -37,6 +43,8 @@ const cache = new InMemoryCache({
       case "Department":
         if (object.unitid !== undefined && object.unitid.id !== undefined) {
           return `${object.__typename}:${object.unitid.id}`;
+        } else if (object.unit !== undefined && object.unit.id !== undefined) {
+          return `${object.__typename}:${object.unit.id}`;
         } else {
           return null;
         }
@@ -82,6 +90,29 @@ const cache = new InMemoryCache({
         } else {
           return null;
         }
+      case "Licence":
+        if (
+          object.id !== undefined &&
+          object.unitid !== undefined &&
+          object.unitid &&
+          object.unitid.id !== undefined
+        ) {
+          return `Licence:${object.id}:${object.unitid ? object.unitid.id : "null"}`;
+        } else {
+          return null;
+        }
+      case "LicenceAssignment":
+        if (object.assignmentid !== undefined) {
+          return `LicenceAssignment:${object.assignmentid}`;
+        } else {
+          return null;
+        }
+      case "TerminateAssignment":
+        if (object.assignmentid !== undefined) {
+          return `LicenceAssignment:${object.assignmentid}`;
+        } else {
+          return null;
+        }
       default:
         return defaultDataIdFromObject(object);
     }
@@ -93,40 +124,34 @@ const cache = new InMemoryCache({
     }
   }
 });
-const httpLink = createUploadLink({
+
+const uploadLink = createUploadLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
-  //uri: `https://us-central1-vipfy-148316.cloudfunctions.net/backend/graphql`,
-  credentials: "same-origin"
+  credentials: "include"
 });
 
-// Pass the tokens to the server to authenticate the user
-const middlewareLink = setContext(() => ({
-  headers: {
-    "x-token": localStorage.getItem("token")
-  }
-}));
+const batchLink = new BatchHttpLink({
+  uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
+  credentials: "same-origin",
+  batchMax: 100
+});
 
-// Refresh the tokens after the user makes a request
+const httpLink = split(operation => operation.getContext().hasUpload, uploadLink, batchLink);
+
 const afterwareLink = new ApolloLink((operation, forward) => {
-  return forward(operation).map(response => {
-    const {
-      response: { headers }
-    } = operation.getContext();
-    if (headers) {
-      const token = headers.get("x-token");
-
-      if (token) {
-        localStorage.setItem("token", token);
-      }
-    }
-
+  return forward!(operation).map(response => {
+    dismissHeaderNotification("network", true);
     return response;
   });
 });
 
+const middlewareLink = setContext(() => ({
+  headers: { "X-USER-HOST": os.hostname() }
+}));
+
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
 const wsLink = new WebSocketLink({
-  uri: `ws${secure}://${SERVER_NAME}:${SERVER_PORT}/subscriptions`,
+  uri: "wss://websockets.vipfy.store/subscriptions",
   options: {
     reconnect: true,
     connectionParams: () => ({
@@ -135,15 +160,20 @@ const wsLink = new WebSocketLink({
   }
 });
 
-// We pass our logout function here to catch malfunctioning tokens and log the
-// User out in case
+// We pass our logout function here to log the User out in case of Auth Errors
 let logout = () => {
   return;
 };
 
-// We pass our logout function here to catch malfunctioning tokens and log the
-// User out in case
 let handleUpgradeError = () => {
+  return;
+};
+
+let addHeaderNotification = (_message, _options) => {
+  return;
+};
+
+let dismissHeaderNotification = (_a, _b) => {
   return;
 };
 
@@ -152,7 +182,15 @@ export const setLogoutFunction = logoutFunc => {
 };
 
 export const setUpgradeErrorHandler = handlerFunc => {
-  logout = handleUpgradeError;
+  handleUpgradeError = handlerFunc;
+};
+
+export const setHeaderNotification = addFunction => {
+  addHeaderNotification = addFunction;
+};
+
+export const setDismissHeaderNotification = removeFunction => {
+  dismissHeaderNotification = removeFunction;
 };
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -161,27 +199,42 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       if (data && data.code == 401) {
         logout();
       } else if (data && data.code == 403) {
-        return console.log(
+        return logger.error(
           `[RightsError]: Message: ${message}, Seems like a user doesn't have the neccessary rights`
         );
       } else if (data && data.code == 426) {
         handleUpgradeError();
       }
 
-      return console.log(
+      return logger.error(
         `[GraphQLError]: Message: ${message}, Type: ${name}, Location: ${locations}, Path: ${path}`
       );
     });
   }
 
   if (networkError) {
-    console.log(`[Network error]: ${networkError}`);
+    addHeaderNotification("Network Problem", {
+      type: "error",
+      key: "network"
+    });
+    logger.warn(`[Network error]: ${networkError}`);
   }
 });
 
-// Concatenate the created middle- and afterware together
-const httpLinkWithMiddleware = errorLink.concat(
-  afterwareLink.concat(middlewareLink.concat(httpLink))
+const retryLink = new RetryLink({
+  attempts: {
+    max: 10,
+    retryIf: (error, operation) => {
+      console.log("GQL retry", inspect(error), operation);
+      return !!error && error.name !== "ServerError" && !("mutation" in operation);
+    }
+  },
+  delay: { initial: 1000 }
+});
+
+// Concatenate the created links together
+const httpLinkWithMiddleware = retryLink.concat(
+  errorLink.concat(afterwareLink.concat(middlewareLink.concat(httpLink)))
 );
 
 // Split the links, so that each can be used for the defined operation
@@ -198,5 +251,7 @@ const link = split(
 // Create a client to use Apollo for communication with GraphQL
 export default new ApolloClient({
   link,
-  cache
+  cache,
+  typeDefs,
+  resolvers
 });

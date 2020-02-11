@@ -38,7 +38,7 @@ class EmployeeGrid extends React.Component<Props, State> {
         return 0;
       });
 
-      employees = interemployees.filter(e => e.id);
+      employees = interemployees.filter(e => {return e.id && `${e.firstname} ${e.lastname}`.toUpperCase().includes(this.props.search.toUpperCase())});
 
       employees.forEach(employee => {
         employeesArray.push(
@@ -113,7 +113,7 @@ class EmployeeGrid extends React.Component<Props, State> {
           }}>
           <div className="addgrid">{this.printTeamEmployees(this.props.employees)}</div>
         </div>
-        <Query query={FETCH_EMPLOYEES}>
+        <Query pollInterval={60 * 10 * 1000 + 900} query={FETCH_EMPLOYEES}>
           {({ loading, error, data }) => {
             if (loading) {
               return "Loading...";

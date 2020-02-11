@@ -4,6 +4,8 @@ import { graphql, compose } from "react-apollo";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import { filterError, ErrorComp } from "../common/functions";
 import * as moment from "moment";
+import * as ReactDOM from "react-dom";
+import { isNumber } from "util";
 
 const READ_NOTIFICATION = gql`
   mutation onReadNotification($id: ID!) {
@@ -18,10 +20,15 @@ const READ_ALL_NOTIFICATIONS = gql`
 `;
 
 interface Props {
+  moveTo: Function;
+  sidebar: Object;
   data: any;
   refetch: Function;
   readNotification: Function;
   readAll: Function;
+  style?: Object;
+  closeme: Function;
+  loading: Boolean;
 }
 
 interface State {
@@ -35,6 +42,20 @@ class Notification extends React.Component<Props, State> {
     loading: false,
     error: "",
     hover: false
+  };
+
+  componentDidMount() {
+    document.addEventListener("click", this.handleClickOutside, true);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("click", this.handleClickOutside, true);
+  }
+  handleClickOutside = e => {
+    const domNode = ReactDOM.findDOMNode(this);
+    if (!domNode || !domNode.contains(e.target)) {
+      this.props.closeme();
+    }
   };
 
   fetchNotifications = async () => {
@@ -113,54 +134,60 @@ class Notification extends React.Component<Props, State> {
       return <ErrorComp error={this.state.error} />;
     }
 
-    return notifications.map(({ message, icon, sendtime, id }) => (
+    return notifications.map(({ message, icon, sendtime, id, link }) => (
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
         <p className="notificationText">{message}</p>
-        <div className="notificationTime">{moment(sendtime - 0).format("LLL")}</div>
+        <div className="notificationTime">
+          {!isNaN(sendtime - 0)
+            ? moment(sendtime - 0).format("LLL")
+            : moment(sendtime).format("LLL")}
+        </div>
       </div>
     ));
   }
 
   render() {
     const { data } = this.props;
-    const dataLength = data.fetchNotifications.length;
+    const dataLength = data.fetchNotifications ? data.fetchNotifications.length : 0;
     const dataExists = dataLength > 0;
+    const refetchButton = (
+      <button
+        className="naked-button"
+        type="button"
+        onClick={this.fetchNotifications}
+        onMouseEnter={this.toggleHover}
+        onMouseLeave={this.toggleHover}>
+        <i className={`fas fa-sync ${this.state.hover ? "fa-spin" : ""}`} />
+      </button>
+    );
 
     return (
-      <div className="notificationPopup">
+      <div className="notificationPopup" style={this.props.style}>
         <div className="notificationPopupHeader">
           {`You have ${dataExists ? dataLength : "no"} new notification${
             dataLength == 1 ? "" : "s"
           }`}
+          {!dataExists && refetchButton}
         </div>
 
         <div className="notificationPopupScroller">
-          {dataExists ? this.renderNotifications(data.fetchNotifications) : ""}
+          {dataExists && this.renderNotifications(data.fetchNotifications)}
         </div>
 
-        {dataExists ? (
+        {dataExists && (
           <React.Fragment>
             <div className="notificationPopupFooter">
               <span>Synchronize: </span>
-              <button
-                className="naked-button"
-                type="button"
-                onClick={this.fetchNotifications}
-                onMouseEnter={this.toggleHover}
-                onMouseLeave={this.toggleHover}>
-                <i className={`fas fa-sync ${this.state.hover ? "fa-spin" : ""}`} />
-              </button>
+              {refetchButton}
             </div>
             <div className="notificationPopupFooter">
-              <span>Discard:</span>
+              <span>Clear Notifications:</span>
               <button className="button-sync" type="button" onClick={this.markAllAsRead}>
-                <i className="fas fa-check" />
+                <i className="fas fa-trash-alt" />
               </button>
             </div>
           </React.Fragment>
-        ) : (
-          ""
         )}
       </div>
     );

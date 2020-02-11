@@ -1,7 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
-
+import { shell } from "electron";
 import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "../queries/products";
 import { fetchLicences } from "../queries/auth";
 import { buyPlan } from "../mutations/products";
@@ -67,6 +67,8 @@ const WRITE_REVIEW = gql`
   }
 `;
 
+// TODO: update this to what addLicence popup is using
+// this endpoint doesn't exist anymore
 const ADD_EXTERNAL_ACCOUNT = gql`
   mutation onAddExternalAccount(
     $username: String!
@@ -158,7 +160,6 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
 
   handleAddReview = async (stars, review) => {
     this.showLoading("We are adding your review. Thank you for your feedback.");
-    console.log("ADDREVIEW", stars, review);
     try {
       const res = await this.props.writeReview({
         variables: { stars, text: JSON.stringify(review), appid: this.props.match.params.appid },
@@ -166,8 +167,6 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
           { query: fetchReviews, variables: { appid: this.props.match.params.appid } }
         ]
       });
-
-      console.log(res);
       this.closePopup();
     } catch (err) {
       this.showError(err.message || "Something went really wrong :-(");
@@ -248,7 +247,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     return starsArray;
   }
 
-  openExternal = url => require("electron").shell.openExternal(url);
+  openExternal = url => shell.openExternal(url);
 
   showfulldesc(bool) {
     if (bool && this.state.showDescriptionFull) {
@@ -267,16 +266,13 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     let i = 0;
 
     if (reviewData) {
-      console.log("REVIEWS", reviewData);
       reviewData.forEach(review => {
         reviewDivs.push(
           <div key={`review-${i}`} className="detail-comment">
             <div className="rating">{this.showStars(review.stars)}</div>
             <span className="detail-comment-author">
               by{" "}
-              {`${review.reviewer.firstname} ${review.reviewer.middlename} ${
-                review.reviewer.lastname
-              }`}
+              {`${review.reviewer.firstname} ${review.reviewer.middlename} ${review.reviewer.lastname}`}
             </span>
             <p className="detail-comment-text">{review.reviewtext}</p>
             <span className="detail-comment-date">
@@ -330,9 +326,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
           <div className="rating">{this.showStars(review[index].stars)}</div>
           <span className="detail-comment-author">
             by{" "}
-            {`${review[index].reviewer.firstname} ${review[index].reviewer.middlename} ${
-              review[index].reviewer.lastname
-            }`}
+            {`${review[index].reviewer.firstname} ${review[index].reviewer.middlename} ${review[index].reviewer.lastname}`}
           </span>
           <span className="detail-comment-date">
             {review[index].reviewdate.split(" ")[1]} {review[index].reviewdate.split(" ")[2]}{" "}
@@ -543,6 +537,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             </div>
           </div>
           {this.state.popup ? (
+            //TODO VIP-411 Replace old Popup with new PopupBase
             <Popup
               popupHeader={this.state.popupHeading}
               popupBody={this.state.popupBody}

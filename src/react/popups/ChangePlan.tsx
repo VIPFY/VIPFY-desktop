@@ -91,7 +91,6 @@ class ChangePlan extends React.Component<Props, State> {
       features[sKey].value = values[sKey];
       features[sKey].amount = amount[sKey];
     });
-    console.log(selectedPlan);
     // updatePlan({
     //   variables: {
     //     planid: this.props.boughtPlanId,
@@ -126,7 +125,10 @@ class ChangePlan extends React.Component<Props, State> {
 
     return (
       <div className="change-plan">
-        <Query query={fetchPlans} variables={{ appid: this.props.appId }}>
+        <Query
+          pollInterval={60 * 10 * 1000 + 1000}
+          query={fetchPlans}
+          variables={{ appid: this.props.appId }}>
           {({ data, loading, error }) => {
             if (loading) {
               return <LoadingDiv text="Fetching Plans..." />;
@@ -164,8 +166,6 @@ class ChangePlan extends React.Component<Props, State> {
               if (error || !data) {
                 return <ErrorComp error={error} />;
               }
-
-              console.log(data);
               return (
                 <div className="orderSelect">
                   <div className="OHeading">

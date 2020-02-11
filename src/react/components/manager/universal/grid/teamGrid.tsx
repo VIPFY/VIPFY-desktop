@@ -21,9 +21,12 @@ class TeamGrid extends React.Component<Props, State> {
   };
 
   printMyTeams(teams) {
+    let filteredTeams = teams.filter(team => {
+      return team.name.toUpperCase().includes(this.props.search.toUpperCase());
+    });
     let teamsArray: JSX.Element[] = [];
-    if (teams.length > 0) {
-      teams.sort(function(a, b) {
+    if (filteredTeams.length > 0) {
+      filteredTeams.sort(function(a, b) {
         let nameA = a.name.toUpperCase(); // ignore upper and lowercase
         let nameB = b.name.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
@@ -37,7 +40,7 @@ class TeamGrid extends React.Component<Props, State> {
         return 0;
       });
 
-      teams.forEach(team => {
+      filteredTeams.forEach(team => {
         teamsArray.push(
           <div
             key={team.name}
@@ -71,7 +74,7 @@ class TeamGrid extends React.Component<Props, State> {
       });
     }
     let i = 0;
-    while ((teams.length + i) % 4 != 0 || teams.length + i < 12 || i == 0) {
+    while ((filteredTeams.length + i) % 4 != 0 || filteredTeams.length + i < 12 || i == 0) {
       teamsArray.push(
         <div className="space" key={`fake-${i}`}>
           <div className="fakeimage" />
@@ -84,7 +87,6 @@ class TeamGrid extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("TG", this.props);
     return (
       <div className="maingridAddEmployeeTeams">
         <div
@@ -103,7 +105,7 @@ class TeamGrid extends React.Component<Props, State> {
           }}>
           <div className="addgrid">{this.printMyTeams(this.props.teams)}</div>
         </div>
-        <Query query={fetchCompanyTeams}>
+        <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchCompanyTeams}>
           {({ loading, error, data }) => {
             if (loading) {
               return "Loading...";

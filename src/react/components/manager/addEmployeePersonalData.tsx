@@ -1,22 +1,26 @@
 import * as React from "react";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import EmployeeGerneralDataAdd from "./universal/adding/employeeGeneralDataAdd";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import { compose, graphql } from "react-apollo";
+import { compose, graphql, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";
 import { randomPassword } from "../../common/passwordgen";
-import { filterError } from "../../common/functions";
+import { filterError, AppContext } from "../../common/functions";
+import * as crypto from "../../common/crypto";
+import { computePasswordScore } from "../../common/passwords";
 
 interface Props {
   close: Function;
   continue: Function;
-  addpersonal: any;
+  addpersonal?: any;
   heading?: string;
   createEmployee: Function;
+  isadmin?: boolean;
+  client: any;
 }
 
 interface State {
@@ -39,25 +43,35 @@ interface State {
   unitid: number | null;
   parsedName: any;
   error: String | null;
+  picture: File | null;
+  employee: any;
+  password: string;
+  sendingemail: boolean;
+  passwordChange: boolean;
+  passwordScore: number;
 }
 
 const CREATE_EMPLOYEE = gql`
-  mutation createEmployee09(
+  mutation createEmployee(
     $name: HumanName!
     $emails: [EmailInput!]!
-    $file: Upload
     $birthday: Date
     $hiredate: Date
     $address: AddressInput
     $position: String
     $phones: [PhoneInput]
-    $password: String!
+    $password: String
     $needpasswordchange: Boolean
+    $picture: Upload
+    $passkey: String!
+    $passwordMetrics: PasswordMetricsInput!
+    $personalKey: KeyInput!
+    $passwordsalt: String!
   ) {
-    createEmployee09(
+    createEmployee(
       name: $name
       emails: $emails
-      file: $file
+      file: $picture
       birthday: $birthday
       hiredate: $hiredate
       address: $address
@@ -65,72 +79,111 @@ const CREATE_EMPLOYEE = gql`
       phones: $phones
       password: $password
       needpasswordchange: $needpasswordchange
-    )
+      passkey: $passkey
+      passwordMetrics: $passwordMetrics
+      personalKey: $personalKey
+      passwordsalt: $passwordsalt
+    ) {
+      id
+      profilepicture
+      firstname
+      middlename
+      lastname
+      title
+      suffix
+    }
   }
 `;
 
 class AddEmployeePersonalData extends React.Component<Props, State> {
   state = {
-    name: this.props.addpersonal.name || "",
-    birthday: this.props.addpersonal.birthday || "",
-    hiredate: this.props.addpersonal.hiredate || "",
-    street: this.props.addpersonal.street || "",
-    zip: this.props.addpersonal.zip || "",
-    city: this.props.addpersonal.city || "",
-    pphone1: this.props.addpersonal.pphone1 || "",
-    pphone2: this.props.addpersonal.pphone2 || "",
-    position: this.props.addpersonal.position || "",
-    wmail1: this.props.addpersonal.wmail1 || "",
-    wmail2: this.props.addpersonal.wmail2 || "",
-    wphone1: this.props.addpersonal.wphone1 || "",
-    wphone2: this.props.addpersonal.wphone2 || "",
+    name: (this.props.addpersonal && this.props.addpersonal.name) || "",
+    birthday: (this.props.addpersonal && this.props.addpersonal.birthday) || "",
+    hiredate: (this.props.addpersonal && this.props.addpersonal.hiredate) || "",
+    street: (this.props.addpersonal && this.props.addpersonal.street) || "",
+    zip: (this.props.addpersonal && this.props.addpersonal.zip) || "",
+    city: (this.props.addpersonal && this.props.addpersonal.city) || "",
+    pphone1: (this.props.addpersonal && this.props.addpersonal.pphone1) || "",
+    pphone2: (this.props.addpersonal && this.props.addpersonal.pphone2) || "",
+    position: (this.props.addpersonal && this.props.addpersonal.position) || "",
+    wmail1: (this.props.addpersonal && this.props.addpersonal.wmail1) || "",
+    wmail2: (this.props.addpersonal && this.props.addpersonal.wmail2) || "",
+    wphone1: (this.props.addpersonal && this.props.addpersonal.wphone1) || "",
+    wphone2: (this.props.addpersonal && this.props.addpersonal.wphone2) || "",
     confirm: false,
     saving: false,
     success: true,
     unitid: null,
     parsedName: null,
-    error: null
+    error: null,
+    picture: null,
+    employee: null,
+    password: "",
+    sendingemail: false,
+    passwordChange: true,
+    passwordScore: 0
   };
 
+  handleConfirm() {
+    if (this.state.confirm) {
+      this.setState({ saving: true, confirm: false });
+    }
+  }
+
+  handleCreate() {
+    if (this.props.addpersonal && this.props.addpersonal.unitid) {
+      this.props.continue(this.state);
+    } else {
+      this.setState({ confirm: true });
+    }
+  }
+
   render() {
-    console.log("AEPD", this.props, this.state);
     return (
       <React.Fragment>
-        <span>
-          <span className="bHeading">{this.props.heading || "Add Employee"}</span>
-          {/*<span className="mHeading">
-            > <span className="active">Personal Data</span> > Teams > Services
-    </span>*/}
-        </span>
-        <EmployeeGerneralDataAdd
-          addpersonal={this.props.addpersonal}
-          setOuterState={s => this.setState(s)}
-        />
-        <div className="buttonsPopup">
-          <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />
-          <div className="buttonSeperator" />
-          <UniversalButton
-            label="Continue"
-            type="high"
-            disabled={
-              this.state.name == "" || this.state.wmail1 == "" || !this.state.wmail1.includes("@")
-            }
-            onClick={() =>
-              this.props.addpersonal.unitid
-                ? this.props.continue(this.state)
-                : this.setState({ confirm: true })
-            }
+        <h1>{this.props.heading || "Add Employee"}</h1>
+        <div className="deleteContent" style={{ overflowY: "scroll" }}>
+          <EmployeeGerneralDataAdd
+            addpersonal={this.props.addpersonal}
+            setOuterState={s => this.setState(s)}
+            isadmin={this.props.isadmin}
           />
+
+          <div className="buttonsPopup" style={{ justifyContent: "space-between" }}>
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  label="Cancel"
+                  type="low"
+                  onClick={() => this.props.close()}
+                  innerRef={el => addRenderElement({ key: "cancel", element: el })}
+                />
+              )}
+            </AppContext.Consumer>
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <UniversalButton
+                  label="Continue"
+                  type="high"
+                  disabled={
+                    this.state.name == "" ||
+                    this.state.wmail1 == "" ||
+                    !this.state.wmail1.includes("@") ||
+                    this.state.password == "" ||
+                    this.state.passwordScore < 2
+                  }
+                  onClick={() => this.handleCreate()}
+                  innerRef={el => addRenderElement({ key: "continueAdd", element: el })}
+                />
+              )}
+            </AppContext.Consumer>
+          </div>
         </div>
         {this.state.confirm && (
           <PopupBase small={true} close={() => this.setState({ confirm: false })}>
             Do you really want to create an Employee called {this.state.name}?
             <UniversalButton label="Cancel" type="low" closingPopup={true} />
-            <UniversalButton
-              label="Confirm"
-              type="high"
-              onClick={() => this.setState({ saving: true, confirm: false })}
-            />
+            <UniversalButton label="Confirm" type="high" onClick={() => this.handleConfirm()} />
           </PopupBase>
         )}
         {this.state.saving && (
@@ -162,6 +215,20 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
               } = this.state;
               const parsedName = parseName(name);
               try {
+                const salt = await crypto.getRandomSalt();
+                const { loginkey, encryptionkey1 } = await crypto.hashPassword(
+                  this.props.client,
+                  wmail1,
+                  this.state.password,
+                  salt
+                );
+                const passwordMetrics = {
+                  passwordlength: this.state.password.length,
+                  passwordstrength: computePasswordScore(this.state.password)
+                };
+
+                const personalKey = await crypto.generatePersonalKeypair(encryptionkey1);
+
                 const unitid = await this.props.createEmployee({
                   variables: {
                     ...state,
@@ -179,22 +246,27 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                       { number: wphone2, tags: ["work"] }
                     ],
                     emails: [{ email: wmail1 }, { email: wmail2 }],
-                    password: await randomPassword(),
+                    password: this.state.sendingemail ? this.state.password : null,
                     hiredate: hiredate != "" ? hiredate : null,
-                    birthday: birthday != "" ? birthday : null
+                    birthday: birthday != "" ? birthday : null,
+                    passkey: loginkey.toString("hex"),
+                    passwordMetrics,
+                    personalKey,
+                    passwordsalt: salt,
+                    needpasswordchange: this.state.passwordChange
                   }
                 });
-                console.log("SUCCESS", unitid);
                 this.setState({
                   success: true,
-                  unitid: unitid.data.createEmployee09,
+                  unitid: unitid.data.createEmployee.id,
                   parsedName: {
                     title: parsedName.salutation || "",
                     firstname: parsedName.firstName || "",
                     middlename: parsedName.middleName || "",
                     lastname: parsedName.lastName || "",
                     suffix: parsedName.suffix || ""
-                  }
+                  },
+                  employee: unitid.data.createEmployee
                 });
               } catch (err) {
                 console.log("ERR", err);
@@ -208,6 +280,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     );
   }
 }
-export default compose(graphql(CREATE_EMPLOYEE, { name: "createEmployee" }))(
-  AddEmployeePersonalData
-);
+export default compose(
+  graphql(CREATE_EMPLOYEE, { name: "createEmployee" }),
+  withApollo
+)(AddEmployeePersonalData);

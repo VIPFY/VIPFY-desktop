@@ -14,13 +14,8 @@ interface Props {
   percentage: number;
 }
 
-interface State {
-  options: Object;
-  series: number[];
-}
-
-class SingleStatistic extends React.Component<Props, State> {
-  state = {
+export default (props: Props) => {
+  const chartData = {
     options: {
       colors: ["#20BAA9"],
       plotOptions: {
@@ -41,45 +36,40 @@ class SingleStatistic extends React.Component<Props, State> {
           }
         }
       },
-      labels: [`${this.props.percentage.toFixed(2)} %`]
+      labels: [`${props.percentage.toFixed(2)} %`]
     },
-    series: [this.props.percentage]
+    series: [props.percentage]
   };
 
-  render() {
-    if (!this.props.app) {
-      return null;
-    }
-
-    return (
-      <div className="genericHolder">
-        <div className="header">
-          <span>{this.props.header}</span>
-        </div>
-        <div className="body">
-          <Chart
-            options={this.state.options}
-            series={this.state.series}
-            height="128"
-            type="radialBar"
-            className="circle"
-          />
-          <div className="info">
-            <AppIcon app={this.props.app} />
-          </div>
-          <div className="info-user">
-            {this.props.options && this.props.options.teamlicence ? (
-              <i className="fal fa-users" title="Shared Account" />
-            ) : (
-              <i className="fal fa-user" title="Single Account" />
-            )}
-            <span>{`${
-              this.props.options && this.props.options.teamlicence ? "Team" : "Single"
-            } Licence`}</span>
-          </div>
-        </div>
-      </div>
-    );
+  if (!props.app) {
+    return null;
   }
-}
-export default SingleStatistic;
+
+  return (
+    <div className="genericHolder">
+      <div className="header">
+        <span>{props.header}</span>
+      </div>
+      <div className="body">
+        <Chart
+          options={chartData.options}
+          series={chartData.series}
+          height="160"
+          type="radialBar"
+        />
+        {/* Remove style when the user/team differentation is integrated again */}
+        <div className="info" style={{ gridRow: "1 / -1", alignSelf: "center" }}>
+          <AppIcon app={props.app} />
+        </div>
+        {/* <div className="info-user">
+          {props.options && props.options.teamlicence ? (
+            <i className="fal fa-users" title="Shared Account" />
+          ) : (
+            <i className="fal fa-user" title="Single Account" />
+          )}
+        <span>{`${props.options && props.options.teamlicence ? "Team" : "Single"} Licence`}</span>
+        </div> */}
+      </div>
+    </div>
+  );
+};

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { clipboard } from "electron";
 
 interface Props {
   placeholder?: string;
@@ -69,18 +70,19 @@ class UniversalSearchBox extends React.Component<Props, State> {
     //await this.props.searchFunction(value);
   };
 
-  activeSearch = () => {
-    console.log("Searching");
-  };
+  activeSearch = () => {};
 
   toggleSearch = (b, e = null) => {
     if (b) {
       this.setState({ searching: true });
       this.input.focus();
+
       if (e) {
         e!.preventDefault();
       }
     } else {
+      this.input.blur();
+
       if (
         !this.props.noautomaticclosing &&
         (this.props.automaticclosing || this.state.value == "")
@@ -159,7 +161,6 @@ class UniversalSearchBox extends React.Component<Props, State> {
   };
 
   render() {
-    const { clipboard } = require("electron");
     return (
       <div
         className="genericSearchHolder"
@@ -174,7 +175,6 @@ class UniversalSearchBox extends React.Component<Props, State> {
               style={{ left: this.state.searching ? "0px" : "-315px" }}
               onContextMenu={e => {
                 e.preventDefault();
-                console.log("CONTEXT", this.state, this.props);
                 if (this.state.searching) {
                   this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
                 }
@@ -182,9 +182,7 @@ class UniversalSearchBox extends React.Component<Props, State> {
               <input
                 value={this.state.value}
                 onChange={input => this.handleChange(input)}
-                ref={i => {
-                  this.input = i;
-                }}
+                ref={node => (this.input = node)}
               />
             </div>
             <div

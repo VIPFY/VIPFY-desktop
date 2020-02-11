@@ -1,11 +1,11 @@
 import * as React from "react";
 import UniversalButton from "../../../components/universalButtons/universalButton";
 import PopupSelfSaving from "../../../popups/universalPopups/selfSaving";
-import AddTeamEmployee from "./../addTeamEmployee";
 import EmployeeDetails from "./../employeeDetails";
-import ManageTeamEmployees from "../universal/managing/teamemployees";
+import AssignNewTeamMember from "../universal/adding/assignNewTeamMember";
 
 interface Props {
+  isadmin: boolean;
   employees: any[];
   search: string;
   team: any;
@@ -41,9 +41,9 @@ class EmployeeSection extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("RERENDER EMPLOYEE");
     let employees: any[] = [];
     let interemployees: any[] = [];
+
     if (this.props.employees) {
       interemployees = this.props.employees;
 
@@ -71,10 +71,10 @@ class EmployeeSection extends React.Component<Props, State> {
     }
 
     const employeeArray: JSX.Element[] = [];
-
     employees.forEach((employee, k) => {
       employeeArray.push(
         <EmployeeDetails
+          key={employee.id}
           employee={employee}
           team={this.props.team}
           deleteFunction={sO => this.setState({ savingObject: sO })}
@@ -86,6 +86,20 @@ class EmployeeSection extends React.Component<Props, State> {
       <div className="section">
         <div className="heading">
           <h1>Employees</h1>
+          <UniversalButton
+            type="high"
+            label="Assign Employee"
+            customStyles={{
+              fontSize: "12px",
+              lineHeight: "24px",
+              fontWeight: "700",
+              marginRight: "16px",
+              width: "128px"
+            }}
+            onClick={() => {
+              this.setState({ add: true });
+            }}
+          />
         </div>
         <div className="table">
           <div className="tableHeading">
@@ -106,42 +120,12 @@ class EmployeeSection extends React.Component<Props, State> {
                 <h1>Position</h1>
               </div>
             </div>
-            <div className="tableEnd">
-              <UniversalButton
-                type="high"
-                label="Manage Employees"
-                customStyles={{
-                  fontSize: "12px",
-                  lineHeight: "24px",
-                  fontWeight: "700",
-                  marginRight: "16px",
-                  width: "128px"
-                }}
-                onClick={() => {
-                  this.setState({ add: true });
-                }}
-              />
-            </div>
+            <div className="tableEnd"></div>
           </div>
           {employeeArray}
         </div>
         {this.state.add && (
-          /*<AddTeamEmployee
-            close={sO => {
-              this.setState({ add: false, savingObject: sO });
-            }}
-            team={this.props.team}
-          />*/
-
-          <ManageTeamEmployees team={this.props.team} close={() => this.setState({ add: false })}>
-            <div className="buttonsPopup">
-              <UniversalButton
-                label="Close"
-                type="low"
-                onClick={() => this.setState({ add: false })}
-              />
-            </div>
-          </ManageTeamEmployees>
+          <AssignNewTeamMember team={this.props.team} close={() => this.setState({ add: false })} />
         )}
         {this.state.savingObject && (
           <PopupSelfSaving

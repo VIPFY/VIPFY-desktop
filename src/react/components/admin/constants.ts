@@ -1,4 +1,5 @@
-import { iconPicFolder, logoPicFolder } from "../../common/constants";
+const preSmallAppImageUrl = "https://appimages.vipfy.store/100/100/fit/";
+const preSmallAppIconUrl = "https://appimages.vipfy.store/24/24/fit/";
 
 export const fields = [
   {
@@ -122,14 +123,15 @@ export const fields = [
     name: "logo",
     type: "picture",
     required: true,
-    folder: logoPicFolder,
+    folder: preSmallAppImageUrl,
     label: "Logo for the marketplace"
   },
   {
     name: "icon",
     type: "picture",
     required: true,
-    folder: iconPicFolder,
+    icon: true,
+    folder: preSmallAppIconUrl,
     label: "Icon for the sidebar"
   },
   {

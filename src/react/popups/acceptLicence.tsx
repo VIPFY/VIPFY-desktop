@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Component } from "react";
+import { shell } from "electron";
 
-class AcceptLicence extends Component {
+class AcceptLicence extends React.Component {
   state = { agreementError: false, agreement: false };
 
   openExternal(url) {
-    require("electron").shell.openExternal(url);
+    shell.openExternal(url);
   }
 
   accept() {
@@ -17,11 +17,9 @@ class AcceptLicence extends Component {
   }
 
   showNeededCheckIns(options) {
-    console.log("OPTIONS");
     if (options.neededCheckIns) {
       let neededCheckInsArray: JSX.Element[] = [];
       options.neededCheckIns.forEach((element, key) => {
-        console.log("ELEMENT", element);
         neededCheckInsArray.push(
           <span
             key={`lawlink-${key}`}
@@ -43,8 +41,6 @@ class AcceptLicence extends Component {
   }
 
   render() {
-    console.log("Accept", this.props);
-
     return (
       <div className="acceptLicenceHolder">
         {this.showNeededCheckIns(this.props.neededCheckIns)}

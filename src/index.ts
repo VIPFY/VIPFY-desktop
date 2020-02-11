@@ -3,10 +3,15 @@ import installExtension, {
   REACT_DEVELOPER_TOOLS,
   APOLLO_DEVELOPER_TOOLS
 } from "electron-devtools-installer";
-import { enableLiveReload } from "electron-compile";
-import path = require("path");
-import Store = require("electron-store");
+import path from "path";
+import Store from "electron-store";
 import * as is from "electron-is";
+import { logger } from "./logger";
+import configJSON from "../config.json";
+
+process.on("uncaughtException", error => {
+  logger.error(error);
+});
 
 const store = new Store();
 const key = getSetupKey();
@@ -26,9 +31,7 @@ const suffix =
 
 if (!disableUpdater) {
   autoUpdater.setFeedURL({
-    url: `${DOMAIN}/VIPFY/98c61756053f11b6429ce49805bd7553/${process.platform}/${
-      process.arch
-    }${suffix}`,
+    url: `${DOMAIN}/VIPFY/${configJSON.channelID}/${process.platform}/${process.arch}${suffix}`,
     serverType: "json"
   });
 
@@ -40,6 +43,10 @@ if (!disableUpdater) {
       message: process.platform === "win32" ? releaseNotes : releaseName,
       detail: "A new version has been downloaded. Restart the application to apply the updates."
     };
+
+    autoUpdater.on("error", error => {
+      logger.error("Autoupdater error", error);
+    });
 
     dialog.showMessageBox(dialogOpts, response => {
       if (response === 0) {
@@ -59,7 +66,7 @@ let isDevMode = !!process.execPath.match(/[\\/]electron/);
 
 const vipfyHandler = (request, callback) => {
   const url = request.url.substr(8);
-  //callback({path: path.normalize(`${__dirname}/${url}`)})
+  // callback({path: path.normalize(`${__dirname}/${url}`)})
 
   if (url.startsWith("todo")) {
     callback({ path: path.normalize(`${app.getAppPath()}/src/todo.html`) });
@@ -123,35 +130,34 @@ function checkSetupKey(key) {
 }
 
 const createWindow = async () => {
-  try {
-    autoUpdater.checkForUpdates();
-    setInterval(function() {
-      try {
-        if (!disableUpdater) {
-          autoUpdater.checkForUpdates();
+  if (!disableUpdater) {
+    try {
+      autoUpdater.checkForUpdates();
+      setInterval(function() {
+        try {
+          if (!disableUpdater) {
+            autoUpdater.checkForUpdates();
+          }
+        } catch (err) {
+          logger.warn("autoupdate failed");
+          logger.warn(err);
         }
-      } catch (err) {
-        console.log("autoupdate failed");
-        console.log(err);
-      }
-    }, 1000 * 60 * 10);
-  } catch (err) {
-    disableUpdater = true;
-    console.error(err);
-    console.error("you can ignore that error if this is run from source");
-    console.log("reverting to devmode");
-    isDevMode = true;
+      }, 1000 * 60 * 10);
+    } catch (err) {
+      disableUpdater = true;
+      logger.error(err);
+    }
   }
 
   protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
-      console.error("Failed to register vipfy protocol");
+      logger.error("Failed to register vipfy protocol", error);
     }
   });
 
   session.fromPartition("services").protocol.registerFileProtocol("vipfy", vipfyHandler, error => {
     if (error) {
-      console.error("Failed to register vipfy protocol");
+      logger.error("Failed to register vipfy protocol", error);
     }
   });
 
@@ -166,24 +172,50 @@ const createWindow = async () => {
     titleBarStyle: "hiddenInset",
     fullscreenable: true,
     backgroundColor: "#253647",
-    frame: false
+    frame: false,
+    webPreferences: {
+      nodeIntegration: true,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      webSecurity: false,
+      webviewTag: true
+    }
   });
 
   mainWindow.once("ready-to-show", () => {
+    mainWindow.webContents.on("did-fail-load", (event, code, desc, url, isMainFrame) => {
+      logger.warn(`failed loading; ${isMainFrame} ${code} ${url}`, event);
+    });
     mainWindow.webContents.setZoomFactor(1.0);
     mainWindow.show();
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  // mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
   if (isDevMode) {
-    await installExtension(REACT_DEVELOPER_TOOLS);
-    await installExtension(APOLLO_DEVELOPER_TOOLS);
+    try {
+      await installExtension(REACT_DEVELOPER_TOOLS);
+    } catch (err) {
+      console.log(err);
+    }
+    try {
+      await installExtension(APOLLO_DEVELOPER_TOOLS);
+    } catch (err) {
+      console.log(err);
+    }
     mainWindow.webContents.openDevTools();
-    enableLiveReload({ strategy: "react-hmr" });
   }
+
+  mainWindow.on("close", () => {
+    try {
+      mainWindow.webContents.session.clearStorageData();
+      session.fromPartition("services").clearStorageData();
+    } catch (err) {
+      logger.error(err);
+    }
+  });
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
@@ -200,7 +232,7 @@ const createWindow = async () => {
 app.on("ready", createWindow);
 
 // Quit when all windows are closed.
-app.on("window-all-closed", () => {
+app.on("window-all-closed", async () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {

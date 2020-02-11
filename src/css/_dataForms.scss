@@ -226,10 +226,13 @@ $fullWidth: 904px;
     top: 104px;
     left: 328px;
     width: 312px;
-    max-height: 440px;
+    height: 350px;
     overflow-y: auto;
 
     .accountHolder {
+      div {
+        @include hide-overflowing-text;
+      }
       height: 55px;
       border-bottom: 1px solid;
       cursor: pointer;

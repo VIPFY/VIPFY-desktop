@@ -6,14 +6,30 @@ interface Props {
   icon: string;
   title?: string;
   disabled?: boolean;
+  type?: string;
+  style?: any;
 }
 
 export default (props: Props) => {
-  const { className, icon, ...properties } = props;
+  const { className, icon, onClick, ...properties } = props;
+  const [active, setActive] = React.useState(false);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setActive(false);
+    }, 200);
+  }, [active]);
 
   return (
-    <button {...properties} className={`naked-button ${className}`}>
-      <i className={`fal fa-${icon}`} />
+    <button
+      {...properties}
+      className={`naked-button ${className}`}
+      onClick={e => {
+        setActive(true);
+        //setInterval(e => setActive(false), 500);
+        onClick(e);
+      }}>
+      <i className={`${active ? "far" : "fal"} fa-${icon}`} />
     </button>
   );
 };

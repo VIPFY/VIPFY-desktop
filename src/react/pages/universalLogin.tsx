@@ -1,10 +1,10 @@
 import * as React from "react";
 import { graphql, Query, withApollo } from "react-apollo";
-import WebView = require("react-electron-web-view");
-import { sleep } from "../common/functions";
+import WebView from "react-electron-web-view";
+import { sleep, getPreloadScriptPath } from "../common/functions";
 
-const { session } = require("electron").remote;
-
+import { remote } from "electron";
+const { session } = remote;
 interface Props {
   company: any;
   showPopup: Function;
@@ -128,7 +128,7 @@ class UniversalLogin extends React.PureComponent<Props, State> {
             {this.state.running && (
               <div>
                 <WebView
-                  preload="./ssoConfigPreload/universalLogin.js"
+                  preload={getPreloadScriptPath("universalLogin.js")}
                   webpreferences="webSecurity=no"
                   src={this.state.loginUrl}
                   partition="ssoconfig"
@@ -146,7 +146,6 @@ class UniversalLogin extends React.PureComponent<Props, State> {
   }
 
   async onIpcMessage(e) {
-    console.log("ipc", e);
     e.target.openDevTools();
     switch (e.channel) {
       case "unload":
@@ -172,7 +171,6 @@ class UniversalLogin extends React.PureComponent<Props, State> {
           } else {
             throw new Error("unknown string");
           }
-          console.log("filling in " + e.args[0]);
           for await (const c of text) {
             if (this.loginState.unloaded) {
               return;
@@ -199,7 +197,6 @@ class UniversalLogin extends React.PureComponent<Props, State> {
                   .querySelector<HTMLWebViewElement>("webview")!
                   .getWebContents()
                   .capturePage(image => {
-                    console.log(image);
                     console.log("image", image.toDataURL({ scaleFactor: 0.5 }));
                   }),
               10000
@@ -217,10 +214,6 @@ class UniversalLogin extends React.PureComponent<Props, State> {
           }
           await sleep(50);
           e.target.send("loginData", this.loginState);
-          console.log("sentLoginData", {
-            username: this.state.username,
-            password: this.state.password
-          });
         }
         break;
     }

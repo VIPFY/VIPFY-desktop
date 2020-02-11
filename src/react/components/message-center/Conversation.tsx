@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Query, Mutation, Subscription } from "react-apollo";
+import { Query } from "react-apollo";
 import gql from "graphql-tag";
-import { union } from "lodash";
 
 import FileUpload from "./FileUpload";
 import Message from "./Message";
@@ -78,7 +77,7 @@ class Conversation extends React.Component<Props, State> {
   };
 
   // Avoid the Scrollbar from going to the bottom when fetching new Messages
-  componentWillReceiveProps({ fetchDialog: newMessages }) {
+  UNSAFE_componentWillReceiveProps({ fetchDialog: newMessages }) {
     const { fetchDialog: oldMessages } = this.props;
 
     if (
@@ -124,11 +123,9 @@ class Conversation extends React.Component<Props, State> {
             cursor: fetchMoreResult.fetchDialog[fetchMoreResult.fetchDialog.length - 1].sendtime
           }));
 
-          console.log(fetchMoreResult.fetchDialog);
-
           return {
             ...previousResult,
-            fetchDialog: union(previousResult.fetchDialog, fetchMoreResult.fetchDialog)
+            fetchDialog: { ...previousResult.fetchDialog, ...fetchMoreResult.fetchDialog }
           };
         }
       });
@@ -200,7 +197,10 @@ export default (props: { groupid: number; userid: number }): JSX.Element => {
   }
 
   return (
-    <Query query={QUERY_DIALOG} variables={{ groupid, limit: LIMIT }}>
+    <Query
+      pollInterval={60 * 10 * 1000 + 1000}
+      query={QUERY_DIALOG}
+      variables={{ groupid, limit: LIMIT }}>
       {({ loading, error, data: { fetchDialog }, subscribeToMore, fetchMore }) => {
         if (loading) {
           return <LoadingDiv text="Fetching conversation..." />;

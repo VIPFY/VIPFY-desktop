@@ -1,16 +1,43 @@
 import * as React from "react";
+import ReactPasswordStrength from "react-password-strength";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
-const { shell } = require("electron");
-import { graphql } from "react-apollo";
+import { shell } from "electron";
+import { graphql, withApollo, compose } from "react-apollo";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import { emailRegex } from "../../common/constants";
+import { emailRegex, PW_MIN_LENGTH } from "../../common/constants";
+import welcomeBack from "../../../images/welcome_back.png";
+import * as crypto from "../../common/crypto";
+import { computePasswordScore } from "../../common/passwords";
+import IconButton from "../../common/IconButton";
 
 const SIGNUP = gql`
-  mutation onSignUp($email: String!, $name: String!, $privacy: Boolean!, $tOS: Boolean!) {
-    signUp(email: $email, companyname: $name, privacy: $privacy, termsOfService: $tOS) {
+  mutation onSignUp(
+    $email: String!
+    $name: String!
+    $privacy: Boolean!
+    $tOS: Boolean!
+    $isPrivate: Boolean
+    $passkey: String!
+    $passwordMetrics: PasswordMetricsInput!
+    $personalKey: KeyInput!
+    $adminKey: KeyInput!
+    $passwordsalt: String!
+  ) {
+    signUp(
+      email: $email
+      companyname: $name
+      privacy: $privacy
+      termsOfService: $tOS
+      isprivate: $isPrivate
+      passkey: $passkey
+      passwordMetrics: $passwordMetrics
+      personalKey: $personalKey
+      adminKey: $adminKey
+      passwordsalt: $passwordsalt
+    ) {
       ok
       token
     }
@@ -21,6 +48,7 @@ interface Props {
   continueFunction: Function;
   backFunction: Function;
   signUp: Function;
+  client: any;
 }
 
 interface State {
@@ -29,33 +57,81 @@ interface State {
   privacy: Boolean;
   tos: boolean;
   register: Boolean;
+  passwordData: Password;
   error: string;
+}
+
+interface Password {
+  score: number;
+  password: string;
+  isValid: boolean;
+  show?: boolean;
 }
 
 class RegisterCompany extends React.Component<Props, State> {
   state = {
     email: "",
     company: "",
+    passwordData: {
+      password: "",
+      score: 0,
+      isValid: false,
+      show: false
+    },
     privacy: false,
     tos: false,
     register: false,
     error: ""
   };
 
+  handlePasswordChange({ score, password, isValid }: Password): void {
+    this.setState({ passwordData: { password, score, isValid } });
+  }
+
   continue = async () => {
     try {
       if (this.state.privacy && this.state.tos) {
         this.setState({ register: true, error: "" });
+        const {
+          passwordData: { password }
+        } = this.state;
+
+        const salt = await crypto.getRandomSalt();
+        const { loginkey, encryptionkey1 } = await crypto.hashPassword(
+          this.props.client,
+          this.state.email,
+          password,
+          salt
+        );
+
+        const passwordMetrics = {
+          passwordlength: password.length,
+          passwordstrength: computePasswordScore(password)
+        };
+
+        const personalKey = await crypto.generatePersonalKeypair(encryptionkey1);
+        const adminKey = await crypto.generateAdminKeypair(
+          Buffer.from(personalKey.publickey, "hex")
+        );
+
         const res = await this.props.signUp({
           variables: {
             email: this.state.email,
             name: this.state.company,
-            privacy: true,
-            tOS: true
+            privacy: this.state.privacy,
+            tOS: this.state.tos,
+            // Registration for private persons is currently not possible
+            isPrivate: false,
+            passkey: loginkey.toString("hex"),
+            passwordMetrics,
+            personalKey,
+            adminKey,
+            passwordsalt: salt
           }
         });
         const { token } = res.data.signUp;
         localStorage.setItem("token", token);
+        localStorage.setItem("key1", encryptionkey1.toString("hex"));
         this.props.continueFunction();
       } else {
         this.setState({ error: "Please accept our Terms of Service and Privacy Agreement" });
@@ -69,23 +145,22 @@ class RegisterCompany extends React.Component<Props, State> {
   };
 
   render() {
+    const { email } = this.state;
+
     return (
       <div className="dataGeneralForm">
         <div className="holder">
           <div className="logo" />
-          <img
-            src={`${__dirname}/../../../images/welcome_back.png`}
-            className="illustration-login"
-          />
+          <img src={welcomeBack} className="illustration-login" />
 
-          <div className="holder-right">
-            <h1>Register a Company</h1>
+          <div className="holder-right register-company-holder">
+            <h1>Register your Company</h1>
 
             <div className="UniversalInputHolder">
               <UniversalTextInput
                 id="emailreg"
                 width="312px"
-                errorEvaluation={this.state.email != "" && !this.state.email.match(emailRegex)}
+                errorEvaluation={email.length > 5 && !email.match(emailRegex)}
                 errorhint="A valid Email looks like this john@vipfy.com"
                 label="Email"
                 livevalue={v => this.setState({ email: v })}
@@ -102,6 +177,47 @@ class RegisterCompany extends React.Component<Props, State> {
                 livevalue={v => this.setState({ company: v })}
               />
             </div>
+
+            <div className="password-container">
+              <ReactPasswordStrength
+                className="passwordStrength"
+                minLength={PW_MIN_LENGTH}
+                minScore={2}
+                scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+                tooShortWord={"too short"}
+                inputProps={{
+                  name: "password_input",
+                  autoComplete: "off",
+                  placeholder: "New Password",
+                  className: "cleanup universalTextInput toggle-password"
+                }}
+                changeCallback={state => this.handlePasswordChange(state)}
+              />
+
+              <IconButton
+                icon={`eye${this.state.passwordData.show ? "" : "-slash"}`}
+                onClick={() =>
+                  this.setState(prevState => {
+                    const passwordField = document.querySelector(".toggle-password");
+
+                    if (prevState.passwordData.show) {
+                      passwordField.type = "password";
+                    } else {
+                      passwordField.type = "text";
+                    }
+
+                    return {
+                      ...prevState,
+                      passwordData: {
+                        ...prevState.passwordData,
+                        show: !prevState.passwordData.show
+                      }
+                    };
+                  })
+                }
+              />
+            </div>
+
             <div
               className="agreementBox"
               style={{
@@ -112,44 +228,28 @@ class RegisterCompany extends React.Component<Props, State> {
                 justifyContent: "space-around",
                 height: "92px"
               }}>
-              <UniversalCheckbox
-                name="tos"
-                liveValue={v => this.setState({ tos: v })}
-                style={{ width: "312px" }}>
-                <span style={{ width: "300px" }}>
+              <UniversalCheckbox name="tos" liveValue={v => this.setState({ tos: v })}>
+                <div className="agreement-text">
                   By registering I agree to the
-                  <span
-                    style={{
-                      position: "unset",
-                      width: "unset",
-                      paddingLeft: "8px",
-                      paddingRight: "8px",
-                      color: "#20baa9"
-                    }}
+                  <div
+                    className="fancy-link"
+                    style={{ color: "#20baa9" }}
                     onClick={() => shell.openExternal("https://vipfy.store/terms-of-service")}>
                     Terms of Service of VIPFY
-                  </span>
-                </span>
+                  </div>
+                </div>
               </UniversalCheckbox>
 
-              <UniversalCheckbox
-                name="privacy"
-                liveValue={v => this.setState({ privacy: v })}
-                style={{ width: "312px" }}>
-                <span style={{ width: "300px" }}>
+              <UniversalCheckbox name="privacy" liveValue={v => this.setState({ privacy: v })}>
+                <div className="agreement-text">
                   By registering I agree to the
-                  <span
-                    style={{
-                      position: "unset",
-                      width: "unset",
-                      paddingLeft: "8px",
-                      paddingRight: "8px",
-                      color: "#20baa9"
-                    }}
+                  <div
+                    className="fancy-link"
+                    style={{ color: "#20baa9" }}
                     onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
                     Privacy Agreement of VIPFY
-                  </span>
-                </span>
+                  </div>
+                </div>
               </UniversalCheckbox>
             </div>
 
@@ -164,10 +264,10 @@ class RegisterCompany extends React.Component<Props, State> {
                 type="high"
                 disabled={
                   !this.state.email.match(emailRegex) ||
-                  this.state.email == "" ||
-                  this.state.company == "" ||
+                  !this.state.email ||
                   !this.state.privacy ||
-                  !this.state.tos
+                  !this.state.tos ||
+                  this.state.passwordData.score < 2
                 }
                 onClick={this.continue}
               />
@@ -176,8 +276,8 @@ class RegisterCompany extends React.Component<Props, State> {
               <PopupBase
                 close={() => this.setState({ register: false, error: "" })}
                 small={true}
-                closeable={false}
-                nosidebar={true}>
+                fullMiddle={true}
+                noSidebar={true}>
                 {this.state.error != "" ? (
                   <React.Fragment>
                     <div>{this.state.error}</div>
@@ -206,6 +306,10 @@ class RegisterCompany extends React.Component<Props, State> {
     );
   }
 }
-export default graphql(SIGNUP, {
-  name: "signUp"
-})(RegisterCompany);
+
+export default compose(
+  withApollo,
+  graphql(SIGNUP, {
+    name: "signUp"
+  })
+)(RegisterCompany);

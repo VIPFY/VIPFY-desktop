@@ -1,5 +1,6 @@
 import * as React from "react";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
+import { getPreloadScriptPath } from "../../common/functions";
 
 interface Props {
   url: string;
@@ -22,7 +23,7 @@ class PassowrdFieldExtractor extends React.PureComponent<Props, State> {
   render() {
     return (
       <WebView
-        preload="./ssoConfigPreload/findPasswordField.js"
+        preload={getPreloadScriptPath("findPasswordField.js")}
         webpreferences="webSecurity=no"
         src={this.props.url || ""}
         partition="ssoconfig"
@@ -33,13 +34,11 @@ class PassowrdFieldExtractor extends React.PureComponent<Props, State> {
   }
 
   onIpcMessage(e) {
-    console.log("ipc", e);
     switch (e.channel) {
       case "getLoginDetails":
         {
           const { username, usernameField, button1 } = this.props;
           e.target.send("loginData", { username, usernameField, button1 });
-          console.log("sending data", { username, usernameField, button1 }, e.target);
         }
         break;
       case "passwordobject":

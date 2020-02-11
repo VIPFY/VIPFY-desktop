@@ -4,9 +4,6 @@ import UniversalTextInput from "../components/universalForms/universalTextInput"
 import UniversalButton from "../components/universalButtons/universalButton";
 import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
-import { FETCH_ADDRESSES } from "../queries/contact";
-import UniversalDropDownInput from "../components/universalForms/universalDropdownInput";
-import { countries } from "../constants/countries";
 
 interface Props {
   close: Function;
@@ -125,7 +122,6 @@ class PopupPhone extends React.Component<Props, State> {
             id: this.props.oldvalues.id
           }
         });
-        console.log("RES", res);
         this.setState({ networking: false, networkerror: false });
       } catch (err) {
         this.setState({ networking: false, networkerror: true });
@@ -269,7 +265,7 @@ class PopupPhone extends React.Component<Props, State> {
             small={true}
             closeable={false}
             autoclosing={10}
-            autoclosingFunction={() => this.setState({ networking: false, networkerror: true })}
+            autoclosingFunction={() => this.setState({ networking: false, networkerror: false })}
             notimer={true}>
             {this.state.networking ? (
               <div>

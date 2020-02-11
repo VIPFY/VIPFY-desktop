@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
-import * as Dropzone from "react-dropzone";
+import Dropzone from "react-dropzone";
 import TeamGerneralDataAdd from "./universal/adding/teamGeneralDataAdd";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
@@ -14,6 +14,7 @@ interface Props {
   continue?: Function;
   addteam?: any;
   createTeam: Function;
+  isadmin?: boolean;
 }
 
 interface State {
@@ -37,30 +38,57 @@ class AddTeamGeneralData extends React.Component<Props, State> {
     saving: false
   };
 
+  handleCreate() {
+    if (this.props.savingFunction) {
+      this.setState({ saving: true });
+    } else {
+      this.props.continue!(this.state);
+    }
+  }
+
+  listenKeyboard = e => {
+    const { name } = this.state;
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.props.close();
+    } else if (!(e.target && e.target.id && e.target.id === "name")) {
+      return; //Check if one of the Textfields is focused
+    } else if (
+      (e.key === "Enter" || e.keyCode === 13) &&
+      name &&
+      e.srcElement.textContent != "Cancel"
+    ) {
+      this.handleCreate();
+    }
+  };
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.listenKeyboard, true);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard, true);
+  }
+
   render() {
     const { picture, name } = this.state;
 
     return (
       <React.Fragment>
-        <span>
-          <span className="bHeading">Add Team </span>
-          {/*<span className="mHeading">
-            > <span className="active">General Data</span> > Employees > Services
-    </span>*/}
-        </span>
-        <TeamGerneralDataAdd setOuterState={s => this.setState(s)} picture={picture} name={name} />
-        <div className="buttonsPopup">
+        <h1>Add Team</h1>
+        <TeamGerneralDataAdd
+          setOuterState={s => this.setState(s)}
+          picture={picture}
+          name={name}
+          isadmin={this.props.isadmin}
+        />
+        <div className="buttonsPopup" style={{ justifyContent: "space-between" }}>
           <UniversalButton label="Cancel" type="low" onClick={() => this.props.close()} />
-          <div className="buttonSeperator" />
+
           <UniversalButton
             label="Create"
             type="high"
             disabled={this.state.name == ""}
-            onClick={() =>
-              this.props.savingFunction
-                ? this.setState({ saving: true })
-                : this.props.continue!(this.state)
-            }
+            onClick={() => this.handleCreate()}
           />
         </div>
         {this.state.saving && (

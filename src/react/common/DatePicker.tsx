@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import moment = require("moment");
+import moment from "moment";
 import UniversalButton from "../components/universalButtons/universalButton";
 
 interface Props {
@@ -13,6 +13,9 @@ interface Props {
   scrollTop?: number;
   holder?: any;
   scrollItem?: any;
+  style?: object;
+  useOnlyBody?: boolean;
+  useHolidays?: boolean;
 }
 
 interface State {
@@ -27,7 +30,7 @@ const firstYear = moment()
   .subtract(100, "y")
   .year();
 
-class DatePicker extends React.PureComponent<Props, State> {
+export default class DatePicker extends React.PureComponent<Props, State> {
   state = {
     show: false,
     touched: false,
@@ -55,6 +58,7 @@ class DatePicker extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     window.addEventListener("keydown", this.listenKeyboard, true);
+    window.addEventListener("scroll", this.closeMe, true);
     document.addEventListener("click", this.handleClickOutside, true);
 
     if (this.props.value) {
@@ -85,8 +89,11 @@ class DatePicker extends React.PureComponent<Props, State> {
 
   componentWillUnmount() {
     window.removeEventListener("keydown", this.listenKeyboard, true);
+    window.removeEventListener("scroll", this.closeMe, true);
     document.removeEventListener("click", this.handleClickOutside, true);
   }
+
+  closeMe = () => this.setState({ show: false });
 
   handleClickOutside = e => {
     const domNode = ReactDOM.findDOMNode(this);
@@ -159,7 +166,7 @@ class DatePicker extends React.PureComponent<Props, State> {
 
   render() {
     const { touched, month, year } = this.state;
-    const { minDate, maxDate } = this.props;
+    const { minDate, maxDate, useHolidays } = this.props;
 
     const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const dates = [];
@@ -186,6 +193,7 @@ class DatePicker extends React.PureComponent<Props, State> {
       }
     }
     }
+
     const daysInMonth = moment(`${year}-${month}-1`, "YYYY-MM-D").daysInMonth();
     const days = [];
 
@@ -227,7 +235,9 @@ class DatePicker extends React.PureComponent<Props, State> {
 
     return (
       <div className="date-picker-wrapper" ref={this.wrapper}>
-        <div className="date-picker" onClick={() => this.setState({ show: true })}>
+        <div
+          className="date-picker"
+          onClick={() => this.setState(prevState => ({ ...prevState, show: !prevState.show }))}>
           <i className="fal fa-calendar" />
           <span className="date-picker-text">
             {touched && this.props.value ? moment(this.props.value).format(format) : "Date"}
@@ -243,23 +253,28 @@ class DatePicker extends React.PureComponent<Props, State> {
             ref={this.picker}
             className="date-picker-popup"
             style={
-              this.wrapper && {
-                position: "fixed",
-                top:
-                  this.calculateTop(this.wrapper.current) +
-                  50 -
-                  ((this.props.holder && this.props.holder.current.scrollTop) || 0),
-                left:
-                  this.calculateLeft(this.wrapper.current) +
-                  this.wrapper.current!.offsetWidth -
-                  16 -
-                  156
-              }
+              this.props.style
+                ? this.props.style
+                : this.wrapper && {
+                    position: "fixed",
+                    top:
+                      this.calculateTop(this.wrapper.current) +
+                      50 -
+                      ((this.props.holder && this.props.holder.current.scrollTop) || 0),
+                    left:
+                      this.calculateLeft(this.wrapper.current) +
+                      this.wrapper.current!.offsetWidth -
+                      16 -
+                      156
+                  }
             }>
             <div className="arrow-up" />
 
             <div className="date-picker-popup-header">
-              <button onClick={() => this.changeDate("subtract")} className="naked-button">
+              <button
+                type="button"
+                onClick={() => this.changeDate("subtract")}
+                className="naked-button">
                 <i className="fal fa-angle-left" />
               </button>
 
@@ -278,7 +293,7 @@ class DatePicker extends React.PureComponent<Props, State> {
                 <i className="fal fa-angle-down" />
               </span>
 
-              <button onClick={() => this.changeDate("add")} className="naked-button">
+              <button type="button" onClick={() => this.changeDate("add")} className="naked-button">
                 <i className="fal fa-angle-right" />
               </button>
             </div>
@@ -298,20 +313,24 @@ class DatePicker extends React.PureComponent<Props, State> {
                   {time.day}
                 </span>
               ))}
-              {days.map((time, key) => (
-                <span
-                  onClick={() => this.setDate(time)}
-                  className={`day ${this.state.day === time.day ? "active" : ""} ${
-                    (minDate &&
-                      moment(`${time.year}-${time.month}-${time.day}`).isBefore(minDate)) ||
-                    (maxDate && moment(`${time.year}-${time.month}-${time.day}`).isAfter(maxDate))
-                      ? "disabled"
-                      : ""
-                  }`}
-                  key={key}>
-                  {time.day}
-                </span>
-              ))}
+
+              {days.map((time, key) => {
+                const today = moment(`${time.year}-${time.month}-${time.day}`);
+
+                return (
+                  <span
+                    onClick={() => this.setDate(time)}
+                    className={`day ${this.state.day === time.day ? "active" : ""} ${
+                      (minDate && today.isBefore(minDate)) || (maxDate && today.isAfter(maxDate))
+                        ? "disabled"
+                        : ""
+                    } ${useHolidays && today.isHoliday([]).holidayName ? "holiday" : ""}`}
+                    title={useHolidays && today.isHoliday([]).holidayName}
+                    key={key}>
+                    {time.day}
+                  </span>
+                );
+              })}
 
               {comingDays.map((time, key) => (
                 <span
@@ -334,5 +353,3 @@ class DatePicker extends React.PureComponent<Props, State> {
     );
   }
 }
-
-export default DatePicker;

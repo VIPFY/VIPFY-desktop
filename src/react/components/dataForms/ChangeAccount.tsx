@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import Store = require("electron-store");
+import Store from "electron-store";
 import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
 
 interface Props {
@@ -68,6 +68,20 @@ class ChangeAccount extends React.Component<Props, State> {
         <h1 style={{ textAlign: "center" }}>Change Account</h1>
 
         <div className="accountArrayHolder">
+          <div className="accountHolder" onClick={() => this.props.addMachineUser!()}>
+            <div className="accountHolderBullet">
+              <i className="fal fa-user-plus" />
+            </div>
+            <div
+              className="accountHolderText"
+              style={{
+                lineHeight: "19px",
+                paddingTop: "19px",
+                fontSize: "14px"
+              }}>
+              Add account
+            </div>
+          </div>
           {this.accounts.length > 0 &&
             this.accounts.map(a => (
               <div
@@ -77,12 +91,13 @@ class ChangeAccount extends React.Component<Props, State> {
                 onMouseLeave={() => this.setState({ hover: "" })}
                 onClick={() => this.props.selectAccount(a.email)}>
                 <PrintEmployeeSquare employee={a} className="accountHolderBullet" size={20} />
-                <div className="accountHolderText" style={{ paddingTop: "11px" }}>
+                <div
+                  className="accountHolderText"
+                  style={{ paddingTop: "11px", maxWidth: "210px" }}>
                   <div>{a.fullname}</div>
                   <div style={{ fontSize: "12px" }}>{a.email}</div>
                 </div>
 
-                {/* {this.state.hover == a.email && ( */}
                 <button
                   onClick={e => {
                     e.stopPropagation();
@@ -91,20 +106,8 @@ class ChangeAccount extends React.Component<Props, State> {
                   className="naked-button">
                   <i className="fal fa-trash-alt accountDelete" />
                 </button>
-                {/* )} */}
               </div>
             ))}
-
-          <div className="accountHolder" onClick={() => this.props.addMachineUser!()}>
-            <div className="accountHolderBullet">
-              <i className="fal fa-user-plus" />
-            </div>
-            <div
-              className="accountHolderText"
-              style={{ lineHeight: "19px", paddingTop: "19px", fontSize: "14px" }}>
-              Add account
-            </div>
-          </div>
         </div>
         <div className="buttonHolder">
           <UniversalButton label="Cancel" type="low" onClick={() => this.props.backFunction()} />
@@ -115,14 +118,16 @@ class ChangeAccount extends React.Component<Props, State> {
             onClick={() => this.props.registerCompany()}
           />
         </div>
+
         {this.state.confirm && (
-          <PopupBase
-            small={true}
-            close={() => this.setState({ confirm: false })}
-            nosidebar={true}
-            closeable={false}>
+          <PopupBase small={true} close={() => this.setState({ confirm: false })} noSidebar={true}>
+            <h1>Delete Account from Machine</h1>
             <p>Do you really want to delete this account from this machine?</p>
-            <UniversalButton type="low" closingPopup={true} label="Cancel" />
+            <UniversalButton
+              type="low"
+              onClick={() => this.setState({ confirm: false })}
+              label="Cancel"
+            />
             <UniversalButton
               type="low"
               closingAllPopups={true}

@@ -1,5 +1,6 @@
 import * as React from "react";
 import UniversalButton from "./components/universalButtons/universalButton";
+import errorPic from "../images/sso_creation_fail.png";
 
 interface Props {
   children: any;
@@ -29,30 +30,32 @@ class OuterErrorBoundary extends React.Component<Props, State> {
       return React.Children.only(this.props.children);
     } else {
       return (
-        <div id="outer-error-page">
-          <h1>Sorry an error occurred!</h1>
-          <img
-            src="images/sso_creation_fail.png"
-            width={621}
-            height={390}
-            style={{ marginTop: "80px", marginBottom: "74px" }}
-          />
-          <p>
-            Please restart VIPFY. If the problem persists, please contact our support with details
-            on the exact steps that lead you to this page
-          </p>
+        <div style={{ width: "100vw", height: "calc(100vh - 32px", overflowY: "scroll" }}>
+          <div id="outer-error-page">
+            <h1>Sorry an error occurred!</h1>
+            <img
+              src={errorPic}
+              width={621}
+              height={390}
+              style={{ marginTop: "80px", marginBottom: "74px" }}
+            />
+            <p>
+              Please restart VIPFY. If the problem persists, please contact our support with details
+              on the exact steps that lead you to this page
+            </p>
 
-          <UniversalButton
-            label="Contact Support"
-            type="high"
-            customStyles={{
-              marginTop: "72px",
-              fontSize: "24px",
-              fontWeight: "bold",
-              padding: "7px 20px"
-            }}
-            onClick={() => (window.location.href = "mailto:support@vipfy.store")}
-          />
+            <UniversalButton
+              label="Contact Support"
+              type="high"
+              customStyles={{
+                marginTop: "72px",
+                fontSize: "24px",
+                fontWeight: "bold",
+                padding: "7px 20px"
+              }}
+              onClick={() => (window.location.href = "mailto:support@vipfy.store")}
+            />
+          </div>
         </div>
       );
     }

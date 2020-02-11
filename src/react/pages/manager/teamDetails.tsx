@@ -1,21 +1,16 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, compose, Query, withApollo } from "react-apollo";
-import * as Dropzone from "react-dropzone";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
-import { QUERY_SEMIPUBLICUSER } from "../../queries/user";
-import LicencesSection from "../../components/manager/licencesSection";
-import PersonalDetails from "../../components/manager/personalDetails";
-import TeamsSection from "../../components/manager/teamsSection";
 
 import { fetchTeam } from "../../queries/departments";
 import TeamGeneralData from "../../components/manager/teamGeneralData";
 import EmployeeSection from "../../components/manager/teamDetails/employeeSection";
 import ServiceSection from "../../components/manager/serviceSection";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlTeam } from "../../common/images";
+import { getImageUrlTeam, resizeImage } from "../../common/images";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -52,7 +47,12 @@ class TeamDetails extends React.Component<Props, State> {
     await this.setState({ loading: true });
 
     try {
-      await this.props.updatePic({ variables: { file: picture, teamid } });
+      const resizedImage = await resizeImage(picture);
+
+      await this.props.updatePic({
+        context: { hasUpload: true },
+        variables: { file: resizedImage, teamid }
+      });
 
       await this.setState({ loading: false });
     } catch (err) {
@@ -66,9 +66,9 @@ class TeamDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const teamid = this.props.match.params.teamid;
+    const { teamid } = this.props.match.params;
     return (
-      <Query query={fetchTeam} variables={{ teamid }}>
+      <Query pollInterval={60 * 10 * 1000 + 200} query={fetchTeam} variables={{ teamid }}>
         {({ loading, error, data }) => {
           if (loading) {
             return "Loading...";
@@ -76,27 +76,30 @@ class TeamDetails extends React.Component<Props, State> {
           if (error) {
             return `Error! ${error.message}`;
           }
-          console.log("Team", data);
 
           const team = data.fetchTeam;
-          console.log("LOG: TeamDetails -> render -> team", team);
 
           return (
             <div className="managerPage">
               <div className="heading">
-                <h1>
-                  <span style={{ cursor: "pointer" }} onClick={() => this.props.moveTo("dmanager")}>
+                <span
+                  className="h1"
+                  style={{
+                    display: "block",
+                    maxWidth: "40vw",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    color: "rgba(37, 54, 71, 0.6)"
+                  }}>
+                  <span
+                    style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
+                    onClick={() => this.props.moveTo("dmanager")}>
                     Team Manager
                   </span>
-                  <h2>></h2>
-                  <h2>{team.name}</h2>
-                </h1>
+                  <span className="h2">{team.name}</span>
+                </span>
 
-                <UniversalSearchBox
-                  getValue={v => {
-                    this.setState({ search: v });
-                  }}
-                />
+                <UniversalSearchBox getValue={v => this.setState({ search: v })} />
               </div>
               <div className="section">
                 <div className="heading">
@@ -119,6 +122,8 @@ class TeamDetails extends React.Component<Props, State> {
                       onDrop={s => this.uploadPic(s)}
                       className="managerBigSquare"
                       uploadError={this.state.uploadError}
+                      isadmin={this.props.isadmin}
+                      isteam={true}
                     />
                   </div>
                   <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
@@ -129,6 +134,7 @@ class TeamDetails extends React.Component<Props, State> {
                 </div>
               </div>
               <EmployeeSection
+                isadmin={this.props.isadmin}
                 employees={team.employees}
                 search={this.state.search}
                 team={team}

@@ -1,4 +1,5 @@
-const ipcRenderer = require("electron").ipcRenderer;
+import { ipcRenderer } from "electron";
+import { hash } from "object-hash";
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
@@ -128,8 +129,6 @@ function triggerMouseEvent(node, eventType) {
   node.dispatchEvent(clickEvent);
 }
 
-console.log("starting FindErrorField");
-
 ipcRenderer.sendToHost("loaded", null);
 
 function walkDOM(node, func) {
@@ -149,8 +148,6 @@ function sendDomMap(tag) {
     if (o === null) return;
     objects[o.hash] = o;
   });
-  console.log(Object.keys(objects).length);
-  console.log(objects);
   ipcRenderer.sendToHost("domMap", tag, objects);
 }
 
@@ -160,7 +157,6 @@ setTimeout(function() {
 }, 5000);
 
 ipcRenderer.on("loginData", async (e, key) => {
-  console.log("login", key);
   await sleep(1000);
   await fillFormField(document.querySelector(key.usernameField), key.username);
   sendDomMap(key.tagBefore);
@@ -180,7 +176,6 @@ ipcRenderer.on("loginData", async (e, key) => {
 });
 
 const skipArgs = ["placeholder", "alt", "title", "aria-label"]; // don't use attributes likely to get translated
-const hash = require("object-hash");
 function createObjFromDom(elem) {
   if (elem == null) return null;
   if (elem.nodeType !== 1) {

@@ -1,9 +1,10 @@
 import * as React from "react";
 import { withRouter } from "react-router";
-import { graphql, Query, withApollo } from "react-apollo";
-import Store = require("electron-store");
+import { graphql, Query, withApollo, compose } from "react-apollo";
+import gql from "graphql-tag";
+import Store from "electron-store";
 
-import { signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
+import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
 import { AppContext, refetchQueries } from "./common/functions";
 import { filterError } from "./common/functions";
@@ -13,9 +14,21 @@ import LoadingDiv from "./components/LoadingDiv";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
-import gql from "graphql-tag";
-import Tutorial from "./tutorials/basicTutorial";
 import SignIn from "./pages/signin";
+import { resetLoggingContext } from "../logger";
+import TwoFactor from "./pages/TwoFactor";
+import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
+import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
+import { hashPassword } from "./common/crypto";
+import { remote } from "electron";
+const { session } = remote;
+import "../css/layout.scss";
+
+const END_IMPERSONATION = gql`
+  mutation onEndImpersonation($token: String!) {
+    endImpersonation(token: $token)
+  }
+`;
 
 interface AppProps {
   client: ApolloClient<InMemoryCache>;
@@ -30,6 +43,9 @@ interface AppProps {
   setName: Function;
   signIn: any;
   signUp: any;
+  signOut: Function;
+  endImpersonation: Function;
+  location: any;
 }
 
 interface PopUp {
@@ -50,6 +66,8 @@ interface AppState {
   page: string;
   sidebarloaded: boolean;
   reshow: string | null;
+  twofactor: string | null;
+  unitid: string | null;
 }
 
 const INITIAL_POPUP = {
@@ -69,7 +87,9 @@ const INITIAL_STATE = {
   renderElements: [],
   page: "dashboard",
   sidebarloaded: false,
-  reshow: null
+  reshow: null,
+  twofactor: null,
+  unitid: null
 };
 
 const tutorial = gql`
@@ -98,12 +118,19 @@ const tutorial = gql`
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
 
-  references: { key; element }[] = [];
+  references: { key; element; listener?; action? }[] = [];
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
-    this.props.history.push("/area");
+    // session.defaultSession.cookies.get({}, (error, cookies) => {
+    //   if (error) {
+    //     return;
+    //   }
+    // });
+    if (this.props.history.location.pathname != "/area") {
+      this.props.history.push("/area");
+    }
     //this.redeemSetupToken();
   }
 
@@ -120,10 +147,11 @@ class App extends React.Component<AppProps, AppState> {
       });
       const { token } = res.data.redeemSetupToken;
       localStorage.setItem("token", token);
-      store.delete("setuptoken");
+      store.delete("setupkey");
       refetch();
     } catch (err) {
-      console.log("setup token error", err);
+      const store = new Store();
+      store.delete("setupkey");
     }
   };
 
@@ -138,32 +166,85 @@ class App extends React.Component<AppProps, AppState> {
 
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
 
-  logMeOut = () => {
-    this.setState(INITIAL_STATE); // clear state
-    this.props.client.cache.reset(); // clear graphql cache
-    localStorage.removeItem("token");
-    this.props.history.push("/");
-    location.reload();
+  logMeOut = async () => {
+    const impersonated = await localStorage.getItem("impersonator-token");
+    if (impersonated) {
+      try {
+        const res = await this.props.endImpersonation({
+          variables: { token: impersonated }
+        });
+
+        // restore original local storage (fixes VIP-1003)
+        const impersonatorLocalStorage = JSON.parse(
+          localStorage.getItem("impersonator-localStorage") ?? "{}"
+        );
+        localStorage.clear();
+        for (const key in impersonatorLocalStorage) {
+          localStorage.setItem(key, impersonatorLocalStorage[key]);
+        }
+
+        await localStorage.setItem("token", res.endImpersonation);
+      } catch (err) {
+        localStorage.removeItem("token");
+        console.error("LOG: logMeOut -> err", err);
+      }
+
+      await this.props.history.push("/area/dashboard");
+      await this.props.client.cache.reset(); // clear graphql cache
+    } else {
+      // Destroy all Sessions
+      try {
+        await this.props.signOut();
+      } catch (err) {
+        console.error("LOG: logMeOut -> err", err);
+      }
+
+      await localStorage.removeItem("token");
+      await this.props.client.cache.reset(); // clear graphql cache
+      await resetLoggingContext();
+      await session.fromPartition("services").clearStorageData();
+      await this.props.history.push("/");
+    }
+
+    await this.setState(INITIAL_STATE); // clear state
+    await location.reload();
   };
 
-  logMeIn = async (email: string, password: string, refetch: Function) => {
+  logMeIn = async (email: string, password: string) => {
     try {
-      // Login will fail if there already is a token, which to be fair,
-      // should never be the case. But never say never...
-      const tokenExists = localStorage.getItem("token");
-      if (tokenExists) {
-        localStorage.removeItem("token");
+      let loginkey: Buffer | null = null;
+      let encryptionkey1: Buffer | null = null;
+      let token = null;
+      let twofactor = null;
+      let unitid = null;
+      try {
+        ({ loginkey, encryptionkey1 } = await hashPassword(this.props.client, email, password));
+        const res = await this.props.signIn({
+          variables: { email, passkey: loginkey.toString("hex") }
+        });
+        ({ token, twofactor, unitid } = res.data.signIn);
+      } catch (err) {
+        // fallback for accounts without passkey
+        // this should eventually be removed
+
+        loginkey = null; // reset since it's invalid
+        encryptionkey1 = null;
+        const res = await this.props.signIn({
+          variables: { email, password }
+        });
+        ({ token, twofactor, unitid } = res.data.signIn);
       }
-      const res = await this.props.signIn({ variables: { email, password } });
-      const { ok, token } = res.data.signIn;
 
-      if (ok) {
+      if (!twofactor) {
         localStorage.setItem("token", token);
-        //this.forceUpdate();
-        //this.props.client.query({ query: me, fetchPolicy: "network-only", errorPolicy: "ignore" });
-        refetch();
-
-        return true;
+        localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
+        this.forceUpdate();
+      } else if (token && twofactor) {
+        localStorage.setItem("twoFAToken", token);
+        localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
+        this.setState({ twofactor, unitid });
+      } else {
+        throw new Error("Something went wrong!");
       }
     } catch (err) {
       this.setState({ error: filterError(err) });
@@ -187,32 +268,26 @@ class App extends React.Component<AppProps, AppState> {
         <Query query={me} fetchPolicy="network-only">
           {({ data, loading, error, refetch }) => {
             if (loading) {
-              return <LoadingDiv text="Preparing Vipfy for you" />;
+              return <LoadingDiv />;
             }
 
-            if (error) {
+            if (error || !data || !data.me) {
               this.props.client.cache.reset(); // clear graphql cache
               this.redeemSetupToken(refetch);
+
               return (
                 <div className="centralize backgroundLogo">
                   <SignIn
-                    login={(a, b) => this.logMeIn(a, b, refetch)}
+                    login={(a, b) => this.logMeIn(a, b)}
                     moveTo={this.moveTo}
-                    error={error.networkError ? "network" : filterError(error)}
+                    error={error && error.networkError ? "network" : filterError(error)}
                     resetError={() => this.setState({ error: "" })}
                   />
                 </div>
               );
-
-              /*return (
-                <Login
-                  login={this.logMeIn}
-                  moveTo={this.moveTo}
-                  register={this.registerMe}
-                  error={error}
-                />
-              );*/
             }
+
+            const impersonateToken = localStorage.getItem("impersonator-token");
 
             const store = new Store();
             let machineuserarray: {
@@ -221,38 +296,58 @@ class App extends React.Component<AppProps, AppState> {
               fullname: string;
               profilepicture: string;
             }[] = [];
-            if (store.has("accounts")) {
-              machineuserarray = store.get("accounts");
-              const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
-              if (i != -1) {
-                machineuserarray.splice(i, 1);
+
+            if (!impersonateToken) {
+              if (store.has("accounts")) {
+                machineuserarray = store.get("accounts");
+                const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
+                if (i != -1) {
+                  machineuserarray.splice(i, 1);
+                }
               }
+              machineuserarray.push({
+                email: data.me.emails[0].email,
+                name: data.me.firstname,
+                fullname: `${data.me.firstname} ${data.me.lastname}`,
+                profilepicture: data.me.profilepicture
+              });
+              store.set("accounts", machineuserarray);
             }
-            machineuserarray.push({
-              email: data.me.emails[0].email,
-              name: data.me.firstname,
-              fullname: `${data.me.firstname} ${data.me.lastname}`,
-              profilepicture: data.me.profilepicture
-            });
-            store.set("accounts", machineuserarray);
 
             return (
-              <PostLogin
-                sidebarloaded={this.sidebarloaded}
-                setName={this.setName}
-                logMeOut={this.logMeOut}
-                showPopup={data => this.renderPopup(data)}
-                moveTo={this.moveTo}
-                {...data.me}
-                employees={data.me.company.employees}
-                profilepicture={data.me.profilepicture}
-              />
+              <HeaderNotificationContext.Consumer>
+                {context => {
+                  return (
+                    <PostLogin
+                      sidebarloaded={this.sidebarloaded}
+                      setName={this.setName}
+                      logMeOut={this.logMeOut}
+                      showPopup={data => this.renderPopup(data)}
+                      moveTo={this.moveTo}
+                      {...data.me}
+                      employees={data.me.company.employees}
+                      profilepicture={data.me.profilepicture}
+                      context={context}
+                      highlightReferences={this.references}
+                    />
+                  );
+                }}
+              </HeaderNotificationContext.Consumer>
             );
           }}
         </Query>
       );
+    } else if (this.state.twofactor) {
+      return (
+        <TwoFactor
+          moveTo={this.moveTo}
+          twoFactor={this.state.twofactor}
+          unitid={this.state.unitid!}
+        />
+      );
     } else {
       this.redeemSetupToken(() => this.forceUpdate());
+
       return (
         <div className="centralize backgroundLogo">
           <SignIn
@@ -263,25 +358,17 @@ class App extends React.Component<AppProps, AppState> {
           />
         </div>
       );
-      //return <Login login={this.logMeIn} moveTo={this.moveTo} error={this.state.error} />;
     }
   };
 
-  sidebarloaded = () => {
-    this.setState({ sidebarloaded: true });
-  };
+  sidebarloaded = () => this.setState({ sidebarloaded: true });
 
-  setrenderElements = references => {
-    this.setState({ renderElements: references });
-  };
+  setrenderElements = references => this.setState({ renderElements: references });
 
   setreshowTutorial = section => {
     switch (section) {
       case "dashboard":
         this.moveTo("dashboard");
-        break;
-      case "profile":
-        this.moveTo("profile");
         break;
 
       default:
@@ -290,18 +377,38 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   addRenderElement = reference => {
+    const oldreferences = [...this.references];
     let index = this.references.findIndex(e => e.key == reference.key);
+    let oldref;
     if (index !== -1) {
-      this.references.splice(index, 1);
+      oldref = this.references.splice(index, 1);
     }
 
     if (!this.references.find(e => e.key === reference.key)) {
+      if (oldref && oldref.listener && oldref.action) {
+        reference.element.addEventListener(oldref.listener, oldref.action);
+      }
       this.references.push(reference);
+    }
+    if (oldreferences.length != this.references.length) {
+      this.forceUpdate();
+    }
+  };
+
+  addRenderAction = ({ key, listener, action }) => {
+    let index = this.references.findIndex(e => e.key == key);
+    if (index !== -1 && this.references[index].listener != listener) {
+      const oldref = this.references.splice(index, 1);
+      if (oldref.element) {
+        const newref = { key: oldref.key, element: oldref.element, listener, action };
+        this.references.push(newref);
+      }
     }
   };
 
   render() {
-    const { placeid, popup, page, sidebarloaded } = this.state;
+    const { placeid, popup } = this.state;
+
     return (
       <AppContext.Provider
         value={{
@@ -310,50 +417,31 @@ class App extends React.Component<AppProps, AppState> {
           renderTutorial: e => this.renderTutorial(e),
           setrenderElements: e => this.setrenderElements(e),
           addRenderElement: e => this.addRenderElement(e),
-          setreshowTutorial: this.setreshowTutorial
+          addRenderAction: e => this.addRenderAction(e),
+          setreshowTutorial: this.setreshowTutorial,
+          references: this.references
         }}
         className="full-size">
-        {this.renderComponents()}
-        {/*sidebarloaded &&
-          localStorage.getItem("token") &&
-          
-            <Query query={tutorial}>
-            {({ data, loading, error }) => {
-              if (error) {
-                return null;
-              }
-
-              if (loading) {
-                return null;
-              }
-
-              return (
-                <Tutorial
-                  tutorialdata={data}
-                  renderElements={this.references}
-                  page={page}
-                  reshow={this.state.reshow}
-                  setreshowTutorial={this.setreshowTutorial}
-                />
-              );
-            }}
-          </Query>
-          }*/}
-        {popup.show && (
-          <Popup
-            popupHeader={popup.header}
-            popupBody={popup.body}
-            bodyProps={popup.props}
-            onClose={this.closePopup}
-            type={popup.type}
-            info={popup.info}
-          />
-        )}
+        <HeaderNotificationProvider>
+          {this.renderComponents()}
+          {popup.show && (
+            <Popup
+              popupHeader={popup.header}
+              popupBody={popup.body}
+              bodyProps={popup.props}
+              onClose={this.closePopup}
+              type={popup.type}
+              info={popup.info}
+            />
+          )}
+        </HeaderNotificationProvider>
       </AppContext.Provider>
     );
   }
 }
 
-export default graphql(signInUser, {
-  name: "signIn"
-})(withApollo(withRouter(App)));
+export default compose(
+  graphql(END_IMPERSONATION, { name: "endImpersonation" }),
+  graphql(signInUser, { name: "signIn" }),
+  graphql(SIGN_OUT, { name: "signOut" })
+)(withApollo(withRouter(App)));

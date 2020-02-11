@@ -1,5 +1,6 @@
 import * as React from "react";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
+import { getPreloadScriptPath } from "../../common/functions";
 
 interface Props {
   url: string;
@@ -36,10 +37,9 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
     key: "start"
   };
   render() {
-    console.log("render find error", this.props);
     return (
       <WebView
-        preload="./ssoConfigPreload/findErrorField.js"
+        preload={getPreloadScriptPath("findErrorField.js")}
         webpreferences="webSecurity=no"
         src={this.props.url || ""}
         partition="ssoconfig"
@@ -56,7 +56,6 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
   stage: Stage = Stage.beforeErrorLogin;
 
   async onIpcMessage(e) {
-    console.log("ipc", e);
     switch (e.channel) {
       case "fillFormField":
         {
@@ -84,11 +83,9 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
             this.stage = Stage.afterSuccessLogin;
           }
           if (this.stage == Stage.afterErrorLogin) {
-            console.log(`override tag ${tag} with error`);
             tag = "error";
           }
           if (this.stage == Stage.afterSuccessLogin) {
-            console.log(`override tag ${tag} with success`);
             tag = "success";
           }
 
@@ -99,16 +96,10 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
           } else if (tag === "error") {
             this.stage = Stage.afterErrorLogin;
             this.domError.push(dom);
-            console.log(
-              "SUCCESS",
-              Object.keys(this.domUsername).length,
-              Object.keys(this.domError).length
-            );
             const candidates = findTags(this.domError, this.domUsername);
             const preferedCandidate = Object.values(candidates).find(a =>
               Object.values(a.attr).some(b => b.includesAny(["err", "alert", "warn"]))
             );
-            console.log("Error Object", preferedCandidate, candidates);
             this.setState({ key: "login" });
           } else if (tag === "ignore") {
             return;
@@ -127,8 +118,6 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
               ["avatar", "name", "menu", "dashboard", "sign out"],
               ["csrf"]
             );
-            console.log("errorObjectDom", errorObjectDom);
-            console.log("hideObjectDom", hideObjectDom);
             this.props.setResult(
               buildQuerySelector(errorObjectDom),
               buildQuerySelector(hideObjectDom)
@@ -167,7 +156,6 @@ class ErrorFieldExtractor extends React.PureComponent<Props, State> {
           } else {
             return;
           }
-          console.log("sendingLoginData", this.props, this.stage);
         }
         break;
       default:
@@ -263,8 +251,6 @@ function findDifference(a, b) {
       b2[key] = b[key];
     }
   }
-  console.log("a", a2);
-  console.log("b", b2);
   const c = Object.values(b2).find(a =>
     Object.values(a.attr).some(b => b.includesAny(["error", "alert"]))
   );

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { graphql, Query, withApollo } from "react-apollo";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
 import Manager from "../components/ssoconfig/manager";
 
 interface Props {
@@ -62,7 +62,6 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
   state = {
     error: "",
     showBoughtplans: true,
-
     loginUrl: "",
     username: "",
     password: "",

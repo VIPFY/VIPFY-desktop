@@ -1,0 +1,11 @@
+{
+  "channelID": "4e2105365ea5c7e823cb7af42450b29a",
+  "server": "api.vipfy.store",
+  "serverSSL": true,
+  "serverPort": 443,
+  "development": false,
+  "stripe": {
+    "live": "pk_live_OrfeIMTOFjG5o9S5zm9iYH0x",
+    "dev": "pk_test_W9VDDvYKZqcmbgaz7iAcUR9j"
+  }
+}

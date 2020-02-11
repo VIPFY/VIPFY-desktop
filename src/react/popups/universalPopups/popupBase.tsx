@@ -1,5 +1,6 @@
 import * as React from "react";
 import { SideBarContext } from "../../common/context";
+import { AppContext } from "../../common/functions";
 
 interface Props {
   close?: Function; //Close function (on background and x), if there is no, there is no x and the popup can't be close via the background
@@ -10,17 +11,19 @@ interface Props {
   autoclosingFunction?: Function;
   notimer?: boolean;
   dialog?: boolean;
-  fullmiddle?: boolean;
-  customStyles?: Object;
+  fullMiddle?: boolean;
   buttonStyles?: Object;
   nooutsideclose?: boolean;
-  nosidebar?: boolean;
+  noSidebar?: boolean;
   styles?: Object;
+  additionalclassName?: string;
+  innerRef?: any;
 }
 
 interface State {
   isopen: boolean;
   autoclosing: boolean;
+  id: string;
 }
 
 const hidePopup = {
@@ -43,7 +46,12 @@ const showBackground = {
 class PopupBase extends React.Component<Props, State> {
   state = {
     isopen: false,
-    autoclosing: false
+    autoclosing: false,
+    id:
+      "popup-" +
+      Math.random()
+        .toString(36)
+        .substring(2, 15)
   };
 
   open = isopen => {
@@ -53,6 +61,10 @@ class PopupBase extends React.Component<Props, State> {
       setTimeout(() => this.props.autoclosingFunction() || null, this.props.autoclosing * 1000);
     }
   };
+
+  componentWillUnmount() {
+    this.setState({ isopen: false, autoclosing: false });
+  }
 
   componentDidMount() {
     setTimeout(() => this.open(true), 1);
@@ -77,6 +89,18 @@ class PopupBase extends React.Component<Props, State> {
     }
   }
 
+  componentDidUpdate(_prevProps, prevState) {
+    if (!prevState.isopen && this.state.isopen) {
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
+      let firstinput = document.querySelector("#" + this.state.id)!.querySelector("input,button");
+      if (firstinput) {
+        firstinput.focus();
+      }
+    }
+  }
+
   renderChildren(children) {
     let popupElementArray: JSX.Element[] = [];
     let popupButtonArray: JSX.Element[] = [];
@@ -92,7 +116,7 @@ class PopupBase extends React.Component<Props, State> {
           element &&
           element.type &&
           element.type.name &&
-          element.type.name == "UniversalButton"
+          element.type.name.endsWith("UniversalButton")
         ) {
           if (popupButtonArray.length > 0) {
             popupButtonArray.push(<div key={`${key}-sep`} className="buttonSeperator" />);
@@ -115,7 +139,7 @@ class PopupBase extends React.Component<Props, State> {
           element &&
           element.type &&
           element.type.name &&
-          element.type.name == "UniversalTextInput"
+          element.type.name.endsWith("UniversalTextInput")
         ) {
           if (popupFieldsArray.length > 0) {
             popupFieldsArray.push(<div key={`${key}-sep`} className="fieldsSeperator" />);
@@ -125,7 +149,7 @@ class PopupBase extends React.Component<Props, State> {
           element &&
           element.type &&
           element.type.name &&
-          element.type.name == "PopupBase"
+          element.type.name.endsWith("PopupBase")
         ) {
           popupElementArray.push(React.cloneElement(element, { closeall: () => this.closeall() }));
         } else {
@@ -137,14 +161,16 @@ class PopupBase extends React.Component<Props, State> {
           {popupFieldsArray}
         </div>
       );
-      popupElementArray.push(
-        <div
-          key="buttons"
-          className="buttonsPopup"
-          style={this.props.buttonStyles ? this.props.buttonStyles : {}}>
-          {popupButtonArray}
-        </div>
-      );
+      if (popupButtonArray.length > 0) {
+        popupElementArray.push(
+          <div
+            key="buttons"
+            className="buttonsPopup"
+            style={this.props.buttonStyles ? this.props.buttonStyles : {}}>
+            {popupButtonArray}
+          </div>
+        );
+      }
       return popupElementArray;
     }
     return children;
@@ -166,27 +192,24 @@ class PopupBase extends React.Component<Props, State> {
           <div
             className="backgroundPopup"
             style={this.state.isopen ? showBackground : hideBackground}
-            onClick={e => {
+            /*onClick={e => {
               e.stopPropagation();
-              if (this.props.nooutsideclose) {
+              if (!this.props.nooutsideclose) {
                 this.close();
               }
-            }}>
-            {this.props.fullmiddle ? (
-              ""
-            ) : (
-              <div className="sideReplicaPopup" style={{ width: sidebarOpen ? "240px" : "48px" }} />
-            )}
-
+            }}*/
+            id={this.state.id}>
+            <div
+              className="sideReplicaPopup"
+              style={{ width: sidebarOpen && !this.props.noSidebar ? "240px" : "48px" }}
+            />
             <div
               className="holderPopup"
               style={{
-                width: sidebarOpen ? "calc(100% - 240px + 18px)" : "calc(100% - 48px + 18px)"
-              }}
-              /*this.props.fullmiddle
-                  ? "100%"
-                  :*/
-            >
+                width:
+                  sidebarOpen && !this.props.noSidebar ? "calc(100% - 240px)" : "calc(100% - 48px)",
+                alignItems: this.props.fullMiddle ? "center" : "flex-start"
+              }}>
               <div
                 className="universalPopup"
                 style={Object.assign(
@@ -196,13 +219,26 @@ class PopupBase extends React.Component<Props, State> {
                   this.props.dialog ? { maxWidth: "25rem" } : "",
                   this.props.styles ? this.props.styles : ""
                 )}
-                onClick={e => e.stopPropagation()}>
+                onClick={e => e.stopPropagation()}
+                ref={this.props.innerRef}>
                 {this.props.close && !(this.props.closeable == false) && (
-                  <div className="closePopup" onClick={() => this.close()}>
-                    <i className="fal fa-times" />
-                  </div>
+                  <AppContext.Consumer>
+                    {({ addRenderElement }) => (
+                      <div
+                        className="closePopup"
+                        onClick={() => this.close()}
+                        ref={el => addRenderElement({ key: "closePopup", element: el })}>
+                        <i className="fal fa-times" />
+                      </div>
+                    )}
+                  </AppContext.Consumer>
                 )}
-                <div className="contentPopup">{this.renderChildren(this.props.children)}</div>
+                <div
+                  className={`contentPopup ${
+                    this.props.additionalclassName ? this.props.additionalclassName : ""
+                  }`}>
+                  {this.renderChildren(this.props.children)}
+                </div>
                 {this.props.autoclosing && !this.props.notimer && (
                   <div className="autoclose" style={autoclosing} />
                 )}
@@ -214,4 +250,4 @@ class PopupBase extends React.Component<Props, State> {
     );
   }
 }
-export default PopupBase;
+export default React.forwardRef((props, ref) => <PopupBase innerRef={ref} {...props} />);

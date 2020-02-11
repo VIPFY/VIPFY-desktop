@@ -1,224 +1,380 @@
 import * as React from "react";
-import gql from "graphql-tag";
-import { times } from "lodash";
-import * as moment from "moment";
-import UserName from "../UserName";
-import { Query, Mutation, graphql } from "react-apollo";
-import { showStars, filterError, concatName } from "../../common/functions";
-import UniversalButton from "../universalButtons/universalButton";
-import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
+import { Query, graphql } from "react-apollo";
+import { concatName } from "../../common/functions";
+import UserSecurityRow from "./UserSecurityRow";
+import { FETCH_USER_SECURITY_OVERVIEW, FORCE_RESET } from "./graphqlOperations";
 
 interface Props {
-  data: { fetchUserSecurityOverview: any };
   forcePasswordChange: Function;
   search: string;
+  id: number;
 }
 
-const CHANGE_ADMIN_STATUS = gql`
-  mutation onChangeAdminStatus($id: ID!, $bool: Boolean!) {
-    changeAdminStatus(unitid: $id, admin: $bool) {
-      id
-      status
-    }
-  }
-`;
+interface State {
+  sort: string;
+  sortforward: boolean;
+}
 
-const FORCE_RESET = gql`
-  mutation forcePasswordChange($userids: [ID]!) {
-    forcePasswordChange(userids: $userids) {
-      ok
-    }
-  }
-`;
-
-const FETCH_USER_SECURITY_OVERVIEW = gql`
-  query userSecurityOverview {
-    fetchUserSecurityOverview {
-      id
-      unitid {
-        firstname
-        lastname
-        isadmin
-        profilepicture
-      }
-      lastactive
-      needspasswordchange
-      passwordlength
-      passwordstrength
-      banned
-      suspended
-      createdate
-    }
-  }
-`;
-
-class UserSecurityTableInner extends React.Component<Props, State> {
-  // changeAdminStatus = async (id, bool) => {
-  //   this.setState({ changeAdminStatus: id });
-  //   try {
-  //     await this.props.changeAdminStatus({
-  //       variables: { id, bool }
-  //       // refetchQueries: [{ query: FETCHUSERSECURITYOVERVIEW }]
-  //     });
-  //     this.setState({ changeAdminStatus: 0 });
-  //   } catch (err) {
-  //     console.log("Change Admin Status not possible");
-  //   }
-  // };
-
-  forceReset = async userids => {
-    try {
-      await this.props.forcePasswordChange({
-        variables: { userids },
-        refetchQueries: [{ query: FETCH_USER_SECURITY_OVERVIEW }]
-      });
-    } catch (err) {
-      console.log("Force reset not possible", err);
-    }
+class UserSecurityTable extends React.Component<Props, State> {
+  state = {
+    sort: "Name",
+    sortforward: true
   };
+
+  handleSortClick(sorted) {
+    if (sorted != this.state.sort) {
+      this.setState({ sortforward: true, sort: sorted });
+    } else {
+      this.setState(oldstate => {
+        return { sortforward: !oldstate.sortforward };
+      });
+    }
+  }
 
   render() {
     return (
-      <table className="security-table">
-        <thead>
-          <tr>
-            <th colSpan={2}>Name</th>
-            <th>Created</th>
-            <th>Last Active</th>
-            <th>PW Length</th>
-            <th>PW Strength</th>
-            <th>Reset PW</th>
-            <th>Admin</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.tableRows()}
-          <tr>
-            {times(6, n => (
-              <td key={n} />
-            ))}
-            <td>
-              {this.props.data.fetchUserSecurityOverview > 1 && (
-                <UniversalButton
-                  type="low"
-                  label="Force all"
-                  onClick={() =>
-                    this.forceReset(this.props.data.fetchUserSecurityOverview.map(user => user.id))
-                  }
-                />
-              )}
-            </td>
-            <td />
-          </tr>
-        </tbody>
-      </table>
+      <Query
+        pollInterval={60 * 10 * 1000 + 7000}
+        query={FETCH_USER_SECURITY_OVERVIEW}
+        fetchPolicy="network-only">
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <div>Loading</div>;
+          }
+
+          if (error || !data) {
+            return <div>Error fetching data</div>;
+          }
+
+          return (
+            <table className="security-table">
+              <thead>
+                <tr>
+                  <th colSpan={2} onClick={() => this.handleSortClick("Name")}>
+                    Name
+                    {this.state.sort == "Name" ? (
+                      this.state.sortforward ? (
+                        <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                      ) : (
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
+                    ) : (
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
+                  </th>
+                  <th onClick={() => this.handleSortClick("Last Active")}>
+                    Last Active
+                    {this.state.sort == "Last Active" ? (
+                      this.state.sortforward ? (
+                        <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                      ) : (
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
+                    ) : (
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
+                  </th>
+                  <th onClick={() => this.handleSortClick("PW Strength")}>
+                    PW Strength
+                    {this.state.sort == "PW Strength" ? (
+                      this.state.sortforward ? (
+                        <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                      ) : (
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
+                    ) : (
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
+                  </th>
+                  <th onClick={() => this.handleSortClick("Admin Rights")}>
+                    Admin Rights
+                    {this.state.sort == "Admin Rights" ? (
+                      this.state.sortforward ? (
+                        <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                      ) : (
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
+                    ) : (
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
+                  </th>
+                  <th onClick={() => this.handleSortClick("Ban User")}>
+                    Ban User
+                    {this.state.sort == "Ban User" ? (
+                      this.state.sortforward ? (
+                        <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                      ) : (
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
+                    ) : (
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
+                  </th>
+                  <th onClick={() => this.handleSortClick("Two-Factor")}>
+                    Two-Factor
+                    {this.state.sort == "Two-Factor" ? (
+                      this.state.sortforward ? (
+                        <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                      ) : (
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
+                    ) : (
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
+                  </th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {data.fetchUserSecurityOverview
+                  .filter(user =>
+                    concatName(user.unitid)
+                      .toLocaleUpperCase()
+                      .includes(this.props.search.toUpperCase())
+                  )
+                  .sort((a, b) => {
+                    //sortselection
+                    switch (this.state.sort) {
+                      case "Ban User":
+                        const bUserA = a.unitid.companyban; //bUser ^= BanUser
+                        const bUserB = b.unitid.companyban;
+
+                        if (bUserA > bUserB) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (bUserA < bUserB) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        const nameAbUser = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                        const nameBbUser = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+
+                        if (nameAbUser < nameBbUser) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+
+                        if (nameAbUser > nameBbUser) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        // names must be equal
+                        return 0;
+
+                      case "Last Active":
+                        const lActiveA = a.lastactive;
+                        const lActiveB = b.lastactive;
+
+                        if (lActiveA > lActiveB) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (lActiveA < lActiveB) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        const nameALast_Active = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                        const nameBLast_Active = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+
+                        if (nameALast_Active < nameBLast_Active) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+
+                        if (nameALast_Active > nameBLast_Active) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        // names must be equal
+                        return 0;
+
+                      case "PW Strength":
+                        const passwordstrengthA = a.passwordstrength;
+                        const passwordstrengthB = b.passwordstrength;
+
+                        if (passwordstrengthA > passwordstrengthB) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (passwordstrengthA < passwordstrengthB) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        const nameApasswordstrength = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                        const nameBpasswordstrength = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+
+                        if (nameApasswordstrength < nameBpasswordstrength) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+
+                        if (nameApasswordstrength > nameBpasswordstrength) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        // names must be equal
+                        return 0;
+
+                      case "Admin Rights":
+                        const isadminA = a.unitid.isadmin;
+                        const isadminB = b.unitid.isadmin;
+
+                        if (isadminA > isadminB) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (isadminA < isadminB) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        const nameAisadmin = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                        const nameBisadmin = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+
+                        if (nameAisadmin < nameBisadmin) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+
+                        if (nameAisadmin > nameBisadmin) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        // names must be equal
+                        return 0;
+
+                      case "Two-Factor": //needs further development
+                        const two_FactorA = a.twofactormethods;
+                        const two_FactorB = b.twofactormethods;
+
+                        if (two_FactorA > two_FactorB) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+                        if (two_FactorA < two_FactorB) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        const nameATwo_Factor = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                        const nameBTwo_Factor = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+
+                        if (nameATwo_Factor < nameBTwo_Factor) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+
+                        if (nameATwo_Factor > nameBTwo_Factor) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        // names must be equal
+                        return 0;
+
+                      default:
+                        //case "Name" is default
+                        const nameAName = a.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+                        const nameBName = b.unitid.firstname.toUpperCase(); // ignore upper and lowercase
+
+                        if (nameAName < nameBName) {
+                          if (this.state.sortforward) {
+                            return -1;
+                          } else {
+                            return 1;
+                          }
+                        }
+
+                        if (nameAName > nameBName) {
+                          if (this.state.sortforward) {
+                            return 1;
+                          } else {
+                            return -1;
+                          }
+                        }
+
+                        // names must be equal
+                        return 0;
+                    }
+                  })
+                  .map((user, key) => (
+                    <UserSecurityRow {...this.props} key={key} user={user} />
+                  ))}
+              </tbody>
+            </table>
+          );
+        }}
+      </Query>
     );
   }
-
-  tableRows() {
-    return this.props.data.fetchUserSecurityOverview
-      .filter(user =>
-        concatName(user.unitid)
-          .toLocaleUpperCase()
-          .includes(this.props.search.toUpperCase())
-      )
-      .map((user, key) => (
-        <tr key={key}>
-          <td className="data-recording-sensitive">
-            <PrintEmployeeSquare employee={user.unitid} />
-          </td>
-          <td className="data-recording-sensitive">
-            <UserName unitid={user.id} />
-          </td>
-          <td>{moment(parseInt(user.createdate)).format("DD.MM.YYYY")}</td>
-          <td>
-            {user.lastactive ? (
-              moment(parseInt(user.lastactive)).format("DD.MM.YYYY")
-            ) : (
-              <i className="fal fa-minus" />
-            )}
-          </td>
-          <td>{user.passwordlength === null ? "unknown" : user.passwordlength}</td>
-          <td>
-            {user.passwordstrength === null ? "unknown" : showStars(user.passwordstrength, 4)}
-          </td>
-          <td>
-            {user.needspasswordchange ? (
-              <span style={{ fontWeight: 500, letterSpacing: "0.02em", lineHeight: "34px" }}>
-                <i className="fal fa-fingerprint" /> REQUIRED
-              </span>
-            ) : (
-              <UniversalButton
-                type="low"
-                onClick={() => this.forceReset([user.id])}
-                label="force"
-              />
-            )}
-          </td>
-          <td>
-            <Mutation
-              mutation={CHANGE_ADMIN_STATUS}
-              optimisticResponse={{
-                __typename: "Mutation",
-                changeAdminStatus: {
-                  __typename: "StatusResponse",
-                  id: user.id,
-                  status: !user.unitid.isadmin
-                }
-              }}
-              update={(proxy, { data: { changeAdminStatus } }) => {
-                const data = proxy.readQuery({ query: FETCH_USER_SECURITY_OVERVIEW });
-                const fetchUserSecurityOverview = data.fetchUserSecurityOverview.map(u => {
-                  if (u.id == user.id) {
-                    return { ...u, unitid: { ...u.unitid, isadmin: changeAdminStatus.status } };
-                  } else {
-                    return u;
-                  }
-                });
-
-                proxy.writeQuery({
-                  query: FETCH_USER_SECURITY_OVERVIEW,
-                  data: { fetchUserSecurityOverview }
-                });
-              }}>
-              {(mutate, { data, loading, error }) => (
-                <React.Fragment>
-                  <label className="switch">
-                    <input
-                      disabled={loading}
-                      onChange={() =>
-                        mutate({ variables: { id: user.id, bool: !user.unitid.isadmin } })
-                      }
-                      checked={data ? data.changeAdminStatus.status : user.unitid.isadmin}
-                      type="checkbox"
-                    />
-                    <span className="slider" />
-                  </label>
-
-                  {error && <span className="error">{filterError(error)}</span>}
-                </React.Fragment>
-              )}
-            </Mutation>
-          </td>
-        </tr>
-      ));
-  }
-}
-
-function UserSecurityTable(props: { search: string }) {
-  return (
-    <Query query={FETCH_USER_SECURITY_OVERVIEW} pollInterval={1000 * 60 * 10}>
-      {({ data, loading, error }) => {
-        if (loading) {
-          return <div>Loading</div>;
-        }
-        if (error) {
-          return <div>Error fetching data</div>;
-        }
-        return <UserSecurityTableInner {...props} data={data} />;
-      }}
-    </Query>
-  );
 }
 
 export default graphql(FORCE_RESET, { name: "forcePasswordChange" })(UserSecurityTable);

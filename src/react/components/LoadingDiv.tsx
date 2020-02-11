@@ -1,22 +1,14 @@
 import * as React from "react";
 
-export default ({
-  text = "Vipfy loves you",
-  legalText = "Legal legal legal",
-  style
-}: {
-  text?: string;
-  legalText?: string;
+interface Props {
   style?: object;
-}) => (
+  progress?: number;
+}
+
+export default ({ style, progress }: Props) => (
   <div id="loading-screen" className="mainPosition" style={style}>
     <div className="loadingTextBlock">
-      {/*<div className="centerText inspirationalText">
-        <div>{text}</div>
-      </div>
-      <div className="centerText legalText">
-        <div>{legalText}</div>
-</div>*/}
+      {progress && <progress max="100" value={progress * 100} />}
     </div>
   </div>
 );

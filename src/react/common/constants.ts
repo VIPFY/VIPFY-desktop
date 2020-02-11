@@ -1,10 +1,8 @@
 export const unitPicFolder =
   "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/";
-export const iconPicFolder = "https://storage.googleapis.com/vipfy-imagestore-01/icons/";
-export const logoPicFolder = "https://storage.googleapis.com/vipfy-imagestore-01/logos/";
-
 export const defaultPic = `${unitPicFolder}default.png`;
-
+export const PW_MIN_LENGTH = 10;
+export const preAppImageUrl = "https://appimages.vipfy.store/140/140/fit/";
 export const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export const countries = [
@@ -254,9 +252,3 @@ export const addressFields = [
   //   label: "Priority"
   // }
 ];
-
-export const consentText = `This awesome App uses software to offer you an amazing
-experience, analyse your use of our App and provide content
-from third parties. By using our App, you acknowledge that you
-have read and understand our Privacy and Terms of Service and that
-you consent to them.`;

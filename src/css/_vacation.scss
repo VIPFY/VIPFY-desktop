@@ -1,0 +1,185 @@
+#vacation {
+  @extend .managerPage;
+
+  .contentPopup {
+    h1 {
+      font-size: 24px;
+      display: block;
+      text-align: center;
+      padding-bottom: 24px;
+    }
+
+    div {
+      margin-bottom: 20px;
+    }
+
+    .success {
+      color: $vipfy-primary-color;
+      font-size: 1rem;
+    }
+  }
+
+  .vacation-request {
+    padding: 20px;
+    height: 600px;
+
+    .vacation-days {
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+    }
+
+    form {
+      display: flex;
+      flex-flow: column;
+
+      .vacation-form-row {
+        display: flex;
+        align-items: center;
+
+        span {
+          margin-right: 20px;
+
+          &:nth-of-type(2) {
+            margin-left: 20px;
+          }
+        }
+
+        button {
+          margin-left: 20px;
+        }
+
+        &:not(:first-of-type) {
+          margin-top: 20px;
+        }
+
+        .error-field {
+          font-size: 1rem;
+          margin-left: 20px;
+        }
+      }
+    }
+
+    .vacation-form-buttons {
+      margin-top: 30px;
+
+      button:first-of-type {
+        margin-right: 20px;
+      }
+    }
+  }
+
+  .vacation-requests-overview {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .table-cell-wrapper {
+    display: flex;
+    align-items: center;
+
+    .managerSquare {
+      margin-top: 0;
+      margin-right: 10px;
+    }
+  }
+
+  .show-icons {
+    i {
+      margin: 0;
+      opacity: 1;
+    }
+  }
+
+  .mainPosition {
+    max-height: 200px;
+  }
+
+  .vacation-table {
+    display: flex;
+    flex-flow: column;
+  }
+
+  .vacation-request-header {
+    display: grid;
+    grid-template-columns: 200px repeat(9, 1fr);
+    grid-template-rows: 40px 20px;
+    grid-template-areas:
+      "name days days days days days request request request ."
+      ". year lastYear total taken left open approved rejected .";
+    justify-items: center;
+    font-weight: bold;
+    padding: 20px;
+
+    #requester-name {
+      grid-area: name;
+      justify-self: start;
+    }
+
+    #vacation-header {
+      grid-area: days;
+    }
+
+    #request-header {
+      grid-area: request;
+    }
+
+    #year {
+      grid-area: year;
+    }
+
+    #last-year {
+      grid-area: lastYear;
+    }
+
+    #total {
+      grid-area: total;
+    }
+
+    #taken {
+      grid-area: taken;
+    }
+
+    #left {
+      grid-area: left;
+    }
+
+    #open {
+      grid-area: open;
+    }
+
+    #approved {
+      grid-area: approved;
+    }
+
+    #rejected {
+      grid-area: rejected;
+    }
+
+    #icons {
+      grid-area: icons;
+    }
+  }
+
+  .add-info {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    align-items: center;
+    grid-row-gap: 20px;
+    width: 100%;
+
+    .headline {
+      font-weight: bold;
+    }
+
+    .universalCoverButton {
+      align-self: start;
+      max-width: 150px;
+    }
+  }
+}

@@ -1,19 +1,21 @@
 export interface Licence {
   id: number;
+  pending: boolean;
   options: JSON;
-  starttime: string;
-  endtime: Date;
+  starttime: number | string;
+  endtime: number | Date;
   agreed: boolean;
   disabled: boolean;
   key: JSON;
   boughtplanid: BoughtPlan;
   unitid: User;
-  sidebar: number;
-  dashboard: number;
   tags: string[];
   edit: boolean;
   view: boolean;
   delete: boolean;
+  vacationstart?: number | Date;
+  vacationend?: number | Date;
+  accountid: number;
 }
 
 export interface Unit {
@@ -30,7 +32,6 @@ export interface User {
   title: string;
   sex: string;
   birthday: string;
-  resetoption: number;
   language: string;
   banned: boolean;
   deleted: boolean;
@@ -46,6 +47,26 @@ export interface User {
   companyban: boolean;
   country: string;
   config: JSON;
+}
+
+export interface SecurityUser {
+  unitid: any;
+  id: number;
+  createdate: string;
+  lastactive: string;
+  passwordlength: number;
+  passwordstrength: number;
+  banned: boolean;
+  suspended: boolean;
+  needspasswordchange: boolean;
+  needstwofa: boolean;
+  twofactormethods: {
+    twofaid: number;
+    twofatype: string;
+    twofacreated: string;
+    twofalastused: string;
+    twofacount: number;
+  }[];
 }
 
 export interface PublicUser {
@@ -71,7 +92,6 @@ export interface Department {
   suspended: Boolean;
   profilepicture: string;
   employees: number;
-  employeedata: PublicUser[];
   manageemployees: Boolean;
   managelicences: Boolean;
   apps: JSON;

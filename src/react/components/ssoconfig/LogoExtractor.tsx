@@ -1,5 +1,6 @@
 import * as React from "react";
-import WebView = require("react-electron-web-view");
+import WebView from "react-electron-web-view";
+import { getPreloadScriptPath } from "../../common/functions";
 
 interface Props {
   url: string;
@@ -26,10 +27,19 @@ class LogoExtractor extends React.PureComponent<Props, State> {
     color: undefined,
     colors: undefined
   };
+
+  componentDidMount() {
+    this.timeout = setTimeout(() => this.props.setResult(null, "", []), 20000);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timeout);
+  }
+
   render() {
     return (
       <WebView
-        preload="./ssoConfigPreload/findLogo.js"
+        preload={getPreloadScriptPath("findLogo.js")}
         webpreferences="webSecurity=no"
         src={this.props.url || ""}
         partition="ssoconfig"
@@ -40,7 +50,6 @@ class LogoExtractor extends React.PureComponent<Props, State> {
   }
 
   onIpcMessage(e) {
-    console.log("ipc", e);
     switch (e.channel) {
       case "logo":
         {
@@ -87,6 +96,7 @@ class LogoExtractor extends React.PureComponent<Props, State> {
       this.state.color !== undefined &&
       this.state.colors !== undefined
     ) {
+      clearTimeout(this.timeout);
       this.props.setResult(this.state.icon!, this.state.color!, this.state.colors!);
     }
   }

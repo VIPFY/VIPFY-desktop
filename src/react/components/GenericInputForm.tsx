@@ -1,9 +1,8 @@
 import * as React from "react";
-import * as Dropzone from "react-dropzone";
-import { times } from "lodash";
-import { filterError } from "../common/functions";
+import { filterError, debounce } from "../common/functions";
+import Dropzone from "react-dropzone";
 import LoadingDiv from "../components/LoadingDiv";
-import { debounce } from "lodash";
+import { shell } from "electron";
 
 interface Fields {
   name: string;
@@ -302,7 +301,7 @@ class GenericInputForm extends React.Component<Props, State> {
             case "stars": {
               return (
                 <div className="stars-holder">
-                  {times(5, i => (
+                  {[...Array(5).keys()].map(i => (
                     <i
                       key={i}
                       className={`fa${
@@ -340,7 +339,7 @@ class GenericInputForm extends React.Component<Props, State> {
                       <span
                         className="lawlink"
                         onClick={() => {
-                          require("electron").shell.openExternal(lawLink);
+                          shell.openExternal(lawLink);
                         }}>
                         Terms of Service
                       </span>
@@ -348,7 +347,7 @@ class GenericInputForm extends React.Component<Props, State> {
                       <span
                         className="lawlink"
                         onClick={() => {
-                          require("electron").shell.openExternal(privacyLink);
+                          shell.openExternal(privacyLink);
                         }}>
                         Privacy
                       </span>
@@ -385,9 +384,9 @@ class GenericInputForm extends React.Component<Props, State> {
                     return (
                       <img
                         alt={this.state.values[name].name}
-                        height="100px"
-                        width="100px"
-                        className="img-circle"
+                        height="200px"
+                        width="200px"
+                        className="preview-img"
                         src={this.state.values[name].preview}
                       />
                     );

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { countries } from "../../constants/countries";
+import UniversalButton from "../universalButtons/universalButton";
 
 interface Props {
   id: string;
@@ -13,6 +14,20 @@ interface Props {
   width?: string;
   livecode?: Function;
   noresults?: string;
+  options?: any[];
+  codeFunction?: Function;
+  renderOption?: Function;
+  noFloating?: Boolean;
+  resetPossible?: Boolean;
+  alternativeText?: Function;
+  showIcon?: Function;
+  noresultsClick?: Function;
+  fewResults?: Boolean;
+  nameFunction?: Function;
+  styles?: Object;
+  noNoResults?: Boolean;
+  noFixed?: Boolean;
+  disabled?: boolean;
 }
 
 interface State {
@@ -23,28 +38,111 @@ interface State {
   notypeing: Boolean;
   errorfaded: Boolean;
   code: string;
+  fullvalue: any;
 }
 
 class UniversalDropDownInput extends React.Component<Props, State> {
+  nameFunction = this.props.nameFunction || (v => v.name);
+
   state = {
     value:
-      this.props.startvalue && countries.find(c => c.code == this.props.startvalue)
-        ? countries.find(c => c.code == this.props.startvalue).name
+      this.props.startvalue && this.props.options
+        ? this.props.options!.find(c =>
+            this.props.codeFunction
+              ? this.props.codeFunction(c) == this.props.startvalue
+              : c.code == this.props.startvalue
+          )
+          ? this.nameFunction(
+              this.props.options!.find(c =>
+                this.props.codeFunction
+                  ? this.props.codeFunction(c) == this.props.startvalue
+                  : c.code == this.props.startvalue
+              )
+            )
+          : ""
+        : countries.find(c => c.code == this.props.startvalue)
+        ? countries.find(c => c.code == this.props.startvalue)!.name
         : "",
     error: null,
     inputFocus: false,
     eyeopen: false,
     notypeing: true,
     errorfaded: false,
-    code: this.props.startvalue || ""
+    code: this.props.startvalue || "",
+    fullvalue:
+      this.props.startvalue && this.props.options
+        ? this.props.options!.find(c =>
+            this.props.codeFunction
+              ? this.props.codeFunction(c) == this.props.startvalue
+              : c.code == this.props.startvalue
+          )
+          ? this.props.options!.find(c =>
+              this.props.codeFunction
+                ? this.props.codeFunction(c) == this.props.startvalue
+                : c.code == this.props.startvalue
+            )
+          : null
+        : null
   };
 
-  componentWillReceiveProps = props => {
+  UNSAFE_componentWillReceiveProps = props => {
     setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
   };
 
+  componentDidMount() {
+    if (this.nameInput) {
+      this.nameInput.focus();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.startvalue != this.props.startvalue || prevProps.id != this.props.id) {
+      this.setState({
+        code: this.props.startvalue || "",
+        value: this.props.options
+          ? this.props.options!.find(c =>
+              this.props.codeFunction
+                ? this.props.codeFunction(c) == this.props.startvalue
+                : c.code == this.props.startvalue
+            )
+            ? this.nameFunction(
+                this.props.options!.find(c =>
+                  this.props.codeFunction
+                    ? this.props.codeFunction(c) == this.props.startvalue
+                    : c.code == this.props.startvalue
+                )
+              )
+            : ""
+          : "",
+        fullvalue: this.props.options
+          ? this.props.options!.find(c =>
+              this.props.codeFunction
+                ? this.props.codeFunction(c) == this.props.startvalue
+                : c.code == this.props.startvalue
+            )
+            ? this.props.options!.find(c =>
+                this.props.codeFunction
+                  ? this.props.codeFunction(c) == this.props.startvalue
+                  : c.code == this.props.startvalue
+              )
+            : null
+          : null
+      });
+    }
+  }
+
   toggleInput = bool => {
-    this.setState({ inputFocus: bool });
+    // If only one result - take it.
+    const possibleValues = countries;
+    if (
+      possibleValues.filter(i => i.name.toLowerCase() == this.state.value.toLowerCase()).length == 1
+    ) {
+      this.selectResult(
+        possibleValues.filter(i => i.name.toLowerCase() == this.state.value.toLowerCase())[0]
+      );
+    } else {
+      this.setState({ inputFocus: bool });
+    }
     if (!bool && this.props.endvalue) {
       this.setState({ error: null });
       this.props.endvalue(this.state.value);
@@ -65,12 +163,24 @@ class UniversalDropDownInput extends React.Component<Props, State> {
       this.props.livecode("");
     }
 
-    this.setState({ value: e.target.value, notypeing: false, code: "" });
+    this.setState({ value: e.target.value, notypeing: false, code: "", fullvalue: null });
     this.timeout = setTimeout(() => this.setState({ notypeing: true }), 250);
   }
 
+  reset() {
+    if (this.props.livevalue) {
+      this.props.livevalue("");
+    }
+    if (this.props.livecode) {
+      this.props.livecode("");
+    }
+
+    this.setState({ value: "", code: "", fullvalue: null });
+    this.nameInput.focus();
+  }
+
   showResults = () => {
-    const possibleValues = countries;
+    const possibleValues = this.props.options || countries;
     let numresults = 0;
     let results: JSX.Element[] = [];
     if (this.state.value != "") {
@@ -78,31 +188,70 @@ class UniversalDropDownInput extends React.Component<Props, State> {
         if (
           numresults < 5 &&
           //possibleValues[i].name.toLowerCase().includes(this.state.value.toLowerCase()) &&
-          possibleValues[i].name.toLowerCase().startsWith(this.state.value.toLowerCase())
+          this.nameFunction(possibleValues[i])
+            .toLowerCase()
+            .startsWith(this.state.value.toLowerCase())
         ) {
           //let index = possibleValues[i].name.toLowerCase().indexOf(this.state.value.toLowerCase());
           let index = 0;
           results.push(
-            <div
-              key={`searchResult-${i}`}
-              className="searchResult"
-              onClick={() => this.selectResult(possibleValues[i])}>
-              <span>{possibleValues[i].name.substring(0, index)}</span>
-              <span className="resultHighlight">
-                {possibleValues[i].name.substring(index, index + this.state.value.length)}
-              </span>
-              <span>{possibleValues[i].name.substring(index + this.state.value.length)}</span>
-            </div>
+            this.props.renderOption ? (
+              this.props.renderOption(
+                possibleValues,
+                i,
+                v => this.selectResult(v),
+                this.state.value
+              )
+            ) : (
+              <div
+                key={`searchResult-${i}`}
+                className="searchResult"
+                onClick={() => this.selectResult(possibleValues[i])}>
+                <span>{this.nameFunction(possibleValues[i]).substring(0, index)}</span>
+                <span className="resultHighlight">
+                  {this.nameFunction(possibleValues[i]).substring(
+                    index,
+                    index + this.state.value.length
+                  )}
+                </span>
+                <span>
+                  {this.nameFunction(possibleValues[i]).substring(index + this.state.value.length)}
+                </span>
+              </div>
+            )
           );
           numresults++;
         }
+        if (numresults >= 5) {
+          break;
+        }
+      }
+      if (numresults < 5 && !this.props.noNoResults) {
+        results.push(
+          <div
+            className="searchResult"
+            onClick={() =>
+              this.props.noresultsClick && this.props.noresultsClick(this.state.value)
+            }>
+            <span>{this.props.noresults || "No results"}</span>
+          </div>
+        );
       }
       return (
         <React.Fragment>
-          <div style={{ width: "355px", height: "10px", position: "relative" }} />
-          <div className="resultHolder">
+          <div
+            className="resultHolder"
+            style={
+              this.props.noFixed
+                ? { marginTop: "10px", width: this.props.width || "400px" }
+                : { marginTop: "10px", position: "fixed", width: this.props.width || "400px" }
+            }>
             {numresults == 0 ? (
-              <div className="searchResult">
+              <div
+                className="searchResult"
+                onClick={() =>
+                  this.props.noresultsClick && this.props.noresultsClick(this.state.value)
+                }>
                 <span>{this.props.noresults || "No results"}</span>
               </div>
             ) : (
@@ -115,19 +264,39 @@ class UniversalDropDownInput extends React.Component<Props, State> {
   };
 
   selectResult = value => {
-    if (this.props.livecode) {
-      this.props.livecode(value.code);
+    let code = value.code;
+    if (this.props.codeFunction) {
+      code = this.props.codeFunction(value);
     }
-    this.setState({ value: value.name, code: value.code });
+    if (this.props.livecode) {
+      this.props.livecode(code);
+    }
+    this.setState({ value: this.nameFunction(value), code: code, fullvalue: value });
   };
 
   render() {
+    if (this.props.options && this.props.options.length == 0 && this.props.noresultsClick) {
+      return (
+        <div style={{ width: "calc(100% - 84px)" }}>
+          <UniversalButton
+            onClick={() => this.props.noresultsClick!()}
+            label={this.props.noresults || "No results"}
+            type="high"
+          />
+        </div>
+      );
+    }
     return (
       <div
         className="universalLabelInput"
-        style={this.props.width ? { width: this.props.width } : {}}>
+        style={Object.assign(
+          {},
+          this.props.width ? { width: this.props.width } : {},
+          this.props.styles || {}
+        )}>
         <input
           id={this.props.id}
+          disabled={this.props.disabled}
           type={
             this.props.type == "password"
               ? this.state.eyeopen
@@ -138,25 +307,35 @@ class UniversalDropDownInput extends React.Component<Props, State> {
           onFocus={() => this.toggleInput(true)}
           onBlur={() => this.toggleInput(false)}
           className="cleanup universalTextInput"
-          style={
-            this.props.errorEvaluation && this.state.notypeing
+          style={{
+            ...(this.props.errorEvaluation && this.state.notypeing
               ? { ...(this.props.width ? { width: this.props.width } : {}), color: "#e32022" }
               : this.props.width
               ? { width: this.props.width }
-              : {}
-          }
+              : {}),
+            ...(this.props.showIcon && this.state.code != ""
+              ? {
+                  paddingLeft: "32px",
+                  width: this.props.width
+                    ? parseInt(this.props.width) - 32 + "px"
+                    : "calc(100% - 32px)"
+                }
+              : {})
+          }}
           value={this.state.value}
           onChange={e => this.changeValue(e)}
-          ref={input => {
-            this.nameInput = input;
-          }}
+          ref={input => (this.nameInput = input)}
         />
-        <label
-          htmlFor={this.props.id}
-          className="universalLabel"
-          style={this.props.errorEvaluation && this.state.notypeing ? { color: "#e32022" } : {}}>
-          {this.props.label}
-        </label>
+        {this.props.noFloating ? (
+          ""
+        ) : (
+          <label
+            htmlFor={this.props.id}
+            className="universalLabel"
+            style={this.props.errorEvaluation && this.state.notypeing ? { color: "#e32022" } : {}}>
+            {this.props.label}
+          </label>
+        )}
         {this.props.errorEvaluation && this.state.notypeing ? (
           <div className="errorhint" style={{ opacity: this.state.errorfaded ? 1 : 0 }}>
             {this.props.errorhint}
@@ -164,19 +343,30 @@ class UniversalDropDownInput extends React.Component<Props, State> {
         ) : (
           ""
         )}
-        {this.state.code == "" ? this.showResults() : ""}
-        {this.props.children ? (
+        {this.state.code == "" && this.showResults()}
+        {this.state.code != "" && this.props.showIcon && this.props.showIcon(this.state.fullvalue)}
+        {this.props.children && (
           <button className="cleanup inputInsideButton" tabIndex={-1}>
             <i className="fal fa-info" />
             <div className="explainLayer">
               <div className="explainLayerInner">{this.props.children}</div>
             </div>
           </button>
-        ) : (
-          ""
         )}
-        {this.props.type == "password" ? (
-          this.state.eyeopen ? (
+        {this.props.resetPossible && this.state.value && (
+          <button
+            className="cleanup inputInsideButton"
+            tabIndex={-1}
+            onClick={() => this.reset()}
+            style={{ color: "#253647" }}>
+            <i className="fal fa-trash-alt" />
+          </button>
+        )}
+        {!this.state.value &&
+          this.props.alternativeText &&
+          this.props.alternativeText(this.nameInput)}
+        {this.props.type == "password" &&
+          (this.state.eyeopen ? (
             <button
               className="cleanup inputInsideButton"
               tabIndex={-1}
@@ -190,12 +380,10 @@ class UniversalDropDownInput extends React.Component<Props, State> {
               onClick={() => this.setState({ eyeopen: true })}>
               <i className="fal fa-eye-slash" />
             </button>
-          )
-        ) : (
-          ""
-        )}
+          ))}
       </div>
     );
   }
 }
+
 export default UniversalDropDownInput;

@@ -4,14 +4,18 @@ import ReactPasswordStrength from "react-password-strength";
 import { me } from "../../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { CHANGE_PASSWORD } from "../../mutations/auth";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
+import { PW_MIN_LENGTH } from "../../common/constants";
+import { updatePassword } from "../../common/passwords";
+import welcomeImage from "../../../images/forgot-password-new.png";
 
 interface PasswordChangeProps {
   logMeOut: Function;
   client: ApolloClient<InMemoryCache>;
+  firstLogin?: boolean;
+  className?: string;
 }
 
 interface PasswordChangeState {
@@ -31,6 +35,24 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
     repeatPassword: null,
     error: null,
     loading: false
+  };
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleEnter, true);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.handleEnter);
+  }
+
+  private handleEnter = (e): void => {
+    const { oldPassword, newPasswordValid, repeatPassword } = this.state;
+
+    if (e.key === "Enter" || e.keyCode === 13) {
+      if (oldPassword && newPasswordValid && repeatPassword) {
+        this.confirm();
+      }
+    }
   };
 
   private passwordChanged(
@@ -54,14 +76,10 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
     }
     await this.setState({ error: null, loading: true });
     try {
-      await this.props.client.mutate({
-        mutation: CHANGE_PASSWORD,
-        variables: {
-          pw: this.state.oldPassword,
-          newPw: this.state.newPassword,
-          confirmPw: this.state.repeatPassword
-        }
-      });
+      if (this.state.newPassword != this.state.repeatPassword) {
+        throw new Error("Passwords don't match");
+      }
+      await updatePassword(this.props.client, this.state.oldPassword, this.state.newPassword!);
       await this.props.client.query({ query: me, fetchPolicy: "network-only" });
     } catch (err) {
       this.setState({ error: filterError(err), loading: false });
@@ -81,14 +99,18 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
   }
 
   render() {
+    const { firstLogin, className } = this.props;
+
     return (
-      <section className="welcome">
+      <section className={`welcome ${className ? className : ""}`}>
         <div className="welcome-holder">
-          <img src={`${__dirname}/../../../images/forgot-password-new.png`} alt="Welcome" />
+          <img src={welcomeImage} alt="Welcome" />
           <div className="welcome-text">
-            <h1>Please set your password</h1>
+            <h1>{firstLogin ? "Admin forces Password Reset" : "Please set your password"}</h1>
             <div>
-              Your initial password has been sent to your email. Please replace it to continue.{" "}
+              {firstLogin
+                ? "Your Admin forces you to reset your password."
+                : "Your initial password has been sent to your email. Please replace it to continue."}
             </div>
 
             <div className="password-fields">
@@ -103,7 +125,7 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
                 <label>
                   <ReactPasswordStrength
                     className="passwordStrength"
-                    minLength={8}
+                    minLength={PW_MIN_LENGTH}
                     minScore={2}
                     scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
                     tooShortWord={"too short"}
@@ -135,110 +157,25 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
               {this.state.error}
             </div>
 
-            <UniversalButton
-              disabled={!this.canSubmit()}
-              customStyles={{ width: "105px" }}
-              label="continue"
-              type="high"
-              onClick={() => this.confirm()}
-            />
+            <div className="universal-buttons">
+              <UniversalButton
+                customStyles={{ width: "105px" }}
+                label="Back"
+                type="low"
+                onClick={() => this.abort()}
+              />
+
+              <UniversalButton
+                disabled={!this.canSubmit()}
+                customStyles={{ width: "105px" }}
+                label="continue"
+                type="high"
+                onClick={() => this.confirm()}
+              />
+            </div>
           </div>
         </div>
       </section>
-    );
-    return (
-      <div className="centralize backgroundLogo">
-        <div className="presideHolder">
-          <div className="lsrlHolder">
-            <div className="partHolder">
-              <div className="partHeading_Login">Welcome to VIPFY</div>
-
-              <div className="partForm partForm_ChangePassword">
-                <div className="Heading" style={{ marginBottom: "1.5rem" }}>
-                  Your initial password has been sent to your email.
-                  <br />
-                  Please replace it to continue.
-                </div>
-                <div style={{ marginBottom: "1.5rem" }}>
-                  <label>
-                    Initial Password:
-                    <input
-                      className="newInputField"
-                      style={{ right: "0", position: "absolute" }}
-                      placeholder="Your Old Password"
-                      autoFocus
-                      autoComplete="off"
-                      type="password"
-                      onChange={e => this.oldPasswordChanged(e)}
-                    />
-                  </label>
-                </div>
-                <div style={{ marginBottom: "1.5rem" }}>
-                  <label>
-                    New Password:
-                    <ReactPasswordStrength
-                      className="passwordStrength"
-                      minLength={8}
-                      minScore={2}
-                      scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                      tooShortWord={"too short"}
-                      inputProps={{
-                        name: "password_input",
-                        autoComplete: "off",
-                        placeholder: "Your Future Password",
-                        className: "newInputField"
-                      }}
-                      changeCallback={(state, feedback) => this.passwordChanged(state, feedback)}
-                    />
-                  </label>
-                </div>
-                <div style={{ position: "relative" }}>
-                  <label>
-                    Repeat:
-                    <input
-                      className="newInputField"
-                      style={{ right: "0", position: "absolute" }}
-                      placeholder="Your Future Password"
-                      type="password"
-                      autoComplete="off"
-                      onChange={e => this.repeatPasswordChanged(e)}
-                    />
-                  </label>
-                  {this.state.newPassword !== null &&
-                  this.state.repeatPassword !== null &&
-                  this.state.newPassword !== this.state.repeatPassword ? (
-                    <span className="inputError">Doesn't match</span>
-                  ) : (
-                    <span />
-                  )}
-                </div>
-                {this.canSubmit() ? (
-                  <div className="partButton_ChangePassword" onClick={() => this.confirm()}>
-                    {this.state.loading ? (
-                      <div className="spinner loginspinner">
-                        <div className="double-bounce1" />
-                        <div className="double-bounce2" />
-                      </div>
-                    ) : (
-                      "Change Password"
-                    )}
-                  </div>
-                ) : (
-                  <div className="partButton_ChangePassword buttonDisabled">Change Password</div>
-                )}
-                <div className="partButton pw-change" onClick={() => this.abort()}>
-                  Logout
-                </div>
-              </div>
-            </div>
-            <div className="seperatorHolder" />
-            <div className="logoSeperator" />
-            <div className={this.state.error === null ? "formError noError" : "formError oneError"}>
-              {this.state.error}
-            </div>
-          </div>
-        </div>
-      </div>
     );
   }
 }

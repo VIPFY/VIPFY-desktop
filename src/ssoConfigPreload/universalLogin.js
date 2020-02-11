@@ -1,4 +1,4 @@
-let ipcRenderer = require("electron").ipcRenderer;
+const { ipcRenderer } = require("electron");
 
 Object.defineProperty(String.prototype, "includesAny", {
   value: function(searches) {
@@ -26,66 +26,145 @@ const sleep = async ms => {
   return new Promise(resolve => setTimeout(resolve, ms / speed));
 };
 
+let interactionHappened = false;
+function didInteraction() {
+  interactionHappened = true;
+}
+function timer() {
+  if (!interactionHappened) {
+    return;
+  }
+  interactionHappened = false;
+  ipcRenderer.sendToHost("interactionHappened");
+}
+
+document.addEventListener("mousemove", didInteraction, true);
+document.addEventListener("touchmove", didInteraction, true);
+document.addEventListener("touchenter", didInteraction, true);
+document.addEventListener("pointermove", didInteraction, true);
+document.addEventListener("keydown", didInteraction, true);
+document.addEventListener("scroll", didInteraction, true);
+
+setInterval(() => timer(), 30000);
+setTimeout(() => timer(), 5000);
+
 let emailEntered = false;
 let passwordEntered = false;
+let domainEntered = false;
 let stopped = false;
 let speed = 1;
+let recaptchaConfirmOnce = false;
+let checkRecaptcha = false;
 
 ipcRenderer.once("loginData", async (e, key) => {
-  if (stopped) return;
-  console.log("gotLoginData", key);
-  emailEntered = key.emailEntered;
-  passwordEntered = key.passwordEntered;
-  speed = key.speed || 1;
-  let didAnything = false;
-  while (!emailEntered || !passwordEntered || stopped) {
-    await sleep(100);
-    let totaltime = 100;
-    let email = findEmailField();
-    let password = findPassField();
-    let button = findConfirmButton();
-    let cookiebutton = findCookieButton();
-    let recaptcha;
-    while (totaltime < 5000) {
-      if (email || emailEntered || cookiebutton) break;
-      await sleep(300);
-      totaltime += 300;
-      email = findEmailField();
-      cookiebutton = findCookieButton();
+  //console.log("LOGIN DATA WEBSEITE", stopped, emailEntered, passwordEntered, key);
+  if (key.execute) {
+    //Use execute method
+    //console.log("EXECUTEARRAY", key.execute.slice(key.step));
+    execute(key.execute.slice(key.step), true);
+  } else {
+    //Use universal Login
+    if (stopped) return;
+    emailEntered = key.emailEntered;
+    passwordEntered = key.passwordEntered;
+    domainEntered = key.domainEntered;
+    speed = key.speed || 1;
+    let didAnything = false;
+    while (!emailEntered || !passwordEntered || stopped) {
+      //console.log("LOGIN DATA", !emailEntered, !passwordEntered, stopped);
+      await sleep(100);
+      let totaltime = 100;
+      let email = findEmailField();
+      let password = findPassField();
+      let button = findConfirmButton();
+      let cookiebutton = findCookieButton();
+      let recaptcha;
+      didAnything = false;
+      while (totaltime < 5000) {
+        if (email || emailEntered || cookiebutton) break;
+        await sleep(300);
+        totaltime += 300;
+        email = findEmailField();
+        cookiebutton = findCookieButton();
+      }
+      await sleep(500);
+      if (cookiebutton) {
+        await clickButton(cookiebutton);
+      }
+
+      recaptcha = findRecaptcha();
+      //console.log(recaptcha);
+      if (recaptcha && !checkRecaptcha) {
+        //console.log("FOUND RECAPTCHA");
+        await recaptchaClick(recaptcha);
+        await sleep(100);
+        document.querySelector("html").style.visibility = "hidden";
+        document.querySelector("iframe[src*='/recaptcha/api2/bframe']").style.visibility =
+          "visible";
+
+        checkRecaptcha = true;
+
+        if (!recaptchaConfirmOnce) {
+          //console.log("SOLVED RECAPTCHA");
+          setInterval(verifyRecaptcha, 100);
+        }
+      }
+      if (!recaptcha || recaptchaConfirmOnce) {
+        document.querySelector("html").style.visibility = "visible";
+        await sleep(100);
+        if (key.domainNeeded) {
+          domain = findDomainField();
+          if (domain && !domainEntered) {
+            await clickButton(domain);
+            await fillFormField(domain, "domain");
+            domainEntered = true;
+            didAnything = true;
+          }
+        }
+        await sleep(100);
+        email = findEmailField();
+        if (email && !emailEntered) {
+          await clickButton(email);
+          await fillFormField(email, "username");
+          emailEntered = true;
+          didAnything = true;
+        }
+        await sleep(100);
+        password = findPassField();
+        if (password && !passwordEntered) {
+          await clickButton(password);
+          await fillFormField(password, "password");
+          passwordEntered = true;
+          didAnything = true;
+        }
+        await sleep(100);
+        button = findConfirmButton();
+        if (button && didAnything) {
+          await clickButton(button);
+          didAnything = true;
+        }
+      }
+      await sleep(500);
     }
-    await sleep(500);
-    if (cookiebutton) {
-      await clickButton(cookiebutton);
+    if (emailEntered && passwordEntered && !stopped) {
+      recaptcha = findForm().querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
+      if (recaptcha && (recaptcha.scrollHeight != 0 || recaptcha.scrollWidth != 0)) {
+        ipcRenderer.sendToHost("recaptcha", null);
+      } else {
+        // Special Case for Wrike
+        if (document.querySelector("[wrike-button-v2][data-application='login-remember']")) {
+          //console.log("SPEZIAL");
+          clickButton(
+            document.querySelector("[wrike-button-v2][data-application='login-remember']")
+          );
+        }
+      }
     }
-    email = findEmailField();
-    if (email) {
-      await fillFormField(email, "username");
-      emailEntered = true;
-      didAnything = true;
-    }
-    await sleep(100);
-    recaptcha = findForm().querySelector('iframe[src*="/recaptcha/"]');
-    if (recaptcha) {
-      ipcRenderer.sendToHost("recaptcha", null);
-    }
-    password = findPassField();
-    if (password) {
-      await fillFormField(password, "password");
-      passwordEntered = true;
-      didAnything = true;
-    }
-    button = findConfirmButton();
-    if (button) {
-      await clickButton(button);
-      didAnything = true;
-    }
-    await sleep(4000);
   }
 });
 
-function start() {
+async function start() {
   //if (!document.body.id.includes("beacon")) {
-  console.log("starting universal login", document);
   ipcRenderer.sendToHost("loaded", null);
   ipcRenderer.sendToHost("getLoginData", null);
   //}
@@ -100,12 +179,12 @@ if (document.readyState === "complete") {
 }*/
 
 async function fillFormField(target, content) {
+  //console.log("FILL", target, content);
   if (stopped) throw new Error("abort");
-  console.log("filling in", content, target, isHidden(target));
-  target.focus();
-  await sleep(250);
-  target.focus();
-  await sleep(250);
+  //target.focus();
+  // await sleep(250);
+  // target.focus();
+  //  await sleep(250);
   const p = new Promise(resolve =>
     ipcRenderer.once("formFieldFilled", async (e, key) => {
       if (stopped) return;
@@ -140,20 +219,51 @@ function isEqualOrChild(child, parent) {
   return false;
 }
 
-function getMidPoint(e) {
+function getMidPoint(e, doc) {
   var rect = e.getBoundingClientRect();
-  return { x: rect.x + rect.width / 10, y: rect.y + rect.height / 2 }; // bias to the left
+  const style = window.getComputedStyle(e);
+  var dx = 0;
+  var dy = 0;
+  if (doc) {
+    var iframe = document.querySelector(args.document);
+    var drect = iframe.getBoundingClientRect();
+    dx = drect.x;
+    dy = drect.y;
+  }
+  return {
+    x:
+      dx +
+      rect.x +
+      parseInt(style.paddingLeft) +
+      (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
+    y:
+      dy +
+      rect.y +
+      parseInt(style.paddingTop) +
+      (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
+  }; // bias to the left
 }
 
-function clickButton(targetNode) {
-  triggerMouseEvent(targetNode, "mouseover");
+function clickButton(targetNode, doc) {
+  var rect = getMidPoint(targetNode, doc);
+
+  if (stopped) throw new Error("abort");
+  const p = new Promise(resolve =>
+    ipcRenderer.once("clicked", async (e, key) => {
+      if (stopped) return;
+      resolve();
+    })
+  );
+  ipcRenderer.sendToHost("click", rect.x, rect.y);
+  return p;
+  /* triggerMouseEvent(targetNode, "mouseover");
   setTimeout(() => {
     triggerMouseEvent(targetNode, "mousedown");
     setTimeout(() => {
       triggerMouseEvent(targetNode, "mouseup");
       triggerMouseEvent(targetNode, "click");
     }, 77);
-  }, 146);
+  }, 146);*/
 }
 
 function triggerMouseEvent(node, eventType) {
@@ -165,39 +275,59 @@ function triggerMouseEvent(node, eventType) {
 
 function findForm(ignoreForm) {
   if (ignoreForm) return document;
-  const forms = Array.from(document.querySelectorAll("form")).filter(
+  let forms = Array.from(document.querySelectorAll("form")).filter(
     filterDom(["sign.?in", "log.?in"], ["oauth", "facebook", "sign.?up", "forgot", "google"])
   );
-  console.log("forms", forms);
+
+  if (forms.length == 0) {
+    forms = Array.from(document.querySelectorAll("form"))
+      .filter(filterDom([], ["oauth", "facebook", "sign.?up", "forgot", "google"]))
+      .filter(
+        e =>
+          Array.from(e.querySelectorAll("input")).filter(
+            filterDom(["email", "user", "log.?in", "name", "pw", "pass"], [])
+          ).length > 0
+      );
+  }
 
   return forms.length == 1 ? forms[0] : document;
 }
 
 function findPassField() {
   let t = Array.from(findForm().querySelectorAll("input[type=password]"))
-    .filter(filterDom(["pass", "pw"], ["repeat", "confirm", "forgot"]))
-    .filter(e => !isHidden(e));
-  console.log("pass", t);
+    .filter(filterDom(["pass", "pw"], ["repeat", "confirm", "forgot", "button"]))
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
   if (t.length == 0) {
     t = Array.from(findForm().querySelectorAll("input[type=password]"))
       .filter(filterDom([], ["repeat", "confirm", "forgot"]))
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
-  console.log("passB", t);
   return t[0];
 }
 
 function findEmailField() {
   let t = Array.from(findForm().querySelectorAll("input"))
-    .filter(filterDom(["email", "user", "log.?in", "name"], ["pw", "pass"]))
-    .filter(e => !isHidden(e));
-  console.log("email", t);
+    .filter(
+      filterDom(["email", "user", "log.?in", "name"], ["pw", "pass", "accountname", "button"])
+    )
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
   if (t.length == 0) {
     t = Array.from(findForm().querySelectorAll("input[type=email]"))
       .filter(filterDom([], ["pw", "pass"]))
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
-  console.log("emailB", t);
+  return t[0];
+}
+
+function findDomainField() {
+  let t = Array.from(findForm().querySelectorAll("input"))
+    .filter(filterDom(["account", "domain"], ["pw", "pass", "email"]))
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
   return t[0];
 }
 
@@ -205,8 +335,23 @@ function findConfirmButton(ignoreForm) {
   var t = [];
   if (findForm() != document) {
     t = Array.from(findForm().querySelectorAll("[type='submit']"))
-      .filter(filterDom([], ["oauth", "google", "facebook", "forgot", "newsletter"]))
-      .filter(e => !isHidden(e));
+      .filter(
+        filterDom(
+          [],
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial",
+            "visibility"
+          ]
+        )
+      )
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
   if (t.length == 0) {
     t = Array.from(
@@ -217,12 +362,22 @@ function findConfirmButton(ignoreForm) {
       .filter(
         filterDom(
           ["sign.?in", "log.?in", "submit", "next", "cont(?![a-hj-z])"],
-          ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "linkedin",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial",
+            "visibility"
+          ]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
-  console.log("button1", t);
   if (t.length == 0) {
     t = Array.from(
       findForm(ignoreForm).querySelectorAll(
@@ -232,12 +387,42 @@ function findConfirmButton(ignoreForm) {
       .filter(
         filterDom(
           ["agree", "proceed", "accept"],
-          ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "linkedin",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial",
+            "visibility"
+          ]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
-  console.log("button2", t);
+  if (t.length == 0) {
+    t = Array.from(findForm().querySelectorAll("[type='submit']"))
+      .filter(
+        filterDom(
+          [],
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial",
+            "visibility"
+          ]
+        )
+      )
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
+  }
   if (t.length == 0) {
     t = Array.from(
       findForm().querySelectorAll(
@@ -247,10 +432,21 @@ function findConfirmButton(ignoreForm) {
       .filter(
         filterDom(
           [],
-          ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "linkedin",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial",
+            "visibility"
+          ]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
   if (t.length == 0) {
     t = Array.from(
@@ -261,13 +457,22 @@ function findConfirmButton(ignoreForm) {
       .filter(
         filterDom(
           [],
-          ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter", "sign.?up"]
+          [
+            "oauth",
+            "google",
+            "facebook",
+            "linkedin",
+            "forgot",
+            "newsletter",
+            "sign.?up",
+            "free.?trial",
+            "visibility"
+          ]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
-
-  console.log("button", t);
 
   if (t.length == 0 && !ignoreForm) return findConfirmButton(true);
 
@@ -277,9 +482,11 @@ function findConfirmButton(ignoreForm) {
 function findCookieButton() {
   var t = Array.from(
     document.querySelectorAll(
-      "[class~=cc-compliance] > [class~=cc-dismiss], [class~='consent'] > a[class~='call']"
+      "#onetrust-accept-btn-handler, [class~=cc-compliance] > [class~=cc-dismiss], [class~='consent'] > a[class~='call'], [ba-click='{{allow()}}']"
     )
-  ).filter(e => !isHidden(e));
+  )
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
   if (t.length == 0) {
     var trustArc = document.querySelector("[src*='https://consent-pref.trustarc.com/']");
     if (trustArc) {
@@ -300,9 +507,9 @@ function findCookieButton() {
           ["oauth", "google", "facebook", "linkedin", "forgot", "newsletter"]
         )
       )
-      .filter(e => !isHidden(e));
+      .filter(e => !isHidden(e))
+      .filter(e => !e.disabled);
   }
-  console.log("cookiebutton", t);
   return t[0];
 }
 
@@ -348,7 +555,6 @@ function filterDom(includesAny, excludesAll) {
       const attr = element.attributes.getNamedItem(attribute);
       if (attr === null) continue;
       const val = attr.value.toLowerCase();
-      //console.log("attr", attribute, val, includesAny);
       if (val.includesAnyRegExp(includesAny)) {
         return true;
       }
@@ -472,4 +678,161 @@ function onClick(e) {
   if (!isButton) {
     console.warn("clicked nonbutton", t);
   }
+function verifyRecaptcha() {
+  if (!recaptchaConfirmOnce) {
+    try {
+      if (grecaptcha.getResponse().length !== 0) {
+        //alert("Recaptcha verified");
+        recaptchaConfirmOnce = true;
+        //console.log("VERIFY RECAP");
+        ipcRenderer.sendToHost("recaptchaSuccess");
+      }
+    } catch (error) {
+      console.error("Recaptcha ERROR:", error);
+      if (String(error).includes("No reCAPTCHA clients exist")) {
+        //console.log("No Recaptcha");
+        recaptchaConfirmOnce = true;
+        ipcRenderer.sendToHost("recaptchaSuccess");
+      }
+    }
+  }
+}
+
+function findRecaptcha() {
+  let t = document.querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
+  //console.log("button", t);
+  if (t && isHidden(t)) {
+    /*let f = fetchFieldProps(appname);
+    let recaptchaTag = f[0].fields.recaptcha;
+    if (recaptchaTag) {
+      let t = document.querySelector(recaptchaTag.tag_props);
+      console.log("recaptcha", t);
+      return t;
+    } else {
+      return false;
+    }*/
+    return false;
+  }
+  return t;
+}
+
+async function recaptchaClick(recap) {
+  //console.log("LET CLICK", recap);
+  if (!checkRecaptcha) {
+    recap.scrollIntoView();
+    recap.focus();
+    checkRecaptcha = true;
+    let pos = recap.getBoundingClientRect();
+    ipcRenderer.sendToHost("recaptcha", pos.left, pos.width, pos.top, pos.height);
+  }
+}
+
+//Script based login functions
+
+async function execute(operations, mainexecute = false) {
+  let doc;
+  for ({ operation, args = {} } of operations) {
+    //console.log("EXECUTE", operation, args);
+    if (mainexecute) {
+      ipcRenderer.sendToHost("executeStep");
+    }
+    doc = args.document ? document.querySelector(args.document).contentWindow.document : document;
+    switch (operation) {
+      case "sleep":
+        let randomrange = args.randomrange || args.seconds / 5;
+        await sleep(Math.max(0, args.seconds + Math.random() * randomrange - randomrange / 2));
+        break;
+      case "waitfor":
+        const p = new Promise(async resolve => {
+          while (!doc.querySelector(args.selector)) {
+            doc = args.document
+              ? document.querySelector(args.document).contentWindow.document
+              : document;
+            await sleep(95 + Math.random() * 10);
+          }
+          resolve();
+        });
+        await p;
+        break;
+      case "click":
+        //console.log("CLICK", doc.querySelector(args.selector));
+        await clickButton(doc.querySelector(args.selector), args.document);
+        break;
+      case "fill":
+        //console.log("fill", doc.querySelector(args.selector), args.fillkey);
+        await fillFormField(doc.querySelector(args.selector), args.fillkey);
+        break;
+      case "solverecaptcha":
+        //console.log("solverecaptcha", doc.querySelector(args.selector));
+        await recaptchaClick(doc.querySelector(args.selector));
+        if (!recaptchaConfirmOnce) {
+          setInterval(verifyRecaptcha, 100);
+        }
+        break;
+      case "recaptcha":
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "solverecaptcha", args }
+        ]);
+        break;
+      case "waitandfill":
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "click", args },
+          { operation: "fill", args }
+        ]);
+        break;
+      case "cookie":
+        let cookiebutton = null;
+
+        let totaltime = 0;
+        //console.log("EXECUTE COOKIE");
+        while (totaltime < 5000) {
+          //console.log(doc.querySelector(args.selector), cookiebutton);
+          if (args.selector ? doc.querySelector(args.selector) : cookiebutton) {
+            //Wait for animations
+            let oldposx,
+              oldposy,
+              oldposx2,
+              oldposy2 = undefined;
+            let newposx,
+              newposy,
+              newposx2,
+              newposy2 = undefined;
+            let rect;
+            let waittime = 0;
+            while (
+              (!(
+                oldposx == newposx &&
+                oldposy == newposy &&
+                oldposx2 == newposx2 &&
+                oldposy2 == newposy2
+              ) ||
+                oldposx == undefined) &&
+              waittime < 5000
+            ) {
+              oldposx = newposx;
+              oldposy = newposy;
+              oldposx2 = newposx2;
+              oldposy2 = newposy2;
+              rect = doc.querySelector(args.selector).getBoundingClientRect();
+              newposx = rect.left;
+              newposy = rect.top;
+              newposx2 = rect.right;
+              newposy2 = rect.bottom;
+              await sleep(100);
+              waittime += 100;
+            }
+
+            await clickButton(args.selector ? doc.querySelector(args.selector) : cookiebutton);
+            break;
+          }
+          await sleep(300);
+          totaltime += 300;
+          cookiebutton = await findCookieButton();
+        }
+        break;
+    }
+  }
+  return;
 }

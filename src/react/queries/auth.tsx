@@ -30,20 +30,23 @@ export const me = gql`
       firstlogin
       config
       tutorialprogress
+      needstwofa
     }
   }
 `;
 
 export const fetchLicences = gql`
   query onFetchLicence {
-    fetchLicences {
+    fetchUserLicenceAssignments {
       id
+      unitid {
+        id
+      }
       starttime
       endtime
       disabled
-      sidebar
-      dashboard
       options
+      pending
       boughtplanid {
         id
         alias
@@ -67,6 +70,7 @@ export const fetchLicences = gql`
       vacationstart
       vacationend
       tags
+      accountid
     }
   }
 `;

@@ -1,7 +1,6 @@
 import * as React from "react";
-import humanizeDuration = require("humanize-duration");
-
-import moment = require("moment");
+import humanizeDuration from "humanize-duration";
+import moment from "moment";
 
 interface Props {
   timestamp: Date | moment.Moment | string | number;
@@ -9,7 +8,7 @@ interface Props {
   postfix?: string | null;
 }
 
-const shortEnglishHumanizer = humanizeDuration.humanizer({
+export const shortEnglishHumanizer = humanizeDuration.humanizer({
   language: "shortEn",
   languages: {
     shortEn: {
