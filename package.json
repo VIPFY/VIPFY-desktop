@@ -7,6 +7,7 @@
   "scripts": {
     "package": "electron-forge package",
     "make": "electron-forge make",
+    "make-win": "$env:LOCALAPPDATA = \"C:\\VIPFY\\vipfy-desktop\\tmp\" & electron-forge make",
     "publish-js": "electron-forge publish",
     "build-linux": "bash ./build-linux.sh && DEVELOPMENT=true electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
@@ -103,7 +104,6 @@
     "streamroller": "^2.2.2",
     "subscriptions-transport-ws": "^0.9.15",
     "tslib": "^1.9.3",
-    "uglify-loader": "^3.0.0",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
@@ -146,8 +146,6 @@
     "tslint": "^6.0.0",
     "typescript": "^3.7.5",
     "typescript-eslint-parser": "^22.0.0",
-    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack-bundle-analyzer": "^3.5.2",
-    "webpack-obfuscator": "^0.18.5"
   }
 }

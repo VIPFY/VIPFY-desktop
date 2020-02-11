@@ -3,8 +3,6 @@ const plugins = require("./webpack.plugins");
 const CopyPlugin = require("copy-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const TerserPlugin = require("terser-webpack-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-
 rules.push({
   test: /\.s?[ac]ss$/i,
   use: [
