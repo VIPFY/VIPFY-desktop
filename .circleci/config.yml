@@ -65,9 +65,9 @@ jobs:
       # - run:
       #     name: Import the private key for the signing process
       #     command: security import Certificates.p12 -t agg -k VipfyKeychain.keychain -P $KEYCHAIN_PASSWORD -A
-      # - run:
-      #     name: Install cli tool to sign the Mac App
-      #     command: npm install -g electron-osx-sign
+      - run:
+          name: Install cli tool to sign the Mac App
+          command: npm install -g electron-osx-sign
       - run: npm install
       - save_cache:
           paths:
@@ -82,15 +82,15 @@ jobs:
       - run:
           name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID npm run publish-js
-      # - run:
-      #     name: Sign the App
-      #     command: electron-osx-sign
+      - run:
+          name: Sign the App
+          command: electron-osx-sign vipfy.dmg
       - run:
           name: Make our deploy script executable
           command: chmod +x .circleci/release-nucleus.sh
-      - run:
-          name: Log in to nucleus and release the previously built version
-          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
+      # - run:
+      #     name: Log in to nucleus and release the previously built version
+      #     command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
 
 workflows:
   build-workflows:
