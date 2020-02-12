@@ -98,7 +98,7 @@ jobs:
       - run:
           name: Create a custom tag for nucleus
           command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-mac-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
-      - run: security cms -D -i -v 339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile -k VipfyKeychain.keychain
+      - run: security cms -D -i 339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile -v  -k VipfyKeychain.keychain
       - run:
           name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID DEBUG=electron-osx-sign* npm run publish-js
