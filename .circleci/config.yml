@@ -96,7 +96,7 @@ jobs:
           command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-mac-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
       - run:
           name: Build the current version for Mac
-          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID DEBUG="electron-packager,electron-forge:*" npm run publish-js
+          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID DEBUG="electron-packager,electron-forge:*,electron-osx-sign" npm run publish-js
       # - run:
       #     name: Sign the App
       #     command: electron-osx-sign vipfy.dmg
