@@ -54,26 +54,32 @@ jobs:
           keys:
             - mac-dependencies
       - run:
-          name: Get the base64 encoded certificate back
-          command: echo $ENCODED_CERTIFICATE | base64 -D > ~/Certificates.p12
+          name: Get the base64 encoded application certificate back
+          command: echo $ENCODED_APPLICATION | base64 -D > ~/application_cert.p12
+      - run:
+          name: Get the base64 encoded installer certificate back
+          command: echo $ENCODED_INSTALLER | base64 -D > ~/installer_cert.p12
       - run:
           name: Create the Keychain for for the build process
           command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
       - run:
           name: Add the created keychain to the default list
           command: security list-keychains -d user -s $(security list-keychains -d user | sed -e s/\"//g) VipfyKeychain.keychain
-      - run:
-          name: make Provisioning Profiles directory
-          command: mkdir -pv ~/Library/VipfyDesktop/Provisioning\ Profiles/
-      - run:
-          name: decode Provisioning Profiles
-          command: echo DEVELOPER_PROFILE | base64 -D > ~/Library/VipfyDesktop/Provisioning\ Profiles/Vipfy.mobileprovision
+      # - run:
+      #     name: make Provisioning Profiles directory
+      #     command: mkdir -pv ~/Library/VipfyDesktop/Provisioning\ Profiles/
+      # - run:
+      #     name: decode Provisioning Profiles
+      #     command: echo DEVELOPER_PROFILE | base64 -D > ~/Library/VipfyDesktop/Provisioning\ Profiles/Vipfy.mobileprovision
           # - run:
       #     name: List all Keychains - should only be one
       #     command: security list-keychains
       - run:
           name: Import the private key for the signing process
-          command: security import ~/Certificates.p12 -P "$CERTIFICATE_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
+          command: security import ~/application_cert.p12 -P "$APPLICATION_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
+      - run:
+          name: Import the private key for the signing process
+          command: security import ~/installer_cert.p12 -P "$INSTALLER_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
       # - run:
       #     name: Install cli tool to sign the Mac App
       #     command: npm install -g electron-osx-sign

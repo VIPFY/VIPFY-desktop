@@ -7,8 +7,7 @@ module.exports = {
       platform: "darwin",
       type: "distribution",
       keychain: "VipfyKeychain.keychain",
-      provisioningProfile: "~/Library/VipfyDesktop/Provisioning Profiles/Vipfy.mobileprovision"
-      // identity: "Developer ID Application: VIPFY GmbH (RD6VS27844)"
+      identity: "Developer ID Application: VIPFY GmbH (RD6VS27844)"
     }
   },
   makers: [
