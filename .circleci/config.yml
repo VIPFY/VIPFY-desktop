@@ -78,10 +78,10 @@ jobs:
       #     name: List all Keychains - should only be one
       #     command: security list-keychains
       - run:
-          name: Import the private key for the signing process
+          name: Import the private key of the application file for the signing process
           command: security import ~/application_cert.p12 -P "$APPLICATION_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
       - run:
-          name: Import the private key for the signing process
+          name: Import the private key of the installer file for the signing process
           command: security import ~/installer_cert.p12 -P "$INSTALLER_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
       # - run:
       #     name: Install cli tool to sign the Mac App
