@@ -60,6 +60,9 @@ jobs:
           name: Create the Keychain for for the build process
           command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
       - run:
+          name: Add the created keychain to the default list
+          command: security list-keychains -d user -s $(security list-keychains -d user | sed -e s/\"//g) VipfyKeychain.keychain
+      - run:
           name: List all Keychains - should only be one
           command: security list-keychains
       - run:
