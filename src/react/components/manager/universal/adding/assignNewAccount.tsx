@@ -329,6 +329,7 @@ class AssignNewAccount extends React.Component<Props, State> {
                 this.setState({ saved: true });
                 setTimeout(() => this.props.close(), 1000);
               } catch (err) {
+                console.log("ERROR", err);
                 this.setState({ error: err });
               }
             }}

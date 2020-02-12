@@ -6,6 +6,8 @@ interface Props {
   isLogin: boolean;
   id: string;
   onChange: Function;
+  noLabel?: boolean;
+  operationOptions?: Object[];
 }
 
 interface State {
@@ -20,6 +22,9 @@ class ClickElement extends React.Component<Props, State> {
   };
 
   giveOperationOptions() {
+    if (this.props.operationOptions) {
+      return this.props.operationOptions;
+    }
     if (this.props.isLogin) {
       return [
         { value: "waitandfill", label: "Fill Field" },
@@ -68,8 +73,8 @@ class ClickElement extends React.Component<Props, State> {
           dropdownStyles={{ color: "white", width: "100%", height: "32px", fontSize: "16px" }}
           dropdownOptionStyles={{ color: "#253647" }}
           width="100%"
-          allowOther={true}
-          label="Operation"
+          allowOther={false}
+          label={this.props.noLabel ? undefined : "Operation"}
           style={{ color: "white" }}
           trashstyle={{ color: "white" }}
           labelstyle={{ color: "white" }}
@@ -87,15 +92,17 @@ class ClickElement extends React.Component<Props, State> {
               dropdownStyles={{ color: "white", width: "100%", height: "32px", fontSize: "16px" }}
               dropdownOptionStyles={{ color: "#253647" }}
               width="100%"
-              allowOther={true}
-              label="data-connection"
+              allowOther={false}
+              label={this.props.noLabel ? undefined : "data-connection"}
               style={{ color: "white" }}
               trashstyle={{ color: "white" }}
               labelstyle={{ color: "white" }}
               livevalue={e => {
                 this.setState({ dataConnection: e });
                 this.props.onChange("fillkey", e);
-              }}></UniversalDropdown>
+              }}
+              starttext="Select connector"
+            />
           </>
         )}
       </div>

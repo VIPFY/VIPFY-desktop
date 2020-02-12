@@ -1113,5 +1113,6 @@ async function execute(executeoperations, mainexecute = false) {
         break;
     }
   }
+  ipcRenderer.sendToHost("endExecution", null);
   return;
 }

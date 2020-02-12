@@ -71,6 +71,7 @@ interface State {
   showExtend: boolean;
   webviewReady: boolean;
   loaded: boolean;
+  fillkeys: Object[];
 }
 
 const FETCH_EXECUTIONAPPS = gql`
@@ -140,7 +141,8 @@ class LoginIntegrator extends React.Component<Props, State> {
     saveKey: "",
     showExtend: false,
     webviewReady: false,
-    loaded: false
+    loaded: false,
+    fillkeys: []
   };
   savevalue: string;
   shallSearch: boolean = true;
@@ -349,11 +351,11 @@ class LoginIntegrator extends React.Component<Props, State> {
         onClick={() => this.cancelSelection(args[4])}
         onMouseEnter={() => {
           document.getElementById(args[4] + "a")!.style.color = "white";
-          document.getElementById(args[4] + "side")!.style.border = "1px solid blue";
+          //document.getElementById(args[4] + "side")!.style.border = "1px solid blue";
         }}
         onMouseLeave={() => {
           document.getElementById(args[4] + "a")!.style.color = "black";
-          document.getElementById(args[4] + "side")!.style.border = "1px solid red";
+          //document.getElementById(args[4] + "side")!.style.border = "1px solid red";
         }}
         id={args[4] + "b"}
         key={Math.random()}
@@ -645,55 +647,32 @@ class LoginIntegrator extends React.Component<Props, State> {
         } else if (plan.operation == "waitandfill" && this.state.isLogin) {
           fillPlans.push(plan.args.id);
           const input = (
-            <div margin-bottom="20px">
-              {plan.args.fillkey[0].toUpperCase() +
-                plan.args.fillkey.substring(1, 10000).toLowerCase()}
-              :
-              <input
-                required
-                type="text"
-                name={plan.args.fillkey}
-                id={plan.args.id + "input"}></input>
-              <label>
-                <input
-                  type="checkbox"
-                  id="myCheck"
-                  onChange={e => {
-                    if (e.target.checked) {
-                      switch (document.getElementById(plan.args.id + "input")!.name) {
-                        case "username":
-                          document.getElementById(plan.args.id + "input")!.value = Math.round(
-                            Math.random() * 10000000000
-                          ).toString();
-                          break;
-
-                        case "email":
-                          document.getElementById(plan.args.id + "input")!.value =
-                            Math.round(Math.random() * 10000000000).toString() + "@vipfy.store";
-                          break;
-
-                        case "password":
-                          document.getElementById(plan.args.id + "input")!.value = "!12345678!Aa";
-                          break;
-
-                        case "domain":
-                          document.getElementById(plan.args.id + "input")!.value =
-                            "vipfy" + Math.round(Math.random() * 10000000000).toString();
-                          break;
-
-                        default:
-                          document.getElementById(plan.args.id + "input")!.value = Math.round(
-                            Math.random() * 10000000000
-                          ).toString();
-                          break;
-                      }
+            <div
+              style={{
+                textAlign: "left",
+                paddingLeft: "24px",
+                display: "flex",
+                alignItems: "center"
+              }}>
+              <span style={{ textTransform: "capitalize", marginRight: "16px" }}>
+                {plan.args.fillkey.toLowerCase()}:
+              </span>
+              <UniversalTextInput
+                id={plan.args.id + "input"}
+                width="200px"
+                livevalue={v =>
+                  this.setState(oldstate => {
+                    const newfillkeys = oldstate.fillkeys;
+                    const finditem = newfillkeys.find(e => (e.key = plan.args.id));
+                    if (finditem) {
+                      finditem.value = v;
                     } else {
-                      document.getElementById(plan.args.id + "input")!.value = "";
+                      newfillkeys.push({ key: plan.args.id, value: v });
                     }
-                  }}
-                />
-                Random Wert
-              </label>
+                    return { ...oldstate, fillkeys: newfillkeys };
+                  })
+                }
+              />
             </div>
           );
           inputList.push(input);
@@ -708,46 +687,33 @@ class LoginIntegrator extends React.Component<Props, State> {
         styles={{ textAlign: "center" }}
         buttonStyles={{ justifyContent: "space-around" }}
         closeable={false}>
-        <form
-          onSubmit={async e => {
-            e.preventDefault();
+        <div style={{ fontSize: "20px", marginBottom: "24px" }}>Please fill in the needed data</div>
+        {inputList.map(e => e)}
+
+        <UniversalButton
+          onClick={e => {
+            this.setState({ divList: [], test: false, end: false });
+          }}
+          type="low"
+          label="Cancel"
+        />
+        <UniversalButton
+          onClick={async () => {
             console.log("Filling plan.");
             fillPlans.forEach(planid => {
               this.setState(oldstate => {
                 oldstate.finalexecutionPlan.find(plan => {
                   return plan.args.id == planid;
-                })!.value = document.getElementById(planid + "input")!.value;
+                })!.value = oldstate.fillkeys.find(e => e.key == planid).value;
                 return oldstate;
               });
             });
             this.setState({ divList: [] });
             await this.sendExecuteFinal();
-          }}>
-          {inputList.map(e => e)}
-          <UniversalButton
-            onClick={async () => {
-              console.log("Filling plan.");
-              fillPlans.forEach(planid => {
-                this.setState(oldstate => {
-                  console.log("OLDSTATE", this.state);
-                  oldstate.finalexecutionPlan.find(plan => {
-                    return plan.args.id == planid;
-                  })!.value = document.getElementById(planid + "input")!.value;
-                  return oldstate;
-                });
-              });
-              this.setState({ divList: [] });
-              await this.sendExecuteFinal();
-            }}
-            type="high"
-            label="submit"></UniversalButton>
-        </form>
-        <UniversalButton
-          onClick={e => {
-            this.setState({ divList: [], test: false, end: false });
           }}
           type="high"
-          label="Abbrechen"></UniversalButton>
+          label="submit"
+        />
       </PopupBase>
     );
     this.state.finalexecutionPlan.forEach(plan => {
@@ -840,11 +806,11 @@ class LoginIntegrator extends React.Component<Props, State> {
         this.loginState.executing++;
         this.webview = e.target;
         this.setState({ webviewReady: true });
-        console.log("TRACKING");
+        //console.log("TRACKING");
         if (this.state.executing > 0) {
           const plan = this.state.processedfinalexecutionPlan;
           const shortedPlan = plan.slice(this.state.step);
-          console.log("SEND EXECUTE 2", shortedPlan, this.state);
+          //console.log("SEND EXECUTE 2", shortedPlan, this.state);
           await sleep(500);
           if (this.webview) {
             this.webview!.send("execute", shortedPlan);
@@ -862,26 +828,9 @@ class LoginIntegrator extends React.Component<Props, State> {
         break;
 
       case "sendEvent":
-        //console.log("selection");
-        // incase of selection of any element.
-
         if (this.state.test) {
           break;
         }
-        /*console.log(
-          "sendEvent\n",
-          e.args[0],
-          e.args[1],
-          e.args[2],
-          e.args[3],
-          e.args[4],
-          e.args[5],
-          e.args[6],
-          e.args[7],
-          e.args[8]
-        );*/
-
-        //generate Execution Plan
         this.setState(oldstate => {
           let plan = oldstate.executionPlan;
           let id = Math.round(Math.random() * 10000000000);
@@ -988,25 +937,7 @@ class LoginIntegrator extends React.Component<Props, State> {
             return oldstate;
           });
         }
-        /*console.log(
-          "loaded first",
-          this.loginState.didLoadOnSteps,
-          this.loginState.step
-        );*/
-
-        /*if (this.state.test && this.state.url != "about:blank") {
-          await session.fromPartition("followLogin").clearStorageData();
-          let exx = [];
-          this.state.finalexecutionPlan.forEach(element => {
-            if (element.step == this.loginState.step) {
-              exx.push(element);
-            }
-          });
-          console.log("SEND EXECUTE 2");
-          this.webview!.send("execute", exx);
-        } else*/ if (
-          !this.loginState.didLoadOnSteps.includes(this.loginState.step)
-        ) {
+        if (!this.loginState.didLoadOnSteps.includes(this.loginState.step)) {
           this.loginState.didLoadOnSteps.push(this.loginState.step);
         }
         break;
@@ -1171,14 +1102,6 @@ class LoginIntegrator extends React.Component<Props, State> {
       case "fillFormField":
         {
           const w = e.target;
-          /* console.log(
-            "fillForm",
-            e.args[0],
-            this.state.executionPlan[0].args.fillkey,
-            this.state.executionPlan.findIndex(element => {
-              return element.args.fillkey == e.args[0];
-            })
-          ); */
           console.log(
             "fillField",
             this.state.processedfinalexecutionPlan,
@@ -1217,13 +1140,13 @@ class LoginIntegrator extends React.Component<Props, State> {
             }
           } */
 
-          console.log("TYPING", text);
+          //console.log("TYPING", text);
 
           for await (const c of text) {
-            console.log("Letter", c);
+            //console.log("Letter", c);
             const shift = c.toLowerCase() != c;
             const modifiers = shift ? ["shift"] : [];
-            console.log("WEBVIEW", w);
+            //console.log("WEBVIEW", w);
             w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
             w.sendInputEvent({ type: "char", modifiers, keyCode: c });
             await sleep(Math.random() * 20 + 50);
@@ -1277,6 +1200,10 @@ class LoginIntegrator extends React.Component<Props, State> {
           }
         });
         break;
+
+      case "endexecution":
+        console.log("END EXECUTION");
+        break;
       default:
         //console.log("No case applied", e.channel);
         break;
@@ -1284,7 +1211,6 @@ class LoginIntegrator extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("THIS State", this.state);
     return (
       <div>
         <div
@@ -1300,17 +1226,29 @@ class LoginIntegrator extends React.Component<Props, State> {
                 id={o.args.id + "side"}
                 onMouseEnter={() => this.zeigeElement(true, o.args.id)}
                 onMouseLeave={() => this.zeigeElement(false, o.args.id)}
-                style={{ marginTop: "10px" }}>
+                style={Object.assign(
+                  { marginTop: "16px", paddingLeft: "16px", paddingRight: "16px" },
+                  k > 0
+                    ? { borderTop: "1px solid white", paddingTop: "15px" }
+                    : { paddingTop: "16px" }
+                )}>
+                <span style={{ color: "white", textDecoration: "underline" }}>Step {k + 1}</span>
                 <ClickElement
                   id={`ce-${k}`}
                   startvalue={o.operation}
                   onChange={(operation, value) => this.updateSelection(o.args.id, operation, value)}
                   isLogin={this.state.isLogin}
+                  noLabel={true}
+                  operationOptions={[
+                    { value: "waitandfill", label: "Fill Field" },
+                    { value: "click", label: "click" }
+                  ]}
                 />
+                <div style={{ height: "24px" }}></div>
                 <UniversalButton
                   type="high"
                   onClick={() => this.cancelSelection(o.args.id)}
-                  label="DELETE"
+                  label="DELETE Step"
                 />
               </div>
             ))}
