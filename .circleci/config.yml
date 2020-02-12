@@ -62,11 +62,15 @@ jobs:
       - run:
           name: Add the created keychain to the default list
           command: security list-keychains -d user -s $(security list-keychains -d user | sed -e s/\"//g) VipfyKeychain.keychain
-      - run:
-          name: List all Keychains - should only be one
-          command: security list-keychains
-      - run: echo $CERTIFICATE_PASSWORD
-      - run: echo "$CERTIFICATE_PASSWORD"
+      # - run: Maybe not needed?
+      #     name: make Provisioning Profiles directory
+      #     command: mkdir -pv ~/Library/VipfyDesktop/Provisioning\ Profiles/
+      # - run:
+      #     name: decode Provisioning Profiles
+      #     command: echo DEVELOPER_PROFILE | base64 -D > ~/Library/VipfyDesktop/Provisioning\ Profiles/App_Store.mobileprovision
+          # - run:
+      #     name: List all Keychains - should only be one
+      #     command: security list-keychains
       - run:
           name: Import the private key for the signing process
           command: security import ~/Certificates.p12 -P "$CERTIFICATE_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
