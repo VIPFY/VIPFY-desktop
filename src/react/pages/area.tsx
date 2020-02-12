@@ -50,6 +50,7 @@ import EmployeeDetails from "./manager/employeeDetails";
 import TeamOverview from "./manager/teamOverview";
 import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
+import LoginIntegrator from "../components/admin/LoginIntegrator";
 
 interface AreaProps {
   history: any[];
@@ -326,7 +327,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
-      { path: "admin/service-integration", component: ServiceIntegrator, admin: true },
+      { path: "admin/service-integration", component: LoginIntegrator, admin: true },
       { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },

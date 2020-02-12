@@ -384,24 +384,24 @@ var callback2 = function(mutationsList, observer) {
 }) */
 
 /// **
-/*window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.sendToHost("loaded");
-  document.addEventListener("click", findTarget, true);
+  /*document.addEventListener("click", findTarget, true);
   document.addEventListener("keyup", findTarget, true);
   document.addEventListener("input", findTarget, true);
-  document.addEventListener("paste", findTarget, true);
+  document.addEventListener("paste", findTarget, true);*/
   //findAllIframes(document);
-});*/
+});
 
-// window.addEventListener("load", () => {
-//   ipcRenderer.sendToHost("loaded");
-//   //webview = document.getElementById("LoginFinder");
-//   document.addEventListener("click", findTarget, true);
-//   document.addEventListener("keyup", findTarget, true);
-//   document.addEventListener("input", findTarget, true);
-//   document.addEventListener("paste", findTarget, true);
-//   findAllIframes(document);
-// });
+window.addEventListener("load", () => {
+  ipcRenderer.sendToHost("loaded");
+  //   //webview = document.getElementById("LoginFinder");
+  //   document.addEventListener("click", findTarget, true);
+  //   document.addEventListener("keyup", findTarget, true);
+  //   document.addEventListener("input", findTarget, true);
+  //   document.addEventListener("paste", findTarget, true);
+  //   findAllIframes(document);
+});
 
 //document.addEventListener("click", findTarget);
 var observer = new MutationObserver(callback1);
@@ -747,25 +747,31 @@ window.addEventListener("beforeunload", () => {
   ipcRenderer.sendToHost("unload", null);
 });
 
+window.addEventListener("load", () => {
+  console.log("LOADED");
+  ipcRenderer.sendToHost("loaded", null);
+});
+
 ipcRenderer.on("startTracking", () => {
-  /*document.addEventListener("click", findTarget, true);
+  console.log("START TRACKING");
+  document.addEventListener("click", findTarget, true);
   document.addEventListener("keyup", findTarget, true);
   document.addEventListener("input", findTarget, true);
   document.addEventListener("paste", findTarget, true);
-  findAllIframes(document);*/
+  findAllIframes(document);
 });
 
 ipcRenderer.on("removeTracking", () => {
-  /*document.removeEventListener("click", findTarget, true);
+  document.removeEventListener("click", findTarget, true);
   document.removeEventListener("keyup", findTarget, true);
   document.removeEventListener("input", findTarget, true);
   document.removeEventListener("paste", findTarget, true);
-  findAllIframes(document, true);*/
+  findAllIframes(document, true);
 });
 
 async function start() {
   //First say Hello
-  console.log("SAY HELLO");
+  console.log("SAY HELLO 2");
   //await sleep(300);
   ipcRenderer.sendToHost("hello");
 
