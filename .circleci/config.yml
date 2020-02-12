@@ -62,6 +62,7 @@ jobs:
       - run:
           name: Get the base64 encoded provisioning file back
           command: echo $ENCODED_PROVISIONING | base64 -D > ~/Library/339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile
+      - run: ls -al /Library
       - run:
           name: Create the Keychain for for the build process
           command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
