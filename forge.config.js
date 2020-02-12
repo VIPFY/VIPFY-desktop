@@ -5,7 +5,8 @@ module.exports = {
     appCopyright: "©2020 VIPFY GmbH",
     osxSign: {
       platform: "darwin",
-      type: "distribution"
+      type: "distribution",
+      keychain: "VipfyKeychain.keychain"
       // identity: "Developer ID Application: VIPFY GmbH (RD6VS27844)"
     }
   },
