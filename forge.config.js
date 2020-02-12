@@ -6,8 +6,8 @@ module.exports = {
     osxSign: {
       platform: "darwin",
       type: "distribution",
-      keychain: "VipfyKeychain.keychain"
-      // identity: "Developer ID Application: VIPFY GmbH (RD6VS27844)"
+      // keychain: "VipfyKeychain.keychain"
+      identity: "Developer ID Application: VIPFY GmbH (RD6VS27844)"
     }
   },
   makers: [
