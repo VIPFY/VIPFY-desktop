@@ -125,11 +125,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                       marginRight: "16px",
                       width: "92px"
                     }}
-                    onClick={() =>
-                      this.setState({
-                        add: true
-                      })
-                    }
+                    onClick={() => this.setState({ add: true })}
                   />
                 </div>
               );
