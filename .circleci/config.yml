@@ -59,10 +59,9 @@ jobs:
       - run:
           name: Get the base64 encoded installer certificate back
           command: echo $ENCODED_INSTALLER | base64 -D > ~/installer_cert.p12
-      - run:
-          name: Get the base64 encoded provisioning file back
-          command: echo $ENCODED_PROVISIONING | base64 -D > 339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile
-      - run: ls -al ~
+      # - run:
+      #     name: Get the base64 encoded provisioning file back
+      #     command: echo $ENCODED_PROVISIONING | base64 -D > 339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile
       - run:
           name: Create the Keychain for for the build process
           command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
