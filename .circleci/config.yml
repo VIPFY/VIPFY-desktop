@@ -67,7 +67,7 @@ jobs:
           command: security list-keychains
       - run:
           name: Import the private key for the signing process
-          command: security import ~/Certificates.p12 -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -P $KEYCHAIN_PASSWORD -A
+          command: security import ~/Certificates.p12 -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -P $CSC_KEY_PASSWORD -A
       # - run:
       #     name: Install cli tool to sign the Mac App
       #     command: npm install -g electron-osx-sign
