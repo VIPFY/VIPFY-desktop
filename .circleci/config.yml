@@ -53,44 +53,44 @@ jobs:
       - restore_cache:
           keys:
             - mac-dependencies
-      - run:
-          name: Get the base64 encoded certificate back
-          command: base64 -D Certificates.p12 \<<\< $ENCODED_CERTIFICATE
-      - run:
-          name: Create the Keychain for for the build process
-          command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
-      - run:
-          name: List all Keychains - should only be one
-          command: security list-keychains
-      - run:
-          name: Import the private key for the signing process
-          command: security import Certificates.p12 -t agg -k VipfyKeychain.keychain -P $KEYCHAIN_PASSWORD -A
+      # - run:
+      #     name: Get the base64 encoded certificate back
+      #     command: base64 -D Certificates.p12 \<<\< $ENCODED_CERTIFICATE
+      # - run:
+      #     name: Create the Keychain for for the build process
+      #     command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
+      # - run:
+      #     name: List all Keychains - should only be one
+      #     command: security list-keychains
+      # - run:
+      #     name: Import the private key for the signing process
+      #     command: security import Certificates.p12 -t agg -k VipfyKeychain.keychain -P $KEYCHAIN_PASSWORD -A
       # - run:
       #     name: Install cli tool to sign the Mac App
       #     command: npm install -g electron-osx-sign
-      # - run: npm install
-      # - save_cache:
-      #     paths:
-      #       - node_modules
-      #     key: mac-dependencies
-      # - run:
-      #     name: Set our development channel ID
-      #     command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
-      # - run:
-      #     name: Create a custom tag for nucleus
-      #     command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-mac-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
-      # - run:
-      #     name: Build the current version for Mac
-      #     command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID npm run publish-js
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: mac-dependencies
+      - run:
+          name: Set our development channel ID
+          command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
+      - run:
+          name: Create a custom tag for nucleus
+          command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-mac-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
+      - run:
+          name: Build the current version for Mac
+          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID npm run publish-js
       # - run:
       #     name: Sign the App
       #     command: electron-osx-sign
-      # - run:
-      #     name: Make our deploy script executable
-      #     command: chmod +x .circleci/release-nucleus.sh
-      # - run:
-      #     name: Log in to nucleus and release the previously built version
-      #     command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
+      - run:
+          name: Make our deploy script executable
+          command: chmod +x .circleci/release-nucleus.sh
+      - run:
+          name: Log in to nucleus and release the previously built version
+          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
 
 workflows:
   build-workflows:
