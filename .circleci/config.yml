@@ -66,10 +66,10 @@ jobs:
           name: List all Keychains - should only be one
           command: security list-keychains
       - run: echo $CERTIFICATE_PASSWORD
-      - run: echo '$CERTIFICATE_PASSWORD'
+      - run: echo "$CERTIFICATE_PASSWORD"
       - run:
           name: Import the private key for the signing process
-          command: security import ~/Certificates.p12 -P '$CERTIFICATE_PASSWORD' -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
+          command: security import ~/Certificates.p12 -P "$CERTIFICATE_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
       # - run:
       #     name: Install cli tool to sign the Mac App
       #     command: npm install -g electron-osx-sign
