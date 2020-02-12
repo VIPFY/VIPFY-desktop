@@ -55,7 +55,7 @@ jobs:
             - mac-dependencies
       - run:
           name: Get the base64 encoded certificate back
-          command: echo $ENCODED_CERTIFICATE | base64 -D > Certificates.p12
+          command: echo $ENCODED_CERTIFICATE | base64 -D > ~/Certificates.p12
       - run:
           name: Create the Keychain for for the build process
           command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
@@ -67,7 +67,7 @@ jobs:
           command: security list-keychains
       - run:
           name: Import the private key for the signing process
-          command: security import Certificates.p12 -t agg -k VipfyKeychain.keychain -P $KEYCHAIN_PASSWORD -A
+          command: security import ~/Certificates.p12 -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -P $KEYCHAIN_PASSWORD -A
       - run:
           name: Install cli tool to sign the Mac App
           command: npm install -g electron-osx-sign
