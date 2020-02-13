@@ -103,7 +103,7 @@ jobs:
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID DEBUG=electron-osx-sign* npm run publish-js
       - run:
           name: Sign the App
-          command: electron-osx-sign --platform darwin --app /var/folders/pt/0xykrh9j62g34sc7znh47kbc0000gn/T/electron-packager/darwin-x64/VIPFY-darwin-x64/VIPFY.app --provisioning-profile 339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile 4C8787490C0B45CD091B4FF1F15E9980FEFCE0B1 --keychain VipfyKeychain.keychain
+          command: electron-osx-sign --platform darwin repo/out/VIPFY-darwin-x64/VIPFY.app --provisioning-profile 339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile --keychain VipfyKeychain.keychain
       # - run:
       #     name: Make our deploy script executable
       #     command: chmod +x .circleci/release-nucleus.sh
