@@ -2,13 +2,10 @@ import * as React from "react";
 import { PureComponent } from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
-import { inspect } from "util";
 import * as uuid from "uuid/v4";
-import { relative } from "path";
-const { gzip, ungzip } = require("node-gzip");
-const lzma = require("lzma");
+import Store from "electron-store";
+import lzma from "lzma";
 const screen = require("electron").remote.screen;
-
 const browserWindow = require("electron").remote.BrowserWindow;
 // const HID = require("node-hid");
 
@@ -18,6 +15,7 @@ interface Props {
 
 interface State {
   sessionId: string;
+  deviceId: string;
 }
 
 interface Event {
@@ -33,6 +31,7 @@ interface Event {
   isButton?: boolean;
   time: number;
   session?: string;
+  device?: string;
   relative?: boolean;
 }
 
@@ -53,9 +52,12 @@ function unique(arr) {
   });
 }
 
+const store = new Store();
+
 class ClickTrackerInner extends PureComponent<Props, State> {
   state = {
-    sessionId: ""
+    sessionId: "",
+    deviceId: ""
   };
 
   events: string[] = [];
@@ -246,17 +248,9 @@ class ClickTrackerInner extends PureComponent<Props, State> {
     this.events = [];
     this.previousEvent = {};
     this.addEvent({ eventType: "ss", session: this.state.sessionId, time: performance.now() });
-    console.log("sending Events", (await gzip(events)).length, events.length);
     lzma.compress(events, 6, function(result) {
       console.log("lzma events", result.length); // <Buffer fd 37 7a 58 5a 00 00 01 69 22 de 36 02 00 21 ...>
     });
-    lzma.compress(events, 9, function(result) {
-      console.log("lzma 9 events", result.length); // <Buffer fd 37 7a 58 5a 00 00 01 69 22 de 36 02 00 21 ...>
-    });
-    lzma.compress(events, 1, function(result) {
-      console.log("lzma 1 events", result.length); // <Buffer fd 37 7a 58 5a 00 00 01 69 22 de 36 02 00 21 ...>
-    });
-    //console.log("events", events);
   }
 
   static getDerivedStateFromProps(props, state) {}
@@ -266,8 +260,6 @@ class ClickTrackerInner extends PureComponent<Props, State> {
   }
 }
 
-//trackingconsent
-
 function ClickTracker() {
   return (
     <Query
@@ -275,6 +267,7 @@ function ClickTracker() {
         query tracking {
           me {
             id
+            consent
           }
         }
       `}>
@@ -284,13 +277,15 @@ function ClickTracker() {
         }
 
         if (error) {
-          console.error("not logging click data", error);
+          console.error("not logging click data, error", error);
           return null;
         }
 
-        if (!data.me.trackingconsent) {
-          //return null;
+        if (!data.me.consent) {
+          console.log("No consent given, not tracking click data");
+          return null;
         }
+
         return <ClickTrackerInner userid={data.me.id} />;
       }}
     </Query>
