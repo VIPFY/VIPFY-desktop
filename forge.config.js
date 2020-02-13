@@ -4,6 +4,7 @@ module.exports = {
     asar: true,
     appCopyright: "©2020 VIPFY GmbH",
     osxSign: {
+      app: "~/repo/out/VIPFY-darwin-x64/VIPFY.app",
       platform: "darwin",
       type: "distribution",
       keychain: "VipfyKeychain.keychain",
