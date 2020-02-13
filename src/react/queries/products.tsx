@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const fetchApps = gql`
-  query {
+  query allApps {
     allApps {
       id
       teaserdescription

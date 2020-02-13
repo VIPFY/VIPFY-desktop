@@ -163,7 +163,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
       switch (category) {
         case "ownLicences":
-          refetchQueries(client, ["fetchUsersOwnLicences"]);
+          refetchQueries(client, [
+            "fetchUsersOwnLicences",
+            "fetchUserLicenceAssignments",
+            "onFetchUserLicences"
+          ]);
           break;
 
         case "employees":
@@ -174,7 +178,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "companyServices":
-          await refetchQueries(client, ["fetchCompanyService"]);
+          await refetchQueries(client, ["fetchCompanyService", "allApps"]);
           break;
 
         case "domains":
@@ -431,7 +435,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
-        show: this.props.isadmin && config.showAdmin && this.props.company.unit.id == 14,
+        show: this.props.isadmin && config.showAdmin,
         highlight: "adminelement"
       },
       {

@@ -95,7 +95,7 @@ export async function createLicenceKeyFragmentForUser(
   unitid: string,
   client: any
 ): Promise<Object | null> {
-  const licence = (
+  let licence = (
     await client.query({
       query: gql`
         query fetchLicenceKey($licenceid: ID!) {
@@ -109,6 +109,24 @@ export async function createLicenceKeyFragmentForUser(
       variables: { licenceid }
     })
   ).data.fetchLicences[0];
+
+  if (!licence) {
+    //IF Admin check if free licences
+    licence = (
+      await client.query({
+        query: gql`
+          query fetchLicenceKeyAdmin($licenceid: ID!) {
+            fetchPureLicenceData(licenceid: $licenceid) {
+              id
+              key
+            }
+          }
+        `,
+        fetchPolicy: "network-only",
+        variables: { licenceid }
+      })
+    ).data.fetchPureLicenceData[0];
+  }
 
   let originalKey = await decryptLicenceKey(client, licence);
 
@@ -129,7 +147,7 @@ export async function reencryptLicenceKeyObject(
     changes = {};
   }
 
-  const licence = (
+  let licence = (
     await client.query({
       query: gql`
         query fetchLicenceKey($licenceid: ID!) {
@@ -143,6 +161,24 @@ export async function reencryptLicenceKeyObject(
       variables: { licenceid }
     })
   ).data.fetchLicences[0];
+
+  if (!licence) {
+    //IF Admin check if free licences
+    licence = (
+      await client.query({
+        query: gql`
+          query fetchLicenceKeyAdmin($licenceid: ID!) {
+            fetchPureLicenceData(licenceid: $licenceid) {
+              id
+              key
+            }
+          }
+        `,
+        fetchPolicy: "network-only",
+        variables: { licenceid }
+      })
+    ).data.fetchPureLicenceData[0];
+  }
 
   let originalKey = await decryptLicenceKey(client, licence);
   let modifiedKey = { ...originalKey, ...changes };

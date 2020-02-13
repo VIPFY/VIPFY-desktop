@@ -333,7 +333,10 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
       app.external = true;
       app.loginurl = this.state.loginUrl;
       const options = { afterdomain, predomain, ...optionsPartial! };
-      const { data } = await this.props.createApp({ variables: { app, options } });
+      const { data } = await this.props.createApp({
+        variables: { app, options },
+        context: { hasUpload: true }
+      });
       console.log("UPLOAD RESULT", data);
     } catch (error) {
       throw error;

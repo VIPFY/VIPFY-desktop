@@ -180,6 +180,7 @@ class SelfSaving extends React.Component<Props, State> {
 
     try {
       const app = await this.props.createOwnApp({
+        context: { hasUpload: true },
         variables: { ssoData: sso }
       });
 
@@ -199,7 +200,7 @@ class SelfSaving extends React.Component<Props, State> {
                 username: this.props.sso.email,
                 password: this.props.sso.password
               },
-              undefined,
+              null,
               this.props.client
             );
             const account = await this.props.createAccount({
@@ -219,17 +220,17 @@ class SelfSaving extends React.Component<Props, State> {
             });
 
             try {
-              const keyfragment = await createLicenceKeyFragmentForUser(
+              /*const keyfragment = await createLicenceKeyFragmentForUser(
                 account.data.createAccount.id,
                 this.state.user?.id,
                 this.props.client
-              );
+              );*/
               await this.props.assignAccount({
                 variables: {
                   licenceid: account.data.createAccount.id,
                   userid: this.state.user?.id,
                   rights: { view: true, use: true },
-                  keyfragment
+                  keyfragment: {}
                 }
               });
               this.props.closeFunction({
@@ -267,6 +268,7 @@ class SelfSaving extends React.Component<Props, State> {
       }, this.props.maxTime);
     }
 
+    console.log("TESTING STATE", this.state);
     const errorMessage = "Sorry, this seems to take additional time. Our Support will take a look.";
     return (
       <PopupBase styles={{ maxWidth: "432px" }} nooutsideclose={true} fullmiddle={true}>
