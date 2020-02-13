@@ -63,6 +63,9 @@ jobs:
           name: Get the base64 encoded nils certificate back
           command: echo $ENCODED_NILS | base64 -D > ~/nils_cert.p12
       - run:
+          name: Get the base64 encoded nils certificate back
+          command: echo $ENCODED_THIRD_PARTY | base64 -D > ~/third_party_cert.p12
+      - run:
           name: Get the base64 encoded provisioning file back
           command: echo $ENCODED_PROVISIONING | base64 -D > ~/repo/339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile
       - run:
@@ -89,6 +92,9 @@ jobs:
       - run:
           name: Import the private key of the nils file for the signing process
           command: security import ~/nils_cert.p12 -P "$NILS_PW" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
+      - run:
+          name: Import the private key of the third party file for the signing process
+          command: security import ~/third_party_cert.p12 -P "$THIRD_PARTY_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
       - run: security find-identity -p codesigning -v
       - run:
           name: Install cli tool to sign the Mac App
