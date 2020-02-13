@@ -38,7 +38,7 @@ configure({
 
 export const logger = getLogger("vipfy");
 export const resetLoggingContext = () => {
-  /*logger.clearContext();
+  logger.clearContext();
   consoleLogger.clearContext();
   addToLoggerContext("process_start_time", new Date(process.getCreationTime()));
   addToLoggerContext("host_arch", os.arch());
@@ -46,7 +46,7 @@ export const resetLoggingContext = () => {
   addToLoggerContext("totalmem", os.totalmem());
   addToLoggerContext("os_platform", os.platform());
   addToLoggerContext("os_version", os.release());
-  addToLoggerContext("host_uptime", os.uptime());*/
+  addToLoggerContext("host_uptime", os.uptime());
 };
 
 const consoleLogger = getLogger("vipfy.console");
@@ -62,13 +62,13 @@ export const addToLoggerContext = (key: string, value: any) => {
   logger.addContext(key, value);
 };
 
-/*addToLoggerContext("process_start_time", new Date(process.getCreationTime()));
+addToLoggerContext("process_start_time", new Date(process.getCreationTime()));
 addToLoggerContext("host_arch", os.arch());
 addToLoggerContext("freemem", os.freemem());
 addToLoggerContext("totalmem", os.totalmem());
 addToLoggerContext("os_platform", os.platform());
 addToLoggerContext("os_version", os.release());
-addToLoggerContext("host_uptime", os.uptime());*/
+addToLoggerContext("host_uptime", os.uptime());
 
 if (is.renderer()) {
   window.onerror = function(msg, url, lineNo, columnNo, error) {
