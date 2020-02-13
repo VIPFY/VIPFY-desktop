@@ -79,7 +79,7 @@ jobs:
       #     command: echo DEVELOPER_PROFILE | base64 -D > ~/Library/VipfyDesktop/Provisioning\ Profiles/Vipfy.mobileprovision
       - run:
           name: Import the private key of the application file for the signing process
-          command: security import ~/application_cert.p12 -P "$APPLICATION_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
+          command: security import ~/application_cert.p12 -P "$NILS_PW" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
       - run:
           name: Import the private key of the installer file for the signing process
           command: security import ~/installer_cert.p12 -P "$INSTALLER_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
@@ -92,6 +92,9 @@ jobs:
           paths:
             - node_modules
           key: mac-dependencies
+      - run:
+          name: Make sure your signing identity is valid
+          command: run security find-identity -p codesigning -v
       - run:
           name: Set our development channel ID
           command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
