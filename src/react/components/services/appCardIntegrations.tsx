@@ -7,7 +7,7 @@ import { randomPassword } from "../../common/passwordgen";
 
 import gql from "graphql-tag";
 import { graphql, compose, withApollo, Query } from "react-apollo";
-import { me, fetchLicences } from "../../queries/auth";
+import { me } from "../../queries/auth";
 import { getBgImageApp } from "../../common/images";
 import { createEncryptedLicenceKeyObject } from "../../common/licences";
 import AssignNewAccount from "../manager/universal/adding/assignNewAccount";

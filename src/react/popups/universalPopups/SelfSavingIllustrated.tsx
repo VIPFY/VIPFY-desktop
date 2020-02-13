@@ -7,7 +7,6 @@ import UniversalLoginExecutor from "../../components/UniversalLoginExecutor";
 import { SSO } from "../../interfaces";
 import { CREATE_OWN_APP } from "../../mutations/products";
 import LogoExtractor from "../../components/ssoconfig/LogoExtractor";
-import { fetchLicences } from "../../queries/auth";
 import fail_pic from "../../../images/sso_creation_fail.png";
 import success_pic from "../../../images/sso_creation_success.png";
 import loading_pic from "../../../images/sso_creation_loading.png";

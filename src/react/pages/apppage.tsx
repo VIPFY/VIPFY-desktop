@@ -3,7 +3,6 @@ import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 import { shell } from "electron";
 import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "../queries/products";
-import { fetchLicences } from "../queries/auth";
 import { buyPlan } from "../mutations/products";
 import Popup from "../components/Popup";
 import checkOrder from "../popups/checkorder";
@@ -138,9 +137,12 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
 
   buyAppAccepted = async (planid, features, price, planinputs) => {
     try {
+      // TODO: fix refetch queries
       await this.props.buyPlan({
         variables: { planid, features, price, planinputs },
-        refetchQueries: [{ query: fetchLicences } /*, { query: fetchRecommendedApps }*/]
+        refetchQueries: [
+          /*, { query: fetchRecommendedApps }*/
+        ]
       });
       //this.props.history.push("/area/dashboard");
     } catch (err) {
@@ -575,7 +577,6 @@ export default compose(
     name: "productPlans"
   }),
   graphql(WRITE_REVIEW, { name: "writeReview" }),
-  graphql(fetchLicences),
   graphql(ADD_EXTERNAL_ACCOUNT, { name: "addExternalApp" }),
   graphql(buyPlan, {
     name: "buyPlan"

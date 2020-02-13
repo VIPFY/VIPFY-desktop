@@ -3,7 +3,6 @@ import gql from "graphql-tag";
 const fragment = gql`
   fragment LicenceParts on Licence {
     id
-    dashboard
     unitid {
       id
     }
