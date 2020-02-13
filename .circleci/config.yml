@@ -72,7 +72,7 @@ jobs:
           name: Set the created keychain as default
           command: security default-keychain -s VipfyKeychain.keychain
       - run:
-          security default-keychain
+          security find-identity -p codesigning
           # - run:
       #     name: make Provisioning Profiles directory
       #     command: mkdir -pv ~/Library/VipfyDesktop/Provisioning\ Profiles/
@@ -81,10 +81,10 @@ jobs:
       #     command: echo DEVELOPER_PROFILE | base64 -D > ~/Library/VipfyDesktop/Provisioning\ Profiles/Vipfy.mobileprovision
       - run:
           name: Import the private key of the application file for the signing process
-          command: security import ~/application_cert.p12 -P "$APPLICATION_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
+          command: security import ~/application_cert.p12 -P "$APPLICATION_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
       - run:
           name: Import the private key of the installer file for the signing process
-          command: security import ~/installer_cert.p12 -P "$INSTALLER_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A
+          command: security import ~/installer_cert.p12 -P "$INSTALLER_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
       # - run:
       #     name: Install cli tool to sign the Mac App
       #     command: npm install -g electron-osx-sign
