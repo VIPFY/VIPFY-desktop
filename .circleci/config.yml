@@ -84,9 +84,9 @@ jobs:
           name: Import the private key of the installer file for the signing process
           command: security import ~/installer_cert.p12 -P "$INSTALLER_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
       - run: security find-identity -p codesigning -v
-      # - run:
-      #     name: Install cli tool to sign the Mac App
-      #     command: npm install -g electron-osx-sign
+      - run:
+          name: Install cli tool to sign the Mac App
+          command: npm install -g electron-osx-sign
       - run: npm install
       - save_cache:
           paths:
@@ -101,12 +101,12 @@ jobs:
       - run:
           name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID DEBUG=electron-osx-sign* npm run publish-js
-      # - run:
-      #     name: Sign the App
-      #     command: electron-osx-sign vipfy.dmg
       - run:
-          name: Make our deploy script executable
-          command: chmod +x .circleci/release-nucleus.sh
+          name: Sign the App
+          command: electron-osx-sign --platform darwin --app /var/folders/pt/0xykrh9j62g34sc7znh47kbc0000gn/T/electron-packager/darwin-x64/VIPFY-darwin-x64/VIPFY.app --provisioning-profile 339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile 4C8787490C0B45CD091B4FF1F15E9980FEFCE0B1 --force --keychain VipfyKeychain.keychain --timestamp
+      # - run:
+      #     name: Make our deploy script executable
+      #     command: chmod +x .circleci/release-nucleus.sh
       # - run:
       #     name: Log in to nucleus and release the previously built version
       #     command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
