@@ -71,7 +71,6 @@ ipcRenderer.once("loginData", async (e, key) => {
     speed = key.speed || 1;
     let didAnything = false;
     while (!emailEntered || !passwordEntered || stopped) {
-      //console.log("LOGIN DATA", !emailEntered, !passwordEntered, stopped);
       await sleep(100);
       let totaltime = 100;
       let email = findEmailField();
@@ -93,7 +92,6 @@ ipcRenderer.once("loginData", async (e, key) => {
       }
 
       recaptcha = findRecaptcha();
-      //console.log(recaptcha);
       if (recaptcha && !checkRecaptcha) {
         //console.log("FOUND RECAPTCHA");
         await recaptchaClick(recaptcha);
@@ -147,7 +145,7 @@ ipcRenderer.once("loginData", async (e, key) => {
       await sleep(500);
     }
     if (emailEntered && passwordEntered && !stopped) {
-      recaptcha = findForm().querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
+      recaptcha = document.querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
       if (recaptcha && (recaptcha.scrollHeight != 0 || recaptcha.scrollWidth != 0)) {
         ipcRenderer.sendToHost("recaptcha", null);
       } else {
@@ -222,28 +220,30 @@ function isEqualOrChild(child, parent) {
 }
 
 function getMidPoint(e, doc) {
-  var rect = e.getBoundingClientRect();
-  const style = window.getComputedStyle(e);
-  var dx = 0;
-  var dy = 0;
-  if (doc) {
-    var iframe = document.querySelector(args.document);
-    var drect = iframe.getBoundingClientRect();
-    dx = drect.x;
-    dy = drect.y;
+  if (e) {
+    var rect = e.getBoundingClientRect();
+    const style = window.getComputedStyle(e);
+    var dx = 0;
+    var dy = 0;
+    if (doc) {
+      var iframe = document.querySelector(args.document);
+      var drect = iframe.getBoundingClientRect();
+      dx = drect.x;
+      dy = drect.y;
+    }
+    return {
+      x:
+        dx +
+        rect.x +
+        parseInt(style.paddingLeft) +
+        (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
+      y:
+        dy +
+        rect.y +
+        parseInt(style.paddingTop) +
+        (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
+    }; // bias to the left
   }
-  return {
-    x:
-      dx +
-      rect.x +
-      parseInt(style.paddingLeft) +
-      (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
-    y:
-      dy +
-      rect.y +
-      parseInt(style.paddingTop) +
-      (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
-  }; // bias to the left
 }
 
 function clickButton(targetNode, doc) {
@@ -256,7 +256,9 @@ function clickButton(targetNode, doc) {
       resolve();
     })
   );
-  ipcRenderer.sendToHost("click", rect.x, rect.y);
+  if (rect) {
+    ipcRenderer.sendToHost("click", rect.x, rect.y);
+  }
   return p;
   /* triggerMouseEvent(targetNode, "mouseover");
   setTimeout(() => {

@@ -782,6 +782,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                     this.setState({ interactions });
                   }}
                   execute={this.state.options.execute}
+                  noError={this.state.options.noError}
                 />
               ) : (
                 <WebView

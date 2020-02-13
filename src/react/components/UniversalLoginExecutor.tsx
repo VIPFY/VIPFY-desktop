@@ -28,6 +28,7 @@ interface Props {
   interactionHappenedCallback?: () => void;
   showLoadingScreen?: Function;
   execute?: Object[];
+  noError?: boolean;
 }
 
 interface State {
@@ -452,7 +453,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               return false;
             };
           }
-          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/"],[]));
+          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account"],[]));
           //console.log("LOGIN", loginarray)
           return loginarray.length > 0
         })();
@@ -643,7 +644,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         w.getWebContents().capturePage(async image => {
           const loggedin = await this.isLoggedIn(w);
           let errorin = false;
-          if (!loggedin) {
+          if (!loggedin && !this.props.noError) {
             errorin = await this.isErrorIn(w);
           }
           console.log("sentResult", loggedin, errorin, this.loginState);
@@ -705,10 +706,11 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     if (
       (this.loginState.emailEnteredEnd || this.loginState.passwordEnteredEnd) &&
       this.webview &&
+      !this.props.noError &&
       (await this.isErrorIn(this.webview))
     ) {
       await sleep(100);
-      if (await this.isErrorIn(this.webview)) {
+      if (!this.props.noError && (await this.isErrorIn(this.webview))) {
         console.log("ERROR", await this.isErrorIn(this.webview), this.props.loginUrl);
         this.timeout = false;
         this.progress = 1;
