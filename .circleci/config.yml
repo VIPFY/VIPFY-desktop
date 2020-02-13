@@ -55,10 +55,13 @@ jobs:
             - mac-dependencies
       - run:
           name: Get the base64 encoded application certificate back
-          command: echo $ENCODED_NILS | base64 -D > ~/application_cert.p12
+          command: echo $ENCODED_APPLICATION | base64 -D > ~/application_cert.p12
       - run:
           name: Get the base64 encoded installer certificate back
           command: echo $ENCODED_INSTALLER | base64 -D > ~/installer_cert.p12
+      - run:
+          name: Get the base64 encoded nils certificate back
+          command: echo $ENCODED_NILS | base64 -D > ~/nils_cert.p12
       - run:
           name: Get the base64 encoded provisioning file back
           command: echo $ENCODED_PROVISIONING | base64 -D > ~/repo/339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile
@@ -79,10 +82,13 @@ jobs:
       #     command: echo DEVELOPER_PROFILE | base64 -D > ~/Library/VipfyDesktop/Provisioning\ Profiles/Vipfy.mobileprovision
       - run:
           name: Import the private key of the application file for the signing process
-          command: security import ~/application_cert.p12 -P "$NILS_PW" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
+          command: security import ~/application_cert.p12 -P "$APPLICATION_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
       - run:
           name: Import the private key of the installer file for the signing process
           command: security import ~/installer_cert.p12 -P "$INSTALLER_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
+      - run:
+          name: Import the private key of the nils file for the signing process
+          command: security import ~/nils_cert.p12 -P "$NILS_PW" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
       - run: security find-identity -p codesigning -v
       - run:
           name: Install cli tool to sign the Mac App
@@ -104,9 +110,9 @@ jobs:
       - run:
           name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID DEBUG=electron-osx-sign* npm run publish-js
-      - run:
-          name: Sign the App
-          command: electron-osx-sign --platform darwin ~/repo/out/VIPFY-darwin-x64/VIPFY.app --provisioning-profile ~/339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile --keychain VipfyKeychain.keychain
+      # - run:
+      #     name: Sign the App
+      #     command: electron-osx-sign --platform darwin ~/repo/out/VIPFY-darwin-x64/VIPFY.app --provisioning-profile ~/339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile --keychain VipfyKeychain.keychain
       # - run:
       #     name: Make our deploy script executable
       #     command: chmod +x .circleci/release-nucleus.sh
