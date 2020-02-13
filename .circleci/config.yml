@@ -59,24 +59,24 @@ jobs:
       - run:
           name: Get the base64 encoded installer certificate back
           command: echo $ENCODED_INSTALLER | base64 -D > ~/installer_cert.p12
-      # - run:
-      #     name: Get the base64 encoded provisioning file back
-      #     command: echo $ENCODED_PROVISIONING | base64 -D > 339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile
+      - run:
+          name: Get the base64 encoded provisioning file back
+          command: echo $ENCODED_PROVISIONING | base64 -D > 339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile
       - run:
           name: Create the Keychain for for the build process
           command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
       - run:
           name: Add the created keychain to the default list
           command: security list-keychains -d user -s $(security list-keychains -d user | sed -e s/\"//g) VipfyKeychain.keychain
-      # - run:
+      - run:
+          name: Set the created keychain as default
+          command: security default-keychain
+          # - run:
       #     name: make Provisioning Profiles directory
       #     command: mkdir -pv ~/Library/VipfyDesktop/Provisioning\ Profiles/
       # - run:
       #     name: decode Provisioning Profiles
       #     command: echo DEVELOPER_PROFILE | base64 -D > ~/Library/VipfyDesktop/Provisioning\ Profiles/Vipfy.mobileprovision
-          # - run:
-      #     name: List all Keychains - should only be one
-      #     command: security list-keychains
       - run:
           name: Import the private key of the application file for the signing process
           command: security import ~/application_cert.p12 -P "$APPLICATION_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain-db -A

@@ -8,7 +8,7 @@ module.exports = {
       type: "distribution",
       keychain: "VipfyKeychain.keychain",
       // prettier-ignore
-      // "provisioning-profile": '339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile',
+      "provisioning-profile": '339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile',
       identity: "Developer ID Application: VIPFY GmbH (RD6VS27844)"
     }
   },
