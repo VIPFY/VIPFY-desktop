@@ -9,7 +9,7 @@ module.exports = {
       type: "distribution",
       keychain: "VipfyKeychain.keychain",
       "provisioning-profile": "339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile",
-      identity: "Developer ID Application: nv@vipfy.com (F86QVFWFB4)"
+      identity: "Mac Developer: nv@vipfy.com (F86QVFWFB4)"
     }
   },
   makers: [

@@ -94,7 +94,7 @@ jobs:
           key: mac-dependencies
       - run:
           name: Make sure your signing identity is valid
-          command: security find-identity codesigning -v
+          command: security find-identity -p codesigning -v
       - run:
           name: Set our development channel ID
           command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
