@@ -55,7 +55,7 @@ jobs:
             - mac-dependencies
       - run:
           name: Get the base64 encoded application certificate back
-          command: echo $ENCODED_APPLICATION | base64 -D > ~/application_cert.p12
+          command: echo $ENCODED_NILS | base64 -D > ~/application_cert.p12
       - run:
           name: Get the base64 encoded installer certificate back
           command: echo $ENCODED_INSTALLER | base64 -D > ~/installer_cert.p12
