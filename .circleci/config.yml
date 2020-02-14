@@ -119,16 +119,13 @@ jobs:
       - run:
           name: Build the current version for Mac
           command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID DEBUG=electron-osx-sign* npm run publish-js
-      # - run:
-      #     name: Sign the App
-      #     command: electron-osx-sign --platform darwin ~/repo/out/VIPFY-darwin-x64/VIPFY.app --provisioning-profile ~/339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile --keychain VipfyKeychain.keychain
-      # - run:
-      #     name: Make our deploy script executable
-      #     command: chmod +x .circleci/release-nucleus.sh
-      # - run:
-      #     name: Log in to nucleus and release the previously built version
-      #     command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
-# DEVELOPMENT=true SERVER_NAME=api.dev.vipfy.store CHANNEL_ID=92c1a89400e8f1153d46aa73ec4ce4d9 DEBUG=electron-osx-sign* npm run publish-js
+      - run:
+          name: Make our deploy script executable
+          command: chmod +x .circleci/release-nucleus.sh
+      - run:
+          name: Log in to nucleus and release the previously built version
+          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
+
 workflows:
   build-workflows:
     jobs:
