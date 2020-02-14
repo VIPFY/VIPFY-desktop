@@ -5,19 +5,6 @@ BRANCH=${BRANCH##refs/heads/}
 NUCLEUS_PW=$(cat .env | grep NUCLEUS_PW)
 NUCLEUS_PW=${NUCLEUS_PW##NUCLEUS_PW=}
 
-# echo "{
-#   \"channelID\": "\"$CHANNEL_ID\"",
-#     \"server\": \"dev.api.vipfy.store\",
-#     \"serverSSL\": true,
-#     \"serverPort\": 443,
-#     \"development\": true,
-#     \"stripe\": {
-#         \"live\": \"pk_live_OrfeIMTOFjG5o9S5zm9iYH0x\",
-#         \"dev\": \"pk_test_W9VDDvYKZqcmbgaz7iAcUR9j\"
-#     }
-# }" > config3.json
-
-
 # Login to the Apple and execute the script
 ssh -t nilsvossebein@rotten-fruit.fritz.box '
   export BRANCH='"'$BRANCH'"';
