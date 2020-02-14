@@ -401,21 +401,6 @@ export const fetchCompanyServicea = gql`
   }
 `;
 
-export const fetchServiceLicences = gql`
-  query fetchServiceLicences($employees: [ID!], $serviceid: ID!) {
-    fetchServiceLicences(employees: $employees, serviceid: $serviceid) {
-      id
-      licence {
-        id
-      }
-      starttime
-      endtime
-      agreed
-      alias
-    }
-  }
-`;
-
 export const FETCH_TOTAL_APP_USAGE = gql`
   query onFetchTotalAppUsage($starttime: Date, $endtime: Date) {
     fetchTotalAppUsage(starttime: $starttime, endtime: $endtime) {
