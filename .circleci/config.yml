@@ -77,6 +77,9 @@ jobs:
       - run:
           name: Set the created keychain as default
           command: security default-keychain -s VipfyKeychain.keychain
+      - run:
+          name: Unlock the keychain
+          command: security unlock-keychain -p $KEYCHAIN_PASSWORD
           # - run:
       #     name: make Provisioning Profiles directory
       #     command: mkdir -pv ~/Library/VipfyDesktop/Provisioning\ Profiles/
@@ -125,7 +128,7 @@ jobs:
       # - run:
       #     name: Log in to nucleus and release the previously built version
       #     command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
-
+# DEVELOPMENT=true SERVER_NAME=api.dev.vipfy.store CHANNEL_ID=92c1a89400e8f1153d46aa73ec4ce4d9 DEBUG=electron-osx-sign* npm run publish-js
 workflows:
   build-workflows:
     jobs:
