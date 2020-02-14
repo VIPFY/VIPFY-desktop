@@ -1,11 +1,11 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose } from "react-apollo";
+import { graphql, compose, withApollo } from "react-apollo";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
-import { filterError, ErrorComp } from "../common/functions";
+import { filterError, ErrorComp, getMyUnitId } from "../common/functions";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
-import { isNumber } from "util";
+import UserName from "./UserName";
 
 const READ_NOTIFICATION = gql`
   mutation onReadNotification($id: ID!) {
@@ -23,6 +23,7 @@ interface Props {
   moveTo: Function;
   sidebar: Object;
   data: any;
+  client: any;
   refetch: Function;
   readNotification: Function;
   readAll: Function;
@@ -129,6 +130,22 @@ class Notification extends React.Component<Props, State> {
     }
   };
 
+  renderNotificatonMessage(message) {
+    let re = /^(.*)([uU]ser [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+    const match = message.match(re);
+    if (!match) {
+      return message;
+    } else {
+      return (
+        <>
+          {match[1]}
+          <UserName unitid={match[2].substring(5)} userid={getMyUnitId(this.props.client)} />
+          {match[3]}
+        </>
+      );
+    }
+  }
+
   renderNotifications(notifications) {
     if (this.state.error) {
       return <ErrorComp error={this.state.error} />;
@@ -137,7 +154,7 @@ class Notification extends React.Component<Props, State> {
     return notifications.map(({ message, icon, sendtime, id, link }) => (
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
-        <p className="notificationText">{message}</p>
+        <p className="notificationText">{this.renderNotificatonMessage(message)}</p>
         <div className="notificationTime">
           {!isNaN(sendtime - 0)
             ? moment(sendtime - 0).format("LLL")
@@ -197,4 +214,4 @@ class Notification extends React.Component<Props, State> {
 export default compose(
   graphql(READ_NOTIFICATION, { name: "readNotification" }),
   graphql(READ_ALL_NOTIFICATIONS, { name: "readAll" })
-)(Notification);
+)(withApollo(Notification));
