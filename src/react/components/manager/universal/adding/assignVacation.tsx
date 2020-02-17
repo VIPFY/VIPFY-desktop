@@ -182,13 +182,13 @@ class AssignVacation extends React.Component<Props, State> {
                           />
                         </div>
                       ))}
-                      <div className="listingDiv" key="new">
+                      {/*<div className="listingDiv" key="new">
                         <UniversalButton
                           type="low"
                           label="Create new User"
                           onClick={() => this.setState({ showall: false })}
                         />
-                      </div>
+                          </div>*/}
                       <UniversalButton type="low" label="Cancel" closingPopup={true} />
                     </PopupBase>
                   )}
