@@ -99,7 +99,7 @@ export async function createLicenceKeyFragmentForUser(
     await client.query({
       query: gql`
         query fetchLicenceKey($licenceid: ID!) {
-          fetchLicences(licenceid: $licenceid) {
+          fetchLicence(licenceid: $licenceid) {
             id
             key
           }
@@ -108,25 +108,7 @@ export async function createLicenceKeyFragmentForUser(
       fetchPolicy: "network-only",
       variables: { licenceid }
     })
-  ).data.fetchLicences[0];
-
-  if (!licence) {
-    //IF Admin check if free licences
-    licence = (
-      await client.query({
-        query: gql`
-          query fetchLicenceKeyAdmin($licenceid: ID!) {
-            fetchPureLicenceData(licenceid: $licenceid) {
-              id
-              key
-            }
-          }
-        `,
-        fetchPolicy: "network-only",
-        variables: { licenceid }
-      })
-    ).data.fetchPureLicenceData[0];
-  }
+  ).data.fetchLicence;
 
   let originalKey = await decryptLicenceKey(client, licence);
 
@@ -151,7 +133,7 @@ export async function reencryptLicenceKeyObject(
     await client.query({
       query: gql`
         query fetchLicenceKey($licenceid: ID!) {
-          fetchLicences(licenceid: $licenceid) {
+          fetchLicence(licenceid: $licenceid) {
             id
             key
           }
@@ -160,25 +142,7 @@ export async function reencryptLicenceKeyObject(
       fetchPolicy: "network-only",
       variables: { licenceid }
     })
-  ).data.fetchLicences[0];
-
-  if (!licence) {
-    //IF Admin check if free licences
-    licence = (
-      await client.query({
-        query: gql`
-          query fetchLicenceKeyAdmin($licenceid: ID!) {
-            fetchPureLicenceData(licenceid: $licenceid) {
-              id
-              key
-            }
-          }
-        `,
-        fetchPolicy: "network-only",
-        variables: { licenceid }
-      })
-    ).data.fetchPureLicenceData[0];
-  }
+  ).data.fetchLicence;
 
   let originalKey = await decryptLicenceKey(client, licence);
   let modifiedKey = { ...originalKey, ...changes };

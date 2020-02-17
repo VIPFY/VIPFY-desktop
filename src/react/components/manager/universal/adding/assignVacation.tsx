@@ -4,7 +4,7 @@ import UniversalButton from "../../../../components/universalButtons/universalBu
 import Calendar from "react-calendar";
 import moment, { now } from "moment";
 import { Query } from "react-apollo";
-import { fetchUserLicences, fetchDepartmentsData } from "../../../../queries/departments";
+import { fetchDepartmentsData } from "../../../../queries/departments";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import { concatName } from "../../../../common/functions";

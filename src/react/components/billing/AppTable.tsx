@@ -116,7 +116,6 @@ class AppListInner extends React.Component<Props, State> {
             <th>App</th>
             <th>Orbit</th>
             <th>Total Accounts</th>
-            <th>Used Accounts</th>
             <th>Time Spent this Month</th>
             <th />
           </tr>
@@ -183,7 +182,6 @@ class AppListInner extends React.Component<Props, State> {
             </td>
             <td>{boughtplan.alias}</td>
             <td>{licencestotal}</td>
-            <td>{licencesused}</td>
             <td>{totalDur}</td>
             <td align="right" className="naked-button-holder">
               {/* Not needed till the Launch of the Marketplace */}

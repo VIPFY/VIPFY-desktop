@@ -214,26 +214,11 @@ class App extends React.Component<AppProps, AppState> {
     try {
       let loginkey: Buffer | null = null;
       let encryptionkey1: Buffer | null = null;
-      let token = null;
-      let twofactor = null;
-      let unitid = null;
-      try {
-        ({ loginkey, encryptionkey1 } = await hashPassword(this.props.client, email, password));
-        const res = await this.props.signIn({
-          variables: { email, passkey: loginkey.toString("hex") }
-        });
-        ({ token, twofactor, unitid } = res.data.signIn);
-      } catch (err) {
-        // fallback for accounts without passkey
-        // this should eventually be removed
-
-        loginkey = null; // reset since it's invalid
-        encryptionkey1 = null;
-        const res = await this.props.signIn({
-          variables: { email, password }
-        });
-        ({ token, twofactor, unitid } = res.data.signIn);
-      }
+      ({ loginkey, encryptionkey1 } = await hashPassword(this.props.client, email, password));
+      const res = await this.props.signIn({
+        variables: { email, passkey: loginkey.toString("hex") }
+      });
+      const { token, twofactor, unitid } = res.data.signIn;
 
       if (!twofactor) {
         localStorage.setItem("token", token);
