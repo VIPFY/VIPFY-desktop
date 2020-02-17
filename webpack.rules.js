@@ -15,6 +15,8 @@ module.exports = [
   //   }
   // },
 
+  // send everything, even dependencies, through babel.
+  // this is nessesary until jscrambler supports async
   {
     test: /\.(ts|js)x?$/,
     use: [
@@ -28,28 +30,5 @@ module.exports = [
         }
       }
     ]
-    // include: /(node_modules)/
   }
-  // {
-  //   test: /\.tsx?$/,
-  //   use: [
-  //     //{ loader: "obfuscator-loader" },
-  //     {
-  //       loader: "babel-loader"
-  //     }
-  //     // {
-  //     //   loader: "ts-loader",
-  //     //   options: {
-  //     //     transpileOnly: true
-  //     //   }
-  //     // }
-  //   ],
-  //   exclude: /(node_modules)/
-  // }
-  // {
-  //   test: /\.tsx?$/,
-  //   enforce: "post",
-  //   use: [{ loader: "obfuscator-loader" }],
-  //   exclude: /(node_modules)/
-  // }
 ];
