@@ -373,7 +373,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Account Integrator",
         location: "integrations",
         icon: "shapes",
-        show: true,
+        show: this.props.isadmin,
         highlight: "integrationselement"
       },
       {

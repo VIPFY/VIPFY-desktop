@@ -637,7 +637,16 @@ async function execute(operations, mainexecute = false) {
     if (mainexecute) {
       ipcRenderer.sendToHost("executeStep");
     }
-    doc = args.document ? document.querySelector(args.document).contentWindow.document : document;
+    if (args.documents) {
+      doc = document;
+      args.documents.forEach(thisdoc => {
+        doc = doc.querySelector(thisdoc).contentWindow.document;
+      });
+    } else if (args.document) {
+      doc = document.querySelector(args.document).contentWindow.document;
+    } else {
+      doc = document;
+    }
     switch (operation) {
       case "sleep":
         let randomrange = args.randomrange || args.seconds / 5;
@@ -656,7 +665,6 @@ async function execute(operations, mainexecute = false) {
         await p;
         break;
       case "click":
-        //console.log("CLICK", doc.querySelector(args.selector));
         await clickButton(doc.querySelector(args.selector), args.document);
         break;
       case "fill":
@@ -689,7 +697,6 @@ async function execute(operations, mainexecute = false) {
         let totaltime = 0;
         //console.log("EXECUTE COOKIE");
         while (totaltime < 5000) {
-          //console.log(doc.querySelector(args.selector), cookiebutton);
           if (args.selector ? doc.querySelector(args.selector) : cookiebutton) {
             //Wait for animations
             let oldposx,

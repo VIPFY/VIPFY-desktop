@@ -10,6 +10,8 @@ import ErrorPopup from "../popups/errorPopup";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
 import HeaderNotificationContext from "../components/notifications/headerNotificationContext";
 import { decryptLicenceKey } from "../common/passwords";
+import PopupBase from "../popups/universalPopups/popupBase";
+import UniversalButton from "../components/universalButtons/universalButton";
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -46,6 +48,7 @@ export type WebViewState = {
   errorScreen: boolean;
   oldspeed: number | undefined;
   key: any;
+  errorRecheck: boolean;
 };
 
 export type WebViewProps = {
@@ -88,6 +91,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     errorScreen: false,
     oldspeed: undefined,
     key: null,
+    errorRecheck: false,
     accountId: ""
   };
 
@@ -341,6 +345,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
   }
 
+  waitforRecheck() {
+    setTimeout(() => this.setState({ errorRecheck: true }), 5000);
+  }
   render() {
     let cssClass = "marginLeft";
     if (this.props.chatOpen) {
@@ -465,18 +472,138 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   }}
                   execute={this.state.options.execute}
                   noError={this.state.options.noError}
+                  individualShow={this.state.options.individualShow}
+                  noUrlCheck={this.state.options.noUrlCheck}
+                  individualNotShow={this.state.options.individualNotShow}
                 />
               ) : (
                 <div>Please Update VIPFY to use this service</div>
               )}
               {this.state.error && (
-                //TODO VIP-411 Replace old Popup with new PopupBase
-                <Popup
-                  popupHeader={"Ooopps, sorry it seems that we can't log you in"}
-                  popupBody={ErrorPopup}
-                  bodyProps={{ sentence: this.state.error }}
-                  onClose={this.closePopup}
-                />
+                <PopupBase small={true}>
+                  <h2>Ooopps, sorry it seems that we can't log you in</h2>
+                  <p style={{ marginTop: "24px" }}>
+                    Please take a look and give us Feedback to improve our Login-System
+                  </p>
+                  <UniversalButton
+                    type="high"
+                    onClick={() => {
+                      this.hideLoadingScreen();
+                      this.waitforRecheck();
+                      this.setState({ error: null });
+                    }}
+                    label="ok"
+                  />
+                </PopupBase>
+              )}
+              {this.state.errorRecheck && (
+                <PopupBase small={true} buttonStyles={{ justifyContent: "flex-start" }}>
+                  <h2>Please help us to improve</h2>
+                  <p style={{ marginTop: "24px" }}>Have you found a reason for the failed login?</p>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <UniversalButton
+                      type="high"
+                      label="Account expired"
+                      onClick={async () => {
+                        try {
+                          await this.props.logError({
+                            variables: {
+                              licenceId: this.state.licenceId,
+                              accountId: this.state.accountId,
+                              unitId: this.state.unitId,
+                              options: this.state.options,
+                              appid: this.state.appid,
+                              error: this.state.error,
+                              loginspeed: this.state.loginspeed,
+                              label: "Account expired"
+                            }
+                          });
+                        } catch (err) {
+                          console.error(err);
+                        }
+                        this.setState({ errorRecheck: false });
+                      }}
+                      customStyles={{ marginBottom: "24px" }}
+                    />
+                    <UniversalButton
+                      type="high"
+                      label="Wrong credentials"
+                      onClick={async () => {
+                        try {
+                          await this.props.logError({
+                            variables: {
+                              licenceId: this.state.licenceId,
+                              accountId: this.state.accountId,
+                              unitId: this.state.unitId,
+                              options: this.state.options,
+                              appid: this.state.appid,
+                              error: this.state.error,
+                              loginspeed: this.state.loginspeed,
+                              label: "Wrong credentials"
+                            }
+                          });
+                        } catch (err) {
+                          console.error(err);
+                        }
+                        this.setState({ errorRecheck: false });
+                      }}
+                      customStyles={{ marginBottom: "24px" }}
+                    />
+                    <UniversalButton
+                      type="high"
+                      label="The login actually worked"
+                      onClick={async () => {
+                        try {
+                          await this.props.logError({
+                            variables: {
+                              licenceId: this.state.licenceId,
+                              accountId: this.state.accountId,
+                              unitId: this.state.unitId,
+                              options: this.state.options,
+                              appid: this.state.appid,
+                              error: this.state.error,
+                              loginspeed: this.state.loginspeed,
+                              label: "The login actually worked"
+                            }
+                          });
+                        } catch (err) {
+                          console.error(err);
+                        }
+                        this.setState({ errorRecheck: false });
+                      }}
+                      customStyles={{ marginBottom: "24px" }}
+                    />
+                    <UniversalButton
+                      type="high"
+                      label="Still on the LoginPage"
+                      onClick={async () => {
+                        try {
+                          await this.props.logError({
+                            variables: {
+                              licenceId: this.state.licenceId,
+                              accountId: this.state.accountId,
+                              unitId: this.state.unitId,
+                              options: this.state.options,
+                              appid: this.state.appid,
+                              error: this.state.error,
+                              loginspeed: this.state.loginspeed,
+                              label: "Still on the LoginPage"
+                            }
+                          });
+                        } catch (err) {
+                          console.error(err);
+                        }
+                        this.setState({ errorRecheck: false });
+                      }}
+                      customStyles={{ marginBottom: "24px" }}
+                    />
+                  </div>
+                  <UniversalButton
+                    type="low"
+                    onClick={() => this.setState({ errorRecheck: false })}
+                    label="cancel"
+                  />
+                </PopupBase>
               )}
 
               {this.state.popup && (
