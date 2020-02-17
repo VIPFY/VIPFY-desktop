@@ -47,7 +47,7 @@ export default () => {
     window.addEventListener("keydown", onEnter, true);
 
     return function cleanup() {
-      window.removeEventListener("keydown", onEnter);
+      window.removeEventListener("keydown", onEnter, true);
     };
   });
 
