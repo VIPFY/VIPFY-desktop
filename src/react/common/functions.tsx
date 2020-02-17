@@ -169,7 +169,8 @@ export const refetchQueries = async (client: ApolloClient<InMemoryCache>, querie
     mutation: DUMMY_QUERY,
     errorPolicy: "ignore",
     fetchPolicy: "no-cache",
-    refetchQueries: queries
+    refetchQueries: queries,
+    awaitRefetchQueries: true
   });
 };
 

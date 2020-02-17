@@ -10,6 +10,7 @@ interface Props {
   form?: string;
   wrapperClass?: string;
   textareaClass?: string;
+  value?: string;
 }
 
 export default (props: Props) => {

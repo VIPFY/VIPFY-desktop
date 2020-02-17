@@ -13,6 +13,8 @@ process.on("uncaughtException", error => {
   logger.error(error);
 });
 
+app.commandLine.appendSwitch("disable-site-isolation-trials");
+
 const store = new Store();
 const key = getSetupKey();
 if (key !== false) {

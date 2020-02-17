@@ -247,13 +247,6 @@ class EmployeeOverview extends React.Component<Props, State> {
                   case "Teams":
                     break;
                   case "Services":
-                    /* interemployees.sort(function(a, b) {
-                        let servicesA = data.fetchUsersOwnLicences(a.id);
-                        let servicesB = data.fetchUsersOwnLicences(b.id);
-                        console.log("Check");
-
-                        return 0;
-                      }); */
                     break;
 
                   default:

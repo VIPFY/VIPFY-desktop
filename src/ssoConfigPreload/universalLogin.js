@@ -71,7 +71,6 @@ ipcRenderer.once("loginData", async (e, key) => {
     speed = key.speed || 1;
     let didAnything = false;
     while (!emailEntered || !passwordEntered || stopped) {
-      //console.log("LOGIN DATA", !emailEntered, !passwordEntered, stopped);
       await sleep(100);
       let totaltime = 100;
       let email = findEmailField();
@@ -93,7 +92,6 @@ ipcRenderer.once("loginData", async (e, key) => {
       }
 
       recaptcha = findRecaptcha();
-      //console.log(recaptcha);
       if (recaptcha && !checkRecaptcha) {
         //console.log("FOUND RECAPTCHA");
         await recaptchaClick(recaptcha);
@@ -147,7 +145,7 @@ ipcRenderer.once("loginData", async (e, key) => {
       await sleep(500);
     }
     if (emailEntered && passwordEntered && !stopped) {
-      recaptcha = findForm().querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
+      recaptcha = document.querySelector('iframe[src*="/recaptcha/"]:not([src*="/anchor?"])');
       if (recaptcha && (recaptcha.scrollHeight != 0 || recaptcha.scrollWidth != 0)) {
         ipcRenderer.sendToHost("recaptcha", null);
       } else {
@@ -165,8 +163,10 @@ ipcRenderer.once("loginData", async (e, key) => {
 
 async function start() {
   //if (!document.body.id.includes("beacon")) {
+  console.log("START TEST", location.href);
   ipcRenderer.sendToHost("loaded", null);
   ipcRenderer.sendToHost("getLoginData", null);
+  console.log("START TEST END", location.href);
   //}
 }
 
@@ -220,28 +220,30 @@ function isEqualOrChild(child, parent) {
 }
 
 function getMidPoint(e, doc) {
-  var rect = e.getBoundingClientRect();
-  const style = window.getComputedStyle(e);
-  var dx = 0;
-  var dy = 0;
-  if (doc) {
-    var iframe = document.querySelector(args.document);
-    var drect = iframe.getBoundingClientRect();
-    dx = drect.x;
-    dy = drect.y;
+  if (e) {
+    var rect = e.getBoundingClientRect();
+    const style = window.getComputedStyle(e);
+    var dx = 0;
+    var dy = 0;
+    if (doc) {
+      var iframe = document.querySelector(args.document);
+      var drect = iframe.getBoundingClientRect();
+      dx = drect.x;
+      dy = drect.y;
+    }
+    return {
+      x:
+        dx +
+        rect.x +
+        parseInt(style.paddingLeft) +
+        (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
+      y:
+        dy +
+        rect.y +
+        parseInt(style.paddingTop) +
+        (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
+    }; // bias to the left
   }
-  return {
-    x:
-      dx +
-      rect.x +
-      parseInt(style.paddingLeft) +
-      (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
-    y:
-      dy +
-      rect.y +
-      parseInt(style.paddingTop) +
-      (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
-  }; // bias to the left
 }
 
 function clickButton(targetNode, doc) {
@@ -254,7 +256,9 @@ function clickButton(targetNode, doc) {
       resolve();
     })
   );
-  ipcRenderer.sendToHost("click", rect.x, rect.y);
+  if (rect) {
+    ipcRenderer.sendToHost("click", rect.x, rect.y);
+  }
   return p;
   /* triggerMouseEvent(targetNode, "mouseover");
   setTimeout(() => {
@@ -328,6 +332,15 @@ function findDomainField() {
     .filter(filterDom(["account", "domain"], ["pw", "pass", "email"]))
     .filter(e => !isHidden(e))
     .filter(e => !e.disabled);
+  return t[0];
+}
+
+function findDomainField() {
+  let t = Array.from(findForm().querySelectorAll("input"))
+    .filter(filterDom(["account", "domain"], ["pw", "pass", "email"]))
+    .filter(e => !isHidden(e))
+    .filter(e => !e.disabled);
+  console.log("DOMAIN", t);
   return t[0];
 }
 
@@ -480,6 +493,7 @@ function findConfirmButton(ignoreForm) {
 }
 
 function findCookieButton() {
+  console.log("find Cookie Button");
   var t = Array.from(
     document.querySelectorAll(
       "#onetrust-accept-btn-handler, [class~=cc-compliance] > [class~=cc-dismiss], [class~='consent'] > a[class~='call'], [ba-click='{{allow()}}']"
@@ -510,6 +524,7 @@ function findCookieButton() {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
+  console.log("return Cookie Button", t[0]);
   return t[0];
 }
 
@@ -622,7 +637,16 @@ async function execute(operations, mainexecute = false) {
     if (mainexecute) {
       ipcRenderer.sendToHost("executeStep");
     }
-    doc = args.document ? document.querySelector(args.document).contentWindow.document : document;
+    if (args.documents) {
+      doc = document;
+      args.documents.forEach(thisdoc => {
+        doc = doc.querySelector(thisdoc).contentWindow.document;
+      });
+    } else if (args.document) {
+      doc = document.querySelector(args.document).contentWindow.document;
+    } else {
+      doc = document;
+    }
     switch (operation) {
       case "sleep":
         let randomrange = args.randomrange || args.seconds / 5;
@@ -641,7 +665,6 @@ async function execute(operations, mainexecute = false) {
         await p;
         break;
       case "click":
-        //console.log("CLICK", doc.querySelector(args.selector));
         await clickButton(doc.querySelector(args.selector), args.document);
         break;
       case "fill":
@@ -674,7 +697,6 @@ async function execute(operations, mainexecute = false) {
         let totaltime = 0;
         //console.log("EXECUTE COOKIE");
         while (totaltime < 5000) {
-          //console.log(doc.querySelector(args.selector), cookiebutton);
           if (args.selector ? doc.querySelector(args.selector) : cookiebutton) {
             //Wait for animations
             let oldposx,

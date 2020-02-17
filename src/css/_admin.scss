@@ -212,3 +212,21 @@ webview.universalLoginExecutor {
 .simpletable tr:hover {
   background: lightblue;
 }
+
+.editAdminPage{
+  padding: 80px;
+
+
+  .appimage{
+    border-radius: 4px;
+    background-color: #F5F5F5;
+    background-position: center;
+    background-size: cover;
+    margin-left: 16px;
+    margin-top: 16px;
+    width: 96px;
+    height: 96px;
+    position: relative;
+    cursor: pointer;
+  }
+}

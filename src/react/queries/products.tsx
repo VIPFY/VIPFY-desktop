@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const fetchApps = gql`
-  query {
+  query allApps {
     allApps {
       id
       teaserdescription
@@ -397,21 +397,6 @@ export const fetchCompanyServicea = gql`
           }
         }
       }
-    }
-  }
-`;
-
-export const fetchServiceLicences = gql`
-  query fetchServiceLicences($employees: [ID!], $serviceid: ID!) {
-    fetchServiceLicences(employees: $employees, serviceid: $serviceid) {
-      id
-      licence {
-        id
-      }
-      starttime
-      endtime
-      agreed
-      alias
     }
   }
 `;
