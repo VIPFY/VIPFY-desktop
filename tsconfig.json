@@ -8,7 +8,6 @@
     "noImplicitAny": false,
     "noUnusedParameters": true,
     "noImplicitThis": true,
-    "importHelpers": true,
     "declarationDir": "dist/types",
     "declaration": true,
     "module": "es2015",
