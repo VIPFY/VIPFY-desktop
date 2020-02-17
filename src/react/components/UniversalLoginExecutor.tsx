@@ -29,6 +29,9 @@ interface Props {
   showLoadingScreen?: Function;
   execute?: Object[];
   noError?: boolean;
+  individualShow?: string;
+  noUrlCheck?: boolean;
+  individualNotShow?: string;
 }
 
 interface State {
@@ -289,7 +292,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         src={this.state.currentUrl || this.props.loginUrl}
         partition={this.props.partition}
         className={this.props.className}
-        useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
+        useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
         onIpcMessage={e => this.onIpcMessage(e)}
         style={this.props.style || {}}
         onNewWindow={e => this.onNewWindow(e)}
@@ -306,8 +309,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
     for (const p of urlParts) {
       //for (const m of l) {
-      if (initial[p].includesAny(l) && !now[p].includesAny(l)) {
-        //console.log("URL TRUE", initial[p]);
+      if (initial[p].includesAny(l) && !now[p].includesAny(l) && !this.props.noUrlCheck) {
+        console.log("URL TRUE", initial[p]);
         //await sleep(200);
         return true;
       }
@@ -453,7 +456,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               return false;
             };
           }
-          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account", "cmds-header__avatar-menu qa-member-menu-trigger", "js_signout"],[]));
+          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account", "cmds-header__avatar-menu qa-member-menu-trigger", "js_signout", "settings" ${
+            this.props.individualShow ? `, "${this.props.individualShow}"` : ""
+          }],[${this.props.individualNotShow ? `"${this.props.individualNotShow}"` : ""}]));
           //console.log("LOGIN", loginarray)
           return loginarray.length > 0
         })();
