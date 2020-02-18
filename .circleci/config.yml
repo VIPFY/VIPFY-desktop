@@ -9,12 +9,12 @@ orbs:
 
 jobs:
   windows: # This is the name of the build
+    branches:
+      only:
+        - /custom-version-.*/
     executor: win/default
     working_directory: ~/repo
-    filters:
-       branches:
-          only:
-            - /custom-version-.*/
+
     steps:
       - checkout # Checks out our code from Bitbucket and installs dependencies
       # Download and cache dependencies
