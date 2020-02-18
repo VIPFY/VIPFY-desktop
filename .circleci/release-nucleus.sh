@@ -13,12 +13,12 @@ curl -L -b cookies.txt -c cookies.txt -u jf:"$PASSWORD" http://release.vipfy.sto
 sleep 3
 
 # Get the previously built version and save the result in a Variable
-VERSION_ID=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq --arg VERSION "$VERSION" 'map(select(.version==$VERSION))')
-echo "This Version is $VERSION_ID"
+VERSION_IDS=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq --arg VERSION "$VERSION" 'map(select(.version==$VERSION))')
+echo "Found this Versions $VERSION_IDS"
 sleep 1
 
-TEST=$(echo $VERSION | jq '.[0].id')
-echo "$TEST"
+VERSION_ID=$(echo $VERSION_IDS | jq '.[0].id')
+echo "$VERSION_ID"
 
 # VERSION_NAME=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq '.[0].version')
 # echo "New Version will be called $VERSION_NAME"
