@@ -30,7 +30,7 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
 
   cat config.json
   echo "Unlock the default keychain"
-  security unlock-keychain /Users/nilsvossebein/Library/Keychains/login.keychain-db -p $MAC_PW
+  security unlock-keychain /Users/nilsvossebein/Library/Keychains/login.keychain-db -p "$MAC_PW"
 
   DEBUG=electron-osx-sign* npm run publish-js
   # npm version prerelease -f
