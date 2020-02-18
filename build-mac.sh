@@ -41,9 +41,6 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
 
   DEBUG=electron-osx-sign* npm run publish-js
-  # npm version prerelease -f
-  # git add -A
-  # git commit -m"Set Version"
   echo "App successfully built. Uploading now..."
   chmod +x .circleci/release-nucleus.sh
   ./.circleci/release-nucleus.sh "$NUCLEUS_PW" "$CHANNEL_ID"
