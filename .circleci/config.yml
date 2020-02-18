@@ -3,18 +3,12 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 
 version: 2.1
-
 orbs:
   win: circleci/windows@2.2.0
-
 jobs:
   windows: # This is the name of the build
-    branches:
-      only:
-        - /custom-version-.*/
     executor: win/default
     working_directory: ~/repo
-
     steps:
       - checkout # Checks out our code from Bitbucket and installs dependencies
       # Download and cache dependencies
@@ -49,3 +43,12 @@ jobs:
           name: Log in to nucleus and release the previously built version
           command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
           shell: bash.exe
+
+workflows:
+  build-workflows:
+    jobs:
+       - windows:
+          filters:
+            branches:
+              only:
+                - /custom-version-.*/
