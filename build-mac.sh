@@ -1,14 +1,16 @@
-#!/bin/bash
+cat#!/bin/bash
 # Get the current branch
 BRANCH="$(git symbolic-ref HEAD 2>/dev/null)"
 BRANCH=${BRANCH##refs/heads/}
 NUCLEUS_PW=$(cat .env | grep NUCLEUS_PW)
 NUCLEUS_PW=${NUCLEUS_PW##NUCLEUS_PW=}
+MAC_PW=${MAC_PW##MAC_PW=}
 
 # Login to the Apple and execute the script
 ssh -t nilsvossebein@rotten-fruit.fritz.box '
   export BRANCH='"'$BRANCH'"';
-  export NUCLEUS_PW='"'$NUCLEUS_PW'"'
+  export NUCLEUS_PW='"'$NUCLEUS_PW'"';
+  export MAC_PW='"'$MAC_PW'"';
   CHANNEL_ID=92c1a89400e8f1153d46aa73ec4ce4d9
 
   echo "Successfully logged into Mac"
@@ -27,6 +29,8 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   ./build-linux.sh
 
   cat config.json
+  echo "Unlock the default keychain"
+  security unlock-keychain /Users/nilsvossebein/Library/Keychains/login.keychain-db -p $MAC_PW
 
   DEBUG=electron-osx-sign* npm run publish-js
   # npm version prerelease -f
