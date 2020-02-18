@@ -4,6 +4,8 @@ touch cookies.txt
 
 PASSWORD=$1
 CHANNEL_ID=$2
+VERSION=$(cat package.json | jq -r '.version')
+echo "This is the created VERSION $VERSION"
 
 # Log in to nucleus
 echo "Logging into Nucleus"
@@ -11,8 +13,8 @@ curl -L -b cookies.txt -c cookies.txt -u jf:$PASSWORD http://release.vipfy.store
 sleep 3
 
 # Get the previously built version and save the result in a Variable
-VERSION_ID=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq '.[0].id')
-echo "Last Version was $VERSION_ID"
+VERSION_ID=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq --arg VERSION "$VERSION" 'map(select(.version=="$VERSION")).id')
+echo "This Version is $VERSION_ID"
 sleep 1
 
 VERSION_NAME=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq '.[0].version')
