@@ -23,12 +23,6 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   export DEVELOPMENT='"'$DEVELOPMENT'"'
   CHANNEL_ID=92c1a89400e8f1153d46aa73ec4ce4d9
 
-  echo "Editing config.json"
-  cat config.json
-
-  ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
-
-
   echo "Successfully logged into Mac"
   cd Documents
   rm -rf vipfy-desktop
@@ -37,20 +31,27 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   cd vipfy-desktop
   git checkout $BRANCH
   git pull
-  npm i
+    echo "Editing config.json"
+  cat config.json
+  ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
 
+  # npm i
 
-  echo "Unlock the default keychain"
-  security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
+  # # echo "Editing config.json"
+  # # cat config.json
+  # # ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
 
-  DEBUG=electron-osx-sign* npm run publish-js
-  # npm version prerelease -f
-  # git add -A
-  # git commit -m"Set Version"
-  echo "App successfully built. Uploading now..."
-  chmod +x .circleci/release-nucleus.sh
-  ./.circleci/release-nucleus.sh "$NUCLEUS_PW" "$CHANNEL_ID"
+  # echo "Unlock the default keychain"
+  # security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
 
-  echo "Successfully uploaded the App to Nucleus"
+  # DEBUG=electron-osx-sign* npm run publish-js
+  # # npm version prerelease -f
+  # # git add -A
+  # # git commit -m"Set Version"
+  # echo "App successfully built. Uploading now..."
+  # chmod +x .circleci/release-nucleus.sh
+  # ./.circleci/release-nucleus.sh "$NUCLEUS_PW" "$CHANNEL_ID"
+
+  # echo "Successfully uploaded the App to Nucleus"
   exit
 '
