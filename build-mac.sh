@@ -31,27 +31,23 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   cd vipfy-desktop
   git checkout $BRANCH
   git pull
-    echo "Editing config.json"
+  npm i
+
+  echo "Editing config.json"
   cat config.json
   ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
 
-  # npm i
+  echo "Unlock the default keychain"
+  security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
 
-  # # echo "Editing config.json"
-  # # cat config.json
-  # # ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
+  DEBUG=electron-osx-sign* npm run publish-js
+  # npm version prerelease -f
+  # git add -A
+  # git commit -m"Set Version"
+  echo "App successfully built. Uploading now..."
+  chmod +x .circleci/release-nucleus.sh
+  ./.circleci/release-nucleus.sh "$NUCLEUS_PW" "$CHANNEL_ID"
 
-  # echo "Unlock the default keychain"
-  # security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
-
-  # DEBUG=electron-osx-sign* npm run publish-js
-  # # npm version prerelease -f
-  # # git add -A
-  # # git commit -m"Set Version"
-  # echo "App successfully built. Uploading now..."
-  # chmod +x .circleci/release-nucleus.sh
-  # ./.circleci/release-nucleus.sh "$NUCLEUS_PW" "$CHANNEL_ID"
-
-  # echo "Successfully uploaded the App to Nucleus"
+  echo "Successfully uploaded the App to Nucleus"
   exit
 '

@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Make sure to have set CHANNEL_ID, SERVER and DEVELOPMENT in your .env file!"
+echo "Make sure to pass CHANNEL_ID, SERVER and DEVELOPMENT!"
 CHANNEL_ID=$1
 BUILD_SERVER=$2
 DEVELOPMENT=$3
