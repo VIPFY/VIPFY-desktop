@@ -51,5 +51,4 @@ workflows:
           filters:
             branches:
               only:
-                - master
-                # - /custom-version-.*/
+                - /custom-version-.*/
