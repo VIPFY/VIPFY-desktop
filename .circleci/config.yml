@@ -20,13 +20,10 @@ jobs:
           paths:
             - node_modules
           key: windows-dependencies
-      - run: set DEVELOPMENT=$DEVELOPMENT
       - run: set UNSIGNED=$UNSIGNED # Signing the App will fail, so remove this build step
-      - run: set SERVER_NAME=$SERVER_NAME
-      - run: set CHANNEL_ID=$CHANNEL_ID
       - run:
           name: Set our development channel ID
-          command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
+          command: ./set-dev-variables.sh
           shell: bash.exe
       - run:
           name: Create a custom tag for nucleus
