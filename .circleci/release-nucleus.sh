@@ -9,11 +9,11 @@ echo "This is the created VERSION $VERSION"
 
 # Log in to nucleus
 echo "Logging into Nucleus"
-curl -L -b cookies.txt -c cookies.txt -u jf:$PASSWORD http://release.vipfy.store:3030/rest/auth/login
+curl -L -b cookies.txt -c cookies.txt -u jf:"$PASSWORD" http://release.vipfy.store:3030/rest/auth/login
 sleep 3
 
 # Get the previously built version and save the result in a Variable
-VERSION_ID=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq --arg VERSION "$VERSION" 'map(select(.version=="$VERSION"))')
+VERSION_ID=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq --arg VERSION "$VERSION" 'map(select(.version==$VERSION))')
 echo "This Version is $VERSION_ID"
 sleep 1
 
