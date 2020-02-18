@@ -21,9 +21,13 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   export CHANNEL_ID='"'$CHANNEL_ID'"';
   export BUILD_SERVER='"'$BUILD_SERVER'"'
   export DEVELOPMENT='"'$DEVELOPMENT'"'
-
-
   CHANNEL_ID=92c1a89400e8f1153d46aa73ec4ce4d9
+
+  echo "Editing config.json"
+  cat config.json
+
+  ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
+
 
   echo "Successfully logged into Mac"
   cd Documents
@@ -35,10 +39,6 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   git pull
   npm i
 
-  echo "Editing config.json"
-  cat config.json
-
-  ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
 
   echo "Unlock the default keychain"
   security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
