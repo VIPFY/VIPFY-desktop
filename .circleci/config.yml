@@ -23,7 +23,7 @@ jobs:
       - run: set UNSIGNED=$UNSIGNED # Signing the App will fail, so remove this build step
       - run:
           name: Set our development channel ID
-          command: chmod +x ./set-dev-variables.sh && ./set-dev-variables.sh
+          command: ./set-dev-variables.sh
           shell: bash.exe
       - run:
           name: Create a custom tag for nucleus

@@ -4,7 +4,7 @@ CHANNEL_ID=${CHANNEL_ID##CHANNEL_ID=}
 BUILD_SERVER=${BUILD_SERVER##BUILD_SERVER=}
 DEVELOPMENT=${DEVELOPMENT##DEVELOPMENT=}
 
-cat config.json | jq '.channelID = $CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
+cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
 cat config.json | jq '.server = "$BUILD_SERVER"' config.json > config-temp.json && mv config-temp.json config.json
 cat config.json | jq '.development = "$DEVELOPMENT"' config.json > config-temp.json && mv config-temp.json config.json
 
