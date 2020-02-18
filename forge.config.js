@@ -6,7 +6,6 @@ module.exports = {
     osxSign: {
       platform: "darwin",
       type: "distribution",
-      // "provisioning-profile": "339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile",
       identity: "Developer ID Application: VIPFY GmbH (RD6VS27844)"
     }
   },
