@@ -1,4 +1,5 @@
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const JscramblerWebpack = require("jscrambler-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = [
@@ -35,4 +36,18 @@ module.exports = [
   //   banner:
   //     "hash:[hash], chunkhash:[chunkhash], name:[name], filebase:[filebase], query:[query], file:[file]"
   // })
+  new JscramblerWebpack({
+    enable: true, // optional, defaults to true
+    params: [],
+    applicationTypes: {
+      webBrowserApp: false,
+      desktopApp: true,
+      serverApp: false,
+      hybridMobileApp: false,
+      javascriptNativeApp: false,
+      html5GameApp: false
+    },
+    applicationId: "5de0353689a38d0016778e47"
+    // and other jscrambler configurations
+  })
 ];

@@ -6,47 +6,19 @@
   "applicationId": "5de0353689a38d0016778e47",
   "params": [
     {
-      "name": "objectPropertiesSparsing"
-    },
-    {
-      "name": "variableMasking"
-    },
-    {
-      "name": "whitespaceRemoval"
-    },
-    {
-      "name": "dotToBracketNotation"
-    },
-    {
-      "name": "stringConcealing"
+      "name": "booleanToAnything"
     },
     {
       "name": "functionReordering"
     },
     {
-      "name": "propertyKeysObfuscation",
-      "options": {
-        "encoding": [
-          "hexadecimal"
-        ]
-      }
+      "name": "functionOutlining"
     },
     {
-      "name": "regexObfuscation"
+      "name": "stringConcealing"
     },
     {
-      "options": {
-        "features": [
-          "opaqueSteps"
-        ]
-      },
-      "name": "controlFlowFlattening"
-    },
-    {
-      "name": "booleanToAnything"
-    },
-    {
-      "name": "identifiersRenaming"
+      "name": "variableGrouping"
     }
   ],
   "areSubscribersOrdered": false,
@@ -58,12 +30,8 @@
     "javascriptNativeApp": false,
     "html5GameApp": false
   },
-  "languageSpecifications": {
-    "es5": false,
-    "es6": true,
-    "es7": false
-  },
   "useRecommendedOrder": true,
-  "jscramblerVersion": "6.1",
-  "tolerateMinification": true
+  "jscramblerVersion": "6.2",
+  "tolerateMinification": true,
+  "useProfilingData": false
 }
