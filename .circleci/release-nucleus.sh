@@ -13,7 +13,7 @@ curl -L -b cookies.txt -c cookies.txt -u jf:$PASSWORD http://release.vipfy.store
 VERSION_ID=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq '.[0].id')
 echo "Last Version was $VERSION_ID"
 VERSION_NAME=$(curl -b cookies.txt http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases | jq '.[0].version')
-echo "New Version is called $VERSION_NAME"
+echo "New Version will be called $VERSION_NAME"
 
 # Trigger the Release
 curl -b cookies.txt -X POST http://release.vipfy.store:3030/rest/app/1/channel/$CHANNEL_ID/temporary_releases/$VERSION_ID/release

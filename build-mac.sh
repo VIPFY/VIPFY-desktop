@@ -11,16 +11,12 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   export NUCLEUS_PW='"'$NUCLEUS_PW'"'
   CHANNEL_ID=92c1a89400e8f1153d46aa73ec4ce4d9
 
-  echo "Successfully logged-in to Mac"
+  echo "Successfully logged into Mac"
   cd Documents
-  if ! [[ -d vipfy-desktop ]]; then
-    git clone git@bitbucket.org:vipfymarketplace/vipfy-desktop.git
-  fi
+  rm -rf vipfy-desktop
+  git clone git@bitbucket.org:vipfymarketplace/vipfy-desktop.git
 
   cd vipfy-desktop
-  git stash
-  git checkout master
-  git fetch
   git checkout $BRANCH
   git pull
   npm i
@@ -33,10 +29,10 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   cat config.json
 
   DEBUG=electron-osx-sign* npm run publish-js
-  npm version prerelease -f
-  git add -A
-  git commit -m"Set Version"
-  echo "Successfully built the App. Uploading now..."
+  # npm version prerelease -f
+  # git add -A
+  # git commit -m"Set Version"
+  echo "App successfully built. Uploading now..."
   chmod +x .circleci/release-nucleus.sh
   ./.circleci/release-nucleus.sh "$NUCLEUS_PW" "$CHANNEL_ID"
 
