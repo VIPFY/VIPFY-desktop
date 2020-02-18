@@ -1,4 +1,4 @@
-cat#!/bin/bash
+#!/bin/bash
 # Get the current branch
 BRANCH="$(git symbolic-ref HEAD 2>/dev/null)"
 BRANCH=${BRANCH##refs/heads/}
@@ -26,7 +26,7 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   echo "Editing config.json"
   cat config.json
 
-  ./build-linux.sh
+  ./set-dev-variables.sh
 
   cat config.json
   echo "Unlock the default keychain"
