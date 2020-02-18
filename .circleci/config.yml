@@ -3,12 +3,18 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 
 version: 2.1
+
 orbs:
   win: circleci/windows@2.2.0
+
 jobs:
   windows: # This is the name of the build
     executor: win/default
     working_directory: ~/repo
+    filters:
+       branches:
+          only:
+            - /custom-version-.*/
     steps:
       - checkout # Checks out our code from Bitbucket and installs dependencies
       # Download and cache dependencies
@@ -43,100 +49,3 @@ jobs:
           name: Log in to nucleus and release the previously built version
           command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
           shell: bash.exe
-
-  mac:
-    macos: # Build the Mac Version
-      xcode: 11.3.0
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - mac-dependencies
-      - run:
-          name: Get the base64 encoded application certificate back
-          command: echo $ENCODED_APPLICATION | base64 -D > ~/application_cert.p12
-      - run:
-          name: Get the base64 encoded installer certificate back
-          command: echo $ENCODED_INSTALLER | base64 -D > ~/installer_cert.p12
-      - run:
-          name: Get the base64 encoded nils certificate back
-          command: echo $ENCODED_NILS | base64 -D > ~/nils_cert.p12
-      - run:
-          name: Get the base64 encoded nils certificate back
-          command: echo $ENCODED_THIRD_PARTY | base64 -D > ~/third_party_cert.p12
-      - run:
-          name: Get the base64 encoded provisioning file back
-          command: echo $ENCODED_PROVISIONING | base64 -D > ~/repo/339ebdc6-a75d-414e-af71-de5fbd6048df.provisionprofile
-      - run:
-          name: Create the Keychain for for the build process
-          command: security create-keychain -p $KEYCHAIN_PASSWORD VipfyKeychain.keychain
-      - run:
-          name: Add the created keychain to the default list
-          command: security list-keychains -d user -s $(security list-keychains -d user | sed -e s/\"//g) VipfyKeychain.keychain
-      - run:
-          name: Set the created keychain as default
-          command: security default-keychain -s VipfyKeychain.keychain
-      - run:
-          name: Unlock the keychain
-          command: security unlock-keychain -p $KEYCHAIN_PASSWORD
-          # - run:
-      #     name: make Provisioning Profiles directory
-      #     command: mkdir -pv ~/Library/VipfyDesktop/Provisioning\ Profiles/
-      # - run:
-      #     name: decode Provisioning Profiles
-      #     command: echo DEVELOPER_PROFILE | base64 -D > ~/Library/VipfyDesktop/Provisioning\ Profiles/Vipfy.mobileprovision
-      - run:
-          name: Import the private key of the application file for the signing process
-          command: security import ~/application_cert.p12 -P "$APPLICATION_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
-      - run:
-          name: Import the private key of the installer file for the signing process
-          command: security import ~/installer_cert.p12 -P "$INSTALLER_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
-      - run:
-          name: Import the private key of the nils file for the signing process
-          command: security import ~/nils_cert.p12 -P "$NILS_PW" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
-      - run:
-          name: Import the private key of the third party file for the signing process
-          command: security import ~/third_party_cert.p12 -P "$THIRD_PARTY_PASSWORD" -f pkcs12 -t agg -k ~/Library/Keychains/VipfyKeychain.keychain -A
-      - run: security find-identity -p codesigning -v
-      - run:
-          name: Install cli tool to sign the Mac App
-          command: npm install -g electron-osx-sign
-      - run: npm install
-      - save_cache:
-          paths:
-            - node_modules
-          key: mac-dependencies
-      - run:
-          name: Make sure your signing identity is valid
-          command: security find-identity -p codesigning -v
-      - run:
-          name: Set our development channel ID
-          command: cat config.json | jq '.channelID = "$CHANNEL_ID"' config.json > config-temp.json && mv config-temp.json config.json
-      - run:
-          name: Create a custom tag for nucleus
-          command: "jq \".version = \\\"$(cat package.json | jq -r '.version')-dev-mac-$(date +\"%Y-%m-%d\")\\\" \" package.json > package-temp.json && mv package-temp.json package.json"
-      - run:
-          name: Build the current version for Mac
-          command: DEVELOPMENT=$DEVELOPMENT SERVER_NAME=$SERVER_NAME CHANNEL_ID=$CHANNEL_ID DEBUG=electron-osx-sign* npm run publish-js
-      - run:
-          name: Make our deploy script executable
-          command: chmod +x .circleci/release-nucleus.sh
-      - run:
-          name: Log in to nucleus and release the previously built version
-          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
-
-workflows:
-  build-workflows:
-    jobs:
-      # - windows:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - /custom-version-.*/
-      - mac:
-          context: Mac
-          # filters:
-          #   branches:
-          #     only:
-          #       - /custom-version-.*/
