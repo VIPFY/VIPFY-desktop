@@ -40,7 +40,6 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
 
   ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
 
-  cat config.json
   echo "Unlock the default keychain"
   security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
 
