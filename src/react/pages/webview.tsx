@@ -376,7 +376,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           return (
             <div className={cssClass} id={`webview-${this.props.viewID}`}>
               {this.state.showLoadingScreen && (
-                <LoadingDiv progress={this.state.progress} style={{ height: "100px" }} />
+                <LoadingDiv progress={this.state.progress} /*style={{ height: "100px" }}*/ />
               )}
 
               {this.state.options.universallogin ? (
