@@ -127,8 +127,8 @@ export const resizeImage = async file => {
     let ctx = canvas.getContext("2d");
     ctx!.drawImage(img, 0, 0);
 
-    const MAX_WIDTH = 90;
-    const MAX_HEIGHT = 90;
+    const MAX_WIDTH = 512;
+    const MAX_HEIGHT = 512;
     let width = img.naturalWidth;
     let height = img.naturalHeight;
 
