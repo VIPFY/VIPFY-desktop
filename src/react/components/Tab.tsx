@@ -24,7 +24,7 @@ interface State {
 }
 
 const FETCH_APP_ICON = gql`
-  query onFetchLicences($licenceid: ID!) {
+  query fetchLicenceAssignment($licenceid: ID!) {
     fetchLicenceAssignment(assignmentid: $licenceid) {
       id
       boughtplanid {

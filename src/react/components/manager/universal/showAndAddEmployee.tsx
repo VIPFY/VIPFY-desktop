@@ -146,8 +146,8 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                   )}
                   startvalue=""
                   livecode={c => this.setState({ user: employees.find(a => a.id == c) })}
-                  noresults="Create new user"
-                  noresultsClick={v => this.setState({ add: true, value: v })}
+                  //noresults="Create new user"
+                  ///noresultsClick={v => this.setState({ add: true, value: v })}
                   fewResults={true}
                 />
               </div>
@@ -170,13 +170,13 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                       />
                     </div>
                   ))}
-                  <div className="listingDiv" key="new">
+                  {/*<div className="listingDiv" key="new">
                     <UniversalButton
                       type="low"
                       label="Create new User"
                       onClick={() => this.setState({ add: true })}
                     />
-                  </div>
+                      </div>*/}
                   <UniversalButton type="low" label="Cancel" closingPopup={true} />
                 </PopupBase>
               )}

@@ -268,4 +268,5 @@ class EmployeeGeneralDataAdd extends React.Component<Props, State> {
     );
   }
 }
+
 export default EmployeeGeneralDataAdd;

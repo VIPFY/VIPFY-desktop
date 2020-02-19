@@ -227,11 +227,13 @@ class CompanyDetails extends React.Component<Props, State> {
                                         s.orbitids.map(
                                           o =>
                                             (sum +=
-                                              o.accounts &&
-                                              o.accounts.filter(
-                                                ac =>
-                                                  ac && (ac.endtime == null || ac.endtime > now())
-                                              ).length)
+                                              o && o.accounts
+                                                ? o.accounts.filter(
+                                                    ac =>
+                                                      ac &&
+                                                      (ac.endtime == null || ac.endtime > now())
+                                                  ).length
+                                                : 0)
                                         )
                                     );
 

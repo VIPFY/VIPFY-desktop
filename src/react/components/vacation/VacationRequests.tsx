@@ -19,12 +19,19 @@ import IconButton from "../../common/IconButton";
 import VacationDecissionPopup from "./VacationDecissionPopup";
 
 interface Props {
-  id: number;
+  id: string;
   isAdmin: boolean;
 }
 
 export default (props: Props) => {
-  if (!props.isAdmin) {
+  const vipfyAdmins = [
+    "f876804e-efd0-48b4-a5b2-807cbf66315f",
+    "98cdb502-51fc-4c0d-a5c7-ee274b6bb7b5",
+    "96d65748-7d36-459a-97d0-7f52a7a4bbf0",
+    "91bd25cb-65cc-4dca-b0c8-285dbf5919f3"
+  ];
+
+  if (!props.isAdmin || !vipfyAdmins.find(id => id == props.id)) {
     return null;
   }
 
@@ -55,9 +62,11 @@ export default (props: Props) => {
               return <ErrorComp error={error} />;
             }
 
-            return data.fetchVacationRequests.map((employee, key) => (
-              <VacationRequestRow key={key} employee={employee} />
-            ));
+            return data.fetchVacationRequests.map((employee, key) => {
+              console.log("LOG: employee", employee);
+
+              return <VacationRequestRow key={key} employee={employee} />;
+            });
           }}
         </Query>
       </div>

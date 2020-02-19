@@ -95,11 +95,11 @@ export async function createLicenceKeyFragmentForUser(
   unitid: string,
   client: any
 ): Promise<Object | null> {
-  const licence = (
+  let licence = (
     await client.query({
       query: gql`
         query fetchLicenceKey($licenceid: ID!) {
-          fetchLicences(licenceid: $licenceid) {
+          fetchLicence(licenceid: $licenceid) {
             id
             key
           }
@@ -108,7 +108,7 @@ export async function createLicenceKeyFragmentForUser(
       fetchPolicy: "network-only",
       variables: { licenceid }
     })
-  ).data.fetchLicences[0];
+  ).data.fetchLicence;
 
   let originalKey = await decryptLicenceKey(client, licence);
 
@@ -129,11 +129,11 @@ export async function reencryptLicenceKeyObject(
     changes = {};
   }
 
-  const licence = (
+  let licence = (
     await client.query({
       query: gql`
         query fetchLicenceKey($licenceid: ID!) {
-          fetchLicences(licenceid: $licenceid) {
+          fetchLicence(licenceid: $licenceid) {
             id
             key
           }
@@ -142,7 +142,7 @@ export async function reencryptLicenceKeyObject(
       fetchPolicy: "network-only",
       variables: { licenceid }
     })
-  ).data.fetchLicences[0];
+  ).data.fetchLicence;
 
   let originalKey = await decryptLicenceKey(client, licence);
   let modifiedKey = { ...originalKey, ...changes };
