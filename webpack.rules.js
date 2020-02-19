@@ -4,22 +4,25 @@ module.exports = [
     test: /\.node$/,
     use: "node-loader"
   },
+  // {
+  //   test: /\.(m?js|node)$/,
+  //   parser: { amd: false },
+  //   use: {
+  //     loader: "@marshallofsound/webpack-asset-relocator-loader",
+  //     options: {
+  //       outputAssetBase: "native_modules"
+  //     }
+  //   }
+  // },
+
+  // send everything, even dependencies, through babel.
+  // this is nessesary until jscrambler supports async
   {
-    test: /\.(m?js|node)$/,
-    parser: { amd: false },
-    use: {
-      loader: "@marshallofsound/webpack-asset-relocator-loader",
-      options: {
-        outputAssetBase: "native_modules"
-      }
-    }
-  },
-  // Put your webpack loader rules in this array. This is where you would put
-  // your ts-loader configuration for instance:
-  {
-    test: /\.tsx?$/,
-    exclude: /(node_modules|.webpack)/,
-    loaders: [
+    test: /\.(ts|js)x?$/,
+    use: [
+      {
+        loader: "babel-loader"
+      },
       {
         loader: "ts-loader",
         options: {

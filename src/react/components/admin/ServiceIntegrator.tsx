@@ -17,7 +17,7 @@ import { threadId } from "worker_threads";
 import * as ReactDOM from "react-dom";
 import "./diagrams/diagram.scss";
 import createEngine, { DefaultLinkModel, DiagramModel } from "@projectstorm/react-diagrams";
-import { JSCustomNodeFactory } from "./diagrams/custom-node-js/JSCustomNodeFactory";
+// import { JSCustomNodeFactory } from "./diagrams/custom-node-js/JSCustomNodeFactory";
 import { TSCustomNodeFactory } from "./diagrams/custom-node-ts/TSCustomNodeFactory";
 import { JSCustomNodeModel } from "./diagrams/custom-node-js/JSCustomNodeModel";
 import { TSCustomNodeModel } from "./diagrams/custom-node-ts/TSCustomNodeModel";
@@ -36,7 +36,7 @@ const { session } = remote;
 const engine = createEngine();
 
 // register the two engines
-engine.getNodeFactories().registerFactory(new JSCustomNodeFactory() as any);
+// engine.getNodeFactories().registerFactory(new JSCustomNodeFactory() as any);
 engine.getNodeFactories().registerFactory(new TSCustomNodeFactory());
 
 interface Props {

@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./diagram.css";
 import createEngine, { DefaultLinkModel, DiagramModel } from "@projectstorm/react-diagrams";
-import { JSCustomNodeFactory } from "./custom-node-js/JSCustomNodeFactory";
+// import { JSCustomNodeFactory } from "./custom-node-js/JSCustomNodeFactory";
 import { TSCustomNodeFactory } from "./custom-node-ts/TSCustomNodeFactory";
 import { JSCustomNodeModel } from "./custom-node-js/JSCustomNodeModel";
 import { TSCustomNodeModel } from "./custom-node-ts/TSCustomNodeModel";
@@ -12,7 +12,7 @@ import { BodyWidget } from "./BodyWidget";
 const engine = createEngine();
 
 // register the two engines
-engine.getNodeFactories().registerFactory(new JSCustomNodeFactory() as any);
+// engine.getNodeFactories().registerFactory(new JSCustomNodeFactory() as any);
 engine.getNodeFactories().registerFactory(new TSCustomNodeFactory());
 
 // create a diagram model
