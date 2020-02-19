@@ -108,7 +108,10 @@ class ClickTrackerInner extends PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    this.setState({ sessionId: uuid() });
+    if (!store.has("deviceId")) {
+      store.set("deviceId", uuid());
+    }
+    this.setState({ sessionId: uuid(), deviceId: store.get("deviceId", "") });
     this.addEventListeners();
     this.boundLogMousePos = this.logMousePos.bind(this);
     this.window = browserWindow.getFocusedWindow();
@@ -147,6 +150,7 @@ class ClickTrackerInner extends PureComponent<Props, State> {
 
   componentWillUnmount() {
     this.removeEventListeners();
+    this.boundLogMousePos = () => null;
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
@@ -206,7 +210,7 @@ class ClickTrackerInner extends PureComponent<Props, State> {
       time: e.timeStamp
     });
     if (!isButton) {
-      console.warn("clicked nonbutton", t);
+      console.debug("clicked nonbutton", t);
     }
   }
 
@@ -247,7 +251,12 @@ class ClickTrackerInner extends PureComponent<Props, State> {
     const events = this.events.join("\n");
     this.events = [];
     this.previousEvent = {};
-    this.addEvent({ eventType: "ss", session: this.state.sessionId, time: performance.now() });
+    this.addEvent({
+      eventType: "ss",
+      session: this.state.sessionId,
+      time: performance.now(),
+      device: this.state.deviceId
+    });
     lzma.compress(events, 6, function(result) {
       console.log("lzma events", result.length); // <Buffer fd 37 7a 58 5a 00 00 01 69 22 de 36 02 00 21 ...>
     });
