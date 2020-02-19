@@ -37,25 +37,11 @@ export default () => {
     });
   };
 
-  const onEnter = e => {
-    if (e.key === "Enter" || e.keyCode === 13) {
-      toggleMonths(e.target.name);
-    }
-  };
-
-  React.useEffect(() => {
-    window.addEventListener("keydown", onEnter, true);
-
-    return function cleanup() {
-      window.removeEventListener("keydown", onEnter);
-    };
-  });
-
   return (
     <Query query={FETCH_BILLS}>
       {({ data: { fetchBills }, loading, error }) => {
         if (loading) {
-          return <LoadingDiv text="Fetching data..." />;
+          return <LoadingDiv />;
         }
 
         if (error || !fetchBills) {
