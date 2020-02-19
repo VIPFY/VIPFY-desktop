@@ -1,14 +1,13 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.11.21-0",
+  "version": "0.11.30",
   "description": "The desktop client for vipfy.com",
   "main": ".webpack/main",
   "scripts": {
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish-js": "electron-forge publish",
-    "build-linux": "bash ./build-linux.sh && DEVELOPMENT=true electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
     "start": "electron-forge start",
     "publish": "npm-run-all build-css build-js"
