@@ -59,6 +59,8 @@ class EmployeeGeneralDataAdd extends React.Component<Props, State> {
     passwordScore: 0
   };
 
+  file = null;
+
   setBothStates = s => {
     this.setState(s);
     this.props.setOuterState(s);
@@ -268,4 +270,5 @@ class EmployeeGeneralDataAdd extends React.Component<Props, State> {
     );
   }
 }
+
 export default EmployeeGeneralDataAdd;
