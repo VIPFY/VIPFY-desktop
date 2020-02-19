@@ -54,12 +54,6 @@ export default (props: Props) => {
 
   const links: Link[] = [
     {
-      header: "Update Password",
-      text: "You can update the current password here",
-      state: "showPasswordUpdate",
-      button: "update"
-    },
-    {
       header: "Two-Factor Authentication",
       text: `Google Authenticator is recommended${securityPage ? ". Set it up for the user." : ""}`,
       state: "show2FA"
@@ -72,6 +66,15 @@ export default (props: Props) => {
       state: "showSessions"
     }
   ];
+
+  if (!user.unitid.isadmin) {
+    links.unshift({
+      header: "Update Password",
+      text: "You can update the current password here",
+      state: "showPasswordUpdate",
+      button: "update"
+    });
+  }
 
   if (securityPage) {
     if (user.twofactormethods.length <= 0) {
