@@ -11,6 +11,7 @@ import { SSO } from "../interfaces";
 
 interface Props {
   products: any;
+  moveTo: Function;
 }
 
 export type AppPageState = {
@@ -127,7 +128,19 @@ class Integrations extends React.Component<Props, AppPageState> {
               <SelfSaving
                 sso={this.state.ownSSO}
                 //  maxTime={7000}
-                closeFunction={() => this.setState({ showLoading: false, popupSSO: false })}
+                closeFunction={e => {
+                  if (e && e.type == "error-self") {
+                    console.log("TEST", encodeURIComponent(this.state.ownSSO.loginurl));
+                    this.props.moveTo(
+                      `admin/service-integration/${e.appid}/${encodeURIComponent(
+                        this.state.ownSSO.loginurl
+                      )}`
+                    );
+                    this.setState({ showLoading: false, popupSSO: false });
+                  } else {
+                    this.setState({ showLoading: false, popupSSO: false });
+                  }
+                }}
               />
             )}
           </React.Fragment>
