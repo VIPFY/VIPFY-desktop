@@ -57,7 +57,6 @@ class EditField extends React.Component<Props, State> {
 
   handleChange = e => {
     e.preventDefault();
-
     this.setState({ value: e.target.value, error: "", touched: true });
   };
 
@@ -108,7 +107,7 @@ class EditField extends React.Component<Props, State> {
   };
 
   render() {
-    const { type, icon, name, label, folder, app, multiple } = this.props;
+    const { type, icon, name, label, folder, multiple } = this.props;
     const { error, value } = this.state;
 
     return (
