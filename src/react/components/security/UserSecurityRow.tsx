@@ -60,7 +60,7 @@ const FETCH_CURRENT_KEY = gql`
 
 interface Props {
   user: SecurityUser;
-  id: number;
+  id: string;
   client: any;
 }
 
@@ -322,7 +322,7 @@ class UserSecurityRow extends React.Component<Props, State> {
               securityPage={true}
               id={this.props.id}
               closeFunction={() => this.setState({ showEdit: false })}
-              user={user}
+              userid={user.id}
             />
           )}
         </td>
