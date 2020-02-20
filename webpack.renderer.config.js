@@ -3,6 +3,9 @@ const plugins = require("./webpack.plugins");
 const CopyPlugin = require("copy-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const TerserPlugin = require("terser-webpack-plugin");
+
+const fast = process.env.npm_lifecycle_event.includes("fast");
+
 rules.push({
   test: /\.s?[ac]ss$/i,
   use: [
@@ -60,7 +63,7 @@ module.exports = {
   node: { global: true },
   plugins,
   optimization: {
-    minimize: true,
+    minimize: !fast,
     minimizer: [
       //new UglifyJsPlugin()
       new TerserPlugin({
