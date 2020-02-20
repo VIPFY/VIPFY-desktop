@@ -7,21 +7,11 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import ClickElement from "./clickElement";
 import UniversalButton from "../universalButtons/universalButton";
 import "./diagrams/diagram.scss";
-import createEngine from "@projectstorm/react-diagrams";
-import { JSCustomNodeFactory } from "./diagrams/custom-node-js/JSCustomNodeFactory";
-import { TSCustomNodeFactory } from "./diagrams/custom-node-ts/TSCustomNodeFactory";
 import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
 
 // capture the session for reset reasons
 const { session } = remote;
-
-// create an instance of the diagram-engine
-const engine = createEngine();
-
-// register the two engines
-engine.getNodeFactories().registerFactory(new JSCustomNodeFactory() as any);
-engine.getNodeFactories().registerFactory(new TSCustomNodeFactory());
 
 interface Props {
   saveExecutionPlan: Function;
