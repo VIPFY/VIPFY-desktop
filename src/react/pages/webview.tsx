@@ -113,8 +113,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    //console.log("COMPARE PROPS", this.props, nextProps);
-    //console.log("COMPARE STATE", this.state, nextState);
     const props = this.props;
     let update = false;
     Object.keys(this.props).forEach(function(key) {
@@ -296,7 +294,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
     let optionsobject = Object.assign({}, licence.boughtPlan.plan.app.options);
     Object.assign(optionsobject, licence.options);
-    console.log("BP", licence.boughtPlan, optionsobject);
     this.setState({
       setUrl: loginurl,
       unitId: licence.unit.id,
@@ -367,9 +364,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (this.props.plain) {
       cssClass = "";
     }
-
-    //console.log("STATE", this.state);
-    console.log("Opening Licence ", this.state.licenceId, " with speed ", this.state.loginspeed);
     return (
       <HeaderNotificationContext.Consumer>
         {context => {
@@ -393,18 +387,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   className={cssClassWeb}
                   showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
                   setResult={async ({ loggedin, errorin, emailEntered, passwordEntered }) => {
-                    console.log(
-                      "SETRESULT",
-                      loggedin,
-                      "| ",
-                      errorin,
-                      "|",
-                      emailEntered,
-                      "|",
-                      passwordEntered
-                    );
                     if (loggedin && emailEntered && passwordEntered) {
-                      console.log("Loggin detected");
                       this.hideLoadingScreen();
                       await this.props.updateLicenceSpeed({
                         variables: {
@@ -425,7 +408,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                             working: false
                           }
                         });
-                        console.log("REAL PROBLEM!", this.state.setUrl);
                         this.setState({
                           progress: 1,
                           error:
@@ -433,11 +415,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                           errorshowed: true
                         });
                       } else {
-                        console.log(
-                          "SET LOGINSPEED TO 1",
-                          this.state.setUrl,
-                          this.state.loginspeed
-                        );
                         await this.props.updateLicenceSpeed({
                           variables: {
                             licenceid: this.props.licenceID,
