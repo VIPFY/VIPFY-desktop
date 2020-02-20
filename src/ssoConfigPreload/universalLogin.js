@@ -163,10 +163,10 @@ ipcRenderer.once("loginData", async (e, key) => {
 
 async function start() {
   //if (!document.body.id.includes("beacon")) {
-  console.log("START TEST", location.href);
+  //console.log("START TEST", location.href);
   ipcRenderer.sendToHost("loaded", null);
   ipcRenderer.sendToHost("getLoginData", null);
-  console.log("START TEST END", location.href);
+  //console.log("START TEST END", location.href);
   //}
 }
 
@@ -633,10 +633,6 @@ async function recaptchaClick(recap) {
 async function execute(operations, mainexecute = false) {
   let doc;
   for ({ operation, args = {} } of operations) {
-    //console.log("EXECUTE", operation, args);
-    if (mainexecute) {
-      ipcRenderer.sendToHost("executeStep");
-    }
     if (args.documents) {
       doc = document;
       args.documents.forEach(thisdoc => {
@@ -740,6 +736,9 @@ async function execute(operations, mainexecute = false) {
           cookiebutton = await findCookieButton();
         }
         break;
+    }
+    if (mainexecute && operation) {
+      ipcRenderer.sendToHost("executeStep");
     }
   }
   return;

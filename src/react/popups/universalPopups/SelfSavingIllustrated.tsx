@@ -106,6 +106,8 @@ interface State {
   showall: boolean;
   add: boolean;
   user: any;
+  result: any;
+  receivedData: boolean;
 }
 
 interface Result {
@@ -136,7 +138,9 @@ class SelfSaving extends React.Component<Props, State> {
     showall: false,
     add: false,
     user: null,
-    showAssign: true
+    showAssign: true,
+    result: null,
+    receivedData: false
   };
 
   close(err = null) {
@@ -258,6 +262,70 @@ class SelfSaving extends React.Component<Props, State> {
     }
   };
 
+  finishIntegration = async () => {
+    if (this.state.receivedData && this.state.receivedIcon) {
+      const [, a] = this.state.icon!.data.split(":");
+      const [mime, b] = a.split(";");
+      const [, iconDataEncoded] = b.split(",");
+
+      // encoding is always base64. mime is assumed to be image/png, but other values
+      // shouldn't be a problem
+
+      // Node's Buffer behaves really weirdly. buf.buffer produces some string prefix
+      // and buf.copy is only 3 bytes. So we use atob with some parsing instead
+      const iconDataArray = new Uint8Array(
+        atob(iconDataEncoded)
+          .split("")
+          .map(c => c.charCodeAt(0))
+      );
+
+      const iconFile = new File([iconDataArray], `${this.props.sso.name}-icon.png`, {
+        type: mime
+      });
+
+      const squareImages = [iconFile, iconFile];
+
+      if (
+        this.state.result.loggedin &&
+        this.state.result.emailEntered &&
+        this.state.result.passwordEntered &&
+        this.state.icon &&
+        this.state.color
+      ) {
+        this.setState({ ssoCheck: true });
+      } else {
+        const moreInformation = this.state.showAssign
+          ? {
+              orbit: this.state.orbit,
+              alias: this.state.alias,
+              user: this.state.user?.id
+            }
+          : {};
+        const res = await this.props.failedIntegration({
+          context: { hasUpload: true },
+          variables: {
+            data: {
+              ...this.props.sso,
+              recaptcha: this.state.result.recaptcha,
+              tries: this.state.result.tries,
+              unloaded: this.state.result.unloaded,
+              emailEntered: this.state.result.emailEntered,
+              passwordEntered: this.state.result.passwordEntered,
+              ...moreInformation,
+              color: this.state.color,
+              squareImages
+            }
+          }
+        });
+        const errorMessage =
+          "Sorry, this seems to take additional time. Our Support will take a look.";
+        this.setState({
+          error: { error: errorMessage, appid: res.data.failedIntegration }
+        });
+      }
+    }
+  };
+
   render() {
     if (this.props.maxTime) {
       this.timeout = setTimeout(() => {
@@ -266,9 +334,6 @@ class SelfSaving extends React.Component<Props, State> {
         }
       }, this.props.maxTime);
     }
-
-    console.log("TESTING STATE", this.state);
-    const errorMessage = "Sorry, this seems to take additional time. Our Support will take a look.";
     return (
       <PopupBase styles={{ maxWidth: "432px" }} nooutsideclose={true} fullmiddle={true}>
         <div className="popup-sso">
@@ -368,10 +433,7 @@ class SelfSaving extends React.Component<Props, State> {
                             </div>
                             <i
                               className="fal fa-trash-alt editbutton"
-                              onClick={() => {
-                                console.log("delete");
-                                this.setState({ user: null });
-                              }}
+                              onClick={() => this.setState({ user: null })}
                             />
                           </div>
                         ) : (
@@ -490,8 +552,13 @@ class SelfSaving extends React.Component<Props, State> {
             </>
           ) : this.state.error ? (
             <>
-              <h3 style={{ marginBottom: "24px" }}>{this.state.error}</h3>
-              <UniversalButton type="high" label="Ok" onClick={() => this.close("error")} />
+              <h3 style={{ marginBottom: "24px" }}>{this.state.error.error}</h3>
+              <UniversalButton type="low" label="OK" onClick={() => this.close("error")} />
+              {/*<UniversalButton
+                type="high"
+                label="Integrate Yourself"
+                onClick={() => this.close({ type: "error-self", appid: this.state.error.appid })}
+              />*/}
             </>
           ) : this.state.ssoCheck ? (
             <>
@@ -512,62 +579,44 @@ class SelfSaving extends React.Component<Props, State> {
           ) : (
             <>
               <div className="hide-sso-webview" /*style={{ height: "400px", width: "400px" }}*/>
-                <UniversalLoginExecutor
-                  loginUrl={this.props.sso.loginurl!}
-                  username={this.props.sso!.email!}
-                  password={this.props.sso.password!}
-                  partition={`self-sso-${this.props.sso.name}`}
-                  timeout={40000}
-                  takeScreenshot={false}
-                  setResult={async (result: Result) => {
-                    if (
-                      result.loggedin &&
-                      result.emailEntered &&
-                      result.passwordEntered &&
-                      this.state.icon &&
-                      this.state.color
-                    ) {
-                      this.setState({ ssoCheck: true });
-                    } else {
-                      const moreInformation = this.state.showAssign
-                        ? {
-                            orbit: this.state.orbit,
-                            alias: this.state.alias,
-                            user: this.state.user?.id
-                          }
-                        : {};
-                      this.props.failedIntegration({
-                        variables: {
-                          data: {
-                            ...this.props.sso,
-                            recaptcha: result.recaptcha,
-                            tries: result.tries,
-                            unloaded: result.unloaded,
-                            emailEntered: result.emailEntered,
-                            passwordEntered: result.passwordEntered,
-                            ...moreInformation
-                          }
+                {!this.state.receivedData && (
+                  <UniversalLoginExecutor
+                    loginUrl={this.props.sso.loginurl!}
+                    username={this.props.sso!.email!}
+                    password={this.props.sso.password!}
+                    partition={`self-sso-${this.props.sso.name}`}
+                    timeout={40000}
+                    takeScreenshot={false}
+                    setResult={async (result: Result) => {
+                      await this.setState(oldstate => {
+                        if (!oldstate.receivedData) {
+                          return { ...oldstate, result, receivedData: true };
+                        } else {
+                          return oldstate;
                         }
                       });
-                      this.setState({ error: errorMessage });
-                    }
-                  }}
-                  progress={progress => {
-                    if (progress < 1) {
-                      this.setState({ progress: progress * 100 });
-                    }
-                  }}
-                />
+                      this.finishIntegration();
+                    }}
+                    progress={progress => {
+                      if (progress < 1) {
+                        this.setState({ progress: progress * 100 });
+                      }
+                    }}
+                  />
+                )}
 
                 {!this.state.receivedIcon && (
                   <LogoExtractor
                     url={this.props.sso.loginurl!}
                     setResult={async (icon, color) => {
-                      await this.setState({ receivedIcon: true, icon, color });
-
-                      if (this.state.ssoCheck && this.state.icon && this.state.color) {
-                        this.setState({ ssoCheck: true });
-                      }
+                      await this.setState(oldstate => {
+                        if (!oldstate.receivedIcon) {
+                          return { ...oldstate, receivedIcon: true, icon, color };
+                        } else {
+                          return oldstate;
+                        }
+                      });
+                      this.finishIntegration();
                     }}
                   />
                 )}

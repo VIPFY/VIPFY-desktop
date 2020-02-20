@@ -288,7 +288,8 @@ class EmployeeDetails extends React.Component<Props, State> {
 
                 {this.state.showSecurityPopup && (
                   <SecurityPopup
-                    user={querydata}
+                    userid={querydata.id}
+                    id={this.props.id}
                     closeFunction={() => this.setState({ showSecurityPopup: false })}
                   />
                 )}

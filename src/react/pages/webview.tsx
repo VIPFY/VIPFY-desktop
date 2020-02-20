@@ -508,14 +508,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                         try {
                           await this.props.logError({
                             variables: {
-                              licenceId: this.state.licenceId,
-                              accountId: this.state.accountId,
-                              unitId: this.state.unitId,
-                              options: this.state.options,
-                              appid: this.state.appid,
-                              error: this.state.error,
-                              loginspeed: this.state.loginspeed,
-                              label: "Account expired"
+                              data: {
+                                licenceId: this.state.licenceId,
+                                accountId: this.state.accountId,
+                                unitId: this.state.unitId,
+                                options: this.state.options,
+                                appid: this.state.appid,
+                                error: this.state.error,
+                                loginspeed: this.state.loginspeed,
+                                label: "Account expired"
+                              }
                             }
                           });
                         } catch (err) {
@@ -532,14 +534,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                         try {
                           await this.props.logError({
                             variables: {
-                              licenceId: this.state.licenceId,
-                              accountId: this.state.accountId,
-                              unitId: this.state.unitId,
-                              options: this.state.options,
-                              appid: this.state.appid,
-                              error: this.state.error,
-                              loginspeed: this.state.loginspeed,
-                              label: "Wrong credentials"
+                              data: {
+                                licenceId: this.state.licenceId,
+                                accountId: this.state.accountId,
+                                unitId: this.state.unitId,
+                                options: this.state.options,
+                                appid: this.state.appid,
+                                error: this.state.error,
+                                loginspeed: this.state.loginspeed,
+                                label: "Wrong credentials"
+                              }
                             }
                           });
                         } catch (err) {
@@ -556,14 +560,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                         try {
                           await this.props.logError({
                             variables: {
-                              licenceId: this.state.licenceId,
-                              accountId: this.state.accountId,
-                              unitId: this.state.unitId,
-                              options: this.state.options,
-                              appid: this.state.appid,
-                              error: this.state.error,
-                              loginspeed: this.state.loginspeed,
-                              label: "The login actually worked"
+                              data: {
+                                licenceId: this.state.licenceId,
+                                accountId: this.state.accountId,
+                                unitId: this.state.unitId,
+                                options: this.state.options,
+                                appid: this.state.appid,
+                                error: this.state.error,
+                                loginspeed: this.state.loginspeed,
+                                label: "The login actually worked"
+                              }
                             }
                           });
                         } catch (err) {
@@ -580,14 +586,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                         try {
                           await this.props.logError({
                             variables: {
-                              licenceId: this.state.licenceId,
-                              accountId: this.state.accountId,
-                              unitId: this.state.unitId,
-                              options: this.state.options,
-                              appid: this.state.appid,
-                              error: this.state.error,
-                              loginspeed: this.state.loginspeed,
-                              label: "Still on the LoginPage"
+                              data: {
+                                licenceId: this.state.licenceId,
+                                accountId: this.state.accountId,
+                                unitId: this.state.unitId,
+                                options: this.state.options,
+                                appid: this.state.appid,
+                                error: this.state.error,
+                                loginspeed: this.state.loginspeed,
+                                label: "Still on the LoginPage"
+                              }
                             }
                           });
                         } catch (err) {
