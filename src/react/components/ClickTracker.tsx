@@ -1,9 +1,8 @@
 import * as React from "react";
 import { PureComponent } from "react";
-import { Query } from "react-apollo";
+import { Query, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import * as uuid from "uuid/v4";
-import Store from "electron-store";
 import lzma from "lzma";
 const screen = require("electron").remote.screen;
 const browserWindow = require("electron").remote.BrowserWindow;
@@ -11,11 +10,12 @@ const browserWindow = require("electron").remote.BrowserWindow;
 
 interface Props {
   userid: string;
+  deviceid: string;
+  client: any;
 }
 
 interface State {
   sessionId: string;
-  deviceId: string;
 }
 
 interface Event {
@@ -33,6 +33,8 @@ interface Event {
   session?: string;
   device?: string;
   relative?: boolean;
+  version?: number;
+  user?: string;
 }
 
 // https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf
@@ -52,12 +54,9 @@ function unique(arr) {
   });
 }
 
-const store = new Store();
-
 class ClickTrackerInner extends PureComponent<Props, State> {
   state = {
-    sessionId: "",
-    deviceId: ""
+    sessionId: ""
   };
 
   events: string[] = [];
@@ -108,10 +107,7 @@ class ClickTrackerInner extends PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    if (!store.has("deviceId")) {
-      store.set("deviceId", uuid());
-    }
-    this.setState({ sessionId: uuid(), deviceId: store.get("deviceId", "") });
+    this.setState({ sessionId: uuid() });
     this.addEventListeners();
     this.boundLogMousePos = this.logMousePos.bind(this);
     this.window = browserWindow.getFocusedWindow();
@@ -255,10 +251,29 @@ class ClickTrackerInner extends PureComponent<Props, State> {
       eventType: "ss",
       session: this.state.sessionId,
       time: performance.now(),
-      device: this.state.deviceId
+      device: this.props.deviceid,
+      user: this.props.userid,
+      version: 1
     });
-    lzma.compress(events, 6, function(result) {
-      console.log("lzma events", result.length); // <Buffer fd 37 7a 58 5a 00 00 01 69 22 de 36 02 00 21 ...>
+    const client = this.props.client;
+    lzma.compress(events, 6, async result => {
+      const file = new File([result], "data.gz", {
+        type: "application/x-gzip"
+      });
+      try {
+        await client.mutate({
+          mutation: gql`
+            mutation sendUsageData($data: Upload!) {
+              sendUsageData(data: $data)
+            }
+          `,
+          context: { hasUpload: true },
+          variables: { data: file }
+        });
+      } catch (err) {
+        console.error("error uploading usage data", err);
+      }
+      console.log("sent events", result.length);
     });
   }
 
@@ -269,7 +284,7 @@ class ClickTrackerInner extends PureComponent<Props, State> {
   }
 }
 
-function ClickTracker() {
+function ClickTracker(props: { client }) {
   return (
     <Query
       query={gql`
@@ -277,6 +292,8 @@ function ClickTracker() {
           me {
             id
             consent
+            pseudonymousid
+            pseudonymousdeviceid
           }
         }
       `}>
@@ -295,9 +312,15 @@ function ClickTracker() {
           return null;
         }
 
-        return <ClickTrackerInner userid={data.me.id} />;
+        return (
+          <ClickTrackerInner
+            userid={data.me.pseudonymousid}
+            deviceid={data.me.pseudonymousdeviceid}
+            client={props.client}
+          />
+        );
       }}
     </Query>
   );
 }
-export default ClickTracker;
+export default withApollo(ClickTracker);
