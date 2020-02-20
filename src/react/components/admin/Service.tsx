@@ -2,10 +2,10 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { Query, graphql, compose } from "react-apollo";
 import LoadingDiv from "../LoadingDiv";
-import { ErrorComp, filterError } from "../../common/functions";
+import { ErrorComp } from "../../common/functions";
 import { fields } from "./constants";
 import EditField from "./EditField";
-import { FETCH_APP, FETCH_APPS, UPLOAD_IMAGES } from "./apollo";
+import { FETCH_APP } from "./apollo";
 
 interface Props {
   appid: number;
@@ -67,12 +67,12 @@ const Service = (props: Props) => {
   const handleSubmit = async (name, value) => {
     try {
       const { appid } = props;
-
+      let variables: Variables = {};
       if (name == "delete") {
-        const variables = { id: appid, type: "app", image: value };
+        variables = { id: appid, type: "app", image: value };
         await props.deleteImage({ variables });
       } else {
-        const variablesset: Variables = { appid };
+        variables = { appid };
 
         if (
           [
@@ -84,14 +84,14 @@ const Service = (props: Props) => {
             "afterdomain"
           ].find(item => item == name)
         ) {
-          variablesset.options = { [name]: value };
+          variables.options = { [name]: value };
         } else {
-          variablesset.app = { [name]: value };
+          variables.app = { [name]: value };
         }
-        //console.log(variablesset);
+
         const { data } = await props.updateApp({
           context: { hasUpload: true },
-          variables: variablesset
+          variables
         });
 
         if (name == "icon" || name == "logo") {
@@ -109,7 +109,7 @@ const Service = (props: Props) => {
     <Query query={FETCH_APP} variables={{ id: props.appid }}>
       {({ data, loading, error }) => {
         if (loading) {
-          return <LoadingDiv text="Fetching Service..." />;
+          return <LoadingDiv />;
         }
 
         if (error || !data) {

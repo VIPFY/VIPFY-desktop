@@ -137,7 +137,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   progressCallbackRunning = false;
 
   reset() {
-    console.log("RESET");
     session.fromPartition(this.props.partition).clearStorageData();
     this.loginState = {
       emailEntered: false,
@@ -158,7 +157,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     }
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
-        //console.log("SENDRESULT 4");
         this.sendResult(this.webview, 0);
       }, this.props.timeout);
     }
@@ -170,7 +168,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    console.log("DID MOUNT");
     this.reset();
     this.mounted++;
     this.progressHandle = setInterval(this.progressCallback.bind(this), this.progressInterval);
@@ -196,7 +193,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     //   });
   }
   componentWillUnmount() {
-    console.log("Will UnMOUNT");
     session.fromPartition(this.props.partition).clearStorageData();
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
@@ -214,29 +210,24 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     let update = false;
     Object.keys(this.props).forEach(function(key) {
       if (props[key] == nextProps[key] || typeof props[key] == "function") {
-        //console.log("Same", key, props[key]);
       } else {
-        //console.log("WEBVIEW DIFFERENT PROPS", key, props[key], nextProps[key]);
         if (
           (Array.isArray(props[key]) && props[key].length == nextProps[key].length) ||
           (props[key].fetchNotifications &&
             props[key].fetchNotifications.length == nextProps[key].fetchNotifications.length)
         ) {
-          //console.log("CHECKING");
           const array = Array.isArray(props[key]) ? props[key] : props[key].fetchNotifications;
           const arraycheck = Array.isArray(props[key])
             ? nextProps[key]
             : nextProps[key].fetchNotifications;
           array.forEach(element => {
             if (!arraycheck.find(e => e.id == element.id)) {
-              //console.log("DIFFERENT", element);
               update = true;
             }
           });
         } else if (props[key] && key == "style" && props[key]!.height == nextProps[key].height) {
           update = true;
         } else {
-          //console.log("SET TRUE", key);
           update = true;
         }
       }
@@ -244,9 +235,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     const state = this.state;
     Object.keys(this.state).forEach(function(key) {
       if (state[key] == nextState[key] || typeof state[key] == "function") {
-        //console.log("Same", key, props[key]);
       } else {
-        //console.log("WEBVIEW DIFFERENT STATE", key, state[key], nextState[key]);
         update = true;
       }
     });
@@ -254,15 +243,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   componentWillUpdate(prevProps: Props) {
-    //console.log("WillUPDATE", prevProps.speed, this.props.speed, this.props.keylog);
     if (
       prevProps.loginUrl != this.props.loginUrl ||
       prevProps.speed != this.props.speed ||
       prevProps.username != this.props.username ||
       prevProps.password != this.props.password
     ) {
-      //console.log("RESET");
-      console.log("WILL UPDATE");
       this.reset();
     }
   }
@@ -310,7 +296,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     for (const p of urlParts) {
       //for (const m of l) {
       if (initial[p].includesAny(l) && !now[p].includesAny(l) && !this.props.noUrlCheck) {
-        console.log("URL TRUE", initial[p]);
         //await sleep(200);
         return true;
       }
@@ -447,7 +432,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
                 const attr = element.attributes.getNamedItem(attribute);
                 if (attr === null) continue;
                 const val = attr.value.toLowerCase();
-                //console.log("attr", attribute, val, includesAny);
                 if (val.includesAnyRegExp(includesAny)) {
                   return true;
                 }
@@ -459,21 +443,16 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account", "cmds-header__avatar-menu qa-member-menu-trigger", "js_signout", "settings" ${
             this.props.individualShow ? `, "${this.props.individualShow}"` : ""
           }],[${this.props.individualNotShow ? `"${this.props.individualNotShow}"` : ""}]));
-          //console.log("LOGIN", loginarray)
           return loginarray.length > 0
         })();
         `
-          //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`
         )
         .then(e => {
-          console.log("FOUND LOGIN", e);
           return e;
         });
     } else {
       return false;
     }
-    //console.log("RETURN ", returnvalue);
-    //return returnvalue;
   }
 
   async isErrorIn(w) {
@@ -597,7 +576,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
                 const attr = element.attributes.getNamedItem(attribute);
                 if (attr === null) continue;
                 const val = attr.value.toLowerCase();
-                //console.log("attr", attribute, val, includesAny);
                 if (val.includesAnyRegExp(includesAny)) {
                   return true;
                 }
@@ -607,21 +585,16 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             };
           }
           let errorarray = Array.from(document.querySelectorAll("*:not(:empty), .fa")).filter(filterDom(["error", "no-mail-icon", "danger", "validation-error"],["wrapper", "reset", "signup", "img__notification-error"]))
-          //console.log(errorarray)
           return errorarray.length > 0
         })();
         `
-          //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`
         )
         .then(e => {
-          console.log("CHECK FOR ERROR", e);
           return e;
         });
     } else {
       return false;
     }
-    //console.log("RETURN ", returnvalue);
-    //return returnvalue;
   }
 
   sendResult(w, delay) {
@@ -636,7 +609,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       this.timeoutHandle = undefined;
     }
 
-    //console.log("SENT RESULT");
     if (w && w.getWebContents()) {
       setTimeout(() => {
         if (this.isUnmounted) {
@@ -652,7 +624,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           if (!loggedin && !this.props.noError) {
             errorin = await this.isErrorIn(w);
           }
-          console.log("sentResult", loggedin, errorin, this.loginState);
           if (this.isUnmounted) {
             return;
           }
@@ -672,7 +643,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             return;
           }
           this.sentResult = true;
-          //console.log("ELSE Sent", w, w.getWebContents());
           this.props.setResult({ loggedin: false, errorin: false, ...this.loginState }, "");
         },
 
@@ -682,7 +652,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   async progressCallback() {
-    //console.log("progressCallback");
     if (this.progressCallbackRunning) {
       return;
     }
@@ -699,14 +668,11 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     ) {
       this.timeout = false;
       this.progress = 1;
-      console.log("SENDRESULT 1");
-      //this.sendResult(this.webview, 0);
       this.props.setResult({ loggedin: true, errorin: false, ...this.loginState }, "");
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
       }
-      //console.log("FINISHED");
     }
     if (
       (this.loginState.emailEnteredEnd || this.loginState.passwordEnteredEnd) &&
@@ -716,11 +682,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     ) {
       await sleep(100);
       if (!this.props.noError && (await this.isErrorIn(this.webview))) {
-        console.log("ERROR", await this.isErrorIn(this.webview), this.props.loginUrl);
         this.timeout = false;
         this.progress = 1;
-        //console.log("SENDRESULT 2");
-        //this.sendResult(this.webview, 0);
         this.props.setResult({ loggedin: false, errorin: true, ...this.loginState }, "");
         if (this.progressHandle) {
           clearInterval(this.progressHandle);
@@ -734,7 +697,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
         if (this.timeout) {
-          console.log("TIMEOUT");
           this.props.setResult({ loggedin: false, errorin: true, ...this.loginState }, "");
         }
       }
@@ -747,8 +709,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   async onIpcMessage(e) {
-    //e.target.openDevTools();
-    console.log("IPC", e);
     this.webview = e.target;
     switch (e.channel) {
       case "interactionHappened":
@@ -761,7 +721,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       case "click":
         {
           let w = e.target;
-          console.log("CLICK", { x: e.args[0], y: e.args[1] });
           w.sendInputEvent({ type: "mouseMove", x: e.args[0], y: e.args[1] });
           await this.modifiedSleep(Math.random() * 30 + 200);
           w.sendInputEvent({
@@ -790,7 +749,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         break;
       case "loaded":
         {
-          console.log("SEND");
           this.loginState.unloaded = false;
         }
         break;
@@ -803,7 +761,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       case "fillFormField":
         {
           const w = e.target;
-          console.log("fillForm", e.args[0]);
           let text = "";
           if (e.args[0] == "domain") {
             text = this.props.domain;
@@ -846,26 +803,19 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           }
 
           if (this.loginState.emailEntered && this.loginState.passwordEntered) {
-            //console.log("SENDRESULT 3");
             this.sendResult(w, 30000);
           }
         }
         break;
       case "getLoginData":
         {
-          console.log("GET LOGIN DATA", this.state.errorin);
           if (await this.isLoggedIn(e.target)) {
-            console.log("LOGGED IN", this.state, e.target);
-            //this.sendResult(this.webview, 0);
             return; //we are done with login
           }
-          //console.log("ERRORIN", this.state.errorin);
           if (this.state.errorin) {
-            console.log("ERROR", this.state);
             return;
           }
           await sleep(50);
-          console.log("SEND LOGIN DATA", this.loginState);
           e.target.send("loginData", {
             ...this.loginState,
             speed: this.props.speed,
@@ -883,7 +833,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           let height = e.args[3] - 50;
           let x = Math.floor(Math.random() * width + left);
           let y = Math.floor(Math.random() * height + top);
-          console.log("Recap", x, y);
           w.sendInputEvent({ type: "mouseMove", x: x, y: y });
           this.modifiedSleep(Math.random() * 30 + 200);
           w.sendInputEvent({ type: "mouseDown", x: x, y: y, button: "left", clickCount: 1 });
@@ -901,8 +850,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
       case "recaptchaSuccess":
         {
-          console.log("Recaptcha success");
-          //this.setState({ showPopup: true, e });
           if (this.props.showLoadingScreen) {
             this.props.showLoadingScreen(true);
           }

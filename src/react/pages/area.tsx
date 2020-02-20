@@ -325,7 +325,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
-      { path: "admin/service-integration", component: LoginIntegrator, admin: true },
+      { path: "admin/service-integration", component: ServiceIntegrator, admin: true },
+      { path: "admin/service-integration/:appid/:url", component: LoginIntegrator },
       { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },
@@ -469,7 +470,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                     />
                     <Route
                       key={"ERRORELSE"}
-                      render={props => (
+                      render={() => (
                         <div
                           className={`full-working ${chatOpen ? "chat-open" : ""} ${
                             sidebarOpen ? "sidebar-open" : ""

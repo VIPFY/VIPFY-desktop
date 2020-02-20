@@ -37,7 +37,6 @@ class LogoExtractor extends React.PureComponent<Props, State> {
   }
 
   render() {
-    console.log("TESTING");
     return (
       <WebView
         preload={getPreloadScriptPath("findLogo.js")}
@@ -51,7 +50,6 @@ class LogoExtractor extends React.PureComponent<Props, State> {
   }
 
   onIpcMessage(e) {
-    console.log("LOGO EXTRACTOR", e.channel);
     switch (e.channel) {
       case "logo":
         {

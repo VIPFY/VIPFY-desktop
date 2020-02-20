@@ -16,6 +16,7 @@ import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
 import { FETCH_EMPLOYEES } from "../queries/departments";
+import { vipfyAdmins } from "../common/constants";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -89,7 +90,7 @@ interface SidebarLinks {
 }
 
 export type SidebarProps = {
-  id: number;
+  id: string;
   history: any[];
   setApp: (licence: number) => void;
   licences: Licence[];
@@ -108,6 +109,7 @@ export type SidebarProps = {
   data: any;
   loading: boolean;
   refetch: Function;
+  company: any;
 };
 
 interface State {
@@ -222,8 +224,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
   componentDidMount() {
     this.props.sidebarloaded();
-    window.addEventListener("keydown", this.listenKeyboard, true);
-    document.addEventListener("click", this.handleClickOutside, true);
+    window.addEventListener("keydown", this.listenKeyboard);
+    document.addEventListener("click", this.handleClickOutside);
 
     this.props.subscribeToMore({
       document: NOTIFICATION_SUBSCRIPTION,
@@ -245,8 +247,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
   }
 
   componentWillUnmount() {
-    window.removeEventListener("keydown", this.listenKeyboard, true);
-    document.removeEventListener("click", this.handleClickOutside, true);
+    window.removeEventListener("keydown", this.listenKeyboard);
+    document.removeEventListener("click", this.handleClickOutside);
   }
 
   handleClickInside = e => {
@@ -266,7 +268,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
   };
 
-  toggleNotificationPopup = e => {
+  toggleNotificationPopup = () => {
     if (this.state.donotopen) {
       this.setState({ donotopen: false });
     } else {
@@ -286,7 +288,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
       this.props.location.pathname.startsWith(`/area/${location}`) ||
       `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
     ) {
-      //cssClass += ` sidebar-active${sidebarOpen ? "" : "-small"}`;
       cssClass += " sidebar-active";
     }
 
@@ -313,13 +314,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
           </button>
         </li>
       );
-    } else {
-      return;
     }
   };
 
   render() {
-    let { sidebarOpen, licences } = this.props;
+    let { sidebarOpen, licences, isadmin } = this.props;
 
     if (!licences) {
       licences = [];
@@ -345,21 +344,21 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Billing",
         location: "billing",
         icon: "file-invoice-dollar",
-        show: this.props.isadmin && config.showBilling,
+        show: isadmin && config.showBilling,
         highlight: "billingelement"
       },
       {
         label: "Security",
         location: "security",
         icon: "user-shield",
-        show: this.props.isadmin,
+        show: isadmin,
         highlight: "securityelement"
       },
       {
         label: "Teams",
         location: "team",
         icon: "users",
-        show: this.props.isadmin && config.showTeams,
+        show: isadmin && config.showTeams,
         highlight: "teamelement"
       },
       {
@@ -373,7 +372,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Account Integrator",
         location: "integrations",
         icon: "shapes",
-        show: this.props.isadmin,
+        show: isadmin,
         highlight: "integrationselement"
       },
       {
@@ -386,7 +385,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Usage Statistics",
         location: "usage",
         icon: "chart-line",
-        show: this.props.isadmin
+        show: isadmin
       },
       {
         label: "Support",
@@ -399,7 +398,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Team Manager",
         location: "dmanager",
         icon: "user-tag",
-        show: this.props.isadmin,
+        show: isadmin,
         important: false,
         highlight: "dmanager"
       },
@@ -407,7 +406,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Employee Manager",
         location: "emanager",
         icon: "users-cog",
-        show: this.props.isadmin,
+        show: isadmin,
         important: false,
         highlight: "emanager"
       },
@@ -415,7 +414,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Service Manager",
         location: "lmanager",
         icon: "credit-card-blank",
-        show: this.props.isadmin,
+        show: isadmin,
         important: false,
         highlight: "lmanager"
       },
@@ -423,22 +422,21 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Universal Login",
         location: "universallogin",
         icon: "pager",
-        show:
-          this.props.isadmin && config.showUniversalLoginDebug && this.props.company.unit.id == 14,
+        show: isadmin && config.showUniversalLoginDebug && this.props.company.unit.id == 14,
         important: false
       },
       {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
-        show: this.props.isadmin && config.showAdmin,
+        show: config.showAdmin && vipfyAdmins.find(admin => admin == this.props.id),
         highlight: "adminelement"
       },
       {
         label: "SSO Configurator",
         location: "ssoconfig",
         icon: "dice-d12",
-        show: this.props.isadmin && config.showSsoConfig && this.props.company.unit.id == 14,
+        show: isadmin && config.showSsoConfig && this.props.company.unit.id == 14,
         highlight: "ssoconfig"
       },
       {

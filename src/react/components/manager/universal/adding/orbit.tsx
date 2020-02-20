@@ -60,10 +60,10 @@ class CreateOrbit extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    document.removeEventListener("keydown", this.handleEnter);
+    document.removeEventListener("keydown", this.handleEnter, true);
   }
 
-  private handleEnter = (e): void => {
+  handleEnter = (e): void => {
     if (e.key === "Enter" || e.keyCode === 13) {
       this.handleSubmit(this.props.externalplan);
     }

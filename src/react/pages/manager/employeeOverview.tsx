@@ -102,34 +102,28 @@ class EmployeeOverview extends React.Component<Props, State> {
       <div className="managerPage">
         <div className="heading">
           <h1>Employee Manager</h1>
-          <UniversalSearchBox
-            getValue={v => {
-              this.setState({ search: v });
-            }}
-          />
+          <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
         <div className="section">
           <AppContext.Consumer>
-            {({ addRenderElement }) => {
-              return (
-                <div className="heading">
-                  <h1>Employees</h1>
-                  <UniversalButton
-                    innerRef={el => addRenderElement({ key: "addEmp", element: el })}
-                    type="high"
-                    label="Add Employee"
-                    customStyles={{
-                      fontSize: "12px",
-                      lineHeight: "24px",
-                      fontWeight: "700",
-                      marginRight: "16px",
-                      width: "92px"
-                    }}
-                    onClick={() => this.setState({ add: true })}
-                  />
-                </div>
-              );
-            }}
+            {({ addRenderElement }) => (
+              <div className="heading">
+                <h1>Employees</h1>
+                <UniversalButton
+                  innerRef={el => addRenderElement({ key: "addEmp", element: el })}
+                  type="high"
+                  label="Add Employee"
+                  customStyles={{
+                    fontSize: "12px",
+                    lineHeight: "24px",
+                    fontWeight: "700",
+                    marginRight: "16px",
+                    width: "92px"
+                  }}
+                  onClick={() => this.setState({ add: true })}
+                />
+              </div>
+            )}
           </AppContext.Consumer>
           <Query query={fetchDepartmentsData} fetchPolicy="network-only">
             {({ loading, error, data, refetch }) => {

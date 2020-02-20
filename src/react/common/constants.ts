@@ -4,7 +4,12 @@ export const defaultPic = `${unitPicFolder}default.png`;
 export const PW_MIN_LENGTH = 10;
 export const preAppImageUrl = "https://appimages.vipfy.store/140/140/fit/";
 export const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
+export const vipfyAdmins = [
+  "f876804e-efd0-48b4-a5b2-807cbf66315f",
+  "98cdb502-51fc-4c0d-a5c7-ee274b6bb7b5",
+  "96d65748-7d36-459a-97d0-7f52a7a4bbf0",
+  "91bd25cb-65cc-4dca-b0c8-285dbf5919f3"
+];
 export const countries = [
   { value: "AT", name: "Austria", isEU: true },
   { value: "BE", name: "Belgium", isEU: true },

@@ -1,47 +1,19 @@
 import * as React from "react";
-import * as fs from "fs";
 import WebView from "react-electron-web-view";
-import { DH_NOT_SUITABLE_GENERATOR } from "constants";
-import { url } from "inspector";
-const { shell, remote } = require("electron");
+const { remote } = require("electron");
 import { sleep, getPreloadScriptPath } from "../../common/functions";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 import ClickElement from "./clickElement";
-import { element, number, object } from "prop-types";
-import PlanHolder from "../PlanHolder";
 import UniversalButton from "../universalButtons/universalButton";
-import { threadId } from "worker_threads";
-
-import * as ReactDOM from "react-dom";
 import "./diagrams/diagram.scss";
-import createEngine, { DefaultLinkModel, DiagramModel } from "@projectstorm/react-diagrams";
-// import { JSCustomNodeFactory } from "./diagrams/custom-node-js/JSCustomNodeFactory";
-import { TSCustomNodeFactory } from "./diagrams/custom-node-ts/TSCustomNodeFactory";
-import { JSCustomNodeModel } from "./diagrams/custom-node-js/JSCustomNodeModel";
-import { TSCustomNodeModel } from "./diagrams/custom-node-ts/TSCustomNodeModel";
-import { BodyWidget } from "./diagrams/BodyWidget";
-import { ipcRenderer, TouchBarScrubber } from "electron";
-import { clipboard } from "electron";
-import { Query, compose, graphql } from "react-apollo";
+import { compose, graphql } from "react-apollo";
 import gql from "graphql-tag";
-import ExecuteAppEdit from "./ExecuteAppEdit";
-import { enhanceErrorWithDocument } from "apollo-cache-inmemory";
 
 // capture the session for reset reasons
 const { session } = remote;
 
-// create an instance of the diagram-engine
-const engine = createEngine();
-
-// register the two engines
-// engine.getNodeFactories().registerFactory(new JSCustomNodeFactory() as any);
-// engine.getNodeFactories().registerFactory(new TSCustomNodeFactory());
-
 interface Props {
-  functionupper: Function;
-  createApp: Function;
   saveExecutionPlan: Function;
 }
 
@@ -72,28 +44,10 @@ interface State {
   webviewReady: boolean;
   loaded: boolean;
   fillkeys: Object[];
+  endExecute: boolean;
+  fullexecutionPlan: Object[];
+  directlyExecute: boolean;
 }
-
-const FETCH_EXECUTIONAPPS = gql`
-  query fetchExecutionApps($appid: ID) {
-    fetchExecutionApps(appid: $appid) {
-      id
-      disabled
-      name
-      loginurl
-      needssubdomain
-      features
-      options
-      internaldata
-    }
-  }
-`;
-
-const CREATE_APP = gql`
-  mutation onCreateApp($app: AppInput!, $options: AppOptions) {
-    createApp(app: $app, options: $options)
-  }
-`;
 
 const SAVE_EXECUTION_PLAN = gql`
   mutation saveExecutionPlan($appid: ID!, $key: String!, $script: JSON!) {
@@ -122,7 +76,9 @@ class LoginIntegrator extends React.Component<Props, State> {
     end: false,
     divList: [],
     showDivList: true,
-    url: "https://calendly.com/login",
+    url: this.props.match.params.url
+      ? decodeURIComponent(this.props.match.params.url)
+      : "https://vipfy.store",
     urlBevorChange: "",
     finalexecutionPlan: [],
     processedfinalexecutionPlan: [],
@@ -142,7 +98,10 @@ class LoginIntegrator extends React.Component<Props, State> {
     showExtend: false,
     webviewReady: false,
     loaded: false,
-    fillkeys: []
+    fillkeys: [],
+    endExecute: false,
+    fullexecutionPlan: [],
+    directlyExecute: false
   };
   savevalue: string;
   shallSearch: boolean = true;
@@ -209,9 +168,10 @@ class LoginIntegrator extends React.Component<Props, State> {
         console.log("else if: invalid url");
         await this.setState({ url: "about:blank" });
         this.searchattampts--;
-        setTimeout(() => this.trySiteLoading(), 1000);
+        await sleep(1000);
+        await this.trySiteLoading();
       } else {
-        console.log("valid url: " + +this.state.searchurl);
+        console.log("valid url: " + this.state.searchurl);
         await this.setState({ url: searchvalue });
         // this.timeoutSave = setTimeout(() => this.searchOnGoogle(), 20000);
       }
@@ -248,11 +208,6 @@ class LoginIntegrator extends React.Component<Props, State> {
       });
     }
     this.shallSearch = true;
-  }
-
-  printExecutionPlan() {
-    console.log(JSON.stringify(this.state.executionPlan));
-    this.setState({ executionPlan: [] });
   }
 
   async updateDivList() {
@@ -663,7 +618,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                 livevalue={v =>
                   this.setState(oldstate => {
                     const newfillkeys = oldstate.fillkeys;
-                    const finditem = newfillkeys.find(e => (e.key = plan.args.id));
+                    const finditem = newfillkeys.find(e => e.key == plan.args.id);
                     if (finditem) {
                       finditem.value = v;
                     } else {
@@ -815,6 +770,10 @@ class LoginIntegrator extends React.Component<Props, State> {
           if (this.webview) {
             this.webview!.send("execute", shortedPlan);
           }
+        }
+        if (this.state.directlyExecute) {
+          await sleep(500);
+          this.sendExecuteFinal();
         }
         break;
       case "sendMessage":
@@ -1191,8 +1150,10 @@ class LoginIntegrator extends React.Component<Props, State> {
         break;
 
       case "loaded":
+        console.log("loaded", this.state);
         this.setState(oldstate => {
-          if (!oldstate.loaded) {
+          if (!oldstate.loaded && oldstate.webviewReady && oldstate.url != "about:blank") {
+            console.log("START TRACKING");
             this.webview!.send("startTracking", {});
             return { ...oldstate, loaded: true };
           } else {
@@ -1201,7 +1162,15 @@ class LoginIntegrator extends React.Component<Props, State> {
         });
         break;
 
-      case "endexecution":
+      case "endExecution":
+        this.setState(oldstate => {
+          if (oldstate.directlyExecute && this.webview) {
+            this.webview!.send("startTracking", {});
+            return { endExecute: true, directlyExecute: false };
+          } else {
+            return { endExecute: true };
+          }
+        });
         console.log("END EXECUTION");
         break;
       default:
@@ -1220,7 +1189,7 @@ class LoginIntegrator extends React.Component<Props, State> {
             height: "calc(100vh - 72px)",
             backgroundColor: "#30475D"
           }}>
-          <div style={{ overflowY: "scroll", height: "100%" }}>
+          <div style={{ overflowY: "scroll", height: "100%", position: "relative" }}>
             {this.state.executionPlan.map((o, k) => (
               <div
                 id={o.args.id + "side"}
@@ -1241,7 +1210,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                   noLabel={true}
                   operationOptions={[
                     { value: "waitandfill", label: "Fill Field" },
-                    { value: "click", label: "click" }
+                    { value: "click", label: "Click" }
                   ]}
                 />
                 <div style={{ height: "24px" }}></div>
@@ -1260,18 +1229,71 @@ class LoginIntegrator extends React.Component<Props, State> {
                 disabled={this.webview == undefined}
                 onClick={async () => {
                   await this.setState(oldstate => {
+                    let newfullExe: Object[] = [];
+                    if (
+                      oldstate.fullexecutionPlan.length > 0 &&
+                      oldstate.finalexecutionPlan.length > 0
+                    ) {
+                      oldstate.fullexecutionPlan.forEach(e => {
+                        if (!oldstate.finalexecutionPlan.find(f => f.args.id == e.args.id)) {
+                          newfullExe.push(e);
+                        }
+                      });
+                    } else {
+                      newfullExe = oldstate.fullexecutionPlan;
+                    }
                     return {
                       ...oldstate,
                       tracking: false,
                       executionPlan: [],
                       divList: [],
                       test: true,
-                      finalexecutionPlan: oldstate.executionPlan
+                      finalexecutionPlan: oldstate.executionPlan,
+                      fullexecutionPlan: newfullExe.concat(oldstate.finalexecutionPlan)
                     };
                   });
                   this.sendExecute();
                 }}
                 label="EXECUTE Tracked"
+              />
+            </div>
+            <div
+              style={{ textAlign: "center", position: "absolute", bottom: "10px", width: "100%" }}>
+              <UniversalButton
+                label="Revert last execution"
+                type="high"
+                onClick={async () => {
+                  session.fromPartition("followLogin").clearStorageData();
+                  await this.setState(oldstate => {
+                    console.log("OLDSTATE", oldstate);
+                    const copyArray = [];
+                    const copyArray2 = copyArray.concat(oldstate.fullexecutionPlan);
+                    return {
+                      searchurl: this.props.match.params.url
+                        ? decodeURIComponent(this.props.match.params.url)
+                        : "https://vipfy.store",
+                      finalexecutionPlan: oldstate.fullexecutionPlan
+                    };
+                  });
+                  await this.trySiteLoading();
+                  if (this.state.fullexecutionPlan.length == 0) {
+                    await this.setState({
+                      loaded: false,
+                      tracking: true,
+                      divList: [],
+                      test: false
+                    });
+                  } else {
+                    await this.setState({
+                      tracking: false,
+                      test: true,
+                      directlyExecute: true
+                    });
+                    //await this.sendExecuteFinal();
+                  }
+                  console.log("TEST", this.state);
+                }}
+                customStyles={{ fontSize: "12px" }}
               />
             </div>
           </div>
@@ -1307,12 +1329,44 @@ class LoginIntegrator extends React.Component<Props, State> {
             onDidFailLoad={e => this.didFailLoad(e)}
           />
         </div>
+        {this.state.endExecute && (
+          <PopupBase id="endExecutePopup" small={true}>
+            <span>Are you logged in?</span>
+            <UniversalButton
+              type="low"
+              label="No"
+              onClick={() =>
+                this.setState({ endExecute: false, tracking: true, divList: [], test: false })
+              }
+            />
+            <UniversalButton
+              type="high"
+              label="Yes"
+              onClick={async () => {
+                const finishedExecutePlan = this.state.fullexecutionPlan.concat(
+                  this.state.finalexecutionPlan
+                );
+                console.log(JSON.stringify(finishedExecutePlan));
+
+                const appupdate = await this.props.saveExecutionPlan({
+                  variables: {
+                    appid: this.props.match.params.appid,
+                    key: "Login",
+                    script: JSON.stringify(finishedExecutePlan)
+                  }
+                });
+                console.log("APPUPDATE", appupdate);
+                this.props.moveTo("dashboard");
+                this.setState({ endExecute: false });
+              }}
+            />
+          </PopupBase>
+        )}
       </div>
     );
   }
 }
 
-export default compose(
-  graphql(CREATE_APP, { name: "createApp" }),
-  graphql(SAVE_EXECUTION_PLAN, { name: "saveExecutionPlan" })
-)(LoginIntegrator);
+export default compose(graphql(SAVE_EXECUTION_PLAN, { name: "saveExecutionPlan" }))(
+  LoginIntegrator
+);
