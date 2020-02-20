@@ -379,7 +379,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                 <LoadingDiv progress={this.state.progress} /*style={{ height: "100px" }}*/ />
               )}
 
-              {this.state.options.universallogin ? (
+              {this.state.options.type == "universalLogin" ||
+              this.state.options.type == "execute" ? (
                 <UniversalLoginExecutor
                   key={`${this.state.setUrl}-${this.state.loginspeed}`}
                   //keylog={`${this.state.setUrl}-${this.state.loginspeed}`}
