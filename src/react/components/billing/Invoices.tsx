@@ -24,6 +24,7 @@ export default () => {
   const [currentYear, setYear] = React.useState(moment().get("year"));
   const [currentMonths, setMonths] = React.useState([moment.months(moment().get("month"))]);
   const [sortDirection, setDirection] = React.useState("-alt");
+  const monthList = React.useRef(null);
 
   const toggleMonths = month => {
     setMonths(prevMonths => {
@@ -44,18 +45,20 @@ export default () => {
   };
 
   React.useEffect(() => {
-    window.addEventListener("keydown", onEnter, true);
+    if (monthList && monthList.current) {
+      monthList.current.addEventListener("keydown", onEnter);
 
-    return function cleanup() {
-      window.removeEventListener("keydown", onEnter);
-    };
+      return function cleanup() {
+        monthList.current.removeEventListener("keydown", onEnter);
+      };
+    }
   });
 
   return (
     <Query query={FETCH_BILLS}>
       {({ data: { fetchBills }, loading, error }) => {
         if (loading) {
-          return <LoadingDiv text="Fetching data..." />;
+          return <LoadingDiv />;
         }
 
         if (error || !fetchBills) {
@@ -81,7 +84,7 @@ export default () => {
 
         return (
           <div className="table-holder" style={{ minHeight: "175px" }}>
-            <ul className="billing-period">
+            <ul ref={monthList} className="billing-period">
               {[...Array(12).keys()].map(i => {
                 const month = moment().months(i);
 
