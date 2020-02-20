@@ -1,23 +1,18 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": { "*": ["types/*"] },
-    "removeComments": false,
-    "preserveConstEnums": true,
     "sourceMap": true,
-    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "strictNullChecks": true,
+    "esModuleInterop": true,
     "noUnusedLocals": true,
+    "noImplicitAny": false,
     "noUnusedParameters": true,
     "noImplicitThis": true,
-    "importHelpers": true,
-    "noEmitHelpers": true,
-    "module": "esnext",
+    "declarationDir": "dist/types",
+    "declaration": true,
+    "module": "es2015",
     "moduleResolution": "node",
-    "pretty": true,
-    "target": "es6",
+    "target": "es2015",
     "jsx": "react",
     "lib": ["dom","esnext","dom.iterable","scripthost"],
     "experimentalDecorators": true,
@@ -26,9 +21,11 @@
     "isolatedModules": true,
     "noEmit": true,
   },
-  "formatCodeOptions": {
-    "indentSize": 2,
-    "tabSize": 2
-  },
-  "include": ["src"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
