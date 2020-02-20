@@ -1,5 +1,5 @@
 import * as React from "react";
-import { graphql, Query } from "react-apollo";
+import { Query } from "react-apollo";
 
 import { fetchApps } from "../queries/products";
 import LoadingDiv from "../components/LoadingDiv";
@@ -136,4 +136,4 @@ class Integrations extends React.Component<{}, AppPageState> {
   }
 }
 
-export default graphql(fetchApps, { name: "products" })(Integrations);
+export default Integrations;
