@@ -12,7 +12,8 @@
     "publish-js-obfuscated": "jscrambler src/ssoConfigPreload/* -o obfuscated && electron-forge publish && shx rm -r obfuscate",
     "publish-js-obfuscated2": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
-    "start": "electron-forge start"
+    "start": "electron-forge start",
+    "faststart": "electron-forge start"
   },
   "keywords": [],
   "author": "Vipfy GmbH",

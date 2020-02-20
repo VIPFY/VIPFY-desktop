@@ -1,4 +1,8 @@
-module.exports = [
+const path = require("path");
+
+const fast = process.env.npm_lifecycle_event.includes("fast");
+
+const rules = [
   // Add support for native node modules
   {
     test: /\.node$/,
@@ -19,16 +23,50 @@ module.exports = [
   // this is nessesary until jscrambler supports async
   {
     test: /\.(ts|js)x?$/,
-    use: [
-      {
-        loader: "babel-loader"
-      },
-      {
-        loader: "ts-loader",
-        options: {
-          transpileOnly: true
-        }
-      }
-    ]
+    use: fast
+      ? [
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true,
+              experimentalWatchApi: true,
+              onlyCompileBundledFiles: true
+            }
+          }
+        ]
+      : [
+          {
+            loader: "babel-loader",
+            options: {
+              cacheDirectory: true
+            }
+          },
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true,
+              experimentalWatchApi: true,
+              onlyCompileBundledFiles: true
+            }
+          }
+        ],
+    include: path.resolve(__dirname, "src")
   }
 ];
+
+if (!fast) {
+  rules.push({
+    test: /\.(ts|js)x?$/,
+    use: [
+      {
+        loader: "babel-loader",
+        options: {
+          cacheDirectory: true
+        }
+      }
+    ],
+    exclude: path.resolve(__dirname, "src")
+  });
+}
+
+module.exports = rules;
