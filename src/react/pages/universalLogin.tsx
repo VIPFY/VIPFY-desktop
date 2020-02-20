@@ -216,6 +216,17 @@ class UniversalLogin extends React.PureComponent<Props, State> {
           e.target.send("loginData", this.loginState);
         }
         break;
+      case "clicked":
+        {
+          const value = e.args[0];
+          const bb = e.target.getBoundingClientRect();
+          value.elementX += bb.x;
+          value.elementY += bb.y;
+          value.mouseX += bb.x;
+          value.mouseY += bb.y;
+          global.addClickEvent(value);
+        }
+        break;
     }
   }
 }

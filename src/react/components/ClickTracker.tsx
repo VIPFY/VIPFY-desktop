@@ -3,9 +3,10 @@ import { PureComponent } from "react";
 import { Query, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import * as uuid from "uuid/v4";
-import lzma from "lzma";
+//import lzma from "lzma";
 const screen = require("electron").remote.screen;
 const browserWindow = require("electron").remote.BrowserWindow;
+const lzma = require("lzma/src/lzma_worker.js").LZMA_WORKER; // workaround for https://github.com/LZMA-JS/LZMA-JS/issues/35
 // const HID = require("node-hid");
 
 interface Props {
@@ -22,8 +23,12 @@ interface Event {
   eventType: "mm" | "mc" | "wr" | "ss";
   mouseX?: number;
   mouseY?: number;
+  windowX?: number;
+  windowY?: number;
   windowW?: number;
   windowH?: number;
+  windowOffsetX?: number;
+  windowOffsetY?: number;
   elementX?: number;
   elementY?: number;
   elementW?: number;
@@ -82,25 +87,21 @@ class ClickTrackerInner extends PureComponent<Props, State> {
     window.requestAnimationFrame(this.boundLogMousePos!);
   }
 
-  onMouseMove(e: MouseEvent) {
-    this.emitWindowResizeEvent(e.timeStamp);
-    this.addEvent({
-      eventType: "mm",
-      mouseX: e.clientX,
-      mouseY: e.clientY,
-      time: e.timeStamp
-    });
-  }
-
   emitWindowResizeEvent(time) {
     if (
       window.innerWidth != this.previousEvent.windowW ||
       window.innerHeight != this.previousEvent.windowH
     ) {
+      const wp = this.window!.getPosition();
+      const wb = this.window!.getContentBounds();
       this.addEvent({
         eventType: "wr",
+        windowX: wp[0],
+        windowY: wp[1],
         windowW: window.innerWidth,
         windowH: window.innerHeight,
+        windowOffsetX: wb.x - wp[0],
+        windowOffsetY: wb.y - wp[1],
         time
       });
     }
@@ -110,8 +111,9 @@ class ClickTrackerInner extends PureComponent<Props, State> {
     this.setState({ sessionId: uuid() });
     this.addEventListeners();
     this.boundLogMousePos = this.logMousePos.bind(this);
-    this.window = browserWindow.getFocusedWindow();
+    this.window = browserWindow.getAllWindows()[0];
     this.logMousePos();
+    global.addClickEvent = this.addEvent.bind(this);
 
     /*for (let i = 0; i < 8721; i++) {
       w.hookWindowMessage(i, (x, y, z) =>
@@ -145,6 +147,8 @@ class ClickTrackerInner extends PureComponent<Props, State> {
   }
 
   componentWillUnmount() {
+    global.addClickEvent = undefined;
+    this.sendEvents(this.props.userid);
     this.removeEventListeners();
     this.boundLogMousePos = () => null;
   }
@@ -184,6 +188,8 @@ class ClickTrackerInner extends PureComponent<Props, State> {
       t = e.target as Element | null;
       isButton = false;
     }
+    const wp = this.window!.getPosition();
+    const wb = this.window!.getContentBounds();
     let elementX, elementY, elementW, elementH;
     if (t) {
       const b = t.getBoundingClientRect();
@@ -196,8 +202,12 @@ class ClickTrackerInner extends PureComponent<Props, State> {
       eventType: "mc",
       mouseX: e.clientX,
       mouseY: e.clientY,
+      windowX: wp[0],
+      windowY: wp[1],
       windowW: window.innerWidth,
       windowH: window.innerHeight,
+      windowOffsetX: wb.x - wp[0],
+      windowOffsetY: wb.y - wp[1],
       elementX,
       elementY,
       elementW,
@@ -238,7 +248,8 @@ class ClickTrackerInner extends PureComponent<Props, State> {
     e.time = Math.round(e.time * 100) / 100;
 
     this.events.push(JSON.stringify(e));
-    if (this.events.length > 20000) {
+    if (this.events.length > 60 * 60 * 5) {
+      // about every 10 minutes
       this.sendEvents(this.props.userid);
     }
   }
@@ -257,7 +268,7 @@ class ClickTrackerInner extends PureComponent<Props, State> {
     });
     const client = this.props.client;
     lzma.compress(events, 6, async result => {
-      const file = new File([result], "data.gz", {
+      const file = new File([Uint8Array.from(result).buffer], "data.gz", {
         type: "application/x-gzip"
       });
       try {
@@ -310,6 +321,10 @@ function ClickTracker(props: { client }) {
         if (!data.me.consent) {
           console.log("No consent given, not tracking click data");
           return null;
+        }
+
+        if (localStorage.getItem("impersonator-token")) {
+          console.log("impersonating, not tracking click data");
         }
 
         return (

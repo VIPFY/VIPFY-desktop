@@ -675,9 +675,7 @@ function onClick(e) {
     elementW = b.width;
     elementH = b.height;
   }
-  console.log(t);
-  t.style.outline = "solid pink 1px";
-  console.log({
+  ipcRenderer.sendToHost("clicked", {
     eventType: "mc",
     mouseX: e.clientX,
     mouseY: e.clientY,
@@ -690,9 +688,12 @@ function onClick(e) {
     isButton,
     time: e.timeStamp
   });
+
   if (!isButton) {
-    console.warn("clicked nonbutton", t);
+    console.debug("clicked nonbutton", t);
   }
+}
+
 function verifyRecaptcha() {
   if (!recaptchaConfirmOnce) {
     try {
