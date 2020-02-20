@@ -467,7 +467,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                     />
                     <Route
                       key={"ERRORELSE"}
-                      render={props => (
+                      render={() => (
                         <div
                           className={`full-working ${chatOpen ? "chat-open" : ""} ${
                             sidebarOpen ? "sidebar-open" : ""
