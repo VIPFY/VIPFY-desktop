@@ -28,6 +28,10 @@ interface Props {
   interactionHappenedCallback?: () => void;
   showLoadingScreen?: Function;
   execute?: Object[];
+  noError?: boolean;
+  individualShow?: string;
+  noUrlCheck?: boolean;
+  individualNotShow?: string;
 }
 
 interface State {
@@ -133,7 +137,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   progressCallbackRunning = false;
 
   reset() {
-    //console.log("RESET");
+    console.log("RESET");
     session.fromPartition(this.props.partition).clearStorageData();
     this.loginState = {
       emailEntered: false,
@@ -166,7 +170,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    //console.log("DID MOUNT");
+    console.log("DID MOUNT");
     this.reset();
     this.mounted++;
     this.progressHandle = setInterval(this.progressCallback.bind(this), this.progressInterval);
@@ -192,7 +196,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     //   });
   }
   componentWillUnmount() {
-    //console.log("Will UnMOUNT");
+    console.log("Will UnMOUNT");
     session.fromPartition(this.props.partition).clearStorageData();
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
@@ -258,7 +262,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       prevProps.password != this.props.password
     ) {
       //console.log("RESET");
-      //console.log("WILL UPDATE");
+      console.log("WILL UPDATE");
       this.reset();
     }
   }
@@ -288,7 +292,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         src={this.state.currentUrl || this.props.loginUrl}
         partition={this.props.partition}
         className={this.props.className}
-        useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
+        useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
         onIpcMessage={e => this.onIpcMessage(e)}
         style={this.props.style || {}}
         onNewWindow={e => this.onNewWindow(e)}
@@ -305,8 +309,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
     for (const p of urlParts) {
       //for (const m of l) {
-      if (initial[p].includesAny(l) && !now[p].includesAny(l)) {
-        //console.log("URL TRUE", initial[p]);
+      if (initial[p].includesAny(l) && !now[p].includesAny(l) && !this.props.noUrlCheck) {
+        console.log("URL TRUE", initial[p]);
         //await sleep(200);
         return true;
       }
@@ -452,7 +456,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               return false;
             };
           }
-          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/"],[]));
+          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account", "cmds-header__avatar-menu qa-member-menu-trigger", "js_signout", "settings" ${
+            this.props.individualShow ? `, "${this.props.individualShow}"` : ""
+          }],[${this.props.individualNotShow ? `"${this.props.individualNotShow}"` : ""}]));
           //console.log("LOGIN", loginarray)
           return loginarray.length > 0
         })();
@@ -460,7 +466,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`
         )
         .then(e => {
-          //console.log("FOUND LOGIN", e);
+          console.log("FOUND LOGIN", e);
           return e;
         });
     } else {
@@ -608,7 +614,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           //document.querySelectorAll(".multiadmin-profile, #presence, [ng-click*='logout'], [ng-click*='signout'], [href*='logout'], [href*='signout'], [href*='log_out'], [href*='sign_out'], [href*='log-out'], [href*='sign-out'], [href*='logoff'], [href*='signoff'], [id*='editAccountSetting'], [data-test-id='navbar-profile-dropdown']").length > 0`
         )
         .then(e => {
-          //console.log("CHECK FOR ERROR", e);
+          console.log("CHECK FOR ERROR", e);
           return e;
         });
     } else {
@@ -643,10 +649,10 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         w.getWebContents().capturePage(async image => {
           const loggedin = await this.isLoggedIn(w);
           let errorin = false;
-          if (!loggedin) {
+          if (!loggedin && !this.props.noError) {
             errorin = await this.isErrorIn(w);
           }
-          //console.log("sentResult", loggedin, errorin, this.loginState);
+          console.log("sentResult", loggedin, errorin, this.loginState);
           if (this.isUnmounted) {
             return;
           }
@@ -693,7 +699,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     ) {
       this.timeout = false;
       this.progress = 1;
-      //console.log("SENDRESULT 1");
+      console.log("SENDRESULT 1");
       //this.sendResult(this.webview, 0);
       this.props.setResult({ loggedin: true, errorin: false, ...this.loginState }, "");
       if (this.progressHandle) {
@@ -705,11 +711,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     if (
       (this.loginState.emailEnteredEnd || this.loginState.passwordEnteredEnd) &&
       this.webview &&
+      !this.props.noError &&
       (await this.isErrorIn(this.webview))
     ) {
       await sleep(100);
-      if (await this.isErrorIn(this.webview)) {
-        //console.log("ERROR", await this.isErrorIn(this.webview), this.props.loginUrl);
+      if (!this.props.noError && (await this.isErrorIn(this.webview))) {
+        console.log("ERROR", await this.isErrorIn(this.webview), this.props.loginUrl);
         this.timeout = false;
         this.progress = 1;
         //console.log("SENDRESULT 2");
@@ -727,7 +734,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
         if (this.timeout) {
-          //console.log("TIMEOUT");
+          console.log("TIMEOUT");
           this.props.setResult({ loggedin: false, errorin: true, ...this.loginState }, "");
         }
       }
@@ -741,7 +748,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
   async onIpcMessage(e) {
     //e.target.openDevTools();
-    //console.log("IPC", e);
+    console.log("IPC", e);
     this.webview = e.target;
     switch (e.channel) {
       case "interactionHappened":
@@ -754,7 +761,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       case "click":
         {
           let w = e.target;
-          //console.log("CLICK", { x: e.args[0], y: e.args[1] });
+          console.log("CLICK", { x: e.args[0], y: e.args[1] });
           w.sendInputEvent({ type: "mouseMove", x: e.args[0], y: e.args[1] });
           await this.modifiedSleep(Math.random() * 30 + 200);
           w.sendInputEvent({
@@ -783,7 +790,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         break;
       case "loaded":
         {
-          //console.log("SEND");
+          console.log("SEND");
           this.loginState.unloaded = false;
         }
         break;
@@ -796,7 +803,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       case "fillFormField":
         {
           const w = e.target;
-          //console.log("fillForm", e.args[0]);
+          console.log("fillForm", e.args[0]);
           let text = "";
           if (e.args[0] == "domain") {
             text = this.props.domain;
@@ -846,19 +853,19 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         break;
       case "getLoginData":
         {
-          //console.log("GET LOGIN DATA", this.state.errorin);
+          console.log("GET LOGIN DATA", this.state.errorin);
           if (await this.isLoggedIn(e.target)) {
-            //console.log("LOGGED IN", this.state, e.target);
+            console.log("LOGGED IN", this.state, e.target);
             //this.sendResult(this.webview, 0);
             return; //we are done with login
           }
           //console.log("ERRORIN", this.state.errorin);
           if (this.state.errorin) {
-            //console.log("ERROR", this.state);
+            console.log("ERROR", this.state);
             return;
           }
           await sleep(50);
-          //console.log("SEND LOGIN DATA", this.loginState);
+          console.log("SEND LOGIN DATA", this.loginState);
           e.target.send("loginData", {
             ...this.loginState,
             speed: this.props.speed,
@@ -876,7 +883,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           let height = e.args[3] - 50;
           let x = Math.floor(Math.random() * width + left);
           let y = Math.floor(Math.random() * height + top);
-          //console.log("Recap", x, y);
+          console.log("Recap", x, y);
           w.sendInputEvent({ type: "mouseMove", x: x, y: y });
           this.modifiedSleep(Math.random() * 30 + 200);
           w.sendInputEvent({ type: "mouseDown", x: x, y: y, button: "left", clickCount: 1 });
@@ -894,7 +901,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
       case "recaptchaSuccess":
         {
-          //console.log("Recaptcha success");
+          console.log("Recaptcha success");
           //this.setState({ showPopup: true, e });
           if (this.props.showLoadingScreen) {
             this.props.showLoadingScreen(true);

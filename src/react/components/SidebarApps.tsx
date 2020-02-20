@@ -3,12 +3,9 @@ import Tooltip from "react-tooltip-lite";
 import { graphql } from "react-apollo";
 import { clipboard } from "electron";
 
-import { UPDATE_LAYOUT } from "../mutations/auth";
-
 import SidebarLink from "./sidebarLink";
 import { Licence } from "../interfaces";
 import { layoutUpdate } from "../common/functions";
-import { fetchLicences } from "../queries/auth";
 import * as moment from "moment";
 
 interface Props {

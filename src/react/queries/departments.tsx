@@ -79,35 +79,6 @@ export const fetchUnitApps = gql`
   }
 `;
 
-export const fetchUsersOwnLicences = gql`
-  query fetchUsersOwnLicences($unitid: ID!) {
-    fetchUsersOwnLicences(unitid: $unitid) {
-      id
-      disabled
-      endtime
-      starttime
-      options
-      vacationend
-      vacationstart
-      boughtplanid {
-        id
-        alias
-        planid {
-          id
-          options
-          appid {
-            id
-            logo
-            name
-            icon
-            disabled
-          }
-        }
-      }
-    }
-  }
-`;
-
 export const fetchTeams = gql`
   query fetchTeams($userid: ID!) {
     fetchTeams(userid: $userid) {

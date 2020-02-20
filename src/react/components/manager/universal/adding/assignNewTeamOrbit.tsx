@@ -9,11 +9,8 @@ import UniversalButton from "../../../../components/universalButtons/universalBu
 import AssignOrbit from "./assignOrbit";
 import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
-import { fetchUserLicences, fetchTeam } from "../../../../queries/departments";
-import Calendar from "react-calendar";
-import moment, { now } from "moment";
+import { fetchTeam } from "../../../../queries/departments";
 import PrintTeamSquare from "../squares/printTeamSquare";
-import account from "./account";
 
 interface Props {
   team: any;

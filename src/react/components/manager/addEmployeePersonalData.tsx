@@ -12,6 +12,7 @@ import { randomPassword } from "../../common/passwordgen";
 import { filterError, AppContext } from "../../common/functions";
 import * as crypto from "../../common/crypto";
 import { computePasswordScore } from "../../common/passwords";
+import { resizeImage } from "../../common/images";
 
 interface Props {
   close: Function;
@@ -124,11 +125,11 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     passwordScore: 0
   };
 
-  handleConfirm() {
+  handleConfirm = () => {
     if (this.state.confirm) {
       this.setState({ saving: true, confirm: false });
     }
-  }
+  };
 
   handleCreate() {
     if (this.props.addpersonal && this.props.addpersonal.unitid) {
@@ -138,6 +139,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
     }
   }
 
+  file = null;
+
   render() {
     return (
       <React.Fragment>
@@ -145,7 +148,13 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
         <div className="deleteContent" style={{ overflowY: "scroll" }}>
           <EmployeeGerneralDataAdd
             addpersonal={this.props.addpersonal}
-            setOuterState={s => this.setState(s)}
+            setOuterState={async s => {
+              if (s.picture) {
+                this.file = await resizeImage(s.picture);
+              } else {
+                this.setState(s);
+              }
+            }}
             isadmin={this.props.isadmin}
           />
 
@@ -183,7 +192,7 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
           <PopupBase small={true} close={() => this.setState({ confirm: false })}>
             Do you really want to create an Employee called {this.state.name}?
             <UniversalButton label="Cancel" type="low" closingPopup={true} />
-            <UniversalButton label="Confirm" type="high" onClick={() => this.handleConfirm()} />
+            <UniversalButton label="Confirm" type="high" onClick={this.handleConfirm} />
           </PopupBase>
         )}
         {this.state.saving && (
@@ -228,8 +237,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                 };
 
                 const personalKey = await crypto.generatePersonalKeypair(encryptionkey1);
-
                 const unitid = await this.props.createEmployee({
+                  context: { hasUpload: true },
                   variables: {
                     ...state,
                     name: {
@@ -253,7 +262,8 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                     passwordMetrics,
                     personalKey,
                     passwordsalt: salt,
-                    needpasswordchange: this.state.passwordChange
+                    needpasswordchange: this.state.passwordChange,
+                    picture: this.file
                   }
                 });
                 this.setState({
@@ -269,7 +279,6 @@ class AddEmployeePersonalData extends React.Component<Props, State> {
                   employee: unitid.data.createEmployee
                 });
               } catch (err) {
-                console.log("ERR", err);
                 this.setState({ success: false, error: filterError(err) });
                 throw new Error(err.message);
               }

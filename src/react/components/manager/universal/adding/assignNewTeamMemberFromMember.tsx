@@ -361,8 +361,8 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                       )}
                       startvalue=""
                       livecode={c => this.setState({ team: teams.find(a => a.unitid.id == c) })}
-                      noresults="Create new team"
-                      noresultsClick={v => this.setState({ newTeam: true })}
+                      //noresults="Create new team"
+                      //noresultsClick={v => this.setState({ newTeam: true })}
                       fewResults={true}
                       livevalue={v => this.setState({ value: v })}
                     />
@@ -402,13 +402,13 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                           />
                         </div>
                       ))}
-                      <div className="listingDiv" key="new">
+                      {/*<div className="listingDiv" key="new">
                         <UniversalButton
                           type="low"
                           label="Create new team"
                           onClick={() => this.setState({ newTeam: true })}
                         />
-                      </div>
+                          </div>*/}
                       <UniversalButton type="low" label="Cancel" closingPopup={true} />
                     </PopupBase>
                   )}

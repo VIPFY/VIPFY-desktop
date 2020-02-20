@@ -351,8 +351,8 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                       startvalue=""
                       livecode={c => this.setState({ employee: employees.find(a => a.id == c) })}
                       livevalue={v => this.setState({ value: v })}
-                      noresults="Create new user"
-                      noresultsClick={v => this.setState({ add: true })}
+                      //noresults="Create new user"
+                      //noresultsClick={v => this.setState({ add: true })}
                       fewResults={true}
                     />
                     {this.state.add && (
@@ -393,13 +393,13 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                           />
                         </div>
                       ))}
-                      <div className="listingDiv" key="new">
+                      {/*<div className="listingDiv" key="new">
                         <UniversalButton
                           type="low"
                           label="Create new User"
                           onClick={() => this.setState({ add: true })}
                         />
-                      </div>
+                          </div>*/}
                       <UniversalButton type="low" label="Cancel" closingPopup={true} />
                     </PopupBase>
                   )}

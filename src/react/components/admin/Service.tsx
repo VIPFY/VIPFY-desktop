@@ -72,7 +72,7 @@ const Service = (props: Props) => {
         const variables = { id: appid, type: "app", image: value };
         await props.deleteImage({ variables });
       } else {
-        const variables: Variables = { appid };
+        const variablesset: Variables = { appid };
 
         if (
           [
@@ -84,12 +84,15 @@ const Service = (props: Props) => {
             "afterdomain"
           ].find(item => item == name)
         ) {
-          variables.options = { [name]: value };
+          variablesset.options = { [name]: value };
         } else {
-          variables.app = { [name]: value };
+          variablesset.app = { [name]: value };
         }
-
-        const { data } = await props.updateApp({ variables });
+        //console.log(variablesset);
+        const { data } = await props.updateApp({
+          context: { hasUpload: true },
+          variables: variablesset
+        });
 
         if (name == "icon" || name == "logo") {
           return data.updateApp[name];
