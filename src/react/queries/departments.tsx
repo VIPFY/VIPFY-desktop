@@ -471,6 +471,7 @@ export const fetchUserLicences = gql`
   query onFetchUserLicences($unitid: ID!) {
     fetchUserLicenceAssignments(unitid: $unitid) {
       id
+      key
       disabled
       endtime
       starttime
