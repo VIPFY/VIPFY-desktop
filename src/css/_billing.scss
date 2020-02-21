@@ -74,6 +74,14 @@
     display: flex;
     flex-flow: column;
 
+    .generic-searchbar {
+      margin-top: 20px;
+    }
+
+    .button-billing {
+      margin: 20px 0;
+    }
+
     .generic-button-holder {
       position: initial;
       margin-top: 30px;
