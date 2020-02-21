@@ -203,21 +203,20 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
     const licences = await client.query({
       query: gql`
         query licencekeys($unitid: ID!) {
-          fetchUserLicences(unitid: $unitid) {
+          fetchUserLicenceAssignments(unitid: $unitid) {
             id
             key
           }
         }
       `,
       fetchPolicy: "network-only",
-      variables: {
-        unitid
-      }
+      variables: { unitid }
     });
+    console.log("LOG: updateEmployeePassword -> licences", licences);
 
     const licenceUpdates = (
       await Promise.all(
-        licences.data.fetchUserLicences
+        licences.data.fetchUserLicenceAssignments
           .flatMap(licence => {
             if (!licence.key || !licence.key.encrypted) {
               return null;

@@ -9,8 +9,8 @@ export const FORCE_RESET = gql`
 `;
 
 export const FETCH_USER_SECURITY_OVERVIEW = gql`
-  query userSecurityOverview {
-    fetchUserSecurityOverview {
+  query userSecurityOverview($userid: ID) {
+    fetchUserSecurityOverview(userid: $userid) {
       id
       unitid {
         id
