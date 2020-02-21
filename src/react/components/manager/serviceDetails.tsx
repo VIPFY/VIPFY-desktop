@@ -198,7 +198,7 @@ class ServiceDetails extends React.Component<Props, State> {
 
                     return (
                       <React.Fragment>
-                        <div className="percentage">
+                        <div className="percentage" style={{ width: "60px" }}>
                           {data && data.assignment
                             ? shortEnglishHumanizer(data.assignment * 60000, {
                                 largest: 2,
