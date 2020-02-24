@@ -7,7 +7,7 @@ import gql from "graphql-tag";
 import moment, { now } from "moment";
 import Calendar from "react-calendar";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
-import { fetchTeam, fetchTeams } from "../../queries/departments";
+import { fetchTeam, fetchTeams, fetchUserLicences } from "../../queries/departments";
 
 interface Props {
   employee: any;
@@ -263,7 +263,8 @@ class RemoveTeamMember extends React.Component<Props, State> {
                 },
                 refetchQueries: [
                   { query: fetchTeam, variables: { teamid: this.props.team.unitid.id } },
-                  { query: fetchTeams, variables: { userid: employee!.id } }
+                  { query: fetchTeams, variables: { userid: employee!.id } },
+                  { query: fetchUserLicences, variables: { unitid: employee!.id } }
                 ]
               });
               this.setState({ saved: true });

@@ -247,252 +247,256 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
     this.props.orbit.accounts.forEach((account, indexa) => {
       const assignments: JSX.Element[] = [];
       let outsideAssignment = false;
-      console.log("TEST", account);
-      account.assignments.forEach((assignment, index) => {
-        if (assignment) {
-          assignments.push(
-            <>
-              <div
-                key={`assignment-${indexa}-|`}
-                style={{ display: "flex", alignItems: "center", position: "relative" }}>
-                <span
-                  style={{
-                    lineHeight: "24px",
-                    width: "24px",
-                    display: "flex",
-                    justifyContent: "center",
-                    fontSize: "26px",
-                    fontWeight: "lighter"
-                  }}>
-                  |
-                </span>
-                <span
-                  style={{
-                    lineHeight: "24px",
-                    width: "24px",
-                    display: "flex",
-                    justifyContent: "center",
-                    fontSize: "26px",
-                    fontWeight: "lighter"
-                  }}>
-                  |
-                </span>
-              </div>
-              <div
-                key={`assignment-${indexa}-${index}`}
-                style={Object.assign(
-                  {},
-                  {
-                    display: "flex",
-                    alignItems: "center",
-                    position: "relative",
-                    cursor: "pointer"
-                  },
-                  assignment &&
-                    assignment.assignoptions &&
-                    this.props.team.unitid.id == assignment.assignoptions.teamlicence
-                    ? { backgroundColor: "rgb(156, 19, 188, 0.1)" }
-                    : {}
-                )}
-                onClick={() =>
-                  this.setState(oldstate => {
-                    const array = oldstate.deleteArray;
-                    const newbool = !array.accounts
-                      .find(a => a.id == account.id)
-                      .assignments.find(as => as.id == assignment.assignmentid).bool;
+      if (account) {
+        account.assignments.forEach((assignment, index) => {
+          if (assignment) {
+            assignments.push(
+              <>
+                <div
+                  key={`assignment-${indexa}-|`}
+                  style={{ display: "flex", alignItems: "center", position: "relative" }}>
+                  <span
+                    style={{
+                      lineHeight: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyContent: "center",
+                      fontSize: "26px",
+                      fontWeight: "lighter"
+                    }}>
+                    |
+                  </span>
+                  <span
+                    style={{
+                      lineHeight: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyContent: "center",
+                      fontSize: "26px",
+                      fontWeight: "lighter"
+                    }}>
+                    |
+                  </span>
+                </div>
+                <div
+                  key={`assignment-${indexa}-${index}`}
+                  style={Object.assign(
+                    {},
+                    {
+                      display: "flex",
+                      alignItems: "center",
+                      position: "relative",
+                      cursor: "pointer"
+                    },
+                    assignment &&
+                      assignment.assignoptions &&
+                      this.props.team.unitid.id == assignment.assignoptions.teamlicence
+                      ? { backgroundColor: "rgb(156, 19, 188, 0.1)" }
+                      : {}
+                  )}
+                  onClick={() =>
+                    this.setState(oldstate => {
+                      const array = oldstate.deleteArray;
+                      const newbool = !array.accounts
+                        .find(a => a.id == account.id)
+                        .assignments.find(as => as.id == assignment.assignmentid).bool;
 
-                    //When deselect => deselect parents
-                    if (!newbool) {
-                      array.orbit = false;
-                      array.accounts.find(a => a.id == account.id).bool = false;
-                    }
-                    array.accounts
-                      .find(a => a.id == account.id)
-                      .assignments.find(as => as.id == assignment.assignmentid).bool = newbool;
+                      //When deselect => deselect parents
+                      if (!newbool) {
+                        array.orbit = false;
+                        array.accounts.find(a => a.id == account.id).bool = false;
+                      }
+                      array.accounts
+                        .find(a => a.id == account.id)
+                        .assignments.find(as => as.id == assignment.assignmentid).bool = newbool;
 
-                    //When autodelete and no children
-                    if (oldstate.autodelete) {
-                      if (
-                        !array.accounts
-                          .find(a => a.id == account.id)
-                          .assignments.find(as => !as.bool)
-                      ) {
-                        array.accounts.find(a => a.id == account.id).bool = true;
-                        if (!array.teams.find(t => !t.bool) && !array.accounts.find(a => !a.bool)) {
-                          array.orbit = true;
+                      //When autodelete and no children
+                      if (oldstate.autodelete) {
+                        if (
+                          !array.accounts
+                            .find(a => a.id == account.id)
+                            .assignments.find(as => !as.bool)
+                        ) {
+                          array.accounts.find(a => a.id == account.id).bool = true;
+                          if (
+                            !array.teams.find(t => !t.bool) &&
+                            !array.accounts.find(a => !a.bool)
+                          ) {
+                            array.orbit = true;
+                          }
                         }
                       }
-                    }
-                    return { orbitoption: 4, deleteArray: array };
-                  })
-                }>
-                <span
-                  style={{
-                    lineHeight: "24px",
-                    width: "24px",
-                    display: "flex",
-                    justifyContent: "center",
-                    fontSize: "26px",
-                    fontWeight: "lighter"
-                  }}>
-                  |
-                </span>
-                <span
-                  style={{
-                    lineHeight: "24px",
-                    width: "24px",
-                    display: "flex",
-                    justifyContent: "center",
-                    fontSize: "26px",
-                    fontWeight: "lighter"
-                  }}>
-                  |
-                </span>
-                <PrintEmployeeSquare
-                  employee={assignment && assignment.unitid}
-                  size={24}
-                  styles={{
-                    lineHeight: "24px",
-                    width: "24px",
-                    height: "24px",
-                    fontSize: "13px",
-                    marginTop: "0px",
-                    marginLeft: "0px"
-                  }}
-                />
-                <span
-                  style={{
-                    lineHeight: "24px",
-                    marginLeft: "8px",
-                    maxWidth: "calc(100% - 80px)",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                  }}>
-                  {concatName(assignment.unitid)}
-                </span>
-                {this.state.deleteArray.accounts
-                  .find(a => a.id == account.id)
-                  .assignments.find(as => as.id == assignment.assignmentid).bool && (
-                  <div
+                      return { orbitoption: 4, deleteArray: array };
+                    })
+                  }>
+                  <span
                     style={{
-                      position: "absolute",
-                      top: "0px",
-                      left: "0px",
-                      width: "100%",
-                      height: "24px",
+                      lineHeight: "24px",
+                      width: "24px",
                       display: "flex",
-                      alignItems: "center"
+                      justifyContent: "center",
+                      fontSize: "26px",
+                      fontWeight: "lighter"
                     }}>
+                    |
+                  </span>
+                  <span
+                    style={{
+                      lineHeight: "24px",
+                      width: "24px",
+                      display: "flex",
+                      justifyContent: "center",
+                      fontSize: "26px",
+                      fontWeight: "lighter"
+                    }}>
+                    |
+                  </span>
+                  <PrintEmployeeSquare
+                    employee={assignment && assignment.unitid}
+                    size={24}
+                    styles={{
+                      lineHeight: "24px",
+                      width: "24px",
+                      height: "24px",
+                      fontSize: "13px",
+                      marginTop: "0px",
+                      marginLeft: "0px"
+                    }}
+                  />
+                  <span
+                    style={{
+                      lineHeight: "24px",
+                      marginLeft: "8px",
+                      maxWidth: "calc(100% - 80px)",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}>
+                    {concatName(assignment.unitid)}
+                  </span>
+                  {this.state.deleteArray.accounts
+                    .find(a => a.id == account.id)
+                    .assignments.find(as => as.id == assignment.assignmentid).bool && (
                     <div
                       style={{
-                        borderTop: "2px solid",
-                        width: "180px",
-                        height: "1px",
-                        marginLeft: "42px"
-                      }}></div>
-                  </div>
-                )}
-              </div>
-            </>
-          );
-        }
-      });
-      account.outsideAssignment = outsideAssignment;
-      accounts.push(
-        <>
-          <div
-            key={`account-${indexa}-1`}
-            style={{ display: "flex", alignItems: "center", position: "relative" }}>
-            <span
-              style={{
-                lineHeight: "24px",
-                width: "24px",
-                display: "flex",
-                justifyContent: "center",
-                fontSize: "26px",
-                fontWeight: "lighter"
-              }}>
-              |
-            </span>
-          </div>
-          <div
-            key={`account-${indexa}`}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              position: "relative",
-              cursor: "pointer"
-            }}
-            onClick={() =>
-              this.setState(oldstate => {
-                const array = oldstate.deleteArray;
-                const newbool = !array.accounts.find(a => a.id == account.id).bool;
-
-                //When deselect => deselect parents
-                if (!newbool) {
-                  array.orbit = false;
-                }
-                //When select => select all children
-                if (newbool) {
-                  array.accounts
-                    .find(a => a.id == account.id)
-                    .assignments.forEach(as => (as.bool = true));
-                }
-                array.accounts.find(a => a.id == account.id).bool = newbool;
-
-                //When autodelete and no children
-                if (oldstate.autodelete) {
-                  if (!array.teams.find(t => !t.bool) && !array.accounts.find(a => !a.bool)) {
-                    array.orbit = true;
-                  }
-                }
-                return { orbitoption: 4, deleteArray: array };
-              })
-            }>
-            <span
-              style={{
-                lineHeight: "24px",
-                width: "24px",
-                display: "flex",
-                justifyContent: "center",
-                fontSize: "26px",
-                fontWeight: "lighter"
-              }}>
-              |
-            </span>
-            <span
-              style={{
-                lineHeight: "24px",
-                maxWidth: "calc(100% - 24px)",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }}>
-              {account.alias}
-            </span>
-            {this.state.deleteArray.accounts.find(a => a.id == account.id).bool && (
-              <div
+                        position: "absolute",
+                        top: "0px",
+                        left: "0px",
+                        width: "100%",
+                        height: "24px",
+                        display: "flex",
+                        alignItems: "center"
+                      }}>
+                      <div
+                        style={{
+                          borderTop: "2px solid",
+                          width: "180px",
+                          height: "1px",
+                          marginLeft: "42px"
+                        }}></div>
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          }
+        });
+        account.outsideAssignment = outsideAssignment;
+        accounts.push(
+          <>
+            <div
+              key={`account-${indexa}-1`}
+              style={{ display: "flex", alignItems: "center", position: "relative" }}>
+              <span
                 style={{
-                  position: "absolute",
-                  top: "0px",
-                  left: "0px",
-                  width: "100%",
-                  height: "24px",
+                  lineHeight: "24px",
+                  width: "24px",
                   display: "flex",
-                  alignItems: "center"
+                  justifyContent: "center",
+                  fontSize: "26px",
+                  fontWeight: "lighter"
                 }}>
+                |
+              </span>
+            </div>
+            <div
+              key={`account-${indexa}`}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                position: "relative",
+                cursor: "pointer"
+              }}
+              onClick={() =>
+                this.setState(oldstate => {
+                  const array = oldstate.deleteArray;
+                  const newbool = !array.accounts.find(a => a.id == account.id).bool;
+
+                  //When deselect => deselect parents
+                  if (!newbool) {
+                    array.orbit = false;
+                  }
+                  //When select => select all children
+                  if (newbool) {
+                    array.accounts
+                      .find(a => a.id == account.id)
+                      .assignments.forEach(as => (as.bool = true));
+                  }
+                  array.accounts.find(a => a.id == account.id).bool = newbool;
+
+                  //When autodelete and no children
+                  if (oldstate.autodelete) {
+                    if (!array.teams.find(t => !t.bool) && !array.accounts.find(a => !a.bool)) {
+                      array.orbit = true;
+                    }
+                  }
+                  return { orbitoption: 4, deleteArray: array };
+                })
+              }>
+              <span
+                style={{
+                  lineHeight: "24px",
+                  width: "24px",
+                  display: "flex",
+                  justifyContent: "center",
+                  fontSize: "26px",
+                  fontWeight: "lighter"
+                }}>
+                |
+              </span>
+              <span
+                style={{
+                  lineHeight: "24px",
+                  maxWidth: "calc(100% - 24px)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}>
+                {account.alias}
+              </span>
+              {this.state.deleteArray.accounts.find(a => a.id == account.id).bool && (
                 <div
                   style={{
-                    borderTop: "2px solid",
-                    width: "180px",
-                    height: "1px",
-                    marginLeft: "18px"
-                  }}></div>
-              </div>
-            )}
-          </div>
-          {assignments}
-        </>
-      );
+                    position: "absolute",
+                    top: "0px",
+                    left: "0px",
+                    width: "100%",
+                    height: "24px",
+                    display: "flex",
+                    alignItems: "center"
+                  }}>
+                  <div
+                    style={{
+                      borderTop: "2px solid",
+                      width: "180px",
+                      height: "1px",
+                      marginLeft: "18px"
+                    }}></div>
+                </div>
+              )}
+            </div>
+            {assignments}
+          </>
+        );
+      }
     });
 
     console.log(this.props.orbit);
@@ -634,12 +638,6 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                         array.accounts.forEach(a =>
                           a.assignments.forEach(as => {
                             if (this.props.orbit.accounts.find(oa => oa.id == a.id)) {
-                              console.log(
-                                "TESTETST",
-                                this.props.orbit.accounts
-                                  .find(oa => oa.id == a.id)
-                                  .assignments.find(oas => oas.assignmentid == as.id)
-                              );
                               if (
                                 this.props.orbit.accounts
                                   .find(oa => oa.id == a.id)
@@ -1020,7 +1018,10 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                   orbitid: this.props.orbit.id,
                   deletejson: this.state.deleteArray,
                   endtime: this.state.todate || new Date()
-                }
+                },
+                refetchQueries: [
+                  { query: fetchTeam, variables: { teamid: this.props.team.unitid.id } }
+                ]
               });
               this.setState({ saved: true });
               setTimeout(() => this.props.close(), 1000);

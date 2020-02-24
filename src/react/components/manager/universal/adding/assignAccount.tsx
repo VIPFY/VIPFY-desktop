@@ -3,6 +3,7 @@ import UniversalButton from "../../../../components/universalButtons/universalBu
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import CreateAccount from "./account";
+import moment from "moment";
 
 interface Props {
   orbit: any;
@@ -102,18 +103,20 @@ class AssignAccount extends React.Component<Props, State> {
             close={() => this.setState({ showall: false })}
             buttonStyles={{ justifyContent: "space-between" }}>
             <h1>All Accounts</h1>
-            {accounts.map(account => (
-              <div className="listingDiv" key={account.id}>
-                <UniversalButton
-                  type="low"
-                  label={account.alias}
-                  onClick={() => {
-                    this.setState({ showall: false });
-                    this.props.continue(account);
-                  }}
-                />
-              </div>
-            ))}
+            {accounts
+              .filter(e => e.endtime >= moment.now() || e.endtime == null)
+              .map(account => (
+                <div className="listingDiv" key={account.id}>
+                  <UniversalButton
+                    type="low"
+                    label={account.alias}
+                    onClick={() => {
+                      this.setState({ showall: false });
+                      this.props.continue(account);
+                    }}
+                  />
+                </div>
+              ))}
             <div className="listingDiv" key="new">
               <UniversalButton
                 type="low"
