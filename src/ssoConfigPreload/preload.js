@@ -33,7 +33,7 @@ setInterval(() => timer(), 30000);
 setTimeout(() => timer(), 5000);
 
 
-  document.addEventListener("mousedown", onClick, true);
+  document.addEventListener("mousedown", onClick);
   (function() {
     Element.prototype._addEventListener = Element.prototype.addEventListener;
     Element.prototype.addEventListener = function(a,b,c) {
