@@ -325,6 +325,7 @@ function ClickTracker(props: { client }) {
 
         if (localStorage.getItem("impersonator-token")) {
           console.log("impersonating, not tracking click data");
+          return null
         }
 
         return (
