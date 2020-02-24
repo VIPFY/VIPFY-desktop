@@ -18,9 +18,9 @@ import * as ReactDOM from "react-dom";
 import "./diagrams/diagram.scss";
 import createEngine, { DefaultLinkModel, DiagramModel } from "@projectstorm/react-diagrams";
 // import { JSCustomNodeFactory } from "./diagrams/custom-node-js/JSCustomNodeFactory";
-import { TSCustomNodeFactory } from "./diagrams/custom-node-ts/TSCustomNodeFactory";
-import { JSCustomNodeModel } from "./diagrams/custom-node-js/JSCustomNodeModel";
-import { TSCustomNodeModel } from "./diagrams/custom-node-ts/TSCustomNodeModel";
+// import { TSCustomNodeFactory } from "./diagrams/custom-node-ts/TSCustomNodeFactory";
+// import { JSCustomNodeModel } from "./diagrams/custom-node-js/JSCustomNodeModel";
+// import { TSCustomNodeModel } from "./diagrams/custom-node-ts/TSCustomNodeModel";
 import { BodyWidget } from "./diagrams/BodyWidget";
 import { ipcRenderer, TouchBarScrubber } from "electron";
 import { clipboard } from "electron";
@@ -37,7 +37,7 @@ const engine = createEngine();
 
 // register the two engines
 // engine.getNodeFactories().registerFactory(new JSCustomNodeFactory() as any);
-engine.getNodeFactories().registerFactory(new TSCustomNodeFactory());
+// engine.getNodeFactories().registerFactory(new TSCustomNodeFactory());
 
 interface Props {
   functionupper: Function;

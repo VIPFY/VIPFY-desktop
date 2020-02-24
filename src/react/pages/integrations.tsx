@@ -29,11 +29,11 @@ class Integrations extends React.Component<{}, AppPageState> {
     return (
       <Query query={fetchApps}>
         {({ data, loading, error }) => {
-          if (loading || this.state.showLoading) {
+          if (loading) {
             return <LoadingDiv />;
           }
 
-          if (error || !data) {
+          if (error) {
             return <ErrorComp error={error} />;
           }
 

@@ -14,7 +14,7 @@ DEVELOPMENT=$(cat .env | grep DEVELOPMENT)
 DEVELOPMENT=${DEVELOPMENT##DEVELOPMENT=}
 
 # Login to the Apple and execute the script
-ssh -t nilsvossebein@rotten-fruit.fritz.box '
+ssh -t nilsvossebein@192.168.1.9 '
   export BRANCH='"'$BRANCH'"';
   export NUCLEUS_PW='"'$NUCLEUS_PW'"'
   export MAC_PW='"'$MAC_PW'"'
@@ -34,7 +34,7 @@ ssh -t nilsvossebein@rotten-fruit.fritz.box '
   npm i
 
   echo "Create a custom tag for nucleus"
-  jq ".version = \"$(cat package.json | jq -r '.version')-dev-mac-$(date +%Y-%m-%d)\" " package.json > package-temp.json && mv package-temp.json package.json
+  jq ".version = \"$(cat package.json | jq -r '.version')-dev.$(date +%Y-%m-%d)\" " package.json > package-temp.json && mv package-temp.json package.json
 
   echo "Editing config.json"
   cat config.json
