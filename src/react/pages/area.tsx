@@ -32,6 +32,7 @@ import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
 import { SideBarContext, UserContext } from "../common/context";
+import ClickTracker from "../components/ClickTracker";
 import EmployeeOverview from "./manager/employeeOverview";
 import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
@@ -353,6 +354,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           const licences = data.fetchUserLicenceAssignments;
           return (
             <div className="area" style={this.props.style}>
+              <ClickTracker />
               <SideBarContext.Provider value={this.state.sidebarOpen}>
                 <UserContext.Provider value={{ userid: this.props.id }}>
                   <Route

@@ -46,6 +46,7 @@
     "@types/react-dom": "^16.0.11",
     "@types/react-router": "^4.4.3",
     "@types/react-router-dom": "^4.3.1",
+    "@types/uuid": "^3.4.4",
     "@types/zxcvbn": "^4.4.0",
     "apexcharts": "^3.8.3",
     "apollo-cache-inmemory": "^1.6.5",
@@ -78,6 +79,7 @@
     "icojs": "^0.12.2",
     "jsonwebtoken": "^8.5.1",
     "log4js": "^6.1.1",
+    "lzma": "^2.3.2",
     "mathjs": "^6.6.0",
     "moment": "^2.24.0",
     "moment-feiertage": "^1.1.5",
@@ -114,6 +116,7 @@
     "streamroller": "^2.2.2",
     "subscriptions-transport-ws": "^0.9.15",
     "tslib": "^1.10.0",
+    "uuid": "^3.3.2",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {

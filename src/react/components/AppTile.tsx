@@ -20,8 +20,8 @@ export default (props: Props) => {
   const name = alias ? alias : planid.appid.name;
 
   return (
-    <div
-      className={`dashboard-app ${entered ? "hovered" : ""}`}
+    <button
+      className={`naked-button dashboard-app ${entered ? "hovered" : ""}`}
       title={props.tileTitle || name}
       //draggable={!empty}
       onClick={() => (props.setTeam ? props.setTeam(id) : "")}
@@ -62,6 +62,6 @@ export default (props: Props) => {
       <div draggable={!empty} className="dashboard-app-name">
         {name}
       </div>
-    </div>
+    </button>
   );
 };

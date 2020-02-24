@@ -7,7 +7,9 @@ import { BatchHttpLink } from "apollo-link-batch-http";
 import { RetryLink } from "apollo-link-retry";
 import { onError } from "apollo-link-error";
 import { inspect } from "util";
+import Store from "electron-store";
 import os from "os";
+import * as uuid from "uuid/v4";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
@@ -145,8 +147,15 @@ const afterwareLink = new ApolloLink((operation, forward) => {
   });
 });
 
+// Device ID used by clicktracker, might be useful for other purposes
+const store = new Store();
+if (!store.has("deviceId")) {
+  store.set("deviceId", uuid());
+}
+const deviceId = store.get("deviceId", "");
+
 const middlewareLink = setContext(() => ({
-  headers: { "X-USER-HOST": os.hostname() }
+  headers: { "X-USER-HOST": os.hostname(), "X-DEVICE": deviceId }
 }));
 
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
