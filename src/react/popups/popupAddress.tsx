@@ -206,7 +206,7 @@ class PopupAddress extends React.Component<Props, State> {
               <span className="light">{this.props.oldvalues!.description}</span>
             </p>
           </div>
-          <UniversalButton type="low" closingPopup={true} label="Cancel" />
+          <UniversalButton type="low" onClick={this.props.close} label="Cancel" />
           <UniversalButton type="high" label="Delete" onClick={this.delete} />
 
           {this.state.confirm ? (
@@ -233,22 +233,12 @@ class PopupAddress extends React.Component<Props, State> {
                     <br />
                     Please try again or contact support
                   </div>
-                  <UniversalButton
-                    type="high"
-                    closingPopup={true}
-                    label="Ok"
-                    closingAllPopups={true}
-                  />
+                  <UniversalButton type="high" label="Ok" onClick={this.props.close} />
                 </React.Fragment>
               ) : (
                 <React.Fragment>
                   <div>Your Adress has been successfully deleted</div>
-                  <UniversalButton
-                    type="high"
-                    closingPopup={true}
-                    label="Ok"
-                    closingAllPopups={true}
-                  />
+                  <UniversalButton type="high" label="Ok" onClick={this.props.close} />
                 </React.Fragment>
               )}
             </PopupBase>
@@ -259,7 +249,7 @@ class PopupAddress extends React.Component<Props, State> {
       );
     }
     return (
-      <PopupBase styles={{ width: "600px" }} close={() => this.props.close()}>
+      <PopupBase styles={{ width: "600px" }} close={this.props.close}>
         <h1>
           {this.props.oldvalues ? "Please change your address" : "Please insert your address"}
         </h1>
@@ -302,12 +292,7 @@ class PopupAddress extends React.Component<Props, State> {
             startvalue={this.props.oldvalues ? this.props.oldvalues.description : ""}
           />
         </div>
-        <UniversalButton
-          onClick={() => this.props.close()}
-          type="low"
-          closingPopup={true}
-          label="Cancel"
-        />
+        <UniversalButton onClick={this.props.close} type="low" label="Cancel" />
         <UniversalButton
           type="high"
           label={this.props.oldvalues ? "Save" : "Confirm"}
@@ -342,12 +327,7 @@ class PopupAddress extends React.Component<Props, State> {
                   <br />
                   Please try again or contact support
                 </div>
-                <UniversalButton
-                  type="high"
-                  closingPopup={true}
-                  label="Ok"
-                  closingAllPopups={true}
-                />
+                <UniversalButton type="high" label="Ok" onClick={this.props.close} />
               </React.Fragment>
             ) : (
               <React.Fragment>
@@ -356,12 +336,7 @@ class PopupAddress extends React.Component<Props, State> {
                     ? "Your Address has been successfully updated"
                     : "Your Address has been successfully created"}
                 </div>
-                <UniversalButton
-                  type="high"
-                  closingPopup={true}
-                  label="Ok"
-                  closingAllPopups={true}
-                />
+                <UniversalButton type="high" label="Ok" onClick={this.props.close} />
               </React.Fragment>
             )}
           </PopupBase>
