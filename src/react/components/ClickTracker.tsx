@@ -268,8 +268,8 @@ class ClickTrackerInner extends PureComponent<Props, State> {
     });
     const client = this.props.client;
     lzma.compress(events, 6, async result => {
-      const file = new File([Uint8Array.from(result).buffer], "data.gz", {
-        type: "application/x-gzip"
+      const file = new File([Uint8Array.from(result).buffer], "data.lzma", {
+        type: "application/x-lzma"
       });
       try {
         await client.mutate({
