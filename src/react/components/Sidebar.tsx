@@ -212,6 +212,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
           await refetchQueries(client, ["onFetchVacationRequests"]);
           break;
 
+        case "ownTeams":
+          await refetchQueries(client, ["fetchTeams"]);
+          break;
+
         case "me":
           await client.query({
             query: me,

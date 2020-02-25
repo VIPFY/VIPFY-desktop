@@ -154,7 +154,6 @@ class ServiceOverview extends React.Component<Props, State> {
       const singleAccounts = [];
 
       if (service.app.options && !service.app.options.pending) {
-        console.log("Testing", service);
         service.orbitids.forEach(element => {
           element &&
             element.teams &&
