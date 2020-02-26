@@ -297,19 +297,31 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                   onClick={() =>
                     this.setState(oldstate => {
                       const array = oldstate.deleteArray;
-                      const newbool = !array.accounts
-                        .find(a => a.id == account.id)
-                        .assignments.find(as => as.id == assignment.assignmentid).bool;
+                      const newbool = !(
+                        array.accounts.find(a => a.id == account.id) &&
+                        array.accounts
+                          .find(a => a.id == account.id)
+                          .assignments.find(as => as.id == assignment.assignmentid) &&
+                        array.accounts
+                          .find(a => a.id == account.id)
+                          .assignments.find(as => as.id == assignment.assignmentid).bool
+                      );
 
                       //When deselect => deselect parents
                       if (!newbool) {
                         array.orbit = false;
                         array.accounts.find(a => a.id == account.id).bool = false;
                       }
-                      array.accounts
-                        .find(a => a.id == account.id)
-                        .assignments.find(as => as.id == assignment.assignmentid).bool = newbool;
-
+                      if (
+                        array.accounts.find(a => a.id == account.id) &&
+                        array.accounts
+                          .find(a => a.id == account.id)
+                          .assignments.find(as => as.id == assignment.assignmentid)
+                      ) {
+                        array.accounts
+                          .find(a => a.id == account.id)
+                          .assignments.find(as => as.id == assignment.assignmentid).bool = newbool;
+                      }
                       //When autodelete and no children
                       if (oldstate.autodelete) {
                         if (
@@ -373,28 +385,32 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                     }}>
                     {concatName(assignment.unitid)}
                   </span>
-                  {this.state.deleteArray.accounts
-                    .find(a => a.id == account.id)
-                    .assignments.find(as => as.id == assignment.assignmentid).bool && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "0px",
-                        left: "0px",
-                        width: "100%",
-                        height: "24px",
-                        display: "flex",
-                        alignItems: "center"
-                      }}>
+                  {this.state.deleteArray.accounts.find(a => a.id == account.id) &&
+                    this.state.deleteArray.accounts
+                      .find(a => a.id == account.id)
+                      .assignments.find(as => as.id == assignment.assignmentid) &&
+                    this.state.deleteArray.accounts
+                      .find(a => a.id == account.id)
+                      .assignments.find(as => as.id == assignment.assignmentid).bool && (
                       <div
                         style={{
-                          borderTop: "2px solid",
-                          width: "180px",
-                          height: "1px",
-                          marginLeft: "42px"
-                        }}></div>
-                    </div>
-                  )}
+                          position: "absolute",
+                          top: "0px",
+                          left: "0px",
+                          width: "100%",
+                          height: "24px",
+                          display: "flex",
+                          alignItems: "center"
+                        }}>
+                        <div
+                          style={{
+                            borderTop: "2px solid",
+                            width: "180px",
+                            height: "1px",
+                            marginLeft: "42px"
+                          }}></div>
+                      </div>
+                    )}
                 </div>
               </>
             );
@@ -472,26 +488,28 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                 }}>
                 {account.alias}
               </span>
-              {this.state.deleteArray.accounts.find(a => a.id == account.id).bool && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "0px",
-                    left: "0px",
-                    width: "100%",
-                    height: "24px",
-                    display: "flex",
-                    alignItems: "center"
-                  }}>
+              {this.state.deleteArray &&
+                this.state.deleteArray.accounts.find(a => a.id == account.id) &&
+                this.state.deleteArray.accounts.find(a => a.id == account.id).bool && (
                   <div
                     style={{
-                      borderTop: "2px solid",
-                      width: "180px",
-                      height: "1px",
-                      marginLeft: "18px"
-                    }}></div>
-                </div>
-              )}
+                      position: "absolute",
+                      top: "0px",
+                      left: "0px",
+                      width: "100%",
+                      height: "24px",
+                      display: "flex",
+                      alignItems: "center"
+                    }}>
+                    <div
+                      style={{
+                        borderTop: "2px solid",
+                        width: "180px",
+                        height: "1px",
+                        marginLeft: "18px"
+                      }}></div>
+                  </div>
+                )}
             </div>
             {assignments}
           </>
