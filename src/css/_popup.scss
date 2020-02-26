@@ -117,7 +117,7 @@ $modal-wh: 50%;
   width: 100%;
   height: calc(100vh - 32px);
   z-index: 1000000;
-  background-color: rgba($vipfy_mainColor, 0.1);
+  background-color: rgba($vipfy_mainColor, 0.8);
   display: flex;
   opacity: 0;
 }
