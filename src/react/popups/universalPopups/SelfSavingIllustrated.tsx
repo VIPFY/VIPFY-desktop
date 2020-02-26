@@ -112,13 +112,8 @@ interface State {
 
 interface Result {
   emailEntered: boolean;
-  emailEnteredEnd: boolean;
   loggedin: boolean;
   passwordEntered: boolean;
-  passwordEnteredEnd: boolean;
-  recaptcha: boolean;
-  tries: number;
-  unloaded: boolean;
 }
 
 class SelfSaving extends React.Component<Props, State> {
@@ -264,33 +259,33 @@ class SelfSaving extends React.Component<Props, State> {
 
   finishIntegration = async () => {
     if (this.state.receivedData && this.state.receivedIcon) {
-      const [, a] = this.state.icon!.data.split(":");
-      const [mime, b] = a.split(";");
-      const [, iconDataEncoded] = b.split(",");
+      let squareImages = undefined;
+      if (this.state.icon) {
+        const [, a] = this.state.icon!.data.split(":");
+        const [mime, b] = a.split(";");
+        const [, iconDataEncoded] = b.split(",");
 
-      // encoding is always base64. mime is assumed to be image/png, but other values
-      // shouldn't be a problem
+        // encoding is always base64. mime is assumed to be image/png, but other values
+        // shouldn't be a problem
 
-      // Node's Buffer behaves really weirdly. buf.buffer produces some string prefix
-      // and buf.copy is only 3 bytes. So we use atob with some parsing instead
-      const iconDataArray = new Uint8Array(
-        atob(iconDataEncoded)
-          .split("")
-          .map(c => c.charCodeAt(0))
-      );
+        // Node's Buffer behaves really weirdly. buf.buffer produces some string prefix
+        // and buf.copy is only 3 bytes. So we use atob with some parsing instead
+        const iconDataArray = new Uint8Array(
+          atob(iconDataEncoded)
+            .split("")
+            .map(c => c.charCodeAt(0))
+        );
 
-      const iconFile = new File([iconDataArray], `${this.props.sso.name}-icon.png`, {
-        type: mime
-      });
+        const iconFile = new File([iconDataArray], `${this.props.sso.name}-icon.png`, {
+          type: mime
+        });
 
-      const squareImages = [iconFile, iconFile];
-
+        squareImages = [iconFile, iconFile];
+      }
       if (
         this.state.result.loggedin &&
         this.state.result.emailEntered &&
-        this.state.result.passwordEntered &&
-        this.state.icon &&
-        this.state.color
+        this.state.result.passwordEntered
       ) {
         this.setState({ ssoCheck: true });
       } else {
@@ -312,7 +307,7 @@ class SelfSaving extends React.Component<Props, State> {
               emailEntered: this.state.result.emailEntered,
               passwordEntered: this.state.result.passwordEntered,
               ...moreInformation,
-              color: this.state.color,
+              color: this.state.color || undefined,
               squareImages
             }
           }
