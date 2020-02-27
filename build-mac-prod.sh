@@ -1,5 +1,5 @@
 #!/bin/bash
-# Get the current branch
+# Get the current branch, make sure that it is the Release!
 BRANCH="$(git symbolic-ref HEAD 2>/dev/null)"
 BRANCH=${BRANCH##refs/heads/}
 NUCLEUS_PW=$(cat .env | grep NUCLEUS_PW)
