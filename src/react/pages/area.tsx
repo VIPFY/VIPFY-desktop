@@ -2,7 +2,7 @@ import * as React from "react";
 import { Route } from "react-router-dom";
 import { withRouter, Switch } from "react-router";
 import { ipcRenderer } from "electron";
-import { graphql, compose, Query, withApollo } from "react-apollo";
+import { compose, Query, withApollo } from "react-apollo";
 
 import AppPage from "./apppage";
 import Billing from "./billing";
@@ -345,7 +345,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
         {({ data, loading, error }) => {
           if (loading) {
-            return <LoadingDiv text="Preparing Vipfy..." />;
+            return <LoadingDiv />;
           }
 
           if (error) {
@@ -358,28 +358,26 @@ class Area extends React.Component<AreaProps, AreaState> {
               <SideBarContext.Provider value={this.state.sidebarOpen}>
                 <UserContext.Provider value={{ userid: this.props.id }}>
                   <Route
-                    render={props => {
-                      return (
-                        <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
-                          {res => (
-                            <Sidebar
-                              sidebarOpen={sidebarOpen}
-                              setApp={this.setApp}
-                              viewID={this.state.viewID}
-                              views={this.state.webviews}
-                              openInstances={this.state.openInstances}
-                              toggleSidebar={this.toggleSidebar}
-                              setInstance={this.setInstance}
-                              {...this.props}
-                              licences={licences}
-                              {...props}
-                              {...res}
-                              moveTo={this.moveTo}
-                            />
-                          )}
-                        </Query>
-                      );
-                    }}
+                    render={props => (
+                      <Query query={FETCH_NOTIFICATIONS} pollInterval={120000}>
+                        {res => (
+                          <Sidebar
+                            sidebarOpen={sidebarOpen}
+                            setApp={this.setApp}
+                            viewID={this.state.viewID}
+                            views={this.state.webviews}
+                            openInstances={this.state.openInstances}
+                            toggleSidebar={this.toggleSidebar}
+                            setInstance={this.setInstance}
+                            {...this.props}
+                            licences={licences}
+                            {...props}
+                            {...res}
+                            moveTo={this.moveTo}
+                          />
+                        )}
+                      </Query>
+                    )}
                   />
                   <Route render={() => <HistoryButtons viewID={this.state.viewID} />} />
                   <Switch>
