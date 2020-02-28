@@ -188,8 +188,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     if (this.state.fetchedNotifications.size > 0) {
       notifications = notifications.filter(({ id }) => !this.state.fetchedNotifications.has(id));
     }
-    const cleanedNotifications = new Set(notifications);
-    const flattedCategories = Array.from(cleanedNotifications).flatMap(({ changed }) => changed);
+    const flattedCategories = notifications.flatMap(({ changed }) => changed);
 
     await sleep(2000);
 
@@ -258,7 +257,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
       }
     }
 
-    for (let notification of cleanedNotifications) {
+    for (let notification of notifications) {
       this.setState(prevState => {
         const { fetchedNotifications } = prevState;
         fetchedNotifications.add(notification.id);
