@@ -1,13 +1,12 @@
 import * as React from "react";
 import Tooltip from "react-tooltip-lite";
 import gql from "graphql-tag";
-import { Licence } from "../interfaces";
-import { AppContext } from "../common/functions";
-import config from "../../configurationManager";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
+import { Licence } from "../interfaces";
+import config from "../../configurationManager";
 import Notification from "../components/Notification";
-import { sleep, refetchQueries } from "../common/functions";
+import { sleep, refetchQueries, AppContext } from "../common/functions";
 import { me } from "../queries/auth";
 import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { FETCH_CARDS } from "../queries/billing";
@@ -38,7 +37,7 @@ const FETCH_CREDIT_DATA = gql`
       promocode
     }
 
-    fetchPlans(appid: 66) {
+    fetchPlans(appid: 1) {
       id
       price
       appid {
@@ -103,6 +102,7 @@ export type SidebarProps = {
   viewID: number;
   openInstances: any;
   setInstance: Function;
+  impersonation?: boolean;
   sidebarloaded: Function;
   views: any[];
   subscribeToMore: Function;
@@ -120,6 +120,8 @@ interface State {
   showNotification: boolean;
   contextMenu: boolean;
   notify: boolean;
+  initialLoad: boolean;
+  fetchedNotifications: any;
 }
 
 class Sidebar extends React.Component<SidebarProps, State> {
@@ -130,37 +132,67 @@ class Sidebar extends React.Component<SidebarProps, State> {
     sortstring: "Custom",
     showNotification: false,
     contextMenu: false,
-    notify: false
+    notify: false,
+    initialLoad: true,
+    fetchedNotifications: new Set()
   };
 
-  // references: { key; element }[] = [];
-  goTo = view => this.props.moveTo(view);
+  componentDidMount() {
+    this.props.sidebarloaded();
+    window.addEventListener("keydown", this.listenKeyboard);
+    document.addEventListener("click", this.handleClickOutside);
 
-  addReferences = (key, element, addRenderElement) => {
-    // this.references.push({ key, element });
-    addRenderElement({ key, element });
-  };
+    this.props.subscribeToMore({
+      document: NOTIFICATION_SUBSCRIPTION,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data || subscriptionData.error) {
+          return prev;
+        }
 
-  maybeaddHighlightReference = (location, highlight, el, addRenderElement) => {
+        this.setState({ notify: true });
+        setTimeout(() => this.setState({ notify: false }), 5000);
+
+        this.refetchCategories(subscriptionData.data.newNotification, this.props.client);
+        return {
+          ...prev,
+          fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
+        };
+      }
+    });
+  }
+
+  componentDidUpdate(prevProps) {
     if (
-      this.props.location.pathname === `/area/${location}` ||
-      `${this.props.location.pathname}/dashboard` === `/area/${location}`
+      this.props.data.fetchNotifications &&
+      prevProps.data.fetchNotifications != this.props.data.fetchNotifications
     ) {
-      this.addReferences("active", el, addRenderElement);
+      // We want to avoid calling the refetch on the initial data fetching
+      if (this.state.initialLoad) {
+        return this.setState({ initialLoad: false });
+      } else {
+        const filteredCategories = this.props.data.fetchNotifications.filter(
+          ({ changed }) => changed.length > 0
+        );
+
+        this.refetchCategories(filteredCategories, this.props.client);
+      }
     }
+  }
 
-    this.addReferences(highlight, el, addRenderElement);
-  };
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.listenKeyboard);
+    document.removeEventListener("click", this.handleClickOutside);
+  }
 
-  listenKeyboard = e => {
-    if (e.key === "Escape" || e.keyCode === 27) {
-      this.setState({ showNotification: false });
+  async refetchCategories(notifications, client) {
+    if (this.state.fetchedNotifications.size > 0) {
+      notifications = notifications.filter(({ id }) => !this.state.fetchedNotifications.has(id));
     }
-  };
+    const flattedCategories = notifications.flatMap(({ changed }) => changed);
 
-  async refetchCategories(categories, client) {
     await sleep(2000);
-    for (const category of categories) {
+
+    for (const category of flattedCategories) {
       const options = { errorPolicy: "ignore", fetchPolicy: "network-only" };
 
       switch (category) {
@@ -224,45 +256,50 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
       }
     }
+
+    for (let notification of notifications) {
+      this.setState(prevState => {
+        const { fetchedNotifications } = prevState;
+        fetchedNotifications.add(notification.id);
+
+        return { ...prevState, fetchedNotifications };
+      });
+    }
   }
 
-  componentDidMount() {
-    this.props.sidebarloaded();
-    window.addEventListener("keydown", this.listenKeyboard);
-    document.addEventListener("click", this.handleClickOutside);
+  // references: { key; element }[] = [];
+  goTo = view => this.props.moveTo(view);
 
-    this.props.subscribeToMore({
-      document: NOTIFICATION_SUBSCRIPTION,
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data || subscriptionData.error) {
-          return prev;
-        }
+  addReferences = (key, element, addRenderElement) => {
+    // this.references.push({ key, element });
+    addRenderElement({ key, element });
+  };
 
-        this.setState({ notify: true });
-        setTimeout(() => this.setState({ notify: false }), 5000);
+  maybeAddHighlightReference = (location, highlight, el, addRenderElement) => {
+    if (
+      this.props.location.pathname === `/area/${location}` ||
+      `${this.props.location.pathname}/dashboard` === `/area/${location}`
+    ) {
+      this.addReferences("active", el, addRenderElement);
+    }
 
-        this.refetchCategories(subscriptionData.data.newNotification.changed, this.props.client);
+    this.addReferences(highlight, el, addRenderElement);
+  };
 
-        return Object.assign({}, prev, {
-          fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
-        });
-      }
-    });
-  }
+  listenKeyboard = e => {
+    if (e.key === "Escape" || e.keyCode === 27) {
+      this.setState({ showNotification: false });
+    }
+  };
 
-  componentWillUnmount() {
-    window.removeEventListener("keydown", this.listenKeyboard);
-    document.removeEventListener("click", this.handleClickOutside);
-  }
-
-  handleClickInside = e => {
+  handleClickInside = () => {
     if (this.state.donotopen) {
       this.setState({ donotopen: false });
     }
   };
 
   handleClickOutside = e => {
-    this.handleClickInside(e);
+    this.handleClickInside();
     const domNode = ReactDOM.findDOMNode(this);
     if (
       (!domNode || !domNode.contains(e.target)) &&
@@ -300,7 +337,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         <li
           key={location}
           className={cssClass}
-          ref={el => this.maybeaddHighlightReference(location, highlight, el, addRenderElement)}>
+          ref={el => this.maybeAddHighlightReference(location, highlight, el, addRenderElement)}>
           <button className="naked-button itemHolder" onClick={() => this.goTo(location)}>
             <Tooltip
               distance={12}
@@ -323,12 +360,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
   render() {
     let { sidebarOpen, licences, isadmin } = this.props;
-
     if (!licences) {
       licences = [];
     }
-
-    const maxValue = licences.reduce((acc, cv) => Math.max(acc, cv.sidebar), 0);
 
     const sidebarLinks = [
       {
@@ -460,10 +494,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
     ];
 
     const filteredLicences0 = licences.filter(licence => {
-      // Make sure that every License has an index
-      if (licence.sidebar === null) {
-        licence.sidebar = maxValue + 1;
-      }
       if (
         !(
           (!licence.disabled &&

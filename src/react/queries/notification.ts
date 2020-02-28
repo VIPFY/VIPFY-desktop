@@ -8,6 +8,7 @@ export const FETCH_NOTIFICATIONS = gql`
       message
       icon
       link
+      changed
     }
   }
 `;

@@ -1,10 +1,10 @@
 import * as React from "react";
 import gql from "graphql-tag";
+import * as moment from "moment";
+import * as ReactDOM from "react-dom";
 import { graphql, compose, withApollo } from "react-apollo";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import { filterError, ErrorComp, getMyUnitId } from "../common/functions";
-import * as moment from "moment";
-import * as ReactDOM from "react-dom";
 import UserName from "./UserName";
 
 const READ_NOTIFICATION = gql`
@@ -46,11 +46,11 @@ class Notification extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    document.addEventListener("click", this.handleClickOutside, true);
+    document.addEventListener("click", this.handleClickOutside);
   }
 
   componentWillUnmount() {
-    document.removeEventListener("click", this.handleClickOutside, true);
+    document.removeEventListener("click", this.handleClickOutside);
   }
   handleClickOutside = e => {
     const domNode = ReactDOM.findDOMNode(this);
@@ -88,8 +88,9 @@ class Notification extends React.Component<Props, State> {
           const data = proxy.readQuery({ query: FETCH_NOTIFICATIONS });
           const updatedNotifications = data.fetchNotifications.filter(notification => {
             if (notification.id != id) {
-              return notification;
+              return true;
             }
+            return false;
           });
 
           data.fetchNotifications = updatedNotifications;
