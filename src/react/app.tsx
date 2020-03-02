@@ -1,6 +1,7 @@
 import * as React from "react";
 import { withRouter } from "react-router";
-import { graphql, Query, withApollo, compose } from "react-apollo";
+import { graphql, Query, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import Store from "electron-store";
 

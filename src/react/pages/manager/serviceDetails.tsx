@@ -1,6 +1,6 @@
 import * as React from "react";
-import UniversalSearchBox from "../../components/universalSearchBox";
-import { graphql, compose, Query, withApollo } from "react-apollo";
+import { graphql, Query, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";

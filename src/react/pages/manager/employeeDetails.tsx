@@ -271,6 +271,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                     savedmessage="Profileimage successfully saved"
                     saveFunction={async () => {
                       await this.props.updatePic({
+                        context: { hasUpload: true },
                         variables: {
                           file: this.state.changepicture,
                           unitid: this.props.match.params.userid

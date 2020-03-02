@@ -1,5 +1,6 @@
 import * as React from "react";
-import { graphql, compose } from "react-apollo";
+import { graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import ChoosePlanBox from "../common/choosePlanBox";
 import ChooseDepartmentBox from "../common/chooseDepartmentBox";
 import { showStars, calculatepartsum } from "../common/functions";

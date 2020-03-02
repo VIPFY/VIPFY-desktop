@@ -2,7 +2,8 @@ import * as React from "react";
 import { Route } from "react-router-dom";
 import { withRouter, Switch } from "react-router";
 import { ipcRenderer } from "electron";
-import { compose, Query, withApollo } from "react-apollo";
+import { Query, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 
 import AppPage from "./apppage";
 import Billing from "./billing";

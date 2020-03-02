@@ -5,7 +5,8 @@ import Dropzone from "react-dropzone";
 import TeamGerneralDataAdd from "./universal/adding/teamGeneralDataAdd";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import { fetchCompanyTeams } from "../../queries/departments";
 
 interface Props {

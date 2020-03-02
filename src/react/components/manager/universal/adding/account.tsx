@@ -1,7 +1,8 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { graphql, compose, withApollo } from "react-apollo";
+import { graphql, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../../queries/billing";

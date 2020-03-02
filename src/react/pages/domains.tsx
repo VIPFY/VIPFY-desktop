@@ -1,5 +1,6 @@
 import * as React from "react";
-import { compose, graphql, Query } from "react-apollo";
+import { graphql, Query } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import GenericInputForm from "../components/GenericInputForm";
 import LoadingDiv from "../components/LoadingDiv";
@@ -353,9 +354,7 @@ class Domains extends React.Component<Props, State> {
                       {
                         name: "delete",
                         type: "checkbox",
-                        label: `Please confirm the removal of the external domain ${
-                          domain.domainname
-                        }`,
+                        label: `Please confirm the removal of the external domain ${domain.domainname}`,
                         required: true
                       }
                     ],

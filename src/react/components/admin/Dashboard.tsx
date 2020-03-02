@@ -9,7 +9,8 @@ export default (props: { props: any }) => {
     { icon: "brackets-curly", link: "universal-login-test", label: "Test Universal Login" },
     { icon: "ambulance", link: "pending-integrations", label: "Pending Integrations" },
     { icon: "books-medical", link: "service-integration", label: "Service Integration" },
-    { icon: "key-skeleton", link: "crypto-debug", label: "Test crypto" }
+    { icon: "key-skeleton", link: "crypto-debug", label: "Test crypto" },
+    { icon: "images", link: "service-logo-overview", label: "Service Logos" }
   ];
 
   return (

@@ -1,7 +1,8 @@
 import * as React from "react";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { fetchCompanyServices } from "../../queries/products";
 

@@ -1,15 +1,9 @@
 import * as React from "react";
-import { clipboard } from "electron";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalTextInput from "../universalForms/universalTextInput";
-import UniversalButton from "../universalButtons/universalButton";
-import { randomPassword } from "../../common/passwordgen";
 
-import gql from "graphql-tag";
-import { graphql, compose, withApollo, Query } from "react-apollo";
+import { withApollo, Query } from "react-apollo";
+import compose from "lodash.flowright";
 import { me } from "../../queries/auth";
 import { getBgImageApp } from "../../common/images";
-import { createEncryptedLicenceKeyObject } from "../../common/licences";
 import AssignNewAccount from "../manager/universal/adding/assignNewAccount";
 import LoadingDiv from "../LoadingDiv";
 
