@@ -1,5 +1,6 @@
 import * as React from "react";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 
 interface Props {

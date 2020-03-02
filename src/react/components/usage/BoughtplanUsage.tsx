@@ -1,5 +1,6 @@
 import * as React from "react";
-import { graphql, compose, Query } from "react-apollo";
+import { graphql, Query } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import Chart from "react-apexcharts";
 import ResizeAware from "react-resize-aware";

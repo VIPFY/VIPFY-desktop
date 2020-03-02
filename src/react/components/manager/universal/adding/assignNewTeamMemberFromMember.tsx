@@ -5,7 +5,8 @@ import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { graphql, compose, Query } from "react-apollo";
+import { graphql, Query } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import {
   fetchTeam,

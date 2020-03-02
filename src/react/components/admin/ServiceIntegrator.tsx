@@ -24,7 +24,8 @@ import createEngine, { DefaultLinkModel, DiagramModel } from "@projectstorm/reac
 import { BodyWidget } from "./diagrams/BodyWidget";
 import { ipcRenderer, TouchBarScrubber } from "electron";
 import { clipboard } from "electron";
-import { Query, compose, graphql } from "react-apollo";
+import { Query, graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import ExecuteAppEdit from "./ExecuteAppEdit";
 import { enhanceErrorWithDocument } from "apollo-cache-inmemory";

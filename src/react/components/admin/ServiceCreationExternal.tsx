@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose, withApollo } from "react-apollo";
+import { graphql, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import { Link } from "react-router-dom";
 import GenericInputForm from "../GenericInputForm";
 import Manager from "../ssoconfig/manager";
@@ -45,7 +46,7 @@ interface Image {
   data: string;
 }
 
-function getSizeColor(image: Image | null, threshold1, threshold2) {
+export function getSizeColor(image: Image | null, threshold1, threshold2) {
   if (image === null) {
     return "#000";
   }

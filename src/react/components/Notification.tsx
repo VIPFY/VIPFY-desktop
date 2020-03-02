@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose, withApollo } from "react-apollo";
+import { graphql, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import { filterError, ErrorComp, getMyUnitId } from "../common/functions";
 import * as moment from "moment";

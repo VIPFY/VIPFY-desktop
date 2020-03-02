@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose, withApollo, Mutation } from "react-apollo";
+import { graphql, withApollo, Mutation } from "react-apollo";
+import compose from "lodash.flowright";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { me } from "../../queries/auth";

@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose } from "react-apollo";
+import { graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import { shell } from "electron";
 import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "../queries/products";
 import { buyPlan } from "../mutations/products";

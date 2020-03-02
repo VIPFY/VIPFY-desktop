@@ -1,6 +1,7 @@
 import * as React from "react";
 import { parse } from "url";
-import { withApollo, compose, graphql } from "react-apollo";
+import { withApollo, graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 
 import LoadingDiv from "../components/LoadingDiv";

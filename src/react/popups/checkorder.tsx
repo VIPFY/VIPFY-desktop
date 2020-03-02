@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { graphql, compose, Query } from "react-apollo";
+import { graphql, Query } from "react-apollo";
 import gql from "graphql-tag";
 import { shell } from "electron";
 import { AppContext } from "../common/functions";

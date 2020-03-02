@@ -5,7 +5,8 @@ import { concatName } from "../../../common/functions";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import Calendar from "react-calendar";
 import UniversalButton from "../../universalButtons/universalButton";
-import { compose, graphql, withApollo } from "react-apollo";
+import { graphql, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 
 interface Props {
