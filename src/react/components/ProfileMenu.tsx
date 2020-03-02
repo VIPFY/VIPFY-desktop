@@ -4,7 +4,7 @@ interface Props {
   closeme: Function;
   sidebarOpen: boolean;
   history: any;
-  id: number;
+  id: string;
   isadmin: boolean;
   logMeOut: Function;
   goTo: Function;

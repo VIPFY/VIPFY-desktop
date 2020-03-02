@@ -14,8 +14,8 @@ import { QUERY_USER } from "../queries/user";
  * @returns {JSX.Element}
  */
 export default function UserName(props: {
-  unitid: number | null;
-  userid?: number;
+  unitid: string | null;
+  userid?: string;
   short?: boolean;
   className?: string;
 }): JSX.Element {
