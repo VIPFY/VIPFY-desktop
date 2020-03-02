@@ -163,6 +163,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
   componentDidUpdate(prevProps) {
     if (
+      this.props.data &&
       this.props.data.fetchNotifications &&
       prevProps.data.fetchNotifications != this.props.data.fetchNotifications
     ) {
@@ -693,7 +694,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                   <div className="naked-button sidebarButton">
                     <i className="far fa-bell" />
                     <span className="notification-amount">
-                      {this.props.loading || !this.props.data.fetchNotifications
+                      {this.props.loading || !this.props.data || !this.props.data.fetchNotifications
                         ? 0
                         : this.props.data.fetchNotifications.length}
                     </span>
