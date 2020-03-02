@@ -203,7 +203,6 @@ class App extends React.Component<AppProps, AppState> {
       await localStorage.removeItem("token");
       await this.props.client.cache.reset(); // clear graphql cache
       await resetLoggingContext();
-      await session.fromPartition("services").clearStorageData();
       await this.props.history.push("/");
     }
 
