@@ -32,6 +32,7 @@ import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
+import ServiceLogoEdit from "../components/admin/ServiceLogoOverview";
 import { SideBarContext, UserContext } from "../common/context";
 import ClickTracker from "../components/ClickTracker";
 import EmployeeOverview from "./manager/employeeOverview";
@@ -327,8 +328,9 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "admin/service-integration", component: ServiceIntegrator, admin: true },
-      { path: "admin/service-integration/:appid/:url", component: LoginIntegrator },
+      { path: "admin/service-integration/:appid/:url", component: LoginIntegrator, admin: true },
       { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
+      { path: "admin/service-logo-overview", component: ServiceLogoEdit, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },
       { path: "emanager", component: EmployeeOverview, admin: true },

@@ -27,6 +27,7 @@ export const FETCH_APPS = gql`
       id
       name
       icon
+      logo
       disabled
       hidden
     }
