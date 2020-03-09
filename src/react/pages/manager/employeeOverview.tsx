@@ -354,7 +354,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                     <ColumnTeams
                                       {...this.props}
                                       style={{ width: "20%" }}
-                                      teams={data.fetchTeams}
+                                      teams={[]}
                                       teamidFunction={team => team}
                                       fake={true}
                                     />
@@ -386,7 +386,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                     <ColumnServices
                                       {...this.props}
                                       style={{ width: "30%" }}
-                                      services={data.fetchUserLicenceAssignments}
+                                      services={[]}
                                       checkFunction={element =>
                                         !element.disabled &&
                                         !element.boughtplanid.planid.appid.disabled &&

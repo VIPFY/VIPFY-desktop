@@ -164,6 +164,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
   componentDidUpdate(prevProps) {
     if (
       this.props.data &&
+      prevProps.data &&
       this.props.data.fetchNotifications &&
       prevProps.data.fetchNotifications != this.props.data.fetchNotifications
     ) {
@@ -709,7 +710,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
               <Notification
                 //sidebar={"1"}
                 moveTo={this.props.moveTo}
-                data={this.props.data}
+                data={this.props.data || {}}
                 loading={this.props.loading}
                 refetch={this.props.refetch}
                 style={{ left: sidebarOpen ? "210px" : "50px", zIndex: 1000 }}
