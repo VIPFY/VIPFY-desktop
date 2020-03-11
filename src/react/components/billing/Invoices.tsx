@@ -56,18 +56,20 @@ export default () => {
 
   return (
     <Query query={FETCH_BILLS}>
-      {({ data: { fetchBills }, loading, error }) => {
+      {({ data, loading, error }) => {
         if (loading) {
           return <LoadingDiv />;
         }
 
-        if (error || !fetchBills) {
+        if (error || !data) {
           return <ErrorComp error={error} />;
         }
 
-        if (fetchBills.length < 1) {
+        if (data.fetchBills.length < 1) {
           return <div className="no-data">No Invoices yet</div>;
         }
+
+        const { fetchBills } = data;
 
         const invoicesByYears = fetchBills.reduce((acc, obj) => {
           const key = moment(obj.billtime).get("year");
