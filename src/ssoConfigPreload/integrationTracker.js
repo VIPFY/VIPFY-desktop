@@ -747,9 +747,28 @@ window.addEventListener("beforeunload", () => {
   ipcRenderer.sendToHost("unload", null);
 });
 
-window.addEventListener("load", () => {
-  console.log("LOADED");
+window.addEventListener("load", async () => {
+  //console.log("LOADED", stopped);
   ipcRenderer.sendToHost("loaded", null);
+  stopped = false;
+  while (!stopped) {
+    //console.log("TEST", stopped);
+    if (
+      document.querySelectorAll(".upgrade-btn")[0] &&
+      (!document.querySelectorAll(".upgrade-btn")[0].eventListenerList ||
+        (document.querySelectorAll(".upgrade-btn")[0].eventListenerList &&
+          !document
+            .querySelectorAll(".upgrade-btn")[0]
+            .eventListenerList.click.find(e => e.listener.name == "clickAlert")))
+    ) {
+      document.querySelectorAll(".upgrade-btn")[0].addEventListener("click", clickAlert);
+    }
+    if (document.querySelector(".store-profile-footer")) {
+      var elem = document.querySelector(".store-profile-footer");
+      elem.parentNode.removeChild(elem);
+    }
+    await sleep(300);
+  }
 });
 
 ipcRenderer.on("startTracking", () => {
@@ -769,12 +788,27 @@ ipcRenderer.on("removeTracking", () => {
   findAllIframes(document, true);
 });
 
+ipcRenderer.on("getSelectOptions", async (e, args1) => {
+  const options = [];
+  if (document.querySelector(args1).options) {
+    Array.prototype.forEach.call(document.querySelector(args1).options, o => {
+      if (o.innerText && o.value) {
+        options.push({ label: o.innerText, value: o.value });
+      }
+    });
+  }
+  ipcRenderer.sendToHost("selectOptions", options);
+});
+
+function clickAlert() {
+  ipcRenderer.sendToHost("clickAlert");
+}
+
 async function start() {
   //First say Hello
   console.log("SAY HELLO 2");
   //await sleep(300);
   ipcRenderer.sendToHost("hello");
-
   /*console.log("TEST");
   totaltime = 0;
   //stopped = true;
@@ -791,18 +825,18 @@ async function start() {
             if (stopped) return;
             resolve();
           })
-        );
-        cookiefound = true;
-      }
+          );
+          cookiefound = true;
+        }
 
-      let recaptcha = findRecaptcha();
+        let recaptcha = findRecaptcha();
       console.log("recaptcha", recaptcha);
-
+      
       if (recaptcha) {
         await recaptchaClick(recaptcha);
 
         checkRecaptcha = true;
-
+        
         if (!recaptchaConfirmOnce) {
           setInterval(verifyRecaptcha, 200);
         }
@@ -992,6 +1026,16 @@ async function fillFormField(target, fillkey) {
   return p;
 }
 
+async function backSpace(target, length) {
+  const p = new Promise(resolve =>
+    ipcRenderer.once("backSpaced", async (e, key) => {
+      resolve();
+    })
+  );
+  ipcRenderer.sendToHost("backSpace", length);
+  return p;
+}
+
 async function execute(executeoperations, mainexecute = false) {
   bot = true;
   console.log("Hier1", executeoperations, mainexecute);
@@ -1030,6 +1074,14 @@ async function execute(executeoperations, mainexecute = false) {
         console.log("CLICK", doc.querySelector(args.selector));
         await clickButton(doc.querySelector(args.selector), args.document);
         break;
+      case "clean":
+        if (doc.querySelector(args.selector).value) {
+          await backSpace(
+            doc.querySelector(args.selector),
+            doc.querySelector(args.selector).value.length
+          );
+        }
+        break;
       case "fill":
         console.log("fill", doc.querySelector(args.selector), args.fillkey);
         await fillFormField(doc.querySelector(args.selector), args.fillkey);
@@ -1051,6 +1103,14 @@ async function execute(executeoperations, mainexecute = false) {
         await execute([
           { operation: "waitfor", args },
           { operation: "click", args },
+          { operation: "fill", args }
+        ]);
+        break;
+      case "waitandcleanandfill":
+        await execute([
+          { operation: "waitfor", args },
+          { operation: "click", args },
+          { operation: "clean", args },
           { operation: "fill", args }
         ]);
         break;

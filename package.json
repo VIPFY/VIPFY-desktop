@@ -145,7 +145,7 @@
     "copy-webpack-plugin": "^5.0.4",
     "cross-zip-cli": "^1.0.0",
     "css-loader": "^3.2.0",
-    "electron": "8.0.1",
+    "electron": "8.1.1",
     "file-loader": "^4.2.0",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
     "jscrambler": "^5.4.0",

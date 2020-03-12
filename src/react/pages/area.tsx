@@ -36,7 +36,6 @@ import ClickTracker from "../components/ClickTracker";
 import EmployeeOverview from "./manager/employeeOverview";
 import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
-import UniversalLogin from "./universalLogin";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
@@ -62,6 +61,7 @@ interface AreaProps {
   emails: string[];
   tutorialprogress?: any;
   highlightReferences?: any;
+  addUsedLicenceID: Function;
 }
 
 interface AreaState {
@@ -156,10 +156,17 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.setState(prevState => ({ sidebarOpen: !prevState.sidebarOpen }));
   };
 
-  addWebview = (licenceID, opendirect = false) => {
+  addWebview = (licenceID, opendirect = false, url = undefined) => {
     this.setState(prevState => {
       const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
-      const l = { licenceID: licenceID, plain: true, setViewTitle: this.setViewTitle, viewID };
+      const l = {
+        licenceID: licenceID,
+        plain: true,
+        setViewTitle: this.setViewTitle,
+        viewID,
+        addWebview: this.addWebview,
+        url: url
+      };
       const newview = <Webview {...this.state} {...this.props} {...l} />;
       return {
         webviews: [
@@ -189,6 +196,7 @@ class Area extends React.Component<AreaProps, AreaState> {
         viewID: opendirect ? viewID : prevState.viewID
       };
     });
+    this.props.addUsedLicenceID(licenceID);
   };
 
   setViewTitle = (title, viewID, licenceID) => {
@@ -338,7 +346,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "lmanager/:serviceid", component: ServiceDetails, admin: true },
       { path: "dmanager/:teamid", component: TeamDetails, admin: true },
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
-      { path: "universallogin", component: UniversalLogin },
       { path: "company", component: CompanyDetails, admin: true }
     ];
     return (
