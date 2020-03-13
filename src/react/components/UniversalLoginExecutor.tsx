@@ -3,6 +3,8 @@ import WebView from "react-electron-web-view";
 import { sleep, getPreloadScriptPath } from "../common/functions";
 
 import { remote } from "electron";
+import UniversalTextInput from "./universalForms/universalTextInput";
+import UniversalButton from "./universalButtons/universalButton";
 const { session } = remote;
 interface Props {
   loginUrl: string;
@@ -40,6 +42,7 @@ interface Props {
 
 interface State {
   running: boolean;
+  solve401: object | null;
 }
 
 const cookiesLoggedIn: { name: string; url: string }[] = [];
@@ -95,7 +98,8 @@ const ignoredCookies = [
 
 class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   state = {
-    running: false
+    running: false,
+    solve401: null
   };
 
   checkedFields = null;
@@ -255,28 +259,74 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   }
 
   render() {
-    return (
-      <WebView
-        key={`${this.props.loginUrl}-${this.props.speed}`}
-        preload={getPreloadScriptPath("universalLogin.js")}
-        //webpreferences="webSecurity=no"
-        src={this.state.currentUrl || this.props.loginUrl}
-        partition={this.props.partition}
-        className={this.props.className}
-        useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
-        onIpcMessage={e => this.onIpcMessage(e)}
-        style={this.props.style || {}}
-        onNewWindow={e => this.onNewWindow(e)}
-        onDidNavigateInPage={e => {
-          //console.log("Did Navigate", e);
-        }}
-        onDidNavigate={e => {
-          //console.log("DID NAVIGATE OUTSIDE", e);
-          //this.props.addWebview(this.props.licenceID, true, e.url);
-        }}
-        onPageTitleUpdated={title => this.props.setViewTitle(title.title)}
-      />
-    );
+    if (this.state.solve401 != null) {
+      return (
+        <div>
+          <UniversalTextInput
+            id="htaccessusername"
+            livevalue={v =>
+              this.setState(oldstate => {
+                const solve401 = oldstate.solve401;
+                solve401.username = v;
+                return { oldstate, solve401 };
+              })
+            }
+          />
+          <UniversalTextInput
+            id="htaccesspassword"
+            type="password"
+            livevalue={v =>
+              this.setState(oldstate => {
+                const solve401 = oldstate.solve401;
+                solve401.password = v;
+                return { oldstate, solve401 };
+              })
+            }
+          />
+          <UniversalButton
+            type="high"
+            onClick={() => {
+              this.props.showLoadingScreen(true);
+              this.setState(oldstate => {
+                const urlParts = this.props.loginUrl.split("://", 2);
+                const url = `${urlParts[0]}://${oldstate.solve401.username}:${oldstate.solve401.password}@${urlParts[1]}`;
+                return { ...oldstate, currentUrl: url, solve401: null };
+              });
+            }}
+            label="Continue"
+          />
+        </div>
+      );
+    } else {
+      return (
+        <WebView
+          key={`${this.props.loginUrl}-${this.props.speed}`}
+          preload={getPreloadScriptPath("universalLogin.js")}
+          //webpreferences="webSecurity=no"
+          src={this.state.currentUrl || this.props.loginUrl}
+          partition={this.props.partition}
+          className={this.props.className}
+          useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
+          onIpcMessage={e => this.onIpcMessage(e)}
+          style={this.props.style || {}}
+          onNewWindow={e => this.onNewWindow(e)}
+          onDidNavigateInPage={e => {
+            //console.log("Did Navigate", e);
+          }}
+          onDidNavigate={e => {
+            //console.log("DID NAVIGATE OUTSIDE", e);
+            //this.props.addWebview(this.props.licenceID, true, e.url);
+            if (e.httpResponseCode == 401) {
+              this.props.showLoadingScreen(false);
+              this.setState({ solve401: {} });
+            }
+          }}
+          onPageTitleUpdated={title =>
+            this.props.setViewTitle && this.props.setViewTitle(title.title)
+          }
+        />
+      );
+    }
   }
 
   async isLoggedIn(w) {

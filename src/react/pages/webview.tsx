@@ -434,6 +434,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   addWebview={this.props.addWebview}
                   licenceID={this.props.licenceID}
                   setViewTitle={title =>
+                    this.props.setViewTitle &&
                     this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
                   }
                   loggedIn={this.props.loggedIn}
