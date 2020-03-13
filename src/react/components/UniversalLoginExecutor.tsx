@@ -33,6 +33,7 @@ interface Props {
   noUrlCheck?: boolean;
   individualNotShow?: string;
   checkfields?: Function;
+  setViewTitle?: Function;
 }
 
 interface State {
@@ -271,6 +272,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           //console.log("DID NAVIGATE OUTSIDE", e);
           //this.props.addWebview(this.props.licenceID, true, e.url);
         }}
+        onPageTitleUpdated={title => this.props.setViewTitle(title.title)}
       />
     );
   }

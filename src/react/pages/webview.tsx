@@ -431,6 +431,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   individualNotShow={this.state.options.individualNotShow}
                   addWebview={this.props.addWebview}
                   licenceID={this.props.licenceID}
+                  setViewTitle={title =>
+                    this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
+                  }
                 />
               ) : (
                 <div>Please Update VIPFY to use this service</div>
