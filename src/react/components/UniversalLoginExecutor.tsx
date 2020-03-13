@@ -33,6 +33,9 @@ interface Props {
   noUrlCheck?: boolean;
   individualNotShow?: string;
   checkfields?: Function;
+  setViewTitle?: Function;
+  addWebview?: Function;
+  loggedIn: Boolean;
 }
 
 interface State {
@@ -246,7 +249,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
       if (e.url.indexOf("wchat") == -1) {
         //this.setState({ currentUrl: e.url });
-        this.props.addWebview(this.props.licenceID, true, e.url);
+        this.props.addWebview(this.props.licenceID, true, e.url, true);
       }
     }
   }
@@ -271,6 +274,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           //console.log("DID NAVIGATE OUTSIDE", e);
           //this.props.addWebview(this.props.licenceID, true, e.url);
         }}
+        onPageTitleUpdated={title => this.props.setViewTitle(title.title)}
       />
     );
   }
@@ -648,6 +652,19 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   async progressCallback() {
     if (this.progressCallbackRunning) {
       return;
+    }
+
+    if (this.props.loggedIn) {
+      this.timeout = false;
+      this.progress = 1;
+      this.props.setResult(
+        { loggedin: true, direct: true, errorin: false, ...this.loginState },
+        ""
+      );
+      if (this.progressHandle) {
+        clearInterval(this.progressHandle);
+        this.progressHandle = undefined;
+      }
     }
     this.progressCallbackRunning = true;
     this.progress += this.progressStep;
