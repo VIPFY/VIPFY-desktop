@@ -6,7 +6,7 @@ import LoadingDiv from "../LoadingDiv";
 import SearchBox from "../SearchBox";
 
 import { FETCH_APPS } from "./apollo";
-import { getImageUrlApp, getSourceSetApp } from "../../common/images";
+import { getBgImageApp } from "../../common/images";
 import UploadImage from "../manager/universal/uploadImage";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
 import gql from "graphql-tag";
@@ -58,7 +58,7 @@ const TableRow = (props: { service; showBorder }) => {
       </td>
       <td>
         <UploadImage
-          picture={{ preview: getImageUrlApp(icon, 512) }}
+          picture={{ preview: getBgImageApp(icon, 256) }}
           key={icon}
           isadmin={true}
           name={name}
@@ -80,7 +80,7 @@ const TableRow = (props: { service; showBorder }) => {
       </td>
       <td>
         <UploadImage
-          picture={{ preview: getImageUrlApp(logo, 1024) }}
+          picture={{ preview: getBgImageApp(logo, 512) }}
           key={logo}
           isadmin={true}
           name={name}
