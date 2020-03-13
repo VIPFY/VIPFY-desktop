@@ -35,6 +35,9 @@ class UploadImage extends React.Component<Props, State> {
     if (newProps.uploadError) {
       this.setState({ picture: newProps.picture });
     }
+    if (this.state.picture != newProps.picture && newProps.picture != this.props.picture) {
+      this.setState({ picture: newProps.picture });
+    }
   }
 
   setBothStates = async file => {
@@ -65,7 +68,9 @@ class UploadImage extends React.Component<Props, State> {
     if (picture && picture.preview) {
       formStyles = {
         ...formStyles,
-        backgroundImage: `url(${encodeURI(picture.preview)})`,
+        backgroundImage: picture.preview.startsWith("-webkit-image-set")
+          ? picture.preview
+          : `url(${encodeURI(picture.preview)})`,
         backgroundPosition: "center",
         backgroundSize: this.props.backgroundSize ?? "cover",
         backgroundColor: "unset",

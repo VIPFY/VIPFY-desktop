@@ -11,7 +11,7 @@ import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlUser, resizeImage } from "../../common/images";
+import { resizeImage, getBgImageUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
 import moment from "moment";
@@ -139,7 +139,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                           <UploadImage
                             picture={
                               querydata.profilepicture && {
-                                preview: getImageUrlUser(querydata.profilepicture, 96)
+                                preview: getBgImageUser(querydata.profilepicture, 96)
                               }
                             }
                             name={`${querydata.firstname} ${querydata.lastname}`}

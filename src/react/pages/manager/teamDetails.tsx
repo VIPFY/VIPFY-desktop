@@ -11,7 +11,7 @@ import TeamGeneralData from "../../components/manager/teamGeneralData";
 import EmployeeSection from "../../components/manager/teamDetails/employeeSection";
 import ServiceSection from "../../components/manager/serviceSection";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlTeam, resizeImage } from "../../common/images";
+import { resizeImage, getBgImageTeam } from "../../common/images";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -112,7 +112,7 @@ class TeamDetails extends React.Component<Props, State> {
                       picture={{
                         preview:
                           team && team.profilepicture
-                            ? getImageUrlTeam(team.profilepicture, 96)
+                            ? getBgImageTeam(team.profilepicture, 96)
                             : null
                       }}
                       name={

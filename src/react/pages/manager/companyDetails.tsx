@@ -7,7 +7,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlUser, resizeImage } from "../../common/images";
+import { resizeImage, getBgImageTeam } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
@@ -130,7 +130,7 @@ class CompanyDetails extends React.Component<Props, State> {
                           <UploadImage
                             picture={
                               profilepicture && {
-                                preview: getImageUrlUser(profilepicture, 96)
+                                preview: getBgImageTeam(profilepicture, 96)
                               }
                             }
                             name={name}
