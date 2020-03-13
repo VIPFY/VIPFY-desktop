@@ -158,7 +158,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.setState(prevState => ({ sidebarOpen: !prevState.sidebarOpen }));
   };
 
-  addWebview = (licenceID, opendirect = false, url = undefined) => {
+  addWebview = (licenceID, opendirect = false, url = undefined, loggedIn = false) => {
     this.setState(prevState => {
       const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
       const l = {
@@ -167,7 +167,8 @@ class Area extends React.Component<AreaProps, AreaState> {
         setViewTitle: this.setViewTitle,
         viewID,
         addWebview: this.addWebview,
-        url: url
+        url: url,
+        loggedIn
       };
       const newview = <Webview {...this.state} {...this.props} {...l} />;
       return {

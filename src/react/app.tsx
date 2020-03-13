@@ -7,7 +7,7 @@ import Store from "electron-store";
 
 import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
-import { AppContext, refetchQueries } from "./common/functions";
+import { AppContext, refetchQueries, getMyUnitId } from "./common/functions";
 import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
@@ -24,6 +24,8 @@ import { hashPassword } from "./common/crypto";
 import { remote } from "electron";
 const { session } = remote;
 import "../css/layout.scss";
+import { encryptForUser } from "./common/licences";
+import { decryptLicenceKey } from "./common/passwords";
 
 const END_IMPERSONATION = gql`
   mutation onEndImpersonation($token: String!) {
@@ -241,7 +243,15 @@ class App extends React.Component<AppProps, AppState> {
           })
         );
         await this.props.saveCookies({
-          variables: { cookies: JSON.stringify(cookies) }
+          variables: {
+            cookies: [
+              await encryptForUser(
+                await getMyUnitId(this.props.client),
+                JSON.stringify(cookies),
+                this.props.client
+              )
+            ]
+          }
         });
       }
       try {
@@ -271,7 +281,10 @@ class App extends React.Component<AppProps, AppState> {
       const { token, twofactor, unitid, config } = res.data.signIn;
 
       if (config.cookies) {
-        const configcookies = JSON.parse(config.cookies);
+        await this.props.client.query({ query: me });
+        const configcookies = await decryptLicenceKey(this.props.client, {
+          key: { encrypted: config.cookies }
+        });
 
         const cookiePromises = [];
         configcookies.forEach(c => {

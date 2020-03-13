@@ -58,6 +58,8 @@ export type WebViewProps = {
   viewID: number;
   logError: Function;
   updateLicenceSpeed: Function;
+  addWebview: Function;
+  loggedIn: Boolean;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -434,6 +436,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   setViewTitle={title =>
                     this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
                   }
+                  loggedIn={this.props.loggedIn}
                 />
               ) : (
                 <div>Please Update VIPFY to use this service</div>

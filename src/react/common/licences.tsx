@@ -32,7 +32,11 @@ export async function createEncryptedLicenceKeyObject(
   };
 }
 
-async function encryptForUser(unitid: string, key: Object, client: any): Promise<boolean | Object> {
+export async function encryptForUser(
+  unitid: string,
+  key: Object,
+  client: any
+): Promise<boolean | Object> {
   const d = await client.query({
     query: gql`
       query onFetchCurrentKey($id: ID) {
