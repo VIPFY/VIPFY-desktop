@@ -26,6 +26,7 @@ interface PostLoginProps {
   profilepicture: string;
   history: any;
   context: any;
+  addUsedLicenceID: Function;
 }
 
 interface State {

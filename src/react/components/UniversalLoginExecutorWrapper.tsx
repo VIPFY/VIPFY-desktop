@@ -12,6 +12,7 @@ interface Props {
     result: { loggedin: boolean; emailEntered: boolean; passwordEntered: boolean; speed: number },
     image: string
   ) => void;
+  checkfields?: Function;
 }
 
 interface State {
@@ -38,14 +39,15 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
       <UniversalLoginExecutor
         {...this.props}
         {...this.state}
-        timeout={30000 + 10000 / (this.state ? this.state.speed : 1)}
         setResult={(result, image) => {
-          if (result.loggedin || this.state.speed < 0.1) {
-            return this.props.setResult({ ...result, speed: this.state.speed }, image);
-          } else {
-            this.setState({ speed: this.state.speed / 3 });
-          }
+          //console.log("SET RESULT 1", result, image);
+          //if (result.loggedin || this.state.speed < 0.1) {
+          return this.props.setResult({ ...result, speed: this.state.speed }, image);
+          //} else {
+          //            this.setState({ speed: this.state.speed / 3 });
+          //}
         }}
+        checkfields={this.props.checkfields}
       />
     );
   }

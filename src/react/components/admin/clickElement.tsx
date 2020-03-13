@@ -30,13 +30,15 @@ class ClickElement extends React.Component<Props, State> {
         { value: "waitandfill", label: "Fill Field" },
         { value: "click", label: "click" },
         { value: "wait", label: "Wait" },
-        { value: "recaptcha", label: "Recaptcha" }
+        { value: "recaptcha", label: "Recaptcha" },
+        { value: "select", label: "Select" }
       ];
     } else {
       return [
         { value: "waitandfill", label: "Fill Field" },
         { value: "click", label: "Click" },
         { value: "wait", label: "Wait" },
+        { value: "select", label: "Select" },
         { value: "recaptcha", label: "Recaptcha" },
         { value: "repeatFill", label: "Repeat a filled field" }
       ];
@@ -73,7 +75,7 @@ class ClickElement extends React.Component<Props, State> {
           dropdownStyles={{ color: "white", width: "100%", height: "32px", fontSize: "16px" }}
           dropdownOptionStyles={{ color: "#253647" }}
           width="100%"
-          allowOther={false}
+          allowOther={true}
           label={this.props.noLabel ? undefined : "Operation"}
           style={{ color: "white" }}
           trashstyle={{ color: "white" }}
@@ -92,7 +94,7 @@ class ClickElement extends React.Component<Props, State> {
               dropdownStyles={{ color: "white", width: "100%", height: "32px", fontSize: "16px" }}
               dropdownOptionStyles={{ color: "#253647" }}
               width="100%"
-              allowOther={false}
+              allowOther={true}
               label={this.props.noLabel ? undefined : "data-connection"}
               style={{ color: "white" }}
               trashstyle={{ color: "white" }}

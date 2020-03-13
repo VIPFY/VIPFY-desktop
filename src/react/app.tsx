@@ -47,6 +47,7 @@ interface AppProps {
   signOut: Function;
   endImpersonation: Function;
   location: any;
+  saveCookies: Function;
 }
 
 interface PopUp {
@@ -69,6 +70,7 @@ interface AppState {
   reshow: string | null;
   twofactor: string | null;
   unitid: string | null;
+  usedLicenceIDs: string[];
 }
 
 const INITIAL_POPUP = {
@@ -90,7 +92,8 @@ const INITIAL_STATE = {
   sidebarloaded: false,
   reshow: null,
   twofactor: null,
-  unitid: null
+  unitid: null,
+  usedLicenceIDs: []
 };
 
 const tutorial = gql`
@@ -116,6 +119,12 @@ const tutorial = gql`
   }
 `;
 
+const SAVE_COOKIES = gql`
+  mutation saveCookies($cookies: JSON) {
+    saveCookies(cookies: $cookies)
+  }
+`;
+
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
 
@@ -134,6 +143,10 @@ class App extends React.Component<AppProps, AppState> {
     }
     //this.redeemSetupToken();
   }
+
+  componentWillUnmount = async () => {
+    await this.logMeOut();
+  };
 
   redeemSetupToken = async refetch => {
     try {
@@ -167,6 +180,18 @@ class App extends React.Component<AppProps, AppState> {
 
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
 
+  addUsedLicenceID = licenceID => {
+    this.setState(oldstate => {
+      const newUsedLicenceIDs = oldstate.usedLicenceIDs;
+      if (newUsedLicenceIDs.findIndex(l => l == licenceID) == -1) {
+        newUsedLicenceIDs.push(licenceID);
+        return { ...oldstate, usedLicenceIDs: newUsedLicenceIDs };
+      } else {
+        return oldstate;
+      }
+    });
+  };
+
   logMeOut = async () => {
     const impersonated = await localStorage.getItem("impersonator-token");
     if (impersonated) {
@@ -190,10 +215,35 @@ class App extends React.Component<AppProps, AppState> {
         console.error("LOG: logMeOut -> err", err);
       }
 
+      if (this.state.usedLicenceIDs.length > 0) {
+        await Promise.all(
+          this.state.usedLicenceIDs.map(licenceID =>
+            session.fromPartition(`service-${licenceID}`).clearStorageData()
+          )
+        );
+      }
+
       await this.props.history.push("/area/dashboard");
       await this.props.client.cache.reset(); // clear graphql cache
     } else {
       // Destroy all Sessions
+      if (this.state.usedLicenceIDs.length > 0) {
+        const cookies = [];
+
+        await Promise.all(
+          this.state.usedLicenceIDs.map(async licenceID => {
+            const appcookies = await session.fromPartition(`service-${licenceID}`).cookies.get({});
+            cookies.push({
+              key: licenceID,
+              cookies: appcookies
+            });
+            return session.fromPartition(`service-${licenceID}`).clearStorageData();
+          })
+        );
+        await this.props.saveCookies({
+          variables: { cookies: JSON.stringify(cookies) }
+        });
+      }
       try {
         await this.props.signOut();
       } catch (err) {
@@ -218,8 +268,28 @@ class App extends React.Component<AppProps, AppState> {
       const res = await this.props.signIn({
         variables: { email, passkey: loginkey.toString("hex") }
       });
-      const { token, twofactor, unitid } = res.data.signIn;
+      const { token, twofactor, unitid, config } = res.data.signIn;
 
+      if (config.cookies) {
+        const configcookies = JSON.parse(config.cookies);
+
+        const cookiePromises = [];
+        configcookies.forEach(c => {
+          this.addUsedLicenceID(c.key);
+          c.cookies.forEach(async e => {
+            const scheme = e.secure ? "https" : "http";
+            const host = e.domain[0] === "." ? e.domain.substr(1) : e.domain;
+            const url = scheme + "://" + host;
+            e.url = url;
+            try {
+              await session.fromPartition(`service-${c.key}`, { cache: true }).cookies.set(e);
+            } catch (err) {
+              console.log("ERRPOR", err, e);
+            }
+          });
+        });
+        await Promise.all(cookiePromises);
+      }
       if (!twofactor) {
         localStorage.setItem("token", token);
         localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
@@ -314,6 +384,7 @@ class App extends React.Component<AppProps, AppState> {
                       profilepicture={data.me.profilepicture}
                       context={context}
                       highlightReferences={this.references}
+                      addUsedLicenceID={this.addUsedLicenceID}
                     />
                   );
                 }}
@@ -428,5 +499,6 @@ class App extends React.Component<AppProps, AppState> {
 export default compose(
   graphql(END_IMPERSONATION, { name: "endImpersonation" }),
   graphql(signInUser, { name: "signIn" }),
-  graphql(SIGN_OUT, { name: "signOut" })
+  graphql(SIGN_OUT, { name: "signOut" }),
+  graphql(SAVE_COOKIES, { name: "saveCookies" })
 )(withApollo(withRouter(App)));

@@ -167,6 +167,18 @@ class ServiceIntegrator extends React.Component<Props, State> {
     }
   }
 
+  handleOutsideSiteChange(e) {
+    if (!e.url.includes("google")) {
+      // so if webview is not google then track it.
+      this.state.cantrack = true;
+      this.setState({
+        webviewid: Math.round(Math.random() * 10000000000).toString(),
+        divList: [],
+        test: false
+      });
+    }
+  }
+
   handleNewWindow(e) {
     console.log("NEW WINDOW", e);
     this.setState({ urlBevorChange: e.target.src, url: e.url });
@@ -710,7 +722,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
         <form
           onSubmit={async e => {
             e.preventDefault();
-            console.log("Filling plan.");
             fillPlans.forEach(planid => {
               this.setState(oldstate => {
                 oldstate.finalexecutionPlan.find(plan => {
@@ -725,10 +736,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
           {inputList.map(e => e)}
           <UniversalButton
             onClick={async () => {
-              console.log("Filling plan.");
               fillPlans.forEach(planid => {
                 this.setState(oldstate => {
-                  console.log("OLDSTATE", this.state);
                   oldstate.finalexecutionPlan.find(plan => {
                     return plan.args.id == planid;
                   })!.value = document.getElementById(planid + "input")!.value;
@@ -767,7 +776,11 @@ class ServiceIntegrator extends React.Component<Props, State> {
   }
 
   processstep = operation => {
-    let result = [];
+    let operations = [];
+    let fillkeys = [];
+    if (operation.args && operation.args.fillkey && !operation.value) {
+      fillkeys.push(operation.args.fillkey);
+    }
     switch (operation.operation) {
       case "function":
         const functionArray = JSON.parse(
@@ -775,7 +788,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         );
         functionArray.forEach(s => {
           const testing2 = this.processstep(s);
-          result = result.concat(testing2);
+          operations = operations.concat(testing2);
         });
         break;
 
@@ -790,23 +803,75 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       default:
-        result.push(operation);
+        operations.push(operation);
         break;
     }
-    return result;
+    return { operations, fillkeys };
+  };
+
+  showFillKeyOptions = async (plan, fillkeys) => {
+    console.log("TEST", fillkeys);
+    const inputList = [];
+    const values = [];
+    fillkeys.forEach((key, index) => {
+      inputList.push(
+        <UniversalTextInput id={key} label={key} livevalue={v => (values[index] = v)} />
+      );
+    });
+
+    const popup = (
+      <PopupBase
+        id="inputPopup"
+        small={true}
+        styles={{ textAlign: "center" }}
+        buttonStyles={{ justifyContent: "space-around" }}
+        closeable={false}>
+        {inputList}
+        <UniversalButton
+          onClick={() => {
+            this.setState({ divList: [], test: false, end: false });
+          }}
+          type="high"
+          label="Cancel"
+        />
+        <UniversalButton
+          onClick={() => {
+            console.log("TEST", values);
+            const finalPlan = [];
+            plan.forEach(op => {
+              if (op.args && op.args.fillkey && !op.value) {
+                op.value = values[fillkeys.findIndex(k => k == op.args.fillkey)];
+              }
+              finalPlan.push(op);
+            });
+            console.log(finalPlan);
+            this.setState(oldstate => {
+              oldstate.divList.pop();
+              return oldstate;
+            });
+            if (this.state.webviewReady && finalPlan.length > 0) {
+              this.webview!.send("execute", finalPlan);
+            }
+          }}
+          type="high"
+          label="Execute"
+        />
+      </PopupBase>
+    );
+    this.setState(oldstate => {
+      oldstate.divList.push(popup);
+      return oldstate;
+    });
   };
 
   sendExecuteFinal = async () => {
     let processedfinalexecutionPlan = [];
-    let awaked = false;
-    console.log("SENDEXECUTEFINAL", this.state, processedfinalexecutionPlan);
+    let processedfillkeys = [];
     this.state.finalexecutionPlan.forEach(fep => {
-      console.log("FEP", fep);
       const operationArray = this.processstep(fep);
-      console.log("TESTING", operationArray);
-      processedfinalexecutionPlan = processedfinalexecutionPlan.concat(operationArray);
+      processedfinalexecutionPlan = processedfinalexecutionPlan.concat(operationArray.operations);
+      processedfillkeys = processedfillkeys.concat(operationArray.fillkeys);
     });
-    console.log("TESTING 2", processedfinalexecutionPlan);
     this.setState({
       divList: [
         <div
@@ -823,10 +888,13 @@ class ServiceIntegrator extends React.Component<Props, State> {
       ],
       processedfinalexecutionPlan
     });
-    console.log("CHECKING", this.state.webviewReady, processedfinalexecutionPlan);
-    if (this.state.webviewReady && processedfinalexecutionPlan.length > 0) {
-      console.log("EXECUTE 1", processedfinalexecutionPlan);
-      this.webview!.send("execute", processedfinalexecutionPlan);
+    console.log(processedfinalexecutionPlan, processedfillkeys);
+    if (processedfillkeys.length > 0) {
+      this.showFillKeyOptions(processedfinalexecutionPlan, processedfillkeys);
+    } else {
+      if (this.state.webviewReady && processedfinalexecutionPlan.length > 0) {
+        this.webview!.send("execute", processedfinalexecutionPlan);
+      }
     }
   };
 
@@ -835,14 +903,12 @@ class ServiceIntegrator extends React.Component<Props, State> {
     const currentexe = this.loginState.executing;
     switch (e.channel) {
       case "hello":
-        console.log("SAY HELLO", this.state);
         this.loginState.executing++;
         this.webview = e.target;
         this.setState({ webviewReady: true });
         if (this.state.executing > 0) {
           const plan = this.state.processedfinalexecutionPlan;
           const shortedPlan = plan.slice(this.state.step);
-          console.log("SEND EXECUTE 2", shortedPlan, this.state);
           await sleep(500);
           if (this.webview) {
             this.webview!.send("execute", shortedPlan);
@@ -850,34 +916,16 @@ class ServiceIntegrator extends React.Component<Props, State> {
         }
         break;
       case "sendMessage":
-        //console.log("sendMessage");
-        //console.log(e.channel); //, e.args[0], e.args[1], e.args[2], e.args[3], e.args[4],
         let i = 0;
         while (e.args[i] != null) {
-          console.log(e.args[i]);
           i++;
         }
         break;
 
       case "sendEvent":
-        //console.log("selection");
-        // incase of selection of any element.
-
         if (this.state.test) {
           break;
         }
-        /*console.log(
-          "sendEvent\n",
-          e.args[0],
-          e.args[1],
-          e.args[2],
-          e.args[3],
-          e.args[4],
-          e.args[5],
-          e.args[6],
-          e.args[7],
-          e.args[8]
-        );*/
 
         //generate Execution Plan
         this.setState(oldstate => {
@@ -986,25 +1034,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             return oldstate;
           });
         }
-        /*console.log(
-          "loaded first",
-          this.loginState.didLoadOnSteps,
-          this.loginState.step
-        );*/
-
-        /*if (this.state.test && this.state.url != "about:blank") {
-          await session.fromPartition("followLogin").clearStorageData();
-          let exx = [];
-          this.state.finalexecutionPlan.forEach(element => {
-            if (element.step == this.loginState.step) {
-              exx.push(element);
-            }
-          });
-          console.log("SEND EXECUTE 2");
-          this.webview!.send("execute", exx);
-        } else*/ if (
-          !this.loginState.didLoadOnSteps.includes(this.loginState.step)
-        ) {
+        if (!this.loginState.didLoadOnSteps.includes(this.loginState.step)) {
           this.loginState.didLoadOnSteps.push(this.loginState.step);
         }
         break;
@@ -1099,20 +1129,15 @@ class ServiceIntegrator extends React.Component<Props, State> {
 
       case "click":
         {
-          console.log("CLICKED", e);
           let w = e.target;
           if (this.loginState.executing != currentexe) {
-            console.log("BREAKOUT 1", this.loginState.executing, currentexe);
             break;
           }
           w.sendInputEvent({ type: "mouseMove", x: e.args[0], y: e.args[1] });
-          //console.log("CONSENT", e.args[0], e.args[1]);
           await sleep(Math.random() * 30 + 200);
           if (this.loginState.executing != currentexe) {
-            console.log("BREAKOUT 2", this.loginState.executing, currentexe);
             break;
           }
-          console.log("mouseDown", currentexe);
           w.sendInputEvent({
             type: "mouseDown",
             x: e.args[0],
@@ -1122,10 +1147,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
           });
           await sleep(Math.random() * 30 + 50);
           if (this.loginState.executing != currentexe) {
-            console.log("BREAKOUT 3", this.loginState.executing, currentexe);
             break;
           }
-          console.log("mouseUp", currentexe);
           w.sendInputEvent({
             type: "mouseUp",
             x: e.args[0],
@@ -1169,14 +1192,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
       case "fillFormField":
         {
           const w = e.target;
-          /* console.log(
-            "fillForm",
-            e.args[0],
-            this.state.executionPlan[0].args.fillkey,
-            this.state.executionPlan.findIndex(element => {
-              return element.args.fillkey == e.args[0];
-            })
-          ); */
           console.log(
             "fillField",
             this.state.processedfinalexecutionPlan,
@@ -1185,52 +1200,38 @@ class ServiceIntegrator extends React.Component<Props, State> {
             }),
             e.args[0]
           );
-          //if (this.state.isLogin) {
-          var text = this.state.processedfinalexecutionPlan.find(element => {
-            //console.log("E", element, element.args.fillkey, e.args[0]);
+          const text = this.state.processedfinalexecutionPlan.find(element => {
             return element.args.fillkey == e.args[0];
           })!.value;
-          /* } else {
-            var text;
-            switch (e.args[0]) {
-              case "username":
-                text = Math.round(Math.random() * 10000000000).toString();
-                break;
-
-              case "email":
-                text = Math.round(Math.random() * 10000000000).toString() + "@vipfy.store";
-                break;
-
-              case "password":
-                text = "!12345678!Aa";
-                break;
-
-              case "domain":
-                text = "vipfy" + Math.round(Math.random() * 10000000000).toString();
-                break;
-
-              default:
-                text = Math.round(Math.random() * 10000000000).toString();
-                break;
-            }
-          } */
-
-          console.log("TYPING", text);
 
           for await (const c of text) {
-            console.log("Letter", c);
             const shift = c.toLowerCase() != c;
             const modifiers = shift ? ["shift"] : [];
-            console.log("WEBVIEW", w);
             w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
             w.sendInputEvent({ type: "char", modifiers, keyCode: c });
             await sleep(Math.random() * 20 + 50);
             w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
-            //this.progress += 0.2 / text.length;
             await sleep(Math.random() * 30 + 200);
           }
           await sleep(500);
           w.send("formFieldFilled");
+        }
+        break;
+
+      case "backSpace":
+        {
+          const w = e.target;
+          const numberinter = new Array(e.args[0]);
+          for await (const n of numberinter) {
+            const modifiers = [];
+            w.sendInputEvent({ type: "keyDown", modifiers, keyCode: "Backspace" });
+            w.sendInputEvent({ type: "char", modifiers, keyCode: "Backspace" });
+            await sleep(Math.random() * 20 + 50);
+            w.sendInputEvent({ type: "keyUp", modifiers, keyCode: "Backspace" });
+            await sleep(Math.random() * 30 + 200);
+          }
+          await sleep(500);
+          w.send("backSpaced");
         }
         break;
 
@@ -1259,11 +1260,22 @@ class ServiceIntegrator extends React.Component<Props, State> {
         }
         break;
 
-      case "unload": {
+      case "unload":
         console.log("UNLOAD", this.webview);
         this.setState({ webviewReady: false });
         this.webview = null;
-      }
+        break;
+      case "selectOptions":
+        console.log("selectOptions", e.args[0], e.args);
+
+        break;
+      case "clickalert":
+        console.log("CLICKED!!!");
+        break;
+
+      case "endExecution":
+        this.setState({ divList: [], test: false, end: false });
+        break;
       default:
         //console.log("No case applied", e.channel);
         break;
@@ -1295,18 +1307,31 @@ class ServiceIntegrator extends React.Component<Props, State> {
               return <div>ERROR</div>;
             }
             const executionApps: JSX.Element[] = [];
-            data.fetchExecutionApps.forEach(e =>
-              executionApps.push(
-                <div>
-                  <span>{e.name}</span>
-                  <UniversalButton
-                    type="high"
-                    onClick={() => this.setState({ app: e })}
-                    label="Edit"
-                  />
-                </div>
-              )
-            );
+            data.fetchExecutionApps
+              .sort(function(a, b) {
+                let nameA = a.name.toUpperCase();
+                let nameB = b.name.toUpperCase();
+                if (nameA < nameB) {
+                  return -1;
+                }
+                if (nameA > nameB) {
+                  return 1;
+                }
+                // namen müssen gleich sein
+                return 0;
+              })
+              .forEach(e =>
+                executionApps.push(
+                  <div>
+                    <span>{e.name}</span>
+                    <UniversalButton
+                      type="high"
+                      onClick={() => this.setState({ app: e })}
+                      label="Edit"
+                    />
+                  </div>
+                )
+              );
             return (
               <div>
                 {executionApps}
@@ -1410,10 +1435,15 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   <ClickElement
                     id={`ce-${k}`}
                     startvalue={o.operation}
-                    onChange={(operation, value) =>
-                      this.updateSelection(o.args.id, operation, value)
-                    }
-                    isLogin={this.state.isLogin}
+                    onChange={(operation, value) => {
+                      this.updateSelection(o.args.id, operation, value);
+                      console.log("TEST", operation);
+                      if (value == "select") {
+                        console.log("id", o.args.selector);
+                        this.webview!.send("getSelectOptions", o.args.selector);
+                      }
+                    }}
+                    isLogin={false}
                   />
                   <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
                   <div /* style={{ float: "left" }} */>
@@ -1484,7 +1514,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
                     //set url back to null
                     console.log("EXECUTE BUTTON");
                     this.setState({ executing: 1, step: 0, test: true });
-                    console.log(await this.sendExecuteFinal());
+                    await this.sendExecuteFinal();
                   }}
                 />
               </div>
@@ -1633,7 +1663,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
               onClose={e => this.handleClosing(e)}
               onDidNavigateInPage={e => this.handleSiteChange(e)}
               onDidNavigate={e => {
-                this.handleSiteChange(e);
+                this.handleOutsideSiteChange(e);
               }}
               onDidFailLoad={e => this.didFailLoad(e)}
             />
