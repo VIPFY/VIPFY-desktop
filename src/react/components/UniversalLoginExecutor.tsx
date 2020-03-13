@@ -662,7 +662,10 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     ) {
       this.timeout = false;
       this.progress = 1;
-      this.props.setResult({ loggedin: true, errorin: false, ...this.loginState }, "");
+      this.props.setResult(
+        { loggedin: true, direct: true, errorin: false, ...this.loginState },
+        ""
+      );
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
@@ -683,6 +686,19 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           clearInterval(this.progressHandle);
           this.progressHandle = undefined;
         }
+      }
+    }
+
+    if (this.webview && (await this.isLoggedIn(this.webview)) && this.progress >= 0.25) {
+      this.timeout = false;
+      this.progress = 1;
+      this.props.setResult(
+        { loggedin: true, direct: true, errorin: false, ...this.loginState },
+        ""
+      );
+      if (this.progressHandle) {
+        clearInterval(this.progressHandle);
+        this.progressHandle = undefined;
       }
     }
 
