@@ -271,6 +271,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
                 return { oldstate, solve401 };
               })
             }
+            label="Username"
           />
           <UniversalTextInput
             id="htaccesspassword"
@@ -279,9 +280,10 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
               this.setState(oldstate => {
                 const solve401 = oldstate.solve401;
                 solve401.password = v;
-                return { oldstate, solve401 };
+                return { ...oldstate, solve401 };
               })
             }
+            label="Password"
           />
           <UniversalButton
             type="high"
