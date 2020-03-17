@@ -282,26 +282,30 @@ class App extends React.Component<AppProps, AppState> {
 
       if (config.cookies) {
         await this.props.client.query({ query: me });
-        const configcookies = await decryptLicenceKey(this.props.client, {
-          key: { encrypted: config.cookies }
-        });
-
-        const cookiePromises = [];
-        configcookies.forEach(c => {
-          this.addUsedLicenceID(c.key);
-          c.cookies.forEach(async e => {
-            const scheme = e.secure ? "https" : "http";
-            const host = e.domain[0] === "." ? e.domain.substr(1) : e.domain;
-            const url = scheme + "://" + host;
-            e.url = url;
-            try {
-              await session.fromPartition(`service-${c.key}`, { cache: true }).cookies.set(e);
-            } catch (err) {
-              console.log("ERRPOR", err, e);
-            }
+        try {
+          const configcookies = await decryptLicenceKey(this.props.client, {
+            key: { encrypted: config.cookies }
           });
-        });
-        await Promise.all(cookiePromises);
+
+          const cookiePromises = [];
+          configcookies.forEach(c => {
+            this.addUsedLicenceID(c.key);
+            c.cookies.forEach(async e => {
+              const scheme = e.secure ? "https" : "http";
+              const host = e.domain[0] === "." ? e.domain.substr(1) : e.domain;
+              const url = scheme + "://" + host;
+              e.url = url;
+              try {
+                await session.fromPartition(`service-${c.key}`, { cache: true }).cookies.set(e);
+              } catch (err) {
+                console.log("ERRPOR", err, e);
+              }
+            });
+          });
+          await Promise.all(cookiePromises);
+        } catch (err) {
+          console.debug("Error parsing cookies", err);
+        }
       }
       if (!twofactor) {
         localStorage.setItem("token", token);
