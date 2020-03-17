@@ -143,7 +143,6 @@ class DataNameForm extends React.Component<Props, State> {
                           livevalue={v => this.setState({ promocode: v })}
                           errorEvaluation={error}
                           errorhint={error && filterError(error)}
-                          onEnter={() => mutate({ variables: { promocode } })}
                         />
                       )
                     ) : (
@@ -165,8 +164,14 @@ class DataNameForm extends React.Component<Props, State> {
                       <UniversalButton
                         label="Add Code"
                         type="high"
-                        disabled={loading || data || !promocode}
-                        onClick={() => mutate({ variables: { promocode } })}
+                        disabled={!promocode || !this.state.name || this.state.name.trim() == ""}
+                        onClick={async () => {
+                          try {
+                            await mutate({ variables: { promocode } });
+                          } catch (err) {
+                            console.log("ERORR-Promocode", err);
+                          }
+                        }}
                       />
                     </div>
                   )}
