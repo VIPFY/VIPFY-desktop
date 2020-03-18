@@ -153,7 +153,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         this.setState({ notify: true });
         setTimeout(() => this.setState({ notify: false }), 5000);
 
-        this.refetchCategories(subscriptionData.data.newNotification, this.props.client);
+        this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
         return {
           ...prev,
           fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
