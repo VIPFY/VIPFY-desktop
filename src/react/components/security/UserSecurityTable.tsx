@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Query, graphql } from "react-apollo";
-import { concatName } from "../../common/functions";
+import { concatName, ErrorComp } from "../../common/functions";
 import UserSecurityRow from "./UserSecurityRow";
 import { FETCH_USER_SECURITY_OVERVIEW, FORCE_RESET } from "./graphqlOperations";
 
@@ -40,7 +40,7 @@ class UserSecurityTable extends React.Component<Props, State> {
           }
 
           if (error || !data) {
-            return <div>Error fetching data</div>;
+            return <ErrorComp error={error} />;
           }
 
           return (
