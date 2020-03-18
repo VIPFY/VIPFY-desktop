@@ -98,29 +98,6 @@ const INITIAL_STATE = {
   usedLicenceIDs: []
 };
 
-const tutorial = gql`
-  {
-    tutorialSteps {
-      id
-      page
-      steptext
-      renderoptions
-      nextstep
-    }
-
-    me {
-      id
-      tutorialprogress
-      emails {
-        email
-      }
-      firstname
-      lastname
-      profilepicture
-    }
-  }
-`;
-
 const SAVE_COOKIES = gql`
   mutation saveCookies($cookies: JSON) {
     saveCookies(cookies: $cookies)

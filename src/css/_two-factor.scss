@@ -42,7 +42,7 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  
+
   input {
     text-align: center;
     width: 48px;
@@ -59,6 +59,28 @@
       /* display: none; <- Crashes Chrome on hover */
       -webkit-appearance: none;
       margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+    }
+  }
+}
+
+.password-recovery {
+  @extend .dataGeneralForm;
+
+  .holder-right {
+    width: 342px;
+    margin-left: 0;
+  }
+
+  #two-factor-form {
+    margin-top: 46px;
+
+    input {
+      width: 32px;
+      height: 32px;
+
+      &:first-of-type {
+        margin-left: 0;
+      }
     }
   }
 }
