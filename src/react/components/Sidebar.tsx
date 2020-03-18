@@ -16,6 +16,7 @@ import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare
 import ProfileMenu from "./ProfileMenu";
 import { FETCH_EMPLOYEES } from "../queries/departments";
 import { vipfyAdmins } from "../common/constants";
+import { FETCH_USER_SECURITY_OVERVIEW } from "./security/graphqlOperations";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -203,10 +204,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "employees":
-          await client.query({
-            query: FETCH_EMPLOYEES,
-            ...options
-          });
+          await Promise.all([
+            client.query({
+              query: FETCH_EMPLOYEES,
+              ...options
+            }),
+            client.query({ query: FETCH_USER_SECURITY_OVERVIEW })
+          ]);
           break;
 
         case "companyServices":
