@@ -6,7 +6,7 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import PopupBase from "./popupBase";
 import { me as ME } from "../../queries/auth";
-import { updatePassword } from "../../common/passwords";
+import { updatePassword as UPDATE_PASSWORD } from "../../common/passwords";
 import { MutationLike } from "../../common/mutationlike";
 
 interface PasswordChangeProps {
@@ -57,7 +57,7 @@ class ForcedPasswordChange extends React.Component<PasswordChangeProps, Password
 
           cache.writeQuery({ query: ME, data: { me: { ...me, needspasswordchange: false } } });
         }}
-        mutation={updatePassword}
+        mutation={UPDATE_PASSWORD}
         onError={() => this.setState({ showError: true })}>
         {(updatePassword, { loading }) => (
           <PopupBase
@@ -118,13 +118,13 @@ class ForcedPasswordChange extends React.Component<PasswordChangeProps, Password
                   label="save"
                   type="high"
                   onClick={() => {
-                    updatePassword({
-                      variables: {
-                        pw: this.state.oldPassword,
-                        newPw: this.state.newPassword,
-                        confirmPw: this.state.repeatPassword
-                      }
-                    });
+                    if (this.state.newPassword == this.state.repeatPassword) {
+                      updatePassword(
+                        this.props.client,
+                        this.state.oldPassword,
+                        this.state.newPassword
+                      );
+                    }
                   }}
                 />
               </div>
