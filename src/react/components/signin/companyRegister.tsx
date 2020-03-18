@@ -235,7 +235,7 @@ class RegisterCompany extends React.Component<Props, State> {
                   <div
                     className="fancy-link"
                     style={{ color: "#20baa9" }}
-                    onClick={() => shell.openExternal("https://vipfy.store/terms-of-service")}>
+                    onClick={() => shell.openExternal("https://vipfy.store/tos")}>
                     Terms of Service of VIPFY
                   </div>
                 </div>
