@@ -21,6 +21,7 @@ interface Props {
   deleteFunction?: Function;
   style?: Object;
   update?: Boolean;
+  min?: number;
 }
 
 interface State {
@@ -180,6 +181,7 @@ class UniversalTextInput extends React.Component<Props, State> {
               ? { width: this.props.width }
               : {})
           }}
+          min={this.props.min}
           value={this.state.value}
           onChange={e => this.changeValue(e)}
           ref={input => {
@@ -273,4 +275,5 @@ class UniversalTextInput extends React.Component<Props, State> {
     );
   }
 }
+
 export default UniversalTextInput;

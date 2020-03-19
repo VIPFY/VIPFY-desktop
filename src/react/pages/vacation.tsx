@@ -4,7 +4,7 @@ import VacationRequests from "../components/vacation/VacationRequests";
 import UserVacationRequests from "../components/vacation/UserVacationRequests";
 
 interface Props {
-  id: number;
+  id: string;
   isadmin: boolean;
   firstname: string;
   lastname: string;
