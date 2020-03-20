@@ -7,14 +7,19 @@ let recaptchaConfirmOnce = false;
 let checkRecaptcha = false;
 let bot = false;
 let webview;
+let last_known_scroll_position = 0;
+//let ticking = false;
+var scrollTimer = -1;
+
 
 var listeners = [];
 
 const asktypes = ["input", "textbox"];
 
-(function() {
+(function () {
   Element.prototype._addEventListener = Element.prototype.addEventListener;
-  Element.prototype.addEventListener = function(a, b, c) {
+  Element.prototype.addEventListener = function (a, b, c) {
+    console.log("Element.prototype.addEventListener");
     if (c == undefined) c = false;
     this._addEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -23,12 +28,14 @@ const asktypes = ["input", "textbox"];
     this.eventListenerList[a].push({ listener: b, useCapture: c });
   };
 
-  Element.prototype.getEventListeners = function(a) {
+  Element.prototype.getEventListeners = function (a) {
+    console.log("Element.prototype.getEventListener");
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) return this.eventListenerList;
     return this.eventListenerList[a];
   };
-  Element.prototype.clearEventListeners = function(a) {
+  Element.prototype.clearEventListeners = function (a) {
+    console.log("Element.prototype.clearEventListener");
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) {
       for (var x in this.getEventListeners()) this.clearEventListeners(x);
@@ -43,7 +50,8 @@ const asktypes = ["input", "textbox"];
   };
 
   Element.prototype._removeEventListener = Element.prototype.removeEventListener;
-  Element.prototype.removeEventListener = function(a, b, c) {
+  Element.prototype.removeEventListener = function (a, b, c) {
+    console.log("Element.prototype.removeEventListener");
     if (c == undefined) c = false;
     this._removeEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -61,10 +69,13 @@ const asktypes = ["input", "textbox"];
     }
     if (this.eventListenerList[a].length == 0) delete this.eventListenerList[a];
   };
+
+
+
 })();
 
 Object.defineProperty(String.prototype, "includesAny", {
-  value: function(searches) {
+  value: function (searches) {
     for (const search of searches) {
       if (this.indexOf(search) !== -1) {
         return true;
@@ -75,7 +86,7 @@ Object.defineProperty(String.prototype, "includesAny", {
 });
 
 Object.defineProperty(String.prototype, "includesAnyRegExp", {
-  value: function(searches) {
+  value: function (searches) {
     for (const search of searches) {
       if (search.test(this)) {
         return true;
@@ -137,12 +148,12 @@ ipcRenderer.on("delockItem", async (e, args1) => {
     return;
   }
   element.disabled = false;
-  element.clearEventListeners(); //entferne das perventDefault
+  element.clearEventListeners(); //remove the perventDefault
   const listeners1 =
     listeners[
-      listeners.findIndex(elemente => {
-        return elemente[0] == element;
-      })
+    listeners.findIndex(elemente => {
+      return elemente[0] == element;
+    })
     ][1];
   Object.keys(listeners1).forEach(key => {
     listeners1[key].forEach(i => element.addEventListener(key, i));
@@ -304,7 +315,7 @@ function findAllIframes(doc, remove = false) {
 
 var config = { attributes: true, childList: true, subtree: true };
 
-var callback1 = function(mutationsList, observer) {
+var callback1 = function (mutationsList, observer) {
   //console.log(iframeList);
   //var newChilds = [];
   for (var mutation of mutationsList) {
@@ -336,7 +347,7 @@ var callback1 = function(mutationsList, observer) {
   //return newChilds;
 };
 
-var callback2 = function(mutationsList, observer) {
+var callback2 = function (mutationsList, observer) {
   //console.log("Callback2 called");
   for (var mutation of mutationsList) {
     if (mutation.type == "childList") {
@@ -456,6 +467,7 @@ function findTarget(event, iframe) {
     listeners.push([event.target, listenersers]); //
     button.clearEventListeners();
     button.addEventListener("click", e => {
+      console.log("listener added");
       e.preventDefault();
       return false;
     });
@@ -597,7 +609,8 @@ function findTarget(event, iframe) {
     selector,
     { x: rect.x, y: rect.y },
     iselector
-  ); /* ipcRenderer.sendToHost(
+  );
+  /* ipcRenderer.sendToHost(
     "sendMessage",
     event.target.tagName,
     event.target.type,
@@ -638,6 +651,8 @@ function findTarget(event, iframe) {
     );
   }
   event.target.disabled = true;
+  console.log("buttons disabled");
+
 }
 
 function elemIsButton(t) {
@@ -758,6 +773,15 @@ ipcRenderer.on("startTracking", () => {
   document.addEventListener("keyup", findTarget, true);
   document.addEventListener("input", findTarget, true);
   document.addEventListener("paste", findTarget, true);
+
+  window.addEventListener('scroll', function (e) {
+    last_known_scroll_position = window.scrollY;
+    ipcRenderer.sendToHost("startScroll", last_known_scroll_position);
+    if (scrollTimer != -1)
+      clearTimeout(scrollTimer);
+    scrollTimer = window.setTimeout(ipcRenderer.sendToHost("stopScroll", last_known_scroll_position), 500);
+  });
+
   findAllIframes(document);
 });
 
@@ -886,7 +910,7 @@ const attributes = [
 function filterDom(includesAny, excludesAll) {
   includesAny = includesAny.map(i => new RegExp(i));
   excludesAll = excludesAll.map(i => new RegExp(i));
-  return function(element) {
+  return function (element) {
     if (!element.hasAttributes()) {
       return false;
     }
