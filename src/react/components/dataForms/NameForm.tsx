@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, compose, withApollo, Mutation } from "react-apollo";
+import { graphql, withApollo, Mutation } from "react-apollo";
+import compose from "lodash.flowright";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { me } from "../../queries/auth";
@@ -142,7 +143,6 @@ class DataNameForm extends React.Component<Props, State> {
                           livevalue={v => this.setState({ promocode: v })}
                           errorEvaluation={error}
                           errorhint={error && filterError(error)}
-                          onEnter={() => mutate({ variables: { promocode } })}
                         />
                       )
                     ) : (
@@ -164,8 +164,14 @@ class DataNameForm extends React.Component<Props, State> {
                       <UniversalButton
                         label="Add Code"
                         type="high"
-                        disabled={loading || data || !promocode}
-                        onClick={() => mutate({ variables: { promocode } })}
+                        disabled={!promocode || !this.state.name || this.state.name.trim() == ""}
+                        onClick={async () => {
+                          try {
+                            await mutate({ variables: { promocode } });
+                          } catch (err) {
+                            console.log("ERORR-Promocode", err);
+                          }
+                        }}
                       />
                     </div>
                   )}

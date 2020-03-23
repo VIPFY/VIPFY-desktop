@@ -16,6 +16,7 @@ export const signInUser = gql`
       token
       twofactor
       unitid
+      config
     }
   }
 `;

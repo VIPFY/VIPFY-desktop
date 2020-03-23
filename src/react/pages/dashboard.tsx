@@ -1,5 +1,4 @@
 import * as React from "react";
-import { graphql, compose } from "react-apollo";
 import moment from "moment";
 import AppList from "../components/profile/AppList";
 import LoadingDiv from "../components/LoadingDiv";

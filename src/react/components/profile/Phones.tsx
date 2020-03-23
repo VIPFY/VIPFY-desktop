@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query, compose, graphql } from "react-apollo";
+import { Query, graphql } from "react-apollo";
+import compose from "lodash.flowright";
 
 import Confirmation from "../../popups/Confirmation";
 import GenericInputForm from "../GenericInputForm";

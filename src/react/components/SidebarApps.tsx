@@ -1,18 +1,15 @@
 import * as React from "react";
 import Tooltip from "react-tooltip-lite";
-import { graphql } from "react-apollo";
 import { clipboard } from "electron";
-
 import SidebarLink from "./sidebarLink";
 import { Licence } from "../interfaces";
-import { layoutUpdate } from "../common/functions";
-import * as moment from "moment";
 
 interface Props {
   sidebarOpen: boolean;
   licences: Licence[];
   header?: string;
   icon?: string;
+  setApp: Function;
 }
 
 interface State {
@@ -160,9 +157,7 @@ class SidebarApps extends React.Component<Props, State> {
     const input = (style = {}) => (
       <div style={{ marginLeft: "8px", width: "calc(100% - 48px)" }}>
         <input
-          ref={node => {
-            this.searchInput = node;
-          }}
+          ref={node => (this.searchInput = node)}
           value={this.state.searchString}
           onChange={e => this.setState({ searchString: e.target.value, selected: -1 })}
           placeholder="Search Apps"

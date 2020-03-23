@@ -12,17 +12,20 @@ interface Props {
   mainClassName?: string;
   formstyles?: Object;
   isteam?: Boolean;
+  backgroundSize?: "cover" | "contain";
 }
 
 interface State {
   name: string;
   picture: any;
+  autoUploadError: string | null;
 }
 
 class UploadImage extends React.Component<Props, State> {
   state = {
     name: this.props.name || "",
-    picture: this.props.picture || null
+    picture: this.props.picture || null,
+    autoUploadError: null
   };
 
   UNSAFE_componentWillReceiveProps(newProps) {
@@ -32,11 +35,19 @@ class UploadImage extends React.Component<Props, State> {
     if (newProps.uploadError) {
       this.setState({ picture: newProps.picture });
     }
+    if (this.state.picture != newProps.picture && newProps.picture != this.props.picture) {
+      this.setState({ picture: newProps.picture });
+    }
   }
 
-  setBothStates = file => {
+  setBothStates = async file => {
     this.setState({ picture: file });
-    this.props.onDrop(file);
+    try {
+      await this.props.onDrop(file);
+      this.setState({ autoUploadError: null });
+    } catch (err) {
+      this.setState({ autoUploadError: err.message });
+    }
   };
 
   getShort = parsedName => {
@@ -57,10 +68,13 @@ class UploadImage extends React.Component<Props, State> {
     if (picture && picture.preview) {
       formStyles = {
         ...formStyles,
-        backgroundImage: `url(${encodeURI(picture.preview)})`,
+        backgroundImage: picture.preview.startsWith("-webkit-image-set")
+          ? picture.preview
+          : `url(${encodeURI(picture.preview)})`,
         backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundColor: "unset"
+        backgroundSize: this.props.backgroundSize ?? "cover",
+        backgroundColor: "unset",
+        backgroundRepeat: "no-repeat"
       };
     } else if ((!picture || !picture.preview) && name != "") {
       formStyles = { ...formStyles, backgroundColor: this.props.isteam ? "#9C13BC" : "#5D76FF" };
@@ -87,6 +101,9 @@ class UploadImage extends React.Component<Props, State> {
             )}
 
             {this.props.uploadError && <div className="uploadError">{this.props.uploadError}</div>}
+            {!this.props.uploadError && this.state.autoUploadError && (
+              <div className="uploadError">{this.props.uploadError}</div>
+            )}
 
             {this.props.isadmin && (
               <div className="imagehover">

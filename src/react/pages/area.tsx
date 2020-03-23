@@ -2,7 +2,8 @@ import * as React from "react";
 import { Route } from "react-router-dom";
 import { withRouter, Switch } from "react-router";
 import { ipcRenderer } from "electron";
-import { graphql, compose, Query, withApollo } from "react-apollo";
+import { Query, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 
 import AppPage from "./apppage";
 import Billing from "./billing";
@@ -31,12 +32,12 @@ import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
+import ServiceLogoEdit from "../components/admin/ServiceLogoOverview";
 import { SideBarContext, UserContext } from "../common/context";
 import ClickTracker from "../components/ClickTracker";
 import EmployeeOverview from "./manager/employeeOverview";
 import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
-import UniversalLogin from "./universalLogin";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
@@ -62,6 +63,7 @@ interface AreaProps {
   emails: string[];
   tutorialprogress?: any;
   highlightReferences?: any;
+  addUsedLicenceID: Function;
 }
 
 interface AreaState {
@@ -156,10 +158,18 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.setState(prevState => ({ sidebarOpen: !prevState.sidebarOpen }));
   };
 
-  addWebview = (licenceID, opendirect = false) => {
+  addWebview = (licenceID, opendirect = false, url = undefined, loggedIn = false) => {
     this.setState(prevState => {
       const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
-      const l = { licenceID: licenceID, plain: true, setViewTitle: this.setViewTitle, viewID };
+      const l = {
+        licenceID: licenceID,
+        plain: true,
+        setViewTitle: this.setViewTitle,
+        viewID,
+        addWebview: this.addWebview,
+        url: url,
+        loggedIn
+      };
       const newview = <Webview {...this.state} {...this.props} {...l} />;
       return {
         webviews: [
@@ -189,6 +199,7 @@ class Area extends React.Component<AreaProps, AreaState> {
         viewID: opendirect ? viewID : prevState.viewID
       };
     });
+    this.props.addUsedLicenceID(licenceID);
   };
 
   setViewTitle = (title, viewID, licenceID) => {
@@ -326,8 +337,9 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "admin/service-integration", component: ServiceIntegrator, admin: true },
-      { path: "admin/service-integration/:appid/:url", component: LoginIntegrator },
+      { path: "admin/service-integration/:appid/:url", component: LoginIntegrator, admin: true },
       { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
+      { path: "admin/service-logo-overview", component: ServiceLogoEdit, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },
       { path: "emanager", component: EmployeeOverview, admin: true },
@@ -338,14 +350,13 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "lmanager/:serviceid", component: ServiceDetails, admin: true },
       { path: "dmanager/:teamid", component: TeamDetails, admin: true },
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
-      { path: "universallogin", component: UniversalLogin },
       { path: "company", component: CompanyDetails, admin: true }
     ];
     return (
       <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
         {({ data, loading, error }) => {
           if (loading) {
-            return <LoadingDiv text="Preparing Vipfy..." />;
+            return <LoadingDiv />;
           }
 
           if (error) {
@@ -358,28 +369,26 @@ class Area extends React.Component<AreaProps, AreaState> {
               <SideBarContext.Provider value={this.state.sidebarOpen}>
                 <UserContext.Provider value={{ userid: this.props.id }}>
                   <Route
-                    render={props => {
-                      return (
-                        <Query query={FETCH_NOTIFICATIONS} pollInterval={600000}>
-                          {res => (
-                            <Sidebar
-                              sidebarOpen={sidebarOpen}
-                              setApp={this.setApp}
-                              viewID={this.state.viewID}
-                              views={this.state.webviews}
-                              openInstances={this.state.openInstances}
-                              toggleSidebar={this.toggleSidebar}
-                              setInstance={this.setInstance}
-                              {...this.props}
-                              licences={licences}
-                              {...props}
-                              {...res}
-                              moveTo={this.moveTo}
-                            />
-                          )}
-                        </Query>
-                      );
-                    }}
+                    render={props => (
+                      <Query query={FETCH_NOTIFICATIONS} pollInterval={120000}>
+                        {res => (
+                          <Sidebar
+                            sidebarOpen={sidebarOpen}
+                            setApp={this.setApp}
+                            viewID={this.state.viewID}
+                            views={this.state.webviews}
+                            openInstances={this.state.openInstances}
+                            toggleSidebar={this.toggleSidebar}
+                            setInstance={this.setInstance}
+                            {...this.props}
+                            licences={licences}
+                            {...props}
+                            {...res}
+                            moveTo={this.moveTo}
+                          />
+                        )}
+                      </Query>
+                    )}
                   />
                   <Route render={() => <HistoryButtons viewID={this.state.viewID} />} />
                   <Switch>

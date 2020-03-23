@@ -1,18 +1,21 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
-import { graphql, compose, Query, withApollo } from "react-apollo";
+import { graphql, Query, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import { FETCH_COMPANY } from "../../queries/departments";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import UploadImage from "../../components/manager/universal/uploadImage";
-import { getImageUrlUser, resizeImage } from "../../common/images";
+import { resizeImage, getBgImageTeam } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import { ADD_PROMOCODE } from "../../mutations/auth";
 import { now } from "moment";
+import LoadingDiv from "../../components/LoadingDiv";
+import { ErrorComp } from "../../common/functions";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -23,24 +26,8 @@ const UPDATE_PIC = gql`
   }
 `;
 
-interface Props {
-  moveTo: Function;
-  updatePic: Function;
-  client: ApolloClient<InMemoryCache>;
-  applyPromocode: Function;
-}
-
-interface State {
-  loading: boolean;
-  showTimeAway: boolean;
-  edit: object | null;
-  updateing: boolean;
-  editvalue: string | null;
-  error: string | null;
-}
-
-const fetchCompanyServices = gql`
-  query fetchCompanyServices {
+const FETCH_COMPANY_SERVICES = gql`
+  query onFetchCompanyServices {
     fetchCompanyServices {
       app {
         id
@@ -64,6 +51,35 @@ const fetchCompanyServices = gql`
     }
   }
 `;
+
+const SET_VATID = gql`
+  mutation onSetVatID($vatID: String!) {
+    setVatID(vatID: $vatID) {
+      unit: unitid {
+        id
+      }
+      legalinformation
+    }
+  }
+`;
+
+interface Props {
+  moveTo: Function;
+  updatePic: Function;
+  client: ApolloClient<InMemoryCache>;
+  applyPromocode: Function;
+  setVatID: Function;
+  isadmin: boolean;
+}
+
+interface State {
+  loading: boolean;
+  showTimeAway: boolean;
+  edit: object | null;
+  updateing: boolean;
+  editvalue: string | null;
+  error: string | null;
+}
 
 class CompanyDetails extends React.Component<Props, State> {
   state = {
@@ -99,15 +115,19 @@ class CompanyDetails extends React.Component<Props, State> {
       <Query pollInterval={60 * 10 * 1000 + 300} query={FETCH_COMPANY}>
         {({ loading, error, data }) => {
           if (loading) {
-            return "Loading...";
+            return <LoadingDiv />;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <ErrorComp error={error} />;
           }
           if (data && data.fetchCompany) {
             const company = data.fetchCompany;
 
             const { name, profilepicture, promocode, employees, legalinformation } = company;
+            const popupCheck =
+              this.state.edit &&
+              ((this.state.edit!.id == "promocode" && !promocode) ||
+                (this.state.edit!.id == "vatID" && !legalinformation.vatID));
 
             return (
               <div className="managerPage">
@@ -129,7 +149,7 @@ class CompanyDetails extends React.Component<Props, State> {
                           <UploadImage
                             picture={
                               profilepicture && {
-                                preview: getImageUrlUser(profilepicture, 96)
+                                preview: getBgImageTeam(profilepicture, 96)
                               }
                             }
                             name={name}
@@ -179,14 +199,14 @@ class CompanyDetails extends React.Component<Props, State> {
                             <h2>
                               <Query
                                 pollInterval={60 * 10 * 1000 + 900}
-                                query={fetchCompanyServices}
+                                query={FETCH_COMPANY_SERVICES}
                                 fetchPolicy="cache-and-network">
                                 {({ loading, error, data }) => {
                                   if (loading) {
-                                    return "Loading...";
+                                    return <LoadingDiv />;
                                   }
                                   if (error) {
-                                    return `Error! ${error.message}`;
+                                    return <ErrorComp error={error} />;
                                   }
 
                                   return data &&
@@ -210,21 +230,21 @@ class CompanyDetails extends React.Component<Props, State> {
                             <h2>
                               <Query
                                 pollInterval={60 * 10 * 1000 + 900}
-                                query={fetchCompanyServices}
+                                query={FETCH_COMPANY_SERVICES}
                                 fetchPolicy="cache-and-network">
                                 {({ loading, error, data }) => {
                                   if (loading) {
-                                    return "Loading...";
+                                    return <LoadingDiv />;
                                   }
                                   if (error) {
-                                    return `Error! ${error.message}`;
+                                    return <ErrorComp error={error} />;
                                   }
                                   let sum = 0;
                                   if (data && data.fetchCompanyServices) {
-                                    data.fetchCompanyServices.map(
+                                    data.fetchCompanyServices.forEach(
                                       s =>
                                         s.orbitids &&
-                                        s.orbitids.map(
+                                        s.orbitids.forEach(
                                           o =>
                                             (sum +=
                                               o && o.accounts
@@ -239,7 +259,7 @@ class CompanyDetails extends React.Component<Props, State> {
 
                                     return sum;
                                   } else {
-                                    return "No Data avaiable";
+                                    return "No Data available";
                                   }
                                 }}
                               </Query>
@@ -307,14 +327,14 @@ class CompanyDetails extends React.Component<Props, State> {
                             onClick={() =>
                               this.setState({
                                 edit: {
-                                  id: "vatId",
+                                  id: "vatID",
                                   label: "VAT-ID",
-                                  startvalue: legalinformation.vatId
+                                  startvalue: legalinformation.vatID
                                 }
                               })
                             }>
                             <h1>VAT-ID</h1>
-                            <h2>{(legalinformation && legalinformation.vatId) || "No VAT yet"}</h2>
+                            <h2>{(legalinformation && legalinformation.vatID) || "No VAT set"}</h2>
                             <div className="profileEditButton">
                               <i className="fal fa-pen editbuttons" />
                             </div>
@@ -326,7 +346,7 @@ class CompanyDetails extends React.Component<Props, State> {
                       <PopupBase small={true} buttonStyles={{ justifyContent: "space-between" }}>
                         <h2 className="boldHeading">Edit Company Data</h2>
                         <div>
-                          {this.state.edit!.id == "promocode" && !promocode ? (
+                          {popupCheck ? (
                             <UniversalTextInput
                               id={this.state.edit!.id}
                               label={this.state.edit!.label}
@@ -343,7 +363,7 @@ class CompanyDetails extends React.Component<Props, State> {
                           type="low"
                           onClick={() => this.setState({ edit: null, editvalue: null })}
                         />
-                        {this.state.edit!.id == "promocode" && !promocode && (
+                        {popupCheck && (
                           <UniversalButton
                             label="Save"
                             type="high"
@@ -362,6 +382,12 @@ class CompanyDetails extends React.Component<Props, State> {
                                 case "promocode":
                                   await this.props.applyPromocode({
                                     variables: { promocode: this.state.editvalue }
+                                  });
+                                  break;
+
+                                case "vatID":
+                                  await this.props.setVatID({
+                                    variables: { vatID: this.state.editvalue }
                                   });
                                   break;
 
@@ -405,5 +431,6 @@ class CompanyDetails extends React.Component<Props, State> {
 }
 export default compose(
   graphql(UPDATE_PIC, { name: "updatePic" }),
-  graphql(ADD_PROMOCODE, { name: "applyPromocode" })
+  graphql(ADD_PROMOCODE, { name: "applyPromocode" }),
+  graphql(SET_VATID, { name: "setVatID" })
 )(withApollo(CompanyDetails));

@@ -28,7 +28,7 @@ let config = {
 };
 
 if (!config.stripeToken) {
-  config.stripeToken = configJSON.stripe[config.isDevelopment ? "live" : "dev"];
+  config.stripeToken = configJSON.stripe[config.isDevelopment ? "dev" : "live"];
 }
 
 export default config;

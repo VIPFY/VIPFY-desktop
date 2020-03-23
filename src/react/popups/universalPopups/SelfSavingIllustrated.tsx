@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Mutation, Query, compose, graphql, withApollo } from "react-apollo";
+import { Mutation, Query, graphql, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import UniversalLoginExecutor from "../../components/UniversalLoginExecutor";

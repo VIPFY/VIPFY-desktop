@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query, graphql, compose } from "react-apollo";
+import { Query, graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp } from "../../common/functions";
 import { fields } from "./constants";

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { parse } from "url";
-import { withApollo, compose, graphql } from "react-apollo";
+import { withApollo, graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 
 import LoadingDiv from "../components/LoadingDiv";
@@ -57,6 +58,8 @@ export type WebViewProps = {
   viewID: number;
   logError: Function;
   updateLicenceSpeed: Function;
+  addWebview: Function;
+  loggedIn: Boolean;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -334,6 +337,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                     context.isActive
                       ? { height: "calc(100vh - 32px - 40px - 1px)" }
                       : { height: "calc(100vh - 32px - 1px)" }
+                    //{ height: "100px" }
                   }
                 />
               )}
@@ -343,7 +347,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                 <UniversalLoginExecutor
                   key={`${this.state.setUrl}-${this.state.loginspeed}`}
                   //keylog={`${this.state.setUrl}-${this.state.loginspeed}`}
-                  loginUrl={this.state.setUrl}
+                  loginUrl={this.props.url || this.state.setUrl}
                   username={this.state.key.email || this.state.key.username}
                   password={this.state.key.password}
                   domain={this.state.key.domain}
@@ -352,7 +356,16 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   partition={`service-${this.state.licenceId}`}
                   className={cssClassWeb}
                   showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
-                  setResult={async ({ loggedin, errorin, emailEntered, passwordEntered }) => {
+                  setResult={async ({
+                    loggedin,
+                    errorin,
+                    emailEntered,
+                    passwordEntered,
+                    direct
+                  }) => {
+                    if (loggedin && direct) {
+                      this.hideLoadingScreen();
+                    }
                     if (loggedin && emailEntered && passwordEntered) {
                       this.hideLoadingScreen();
                       await this.props.updateLicenceSpeed({
@@ -418,6 +431,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   individualShow={this.state.options.individualShow}
                   noUrlCheck={this.state.options.noUrlCheck}
                   individualNotShow={this.state.options.individualNotShow}
+                  addWebview={this.props.addWebview}
+                  licenceID={this.props.licenceID}
+                  setViewTitle={title =>
+                    this.props.setViewTitle &&
+                    this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
+                  }
+                  loggedIn={this.props.loggedIn}
                 />
               ) : (
                 <div>Please Update VIPFY to use this service</div>

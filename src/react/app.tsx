@@ -1,12 +1,13 @@
 import * as React from "react";
 import { withRouter } from "react-router";
-import { graphql, Query, withApollo, compose } from "react-apollo";
+import { graphql, Query, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import Store from "electron-store";
 
 import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
-import { AppContext, refetchQueries } from "./common/functions";
+import { AppContext, refetchQueries, getMyUnitId } from "./common/functions";
 import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
@@ -23,6 +24,8 @@ import { hashPassword } from "./common/crypto";
 import { remote } from "electron";
 const { session } = remote;
 import "../css/layout.scss";
+import { encryptForUser } from "./common/licences";
+import { decryptLicenceKey } from "./common/passwords";
 
 const END_IMPERSONATION = gql`
   mutation onEndImpersonation($token: String!) {
@@ -46,6 +49,7 @@ interface AppProps {
   signOut: Function;
   endImpersonation: Function;
   location: any;
+  saveCookies: Function;
 }
 
 interface PopUp {
@@ -68,6 +72,7 @@ interface AppState {
   reshow: string | null;
   twofactor: string | null;
   unitid: string | null;
+  usedLicenceIDs: string[];
 }
 
 const INITIAL_POPUP = {
@@ -89,7 +94,8 @@ const INITIAL_STATE = {
   sidebarloaded: false,
   reshow: null,
   twofactor: null,
-  unitid: null
+  unitid: null,
+  usedLicenceIDs: []
 };
 
 const tutorial = gql`
@@ -115,6 +121,12 @@ const tutorial = gql`
   }
 `;
 
+const SAVE_COOKIES = gql`
+  mutation saveCookies($cookies: JSON) {
+    saveCookies(cookies: $cookies)
+  }
+`;
+
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
 
@@ -133,6 +145,10 @@ class App extends React.Component<AppProps, AppState> {
     }
     //this.redeemSetupToken();
   }
+
+  componentWillUnmount = async () => {
+    await this.logMeOut();
+  };
 
   redeemSetupToken = async refetch => {
     try {
@@ -166,6 +182,18 @@ class App extends React.Component<AppProps, AppState> {
 
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
 
+  addUsedLicenceID = licenceID => {
+    this.setState(oldstate => {
+      const newUsedLicenceIDs = oldstate.usedLicenceIDs;
+      if (newUsedLicenceIDs.findIndex(l => l == licenceID) == -1) {
+        newUsedLicenceIDs.push(licenceID);
+        return { ...oldstate, usedLicenceIDs: newUsedLicenceIDs };
+      } else {
+        return oldstate;
+      }
+    });
+  };
+
   logMeOut = async () => {
     const impersonated = await localStorage.getItem("impersonator-token");
     if (impersonated) {
@@ -189,10 +217,43 @@ class App extends React.Component<AppProps, AppState> {
         console.error("LOG: logMeOut -> err", err);
       }
 
+      if (this.state.usedLicenceIDs.length > 0) {
+        await Promise.all(
+          this.state.usedLicenceIDs.map(licenceID =>
+            session.fromPartition(`service-${licenceID}`).clearStorageData()
+          )
+        );
+      }
+
       await this.props.history.push("/area/dashboard");
       await this.props.client.cache.reset(); // clear graphql cache
     } else {
       // Destroy all Sessions
+      if (this.state.usedLicenceIDs.length > 0) {
+        const cookies = [];
+
+        await Promise.all(
+          this.state.usedLicenceIDs.map(async licenceID => {
+            const appcookies = await session.fromPartition(`service-${licenceID}`).cookies.get({});
+            cookies.push({
+              key: licenceID,
+              cookies: appcookies
+            });
+            return session.fromPartition(`service-${licenceID}`).clearStorageData();
+          })
+        );
+        await this.props.saveCookies({
+          variables: {
+            cookies: [
+              await encryptForUser(
+                await getMyUnitId(this.props.client),
+                JSON.stringify(cookies),
+                this.props.client
+              )
+            ]
+          }
+        });
+      }
       try {
         await this.props.signOut();
       } catch (err) {
@@ -202,7 +263,6 @@ class App extends React.Component<AppProps, AppState> {
       await localStorage.removeItem("token");
       await this.props.client.cache.reset(); // clear graphql cache
       await resetLoggingContext();
-      await session.fromPartition("services").clearStorageData();
       await this.props.history.push("/");
     }
 
@@ -218,8 +278,35 @@ class App extends React.Component<AppProps, AppState> {
       const res = await this.props.signIn({
         variables: { email, passkey: loginkey.toString("hex") }
       });
-      const { token, twofactor, unitid } = res.data.signIn;
+      const { token, twofactor, unitid, config } = res.data.signIn;
 
+      if (config.cookies) {
+        await this.props.client.query({ query: me });
+        try {
+          const configcookies = await decryptLicenceKey(this.props.client, {
+            key: { encrypted: config.cookies }
+          });
+
+          const cookiePromises = [];
+          configcookies.forEach(c => {
+            this.addUsedLicenceID(c.key);
+            c.cookies.forEach(async e => {
+              const scheme = e.secure ? "https" : "http";
+              const host = e.domain[0] === "." ? e.domain.substr(1) : e.domain;
+              const url = scheme + "://" + host;
+              e.url = url;
+              try {
+                await session.fromPartition(`service-${c.key}`, { cache: true }).cookies.set(e);
+              } catch (err) {
+                console.log("ERRPOR", err, e);
+              }
+            });
+          });
+          await Promise.all(cookiePromises);
+        } catch (err) {
+          console.debug("Error parsing cookies", err);
+        }
+      }
       if (!twofactor) {
         localStorage.setItem("token", token);
         localStorage.setItem("key1", encryptionkey1 ? encryptionkey1.toString("hex") : "");
@@ -314,6 +401,7 @@ class App extends React.Component<AppProps, AppState> {
                       profilepicture={data.me.profilepicture}
                       context={context}
                       highlightReferences={this.references}
+                      addUsedLicenceID={this.addUsedLicenceID}
                     />
                   );
                 }}
@@ -428,5 +516,6 @@ class App extends React.Component<AppProps, AppState> {
 export default compose(
   graphql(END_IMPERSONATION, { name: "endImpersonation" }),
   graphql(signInUser, { name: "signIn" }),
-  graphql(SIGN_OUT, { name: "signOut" })
+  graphql(SIGN_OUT, { name: "signOut" }),
+  graphql(SAVE_COOKIES, { name: "saveCookies" })
 )(withApollo(withRouter(App)));

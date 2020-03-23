@@ -4,7 +4,8 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
 import { shell } from "electron";
-import { graphql, withApollo, compose } from "react-apollo";
+import { graphql, withApollo } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import { emailRegex, PW_MIN_LENGTH } from "../../common/constants";
@@ -234,7 +235,7 @@ class RegisterCompany extends React.Component<Props, State> {
                   <div
                     className="fancy-link"
                     style={{ color: "#20baa9" }}
-                    onClick={() => shell.openExternal("https://vipfy.store/terms-of-service")}>
+                    onClick={() => shell.openExternal("https://vipfy.store/tos")}>
                     Terms of Service of VIPFY
                   </div>
                 </div>

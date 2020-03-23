@@ -7,7 +7,8 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import ClickElement from "./clickElement";
 import UniversalButton from "../universalButtons/universalButton";
 import "./diagrams/diagram.scss";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import gql from "graphql-tag";
 
 // capture the session for reset reasons

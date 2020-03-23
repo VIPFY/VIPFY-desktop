@@ -76,14 +76,19 @@ class ClickTrackerInner extends PureComponent<Props, State> {
   logMousePos() {
     const time = performance.now();
     this.emitWindowResizeEvent(time);
-    const p = screen.getCursorScreenPoint();
-    const wp = this.window!.getPosition();
-    this.addEvent({
-      eventType: "mm",
-      mouseX: p.x - wp[0],
-      mouseY: p.y - wp[1],
-      time: performance.now()
-    });
+    try {
+      const p = screen.getCursorScreenPoint();
+
+      const wp = this.window!.getPosition();
+      this.addEvent({
+        eventType: "mm",
+        mouseX: p.x - wp[0],
+        mouseY: p.y - wp[1],
+        time: performance.now()
+      });
+    } catch (err) {
+      console.error("logMousePos", err);
+    }
     window.requestAnimationFrame(this.boundLogMousePos!);
   }
 
@@ -325,7 +330,7 @@ function ClickTracker(props: { client }) {
 
         if (localStorage.getItem("impersonator-token")) {
           console.log("impersonating, not tracking click data");
-          return null
+          return null;
         }
 
         return (

@@ -1,6 +1,7 @@
 import * as React from "react";
 import TutorialsIntro from "./tutorialsIntro";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
+import compose from "lodash.flowright";
 import { CLOSE_TUTORIAL } from "../mutations/auth";
 import { me } from "./../queries/auth";
 
