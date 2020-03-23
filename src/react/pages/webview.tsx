@@ -438,6 +438,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                     this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
                   }
                   loggedIn={this.props.loggedIn}
+                  deleteCookies={this.state.options.deleteCookies}
                 />
               ) : (
                 <div>Please Update VIPFY to use this service</div>
