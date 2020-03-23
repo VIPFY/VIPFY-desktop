@@ -27,9 +27,10 @@ class SignIn extends React.Component<Props, State> {
 
   changeProgress(s) {
     this.props.resetError();
+    console.log(s);
     const store = new Store();
     if (s != "registerCompany" && (!store.has("accounts") || store.get("accounts").length == 0)) {
-      this.setState({ progress: "createuser" });
+      this.setState({ progress: "createUser" });
     } else {
       this.setState({ progress: s });
     }
@@ -38,7 +39,7 @@ class SignIn extends React.Component<Props, State> {
   componentDidMount() {
     const store = new Store();
     if (!store.has("accounts") || store.get("accounts").length == 0) {
-      this.setState({ progress: "createuser" });
+      this.setState({ progress: "createUser" });
     } else {
       this.setState({ email: store.get("accounts")[store.get("accounts").length - 1].email });
     }
@@ -59,11 +60,11 @@ class SignIn extends React.Component<Props, State> {
           />
         );
 
-      case "selectuser":
+      case "selectUser":
         return (
           <ChangeAccount
             backFunction={() => this.changeProgress("login")}
-            addMachineUser={() => this.changeProgress("createuser")}
+            addMachineUser={() => this.changeProgress("createUser")}
             selectAccount={email => {
               this.setState({ email });
               this.changeProgress("login");
@@ -72,7 +73,7 @@ class SignIn extends React.Component<Props, State> {
           />
         );
 
-      case "createuser":
+      case "createUser":
         return (
           <AddMachineUser
             continueFunction={(email: string) => this.setState({ email: email, progress: "login" })}

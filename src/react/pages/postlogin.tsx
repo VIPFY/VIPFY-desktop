@@ -1,5 +1,4 @@
 import * as React from "react";
-import { decode } from "jsonwebtoken";
 import { Query, withApollo } from "react-apollo";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
@@ -12,7 +11,7 @@ import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment from "moment";
 import { filterError, concatName } from "../common/functions";
-import UserName from "../components/UserName";
+import RecoveryKey from "../components/signin/RecoveryKey";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -115,6 +114,14 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                 setFirstLogin={() => this.setState({ firstLogin: true })}
                 {...clearProps}
               />
+            );
+          }
+
+          if (!data.me.recoverypublickey) {
+            return (
+              <div className="centralize backgroundLogo">
+                <RecoveryKey />
+              </div>
             );
           }
 

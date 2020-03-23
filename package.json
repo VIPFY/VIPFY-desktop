@@ -17,6 +17,28 @@
   },
   "keywords": [],
   "author": "Vipfy GmbH",
+  "contributors": [
+    {
+      "name": "Pascal Clanget",
+      "email": "pc@vipfy.store"
+    },
+    {
+      "name": "Jannis Froese",
+      "email": "jf@vipfy.store"
+    },
+    {
+      "name": "Nils Vossebein",
+      "email": "nv@vipfy.store"
+    },
+    {
+      "name": "Osama Haroon",
+      "email": "osama.haroon@vipfy.store"
+    },
+    {
+      "name": "Stanimir Iglev",
+      "email": "stanimir.iglev@vipfy.store"
+    }
+  ],
   "license": "proprietary",
   "prettier": {
     "printWidth": 100,

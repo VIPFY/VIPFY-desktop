@@ -31,6 +31,8 @@ export const me = gql`
       config
       tutorialprogress
       needstwofa
+      recoverypublickey
+      recoveryprivatekey
     }
   }
 `;

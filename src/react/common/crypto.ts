@@ -192,12 +192,20 @@ export async function generateNewKeypair(): Promise<{ publicKey: Buffer; private
   return { publicKey, privateKey };
 }
 
+export async function getRandomBytes(bytes: number) {
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
+
+  return await sodium.randombytes_buf(bytes);
+}
+
 export async function encryptPrivateKey(privateKey: Buffer, passKey: Buffer): Promise<Buffer> {
   if (!sodium) {
     sodium = await SodiumPlus.auto();
   }
 
-  const nonce = await sodium.randombytes_buf(24);
+  const nonce = await getRandomBytes(24);
   const result = await sodium.crypto_secretbox(privateKey, nonce, new CryptographyKey(passKey));
   return Buffer.concat([nonce, result]);
 }

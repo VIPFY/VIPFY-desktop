@@ -67,7 +67,7 @@
   @extend .dataGeneralForm;
 
   .holder-right {
-    width: 342px;
+    width: 314px;
     margin-left: 0;
   }
 
@@ -82,5 +82,61 @@
         margin-left: 0;
       }
     }
+  }
+}
+
+.recovery-screen {
+  @extend .dataGeneralForm;
+  position: relative;
+  padding-left: 68px;
+  padding-right: 68px;
+
+  .explanation {
+    position: relative;
+  }
+
+  h1 {
+    margin-left: 12px;
+    font-size: 24px;
+  }
+
+  .attention-box {
+    background: rgba(255, 111, 97, 0.35);
+    display: flex;
+    flex-flow: column;
+    margin: 32px 0 16px;
+    padding: 12px 16px 12px 12px;
+    border-radius: 8px;
+    line-height: 24px;
+
+    i {
+      color: rgba(238, 104, 91, 1);
+      font-size: 24px;
+      font-weight: 400;
+    }
+
+    .recovery-text {
+      margin: 12px 0 24px;
+    }
+  }
+
+  .recovery-code-holder {
+    margin-left: 12px;
+
+    .recovery-code {
+      margin-top: 8px;
+
+      span {
+        font-size: 24px;
+        font-weight: bold;
+        font-family: Verdana, Geneva, Tahoma;
+      }
+    }
+  }
+
+  .continue-button {
+    position: absolute;
+    right: 0;
+    bottom: 50px;
   }
 }
