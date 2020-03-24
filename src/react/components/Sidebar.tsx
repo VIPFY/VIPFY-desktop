@@ -463,13 +463,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "lmanager"
       },
       {
-        label: "Universal Login",
-        location: "universallogin",
-        icon: "pager",
-        show: isadmin && config.showUniversalLoginDebug && this.props.company.unit.id == 14,
-        important: false
-      },
-      {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
