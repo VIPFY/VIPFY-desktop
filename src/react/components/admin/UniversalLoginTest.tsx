@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import Tooltip from "react-tooltip-lite";
 import * as fs from "fs";
 import UniversalLoginExecutorWrapper from "../UniversalLoginExecutorWrapper";
-import UniversalLoginExecutor from "../UniversalLoginExecutor";
 import * as Sites from "./sites";
 import UniversalButton from "../universalButtons/universalButton";
 import { remote } from "electron";
