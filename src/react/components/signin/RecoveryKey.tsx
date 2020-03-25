@@ -1,26 +1,38 @@
 import * as React from "react";
+import { remote } from "electron";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import IconButton from "../../common/IconButton";
-import {
-  hashPasswordWithParams,
-  generatePersonalKeypair,
-  getRandomBytes
-} from "../../common/crypto";
+import { generatePersonalKeypair, getRandomBytes } from "../../common/crypto";
+import { ErrorComp } from "../../common/functions";
+import gql from "graphql-tag";
+import { Mutation } from "react-apollo";
+
+const SAVE_RECOVERY_KEY = gql`
+  mutation onSaveRecoveryKey($pbKey: String!) {
+    saveRecoveryKey(pbKey: $pbKey)
+  }
+`;
 
 interface Props {
-  email: string;
+  continueFunction: Function;
 }
 
 export default (props: Props) => {
   const [encryptionKey, setKey] = React.useState("");
+  const [codeWindow, setWindow] = React.useState(null);
+  const [printError, setError] = React.useState(null);
+  const [keyPair, setkeyPair] = React.useState(null);
 
   React.useEffect(async () => {
+    const thisWindow = await remote.getCurrentWindow();
+    setWindow(thisWindow);
+
     const key = await getRandomBytes(36);
     let base64Key = await key.toString("base64");
 
     const personalKey = await generatePersonalKeypair(key.slice(0, 32));
-
+    setkeyPair(personalKey);
     setKey(base64Key);
   }, []);
 
@@ -28,7 +40,6 @@ export default (props: Props) => {
     if (!encryptionKey) {
       return null;
     }
-    console.log("FIRE: generateReadableKey -> encryptionKey", encryptionKey);
 
     let keyParts = [];
     for (let i = 0; i < encryptionKey.length; i += 4) {
@@ -63,13 +74,45 @@ export default (props: Props) => {
             <span>Your code is:</span>
             <IconButton
               title="Print recovery code"
-              onClick={() => console.log("PRINT")}
+              onClick={() => {
+                const printers = codeWindow.webContents.getPrinters();
+
+                codeWindow.webContents.print(
+                  {
+                    header: "Your VIPFY Recovery Code",
+                    // Without the deviceName property, the printer select menu does not show up
+                    deviceName: (printers && printers[0].name) || ""
+                  },
+                  (_success, errorType) => {
+                    if (errorType) {
+                      setError(new Error(errorType));
+                    }
+                  }
+                );
+              }}
               icon="print"
             />
             <div className="recovery-code">{generateReadableKey()}</div>
           </div>
 
-          <UniversalButton label="login" type="high" className="continue-button" />
+          <ErrorComp error={printError} />
+          <Mutation mutation={SAVE_RECOVERY_KEY}>
+            {(mutate, { loading, error }) => (
+              <React.Fragment>
+                <ErrorComp error={error} />
+                <UniversalButton
+                  disabled={loading}
+                  label="login"
+                  type="high"
+                  className="continue-button"
+                  onClick={async () => {
+                    // await mutate({ variables: { ...keyPair } });
+                    props.continueFunction();
+                  }}
+                />
+              </React.Fragment>
+            )}
+          </Mutation>
         </div>
       </div>
     </div>

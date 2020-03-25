@@ -67,20 +67,34 @@
   @extend .dataGeneralForm;
 
   .holder-right {
-    width: 314px;
+    width: 400px;
     margin-left: 0;
   }
 
-  #two-factor-form {
+  form {
     margin-top: 46px;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    grid-row-gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(16px, 32px));
+
+    i {
+      &:last-of-type {
+        display: none;
+      }
+    }
 
     input {
-      width: 32px;
+      grid-column: span 2;
+      width: 64px;
       height: 32px;
-
-      &:first-of-type {
-        margin-left: 0;
-      }
+      text-align: center;
+      border-radius: 4px;
+      background-color: #F5F5F5FF;
+      box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
+      outline: none;
+      border: 0;
     }
   }
 }

@@ -52,6 +52,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
   render() {
     const isImpersonating = !!localStorage.getItem("impersonator-token");
+    console.log("RERENDER");
     return (
       <Query query={me}>
         {({ data, loading, error, refetch }) => {
@@ -120,7 +121,11 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           if (!data.me.recoverypublickey) {
             return (
               <div className="centralize backgroundLogo">
-                <RecoveryKey />
+                <RecoveryKey
+                  continueFunction={() => {
+                    clearProps.moveTo("dashboard");
+                  }}
+                />
               </div>
             );
           }
