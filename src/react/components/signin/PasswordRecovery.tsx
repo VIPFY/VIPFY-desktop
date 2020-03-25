@@ -11,27 +11,50 @@ export default (props: Props) => {
   const [submitting, toggleSubmit] = React.useState(false);
   const [code, setCode] = React.useState(null);
   const recoveryCode = React.useRef(null);
-  console.log("rerender");
-  const onKeyUp = (e, number) => {
-    const MAX_LENGTH = 4;
-    const target = e.srcElement || e.target;
+  const MAX_LENGTH = 4;
 
+  const onKeyUp = (e, number) => {
+    if (e.keyCode == 17 || e.key == "Control") {
+      return;
+    }
+    console.log(e.keyCode, e.key);
+    const target = e.srcElement || e.target;
     const myLength = target.value.length;
+    target.value = target.value.replace(/[-\s]/g, "");
 
     if ((e.keyCode == 8 || e.key == "Backspace") && myLength === 0) {
-      let previous = target.previousElementSibling;
+      const previous = target.previousElementSibling;
 
       if (previous && previous.tagName.toLowerCase() === "i") {
         if (previous.previousElementSibling) {
+          const previousField = document.getElementById(`input-${number - 1}`);
+          previousField.value = previousField.value.substring(0, 3);
           previous.previousElementSibling.focus();
         }
       }
-    } else if (myLength == MAX_LENGTH) {
-      let next = target.nextElementSibling;
+    } else if (myLength >= MAX_LENGTH) {
+      goToNextField(target, number);
+    }
+  };
 
-      if (next && next.tagName.toLowerCase() === "i") {
-        if (next.nextElementSibling) {
-          next.nextElementSibling.focus();
+  const goToNextField = (target, number) => {
+    let next = target.nextElementSibling;
+
+    if (next && next.tagName.toLowerCase() === "i") {
+      if (next.nextElementSibling) {
+        const { value } = target;
+
+        if (value.length > MAX_LENGTH) {
+          const nextField = document.getElementById(`input-${number + 1}`);
+
+          target.value = value.substring(0, 4);
+          nextField.value = value.substring(4);
+
+          if (value.substring(4).length > 4) {
+            goToNextField(next.nextElementSibling, number + 1);
+          } else {
+            next.nextElementSibling.focus();
+          }
         }
       }
     }
@@ -40,15 +63,7 @@ export default (props: Props) => {
   const renderRows = items =>
     items.map(number => (
       <React.Fragment>
-        <input
-          id={`input-${number}`}
-          key={number}
-          onKeyUp={e => onKeyUp(e, number)}
-          // onChange={e => handleChange(e.target.value, number)}
-          required
-          maxLength={4}
-          // value={code[`field${number}`]}
-        />
+        <input id={`input-${number}`} key={number} required onKeyUp={e => onKeyUp(e, number)} />
         <i className="fal fa-minus" />
       </React.Fragment>
     ));
@@ -62,8 +77,8 @@ export default (props: Props) => {
         <div className="holder-right">
           <h1>Recover your account</h1>
           <p style={{ textAlign: "left" }}>
-            Please put in your 8 digit long recovery code you got in the beginning to set a new
-            password.
+            Please put in your 44 characters long recovery code you got in the beginning to set a
+            new password.
           </p>
 
           <form>{renderRows(items)}</form>
