@@ -27,10 +27,6 @@ interface State {
   backgroundRunners: number[];
 }
 
-function average(arr: number[]) {
-  return arr.reduce((p, c) => p + c, 0) / arr.length;
-}
-
 class UniversalLoginTest extends React.Component<Props, State> {
   state = {
     currentTest: -1,
@@ -50,22 +46,22 @@ class UniversalLoginTest extends React.Component<Props, State> {
           this.state.sites[i].loggedIn === undefined &&
           this.state.sites[i].image === undefined
         ) {
-          this.setState(prev => ({ backgroundRunners: [...prev.backgroundRunners, i] }));
+          this.setState(state => ({ backgroundRunners: [...state.backgroundRunners, i] }));
           break;
         }
       }
     }
   }
 
-  canTryLogin(s) {
-    if (s) {
+  canTryLogin(site) {
+    if (site) {
       return !(
-        s.email == "" ||
-        s.password == "" ||
-        s.url == "" ||
-        s.email == "-" ||
-        s.password == "-" ||
-        s.url == "-"
+        site.email == "" ||
+        site.password == "" ||
+        site.url == "" ||
+        site.email == "-" ||
+        site.password == "-" ||
+        site.url == "-"
       );
     }
     return false;
@@ -76,22 +72,26 @@ class UniversalLoginTest extends React.Component<Props, State> {
       <>
         <tr key={`${site.app}_${i}`}>
           <td>{site.app}</td>
-          <td>{this.displayBool(site.loggedin, this.state.currentTest == i)}</td>
-          <td>{this.displayBool(site.recaptcha, this.state.currentTest == i)}</td>
-          <td>{this.displayBool(site.emailEntered, this.state.currentTest == i)}</td>
-          <td>{this.displayBool(site.passwordEntered, this.state.currentTest == i)}</td>
           <td>{this.displayBool(site.errorin, this.state.currentTest == i)}</td>
-          <td>{this.displayBool(site.fields, this.state.currentTest == i)}</td>
-          <td>{site.speed && site.speed.toFixed(1)}</td>
+          <td>{this.displayBool(site.errorin, this.state.currentTest == i)}</td>
+          <td>{this.displayBool(site.loggedin, this.state.currentTest == i)}</td>
+          <td>{this.displayBool(site.loggedin, this.state.currentTest == i)}</td>
+          <td>{this.displayBool(site.loggedin, this.state.currentTest == i)}</td>
           <td>
             <Tooltip
               direction="left"
               content={
                 <span>
-                  <img src={site.image} style={{ width: "1024px", objectFit: "cover" }} />
+                  <img
+                    src={site.image}
+                    /* TODO bug: site.image is currently unknown*/ style={{
+                      width: "1024px",
+                      objectFit: "cover"
+                    }}
+                  />
                 </span>
               }>
-              <span>Details</span>
+              <span>Screenshot</span>
             </Tooltip>
           </td>
           <td>
@@ -103,7 +103,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
 
         {siteUnderTest === site && (
           <tr>
-            <td colSpan={10}>
+            <td colSpan={8}>
               <UniversalLoginExecutorWrapper
                 loginUrl={site.url}
                 username={site.email}
@@ -149,23 +149,27 @@ class UniversalLoginTest extends React.Component<Props, State> {
     if (!this.state.running) {
       return;
     }
-    this.setState(oldstate => {
-      let c = oldstate.currentTest + 1;
-      let s = oldstate.sites[c];
-      while (!this.canTryLogin(s)) {
-        c++;
-        s = oldstate.sites[c];
+
+    this.setState(state => {
+      let nextTest = state.currentTest + 1;
+      let nextSite = state.sites[nextTest];
+
+      while (!this.canTryLogin(nextSite)) {
+        nextTest++;
+        nextSite = state.sites[nextTest];
       }
-      return { ...oldstate, currentTest: c };
+
+      return { ...state, currentTest: nextTest };
     });
   }
 
   renderProportion(key) {
-    let t = this.state.sites.filter(s => s[key] == true).length;
     let total = this.state.sites.filter(s => s[key] == true || s[key] === false).length;
     if (total == 0) {
       return <span>0/0</span>;
     }
+
+    let t = this.state.sites.filter(s => s[key] == true).length;
     return (
       <span>
         {t}/{total} ({((t / total) * 100).toFixed(2)}%)
@@ -179,12 +183,14 @@ class UniversalLoginTest extends React.Component<Props, State> {
 
     return (
       <section className="admin">
-        <h1>This is just a heading</h1>
+        <h1>Test Universal Login</h1>
+
         <UniversalButton
           onClick={() => session.fromPartition("ssotest").clearStorageData()}
           label="Clear ssoTest"
           type="high"
         />
+
         <div>
           {this.state.running ? (
             <span onClick={() => this.setState({ running: false })}>
@@ -203,61 +209,44 @@ class UniversalLoginTest extends React.Component<Props, State> {
         <table className="simpletable">
           <thead>
             <tr>
-              <th>App</th>
-              <th>Logged In</th>
-              <th>Recaptcha</th>
-              <th>Email</th>
-              <th>Password</th>
-              <th>Wrong Email / Password</th>
-              <th>Fields</th>
-              <th>Speedy</th>
               <th />
+              <th>Test 1</th>
+              <th>Test 2</th>
+              <th>Test 3</th>
+              <th>Test 4</th>
+              <th>Test 5</th>
+            </tr>
+            <tr>
+              <th>Given:</th>
+              <th>Wrong Email</th>
+              <th>Wrong Password</th>
+              <th>Correct Credentials, Fast</th>
+              <th>Correct Credentials, Slow</th>
+              <th>Preexisting Session</th>
+            </tr>
+            <tr>
+              <th>Expected:</th>
+              <th>Error</th>
+              <th>Error</th>
+              <th>Login</th>
+              <th>Login</th>
+              <th>Login</th>
+            </tr>
+            <tr>
+              <th>Tests Passed:</th>
+              <th>{this.renderProportion("errorin")}</th>
+              <th>{this.renderProportion("errorin")}</th>
+              <th>{this.renderProportion("loggedin")}</th>
+              <th>{this.renderProportion("loggedin")}</th>
+              <th>{this.renderProportion("loggedin")}</th>
+            </tr>
+            <tr>
+              <th>App</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td />
-              <td>{this.renderProportion("loggedin")}</td>
-              <td>{this.renderProportion("recaptcha")}</td>
-              <td>{this.renderProportion("emailEntered")}</td>
-              <td>{this.renderProportion("passwordEntered")}</td>
-              <td>{this.renderProportion("errorin")}</td>
-              <td>{this.renderProportion("fields")}</td>
-              <td>{average(this.state.sites.map(s => s.speed).filter(s => !!s)).toFixed(1)}</td>
-              <td />
-              <td />
-            </tr>
-            {this.renderTable(siteUnderTest)}
-          </tbody>
+          <tbody>{this.renderTable(siteUnderTest)}</tbody>
         </table>
 
-        <div>
-          {/*this.state.backgroundRunners.map(r => (
-            <UniversalLoginExecutor
-              key={`bgrunner_${r}`}
-              loginUrl={this.state.sites[r].url}
-              username={this.state.sites[r].email}              password={this.state.sites[r].password}
-              timeout={6000}
-              partition={`ssotest_${r}`}
-              setResult={(result, image) => {
-                this.setState(prev => {
-                  let sites = [...prev.sites];
-                  sites[r] = { ...sites[r], ...result, image };
-                  let backgroundRunners = prev.backgroundRunners.filter(b => b !== r);
-
-                  return { sites, backgroundRunners };
-                });
-              }}
-              checkfields={e =>
-                this.setState(prev => {
-                  let sites = [...prev.sites];
-                  sites[r] = { ...sites[r], fields: e };
-                  return { sites };
-                })
-              }
-            />
-            ))*/}
-        </div>
         <button className="button-nav">
           <i className="fal fa-arrow-alt-from-right" />
           <Link to="/area/admin">Go Back</Link>
