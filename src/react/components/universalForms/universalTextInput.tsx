@@ -22,6 +22,8 @@ interface Props {
   style?: Object;
   update?: Boolean;
   min?: number;
+  prefix?: String;
+  suffix?: String;
 }
 
 interface State {
@@ -132,7 +134,10 @@ class UniversalTextInput extends React.Component<Props, State> {
         }`}
         style={Object.assign(
           { ...this.props.style },
-          this.props.width ? { width: this.props.width } : {}
+          this.props.width ? { width: this.props.width } : {},
+          this.props.prefix || this.props.suffix
+            ? { display: "flex", alignItems: "center", overflowX: "auto" }
+            : {}
         )}
         onContextMenu={e => {
           e.preventDefault();
@@ -141,6 +146,7 @@ class UniversalTextInput extends React.Component<Props, State> {
           }
         }}
         ref={this.wrapper}>
+        {this.props.prefix && <div>{this.props.prefix}</div>}
         <input
           autoFocus={this.props.focus || false}
           id={this.props.id}
@@ -200,6 +206,7 @@ class UniversalTextInput extends React.Component<Props, State> {
           }>
           {this.props.label}
         </label>
+        {this.props.suffix && <div>{this.props.suffix}</div>}
         {this.props.errorEvaluation && this.state.notypeing ? (
           <div className="errorhint" style={{ opacity: this.state.errorfaded ? 1 : 0 }}>
             {this.props.errorhint}
