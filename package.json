@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.12.0",
+  "version": "0.13.0-dev",
   "description": "The desktop client for vipfy.com",
   "main": ".webpack/main",
   "scripts": {
@@ -143,7 +143,7 @@
     "copy-webpack-plugin": "^5.0.4",
     "cross-zip-cli": "^1.0.0",
     "css-loader": "^3.2.0",
-    "electron": "8.1.1",
+    "electron": "8.2.0",
     "file-loader": "^4.2.0",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
     "jscrambler": "^5.4.0",
