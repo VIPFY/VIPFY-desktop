@@ -13,7 +13,7 @@ import IconButton from "../../common/IconButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 
 interface Props {
-  id: number;
+  id: string;
 }
 
 export default (props: Props) => (
@@ -68,9 +68,9 @@ export default (props: Props) => (
 );
 
 interface PopupProps {
-  userid: number;
+  userid: string;
   request: {
-    id: number;
+    id: string;
     status: string;
     startdate: Date;
     enddate: Date;
