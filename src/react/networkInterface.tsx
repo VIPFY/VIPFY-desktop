@@ -9,7 +9,7 @@ import { onError } from "apollo-link-error";
 import { inspect } from "util";
 import Store from "electron-store";
 import os from "os";
-import * as uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
