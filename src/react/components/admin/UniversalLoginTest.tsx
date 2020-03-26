@@ -27,6 +27,48 @@ interface State {
   backgroundRunners: number[];
 }
 
+interface Test {
+  testNumber: number;
+  entersCorrectEmail?: boolean;
+  entersCorrectPassword?: boolean;
+  speedFactor?: number;
+  preexistingSession: boolean;
+}
+
+const tests = [
+  {
+    testNumber: 1,
+    entersCorrectEmail: false,
+    speedFactor: 1,
+    preexistingSession: false
+  },
+  {
+    testNumber: 2,
+    entersCorrectEmail: true,
+    entersCorrectPassword: false,
+    speedFactor: 1,
+    preexistingSession: false
+  },
+  {
+    testNumber: 3,
+    entersCorrectEmail: true,
+    entersCorrectPassword: true,
+    speedFactor: 10,
+    preexistingSession: false
+  },
+  {
+    testNumber: 4,
+    entersCorrectEmail: true,
+    entersCorrectPassword: true,
+    speedFactor: 1,
+    preexistingSession: false
+  },
+  {
+    testNumber: 5,
+    preexistingSession: true
+  }
+];
+
 class UniversalLoginTest extends React.Component<Props, State> {
   state = {
     currentTest: -1,
@@ -111,10 +153,10 @@ class UniversalLoginTest extends React.Component<Props, State> {
                 timeout={60000}
                 partition="ssotest"
                 setResult={(result, image) => {
-                  const currentTest = this.state.currentTest;
                   this.setState(prev => {
                     let sites = [...prev.sites];
-                    sites[currentTest] = { ...sites[currentTest], ...result, image };
+                    debugger;
+                    sites[prev.currentTest] = { ...sites[prev.currentTest], ...result, image };
                     return { sites };
                   });
                   this.advance();

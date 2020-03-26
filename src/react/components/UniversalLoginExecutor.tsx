@@ -39,6 +39,7 @@ interface Props {
   addWebview?: Function;
   loggedIn: Boolean;
   deleteCookies?: Boolean;
+  delay?: number;
 }
 
 interface State {
@@ -170,7 +171,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     }
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
-        this.sendResult(this.webview, 0);
+        this.sendResult({ loggedin: false, errorin: true, ...this.loginState });
       }, this.props.timeout);
     }
     this.progress = 0;
@@ -651,60 +652,51 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     }
   }
 
-  sendResult(w, delay) {
-    if (delay != 0) {
-      this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
-    }
-    if (!w) {
-      w = this.webview;
-    }
+  sendResult(resultValues) {
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
     }
 
-    if (w && w.getWebContents()) {
-      setTimeout(() => {
-        //console.log("IF", this.isUnmounted, this.sentResult);
-        if (this.isUnmounted) {
-          return;
-        }
-        if (this.sentResult) {
-          return;
-        }
-        this.sentResult = true;
-        w.getWebContents().capturePage(async image => {
-          //console.log("CAPTURE");
-          const loggedin = await this.isLoggedIn(w);
-          let errorin = false;
-          if (!loggedin && !this.props.noError) {
-            errorin = await this.isErrorIn(w);
-          }
-          if (this.isUnmounted) {
-            return;
-          }
-          //await setTimeout(() => w.send("checkFields"), 1000);
-          this.props.setResult(
-            { loggedin, errorin, ...this.loginState },
-            this.props.takeScreenshot ? image.toDataURL({ scaleFactor: 0.5 }) : ""
-          );
-        });
-      }, delay);
-    } else {
-      setTimeout(
-        () => {
-          if (this.isUnmounted) {
-            return;
-          }
-          if (this.sentResult) {
-            return;
-          }
-          this.sentResult = true;
-          this.props.setResult({ loggedin: false, errorin: false, ...this.loginState }, "");
-        },
+    const delay = this.props.delay;
+    if (this.props.takeScreenshot) {
+      if (!!delay) {
+        this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
+      }
 
-        delay
-      );
+      const webview = this.webview;
+
+      if (webview && remote.webContents.fromId(webview.getWebContentsId())) {
+        setTimeout(async () => {
+          if (this.isUnmounted || this.sentResult) {
+            return;
+          }
+
+          this.sentResult = true;
+
+          if (this.props.takeScreenshot) {
+            const image = await webview.getWebContents().capturePage();
+            this.props.setResult(resultValues, image.toDataURL({ scaleFactor: 0.5 }));
+          } else {
+            this.props.setResult(resultValues, "");
+          }
+        }, delay);
+      } else {
+        setTimeout(
+          () => {
+            if (this.isUnmounted || this.sentResult) {
+              return;
+            }
+
+            this.sentResult = true;
+            this.props.setResult({ loggedin: false, errorin: false, ...this.loginState }, "");
+          },
+
+          delay
+        );
+      }
+    } else {
+      this.props.setResult(resultValues, "");
     }
   }
 
@@ -716,10 +708,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     if (this.props.loggedIn) {
       this.timeout = false;
       this.progress = 1;
-      this.props.setResult(
-        { loggedin: true, direct: true, errorin: false, ...this.loginState },
-        ""
-      );
+      this.sendResult({
+        loggedin: true,
+        direct: true,
+        errorin: false,
+        ...this.loginState
+      });
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
@@ -731,23 +725,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     this.props.progress!(this.progress);
     this.timeout = true;
     if (
-      this.loginState.emailEnteredEnd &&
-      this.loginState.passwordEntered &&
-      this.webview &&
-      (await this.isLoggedIn(this.webview))
-    ) {
-      this.timeout = false;
-      this.progress = 1;
-      this.props.setResult(
-        { loggedin: true, direct: true, errorin: false, ...this.loginState },
-        ""
-      );
-      if (this.progressHandle) {
-        clearInterval(this.progressHandle);
-        this.progressHandle = undefined;
-      }
-    }
-    if (
       (this.loginState.emailEnteredEnd || this.loginState.passwordEnteredEnd) &&
       this.webview &&
       !this.props.noError &&
@@ -757,7 +734,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       if (!this.props.noError && (await this.isErrorIn(this.webview))) {
         this.timeout = false;
         this.progress = 1;
-        this.props.setResult({ loggedin: false, errorin: true, ...this.loginState }, "");
+        this.sendResult({ loggedin: false, errorin: true, ...this.loginState });
         if (this.progressHandle) {
           clearInterval(this.progressHandle);
           this.progressHandle = undefined;
@@ -768,10 +745,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     if (this.webview && (await this.isLoggedIn(this.webview))) {
       this.timeout = false;
       this.progress = 1;
-      this.props.setResult(
-        { loggedin: true, direct: true, errorin: false, ...this.loginState },
-        ""
-      );
+      this.sendResult({ loggedin: true, direct: true, errorin: false, ...this.loginState });
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
@@ -783,7 +757,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
         if (this.timeout) {
-          this.props.setResult({ loggedin: false, errorin: true, ...this.loginState }, "");
+          this.sendResult({ loggedin: false, errorin: true, ...this.loginState });
         }
       }
     }
@@ -920,10 +894,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             this.loginState.passwordEnteredEnd = true;
           } else {
             throw new Error("unknown string");
-          }
-
-          if (this.loginState.emailEntered && this.loginState.passwordEntered) {
-            this.sendResult(w, 30000);
           }
         }
         break;

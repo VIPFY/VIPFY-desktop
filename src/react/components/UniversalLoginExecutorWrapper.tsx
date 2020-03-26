@@ -40,7 +40,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         {...this.props}
         {...this.state}
         setResult={(result, image) => {
-          //console.log("SET RESULT 1", result, image);
+          console.log("SET RESULT 1");
           //if (result.loggedin || this.state.speed < 0.1) {
           return this.props.setResult({ ...result, speed: this.state.speed }, image);
           //} else {
