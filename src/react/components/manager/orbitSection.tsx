@@ -371,6 +371,7 @@ class OrbitSection extends React.Component<Props, State> {
                 <UniversalTextInput
                   width="300px"
                   id="domain"
+                  className="scrollable"
                   startvalue={this.state.loginurl}
                   livevalue={value => {
                     let domain = value;

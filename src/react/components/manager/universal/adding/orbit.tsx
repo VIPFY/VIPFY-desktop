@@ -149,6 +149,7 @@ class CreateOrbit extends React.Component<Props, State> {
                 <UniversalTextInput
                   width="300px"
                   id="domain"
+                  className="scrollable"
                   livevalue={value => {
                     let domain = value;
                     let protocol = undefined;
