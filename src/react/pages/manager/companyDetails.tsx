@@ -212,7 +212,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                   return data &&
                                     data.fetchCompanyServices &&
                                     data.fetchCompanyServices.length
-                                    ? data.fetchCompanyServices.length
+                                    ? data.fetchCompanyServices.length - 1
                                     : 0;
                                 }}
                               </Query>
@@ -257,7 +257,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                         )
                                     );
 
-                                    return sum;
+                                    return Math.max(0, sum - 1);
                                   } else {
                                     return "No Data available";
                                   }

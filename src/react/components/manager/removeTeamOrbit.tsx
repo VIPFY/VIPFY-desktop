@@ -86,7 +86,7 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
             id: a.id,
             bool: false,
             assignments: a.assignments
-              .filter(asa => asa != null)
+              .filter(asa => asa != null && (asa.endtime == null || asa.endtime > now()))
               .map(as => {
                 if (as) {
                   return { id: as.assignmentid, bool: false };
@@ -248,9 +248,9 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
     this.props.orbit.accounts.forEach((account, indexa) => {
       const assignments: JSX.Element[] = [];
       let outsideAssignment = false;
-      if (account) {
+      if (account && (account.endtime == null || account.endtime > now())) {
         account.assignments.forEach((assignment, index) => {
-          if (assignment) {
+          if (assignment && (assignment.endtime == null || assignment.endtime > now())) {
             assignments.push(
               <>
                 <div
