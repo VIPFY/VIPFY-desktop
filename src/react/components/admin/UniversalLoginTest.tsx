@@ -155,19 +155,10 @@ class UniversalLoginTest extends React.Component<Props, State> {
                 setResult={(result, image) => {
                   this.setState(prev => {
                     let sites = [...prev.sites];
-                    debugger;
                     sites[prev.currentTest] = { ...sites[prev.currentTest], ...result, image };
                     return { sites };
                   });
                   this.advance();
-                }}
-                checkfields={e => {
-                  const ct = this.state.currentTest;
-                  this.setState(prev => {
-                    let sites = [...prev.sites];
-                    sites[ct] = { ...sites[ct], fields: e };
-                    return { sites };
-                  });
                 }}
               />
             </td>

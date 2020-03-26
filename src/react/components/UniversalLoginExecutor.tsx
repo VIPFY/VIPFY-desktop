@@ -34,7 +34,6 @@ interface Props {
   individualShow?: string;
   noUrlCheck?: boolean;
   individualNotShow?: string;
-  checkfields?: Function;
   setViewTitle?: Function;
   addWebview?: Function;
   loggedIn: Boolean;
@@ -57,23 +56,6 @@ function minus(setA, setB) {
   }
   return _difference;
 }
-
-// setInterval(() => {
-//   let diff = [
-//     ...minus([...cookiesLoggedIn].map(v => v.name), [...cookiesLoggedOut].map(v => v.name))
-//   ]
-//     .map(a => [a, [...cookiesLoggedIn].filter(v => v.name == a).length])
-//     .sort((a, b) => b[1] - a[1]);
-//   let diff2 = [
-//     ...minus(
-//       [...cookiesLoggedOut].map(v => v.name),
-//       minus([...cookiesLoggedIn].map(v => v.name), [...cookiesLoggedOut].map(v => v.name))
-//     )
-//   ]
-//     .map(a => [a, [...cookiesLoggedOut].filter(v => v.name == a).length])
-//     .sort((a, b) => b[1] - a[1]);
-//   console.log("cookiediff", diff.length, diff.slice(0, 100), diff2.length, diff2.slice(0, 100));
-// }, 60000);
 
 const ignoredCookies = [
   "_ga",
@@ -103,8 +85,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     running: false,
     solve401: null
   };
-
-  checkedFields = null;
 
   static defaultProps = {
     speed: 10,
@@ -152,6 +132,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     if (this.props.deleteCookies) {
       session.fromPartition(this.props.partition).clearStorageData();
     }
+
     this.loginState = {
       emailEntered: false,
       passwordEntered: false,
@@ -165,15 +146,18 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       domainEnteredEnd: false,
       step: 0
     };
+
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
     }
+
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
         this.sendResult({ loggedin: false, errorin: true, ...this.loginState });
       }, this.props.timeout);
     }
+
     this.progress = 0;
     this.props.progress!(0);
     this.progressStep = ((1 - 2 * 0.2) * this.progressInterval) / this.props.timeout!;
@@ -185,25 +169,30 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     this.reset();
     this.mounted++;
     this.progressHandle = setInterval(this.progressCallback.bind(this), this.progressInterval);
+
     if (this.props.deleteCookies) {
       session.fromPartition(this.props.partition).clearStorageData();
     }
   }
+
   componentWillUnmount = async () => {
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
       this.timeoutHandle = undefined;
     }
+
     if (this.progressHandle) {
       clearInterval(this.progressHandle);
       this.progressHandle = undefined;
     }
+
     this.isUnmounted = true;
   };
 
   shouldComponentUpdate(nextProps, nextState) {
     const props = this.props;
     let update = false;
+
     Object.keys(this.props).forEach(function(key) {
       if (props[key] == nextProps[key] || typeof props[key] == "function") {
       } else {
@@ -228,6 +217,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         }
       }
     });
+
     const state = this.state;
     Object.keys(this.state).forEach(function(key) {
       if (state[key] == nextState[key] || typeof state[key] == "function") {
@@ -260,7 +250,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
 
       if (e.url.indexOf("wchat") == -1) {
-        //this.setState({ currentUrl: e.url });
         this.props.addWebview(this.props.licenceID, true, e.url, true);
       }
     }
@@ -827,9 +816,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       case "loaded":
         {
           this.loginState.unloaded = false;
-          //e.target.send("checkFields");
+
           if (this.webview && (await this.isLoggedIn(this.webview))) {
-            //console.log("DIRECT LoggedIn", this.loginState);
             this.timeout = false;
             this.progress = 1;
             this.props.setResult(
@@ -843,12 +831,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           }
         }
         break;
-      /*case "recaptcha":
-        {
-          console.log("recaptcha FOUND");
-          this.loginState.recaptcha = true;
-        }
-        break;*/
       case "fillFormField":
         {
           const w = e.target;
@@ -939,8 +921,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           this.modifiedSleep(Math.random() * 30 + 50);
           w.sendInputEvent({ type: "mouseUp", x: x, y: y, button: "left", clickCount: 1 });
           this.modifiedSleep(Math.random() * 30 + 100);
-          //this.signupState.recaptcha = true;
-          // focusAndClick(e);
+
           await this.modifiedSleep(500);
           if (this.props.showLoadingScreen) {
             this.props.showLoadingScreen(false);
@@ -955,19 +936,12 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           }
         }
         break;
+
       case "executeStep":
         {
           this.loginState.step += 1;
         }
         break;
-
-      case "checkfields": {
-        console.log("CHECKFIELDS", e.args[0], e.args[1]);
-        this.checkedFields = e.args[0];
-        /*if (this.props.checkfields) {
-          this.props.checkfields(e.args[0]);
-        }*/
-      }
     }
   }
 }

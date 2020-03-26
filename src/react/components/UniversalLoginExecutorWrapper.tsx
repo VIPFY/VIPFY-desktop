@@ -12,7 +12,6 @@ interface Props {
     result: { loggedin: boolean; emailEntered: boolean; passwordEntered: boolean; speed: number },
     image: string
   ) => void;
-  checkfields?: Function;
 }
 
 interface State {
@@ -47,7 +46,6 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
           //            this.setState({ speed: this.state.speed / 3 });
           //}
         }}
-        checkfields={this.props.checkfields}
       />
     );
   }

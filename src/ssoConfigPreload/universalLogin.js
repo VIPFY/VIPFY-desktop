@@ -200,16 +200,6 @@ window.addEventListener("beforeunload", () => {
   ipcRenderer.sendToHost("unload", null);
 });
 
-/* window.addEventListener("DOMContentLoaded", async () => {
-  console.log("TEST TEST TEST");
-  await sleep(500);
-  start();
-  ipcRenderer.sendToHost("checkfields", !!findEmailField() || !!findPassField(), "check");
-});
-
-ipcRenderer.on("checkFields", async () =>
-  ipcRenderer.sendToHost("checkfields", !!findEmailField() || !!findPassField(), "check")
-); */
 function isHidden(elem) {
   if (!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length)) return true;
   const style = window.getComputedStyle(elem);
