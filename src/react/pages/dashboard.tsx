@@ -16,6 +16,7 @@ interface Props {
   setApp: Function;
   licences: any[];
   switchLayout: Function;
+  isadmin: Boolean;
 }
 
 interface State {
@@ -72,7 +73,6 @@ class Dashboard extends React.Component<Props, State> {
         }
       });
     }
-
     return (
       <div className="managerPage dashboard">
         <div className="heading">
@@ -89,10 +89,14 @@ class Dashboard extends React.Component<Props, State> {
               </div>
               <img src={dashboardPic} alt="Cool pic of a dashboard" />
               <div>You haven't integrated any services yet.</div>
-              <div>
-                Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
-                services.
-              </div>
+              {this.props.isadmin ? (
+                <div>
+                  Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
+                  services.
+                </div>
+              ) : (
+                <div>Please ask your administrator to integrate Services for you</div>
+              )}
             </div>
           </div>
         ) : (

@@ -82,18 +82,20 @@ class LicencesSection extends React.Component<Props, State> {
               <div className="section" key="Licences">
                 <div className="heading">
                   <h1>Assigned Accounts</h1>
-                  <UniversalButton
-                    type="high"
-                    label="Assign Account"
-                    customStyles={{
-                      fontSize: "12px",
-                      lineHeight: "24px",
-                      fontWeight: "700",
-                      marginRight: "16px",
-                      width: "120px"
-                    }}
-                    onClick={() => this.setState({ add: true })}
-                  />
+                  {this.props.isadmin && (
+                    <UniversalButton
+                      type="high"
+                      label="Assign Account"
+                      customStyles={{
+                        fontSize: "12px",
+                        lineHeight: "24px",
+                        fontWeight: "700",
+                        marginRight: "16px",
+                        width: "120px"
+                      }}
+                      onClick={() => this.setState({ add: true })}
+                    />
+                  )}
                 </div>
                 <div className="table">
                   <div className="tableHeading">
