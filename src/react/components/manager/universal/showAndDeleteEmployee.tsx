@@ -47,7 +47,6 @@ class ShowAndDeleteEmployee extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("DATE", this.props.employee);
     return (
       <div
         style={{

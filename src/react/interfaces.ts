@@ -105,7 +105,7 @@ export interface BoughtPlan {
   id: number;
   buytime: string;
   alias: string;
-  endtime: string;
+  endtime: number | Date;
   description: string;
   key: JSON;
   buyer: Unit;
