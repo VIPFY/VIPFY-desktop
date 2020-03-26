@@ -2,7 +2,7 @@ import * as React from "react";
 import { PureComponent } from "react";
 import { Query, withApollo } from "react-apollo";
 import gql from "graphql-tag";
-import * as uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 //import lzma from "lzma";
 const screen = require("electron").remote.screen;
 const browserWindow = require("electron").remote.BrowserWindow;
