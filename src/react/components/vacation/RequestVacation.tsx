@@ -12,7 +12,7 @@ import RequestVacationPopup from "./RequestVacationPopup";
 import RequestHalfDayPopup from "./RequestHalfDayPopup";
 
 interface Props {
-  id: number;
+  id: string;
   isAdmin: boolean;
 }
 

@@ -16,7 +16,7 @@ const SET_VACATION_DAYS = gql`
 `;
 interface Props {
   close: Function;
-  id: number;
+  id: string;
 }
 
 export default (props: Props) => {
@@ -64,9 +64,12 @@ export default (props: Props) => {
             How many vacation days should <UserName unitid={props.id} /> have?
           </div>
 
-          <form>
+          <form
+            id="setup-vacation-form"
+            onSubmit={() => mutate({ variables: { userid: props.id, year, days } })}>
             <UniversalTextInput
               id="days"
+              min={0}
               type="number"
               label="Days"
               livevalue={v => setDays(parseInt(v))}
@@ -93,10 +96,8 @@ export default (props: Props) => {
             }}
           />
           <UniversalButton
+            form="setup-vacation-form"
             disabled={loading}
-            onClick={() => {
-              mutate({ variables: { userid: props.id, year, days } });
-            }}
             label="Confirm"
             type="high"
           />

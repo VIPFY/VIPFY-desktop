@@ -372,9 +372,14 @@ export const computeLeftOverDays = ({ vacationDaysPerYear, vacationRequests }) =
   const copy = { ...vacationDaysPerYear };
   delete copy[currentYear];
 
-  const remainingVacationDays: number = Object.values(copy).reduce((acc, cV) => acc + cV, 0);
+  const remainingVacationDays: number = Object.values(copy).reduce(
+    (acc: number, cV: number) => acc + cV,
+    0
+  );
 
-  const requestsLastYears = vacationRequests.filter(({ status }) => status == "CONFIRMED");
+  const requestsLastYears = vacationRequests.filter(({ status, startdate }) => {
+    return status == "CONFIRMED" && moment(startdate).get("year") != currentYear;
+  });
 
   return (
     remainingVacationDays - requestsLastYears.map(t => t.days).reduce((acc, cV) => acc + cV, 0)

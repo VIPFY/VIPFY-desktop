@@ -38,6 +38,7 @@ interface Props {
   setViewTitle?: Function;
   addWebview?: Function;
   loggedIn: Boolean;
+  deleteCookies?: Boolean;
 }
 
 interface State {
@@ -147,6 +148,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   progressCallbackRunning = false;
 
   reset() {
+    if (this.props.deleteCookies) {
+      session.fromPartition(this.props.partition).clearStorageData();
+    }
     this.loginState = {
       emailEntered: false,
       passwordEntered: false,
@@ -180,6 +184,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     this.reset();
     this.mounted++;
     this.progressHandle = setInterval(this.progressCallback.bind(this), this.progressInterval);
+    if (this.props.deleteCookies) {
+      session.fromPartition(this.props.partition).clearStorageData();
+    }
   }
   componentWillUnmount = async () => {
     if (this.timeoutHandle) {
@@ -758,7 +765,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       }
     }
 
-    if (this.webview && (await this.isLoggedIn(this.webview)) && this.progress >= 0.25) {
+    if (this.webview && (await this.isLoggedIn(this.webview))) {
       this.timeout = false;
       this.progress = 1;
       this.props.setResult(

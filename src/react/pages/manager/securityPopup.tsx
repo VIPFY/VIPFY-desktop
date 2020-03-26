@@ -17,7 +17,6 @@ import { FETCH_SESSIONS } from "../../components/security/graphqlOperations";
 import Device from "../../popups/universalPopups/Device";
 import TwoFADeactivate from "../../popups/universalPopups/TwoFADeactivate";
 import { SecurityContext } from "../security";
-import { me as ME } from "../../queries/auth";
 
 const SIGN_OUT_EVERYWHERE = gql`
   mutation onSignOutEverywhere($userid: ID!) {
@@ -83,17 +82,14 @@ export default (props: Props) => {
               securityPage ? "the user is" : "you are"
             } currently logged into the account`,
             state: "showSessions"
-          }
-        ];
-
-        if (!user.unitid.isadmin) {
-          links.unshift({
+          },
+          {
             header: "Update Password",
             text: "You can update the current password here",
             state: "showPasswordUpdate",
             button: "update"
-          });
-        }
+          }
+        ];
 
         if (securityPage) {
           if (user.twofactormethods.length <= 0) {

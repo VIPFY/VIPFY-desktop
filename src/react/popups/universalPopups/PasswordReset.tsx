@@ -23,7 +23,7 @@ export default (props: Props) => (
         {data ? (
           <React.Fragment>
             <div className="sub-header">Forcing Password Change was successful</div>
-            <UniversalButton onClick={() => props.closeFunction()} type="high" label="ok" />{" "}
+            <UniversalButton onClick={() => props.closeFunction()} type="high" label="ok" />
           </React.Fragment>
         ) : (
           <React.Fragment>
