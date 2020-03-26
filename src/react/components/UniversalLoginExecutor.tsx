@@ -18,8 +18,6 @@ interface Props {
     result: {
       loggedin: boolean;
       errorin: boolean;
-      emailEntered: boolean;
-      passwordEntered: boolean;
     },
     image: string
   ) => void;
@@ -108,25 +106,22 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     domainEnteredEnd: false,
     step: 0
   };
-
+  
   mounted = 0;
-
-  timeoutHandle: NodeJS.Timer | undefined = undefined;
-
-  progressHandle: NodeJS.Timer | undefined = undefined;
-
-  webview: any = undefined;
-
-  progress = 0;
-
-  progressInterval = 200;
-  progressStep = 0;
-  sentResult = false;
+  isUnmounted = false;
 
   timeout = true;
+  timeoutHandle: NodeJS.Timer | undefined = undefined;
 
-  isUnmounted = false;
+  webview: any = undefined;
+  
+  progressHandle: NodeJS.Timer | undefined = undefined;
+  progress = 0;
+  progressInterval = 200;
+  progressStep = 0;
   progressCallbackRunning = false;
+  
+  sentResult = false;
 
   reset() {
     if (this.props.deleteCookies) {

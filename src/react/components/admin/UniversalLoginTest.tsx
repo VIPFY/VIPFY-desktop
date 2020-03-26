@@ -150,6 +150,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
                 loginUrl={site.url}
                 username={site.email}
                 password={site.password}
+                speed={1}
                 timeout={60000}
                 partition="ssotest"
                 setResult={(result, image) => {
