@@ -64,6 +64,8 @@ class Dashboard extends React.Component<Props, State> {
             moment().isBefore(moment(licence.vacationend))
           ) {
             appLists["Temporary Apps"].push(licence);
+          } else {
+            appLists["My Apps"].push(licence);
           }
         } else {
           appLists["My Apps"].push(licence);

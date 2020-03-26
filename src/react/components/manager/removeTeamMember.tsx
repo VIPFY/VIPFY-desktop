@@ -69,7 +69,10 @@ class RemoveTeamMember extends React.Component<Props, State> {
       this.props.employee.assignments
         .filter(
           asa =>
-            asa && asa.assignoptions && asa.assignoptions.teamlicence == this.props.team.unitid.id
+            asa &&
+            (asa.endtime == null || asa.endtime > now()) &&
+            asa.assignoptions &&
+            asa.assignoptions.teamlicence == this.props.team.unitid.id
         )
         .forEach((asa, k) => {
           assignments.push(

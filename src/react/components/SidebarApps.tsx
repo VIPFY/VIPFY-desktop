@@ -95,7 +95,7 @@ class SidebarApps extends React.Component<Props, State> {
         break;
       case "Enter":
         {
-          const licenceid = this.props.licences
+          const licences = this.props.licences
             .filter(licence => {
               if (licence.boughtplanid.alias) {
                 return licence.boughtplanid.alias
@@ -129,9 +129,11 @@ class SidebarApps extends React.Component<Props, State> {
               }
 
               return 0;
-            })[this.state.selected].id;
+            });
+          const licenceid = licences[this.state.selected] && licences[this.state.selected].id;
 
           if (
+            licenceid &&
             this.props.openInstances &&
             (!this.props.openInstances[licenceid] ||
               (this.props.openInstances[licenceid] &&
