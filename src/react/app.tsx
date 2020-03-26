@@ -198,9 +198,16 @@ class App extends React.Component<AppProps, AppState> {
     const impersonated = await localStorage.getItem("impersonator-token");
     if (impersonated) {
       try {
-        const res = await this.props.endImpersonation({
-          variables: { token: impersonated }
-        });
+        let token = null;
+        try {
+          const res = await this.props.endImpersonation({
+            variables: { token: impersonated }
+          });
+          token = res.endImpersonation;
+        } catch (err) {
+          // even if server side fails for some reason still undo impersonation locally
+          console.error("LOG: logMeOut -> err endImpersonation", err);
+        }
 
         // restore original local storage (fixes VIP-1003)
         const impersonatorLocalStorage = JSON.parse(
@@ -210,8 +217,7 @@ class App extends React.Component<AppProps, AppState> {
         for (const key in impersonatorLocalStorage) {
           localStorage.setItem(key, impersonatorLocalStorage[key]);
         }
-
-        await localStorage.setItem("token", res.endImpersonation);
+        await localStorage.setItem("token", token);
       } catch (err) {
         localStorage.removeItem("token");
         console.error("LOG: logMeOut -> err", err);
