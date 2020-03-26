@@ -14,7 +14,7 @@ import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
-import { FETCH_EMPLOYEES } from "../queries/departments";
+import { FETCH_EMPLOYEES, fetchDepartmentsData } from "../queries/departments";
 import { vipfyAdmins } from "../common/constants";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./security/graphqlOperations";
 
@@ -209,7 +209,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
               query: FETCH_EMPLOYEES,
               ...options
             }),
-            client.query({ query: FETCH_USER_SECURITY_OVERVIEW })
+            client.query({ query: FETCH_USER_SECURITY_OVERVIEW }),
+            client.query({ query: fetchDepartmentsData })
           ]);
           break;
 
@@ -498,13 +499,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "vacation"
       }
     ];
-
     const filteredLicences0 = licences.filter(licence => {
       if (
         !(
           (!licence.disabled &&
             !licence.pending &&
             !licence.boughtplanid.planid.appid.disabled &&
+            (licence.boughtplanid.endtime > moment.now() || licence.boughtplanid.endtime == null) &&
             (licence.endtime > moment.now() || licence.endtime == null) &&
             !licence.vacationstart) ||
           (!licence.disabled &&

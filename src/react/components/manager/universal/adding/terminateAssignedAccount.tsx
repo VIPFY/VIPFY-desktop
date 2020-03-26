@@ -1,12 +1,9 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
-import AssignServiceToUser from "./assignServiceToUser";
 import PrintEmployeeSquare from "../squares/printEmployeeSquare";
 import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
-import AssignAccount from "./assignAccount";
 import UniversalButton from "../../../universalButtons/universalButton";
-import AssignOrbit from "./assignOrbit";
 import { graphql } from "react-apollo";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
@@ -61,7 +58,6 @@ class TerminateAssignedAccount extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("TERMINATE", this.props, this.state);
     return (
       <PopupBase
         small={true}

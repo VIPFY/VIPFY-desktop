@@ -33,10 +33,10 @@ class LicencesSection extends React.Component<Props, State> {
         variables={{ unitid: employeeid }}>
         {({ loading, error, data, refetch }) => {
           if (loading) {
-            return "Loading...";
+            return <div>Loading...</div>;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <div>Error! {error.message}</div>;
           }
           let appArray: JSX.Element[] = [];
 
@@ -62,7 +62,8 @@ class LicencesSection extends React.Component<Props, State> {
               if (
                 !e.disabled &&
                 !e.boughtplanid.planid.appid.disabled &&
-                (e.endtime > now() || e.endtime == null)
+                (e.endtime > now() || e.endtime == null) &&
+                (e.boughtplanid.endtime > now() || e.boughtplanid.endtime == null)
               ) {
                 appArray.push(
                   <ServiceDetails

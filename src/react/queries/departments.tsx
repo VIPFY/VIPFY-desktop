@@ -497,6 +497,7 @@ export const fetchUserLicences = gql`
       }
       boughtplanid {
         id
+        endtime
         alias
         totalprice
         planid {
