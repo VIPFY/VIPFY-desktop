@@ -643,8 +643,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       this.timeoutHandle = undefined;
     }
 
-    const delay = this.props.delay;
-    if (this.props.takeScreenshot) {
+    const { takeScreenshot, delay } = this.props;
+
+    if (takeScreenshot) {
       if (!!delay) {
         this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
       }
@@ -659,7 +660,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
           this.sentResult = true;
 
-          if (this.props.takeScreenshot) {
+          if (takeScreenshot) {
             const image = await webview.getWebContents().capturePage();
             this.props.setResult(resultValues, image.toDataURL({ scaleFactor: 0.5 }));
           } else {
@@ -667,18 +668,14 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           }
         }, delay);
       } else {
-        setTimeout(
-          () => {
-            if (this.isUnmounted || this.sentResult) {
-              return;
-            }
+        setTimeout(() => {
+          if (this.isUnmounted || this.sentResult) {
+            return;
+          }
 
-            this.sentResult = true;
-            this.props.setResult({ loggedin: false, errorin: false, ...this.loginState }, "");
-          },
-
-          delay
-        );
+          this.sentResult = true;
+          this.props.setResult({ loggedin: false, errorin: false, ...this.loginState }, "");
+        }, delay);
       }
     } else {
       this.props.setResult(resultValues, "");

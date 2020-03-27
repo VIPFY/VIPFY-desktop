@@ -113,7 +113,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
                     let sites = [...prev.sites];
                     sites[prev.currentTest] = {
                       ...sites[prev.currentTest],
-                      ...testResults,
+                      testResults,
                       screenshot
                     };
                     return { sites };

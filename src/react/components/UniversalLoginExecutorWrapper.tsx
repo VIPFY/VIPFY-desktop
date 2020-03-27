@@ -13,7 +13,7 @@ interface Props {
 interface Test {
   expectLoginSuccess: boolean;
   expectError: boolean;
-  clearStorageData: boolean;
+  reuseSession: boolean;
   speedFactor?: number;
   enterCorrectEmail?: boolean;
   enterCorrectPassword?: boolean;
@@ -23,14 +23,14 @@ const tests = [
   {
     expectLoginSuccess: false,
     expectError: true,
-    clearStorageData: true,
+    reuseSession: false,
     speedFactor: 1,
     enterCorrectEmail: false
   },
   {
     expectLoginSuccess: false,
     expectError: true,
-    clearStorageData: true,
+    reuseSession: false,
     speedFactor: 1,
     enterCorrectEmail: true,
     enterCorrectPassword: false
@@ -38,7 +38,7 @@ const tests = [
   {
     expectLoginSuccess: true,
     expectError: false,
-    clearStorageData: true,
+    reuseSession: false,
     speedFactor: 10,
     enterCorrectEmail: true,
     enterCorrectPassword: true
@@ -46,7 +46,7 @@ const tests = [
   {
     expectLoginSuccess: true,
     expectError: false,
-    clearStorageData: true,
+    reuseSession: false,
     speedFactor: 1,
     enterCorrectEmail: true,
     enterCorrectPassword: true
@@ -54,7 +54,7 @@ const tests = [
   {
     expectLoginSuccess: true,
     expectError: false,
-    clearStorageData: false
+    reuseSession: true
   }
 ];
 
@@ -73,24 +73,44 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
   }
 
   advance() {
-    debugger;
-    const nextTest = this.state.currentTest + 1;
-
-    if (!tests[nextTest]) {
-      return;
+    if (this.hasNextTest()) {
+      this.setState(state => {
+        return { ...state, currentTest: this.state.currentTest + 1 };
+      });
+    } else {
+      debugger;
+      this.props.setResult(this.state.testResults, this.state.screenshot);
     }
+  }
 
-    this.setState(state => {
-      return { ...state, currentTest: nextTest };
-    });
+  hasNextTest() {
+    return !!tests[this.state.currentTest + 1];
+  }
+
+  existsReusableSession() {
+    return this.isLoginSuccess(this.state.currentTest - 1);
+  }
+
+  isLoginSuccess(testNumber: number) {
+    return (
+      tests[testNumber] &&
+      tests[testNumber].expectLoginSuccess &&
+      this.state.testResults[testNumber]
+    );
   }
 
   render() {
-    debugger;
-    const test = tests[this.state.currentTest];
+    const { currentTest, testResults } = this.state;
+    const test = tests[currentTest];
 
-    if (test.clearStorageData) {
+    if (!test.reuseSession) {
       session.fromPartition(SSO_TEST_PARTITION).clearStorageData();
+    } else if (!this.existsReusableSession()) {
+      this.setState(() => {
+        testResults[currentTest] = false;
+        return { testResults };
+      });
+      this.advance();
     }
 
     return (
