@@ -147,7 +147,7 @@ class TeamOverview extends React.Component<Props, State> {
             pollInterval={60 * 10 * 1000 + 600}
             query={fetchCompanyTeams}
             fetchPolicy="network-only">
-            {({ loading, error, data, refetch }) => {
+            {({ loading, error, data }) => {
               if (loading) {
                 return (
                   <div className="table" key="table">
@@ -176,7 +176,7 @@ class TeamOverview extends React.Component<Props, State> {
                 );
               }
               if (error) {
-                return `Error! ${error.message}`;
+                return <div>Error! {error.message}</div>;
               }
 
               // Sort teams
@@ -361,6 +361,7 @@ class TeamOverview extends React.Component<Props, State> {
                               employeeidFunction={e => e}
                               checkFunction={e => true}
                             />
+                            {console.log("TEAM", team.services)}
                             <ColumnServices
                               services={team.services}
                               checkFunction={element =>
