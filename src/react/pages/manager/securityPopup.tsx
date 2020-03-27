@@ -68,7 +68,7 @@ export default (props: Props) => {
 
         const user = data.fetchUserSecurityOverview.find(el => el.unitid.id == userid);
 
-        const links: Link[] = [
+        let links: Link[] = [
           {
             header: "Two-Factor Authentication",
             text: `Google Authenticator is recommended${
@@ -90,8 +90,10 @@ export default (props: Props) => {
             button: "update"
           }
         ];
+        console.log("FIRE: links", links);
 
         if (securityPage) {
+          console.log("FIRE: securityPage", securityPage);
           if (user.twofactormethods.length <= 0) {
             links.push({
               header: "Force Two-Factor Authentication",
@@ -101,7 +103,7 @@ export default (props: Props) => {
               button: user.needstwofa ? "unforce" : "force"
             });
           } else {
-            links[1] = {
+            links[0] = {
               header: "Shut off Two-Factor Authentication",
               text: "Deactivate the users Two-Factor Authentication",
               state: "show2FADeactivate",
@@ -133,6 +135,7 @@ export default (props: Props) => {
 
           links.reverse();
         }
+        console.log("FIRE: links after second pushs", links);
 
         return (
           <PopupBase
