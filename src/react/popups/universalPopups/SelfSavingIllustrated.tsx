@@ -584,7 +584,6 @@ class SelfSaving extends React.Component<Props, State> {
                     timeout={40000}
                     takeScreenshot={false}
                     setResult={async (result: Result) => {
-                      console.log("RESULT", result);
                       await this.setState(oldstate => {
                         if (!oldstate.receivedData) {
                           return { ...oldstate, result, receivedData: true };
