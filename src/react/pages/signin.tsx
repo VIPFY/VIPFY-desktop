@@ -14,99 +14,91 @@ interface Props {
   resetError: Function;
 }
 
-interface State {
-  progress: string;
-  email: string;
-}
+export default (props: Props) => {
+  const [progress, setProgress] = React.useState("login");
+  const [email, setEmail] = React.useState("");
 
-class SignIn extends React.Component<Props, State> {
-  state = {
-    progress: "login",
-    email: ""
+  const changeProgress = s => {
+    props.resetError();
+    const store = new Store();
+
+    if (s != "registerCompany" && (!store.has("accounts") || store.get("accounts").length == 0)) {
+      setProgress("createUser");
+    } else {
+      setProgress(s);
+    }
   };
 
-  changeProgress(s) {
-    this.props.resetError();
-    console.log(s);
-    const store = new Store();
-    if (s != "registerCompany" && (!store.has("accounts") || store.get("accounts").length == 0)) {
-      this.setState({ progress: "createUser" });
-    } else {
-      this.setState({ progress: s });
-    }
-  }
-
-  componentDidMount() {
+  React.useEffect(() => {
     const store = new Store();
     if (!store.has("accounts") || store.get("accounts").length == 0) {
-      this.setState({ progress: "createUser" });
+      setProgress("createUser");
     } else {
-      this.setState({ email: store.get("accounts")[store.get("accounts").length - 1].email });
+      setEmail(store.get("accounts")[store.get("accounts").length - 1].email);
     }
+  }, []);
+
+  switch (progress) {
+    case "login":
+      return (
+        <Login
+          type="login"
+          backFunction={() => null}
+          continueFunction={(pw, email) => props.login(email, pw)}
+          goToRecovery={() => changeProgress("passwordRecovery")}
+          email={email}
+          changeUser={() => changeProgress("selectUser")}
+          error={props.error}
+        />
+      );
+
+    case "selectUser":
+      return (
+        <ChangeAccount
+          backFunction={() => changeProgress("login")}
+          addMachineUser={() => changeProgress("createUser")}
+          selectAccount={email => {
+            setEmail(email);
+            changeProgress("login");
+          }}
+          registerCompany={() => changeProgress("registerCompany")}
+        />
+      );
+
+    case "createUser":
+      return (
+        <AddMachineUser
+          continueFunction={(email: string) => {
+            setProgress("login");
+            setEmail(email);
+          }}
+          backFunction={() => changeProgress("selectuser")}
+          registerCompany={() => changeProgress("registerCompany")}
+        />
+      );
+
+    case "registerCompany":
+      return (
+        <RegisterCompany
+          backFunction={() => changeProgress("login")}
+          continueFunction={() => props.moveTo("/area/dashboard")}
+        />
+      );
+
+    case "passwordRecovery":
+      return <PasswordRecovery email={email} backFunction={() => changeProgress("login")} />;
+
+    default:
+      return (
+        <Login
+          type="login"
+          backFunction={() => null}
+          continueFunction={v => props.login(email, v)}
+          email={email}
+          changeUser={() => changeProgress("selectUser")}
+          goToRecovery={() => changeProgress("passwordRecovery")}
+          error={props.error}
+        />
+      );
   }
-
-  render() {
-    switch (this.state.progress) {
-      case "login":
-        return (
-          <Login
-            type="login"
-            backFunction={() => null}
-            continueFunction={(pw, email) => this.props.login(email, pw)}
-            goToRecovery={() => this.changeProgress("passwordRecovery")}
-            email={this.state.email}
-            changeUser={() => this.changeProgress("selectUser")}
-            error={this.props.error}
-          />
-        );
-
-      case "selectUser":
-        return (
-          <ChangeAccount
-            backFunction={() => this.changeProgress("login")}
-            addMachineUser={() => this.changeProgress("createUser")}
-            selectAccount={email => {
-              this.setState({ email });
-              this.changeProgress("login");
-            }}
-            registerCompany={() => this.changeProgress("registerCompany")}
-          />
-        );
-
-      case "createUser":
-        return (
-          <AddMachineUser
-            continueFunction={(email: string) => this.setState({ email: email, progress: "login" })}
-            backFunction={() => this.changeProgress("selectuser")}
-            registerCompany={() => this.changeProgress("registerCompany")}
-          />
-        );
-
-      case "registerCompany":
-        return (
-          <RegisterCompany
-            backFunction={() => this.changeProgress("login")}
-            continueFunction={() => this.props.moveTo("/area/dashboard")}
-          />
-        );
-
-      case "passwordRecovery":
-        return <PasswordRecovery backFunction={() => this.changeProgress("login")} />;
-
-      default:
-        return (
-          <Login
-            type="login"
-            backFunction={() => null}
-            continueFunction={v => this.props.login(this.state.email, v)}
-            email={this.state.email}
-            changeUser={() => this.changeProgress("selectUser")}
-            goToRecovery={() => this.changeProgress("passwordRecovery")}
-            error={this.props.error}
-          />
-        );
-    }
-  }
-}
-
-export default SignIn;
+};

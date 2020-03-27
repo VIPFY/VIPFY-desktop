@@ -22,8 +22,6 @@ import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
 import Security from "./security";
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
@@ -53,8 +51,10 @@ import TeamOverview from "./manager/teamOverview";
 import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
+import RecoveryKey from "../components/signin/RecoveryKey";
 
 interface AreaProps {
+  id: string;
   history: any[];
   moveTo: Function;
   consent?: boolean;
@@ -64,6 +64,9 @@ interface AreaProps {
   tutorialprogress?: any;
   highlightReferences?: any;
   addUsedLicenceID: Function;
+  client: any;
+  recoverypublickey?: string;
+  needstowfa: boolean;
 }
 
 interface AreaState {
@@ -352,6 +355,17 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
       { path: "company", component: CompanyDetails, admin: true }
     ];
+
+    const isImpersonating = !!localStorage.getItem("impersonator-token");
+
+    if (!this.props.recoverypublickey && !isImpersonating) {
+      return (
+        <div className="centralize backgroundLogo">
+          <RecoveryKey />
+        </div>
+      );
+    }
+
     return (
       <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
         {({ data, loading, error }) => {
@@ -362,6 +376,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           if (error) {
             return <ErrorPage />;
           }
+
           const licences = data.fetchUserLicenceAssignments;
           return (
             <div className="area" style={this.props.style}>

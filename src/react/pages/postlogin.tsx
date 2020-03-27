@@ -11,7 +11,6 @@ import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment from "moment";
 import { filterError, concatName } from "../common/functions";
-import RecoveryKey from "../components/signin/RecoveryKey";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -52,7 +51,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
   render() {
     const isImpersonating = !!localStorage.getItem("impersonator-token");
-    console.log("RERENDER");
+
     return (
       <Query query={me}>
         {({ data, loading, error, refetch }) => {
@@ -118,18 +117,6 @@ class PostLogin extends React.Component<PostLoginProps, State> {
             );
           }
 
-          if (!data.me.recoverypublickey) {
-            return (
-              <div className="centralize backgroundLogo">
-                <RecoveryKey
-                  continueFunction={() => {
-                    clearProps.moveTo("dashboard");
-                  }}
-                />
-              </div>
-            );
-          }
-
           if (data.me.needspasswordchange && !this.reachedArea && !isImpersonating) {
             return <PasswordChange firstLogin={this.state.firstLogin} {...clearProps} />;
           }
@@ -156,16 +143,16 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
           return (
             <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
-              {({ data, error }) => {
+              {({ data: d2, error }) => {
                 if (error) {
                   return filterError(error);
                 }
 
-                if (data && data.fetchVipfyPlan) {
-                  const vipfyPlan = data.fetchVipfyPlan.plan.name;
+                if (d2 && d2.fetchVipfyPlan) {
+                  const vipfyPlan = d2.fetchVipfyPlan.plan.name;
                   // TODO: [VIP-314] Reimplement credits when new structure is clear
                   // const { fetchCredits } = data;
-                  const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
+                  const expiry = moment(parseInt(d2.fetchVipfyPlan.endtime));
 
                   if (context) {
                     if (moment().isAfter(expiry)) {

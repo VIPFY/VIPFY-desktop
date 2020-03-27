@@ -9,16 +9,16 @@ import gql from "graphql-tag";
 import { Mutation } from "react-apollo";
 
 const SAVE_RECOVERY_KEY = gql`
-  mutation onSaveRecoveryKey($pbKey: String!) {
-    saveRecoveryKey(pbKey: $pbKey)
+  mutation onSaveRecoveryKey($keyData: RecoveryKeyInput!) {
+    saveRecoveryKey(keyData: $keyData) {
+      id
+      recoverypublickey
+      recoveryprivatekey
+    }
   }
 `;
-
-interface Props {
-  continueFunction: Function;
-}
-
-export default (props: Props) => {
+// csqPKACf1S/Fqt34UwC1AhVm3WJvfO8rJoLh/C6Oply5Ndva
+const RecoveryKey = () => {
   const [encryptionKey, setKey] = React.useState("");
   const [codeWindow, setWindow] = React.useState(null);
   const [printError, setError] = React.useState(null);
@@ -94,21 +94,16 @@ export default (props: Props) => {
             />
             <div className="recovery-code">{generateReadableKey()}</div>
           </div>
-
           <ErrorComp error={printError} />
           <Mutation mutation={SAVE_RECOVERY_KEY}>
-            {(mutate, { loading, error }) => (
+            {(mutate, { error }) => (
               <React.Fragment>
                 <ErrorComp error={error} />
                 <UniversalButton
-                  disabled={loading}
                   label="login"
                   type="high"
                   className="continue-button"
-                  onClick={async () => {
-                    // await mutate({ variables: { ...keyPair } });
-                    props.continueFunction();
-                  }}
+                  onClick={() => mutate({ variables: { keyData: keyPair } })}
                 />
               </React.Fragment>
             )}
@@ -118,3 +113,29 @@ export default (props: Props) => {
     </div>
   );
 };
+
+// Thou shall never delete this Hack, or the RecoveryKey functional component
+// will throw the root of all evil errors
+export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    console.error(error); // Update state so the next render will show the fallback UI.
+    return { hasError: true };
+  }
+  componentDidCatch(error, errorInfo) {
+    // You can also log the error to an error reporting service
+    console.error(error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      // You can render any custom fallback UI
+      return <h1>Something went wrong.</h1>;
+    }
+
+    return <RecoveryKey />;
+  }
+}

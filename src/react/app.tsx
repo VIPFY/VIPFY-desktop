@@ -67,7 +67,6 @@ interface AppState {
   popup: PopUp;
   showTutorial: boolean;
   renderElements: { key: string; element: any }[];
-  page: string;
   sidebarloaded: boolean;
   reshow: string | null;
   twofactor: string | null;
@@ -90,7 +89,6 @@ const INITIAL_STATE = {
   popup: INITIAL_POPUP,
   showTutorial: true,
   renderElements: [],
-  page: "dashboard",
   sidebarloaded: false,
   reshow: null,
   twofactor: null,
@@ -306,7 +304,6 @@ class App extends React.Component<AppProps, AppState> {
 
   moveTo = (path: string) => {
     if (!(this.props.location.pathname === `/area/${path}`)) {
-      this.setState({ page: path });
       this.props.history.push(`/area/${path}`);
     }
   };
