@@ -129,7 +129,7 @@ class SelfSaving extends React.Component<Props, State> {
     color: "",
     receivedIcon: false,
     newid: 0,
-    orbit: "Integrated Account",
+    orbit: `${this.props.sso.name} (Integrated)` || "Integrated Account",
     alias: this.props.sso.email || "",
     showall: false,
     add: false,
@@ -370,7 +370,7 @@ class SelfSaving extends React.Component<Props, State> {
                 width="100%"
                 id="orbit"
                 label="Orbit"
-                startvalue="Integrated Account"
+                startvalue={`${this.props.sso.name} (Integrated)`}
                 livevalue={value => this.setState({ orbit: value })}
                 style={{ marginTop: "24px" }}
               />
@@ -386,10 +386,10 @@ class SelfSaving extends React.Component<Props, State> {
               <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchDepartmentsData}>
                 {({ loading, error, data }) => {
                   if (loading) {
-                    return "Loading...";
+                    return <div>Loading...</div>;
                   }
                   if (error) {
-                    return `Error! ${error.message}`;
+                    return <div>Error! {error.message}</div>;
                   }
                   const employees = data.fetchDepartmentsData[0].employees;
                   return (
@@ -574,7 +574,7 @@ class SelfSaving extends React.Component<Props, State> {
             </>
           ) : (
             <>
-              <div className="hide-sso-webview" /*style={{ height: "400px", width: "400px" }}*/>
+              <div className="hide-sso-webview" style={{ height: "400px", width: "400px" }}>
                 {!this.state.receivedData && (
                   <UniversalLoginExecutor
                     loginUrl={this.props.sso.loginurl!}
