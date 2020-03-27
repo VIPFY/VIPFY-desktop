@@ -37,6 +37,7 @@ interface Props {
   loggedIn: Boolean;
   deleteCookies?: Boolean;
   delay?: number;
+  webviewId?: number;
 }
 
 interface State {
@@ -106,7 +107,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     domainEnteredEnd: false,
     step: 0
   };
-  
+
   mounted = 0;
   isUnmounted = false;
 
@@ -114,13 +115,13 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   timeoutHandle: NodeJS.Timer | undefined = undefined;
 
   webview: any = undefined;
-  
+
   progressHandle: NodeJS.Timer | undefined = undefined;
   progress = 0;
   progressInterval = 200;
   progressStep = 0;
   progressCallbackRunning = false;
-  
+
   sentResult = false;
 
   reset() {
@@ -294,7 +295,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     } else {
       return (
         <WebView
-          key={`${this.props.loginUrl}-${this.props.speed}`}
+          key={this.props.webviewId || `${this.props.loginUrl}-${this.props.speed}`}
           preload={getPreloadScriptPath("universalLogin.js")}
           //webpreferences="webSecurity=no"
           src={this.state.currentUrl || this.props.loginUrl}

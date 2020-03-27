@@ -18,81 +18,39 @@ interface State {
     url: string;
     email: string;
     password: string;
-    ignore: string;
-    image?: string;
-    emailEntered?: boolean;
-    passwordEntered?: boolean;
-    loggedIn?: boolean;
+    // following properties aren't present in Sites imported from ./sites which causes typescript problems
+    screenshot?: string;
+    testResults?: boolean[];
   }[];
-  backgroundRunners: number[];
 }
-
-interface Test {
-  testNumber: number;
-  entersCorrectEmail?: boolean;
-  entersCorrectPassword?: boolean;
-  speedFactor?: number;
-  preexistingSession: boolean;
-}
-
-const tests = [
-  {
-    testNumber: 1,
-    entersCorrectEmail: false,
-    speedFactor: 1,
-    preexistingSession: false
-  },
-  {
-    testNumber: 2,
-    entersCorrectEmail: true,
-    entersCorrectPassword: false,
-    speedFactor: 1,
-    preexistingSession: false
-  },
-  {
-    testNumber: 3,
-    entersCorrectEmail: true,
-    entersCorrectPassword: true,
-    speedFactor: 10,
-    preexistingSession: false
-  },
-  {
-    testNumber: 4,
-    entersCorrectEmail: true,
-    entersCorrectPassword: true,
-    speedFactor: 1,
-    preexistingSession: false
-  },
-  {
-    testNumber: 5,
-    preexistingSession: true
-  }
-];
 
 class UniversalLoginTest extends React.Component<Props, State> {
   state = {
     currentTest: -1,
     running: false,
-    sites: Sites.sites,
-    backgroundRunners: []
+    sites: Sites.sites
   };
 
   componentDidUpdate() {
     fs.writeFileSync("ssotest.json", JSON.stringify(this.state.sites));
+  }
 
-    if (this.state.backgroundRunners.length < 3) {
-      for (let i = 0; i < this.state.sites.length; i++) {
-        if (
-          this.canTryLogin(this.state.sites[i]) &&
-          !this.state.backgroundRunners.includes(i) &&
-          this.state.sites[i].loggedIn === undefined &&
-          this.state.sites[i].image === undefined
-        ) {
-          this.setState(state => ({ backgroundRunners: [...state.backgroundRunners, i] }));
-          break;
-        }
-      }
+  advance() {
+    if (!this.state.running) {
+      return;
     }
+
+    this.setState(state => {
+      let nextTest = state.currentTest + 1;
+      let nextSite = state.sites[nextTest];
+
+      while (!this.canTryLogin(nextSite)) {
+        nextTest++;
+        nextSite = state.sites[nextTest];
+      }
+
+      return { ...state, currentTest: nextTest };
+    });
   }
 
   canTryLogin(site) {
@@ -114,19 +72,19 @@ class UniversalLoginTest extends React.Component<Props, State> {
       <>
         <tr key={`${site.app}_${i}`}>
           <td>{site.app}</td>
-          <td>{this.displayBool(site.errorin, this.state.currentTest == i)}</td>
-          <td>{this.displayBool(site.errorin, this.state.currentTest == i)}</td>
-          <td>{this.displayBool(site.loggedin, this.state.currentTest == i)}</td>
-          <td>{this.displayBool(site.loggedin, this.state.currentTest == i)}</td>
-          <td>{this.displayBool(site.loggedin, this.state.currentTest == i)}</td>
+          <td>{this.renderTestStatus(0, site.testResults, this.state.currentTest == i)}</td>
+          <td>{this.renderTestStatus(1, site.testResults, this.state.currentTest == i)}</td>
+          <td>{this.renderTestStatus(2, site.testResults, this.state.currentTest == i)}</td>
+          <td>{this.renderTestStatus(3, site.testResults, this.state.currentTest == i)}</td>
+          <td>{this.renderTestStatus(4, site.testResults, this.state.currentTest == i)}</td>
           <td>
             <Tooltip
               direction="left"
               content={
                 <span>
                   <img
-                    src={site.image}
-                    /* TODO bug: site.image is currently unknown*/ style={{
+                    src={site.screenshot}
+                    style={{
                       width: "1024px",
                       objectFit: "cover"
                     }}
@@ -150,13 +108,14 @@ class UniversalLoginTest extends React.Component<Props, State> {
                 loginUrl={site.url}
                 username={site.email}
                 password={site.password}
-                speed={1}
-                timeout={60000}
-                partition="ssotest"
-                setResult={(result, image) => {
+                setResult={(testResults, screenshot) => {
                   this.setState(prev => {
                     let sites = [...prev.sites];
-                    sites[prev.currentTest] = { ...sites[prev.currentTest], ...result, image };
+                    sites[prev.currentTest] = {
+                      ...sites[prev.currentTest],
+                      ...testResults,
+                      screenshot
+                    };
                     return { sites };
                   });
                   this.advance();
@@ -169,32 +128,16 @@ class UniversalLoginTest extends React.Component<Props, State> {
     ));
   }
 
-  displayBool(a: boolean, b: boolean = false) {
-    if (a === null || a === undefined) {
-      if (b) {
-        return <i className="fal fa-spinner fa-spin" />;
-      }
-      return " ";
-    }
-    return a ? <span style={{ color: "green" }}>✔</span> : <span style={{ color: "red" }}>×</span>;
-  }
-
-  advance() {
-    if (!this.state.running) {
-      return;
+  renderTestStatus(testIndex: number, results: boolean[], isUnderTest: boolean = false) {
+    if (!results || results[testIndex] === null || results[testIndex] === undefined) {
+      return isUnderTest ? <i className="fal fa-spinner fa-spin" /> : " ";
     }
 
-    this.setState(state => {
-      let nextTest = state.currentTest + 1;
-      let nextSite = state.sites[nextTest];
-
-      while (!this.canTryLogin(nextSite)) {
-        nextTest++;
-        nextSite = state.sites[nextTest];
-      }
-
-      return { ...state, currentTest: nextTest };
-    });
+    return results[testIndex] ? (
+      <span style={{ color: "green" }}>✔</span>
+    ) : (
+      <span style={{ color: "red" }}>×</span>
+    );
   }
 
   renderProportion(key) {
