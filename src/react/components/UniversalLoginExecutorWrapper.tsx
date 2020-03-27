@@ -24,14 +24,14 @@ const tests = [
     expectLoginSuccess: false,
     expectError: true,
     reuseSession: false,
-    speedFactor: 1,
+    speedFactor: 5,
     enterCorrectEmail: false
   },
   {
     expectLoginSuccess: false,
     expectError: true,
     reuseSession: false,
-    speedFactor: 1,
+    speedFactor: 3,
     enterCorrectEmail: true,
     enterCorrectPassword: false
   },
@@ -59,7 +59,7 @@ const tests = [
 ];
 
 const SSO_TEST_PARTITION = "ssotest";
-const MINUTE = 60000;
+const SECOND = 1000;
 
 class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
   state = {
@@ -78,7 +78,6 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
         return { ...state, currentTest: this.state.currentTest + 1 };
       });
     } else {
-      debugger;
       this.props.setResult(this.state.testResults, this.state.screenshot);
     }
   }
@@ -120,7 +119,7 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
         username={this.props.username + (test.enterCorrectEmail ? "" : "WRONG")}
         password={this.props.password + (test.enterCorrectPassword ? "" : "WRONG")}
         speed={test.speedFactor}
-        timeout={MINUTE}
+        timeout={15 * SECOND}
         partition={SSO_TEST_PARTITION}
         setResult={(result, screenshot) => {
           this.setState(state => {

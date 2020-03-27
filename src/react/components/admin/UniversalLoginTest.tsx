@@ -72,11 +72,9 @@ class UniversalLoginTest extends React.Component<Props, State> {
       <>
         <tr key={`${site.app}_${i}`}>
           <td>{site.app}</td>
-          <td>{this.renderTestStatus(0, site.testResults, this.state.currentTest == i)}</td>
-          <td>{this.renderTestStatus(1, site.testResults, this.state.currentTest == i)}</td>
-          <td>{this.renderTestStatus(2, site.testResults, this.state.currentTest == i)}</td>
-          <td>{this.renderTestStatus(3, site.testResults, this.state.currentTest == i)}</td>
-          <td>{this.renderTestStatus(4, site.testResults, this.state.currentTest == i)}</td>
+          {Array.from({ length: 5 }, (_, k) => (
+            <td>{this.renderTestStatus(k, site.testResults, this.state.currentTest == i)}</td>
+          ))}
           <td>
             <Tooltip
               direction="left"
