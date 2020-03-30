@@ -398,7 +398,6 @@ class TeamOverview extends React.Component<Props, State> {
                       additionalclassName="formPopup">
                       <AddTeamGeneralData
                         savingFunction={data => {
-                          console.log("DATA", data);
                           this.setState({ add: false });
                           this.props.moveTo(`dmanager/${data.content.unitid.id}`);
                         }}

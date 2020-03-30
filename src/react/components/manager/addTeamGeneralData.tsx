@@ -1,12 +1,9 @@
 import * as React from "react";
-import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
-import Dropzone from "react-dropzone";
 import TeamGerneralDataAdd from "./universal/adding/teamGeneralDataAdd";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
-import compose from "lodash.flowright";
+import { Mutation } from "react-apollo";
 import { fetchCompanyTeams } from "../../queries/departments";
 
 interface Props {
@@ -14,24 +11,23 @@ interface Props {
   savingFunction?: Function;
   continue?: Function;
   addteam?: any;
-  createTeam: Function;
   isadmin?: boolean;
 }
 
 interface State {
   name: string;
   leader: string;
-  picture: Dropzone.DropzoneProps | null;
+  picture?: any;
   saving: Boolean;
 }
 
 const CREATE_TEAM = gql`
-  mutation createTeam($teamdata: JSON!, $addemployees: [JSON]!, $apps: [JSON]!) {
+  mutation onCreateTeam($teamdata: JSON!, $addemployees: [JSON]!, $apps: [JSON]!) {
     createTeam(team: $teamdata, addemployees: $addemployees, apps: $apps)
   }
 `;
 
-class AddTeamGeneralData extends React.Component<Props, State> {
+export default class AddTeamGeneralData extends React.Component<Props, State> {
   state = {
     name: (this.props.addteam && this.props.addteam.name) || "",
     leader: (this.props.addteam && this.props.addteam.leader) || "",
@@ -63,11 +59,11 @@ class AddTeamGeneralData extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    window.addEventListener("keydown", this.listenKeyboard, true);
+    window.addEventListener("keydown", this.listenKeyboard);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("keydown", this.listenKeyboard, true);
+    window.removeEventListener("keydown", this.listenKeyboard);
   }
 
   render() {
@@ -93,41 +89,44 @@ class AddTeamGeneralData extends React.Component<Props, State> {
           />
         </div>
         {this.state.saving && (
-          <PopupSelfSaving
-            savingmessage={`Creating team ${this.state.name}.`}
-            savedmessage={`Team ${this.state.name} is created.`}
-            closeFunction={this.props.close}
-            saveFunction={async () => {
-              try {
-                const teamid = await this.props.createTeam({
-                  variables: {
-                    teamdata: { name: this.state.name, profilepicture: this.state.picture },
-                    addemployees: [],
-                    apps: []
-                  },
-                  refetchQueries: [{ query: fetchCompanyTeams }]
-                });
-                this.props.savingFunction!({
-                  action: "success",
-                  content: {
-                    unitid: { id: teamid.data.createTeam },
-                    name: this.state.name,
-                    profilepicture: this.state.picture,
-                    employees: [],
-                    services: []
-                  }
-                });
-              } catch (error) {
-                this.props.savingFunction!({
-                  action: "error",
-                  content: error
-                });
-              }
-            }}
-          />
+          <Mutation
+            mutation={CREATE_TEAM}
+            onCompleted={data =>
+              this.props.savingFunction!({
+                action: "success",
+                content: {
+                  unitid: { id: data.createTeam },
+                  name: this.state.name,
+                  profilepicture: this.state.picture,
+                  employees: [],
+                  services: []
+                }
+              })
+            }
+            onError={error =>
+              this.props.savingFunction!({ action: "error", content: error.message })
+            }>
+            {createTeam => (
+              <PopupSelfSaving
+                savingmessage={`Creating team ${this.state.name}.`}
+                savedmessage={`Team ${this.state.name} is created.`}
+                closeFunction={this.props.close}
+                saveFunction={() => {
+                  createTeam({
+                    variables: {
+                      teamdata: { name: this.state.name, profilepicture: this.state.picture },
+                      addemployees: [],
+                      apps: []
+                    },
+                    context: { hasUpload: true },
+                    refetchQueries: [{ query: fetchCompanyTeams }]
+                  });
+                }}
+              />
+            )}
+          </Mutation>
         )}
       </React.Fragment>
     );
   }
 }
-export default compose(graphql(CREATE_TEAM, { name: "createTeam" }))(AddTeamGeneralData);
