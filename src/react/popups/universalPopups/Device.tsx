@@ -9,8 +9,7 @@ import {
   SIGN_OUT_USER,
   FETCH_SESSIONS
 } from "../../components/security/graphqlOperations";
-import { ErrorComp } from "../../common/functions";
-import { SecurityContext } from "../../pages/security";
+import { ErrorComp, AppContext } from "../../common/functions";
 
 interface Props {
   session: {
@@ -37,7 +36,7 @@ export default (props: Props) => {
   } = decode(token);
 
   return (
-    <SecurityContext.Consumer>
+    <AppContext.Consumer>
       {({ logOut }) => (
         <div className="device" style={extended ? { height: "168px" } : {}}>
           <div
@@ -66,7 +65,6 @@ export default (props: Props) => {
                 }
 
                 const data = store.readQuery({ query: FETCH_SESSIONS, variables });
-                console.log("LOG: data", data);
 
                 const fetchUsersSessions = data.fetchUsersSessions.filter(el => {
                   return session.id != el.id;
@@ -131,6 +129,6 @@ export default (props: Props) => {
           </div>
         </div>
       )}
-    </SecurityContext.Consumer>
+    </AppContext.Consumer>
   );
 };
