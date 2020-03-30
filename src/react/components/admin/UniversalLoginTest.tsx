@@ -5,6 +5,7 @@ import * as fs from "fs";
 import UniversalLoginExecutorWrapper from "../UniversalLoginExecutorWrapper";
 import * as Sites from "./sites";
 import UniversalButton from "../universalButtons/universalButton";
+import { TestResult } from "../../interfaces";
 import { remote } from "electron";
 const { session } = remote;
 
@@ -18,9 +19,7 @@ interface State {
     url: string;
     email: string;
     password: string;
-    // following properties aren't present in Sites imported from ./sites which causes typescript problems
-    screenshot?: string;
-    testResults?: boolean[];
+    testResults?: TestResult[]; // not present in Sites imported from ./sites which causes typescript problems
   }[];
 }
 
@@ -44,7 +43,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
       let nextTest = state.currentTest + 1;
       let nextSite = state.sites[nextTest];
 
-      while (!this.canTryLogin(nextSite)) {
+      while (!this.loginDataAvailable(nextSite)) {
         nextTest++;
         nextSite = state.sites[nextTest];
       }
@@ -53,7 +52,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
     });
   }
 
-  canTryLogin(site) {
+  loginDataAvailable(site) {
     if (site) {
       return !(
         site.email == "" ||
@@ -76,12 +75,13 @@ class UniversalLoginTest extends React.Component<Props, State> {
             <td>{this.renderTestStatus(k, site.testResults, this.state.currentTest == i)}</td>
           ))}
           <td>
+            {/*
             <Tooltip
               direction="left"
               content={
                 <span>
                   <img
-                    src={site.screenshot}
+                    src={site.testResults.screenshot}
                     style={{
                       width: "1024px",
                       objectFit: "cover"
@@ -91,6 +91,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
               }>
               <span>Screenshot</span>
             </Tooltip>
+            */}
           </td>
           <td>
             <span onClick={() => this.setState({ currentTest: i, running: false })}>
@@ -106,13 +107,12 @@ class UniversalLoginTest extends React.Component<Props, State> {
                 loginUrl={site.url}
                 username={site.email}
                 password={site.password}
-                setResult={(testResults, screenshot) => {
+                setResult={testResults => {
                   this.setState(prev => {
                     let sites = [...prev.sites];
                     sites[prev.currentTest] = {
                       ...sites[prev.currentTest],
-                      testResults,
-                      screenshot
+                      testResults
                     };
                     return { sites };
                   });
@@ -126,16 +126,29 @@ class UniversalLoginTest extends React.Component<Props, State> {
     ));
   }
 
-  renderTestStatus(testIndex: number, results: boolean[], isUnderTest: boolean = false) {
-    if (!results || results[testIndex] === null || results[testIndex] === undefined) {
+  renderTestStatus(testIndex: number, results: TestResult[], isUnderTest: boolean = false) {
+    if (this.hasResult(testIndex, results)) {
+      return this.renderTestResult(results[testIndex]);
+    } else {
+      // test is either running or wasn't started yet
       return isUnderTest ? <i className="fal fa-spinner fa-spin" /> : " ";
     }
+  }
 
-    return results[testIndex] ? (
-      <span style={{ color: "green" }}>✔</span>
-    ) : (
-      <span style={{ color: "red" }}>×</span>
-    );
+  hasResult(testIndex: number, results: TestResult[]) {
+    return !results || !results[testIndex];
+  }
+
+  renderTestResult(result: TestResult) {
+    if (result.skipped) {
+      return <span style={{ color: "yellow" }}>Skipped</span>;
+    } else if (result.timedOut) {
+      return <span style={{ color: "orange" }}>Timeout</span>;
+    } else if (result.passed) {
+      return <span style={{ color: "green" }}>✔</span>;
+    } else {
+      return <span style={{ color: "red" }}>×</span>;
+    }
   }
 
   renderProportion(key) {

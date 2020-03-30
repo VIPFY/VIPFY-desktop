@@ -236,3 +236,10 @@ export interface SSO {
   email?: string;
   password?: string;
 }
+
+export interface TestResult {
+  skipped?: boolean; // test was skipped because either a precondition wasn't met or the test would have been redundant
+  passed?: boolean;
+  timedOut?: boolean;
+  screenshot?: string;
+}

@@ -16,8 +16,10 @@ interface Props {
   takeScreenshot?: boolean;
   setResult: (
     result: {
-      loggedin: boolean;
-      errorin: boolean;
+      loggedIn: boolean;
+      error: boolean;
+      timedOut?: boolean;
+      direct?: boolean;
     },
     image: string
   ) => void;
@@ -150,7 +152,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
-        this.sendResult({ loggedin: false, errorin: true, ...this.loginState });
+        debugger;
+        this.sendResult({ loggedIn: false, error: true, timedOut: true, ...this.loginState });
       }, this.props.timeout);
     }
 
@@ -674,7 +677,10 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           }
 
           this.sentResult = true;
-          this.props.setResult({ loggedin: false, errorin: false, ...this.loginState }, "");
+          this.props.setResult(
+            { ...resultValues, loggedIn: false, error: false, ...this.loginState },
+            ""
+          );
         }, delay);
       }
     } else {
@@ -691,9 +697,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       this.timeout = false;
       this.progress = 1;
       this.sendResult({
-        loggedin: true,
+        loggedIn: true,
         direct: true,
-        errorin: false,
+        error: false,
         ...this.loginState
       });
       if (this.progressHandle) {
@@ -716,7 +722,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       if (!this.props.noError && (await this.isErrorIn(this.webview))) {
         this.timeout = false;
         this.progress = 1;
-        this.sendResult({ loggedin: false, errorin: true, ...this.loginState });
+        this.sendResult({ loggedIn: false, error: true, ...this.loginState });
         if (this.progressHandle) {
           clearInterval(this.progressHandle);
           this.progressHandle = undefined;
@@ -727,7 +733,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     if (this.webview && (await this.isLoggedIn(this.webview))) {
       this.timeout = false;
       this.progress = 1;
-      this.sendResult({ loggedin: true, direct: true, errorin: false, ...this.loginState });
+      this.sendResult({ loggedIn: true, direct: true, error: false, ...this.loginState });
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
@@ -739,7 +745,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
         if (this.timeout) {
-          this.sendResult({ loggedin: false, errorin: true, ...this.loginState });
+          this.sendResult({ loggedIn: false, error: true, ...this.loginState });
         }
       }
     }
@@ -756,10 +762,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       //console.log("DIRECT LoggedIn", this.loginState);
       this.timeout = false;
       this.progress = 1;
-      this.props.setResult(
-        { loggedin: true, errorin: false, direct: true, ...this.loginState },
-        ""
-      );
+      this.props.setResult({ loggedIn: true, error: false, direct: true, ...this.loginState }, "");
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
@@ -814,7 +817,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             this.timeout = false;
             this.progress = 1;
             this.props.setResult(
-              { loggedin: true, errorin: false, direct: true, ...this.loginState },
+              { loggedIn: true, error: false, direct: true, ...this.loginState },
               ""
             );
             if (this.progressHandle) {
@@ -878,7 +881,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             this.timeout = false;
             this.progress = 1;
             this.props.setResult(
-              { loggedin: true, errorin: false, direct: true, ...this.loginState },
+              { loggedIn: true, error: false, direct: true, ...this.loginState },
               ""
             );
             if (this.progressHandle) {

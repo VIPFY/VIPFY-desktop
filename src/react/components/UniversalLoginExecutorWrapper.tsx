@@ -1,5 +1,6 @@
 import * as React from "react";
 import UniversalLoginExecutor from "./UniversalLoginExecutor";
+import { TestResult } from "../interfaces";
 import { remote } from "electron";
 const { session } = remote;
 
@@ -7,7 +8,7 @@ interface Props {
   loginUrl: string;
   username: string;
   password: string;
-  setResult: (testResults: boolean[], screenshot: string) => void;
+  setResult: (testResults: TestResult[]) => void;
 }
 
 interface Test {
@@ -64,12 +65,11 @@ const SECOND = 1000;
 class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
   state = {
     currentTest: 0,
-    testResults: [],
-    screenshot: "" // how to deal with only 1 screenshot but 5 tests?
+    testResults: []
   };
 
   isPassed(test: Test, result) {
-    return test.expectLoginSuccess == result.loggedin && test.expectError == result.errorin;
+    return test.expectLoginSuccess == result.loggedIn && test.expectError == result.error;
   }
 
   advance() {
@@ -78,7 +78,7 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
         return { ...state, currentTest: this.state.currentTest + 1 };
       });
     } else {
-      this.props.setResult(this.state.testResults, this.state.screenshot);
+      this.props.setResult(this.state.testResults);
     }
   }
 
@@ -106,7 +106,7 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
       session.fromPartition(SSO_TEST_PARTITION).clearStorageData();
     } else if (!this.existsReusableSession()) {
       this.setState(() => {
-        testResults[currentTest] = false;
+        testResults[currentTest] = { skipped: true };
         return { testResults };
       });
       this.advance();
@@ -121,14 +121,20 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
         speed={test.speedFactor}
         timeout={15 * SECOND}
         partition={SSO_TEST_PARTITION}
+        //takeScreenshot={false}
         setResult={(result, screenshot) => {
           this.setState(state => {
             let testResults = [...state.testResults];
-            testResults[state.currentTest] = this.isPassed(test, result);
+            let currentResult = testResults[state.currentTest] || {};
+
+            currentResult.passed = this.isPassed(test, result);
+            currentResult.timedOut = result.timedOut;
+            currentResult.screenshot = screenshot;
+
+            testResults[state.currentTest] = currentResult;
 
             return {
-              testResults,
-              screenshot
+              testResults
             };
           });
           this.advance();
