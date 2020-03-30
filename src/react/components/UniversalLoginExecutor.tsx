@@ -152,7 +152,6 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
-        debugger;
         this.sendResult({ loggedIn: false, error: true, timedOut: true, ...this.loginState });
       }, this.props.timeout);
     }
