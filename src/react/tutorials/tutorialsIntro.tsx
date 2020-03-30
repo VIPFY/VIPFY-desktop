@@ -211,12 +211,12 @@ class TutorialsIntro extends React.Component<Props, State> {
               <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
                 <i className="fas fa-times" /> Close this tour.
                 <br />
-                You will find more information in our Forum
+                For any further question simply contact our support
               </div>
               <div className="tutorialContent">
                 <p>First of all: Let's integrate another employee.</p>
                 <p>To see and edit all employees of your company</p>
-                <p style={{ fontWeight: "bold" }}>Click on EmployeeManager</p>
+                <p style={{ fontWeight: "bold" }}>Click on Employee Manager</p>
               </div>
             </div>
           </div>
@@ -266,7 +266,7 @@ class TutorialsIntro extends React.Component<Props, State> {
               <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
                 <i className="fas fa-times" /> Close this tour.
                 <br />
-                You will find more information in our Forum
+                For any further question simply contact our support
               </div>
               <div className="tutorialContent">
                 <p>
@@ -363,7 +363,7 @@ class TutorialsIntro extends React.Component<Props, State> {
               <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
                 <i className="fas fa-times" /> Close this tutorial.
                 <br />
-                You will find more information in our Forum
+                For any further question simply contact our support
               </div>
               <div className="tutorialContent">
                 <p>Insert the needed information about the new employee</p>
@@ -555,11 +555,11 @@ class TutorialsIntro extends React.Component<Props, State> {
               <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
                 <i className="fas fa-times" /> Close this tour.
                 <br />
-                You will find more information in our Forum
+                For any further question simply contact our support
               </div>
               <div className="tutorialContent">
                 <p>To see and edit all services and credentials of your company</p>
-                <p style={{ fontWeight: "bold" }}>Click on ServiceManager</p>
+                <p style={{ fontWeight: "bold" }}>Click on Service Manager</p>
               </div>
             </div>
           </div>
@@ -608,7 +608,7 @@ class TutorialsIntro extends React.Component<Props, State> {
               <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
                 <i className="fas fa-times" /> Close this tour.
                 <br />
-                You will find more information in our Forum
+                For any further question simply contact our support
               </div>
               <div className="tutorialContent">
                 <p>First we have to select a service.</p>
@@ -689,7 +689,7 @@ class TutorialsIntro extends React.Component<Props, State> {
                   onClick={() => this.close({ tutorial: "intro" })}>
                   <i className="fas fa-times" /> Close this tutorial.
                   <br />
-                  You will find more information in our Forum
+                  For any further question simply contact our support
                 </div>
                 <div className="tutorialContent">
                   <p>Click here to create your first orbit.</p>
@@ -775,13 +775,13 @@ class TutorialsIntro extends React.Component<Props, State> {
                   onClick={() => this.close({ tutorial: "intro" })}>
                   <i className="fas fa-times" /> Close this tutorial.
                   <br />
-                  You will find more information in our Forum
+                  For any further question simply contact our support
                 </div>
                 <div className="tutorialContent">
                   <p>
                     Select the service you want to add. Either type it first and select it in the
                     dropdown or click on <span style={{ fontWeight: "bold" }}>SHOW ALL</span> to see
-                    all services that are nativly supported by VIPFY
+                    all services that are natively supported by VIPFY
                   </p>
                 </div>
               </div>
@@ -866,7 +866,7 @@ class TutorialsIntro extends React.Component<Props, State> {
               <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
                 <i className="fas fa-times" /> Close this tutorial.
                 <br />
-                You will find more information in our Forum
+                For any further question simply contact our support
               </div>
               <div className="tutorialContent">
                 <p>
@@ -1009,7 +1009,7 @@ class TutorialsIntro extends React.Component<Props, State> {
               <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
                 <i className="fas fa-times" /> Close this tutorial.
                 <br />
-                You will find more information in our Forum
+                For any further question simply contact our support
               </div>
               <div className="tutorialContent">
                 <p>Click here to add your first account.</p>
@@ -1095,7 +1095,7 @@ class TutorialsIntro extends React.Component<Props, State> {
               <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
                 <i className="fas fa-times" /> Close this tutorial.
                 <br />
-                You will find more information in our Forum
+                For any further question simply contact our support
               </div>
               <div className="tutorialContent">
                 <p>
@@ -1212,7 +1212,7 @@ class TutorialsIntro extends React.Component<Props, State> {
               <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
                 <i className="fas fa-times" /> Close this tutorial.
                 <br />
-                You will find more information in our Forum
+                For any further question simply contact our support
               </div>
               <div className="tutorialContent">
                 <p>
