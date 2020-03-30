@@ -257,7 +257,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                         )
                                     );
 
-                                    return Math.max(0, sum - 1);
+                                    return sum;
                                   } else {
                                     return "No Data available";
                                   }
