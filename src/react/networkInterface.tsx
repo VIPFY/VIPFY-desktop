@@ -160,7 +160,7 @@ const middlewareLink = setContext(() => ({
 
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
 const wsLink = new WebSocketLink({
-  uri: "wss://websockets.vipfy.store/subscriptions",
+  uri: config.websocketServer,
   options: {
     reconnect: true,
     connectionParams: () => ({
