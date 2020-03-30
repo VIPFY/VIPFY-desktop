@@ -1,5 +1,5 @@
 export interface Licence {
-  id: number;
+  id: string;
   pending: boolean;
   options: JSON;
   starttime: number | string;
@@ -15,11 +15,11 @@ export interface Licence {
   delete: boolean;
   vacationstart?: number | Date;
   vacationend?: number | Date;
-  accountid: number;
+  accountid: string;
 }
 
 export interface Unit {
-  id: number;
+  id: string;
   profilepicture: string;
   createdate: string;
 }
@@ -48,7 +48,7 @@ export interface User extends Unit {
 
 export interface SecurityUser {
   unitid: any;
-  id: number;
+  id: string;
   createdate: string;
   lastactive: string;
   passwordlength: number;
@@ -58,7 +58,7 @@ export interface SecurityUser {
   needspasswordchange: boolean;
   needstwofa: boolean;
   twofactormethods: {
-    twofaid: number;
+    twofaid: string;
     twofatype: string;
     twofacreated: string;
     twofalastused: string;
@@ -67,7 +67,7 @@ export interface SecurityUser {
 }
 
 export interface PublicUser {
-  id: number;
+  id: string;
   firstname: string;
   middlename: string;
   lastname: string;
@@ -99,7 +99,7 @@ export interface Department {
 }
 
 export interface BoughtPlan {
-  id: number;
+  id: string;
   buytime: string;
   alias: string;
   endtime: number | Date;
@@ -114,7 +114,7 @@ export interface BoughtPlan {
 }
 
 export interface Domain {
-  id: number;
+  id: string;
   domainname: string;
   createdate: Date;
   renewaldate: Date;
@@ -143,7 +143,7 @@ export interface Email {
 }
 
 export interface Plan {
-  id: number;
+  id: string;
   name: string;
   teaserdescription: string;
   features: JSON;
@@ -163,7 +163,7 @@ export interface Plan {
 }
 
 export interface App {
-  id: number;
+  id: string;
   name: string;
   icon: string;
   loginurl: string;
