@@ -236,3 +236,7 @@ export interface SSO {
   email?: string;
   password?: string;
 }
+
+export interface WorkAround {
+  [basicallyEverything: string]: any;
+}
