@@ -21,7 +21,9 @@ import { WorkAround } from "../../interfaces";
 const UPDATE_PIC = gql`
   mutation onUpdateCompanyPic($file: Upload!) {
     updateCompanyPic(file: $file) {
-      id
+      unit: unitid {
+        id
+      }
       profilepicture
     }
   }
