@@ -574,7 +574,7 @@ class SelfSaving extends React.Component<Props, State> {
             </>
           ) : (
             <>
-              <div className="hide-sso-webview" style={{ height: "400px", width: "400px" }}>
+              <div className="hide-sso-webview" /*style={{ height: "400px", width: "400px" }}*/>
                 {!this.state.receivedData && (
                   <UniversalLoginExecutor
                     loginUrl={this.props.sso.loginurl!}
