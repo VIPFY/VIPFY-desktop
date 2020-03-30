@@ -8,6 +8,7 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 import { User } from "../../interfaces";
 import TwoFactorForm from "../../common/TwoFactorForm";
 import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/graphqlOperations";
+import { WorkAround } from "../../interfaces";
 
 export const GENERATE_SECRET = gql`
   query onGenerateSecret($type: TWOFA_TYPE!, $userid: ID) {
@@ -49,7 +50,7 @@ interface InnerProps extends Props {
 const GoogleAuth = (props: InnerProps) => {
   const [showInput, toggleInput] = React.useState(false);
   const [verifyToken, { data, loading, error }] = useMutation(VERIFY_TOKEN, {
-    refetchQueries: [FETCH_USER_SECURITY_OVERVIEW, { variables: { userid: props.user.id } }]
+    refetchQueries: [{ query: FETCH_USER_SECURITY_OVERVIEW, variables: { userid: props.user.id } }]
   });
 
   if (data) {
@@ -123,9 +124,7 @@ const GoogleAuth = (props: InnerProps) => {
           </React.Fragment>
         )}
       </section>
-      {props.close && (
-        <UniversalButton disabled={loading} type="low" closingPopup={true} label="cancel" />
-      )}
+      {props.close && <UniversalButton type="low" closingPopup={true} label="cancel" />}
       {!showInput && (
         <UniversalButton type="high" label="confirm" onClick={() => toggleInput(true)} />
       )}
@@ -134,7 +133,9 @@ const GoogleAuth = (props: InnerProps) => {
 };
 
 export default (props: Props) => (
-  <Query query={GENERATE_SECRET} variables={{ type: "totp", userid: props.user.id }}>
+  <Query<WorkAround, WorkAround>
+    query={GENERATE_SECRET}
+    variables={{ type: "totp", userid: props.user.id }}>
     {({ data, loading, error }) => {
       if (loading) {
         return <LoadingDiv />;
