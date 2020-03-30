@@ -493,6 +493,7 @@ class App extends React.Component<AppProps, AppState> {
         value={{
           showPopup: (data: PopUp) => this.renderPopup(data),
           placeid,
+          logOut: this.logMeOut,
           renderTutorial: e => this.renderTutorial(e),
           setrenderElements: e => this.setrenderElements(e),
           addRenderElement: e => this.addRenderElement(e),
