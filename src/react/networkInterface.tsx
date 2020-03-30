@@ -188,6 +188,7 @@ let dismissHeaderNotification = (_a, _b) => {
 
 export const setLogoutFunction = logoutFunc => {
   logout = logoutFunc;
+  window.logout = logoutFunc;
 };
 
 export const setUpgradeErrorHandler = handlerFunc => {

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { withRouter } from "react-router";
 import { graphql, Query, withApollo } from "react-apollo";
+
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import Store from "electron-store";
@@ -22,7 +23,7 @@ import HeaderNotificationProvider from "./components/notifications/headerNotific
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
 import { hashPassword } from "./common/crypto";
 import { remote } from "electron";
-const { session } = remote;
+const { session, BrowserWindow } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
@@ -140,6 +141,7 @@ class App extends React.Component<AppProps, AppState> {
     //     return;
     //   }
     // });
+
     if (this.props.history.location.pathname != "/area") {
       this.props.history.push("/area");
     }
