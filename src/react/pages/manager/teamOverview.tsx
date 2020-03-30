@@ -206,7 +206,7 @@ class TeamOverview extends React.Component<Props, State> {
                           return -1;
                         }
                       }
-                      // namen mÃ¼ssen gleich sein
+                      // namen müssen gleich sein
                       return 0;
                     });
                     break;
@@ -361,7 +361,6 @@ class TeamOverview extends React.Component<Props, State> {
                               employeeidFunction={e => e}
                               checkFunction={e => true}
                             />
-                            {console.log("TEAM", team.services)}
                             <ColumnServices
                               services={team.services}
                               checkFunction={element =>
