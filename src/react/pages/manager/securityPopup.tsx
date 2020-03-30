@@ -90,10 +90,8 @@ export default (props: Props) => {
             button: "update"
           }
         ];
-        console.log("FIRE: links", links);
 
         if (securityPage) {
-          console.log("FIRE: securityPage", securityPage);
           if (user.twofactormethods.length <= 0) {
             links.push({
               header: "Force Two-Factor Authentication",
@@ -135,7 +133,6 @@ export default (props: Props) => {
 
           links.reverse();
         }
-        console.log("FIRE: links after second pushs", links);
 
         return (
           <PopupBase
