@@ -38,7 +38,6 @@ interface Props {
   addWebview?: Function;
   loggedIn: Boolean;
   deleteCookies?: Boolean;
-  delay?: number;
   webviewId?: number;
 }
 
@@ -126,6 +125,8 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
   sentResult = false;
 
+  screenshotDelay = 500;
+
   reset() {
     if (this.props.deleteCookies) {
       session.fromPartition(this.props.partition).clearStorageData();
@@ -152,7 +153,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
 
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
-        this.sendResult({ loggedIn: false, error: true, timedOut: true, ...this.loginState });
+        this.sendResult({ loggedIn: false, error: false, timedOut: true, ...this.loginState });
       }, this.props.timeout);
     }
 
@@ -645,12 +646,10 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       this.timeoutHandle = undefined;
     }
 
-    const { takeScreenshot, delay } = this.props;
+    const takeScreenshot = this.props.takeScreenshot;
 
     if (takeScreenshot) {
-      if (!!delay) {
-        this.progressStep = ((1 - this.progress) * this.progressInterval) / delay;
-      }
+      this.progressStep = ((1 - this.progress) * this.progressInterval) / this.screenshotDelay;
 
       const webview = this.webview;
 
@@ -668,7 +667,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           } else {
             this.props.setResult(resultValues, "");
           }
-        }, delay);
+        }, this.screenshotDelay);
       } else {
         setTimeout(() => {
           if (this.isUnmounted || this.sentResult) {
@@ -680,7 +679,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
             { ...resultValues, loggedIn: false, error: false, ...this.loginState },
             ""
           );
-        }, delay);
+        }, this.screenshotDelay);
       }
     } else {
       this.props.setResult(resultValues, "");
