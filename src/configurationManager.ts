@@ -11,6 +11,7 @@ let config = {
       process.env.SERVER_SSL !== "false" &&
       process.env.SERVER_SSL !== "FALSE"
     : configJSON.serverSSL,
+  websocketServer: process.env.WEBSOCKET_SERVER || configJSON.websocketServer,
   isDevelopment: devCheck,
   stripeToken: process.env.stripeToken,
   showProfile: true,
