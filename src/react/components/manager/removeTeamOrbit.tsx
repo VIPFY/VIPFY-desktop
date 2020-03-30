@@ -180,7 +180,10 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                 }
                 //When autodelete and no children
                 if (oldstate.autodelete) {
-                  if (!array.teams.find(t => !t.bool) && !array.accounts.find(a => !a.bool)) {
+                  if (
+                    !array.teams.find(t => !t || !t.bool) &&
+                    !array.accounts.find(a => !a || !a.bool)
+                  ) {
                     array.orbit = true;
                   }
                 }
@@ -791,13 +794,15 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                             return { id: t.unitid.id, bool: true };
                           }),
                           accounts: this.props.orbit.accounts.map(a => {
-                            return {
-                              id: a.id,
-                              bool: true,
-                              assignments: a.assignments.map(as => {
-                                return { id: as.assignmentid, bool: true };
-                              })
-                            };
+                            if (a) {
+                              return {
+                                id: a.id,
+                                bool: true,
+                                assignments: a.assignments.map(as => {
+                                  return { id: as.assignmentid, bool: true };
+                                })
+                              };
+                            }
                           })
                         }
                       });
@@ -822,13 +827,15 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                             return { id: t.unitid.id, bool: true };
                           }),
                           accounts: this.props.orbit.accounts.map(a => {
-                            return {
-                              id: a.id,
-                              bool: true,
-                              assignments: a.assignments.map(as => {
-                                return { id: as.assignmentid, bool: true };
-                              })
-                            };
+                            if (a) {
+                              return {
+                                id: a.id,
+                                bool: true,
+                                assignments: a.assignments.map(as => {
+                                  return { id: as.assignmentid, bool: true };
+                                })
+                              };
+                            }
                           })
                         }
                       });
@@ -899,9 +906,7 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
               style={{
                 display: "flex",
                 alignItems: "center",
-                position: "absolute",
-                bottom: "0px",
-                left: "0px"
+                marginTop: "24px"
               }}>
               <span
                 style={{
@@ -970,9 +975,11 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                   //When select => select all children
                   if (newbool) {
                     array.accounts &&
-                      array.accounts.forEach(a => a.assignments.forEach(as => (as.bool = true)));
-                    array.accounts && array.accounts.forEach(a => (a.bool = true));
-                    array.teams && array.teams.forEach(t => (t.bool = true));
+                      array.accounts.forEach(
+                        a => a && a.assignments.forEach(asa => asa && (asa.bool = true))
+                      );
+                    array.accounts && array.accounts.forEach(a => a && (a.bool = true));
+                    array.teams && array.teams.forEach(t => t && (t.bool = true));
                   }
                   array.orbit = newbool;
 
@@ -1023,9 +1030,11 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
               this.state.deleteArray.orbit ||
               (this.state.deleteArray.teams && this.state.deleteArray.teams.find(t => t.bool)) ||
               (this.state.deleteArray.accounts &&
-                this.state.deleteArray.accounts.find(a => a.bool)) ||
+                this.state.deleteArray.accounts.find(a => a && a.bool)) ||
               (this.state.deleteArray.accounts &&
-                this.state.deleteArray.accounts.forEach(a => a.assignments.find(as => as.bool)))
+                this.state.deleteArray.accounts.forEach(
+                  a => a && a.assignments.find(asa => asa && asa.bool)
+                ))
             )
           }
           onClick={async () => {

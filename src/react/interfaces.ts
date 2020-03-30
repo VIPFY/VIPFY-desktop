@@ -24,8 +24,7 @@ export interface Unit {
   createdate: string;
 }
 
-export interface User {
-  id: string;
+export interface User extends Unit {
   firstname: string;
   middlename: string;
   lastname: string;
@@ -36,9 +35,7 @@ export interface User {
   banned: boolean;
   deleted: boolean;
   suspended: boolean;
-  profilepicture: string;
   emails: Email[];
-  createdate: string;
   company: Department;
   statisticdata: JSON;
   needspasswordchange: boolean;
@@ -222,17 +219,13 @@ export interface InputProps {
   handleKeyPress?: Function;
 }
 
-export interface Domain {
-  domain: string;
-  price: string;
-  currency: string;
-  availability: string;
-  description: string;
-}
-
 export interface SSO {
   name?: string;
   loginurl?: string;
   email?: string;
   password?: string;
+}
+
+export interface WorkAround {
+  [basicallyEverything: string]: any;
 }
