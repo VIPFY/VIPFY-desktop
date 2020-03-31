@@ -473,7 +473,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
-        show: true || (config.showAdmin && vipfyAdmins.find(admin => admin == this.props.id)),
+        show: config.showAdmin && vipfyAdmins.find(admin => admin == this.props.id),
         highlight: "adminelement"
       },
       {
