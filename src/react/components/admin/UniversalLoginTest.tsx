@@ -53,17 +53,18 @@ class UniversalLoginTest extends React.Component<Props, State> {
   }
 
   loginDataAvailable(site) {
-    if (site) {
-      return !(
-        site.email == "" ||
-        site.password == "" ||
-        site.url == "" ||
-        site.email == "-" ||
-        site.password == "-" ||
-        site.url == "-"
-      );
+    if (!site) {
+      return false;
     }
-    return false;
+
+    return !(
+      site.email == "" ||
+      site.password == "" ||
+      site.url == "" ||
+      site.email == "-" ||
+      site.password == "-" ||
+      site.url == "-"
+    );
   }
 
   renderTable(siteUnderTest) {
