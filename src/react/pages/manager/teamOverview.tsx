@@ -147,7 +147,7 @@ class TeamOverview extends React.Component<Props, State> {
             pollInterval={60 * 10 * 1000 + 600}
             query={fetchCompanyTeams}
             fetchPolicy="network-only">
-            {({ loading, error, data, refetch }) => {
+            {({ loading, error, data }) => {
               if (loading) {
                 return (
                   <div className="table" key="table">
@@ -176,7 +176,7 @@ class TeamOverview extends React.Component<Props, State> {
                 );
               }
               if (error) {
-                return `Error! ${error.message}`;
+                return <div>Error! {error.message}</div>;
               }
 
               // Sort teams
@@ -206,7 +206,7 @@ class TeamOverview extends React.Component<Props, State> {
                           return -1;
                         }
                       }
-                      // namen mÃ¼ssen gleich sein
+                      // namen müssen gleich sein
                       return 0;
                     });
                     break;
@@ -398,7 +398,6 @@ class TeamOverview extends React.Component<Props, State> {
                       additionalclassName="formPopup">
                       <AddTeamGeneralData
                         savingFunction={data => {
-                          console.log("DATA", data);
                           this.setState({ add: false });
                           this.props.moveTo(`dmanager/${data.content.unitid.id}`);
                         }}

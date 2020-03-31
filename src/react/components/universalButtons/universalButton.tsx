@@ -24,19 +24,24 @@ class UniversalButton extends React.Component<Props, State> {
     saving: false
   };
   click = async e => {
-    if (!this.state.saving && !this.props.disabled) {
-      if (this.props.onClick) {
-        this.setState({ saving: true });
-        try {
-          await this.props.onClick(e);
-        } catch (error) {
-          console.error(error);
+    try {
+      if (!this.state.saving && !this.props.disabled) {
+        if (this.props.onClick) {
+          this.setState({ saving: true });
+          try {
+            await this.props.onClick(e);
+          } catch (error) {
+            console.error(error);
+          }
+          this.setState({ saving: false });
         }
-        this.setState({ saving: false });
+        if (this.props.additionalClickFunction) {
+          this.props.additionalClickFunction();
+        }
       }
-      if (this.props.additionalClickFunction) {
-        this.props.additionalClickFunction();
-      }
+    } catch (error) {
+      this.setState({ saving: false });
+      console.error(error);
     }
   };
 

@@ -3,6 +3,7 @@
   "server": "api.vipfy.store",
   "serverSSL": true,
   "serverPort": 443,
+  "websocketServer": "wss://websockets.vipfy.store/subscriptions",
   "development": false,
   "stripe": {
     "live": "pk_live_OrfeIMTOFjG5o9S5zm9iYH0x",

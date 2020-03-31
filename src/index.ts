@@ -210,8 +210,10 @@ const createWindow = async () => {
     mainWindow.webContents.openDevTools();
   }
 
-  mainWindow.on("close", () => {
+  mainWindow.on("close", async () => {
     try {
+      await mainWindow.webContents.executeJavaScript("window.logout()");
+      await mainWindow.webContents.executeJavaScript("localStorage.clear()");
       mainWindow.webContents.session.clearStorageData();
       session.fromPartition("services").clearStorageData();
     } catch (err) {

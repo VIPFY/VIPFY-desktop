@@ -1,6 +1,7 @@
 import * as React from "react";
 import { withRouter } from "react-router";
 import { graphql, Query, withApollo } from "react-apollo";
+
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import Store from "electron-store";
@@ -22,7 +23,7 @@ import HeaderNotificationProvider from "./components/notifications/headerNotific
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
 import { hashPassword } from "./common/crypto";
 import { remote } from "electron";
-const { session } = remote;
+const { session, BrowserWindow } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
@@ -115,6 +116,7 @@ class App extends React.Component<AppProps, AppState> {
     //     return;
     //   }
     // });
+
     if (this.props.history.location.pathname != "/area") {
       this.props.history.push("/area");
     }
@@ -173,9 +175,16 @@ class App extends React.Component<AppProps, AppState> {
     const impersonated = await localStorage.getItem("impersonator-token");
     if (impersonated) {
       try {
-        const res = await this.props.endImpersonation({
-          variables: { token: impersonated }
-        });
+        let token = null;
+        try {
+          const res = await this.props.endImpersonation({
+            variables: { token: impersonated }
+          });
+          token = res.endImpersonation;
+        } catch (err) {
+          // even if server side fails for some reason still undo impersonation locally
+          console.error("LOG: logMeOut -> err endImpersonation", err);
+        }
 
         // restore original local storage (fixes VIP-1003)
         const impersonatorLocalStorage = JSON.parse(
@@ -185,8 +194,7 @@ class App extends React.Component<AppProps, AppState> {
         for (const key in impersonatorLocalStorage) {
           localStorage.setItem(key, impersonatorLocalStorage[key]);
         }
-
-        await localStorage.setItem("token", res.endImpersonation);
+        await localStorage.setItem("token", token);
       } catch (err) {
         localStorage.removeItem("token");
         console.error("LOG: logMeOut -> err", err);
@@ -461,6 +469,7 @@ class App extends React.Component<AppProps, AppState> {
         value={{
           showPopup: (data: PopUp) => this.renderPopup(data),
           placeid,
+          logOut: this.logMeOut,
           renderTutorial: e => this.renderTutorial(e),
           setrenderElements: e => this.setrenderElements(e),
           addRenderElement: e => this.addRenderElement(e),
