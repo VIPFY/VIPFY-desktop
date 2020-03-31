@@ -7,18 +7,16 @@ let recaptchaConfirmOnce = false;
 let checkRecaptcha = false;
 let bot = false;
 let webview;
-let last_known_scroll_position = 0;
 //let ticking = false;
 var scrollTimer = -1;
-
 
 var listeners = [];
 
 const asktypes = ["input", "textbox"];
 
-(function () {
+(function() {
   Element.prototype._addEventListener = Element.prototype.addEventListener;
-  Element.prototype.addEventListener = function (a, b, c) {
+  Element.prototype.addEventListener = function(a, b, c) {
     console.log("Element.prototype.addEventListener");
     if (c == undefined) c = false;
     this._addEventListener(a, b, c);
@@ -28,13 +26,13 @@ const asktypes = ["input", "textbox"];
     this.eventListenerList[a].push({ listener: b, useCapture: c });
   };
 
-  Element.prototype.getEventListeners = function (a) {
+  Element.prototype.getEventListeners = function(a) {
     console.log("Element.prototype.getEventListener");
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) return this.eventListenerList;
     return this.eventListenerList[a];
   };
-  Element.prototype.clearEventListeners = function (a) {
+  Element.prototype.clearEventListeners = function(a) {
     console.log("Element.prototype.clearEventListener");
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) {
@@ -50,7 +48,7 @@ const asktypes = ["input", "textbox"];
   };
 
   Element.prototype._removeEventListener = Element.prototype.removeEventListener;
-  Element.prototype.removeEventListener = function (a, b, c) {
+  Element.prototype.removeEventListener = function(a, b, c) {
     console.log("Element.prototype.removeEventListener");
     if (c == undefined) c = false;
     this._removeEventListener(a, b, c);
@@ -69,13 +67,10 @@ const asktypes = ["input", "textbox"];
     }
     if (this.eventListenerList[a].length == 0) delete this.eventListenerList[a];
   };
-
-
-
 })();
 
 Object.defineProperty(String.prototype, "includesAny", {
-  value: function (searches) {
+  value: function(searches) {
     for (const search of searches) {
       if (this.indexOf(search) !== -1) {
         return true;
@@ -86,7 +81,7 @@ Object.defineProperty(String.prototype, "includesAny", {
 });
 
 Object.defineProperty(String.prototype, "includesAnyRegExp", {
-  value: function (searches) {
+  value: function(searches) {
     for (const search of searches) {
       if (search.test(this)) {
         return true;
@@ -151,9 +146,9 @@ ipcRenderer.on("delockItem", async (e, args1) => {
   element.clearEventListeners(); //remove the perventDefault
   const listeners1 =
     listeners[
-    listeners.findIndex(elemente => {
-      return elemente[0] == element;
-    })
+      listeners.findIndex(elemente => {
+        return elemente[0] == element;
+      })
     ][1];
   Object.keys(listeners1).forEach(key => {
     listeners1[key].forEach(i => element.addEventListener(key, i));
@@ -170,6 +165,7 @@ ipcRenderer.on("delockItem", async (e, args1) => {
 
 ipcRenderer.on("givePosition", async (e, args1, args2, args3) => {
   const ding = document.querySelector(args1);
+  console.log("givePositionBack", ding, args1);
   if (ding == null) {
     return;
   }
@@ -285,7 +281,7 @@ function removeIframeEvents(iframe, list, events) {
     */
 }
 
-function findAllIframes(doc, remove = false) {
+function findAllIframes(doc, remove) {
   //console.log("findAllIframes called");
   let iframes = doc.querySelectorAll("iframe");
   //console.log("IFRAMES", iframes, doc);
@@ -315,7 +311,7 @@ function findAllIframes(doc, remove = false) {
 
 var config = { attributes: true, childList: true, subtree: true };
 
-var callback1 = function (mutationsList, observer) {
+var callback1 = function(mutationsList, observer) {
   //console.log(iframeList);
   //var newChilds = [];
   for (var mutation of mutationsList) {
@@ -347,7 +343,7 @@ var callback1 = function (mutationsList, observer) {
   //return newChilds;
 };
 
-var callback2 = function (mutationsList, observer) {
+var callback2 = function(mutationsList, observer) {
   //console.log("Callback2 called");
   for (var mutation of mutationsList) {
     if (mutation.type == "childList") {
@@ -609,27 +605,7 @@ function findTarget(event, iframe) {
     selector,
     { x: rect.x, y: rect.y },
     iselector
-  );
-  /* ipcRenderer.sendToHost(
-    "sendMessage",
-    event.target.tagName,
-    event.target.type,
-    event.type,
-    asktypes.includes(event.target.tagName.toLowerCase()),
-    event.type == "click"
-  ); */ //clientLeft clientTop
-
-  /* ipcRenderer.sendToHost(
-    "sendClick",
-    [event.target.clientWidth, event.target.clientHeight, event.offsetX, event.offsetY],
-    [
-      [event.screenX - event.offsetX, event.screenY - event.offsetY],
-      event.target.clientWidth,
-      event.target.clientHeight,
-      event.target.clientLeft,
-      event.target.clientTop
-    ]
-  );  */ if (
+  ); /* if (
     asktypes.includes(event.target.tagName.toLowerCase()) &&
     event.type == "click" &&
     wereans[0]
@@ -649,10 +625,26 @@ function findTarget(event, iframe) {
       rect.x,
       rect.y
     );
-  }
-  event.target.disabled = true;
+  } */ /* ipcRenderer.sendToHost(
+    "sendClick",
+    [event.target.clientWidth, event.target.clientHeight, event.offsetX, event.offsetY],
+    [
+      [event.screenX - event.offsetX, event.screenY - event.offsetY],
+      event.target.clientWidth,
+      event.target.clientHeight,
+      event.target.clientLeft,
+      event.target.clientTop
+    ]
+  );  */ //clientLeft clientTop
+  /* ipcRenderer.sendToHost(
+    "sendMessage",
+    event.target.tagName,
+    event.target.type,
+    event.type,
+    asktypes.includes(event.target.tagName.toLowerCase()),
+    event.type == "click"
+  ); */ event.target.disabled = true;
   console.log("buttons disabled");
-
 }
 
 function elemIsButton(t) {
@@ -786,22 +778,27 @@ window.addEventListener("load", async () => {
   }
 });
 
+ipcRenderer.once("startTracking", () => {
+  window.addEventListener("scroll", function(e) {
+    ipcRenderer.sendToHost("startScroll", window.scrollY);
+  });
+});
+
 ipcRenderer.on("startTracking", () => {
   console.log("START TRACKING");
+  //remove Listeners first in case they already exist (no doubles);
+  document.removeEventListener("click", findTarget, true);
+  document.removeEventListener("keyup", findTarget, true);
+  document.removeEventListener("input", findTarget, true);
+  document.removeEventListener("paste", findTarget, true);
   document.addEventListener("click", findTarget, true);
   document.addEventListener("keyup", findTarget, true);
   document.addEventListener("input", findTarget, true);
   document.addEventListener("paste", findTarget, true);
+  ipcRenderer.sendToHost("trackingStarted");
+  //document.addEventListener();
 
-  window.addEventListener('scroll', function (e) {
-    last_known_scroll_position = window.scrollY;
-    ipcRenderer.sendToHost("startScroll", last_known_scroll_position);
-    if (scrollTimer != -1)
-      clearTimeout(scrollTimer);
-    scrollTimer = window.setTimeout(ipcRenderer.sendToHost("stopScroll", last_known_scroll_position), 500);
-  });
-
-  findAllIframes(document);
+  findAllIframes(document, false);
 });
 
 ipcRenderer.on("removeTracking", () => {
@@ -809,8 +806,74 @@ ipcRenderer.on("removeTracking", () => {
   document.removeEventListener("keyup", findTarget, true);
   document.removeEventListener("input", findTarget, true);
   document.removeEventListener("paste", findTarget, true);
+  ipcRenderer.sendToHost("trackingEnded");
+
+  /* window.removeEventListener("scroll", function(e) {
+    ipcRenderer.sendToHost("startScroll", window.scrollY);
+  }); */
   findAllIframes(document, true);
 });
+
+ipcRenderer.on("hide element", async (e, args1, args2, args3) => {
+  let ding = document.querySelector(args1);
+  for (let i = 0; i < args3; i++) {
+    if (ding.displaySave) {
+      ipcRenderer.sendToHost("true PPP");
+    } else {
+      ipcRenderer.sendToHost("false PPP");
+    }
+    ipcRenderer.sendToHost(
+      "Hide Element triggered",
+      ding.style.display,
+      ding.displaySave,
+      args2,
+      1
+    );
+    if (args2) {
+      //Hide Element
+      if (!(ding.style.display == "none")) {
+        ding.displaySave = ding.style.display;
+        ding.style.display = "none";
+      }
+    } else {
+      //Show Element
+      if (
+        ding.style.display == "none" &&
+        ding.displaySave !== undefined &&
+        ding.displaySave != null
+      ) {
+        ding.style.display = ding.displaySave;
+        ding.displaySave = null;
+      }
+    }
+    ding = ding.parentElement;
+  }
+  //Show the parentElement if is was hiden from me and is not anymore in the list
+  if (ding.style.display == "none" && ding.displaySave !== undefined && ding.displaySave != null) {
+    ding.style.display = ding.displaySave;
+    ding.displaySave = null;
+  }
+
+  ipcRenderer.sendToHost("Hide Element triggered", ding.style.display, ding.displaySave, args2, 2);
+});
+
+/* ipcRenderer.on("givePosition", async (e, args1, args2, args3) => {
+  const ding = document.querySelector(args1);
+  console.log("givePositionBack", ding, args1);
+  if (ding == null) {
+    return;
+  }
+  const rect = ding.getBoundingClientRect();
+  ipcRenderer.sendToHost(
+    "givePosition",
+    ding.clientWidth,
+    ding.clientHeight,
+    rect.x,
+    rect.y,
+    args2,
+    args3
+  );
+}); */
 
 ipcRenderer.on("getSelectOptions", async (e, args1) => {
   const options = [];
@@ -944,7 +1007,7 @@ const attributes = [
 function filterDom(includesAny, excludesAll) {
   includesAny = includesAny.map(i => new RegExp(i));
   excludesAll = excludesAll.map(i => new RegExp(i));
-  return function (element) {
+  return function(element) {
     if (!element.hasAttributes()) {
       return false;
     }

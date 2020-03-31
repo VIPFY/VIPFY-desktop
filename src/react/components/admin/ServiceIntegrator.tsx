@@ -958,6 +958,10 @@ class ServiceIntegrator extends React.Component<Props, State> {
         this.startScroll(e.args[0]);
         break;
 
+      case "stopScroll":
+        this.stopScroll();
+        break;
+
       case "gotClicked":
         console.log("ServiceIntegrator.gotClicked called");
         break;
@@ -1325,7 +1329,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "unload":
-        console.log("UNLOAD", this.webview);
+        //console.log("UNLOAD", this.webview);
         this.setState({ webviewReady: false });
         this.webview = null;
         break;
@@ -1398,13 +1402,12 @@ class ServiceIntegrator extends React.Component<Props, State> {
     //   );
     // } else {
     return (
-      <div>
-        <div>
+      <div style={{ height: "100%" }}>
         <div
           style={{
             float: "left",
             width: "200px",
-            height: "calc(100vh - 72px)",
+            height: "100%", //calc(100vh - 72px)
             backgroundColor: "#30475D"
           }}>
           <div style={{ height: "15%" }}>
@@ -1475,54 +1478,52 @@ class ServiceIntegrator extends React.Component<Props, State> {
                 }}
                 label="Start Tracking"
               />
-              )}
-            </div>
-            <div style={{ overflowY: "scroll", width: "100%", height: "65%" }}>
-              {this.state.executionPlan.map((o, k) => (
-                <div
-                  id={o.args.id + "side"}
-                  onMouseEnter={() => this.zeigeElement(true, o.args.id)}
-                  onMouseLeave={() => this.zeigeElement(false, o.args.id)}
-                  style={{ border: "1px solid red", marginTop: "10px" }}>
-                  <ClickElement
-                    id={`ce-${k}`}
-                    startvalue={o.operation}
-                    onChange={(operation, value) => {
-                      this.updateSelection(o.args.id, operation, value);
-                      console.log("TEST", operation);
-                      if (value == "select") {
-                        console.log("id", o.args.selector);
-                        this.webview!.send("getSelectOptions", o.args.selector);
-                      }
-                    }}
-                    isLogin={false}
-                  />
-                  <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
-                  <div /* style={{ float: "left" }} */>
-                    {!this.state.isLogin ? (
-                      <span>
-                        <input
-                          type="checkbox"
-                          id={"paralelOption" + o.args.id}
-                          onChange={e => {
-                            o.isParalelOption = e.target.checked;
-                            this.forceUpdate();
-                          }}
-                        />
-                        <div style={{ color: "white" }}>Is Paralel Option</div>
-                      </span>
-                    ) : null}
-                    <input
-                      style={{ visibility: o.isParalelOption ? "visible" : "collapse" }}
-                      id={"team" + o.args.id}
-                      onChange={e => {
-                        o.paralelTeam = document.getElementById("team" + o.args.id)!.value;
-                      }}></input>
-                  </div>
+            )}
+          </div>
+          <div style={{ overflowY: "scroll", width: "100%", height: "65%" }}>
+            {this.state.executionPlan.map((o, k) => (
+              <div
+                id={o.args.id + "side"}
+                onMouseEnter={() => this.zeigeElement(true, o.args.id)}
+                onMouseLeave={() => this.zeigeElement(false, o.args.id)}
+                style={{ border: "1px solid red", marginTop: "10px" }}>
+                <ClickElement
+                  id={`ce-${k}`}
+                  startvalue={o.operation}
+                  onChange={(operation, value) => {
+                    this.updateSelection(o.args.id, operation, value);
+                    console.log("TEST", operation);
+                    if (value == "select") {
+                      console.log("id", o.args.selector);
+                      this.webview!.send("getSelectOptions", o.args.selector);
+                    }
+                  }}
+                  isLogin={false}
+                />
+                <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
+                <div /* style={{ float: "left" }} */>
+                  {!this.state.isLogin ? (
+                    <span>
+                      <input
+                        type="checkbox"
+                        id={"paralelOption" + o.args.id}
+                        onChange={e => {
+                          o.isParalelOption = e.target.checked;
+                          this.forceUpdate();
+                        }}
+                      />
+                      <div style={{ color: "white" }}>Is Paralel Option</div>
+                    </span>
+                  ) : null}
+                  <input
+                    style={{ visibility: o.isParalelOption ? "visible" : "collapse" }}
+                    id={"team" + o.args.id}
+                    onChange={e => {
+                      o.paralelTeam = document.getElementById("team" + o.args.id)!.value;
+                    }}></input>
                 </div>
               </div>
             ))}
-
             <div style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
               Everything selected?
               <UniversalButton
@@ -1541,7 +1542,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   });
                   this.sendExecute();
                 }}
-                style={{ width: "100px" }}
                 label="EXECUTE Tracked"></UniversalButton>
             </div>
           </div>
@@ -1688,7 +1688,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         <div
           style={{
             float: "left",
-            height: "calc(100vh - 72px)",
+            height: "100%", //calc(100vh - 72px)
             width: "calc(100% - 200px)"
           }}>
           {this.state.divList.map(e => e)}
