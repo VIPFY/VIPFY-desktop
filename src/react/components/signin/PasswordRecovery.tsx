@@ -4,8 +4,9 @@ import gql from "graphql-tag";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import { ErrorComp } from "../../common/functions";
-import { generatePersonalKeypair } from "../../common/crypto";
+import { generatePersonalKeypair, decryptPrivateKey } from "../../common/crypto";
 import LoadingDiv from "../LoadingDiv";
+import { WorkAround } from "../../interfaces";
 
 const RECOVER_PASSWORD = gql`
   mutation onRecoverPassword($keyData: RecoveryKeyInput!, $email: String!) {
@@ -31,7 +32,7 @@ export default (props: Props) => {
     variables: { email: props.email }
   });
 
-  const _base64ToArrayBuffer = base64 => {
+  const base64ToArrayBuffer = base64 => {
     const binaryString = window.atob(base64);
 
     const bytes = new Uint8Array(binaryString.length);
@@ -109,6 +110,7 @@ export default (props: Props) => {
         <i className="fal fa-minus" />
       </React.Fragment>
     ));
+  // pC9KfZ3DLu+gWnba4weehpCLiMXI/cpC/EVOwdH3n6QthGN/
 
   return (
     <div className="password-recovery">
@@ -119,15 +121,7 @@ export default (props: Props) => {
         <div className="holder-right">
           <h1>Recover your account</h1>
 
-          {loading ? (
-            <LoadingDiv />
-          ) : (
-            <p style={{ textAlign: "left" }}>
-              Please put in your 44 characters long recovery code you got in the beginning to set a
-              new password.
-            </p>
-          )}
-          <Mutation mutation={RECOVER_PASSWORD}>
+          <Mutation<WorkAround, WorkAround> mutation={RECOVER_PASSWORD}>
             {(mutate, { loading: l2, error: e2 }) => {
               const handleSubmit = async e => {
                 e.preventDefault();
@@ -136,22 +130,33 @@ export default (props: Props) => {
                   .map(node => node.value)
                   .reduce((acc, cv) => acc + cv, "");
 
-                const keyBytes = await _base64ToArrayBuffer(code);
+                const keyBytes = await base64ToArrayBuffer(code);
 
                 const keyData = await decryptPrivateKey(
-                  data.fetchRecoveryKey,
+                  Buffer.from(data.fetchRecoveryKey.slice(0, 32)),
                   Buffer.from(keyBytes.slice(0, 32))
                 );
                 console.log("FIRE: keyData", keyData);
-                await mutate({ variables: { keyData, email: props.email } });
+                //   await mutate({ variables: { keyData, email: props.email } });
               };
 
               return (
                 <React.Fragment>
-                  {!error && (
-                    <form onSubmit={handleSubmit} id="recovery-form">
-                      {renderRows(fields)}
-                    </form>
+                  {loading ? (
+                    <LoadingDiv />
+                  ) : (
+                    !error && (
+                      <React.Fragment>
+                        <p style={{ textAlign: "left" }}>
+                          Please put in your 44 characters long recovery code you got in the
+                          beginning to set a new password.
+                        </p>
+
+                        <form onSubmit={handleSubmit} id="recovery-form">
+                          {renderRows(fields)}
+                        </form>
+                      </React.Fragment>
+                    )
                   )}
 
                   <ErrorComp error={e2 || error} />

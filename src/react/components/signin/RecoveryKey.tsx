@@ -7,6 +7,7 @@ import { generatePersonalKeypair, getRandomBytes } from "../../common/crypto";
 import { ErrorComp } from "../../common/functions";
 import gql from "graphql-tag";
 import { Mutation } from "react-apollo";
+import { WorkAround } from "../../interfaces";
 
 const SAVE_RECOVERY_KEY = gql`
   mutation onSaveRecoveryKey($keyData: RecoveryKeyInput!) {
@@ -95,7 +96,7 @@ const RecoveryKey = () => {
             <div className="recovery-code">{generateReadableKey()}</div>
           </div>
           <ErrorComp error={printError} />
-          <Mutation mutation={SAVE_RECOVERY_KEY}>
+          <Mutation<WorkAround, WorkAround> mutation={SAVE_RECOVERY_KEY}>
             {(mutate, { error }) => (
               <React.Fragment>
                 <ErrorComp error={error} />

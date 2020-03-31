@@ -23,6 +23,7 @@ class UniversalButton extends React.Component<Props, State> {
   state = {
     saving: false
   };
+
   click = async e => {
     try {
       if (!this.state.saving && !this.props.disabled) {
