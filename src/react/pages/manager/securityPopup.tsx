@@ -12,12 +12,10 @@ import UserName from "../../components/UserName";
 import { Query, Mutation } from "react-apollo";
 import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/graphqlOperations";
 import LoadingDiv from "../../components/LoadingDiv";
-import { ErrorComp } from "../../common/functions";
+import { ErrorComp, AppContext } from "../../common/functions";
 import { FETCH_SESSIONS } from "../../components/security/graphqlOperations";
 import Device from "../../popups/universalPopups/Device";
 import TwoFADeactivate from "../../popups/universalPopups/TwoFADeactivate";
-import { SecurityContext } from "../security";
-import { me as ME } from "../../queries/auth";
 
 const SIGN_OUT_EVERYWHERE = gql`
   mutation onSignOutEverywhere($userid: ID!) {
@@ -69,7 +67,7 @@ export default (props: Props) => {
 
         const user = data.fetchUserSecurityOverview.find(el => el.unitid.id == userid);
 
-        const links: Link[] = [
+        let links: Link[] = [
           {
             header: "Two-Factor Authentication",
             text: `Google Authenticator is recommended${
@@ -83,17 +81,14 @@ export default (props: Props) => {
               securityPage ? "the user is" : "you are"
             } currently logged into the account`,
             state: "showSessions"
-          }
-        ];
-
-        if (!user.unitid.isadmin) {
-          links.unshift({
+          },
+          {
             header: "Update Password",
             text: "You can update the current password here",
             state: "showPasswordUpdate",
             button: "update"
-          });
-        }
+          }
+        ];
 
         if (securityPage) {
           if (user.twofactormethods.length <= 0) {
@@ -105,7 +100,7 @@ export default (props: Props) => {
               button: user.needstwofa ? "unforce" : "force"
             });
           } else {
-            links[1] = {
+            links[0] = {
               header: "Shut off Two-Factor Authentication",
               text: "Deactivate the users Two-Factor Authentication",
               state: "show2FADeactivate",
@@ -274,7 +269,7 @@ export default (props: Props) => {
               )}
 
               {show == "showSessions" && (
-                <SecurityContext.Consumer>
+                <AppContext.Consumer>
                   {({ logOut }) => (
                     <Mutation mutation={SIGN_OUT_EVERYWHERE}>
                       {(mutate, { loading, error }) => (
@@ -337,7 +332,7 @@ export default (props: Props) => {
                       )}
                     </Mutation>
                   )}
-                </SecurityContext.Consumer>
+                </AppContext.Consumer>
               )}
             </section>
 

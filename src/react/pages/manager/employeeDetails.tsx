@@ -74,11 +74,11 @@ class EmployeeDetails extends React.Component<Props, State> {
         variables={this.props.profile ? {} : { unitid: employeeid }}>
         {({ loading, error, data, refetch }) => {
           if (loading) {
-            return "Loading...";
+            return <div>Loading...</div>;
           }
 
           if (error) {
-            return `Error! ${error.message}`;
+            return <div>Error! {error.message}</div>;
           }
 
           if (data && (data.fetchSemiPublicUser || data.me)) {

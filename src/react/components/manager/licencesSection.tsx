@@ -33,10 +33,10 @@ class LicencesSection extends React.Component<Props, State> {
         variables={{ unitid: employeeid }}>
         {({ loading, error, data, refetch }) => {
           if (loading) {
-            return "Loading...";
+            return <div>Loading...</div>;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <div>Error! {error.message}</div>;
           }
           let appArray: JSX.Element[] = [];
 
@@ -62,7 +62,8 @@ class LicencesSection extends React.Component<Props, State> {
               if (
                 !e.disabled &&
                 !e.boughtplanid.planid.appid.disabled &&
-                (e.endtime > now() || e.endtime == null)
+                (e.endtime > now() || e.endtime == null) &&
+                (e.boughtplanid.endtime > now() || e.boughtplanid.endtime == null)
               ) {
                 appArray.push(
                   <ServiceDetails
@@ -82,18 +83,20 @@ class LicencesSection extends React.Component<Props, State> {
               <div className="section" key="Licences">
                 <div className="heading">
                   <h1>Assigned Accounts</h1>
-                  <UniversalButton
-                    type="high"
-                    label="Assign Account"
-                    customStyles={{
-                      fontSize: "12px",
-                      lineHeight: "24px",
-                      fontWeight: "700",
-                      marginRight: "16px",
-                      width: "120px"
-                    }}
-                    onClick={() => this.setState({ add: true })}
-                  />
+                  {this.props.isadmin && (
+                    <UniversalButton
+                      type="high"
+                      label="Assign Account"
+                      customStyles={{
+                        fontSize: "12px",
+                        lineHeight: "24px",
+                        fontWeight: "700",
+                        marginRight: "16px",
+                        width: "120px"
+                      }}
+                      onClick={() => this.setState({ add: true })}
+                    />
+                  )}
                 </div>
                 <div className="table">
                   <div className="tableHeading">

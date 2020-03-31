@@ -177,7 +177,6 @@ class AssignNewTeamMember extends React.Component<Props, State> {
     return members;
   }
   render() {
-    console.log("PROPS", this.props, this.state);
     return (
       <PopupBase
         small={true}

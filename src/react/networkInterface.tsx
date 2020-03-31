@@ -9,7 +9,7 @@ import { onError } from "apollo-link-error";
 import { inspect } from "util";
 import Store from "electron-store";
 import os from "os";
-import * as uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 import { getMainDefinition } from "apollo-utilities";
 import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
@@ -160,7 +160,7 @@ const middlewareLink = setContext(() => ({
 
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
 const wsLink = new WebSocketLink({
-  uri: "wss://websockets.vipfy.store/subscriptions",
+  uri: config.websocketServer,
   options: {
     reconnect: true,
     connectionParams: () => ({
@@ -188,6 +188,7 @@ let dismissHeaderNotification = (_a, _b) => {
 
 export const setLogoutFunction = logoutFunc => {
   logout = logoutFunc;
+  window.logout = logoutFunc;
 };
 
 export const setUpgradeErrorHandler = handlerFunc => {

@@ -16,6 +16,7 @@ interface Props {
   setApp: Function;
   licences: any[];
   switchLayout: Function;
+  isadmin: Boolean;
 }
 
 interface State {
@@ -51,26 +52,35 @@ class Dashboard extends React.Component<Props, State> {
 
     if (licenceCheck) {
       this.props.licences.forEach(licence => {
-        if (licence.dashboard !== null && licence.dashboard <= 8) {
-          favourites[licence.dashboard] = licence;
-        }
-
-        if (licence.pending) {
-          //appLists["Pending Apps"].push(licence);
-        } else if (licence.tags.length > 0) {
-          if (
-            licence.tags.includes("vacation") &&
-            licence.vacationstart &&
-            moment().isBefore(moment(licence.vacationend))
-          ) {
-            appLists["Temporary Apps"].push(licence);
+        if (
+          !licence.disabled &&
+          !licence.pending &&
+          !licence.boughtplanid.planid.appid.disabled &&
+          (licence.boughtplanid.endtime > moment.now() || licence.boughtplanid.endtime == null) &&
+          (licence.endtime > moment.now() || licence.endtime == null)
+        ) {
+          if (licence.dashboard !== null && licence.dashboard <= 8) {
+            favourites[licence.dashboard] = licence;
           }
-        } else {
-          appLists["My Apps"].push(licence);
+
+          if (licence.pending) {
+            //appLists["Pending Apps"].push(licence);
+          } else if (licence.tags.length > 0) {
+            if (
+              licence.tags.includes("vacation") &&
+              licence.vacationstart &&
+              moment().isBefore(moment(licence.vacationend))
+            ) {
+              appLists["Temporary Apps"].push(licence);
+            } else {
+              appLists["My Apps"].push(licence);
+            }
+          } else {
+            appLists["My Apps"].push(licence);
+          }
         }
       });
     }
-
     return (
       <div className="managerPage dashboard">
         <div className="heading">
@@ -87,10 +97,14 @@ class Dashboard extends React.Component<Props, State> {
               </div>
               <img src={dashboardPic} alt="Cool pic of a dashboard" />
               <div>You haven't integrated any services yet.</div>
-              <div>
-                Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
-                services.
-              </div>
+              {this.props.isadmin ? (
+                <div>
+                  Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
+                  services.
+                </div>
+              ) : (
+                <div>Please ask your administrator to integrate Services for you</div>
+              )}
             </div>
           </div>
         ) : (

@@ -13,6 +13,7 @@ import ShowAndAddEmployee from "./universal/showAndAddEmployee";
 import ShowAndDeleteEmployee from "./universal/showAndDeleteEmployee";
 import { fetchCompanyServices } from "./../../queries/products";
 import { AppContext } from "../../common/functions";
+import UniversalCheckbox from "../universalForms/universalCheckbox";
 
 interface Props {
   orbit: any;
@@ -36,11 +37,25 @@ interface State {
   changedt: Boolean;
   newaccount: Boolean;
   addUsers: any;
+  selfhosting: boolean;
+  protocol: String;
 }
 
 const CHANGE_ORBIT = gql`
-  mutation changeOrbit($orbitid: ID!, $alias: String, $loginurl: String, $endtime: Date) {
-    changeOrbit(orbitid: $orbitid, alias: $alias, loginurl: $loginurl, endtime: $endtime) {
+  mutation changeOrbit(
+    $orbitid: ID!
+    $alias: String
+    $loginurl: String
+    $endtime: Date
+    $selfhosting: Boolean
+  ) {
+    changeOrbit(
+      orbitid: $orbitid
+      alias: $alias
+      loginurl: $loginurl
+      endtime: $endtime
+      selfhosting: $selfhosting
+    ) {
       id
       alias
       key
@@ -73,14 +88,25 @@ const INITAL_STATE = {
 class OrbitSection extends React.Component<Props, State> {
   state = {
     ...INITAL_STATE,
-    loginurl:
-      this.props.orbit.key &&
-      this.props.orbit.key.domain &&
-      this.props.orbit.key.domain
-        .replace(this.props.app.options.predomain, "")
-        .replace(this.props.app.options.afterdomain, ""),
+    loginurl: this.props.orbit.key
+      ? this.props.orbit.key.selfhosting
+        ? this.props.orbit.key.domain.substring(this.props.orbit.key.domain.search(/:\/\/{1}/) + 3)
+        : this.props.orbit.key.domain &&
+          this.props.orbit.key.domain
+            .replace(this.props.app.options.predomain, "")
+            .replace(this.props.app.options.afterdomain, "")
+      : undefined,
     alias: this.props.orbit.alias,
-    todate: this.props.orbit.endtime && moment(this.props.orbit.endtime).toDate()
+    todate: this.props.orbit.endtime && moment(this.props.orbit.endtime).toDate(),
+    protocol:
+      (this.props.orbit.key &&
+        this.props.orbit.key.selfhosting &&
+        this.props.orbit.key.domain.substring(
+          0,
+          this.props.orbit.key.domain.search(/:\/\/{1}/) + 3
+        )) ||
+      "https://",
+    selfhosting: this.props.orbit.key.selfhosting
   };
 
   showStatus(e) {
@@ -140,7 +166,7 @@ class OrbitSection extends React.Component<Props, State> {
         </span>
       );
     } else {
-      return;
+      return "";
     }
   }
 
@@ -327,24 +353,68 @@ class OrbitSection extends React.Component<Props, State> {
                   marginTop: "28px",
                   position: "relative"
                 }}>
-                <span style={{ lineHeight: "24px", width: "84px" }}>Domain:</span>
-                <span style={{ lineHeight: "24px", width: "calc(100% - 84px)" }}>
-                  <UniversalTextInput
-                    width="100%"
-                    id="orbitsubdomain"
-                    startvalue={this.state.loginurl}
-                    livevalue={v => {
-                      if (v != this.state.loginurl && v != "") {
-                        this.setState({ loginurl: v, changedl: true });
-                      } else {
-                        this.setState({ loginurl: v, changedl: false });
-                      }
-                    }}>
-                    <span>{this.props.app.options.predomain}</span>
-                    <span>YOUR DOMAIN</span>
-                    <span>{this.props.app.options.afterdomain}</span>
-                  </UniversalTextInput>
+                <span style={{ lineHeight: "24px", width: "84px" }}>
+                  <span>Domain:</span>
+                  {this.props.app.options.selfhosting && (
+                    <div style={{ alignItems: "center", display: "flex" }}>
+                      <UniversalCheckbox
+                        startingvalue={this.props.orbit.key.selfhosting}
+                        liveValue={e => this.setState({ selfhosting: e, changedl: true })}
+                        style={{ float: "left" }}
+                      />
+                      <span style={{ fontSize: "10px", lineHeight: "18px", marginLeft: "4px" }}>
+                        Selfhosting
+                      </span>
+                    </div>
+                  )}
                 </span>
+                <UniversalTextInput
+                  width="300px"
+                  id="domain"
+                  className="scrollable"
+                  startvalue={this.state.loginurl}
+                  livevalue={value => {
+                    let domain = value;
+                    let protocol = undefined;
+                    if (value.startsWith("https://") || value.startsWith("http://")) {
+                      protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
+                      domain = value.substring(value.search(/:\/\/{1}/) + 3);
+                    } else {
+                      protocol = this.state.protocol;
+                    }
+                    if (value != this.state.loginurl && value != "") {
+                      this.setState({ loginurl: domain, changedl: true, protocol });
+                    } else {
+                      this.setState({ loginurl: domain, changedl: false, protocol });
+                    }
+                  }}
+                  modifyValue={value => {
+                    if (value.startsWith("https://") || value.startsWith("http://")) {
+                      return value.substring(value.search(/:\/\/{1}/) + 3);
+                    } else {
+                      return value;
+                    }
+                  }}
+                  prefix={
+                    this.state.selfhosting ? (
+                      <select
+                        className="universalTextInput"
+                        style={{ width: "75px" }}
+                        value={this.state.protocol}
+                        onChange={e => this.setState({ protocol: e.target.value, changedl: true })}>
+                        <option value="http://" key="http://">
+                          http://
+                        </option>
+                        <option value="https://" key="https://">
+                          https://
+                        </option>
+                      </select>
+                    ) : (
+                      this.props.app.options.predomain
+                    )
+                  }
+                  suffix={this.state.selfhosting ? undefined : this.props.app.options.afterdomain}
+                />
               </div>
             )}
 
@@ -443,8 +513,11 @@ class OrbitSection extends React.Component<Props, State> {
                       variables: {
                         orbitid: orbit.id,
                         alias: this.state.alias,
+                        selfhosting: this.state.selfhosting,
                         loginurl: this.props.app.needssubdomain
-                          ? `${this.props.app.options.predomain}${this.state.loginurl}${this.props.app.options.afterdomain}`
+                          ? this.state.selfhosting
+                            ? `${this.state.protocol}${this.state.loginurl}`
+                            : `${this.props.app.options.predomain}${this.state.loginurl}${this.props.app.options.afterdomain}`
                           : undefined,
                         endtime: this.state.todate
                       },

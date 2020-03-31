@@ -6,6 +6,7 @@ import { remote } from "electron";
 import UniversalTextInput from "./universalForms/universalTextInput";
 import UniversalButton from "./universalButtons/universalButton";
 const { session } = remote;
+const os = require("os");
 interface Props {
   loginUrl: string;
   username: string;
@@ -38,6 +39,9 @@ interface Props {
   setViewTitle?: Function;
   addWebview?: Function;
   loggedIn: Boolean;
+  deleteCookies?: Boolean;
+  modifyFields?: Object;
+  blockUrls?: String[];
 }
 
 interface State {
@@ -147,6 +151,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
   progressCallbackRunning = false;
 
   reset() {
+    if (this.props.deleteCookies) {
+      session.fromPartition(this.props.partition).clearStorageData();
+    }
     this.loginState = {
       emailEntered: false,
       passwordEntered: false,
@@ -180,6 +187,9 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
     this.reset();
     this.mounted++;
     this.progressHandle = setInterval(this.progressCallback.bind(this), this.progressInterval);
+    if (this.props.deleteCookies) {
+      session.fromPartition(this.props.partition).clearStorageData();
+    }
   }
   componentWillUnmount = async () => {
     if (this.timeoutHandle) {
@@ -300,6 +310,14 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         </div>
       );
     } else {
+      const useragentStrings = {
+        win32:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36",
+        darwin:
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36",
+        linux:
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"
+      };
       return (
         <WebView
           key={`${this.props.loginUrl}-${this.props.speed}`}
@@ -308,16 +326,35 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
           src={this.state.currentUrl || this.props.loginUrl}
           partition={this.props.partition}
           className={this.props.className}
-          useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
+          useragent={
+            useragentStrings[os.platform()] ||
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
+          }
           onIpcMessage={e => this.onIpcMessage(e)}
           style={this.props.style || {}}
           onNewWindow={e => this.onNewWindow(e)}
           onDidNavigateInPage={e => {
             //console.log("Did Navigate", e);
+            if (
+              this.props.blockUrls &&
+              this.webview &&
+              new RegExp(this.props.blockUrls.join("|")).test(e.url)
+            ) {
+              console.log("URL IS BLOCKED");
+              this.webview.getWebContents().goBack();
+            }
           }}
           onDidNavigate={e => {
             //console.log("DID NAVIGATE OUTSIDE", e);
-            //this.props.addWebview(this.props.licenceID, true, e.url);
+            if (
+              this.props.blockUrls &&
+              this.webview &&
+              new RegExp(this.props.blockUrls.join("|")).test(e.url)
+            ) {
+              console.log("URL IS BLOCKED");
+              this.webview.getWebContents().goBack();
+            }
+
             if (e.httpResponseCode == 401) {
               this.props.showLoadingScreen(false);
               this.setState({ solve401: {} });
@@ -758,7 +795,7 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       }
     }
 
-    if (this.webview && (await this.isLoggedIn(this.webview)) && this.progress >= 0.25) {
+    if (this.webview && (await this.isLoggedIn(this.webview))) {
       this.timeout = false;
       this.progress = 1;
       this.props.setResult(
@@ -846,9 +883,11 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
       case "loaded":
         {
           this.loginState.unloaded = false;
-          //e.target.send("checkFields");
+          await sleep(50);
+          if (this.props.modifyFields) {
+            e.target.send("getModifyFields", this.props.modifyFields);
+          }
           if (this.webview && (await this.isLoggedIn(this.webview))) {
-            //console.log("DIRECT LoggedIn", this.loginState);
             this.timeout = false;
             this.progress = 1;
             this.props.setResult(
@@ -984,12 +1023,17 @@ class UniversalLoginExecutor extends React.PureComponent<Props, State> {
         }
         break;
 
-      case "checkfields": {
-        console.log("CHECKFIELDS", e.args[0], e.args[1]);
-        this.checkedFields = e.args[0];
-        /*if (this.props.checkfields) {
+      case "checkfields":
+        {
+          console.log("CHECKFIELDS", e.args[0], e.args[1]);
+          this.checkedFields = e.args[0];
+          /*if (this.props.checkfields) {
           this.props.checkfields(e.args[0]);
         }*/
+        }
+        break;
+      case "redirectClick": {
+        console.log("REDIRECT CLICK", e.args[0], e.args[1]);
       }
     }
   }
