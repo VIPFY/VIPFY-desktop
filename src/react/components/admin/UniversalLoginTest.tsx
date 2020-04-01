@@ -137,7 +137,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
   }
 
   hasResult(testIndex: number, results: TestResult[]) {
-    return !results || !results[testIndex];
+    return results && results[testIndex];
   }
 
   renderTestResult(result: TestResult) {
