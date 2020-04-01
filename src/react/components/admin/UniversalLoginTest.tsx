@@ -69,11 +69,13 @@ class UniversalLoginTest extends React.Component<Props, State> {
 
   renderTable(siteUnderTest) {
     return this.state.sites.map((site, i) => (
-      <>
-        <tr key={`${site.app}_${i}`}>
+      <React.Fragment key={`${site.app}`}>
+        <tr>
           <td>{site.app}</td>
           {Array.from({ length: 5 }, (_, k) => (
-            <td>{this.renderTestStatus(k, site.testResults, this.state.currentTest == i)}</td>
+            <td key={`${site.app}_${i}_${k}`}>
+              {this.renderTestStatus(k, site.testResults, this.state.currentTest == i)}
+            </td>
           ))}
           <td>
             {/*
@@ -123,7 +125,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
             </td>
           </tr>
         )}
-      </>
+      </React.Fragment>
     ));
   }
 
