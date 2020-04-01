@@ -80,7 +80,7 @@ const ignoredCookies = [
   "ASP.NET_SessionId"
 ];
 
-class UniversalLoginExecutor extends React.PureComponent<Props, State> {
+class UniversalLoginExecutor extends React.Component<Props, State> {
   state = {
     running: false,
     solve401: null
