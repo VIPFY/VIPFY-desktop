@@ -1,6 +1,3 @@
-const {
-  utils: { fromBuildIdentifier }
-} = require("@electron-forge/core");
 const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
@@ -10,15 +7,14 @@ const packageJSON = fs.readFileSync(fullPath);
 
 const { version } = JSON.parse(packageJSON);
 const [major, minor, patch] = version.split(".");
-const devVersion = `${major}.${minor}.${patch}-dev-${moment().format("LLL")}`;
+const devVersion = `${major}.${minor}.${patch}-dev-${moment().format("YYYY-MM-DD")}`;
 console.log("FIRE: devVersion", devVersion);
 
 module.exports = {
-  buildIdentifier: !!process.env.DEVELOPMENT ? "dev" : "prod",
   packagerConfig: {
     icon: "iconTransparent",
     asar: false,
-    appVersion: fromBuildIdentifier({ dev: devVersion, prod: version }),
+    appVersion: !!process.env.DEVELOPMENT ? devVersion : version,
     appCopyright: `©${new Date().getFullYear()} VIPFY GmbH`,
     osxSign: {
       platform: "darwin",
