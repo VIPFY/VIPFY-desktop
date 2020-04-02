@@ -11,6 +11,7 @@ APPLE_APP_PASSWORD=${APPLE_APP_PASSWORD##APPLE_APP_PASSWORD=}
 
 # Login to the Mac and execute the script
 ssh -t nilsvossebein@192.168.1.9 '
+  set -e
   export BRANCH='"'$BRANCH'"';
   export NUCLEUS_PW='"'$NUCLEUS_PW'"'
   export MAC_PW='"'$MAC_PW'"'

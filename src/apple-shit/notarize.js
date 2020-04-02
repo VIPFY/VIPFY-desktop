@@ -8,8 +8,6 @@ module.exports = () => {
   }
 
   console.log("Notarizing...");
-  console.log("FIRE: process.env.APPLE_APP_PASSWORD", process.env.APPLE_APP_PASSWORD);
-  console.log("FIRE: process.env.APPLE_ID", process.env.APPLE_ID);
 
   return notarize({
     appBundleId: "vipfy-app",
