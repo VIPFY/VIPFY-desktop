@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.13.0-dev",
+  "version": "0.13.0",
   "description": "The desktop client for vipfy.com",
   "main": ".webpack/main",
   "scripts": {
@@ -15,7 +15,10 @@
     "start": "electron-forge start",
     "faststart": "electron-forge start"
   },
-  "keywords": ["saas","react"],
+  "keywords": [
+    "saas",
+    "react"
+  ],
   "author": "VIPFY GmbH",
   "license": "proprietary",
   "prettier": {
