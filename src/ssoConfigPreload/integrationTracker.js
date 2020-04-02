@@ -127,7 +127,6 @@ async function onExecute(args1, booler) {
   console.log("ON EXECUTE", args1, booler);
   await execute(args1, booler);
   //reset everything
-  //await ipcRenderer.sendToHost("readyForNextStep");
   listeners = [];
   iframeList = [];
   stopped = false;
@@ -204,23 +203,9 @@ function giveIframeEvents(iframe, list, events) {
         iframe.contentWindow.document.addEventListener("paste", e => findTarget(e, iframe), true);
       }
     });
-    /* iframe.contentWindow.document.addEventListener("DOMSubtreeModified", e => {
-      console.log(e.target, e.target.contentWindow.document);
-    });*/
   }
   var observer = new MutationObserver(callback2);
   observer.observe(iframe, config);
-  /*iframe.contentWindow.document.addEventListener("DOMSubtreeModified", (e) => {
-   if (e.target.tagName=="IFRAME"){
-        console.log("IFRAME ALL", e);
-        e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
-        e.target.contentWindow.document.addEventListener("input", findTarget,true);
-        e.target.contentWindow.document.addEventListener("click", findTarget,true);
-        e.target.contentWindow.document.addEventListener("paste", findTarget,true);
-        findAllIframes(e.target.contentWindow.document);
-    }
-  })
-    */
 }
 
 function removeIframeEvents(iframe, list, events) {
@@ -262,31 +247,14 @@ function removeIframeEvents(iframe, list, events) {
         );
       }
     });
-    /* iframe.contentWindow.document.addEventListener("DOMSubtreeModified", e => {
-      console.log(e.target, e.target.contentWindow.document);
-    });*/
   }
   var observer = new MutationObserver(callback2);
   observer.observe(iframe, config);
-  /*iframe.contentWindow.document.addEventListener("DOMSubtreeModified", (e) => {
-   if (e.target.tagName=="IFRAME"){
-        console.log("IFRAME ALL", e);
-        e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
-        e.target.contentWindow.document.addEventListener("input", findTarget,true);
-        e.target.contentWindow.document.addEventListener("click", findTarget,true);
-        e.target.contentWindow.document.addEventListener("paste", findTarget,true);
-        findAllIframes(e.target.contentWindow.document);
-    }
-  })
-    */
 }
 
 function findAllIframes(doc, remove) {
-  //console.log("findAllIframes called");
   let iframes = doc.querySelectorAll("iframe");
-  //console.log("IFRAMES", iframes, doc);
   iframes.forEach(iframe => {
-    //console.log("IFRAME", iframe, isHidden(iframe));
     if (!isHidden(iframe) && iframe.contentDocument) {
       findAllIframes(iframe.contentWindow.document);
     }
@@ -299,7 +267,6 @@ function findAllIframes(doc, remove) {
     }
   }
   iframes = machKaputt;
-  //console.log("New iframes", iframes)
   if (remove) {
     iframes.forEach(iframe => removeIframeEvents(iframe, true, true));
   } else {
@@ -307,25 +274,15 @@ function findAllIframes(doc, remove) {
   }
 }
 
-//console.log(webview[0]);
-
 var config = { attributes: true, childList: true, subtree: true };
 
 var callback1 = function(mutationsList, observer) {
-  //console.log(iframeList);
-  //var newChilds = [];
   for (var mutation of mutationsList) {
     if (mutation.type == "childList") {
       mutation.addedNodes.forEach(node => {
-        //console.log("Node added", node.tagName);
-        //if(node.tagName == "IFRAME") {
-        //giveIframeEvents(node);
         findAllIframes(document);
-        //}
-        //newChilds.push(node);
       });
       mutation.removedNodes.forEach(node => {
-        //console.log("Node removed", node.tagName);
         if (node.tagName == "IFRAME") {
           var index = iframeList.indexOf(node);
           if (index > -1) {
@@ -333,14 +290,8 @@ var callback1 = function(mutationsList, observer) {
           }
         }
       });
-      /*             console.log('A child node has been added or removed.');
-       */
     }
-    /* else if (mutation.type == 'attributes') {
-            console.log('The ' + mutation.attributeName + ' attribute was modified.');
-        } */
   }
-  //return newChilds;
 };
 
 var callback2 = function(mutationsList, observer) {
@@ -367,50 +318,14 @@ var callback2 = function(mutationsList, observer) {
   }
 };
 
-//webview.addEventListener("loadend", () => {console.log("Yeaaa")});
-/* window.addEventListener("DOMSubtreeModified", (e) => {
-    if (e.target.tagName=="IFRAME"){
-        console.log("IFRAME", e);
-        e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
-        e.target.contentWindow.document.addEventListener("input", findTarget,true);
-        e.target.contentWindow.document.addEventListener("click", findTarget,true);
-        e.target.contentWindow.document.addEventListener("paste", findTarget,true);
-        findAllIframes(e.target.contentWindow.document);
-
-        e.target.contentWindow.addEventListener("load", () => {
-            e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
-            e.target.contentWindow.document.addEventListener("input", findTarget,true);
-            e.target.contentWindow.document.addEventListener("click", findTarget,true);
-            e.target.contentWindow.document.addEventListener("paste", findTarget,true);
-            findAllIframes(e.target.contentWindow.document);
-        });
-    }
-    else if (e.target.id) {
-        console.log("EVENT", e)
-    }
-}) */
-
-/// **
 window.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.sendToHost("loaded");
-  /*document.addEventListener("click", findTarget, true);
-  document.addEventListener("keyup", findTarget, true);
-  document.addEventListener("input", findTarget, true);
-  document.addEventListener("paste", findTarget, true);*/
-  //findAllIframes(document);
 });
 
 window.addEventListener("load", () => {
   ipcRenderer.sendToHost("loaded");
-  //   //webview = document.getElementById("LoginFinder");
-  //   document.addEventListener("click", findTarget, true);
-  //   document.addEventListener("keyup", findTarget, true);
-  //   document.addEventListener("input", findTarget, true);
-  //   document.addEventListener("paste", findTarget, true);
-  //   findAllIframes(document);
 });
 
-//document.addEventListener("click", findTarget);
 var observer = new MutationObserver(callback1);
 observer.observe(document, config);
 
@@ -439,7 +354,9 @@ function findTarget(event, iframe) {
   if (bot) {
     return;
   }
+
   console.log("findTarget", event, event.target, iframe);
+  //return;
   /* if(event.type == "click") {
         console.log("Event", event)
     } */
@@ -600,50 +517,12 @@ function findTarget(event, iframe) {
     button.value,
     createObjFromDom(element1),
     "ID-Elements " + Array.from(document.querySelectorAll(iselector)).length,
-    //document.querySelectorAll("INPUT"),
     event.type,
     selector,
     { x: rect.x, y: rect.y },
     iselector
-  ); /* if (
-    asktypes.includes(event.target.tagName.toLowerCase()) &&
-    event.type == "click" &&
-    wereans[0]
-  ) {
-    ipcRenderer.sendToHost(
-      "gotClicked",
-      wereans[1].clientWidth,
-      wereans[1].clientHeight,
-      rect.x,
-      rect.y
-    );
-  } else {
-    ipcRenderer.sendToHost(
-      "gotClicked",
-      event.target.clientWidth,
-      event.target.clientHeight,
-      rect.x,
-      rect.y
-    );
-  } */ /* ipcRenderer.sendToHost(
-    "sendClick",
-    [event.target.clientWidth, event.target.clientHeight, event.offsetX, event.offsetY],
-    [
-      [event.screenX - event.offsetX, event.screenY - event.offsetY],
-      event.target.clientWidth,
-      event.target.clientHeight,
-      event.target.clientLeft,
-      event.target.clientTop
-    ]
-  );  */ //clientLeft clientTop
-  /* ipcRenderer.sendToHost(
-    "sendMessage",
-    event.target.tagName,
-    event.target.type,
-    event.type,
-    asktypes.includes(event.target.tagName.toLowerCase()),
-    event.type == "click"
-  ); */ event.target.disabled = true;
+  );
+  event.target.disabled = true;
   console.log("buttons disabled");
 }
 
@@ -796,7 +675,6 @@ ipcRenderer.on("startTracking", () => {
   document.addEventListener("input", findTarget, true);
   document.addEventListener("paste", findTarget, true);
   ipcRenderer.sendToHost("trackingStarted");
-  //document.addEventListener();
 
   findAllIframes(document, false);
 });
@@ -808,9 +686,6 @@ ipcRenderer.on("removeTracking", () => {
   document.removeEventListener("paste", findTarget, true);
   ipcRenderer.sendToHost("trackingEnded");
 
-  /* window.removeEventListener("scroll", function(e) {
-    ipcRenderer.sendToHost("startScroll", window.scrollY);
-  }); */
   findAllIframes(document, true);
 });
 
@@ -857,24 +732,6 @@ ipcRenderer.on("hide element", async (e, args1, args2, args3) => {
   ipcRenderer.sendToHost("Hide Element triggered", ding.style.display, ding.displaySave, args2, 2);
 });
 
-/* ipcRenderer.on("givePosition", async (e, args1, args2, args3) => {
-  const ding = document.querySelector(args1);
-  console.log("givePositionBack", ding, args1);
-  if (ding == null) {
-    return;
-  }
-  const rect = ding.getBoundingClientRect();
-  ipcRenderer.sendToHost(
-    "givePosition",
-    ding.clientWidth,
-    ding.clientHeight,
-    rect.x,
-    rect.y,
-    args2,
-    args3
-  );
-}); */
-
 ipcRenderer.on("getSelectOptions", async (e, args1) => {
   const options = [];
   if (document.querySelector(args1).options) {
@@ -892,58 +749,7 @@ function clickAlert() {
 }
 
 async function start() {
-  //First say Hello
-  console.log("SAY HELLO 2");
-  //await sleep(300);
   ipcRenderer.sendToHost("hello");
-  /*console.log("TEST");
-  totaltime = 0;
-  //stopped = true;
-  while (!stopped && !checkRecaptcha && totaltime < 5000) {
-    if (!cookiefound) {
-      let cookiebutton = findCookieButton();
-      console.log("FIND COOKIE", cookiebutton);
-      if (cookiebutton) {
-        await sleep(300);
-        await clickButton(cookiebutton);
-        ipcRenderer.sendToHost("reset");
-        await new Promise(resolve =>
-          ipcRenderer.once("done", async (e, args) => {
-            if (stopped) return;
-            resolve();
-          })
-          );
-          cookiefound = true;
-        }
-
-        let recaptcha = findRecaptcha();
-      console.log("recaptcha", recaptcha);
-      
-      if (recaptcha) {
-        await recaptchaClick(recaptcha);
-
-        checkRecaptcha = true;
-        
-        if (!recaptchaConfirmOnce) {
-          setInterval(verifyRecaptcha, 200);
-        }
-      } else {
-        // ipcRenderer.sendToHost("recaptchaSuccess");
-      }
-    }
-    console.log("TEST2");
-    await sleep(100);
-    totaltime += 100;
-  }
-  console.log("TEST NACH");*/
-
-  /*await execute([
-    { operation: "waitandfill", args: { selector: "#customerUrl", fillkey: "domain" } },
-    { operation: "click", args: { selector: "#support-login" } },
-    { operation: "waitandfill", args: { selector: "#user_email", fillkey: "username" } },
-    { operation: "waitandfill", args: { selector: "#user_password", fillkey: "password" } },
-    { operation: "click", args: { selector: "input[type='submit'][name='commit']" } }
-  ]);*/
 }
 
 ipcRenderer.on("execute", async (e, args1) => {
@@ -1097,12 +903,6 @@ async function recaptchaClick(recap) {
 start();
 
 async function fillFormField(target, fillkey) {
-  //console.log("FILL", target, content);
-  //if (stopped) throw new Error("abort");
-  //target.focus();
-  // await sleep(250);
-  // target.focus();
-  //  await sleep(250);
   const p = new Promise(resolve =>
     ipcRenderer.once("formFieldFilled", async (e, key) => {
       //if (stopped) return;

@@ -49,6 +49,10 @@ interface State {
   endExecute: boolean;
   fullexecutionPlan: Object[];
   directlyExecute: boolean;
+  stealthList: Object[];
+  redirectList: Object[];
+  spyList: Object[];
+  clickReload: Boolean;
 }
 
 const SAVE_EXECUTION_PLAN = gql`
@@ -77,7 +81,7 @@ class LoginIntegrator extends React.Component<Props, State> {
   state = {
     autosort: true,
     tracking: true,
-    isLogin: true,
+    isLogin: false,
     end: false,
     divList: [],
 
@@ -106,7 +110,11 @@ class LoginIntegrator extends React.Component<Props, State> {
     fillkeys: [],
     endExecute: false,
     fullexecutionPlan: [],
-    directlyExecute: false
+    directlyExecute: false,
+    stealthList: [],
+    redirectList: [],
+    spyList: [],
+    clickReload: true //only a temp answere till a better one commes in mind
   };
   savevalue: string;
   shallSearch: boolean = true;
@@ -495,11 +503,12 @@ class LoginIntegrator extends React.Component<Props, State> {
     this.zeigeElementworking(onOff, id, invisible);
   }
   async zeigeElementworking(onOff, id, invisible) {
+    console.log("trigger");
     if (
       (this.state.test || this.state.end || !this.state.tracking) &&
       this.aktDivListState.divListHold.length > 0
     ) {
-      console.log("zeigeElement NOT");
+      //console.log("zeigeElement NOT");
       return;
     } else if (onOff) {
       //Remove Cover Div
@@ -526,14 +535,6 @@ class LoginIntegrator extends React.Component<Props, State> {
           return element.props.id == id;
         }) == -1
       ) {
-        /* console.log(
-          "make cover div",
-          this.state.executionPlan[
-            this.state.executionPlan.findIndex(element => {
-              return element.args.id == id;
-            })
-          ].args.selector
-        ); */
         //Make Highlight Divs
         this.webview!.send(
           "givePosition",
@@ -548,7 +549,7 @@ class LoginIntegrator extends React.Component<Props, State> {
       }
     } else {
       //prevent doubles
-      console.log(invisible);
+      console.log(onOff);
       if (
         !invisible &&
         this.state.divList.findIndex(element => {
@@ -681,21 +682,28 @@ class LoginIntegrator extends React.Component<Props, State> {
   }
 
   sendExecute() {
-    /* this.setState(oldstate => {
-      //console.log("Heeello2", oldstate.executionPlan);
+    this.setState(oldstate => {
       oldstate.executionPlan.forEach(object => {
         if (object.operation == "repeatFill") {
-          oldstate.finalexecutionPlan.forEach(finalobject => {
+          oldstate.executionPlan.forEach(finalobject => {
             if (object.args.fillkey == finalobject.args.fillkey) {
               object.args.fillkey = finalobject.args.fillkey;
               object.value = finalobject.value;
-              //object.operation = finalobject.operation;
-              //object.repeat = true;
             }
           });
+          if (object.operation == "repeatFill") {
+            oldstate.fullexecutionPlan.forEach(executionsPlan => {
+              executionsPlan.forEach(element => {
+                if (object.args.fillkey == finalobject.args.fillkey) {
+                  object.args.fillkey = finalobject.args.fillkey;
+                  object.value = finalobject.value;
+                }
+              });
+            });
+          }
         }
       });
-    }); */
+    });
     this.autosort();
 
     const inputList: JSX.Element[] = [];
@@ -847,7 +855,6 @@ class LoginIntegrator extends React.Component<Props, State> {
 
   sendExecuteFinal = async () => {
     let processedfinalexecutionPlan = [];
-    let awaked = false;
     //console.log("SENDEXECUTEFINAL", this.state, processedfinalexecutionPlan);
     this.state.executionPlan.forEach(fep => {
       console.log("FEP", fep);
@@ -945,6 +952,7 @@ class LoginIntegrator extends React.Component<Props, State> {
           console.log("test active", this.state.test);
           break;
         }
+        console.log("SendEvent doing");
         this.setState(oldstate => {
           let plan = oldstate.executionPlan;
           let id = Math.round(Math.random() * 10000000000);
@@ -997,13 +1005,15 @@ class LoginIntegrator extends React.Component<Props, State> {
                 });
                 break;
             }
-            //console.log("executionplan", plan);
+
             e.target.send("givePosition", plan[plan.length - 1].args.selector, id, 1);
             this.autosort();
+            console.log("SendEvent blabla");
             return { ...oldstate, executionPlan: plan };
           }
           return oldstate;
         });
+        console.log("SendEvent finished");
         break;
 
       case "updateDivList":
@@ -1392,7 +1402,6 @@ class LoginIntegrator extends React.Component<Props, State> {
                     width="200px"
                     onEnter={async () => {
                       await this.setState({
-                        isLogin: true,
                         end: false,
                         divList: [],
                         url: "",
@@ -1476,6 +1485,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                     <UniversalButton
                       type="high"
                       onClick={async () => {
+                        console.log("Start Tracking");
                         await this.setState({ tracking: !this.state.tracking });
                         if (this.state.tracking) {
                           await this.webview!.send("startTracking", {});
@@ -1567,84 +1577,203 @@ class LoginIntegrator extends React.Component<Props, State> {
                           }}
                         />
                       </div>
-                      <ClickElement
-                        id={`ce-${k}`}
-                        startvalue={o.operation}
-                        onChange={(operation, value) =>
-                          this.updateSelection(o.args.id, operation, value)
-                        }
-                        isLogin={this.state.isLogin}
-                        noLabel={true}
-                        operationOptions={[
-                          { value: "waitandfill", label: "Fill Field" },
-                          { value: "click", label: "Click" }
-                        ]}
-                      />
+                      {this.state.clickReload ? (
+                        <ClickElement
+                          id={`ce-0` + o.args.id}
+                          startvalue={o.operation}
+                          onChange={(operation, value) =>
+                            this.updateSelection(o.args.id, operation, value)
+                          }
+                          isLogin={this.state.isLogin}
+                          noLabel={true}
+                          operationOptions={[
+                            { value: "waitandfill", label: "Fill Field" },
+                            { value: "click", label: "Click" }
+                          ]}
+                        />
+                      ) : (
+                        <div />
+                      )}
+
                       <div style={{ height: "24px" }}></div>
                       <UniversalButton
                         type="high"
                         onClick={() => this.cancelSelection(o.args.id)}
                         label="DELETE Step"
                       />
-                      <div>
-                        <UniversalButton
-                          type="high"
-                          label={
-                            !o.args.isInvisible ? "Make element invisible" : "Make element visible"
-                          }
-                          onClick={() => {
-                            o.args.isInvisible = !o.args.isInvisible;
-                            console.log("invisible", o.args.isInvisible);
-                            if (o.args.isInvisible) {
-                              this.zeigeElement(false, o.args.id, o.args.isInvisible);
+                      {!this.state.isLogin ? (
+                        <div>
+                          <UniversalButton
+                            type="high"
+                            label={
+                              !o.args.isInvisible
+                                ? "Make element invisible"
+                                : "Make element visible"
                             }
-                            this.zeigeElement(true, o.args.id, o.args.isInvisible);
-                            this.webview.send(
-                              "hide element",
-                              o.args.selector,
-                              o.args.isInvisible,
-                              o.args.invisible
-                            );
-                          }}
-                        />
-                        {o.args.isInvisible ? (
-                          <div>
-                            <UniversalButton
-                              type="low"
-                              label="^"
-                              onClick={() => {
-                                o.args.invisible++;
-                                this.webview.send(
-                                  "hide element",
-                                  o.args.selector,
-                                  o.args.isInvisible,
-                                  o.args.invisible
-                                );
-                              }}
-                            />
-                            <UniversalButton
-                              type="low"
-                              label="v"
-                              onClick={() => {
-                                if (o.args.invisible > 1) {
-                                  o.args.invisible--;
+                            onClick={() => {
+                              o.args.isInvisible = !o.args.isInvisible;
+                              console.log("invisible", o.args.isInvisible);
+                              if (o.args.isInvisible) {
+                                if (this.state.stealthList.indexOf(o) == -1) {
+                                  this.setState(oldstate => {
+                                    const stealthList = oldstate.stealthList;
+                                    stealthList.push(o);
+                                    oldstate.stealthList = stealthList;
+                                    return oldstate;
+                                  });
+                                }
+                                this.zeigeElement(false, o.args.id, o.args.isInvisible);
+                              } else {
+                                const index = this.state.stealthList.indexOf(o);
+                                if (index != -1) {
+                                  this.setState(oldstate => {
+                                    const stealthList = oldstate.stealthList;
+                                    stealthList.splice(index, 1);
+                                    oldstate.stealthList = stealthList;
+                                    return oldstate;
+                                  });
+                                }
+                              }
+                              this.zeigeElement(true, o.args.id, o.args.isInvisible);
+                              this.webview.send(
+                                "hide element",
+                                o.args.selector,
+                                o.args.isInvisible,
+                                o.args.invisible
+                              );
+                            }}
+                          />
+                          {o.args.isInvisible ? (
+                            <div>
+                              <UniversalButton
+                                type="low"
+                                label="^"
+                                onClick={() => {
+                                  o.args.invisible++;
                                   this.webview.send(
                                     "hide element",
                                     o.args.selector,
                                     o.args.isInvisible,
                                     o.args.invisible
                                   );
+                                  this.setState({});
+                                }}
+                              />
+                              <UniversalButton
+                                type="low"
+                                label="v"
+                                onClick={() => {
+                                  if (o.args.invisible > 1) {
+                                    o.args.invisible--;
+                                    this.webview.send(
+                                      "hide element",
+                                      o.args.selector,
+                                      o.args.isInvisible,
+                                      o.args.invisible
+                                    );
+                                    this.setState({});
+                                  }
+                                }}
+                              />
+                              <div>
+                                Hide range: Selected Element + {o.args.invisible - 1} Parentelements
+                              </div>
+                            </div>
+                          ) : (
+                            <div />
+                          )}
+                        </div>
+                      ) : (
+                        <div />
+                      )}
+                      {!this.state.isLogin ? (
+                        this.state.spyList.indexOf(o) == -1 &&
+                        this.state.redirectList.indexOf(o) == -1 ? (
+                          <div>
+                            <UniversalButton
+                              label="Alter Events"
+                              type="high"
+                              onClick={() => {
+                                let popup = (
+                                  <PopupBase
+                                    id="inputPopup"
+                                    small={true}
+                                    styles={{ textAlign: "center" }}
+                                    buttonStyles={{ justifyContent: "space-around" }}
+                                    closeable={false}>
+                                    <UniversalButton
+                                      type="high"
+                                      label="add Event"
+                                      onClick={() => {
+                                        this.setState(oldstate => {
+                                          oldstate.divList = [];
+                                          this.state.executionPlan.forEach(element =>
+                                            this.zeigeElement(
+                                              false,
+                                              element.args.id,
+                                              element.isInvisible
+                                            )
+                                          );
+                                          const spyList = oldstate.spyList;
+                                          spyList.push(o);
+                                          oldstate.spyList = spyList;
+                                          return oldstate;
+                                        });
+                                      }}
+                                    />
+                                    <UniversalButton
+                                      type="high"
+                                      label="exchange Events"
+                                      onClick={() => {
+                                        this.setState(oldstate => {
+                                          oldstate.divList = [];
+                                          this.state.executionPlan.forEach(element =>
+                                            this.zeigeElement(
+                                              false,
+                                              element.args.id,
+                                              element.isInvisible
+                                            )
+                                          );
+                                          const redirectList = oldstate.redirectList;
+                                          redirectList.push(o);
+                                          oldstate.redirectList = redirectList;
+                                          return oldstate;
+                                        });
+                                      }}
+                                    />
+                                  </PopupBase>
+                                );
+                                this.setState(oldstate => {
+                                  const divList = oldstate.divList;
+                                  divList.push(popup);
+                                  oldstate.divList = divList;
+                                  return oldstate;
+                                });
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div>
+                            <UniversalButton
+                              label="Remove Altered Events"
+                              type="high"
+                              onClick={() => {
+                                if (this.state.spyList.indexOf(o) != -1) {
+                                  const spyList = this.state.spyList;
+                                  spyList.splice(spyList.indexOf(o), 1);
+                                  this.setState({ spyList });
+                                } else {
+                                  const redirectList = this.state.redirectList;
+                                  redirectList.splice(redirectList.indexOf(o), 1);
+                                  this.setState({ redirectList });
                                 }
                               }}
                             />
-                            <div>
-                              Hide range: Selected Element + {o.args.invisible - 1} Parentelements
-                            </div>
                           </div>
-                        ) : (
-                          <div />
-                        )}
-                      </div>
+                        )
+                      ) : (
+                        <div />
+                      )}
                       {!this.state.autosort ? (
                         <div style={{ float: "left" }}>
                           {this.state.executionPlan.findIndex(element => {
@@ -1664,12 +1793,15 @@ class LoginIntegrator extends React.Component<Props, State> {
                                   this.zeigeElement(
                                     true,
                                     oldstate.executionPlan[index - 1].args.id,
-                                    o.args.invisible
+                                    oldstate.executionPlan[index - 1].args.isInvisible
                                   );
                                   oldstate.executionPlan[index] = oldstate.executionPlan[index - 1];
                                   oldstate.executionPlan[index - 1] = element;
+                                  oldstate.clickReload = false;
                                   return oldstate;
                                 });
+                                //reload clickelement
+                                this.setState({ clickReload: true });
                               }}
                               label="Up"
                             />
@@ -1692,12 +1824,14 @@ class LoginIntegrator extends React.Component<Props, State> {
                                   this.zeigeElement(
                                     true,
                                     oldstate.executionPlan[index + 1].args.id,
-                                    o.args.invisible
+                                    oldstate.executionPlan[index + 1].args.isInvisible
                                   );
                                   oldstate.executionPlan[index] = oldstate.executionPlan[index + 1];
                                   oldstate.executionPlan[index + 1] = element;
+                                  oldstate.clickReload = false;
                                   return oldstate;
                                 });
+                                this.setState({ clickReload: true });
                               }}
                               label="Down"
                             />
@@ -1729,14 +1863,6 @@ class LoginIntegrator extends React.Component<Props, State> {
                       }}
                       label="EXECUTE Tracked"
                     />
-                  </div>
-                  <div
-                    style={{
-                      textAlign: "center",
-                      position: "absolute",
-                      bottom: "10px",
-                      width: "100%"
-                    }}>
                     <UniversalButton
                       label="Revert last execution"
                       type="high"
