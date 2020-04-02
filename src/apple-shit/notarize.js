@@ -11,7 +11,7 @@ module.exports = () => {
   const fullPath = path.join(__dirname + "/.." + "/.." + "/package.json");
   const package = fs.readFileSync(fullPath);
   const pathToVersion = path.join(
-    __dirname + "/.." + "/.." + +"/out" + "/make/" + JSON.parse(package).version
+    __dirname + "/.." + "/.." + "/out" + "/make/" + JSON.parse(package).version
   );
   console.log("The path to the current version is: ", pathToVersion);
   console.log("Notarizing...");
