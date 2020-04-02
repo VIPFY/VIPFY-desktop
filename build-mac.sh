@@ -22,6 +22,7 @@ ssh -t nilsvossebein@192.168.1.9 '
   export BUILD_SERVER='"'$BUILD_SERVER'"'
   export APPLE_ID=nv@vipfy.com
   export APPLE_APP_PASSWORD='"'$APPLE_APP_PASSWORD'"'
+  export DEVELOPMENT=true
 
   echo "Successfully logged into Mac"
   cd Documents

@@ -19,7 +19,7 @@ module.exports = {
     icon: "iconTransparent",
     asar: false,
     appVersion: fromBuildIdentifier({ dev: devVersion, prod: version }),
-    appCopyright: `©${new Date.getFullYear()} VIPFY GmbH`,
+    appCopyright: `©${new Date().getFullYear()} VIPFY GmbH`,
     osxSign: {
       platform: "darwin",
       type: "distribution",
