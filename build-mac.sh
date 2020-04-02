@@ -20,7 +20,6 @@ ssh -t nilsvossebein@192.168.1.9 '
   export MAC_PW='"'$MAC_PW'"'
   export CHANNEL_ID='"'$CHANNEL_ID'"';
   export BUILD_SERVER='"'$BUILD_SERVER'"'
-  DEVELOPMENT=true
   export APPLE_ID=nv@vipfy.com
   export APPLE_APP_PASSWORD='"'$APPLE_APP_PASSWORD'"'
 
@@ -36,7 +35,7 @@ ssh -t nilsvossebein@192.168.1.9 '
 
   echo "Editing config.json"
   cat config.json
-  ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
+  ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" true
 
   echo "Unlock the default keychain"
   security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db

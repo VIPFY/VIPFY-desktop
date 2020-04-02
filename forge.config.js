@@ -7,10 +7,11 @@ const moment = require("moment");
 
 const fullPath = path.join(__dirname + "/package.json");
 const packageJSON = fs.readFileSync(fullPath);
+
 const { version } = JSON.parse(packageJSON);
 const [major, minor, patch] = version.split(".");
-
 const devVersion = `${major}.${minor}.${patch}-dev-${moment().format("LLL")}`;
+console.log("FIRE: process.env.DEVELOPMENT", process.env.DEVELOPMENT);
 
 module.exports = {
   buildIdentifier: process.env.DEVELOPMENT ? "dev" : "prod",
