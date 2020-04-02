@@ -23,6 +23,22 @@ export async function generatePersonalKeypair(
   };
 }
 
+/**
+ * Returns a newly encrypted Private Key
+ *
+ * @param encryptionKey The Encryption key that the key should be encrypted with
+ * @param privateKey The key to be encrypted
+ */
+export async function regenerateEncryptedPrivateKey(
+  encryptionKey: Buffer,
+  privateKey: Buffer
+): Promise<{ privatekey: string; encryptedby: string }> {
+  const encPrivateKey = await encryptPrivateKey(privateKey, encryptionKey);
+  privateKey.fill(0); // overwrite it for security
+
+  return { privatekey: encPrivateKey.toString("hex"), encryptedby: null };
+}
+
 export async function generateAdminKeypair(
   encryptingPublicKey: Buffer
 ): Promise<{ privatekey: string; publickey: string; encryptedby: string }> {

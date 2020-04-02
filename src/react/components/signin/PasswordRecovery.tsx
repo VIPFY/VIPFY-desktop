@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Mutation, useQuery } from "react-apollo";
 import gql from "graphql-tag";
+import { decode } from "jsonwebtoken";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import { ErrorComp } from "../../common/functions";
@@ -14,9 +15,12 @@ const RECOVER_PASSWORD = gql`
   }
 `;
 
-const FETCH_RECOVERY_KEY = gql`
-  query onFetchRecoveryKey($email: String!) {
-    fetchRecoveryKey(email: $email)
+const FETCH_RECOVERY_CHALLENGE = gql`
+  query onFetchRecoveryChallenge($email: String!) {
+    fetchRecoveryChallenge(email: $email) {
+      encryptedKey
+      token
+    }
   }
 `;
 
@@ -28,8 +32,10 @@ interface Props {
 export default (props: Props) => {
   const MAX_LENGTH = 4;
   const fields = [...Array(12).keys()];
-  const { data, loading, error } = useQuery(FETCH_RECOVERY_KEY, {
-    variables: { email: props.email }
+  const [localError, setLocalError] = React.useState(null);
+  const { data, loading, error: queryError } = useQuery(FETCH_RECOVERY_CHALLENGE, {
+    variables: { email: props.email },
+    fetchPolicy: "network-only"
   });
 
   const base64ToArrayBuffer = base64 => {
@@ -110,7 +116,6 @@ export default (props: Props) => {
         <i className="fal fa-minus" />
       </React.Fragment>
     ));
-  // pC9KfZ3DLu+gWnba4weehpCLiMXI/cpC/EVOwdH3n6QthGN/
 
   return (
     <div className="password-recovery">
@@ -120,24 +125,44 @@ export default (props: Props) => {
 
         <div className="holder-right">
           <h1>Recover your account</h1>
-
+          {/* 8a9ElIr8l5goXUT2ub5D9cBiL4o//35J0e5i9l5rhtZY4QM/ */}
           <Mutation<WorkAround, WorkAround> mutation={RECOVER_PASSWORD}>
             {(mutate, { loading: l2, error: e2 }) => {
               const handleSubmit = async e => {
-                e.preventDefault();
-                const code = Object.values(e.target)
-                  .filter(node => node.value)
-                  .map(node => node.value)
-                  .reduce((acc, cv) => acc + cv, "");
+                try {
+                  e.preventDefault();
+                  setLocalError(null);
+                  const code = Object.values(e.target)
+                    .filter(node => node.value)
+                    .map(node => node.value)
+                    .reduce((acc, cv) => acc + cv, "");
 
-                const keyBytes = await base64ToArrayBuffer(code);
+                  const keyBytes = await base64ToArrayBuffer(code);
 
-                const keyData = await decryptPrivateKey(
-                  Buffer.from(data.fetchRecoveryKey.slice(0, 32)),
-                  Buffer.from(keyBytes.slice(0, 32))
-                );
-                console.log("FIRE: keyData", keyData);
-                //   await mutate({ variables: { keyData, email: props.email } });
+                  const decryptedKey = await decryptPrivateKey(
+                    Buffer.from(data.fetchRecoveryChallenge.encryptedKey, "hex"),
+                    Buffer.from(keyBytes.slice(0, 32))
+                  );
+                  console.log("FIRE: keyData", decryptedKey);
+                  console.log(
+                    "FIRE: data.fetchRecoveryChallenge.token",
+                    data.fetchRecoveryChallenge.token
+                  );
+
+                  const token = decode(data.fetchRecoveryChallenge.token);
+                  console.log("FIRE: token", token);
+                  // const buffer = new Buffer(data.fetchRecoveryChallenge.token, "base64");
+                  // const decrypted = crypto
+                  //   .privateDecrypt({ key: decryptedKey }, buffer)
+                  //   .toString("utf8");
+                  // console.log("FIRE: decrypted", decrypted);
+
+                  // console.log("FIRE: token", token);
+
+                  //  mutate({ variables: { keyData, email: props.email } });
+                } catch (e3) {
+                  setLocalError(e3);
+                }
               };
 
               return (
@@ -145,7 +170,7 @@ export default (props: Props) => {
                   {loading ? (
                     <LoadingDiv />
                   ) : (
-                    !error && (
+                    !queryError && (
                       <React.Fragment>
                         <p style={{ textAlign: "left" }}>
                           Please put in your 44 characters long recovery code you got in the
@@ -159,7 +184,7 @@ export default (props: Props) => {
                     )
                   )}
 
-                  <ErrorComp error={e2 || error} />
+                  <ErrorComp error={e2 || queryError || localError} />
 
                   <div className="login-buttons">
                     <UniversalButton
@@ -168,7 +193,7 @@ export default (props: Props) => {
                       disabled={l2}
                       onClick={props.backFunction}
                     />
-                    {!error && (
+                    {!queryError && (
                       <UniversalButton
                         label="Reset Password"
                         form="recovery-form"

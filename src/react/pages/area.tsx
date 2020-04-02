@@ -52,6 +52,7 @@ import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
 import RecoveryKey from "../components/signin/RecoveryKey";
+import { WorkAround } from "../interfaces";
 
 interface AreaProps {
   id: string;
@@ -367,7 +368,9 @@ class Area extends React.Component<AreaProps, AreaState> {
     }
 
     return (
-      <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
+      <Query<WorkAround, WorkAround>
+        query={fetchUserLicences}
+        variables={{ unitid: this.props.id }}>
         {({ data, loading, error }) => {
           if (loading) {
             return <LoadingDiv />;

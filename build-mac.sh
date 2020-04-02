@@ -12,7 +12,7 @@ BUILD_SERVER=$(cat .env | grep BUILD_SERVER)
 BUILD_SERVER=${BUILD_SERVER##BUILD_SERVER=}
 DEVELOPMENT=$(cat .env | grep DEVELOPMENT)
 DEVELOPMENT=${DEVELOPMENT##DEVELOPMENT=}
-
+# fxvw-rsye-xguu-pgur
 # Login to the Apple and execute the script
 ssh -t nilsvossebein@192.168.1.9 '
   export BRANCH='"'$BRANCH'"';

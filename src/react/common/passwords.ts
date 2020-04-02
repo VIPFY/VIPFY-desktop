@@ -212,7 +212,6 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
       fetchPolicy: "network-only",
       variables: { unitid }
     });
-    console.log("LOG: updateEmployeePassword -> licences", licences);
 
     const licenceUpdates = (
       await Promise.all(
@@ -325,10 +324,12 @@ export async function decryptLicenceKey(client, licence) {
           `,
           variables: { publickey: candidate.key }
         });
+
         if (d.error) {
           console.error(d.error);
           throw new Error("can't fetch key");
         }
+
         let found = false;
         for (const k of d.data.fetchKeys) {
           try {

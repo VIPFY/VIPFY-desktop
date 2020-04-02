@@ -11,6 +11,7 @@ import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment from "moment";
 import { filterError, concatName } from "../common/functions";
+import { WorkAround } from "../interfaces";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -25,6 +26,9 @@ interface PostLoginProps {
   history: any;
   context: any;
   addUsedLicenceID: Function;
+  firstname: string;
+  middlename: string;
+  lastname: string;
 }
 
 interface State {
@@ -53,12 +57,12 @@ class PostLogin extends React.Component<PostLoginProps, State> {
     const isImpersonating = !!localStorage.getItem("impersonator-token");
 
     return (
-      <Query query={me}>
+      <Query<WorkAround, WorkAround> query={me}>
         {({ data, loading, error, refetch }) => {
           const { context, ...clearProps } = this.props;
 
           if (loading) {
-            return <LoadingDiv text="Preparing Vipfy for you" />;
+            return <LoadingDiv />;
           }
 
           if (error || !data || !data.me) {
@@ -86,7 +90,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
           if (isImpersonating) {
             context.addHeaderNotification(
-              `You are impersonating the User ${concatName(this.props)}`,
+              `You are impersonating the User ${concatName(clearProps)}`,
               {
                 type: "impersonation",
                 key: "impersonator",
@@ -142,7 +146,9 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           }
 
           return (
-            <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
+            <Query<WorkAround, WorkAround>
+              pollInterval={60 * 60 * 1000 + 10000}
+              query={FETCH_VIPFY_PLAN}>
               {({ data: d2, error }) => {
                 if (error) {
                   return filterError(error);

@@ -3,7 +3,11 @@ import { remote } from "electron";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import IconButton from "../../common/IconButton";
-import { generatePersonalKeypair, getRandomBytes } from "../../common/crypto";
+import {
+  generatePersonalKeypair,
+  getRandomBytes,
+  regenerateEncryptedPrivateKey
+} from "../../common/crypto";
 import { ErrorComp } from "../../common/functions";
 import gql from "graphql-tag";
 import { Mutation } from "react-apollo";
@@ -18,8 +22,12 @@ const SAVE_RECOVERY_KEY = gql`
     }
   }
 `;
-// csqPKACf1S/Fqt34UwC1AhVm3WJvfO8rJoLh/C6Oply5Ndva
-const RecoveryKey = () => {
+
+interface Props {
+  privateKey?: string;
+}
+
+const RecoveryKey = (props: Props) => {
   const [encryptionKey, setKey] = React.useState("");
   const [codeWindow, setWindow] = React.useState(null);
   const [printError, setError] = React.useState(null);
@@ -32,8 +40,17 @@ const RecoveryKey = () => {
     const key = await getRandomBytes(36);
     let base64Key = await key.toString("base64");
 
-    const personalKey = await generatePersonalKeypair(key.slice(0, 32));
-    setkeyPair(personalKey);
+    if (props.privateKey) {
+      const newKeys = await regenerateEncryptedPrivateKey(
+        Buffer.from(key.slice(0, 32)),
+        Buffer.from(props.privateKey)
+      );
+
+      setkeyPair(newKeys);
+    } else {
+      const personalKeys = await generatePersonalKeypair(key.slice(0, 32));
+      setkeyPair(personalKeys);
+    }
     setKey(base64Key);
   }, []);
 
