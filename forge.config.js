@@ -11,10 +11,10 @@ const packageJSON = fs.readFileSync(fullPath);
 const { version } = JSON.parse(packageJSON);
 const [major, minor, patch] = version.split(".");
 const devVersion = `${major}.${minor}.${patch}-dev-${moment().format("LLL")}`;
-console.log("FIRE: process.env.DEVELOPMENT", process.env.DEVELOPMENT);
+console.log("FIRE: devVersion", devVersion);
 
 module.exports = {
-  buildIdentifier: process.env.DEVELOPMENT ? "dev" : "prod",
+  buildIdentifier: !!process.env.DEVELOPMENT ? "dev" : "prod",
   packagerConfig: {
     icon: "iconTransparent",
     asar: false,
