@@ -6,6 +6,7 @@ const path = require("path");
 const fullPath = path.join(__dirname + "/.." + "/.." + "/package.json");
 const package = fs.readFileSync(fullPath);
 const pathToVersion = path.join(__dirname + "/.." + "/.." + "/make/" + JSON.parse(package).version);
+console.log("The Path to the new version is:", pathToVersion);
 
 module.exports = function() {
   if (process.platform !== "darwin") {
