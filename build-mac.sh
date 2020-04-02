@@ -10,8 +10,6 @@ CHANNEL_ID=$(cat .env | grep CHANNEL_ID)
 CHANNEL_ID=${CHANNEL_ID##CHANNEL_ID=}
 BUILD_SERVER=$(cat .env | grep BUILD_SERVER)
 BUILD_SERVER=${BUILD_SERVER##BUILD_SERVER=}
-DEVELOPMENT=$(cat .env | grep DEVELOPMENT)
-DEVELOPMENT=${DEVELOPMENT##DEVELOPMENT=}
 APPLE_APP_PASSWORD=$(cat .env | grep APPLE_APP_PASSWORD)
 APPLE_APP_PASSWORD=${APPLE_APP_PASSWORD##APPLE_APP_PASSWORD=}
 
@@ -22,7 +20,7 @@ ssh -t nilsvossebein@192.168.1.9 '
   export MAC_PW='"'$MAC_PW'"'
   export CHANNEL_ID='"'$CHANNEL_ID'"';
   export BUILD_SERVER='"'$BUILD_SERVER'"'
-  export DEVELOPMENT='"'$DEVELOPMENT'"'
+  DEVELOPMENT=true
   export APPLE_ID=nv@vipfy.com
   export APPLE_APP_PASSWORD='"'$APPLE_APP_PASSWORD'"'
 
@@ -41,6 +39,7 @@ ssh -t nilsvossebein@192.168.1.9 '
 
   echo "Editing config.json"
   cat config.json
+  echo $DEVELOPMENT
   ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
 
   echo "Unlock the default keychain"
