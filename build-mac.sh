@@ -15,8 +15,7 @@ APPLE_APP_PASSWORD=${APPLE_APP_PASSWORD##APPLE_APP_PASSWORD=}
 
 # Login to the Apple and execute the script
 ssh -t nilsvossebein@192.168.1.9 '
-  onexit(){ while caller $((n++)); do :; done; }
-  trap onexit EXIT
+  set -e
 
   export BRANCH='"'$BRANCH'"';
   export NUCLEUS_PW='"'$NUCLEUS_PW'"'
