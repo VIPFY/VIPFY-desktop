@@ -34,9 +34,6 @@ ssh -t nilsvossebein@192.168.1.9 '
   git pull
   npm i
 
-  echo "Create a custom tag for nucleus"
-  jq ".version = \"$(cat package.json | jq -r '.version')-dev-$(date +%Y-%m-%d)\" " package.json > package-temp.json && mv package-temp.json package.json
-
   echo "Editing config.json"
   cat config.json
   ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"

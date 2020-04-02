@@ -8,7 +8,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "make-win": "$env:LOCALAPPDATA = \"C:\\VIPFY\\vipfy-desktop\\tmp\" & electron-forge make",
-    "make-mac-dev": "./prepare-build.sh && ./build-mac.sh",
+    "make-mac-dev": "./prepare-build.sh true && ./build-mac.sh",
     "make-mac-prod": "./prepare-build.sh && ./build-mac-prod.sh",
     "publish-js": "electron-forge publish",
     "publish-js-obfuscated": "jscrambler src/ssoConfigPreload/* -o obfuscated && electron-forge publish && shx rm -r obfuscate",

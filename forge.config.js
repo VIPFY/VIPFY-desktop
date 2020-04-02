@@ -1,11 +1,28 @@
+const {
+  utils: { fromBuildIdentifier }
+} = require("@electron-forge/core");
+const fs = require("fs");
+const path = require("path");
+const moment = require("moment");
+
+const fullPath = path.join(__dirname + "/package.json");
+const packageJSON = fs.readFileSync(fullPath);
+const { version } = JSON.parse(packageJSON);
+const [major, minor, patch] = version.split(".");
+
+const devVersion = `${major}.${minor}.${patch}-dev-${moment().format("LLL")}`;
+
 module.exports = {
+  buildIdentifier: process.env.DEVELOPMENT ? "dev" : "prod",
   packagerConfig: {
     icon: "iconTransparent",
     asar: false,
-    appCopyright: "©2020 VIPFY GmbH",
+    appVersion: fromBuildIdentifier({ dev: devVersion, prod: version }),
+    appCopyright: `©${new Date.getFullYear()} VIPFY GmbH`,
     osxSign: {
       platform: "darwin",
       type: "distribution",
+      appVersion,
       "gatekeeper-assess": false,
       "hardened-runtime": true,
       entitlements: "./src/apple-shit/entitlement.plist",
@@ -43,7 +60,7 @@ module.exports = {
     {
       name: "@electron-forge/maker-dmg",
       config: {
-        icon: "./iconTransparent.icns",
+        icon: "./src/apple-shit/vipfy_logo_mac.icns",
         background: "./dmgBackground.png"
       }
     }
@@ -83,7 +100,7 @@ module.exports = {
   hooks: {
     postPackage: async () => {
       console.log(__dirname);
-      return require("./src/apple-shit/notarize.js");
+      return (await require("./src/apple-shit/notarize.js"))();
     }
   }
 };
