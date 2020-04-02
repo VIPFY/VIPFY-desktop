@@ -414,7 +414,6 @@ class ChangeAccount extends React.Component<Props, State> {
             {!newaccount && (
               <>
                 <h2 style={{ paddingTop: "24px", paddingBottom: "24px" }}>Users</h2>
-                {console.log(account.assignments)}
                 {account.assignments.map(
                   assignment =>
                     assignment &&

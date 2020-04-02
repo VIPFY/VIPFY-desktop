@@ -10,6 +10,7 @@ import {
   fetchCompanyServices
 } from "../../../../queries/products";
 import { AppContext } from "../../../../common/functions";
+import UniversalCheckbox from "../../../universalForms/universalCheckbox";
 
 interface Props {
   service: any;
@@ -26,7 +27,9 @@ interface State {
   planid: number;
   saving: boolean;
   saved: boolean;
+  selfhosting: boolean;
   error: boolean;
+  protocol: String;
 }
 
 const CREATE_ORBIT = gql`
@@ -52,7 +55,9 @@ class CreateOrbit extends React.Component<Props, State> {
     saving: false,
     saved: false,
     error: false,
-    planid: 0
+    selfhosting: false,
+    planid: 0,
+    protocol: "https://"
   };
 
   componentDidMount() {
@@ -79,9 +84,12 @@ class CreateOrbit extends React.Component<Props, State> {
           alias: this.state.alias,
           options: {
             domain: this.props.service.needssubdomain
-              ? `${this.props.service.options.predomain}${this.state.domain}${this.props.service.options.afterdomain}`
+              ? this.state.selfhosting
+                ? `${this.state.protocol}${this.state.domain}`
+                : `${this.props.service.options.predomain}${this.state.domain}${this.props.service.options.afterdomain}`
               : undefined,
-            external: true
+            external: true,
+            selfhosting: this.state.selfhosting ? true : undefined
           }
         },
         refetchQueries: [
@@ -124,14 +132,66 @@ class CreateOrbit extends React.Component<Props, State> {
             <h1>Create Orbit</h1>
             {this.props.service.needssubdomain && (
               <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
-                <span style={{ lineHeight: "24px", width: "84px" }}>Domain:</span>
+                <span style={{ lineHeight: "24px", width: "84px" }}>
+                  <span>Domain:</span>
+                  {this.props.service.options.selfhosting && (
+                    <div style={{ alignItems: "center", display: "flex" }}>
+                      <UniversalCheckbox
+                        liveValue={e => this.setState({ selfhosting: e })}
+                        style={{ float: "left" }}
+                      />
+                      <span style={{ fontSize: "10px", lineHeight: "18px", marginLeft: "4px" }}>
+                        Selfhosting
+                      </span>
+                    </div>
+                  )}
+                </span>
                 <UniversalTextInput
                   width="300px"
                   id="domain"
-                  livevalue={v =>
-                    this.props.alias || this.state.aliastouched
-                      ? this.setState({ domain: v })
-                      : this.setState({ domain: v, alias: v })
+                  className="scrollable"
+                  livevalue={value => {
+                    let domain = value;
+                    let protocol = undefined;
+                    if (value.startsWith("https://") || value.startsWith("http://")) {
+                      protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
+                      domain = value.substring(value.search(/:\/\/{1}/) + 3);
+                    } else {
+                      protocol = this.state.protocol;
+                    }
+                    if (this.props.alias || this.state.aliastouched) {
+                      this.setState({ domain, protocol });
+                    } else {
+                      this.setState({ domain, protocol, alias: domain });
+                    }
+                  }}
+                  modifyValue={value => {
+                    if (value.startsWith("https://") || value.startsWith("http://")) {
+                      return value.substring(value.search(/:\/\/{1}/) + 3);
+                    } else {
+                      return value;
+                    }
+                  }}
+                  prefix={
+                    this.state.selfhosting ? (
+                      <select
+                        className="universalTextInput"
+                        style={{ width: "75px" }}
+                        value={this.state.protocol}
+                        onChange={e => this.setState({ protocol: e.target.value })}>
+                        <option value="http://" key="http://">
+                          http://
+                        </option>
+                        <option value="https://" key="https://">
+                          https://
+                        </option>
+                      </select>
+                    ) : (
+                      this.props.service.options.predomain
+                    )
+                  }
+                  suffix={
+                    this.state.selfhosting ? undefined : this.props.service.options.afterdomain
                   }
                 />
               </div>

@@ -48,7 +48,6 @@ class CreateAccount extends React.Component<Props, State> {
   };
 
   render() {
-    console.log("PROPS ACCOUNT", this.props, this.state);
     return (
       <AppContext.Consumer>
         {({ addRenderElement }) => (

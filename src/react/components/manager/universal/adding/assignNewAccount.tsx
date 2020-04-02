@@ -284,6 +284,11 @@ class AssignNewAccount extends React.Component<Props, State> {
                   />
                 )}
               </>
+            ) : this.state.service.options.pending ? (
+              <div>
+                Sorry you can't create Orbits for pending services. Please wait until this issue has
+                been solved
+              </div>
             ) : (
               <AssignOrbit
                 service={this.state.service}

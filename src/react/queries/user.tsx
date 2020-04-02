@@ -52,6 +52,7 @@ export const QUERY_SEMIPUBLICUSER = gql`
       }
       assignments {
         alias
+        endtime
         assignmentid
         assignoptions
         boughtplanid {
@@ -111,6 +112,7 @@ export const QUERY_ME = gql`
       }
       assignments {
         alias
+        endtime
         assignmentid
         assignoptions
         boughtplanid {

@@ -2,6 +2,7 @@ import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import TeamServiceDetails from "./teamserviceDetails";
 import AssignNewTeamOrbit from "./universal/adding/assignNewTeamOrbit";
+import { now } from "moment";
 
 interface Props {
   team: any;
@@ -22,7 +23,7 @@ class ServiceSection extends React.Component<Props, State> {
     let services: any[] = [];
     let interservices: any[] = [];
     if (this.props.team.services) {
-      interservices = this.props.team.services;
+      interservices = this.props.team.services.filter(e => e.endtime == null || e.endtime < now());
 
       interservices.sort(function(a, b) {
         let nameA = a.planid.appid.name.toUpperCase();

@@ -331,7 +331,7 @@ class ServiceOverview extends React.Component<Props, State> {
             </AppContext.Consumer>
           </div>
           <Query pollInterval={60 * 10 * 1000 + 900} query={COMPANY_SERVICES_OPTIONS}>
-            {({ loading, error, data, refetch }) => {
+            {({ loading, error, data }) => {
               if (loading) {
                 return (
                   <div className="table" key="table-fake-key">
@@ -372,7 +372,7 @@ class ServiceOverview extends React.Component<Props, State> {
                 );
               }
               if (error) {
-                return `Error! ${error.message}`;
+                return <div>Error! {error.message}</div>;
               }
 
               //Sort teams

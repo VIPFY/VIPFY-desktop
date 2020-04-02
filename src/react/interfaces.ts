@@ -1,5 +1,5 @@
 export interface Licence {
-  id: number;
+  id: string;
   pending: boolean;
   options: JSON;
   starttime: number | string;
@@ -15,17 +15,16 @@ export interface Licence {
   delete: boolean;
   vacationstart?: number | Date;
   vacationend?: number | Date;
-  accountid: number;
+  accountid: string;
 }
 
 export interface Unit {
-  id: number;
+  id: string;
   profilepicture: string;
   createdate: string;
 }
 
-export interface User {
-  id: number;
+export interface User extends Unit {
   firstname: string;
   middlename: string;
   lastname: string;
@@ -36,9 +35,7 @@ export interface User {
   banned: boolean;
   deleted: boolean;
   suspended: boolean;
-  profilepicture: string;
   emails: Email[];
-  createdate: string;
   company: Department;
   statisticdata: JSON;
   needspasswordchange: boolean;
@@ -51,7 +48,7 @@ export interface User {
 
 export interface SecurityUser {
   unitid: any;
-  id: number;
+  id: string;
   createdate: string;
   lastactive: string;
   passwordlength: number;
@@ -61,7 +58,7 @@ export interface SecurityUser {
   needspasswordchange: boolean;
   needstwofa: boolean;
   twofactormethods: {
-    twofaid: number;
+    twofaid: string;
     twofatype: string;
     twofacreated: string;
     twofalastused: string;
@@ -70,7 +67,7 @@ export interface SecurityUser {
 }
 
 export interface PublicUser {
-  id: number;
+  id: string;
   firstname: string;
   middlename: string;
   lastname: string;
@@ -102,10 +99,10 @@ export interface Department {
 }
 
 export interface BoughtPlan {
-  id: number;
+  id: string;
   buytime: string;
   alias: string;
-  endtime: string;
+  endtime: number | Date;
   description: string;
   key: JSON;
   buyer: Unit;
@@ -117,7 +114,7 @@ export interface BoughtPlan {
 }
 
 export interface Domain {
-  id: number;
+  id: string;
   domainname: string;
   createdate: Date;
   renewaldate: Date;
@@ -146,7 +143,7 @@ export interface Email {
 }
 
 export interface Plan {
-  id: number;
+  id: string;
   name: string;
   teaserdescription: string;
   features: JSON;
@@ -166,7 +163,7 @@ export interface Plan {
 }
 
 export interface App {
-  id: number;
+  id: string;
   name: string;
   icon: string;
   loginurl: string;
@@ -222,19 +219,15 @@ export interface InputProps {
   handleKeyPress?: Function;
 }
 
-export interface Domain {
-  domain: string;
-  price: string;
-  currency: string;
-  availability: string;
-  description: string;
-}
-
 export interface SSO {
   name?: string;
   loginurl?: string;
   email?: string;
   password?: string;
+}
+
+export interface WorkAround {
+  [basicallyEverything: string]: any;
 }
 
 export interface TestResult {

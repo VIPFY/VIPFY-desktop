@@ -171,6 +171,54 @@ async function start() {
 }
 
 start();
+
+ipcRenderer.once("getModifyFields", (e, key) => {
+  modifyFields(key);
+});
+
+async function modifyFields(elements) {
+  while (true) {
+    for (i = 0; i < elements.hide.length; i++) {
+      var element = elements.hide[i];
+      var selectedElement = document.querySelector(element.selector);
+      if (selectedElement) {
+        var i = 0;
+        while (i < element.parentlevel) {
+          selectedElement = selectedElement.parentNode;
+          i++;
+        }
+        var parent = selectedElement.parentNode;
+        parent.removeChild(selectedElement);
+      }
+    }
+    for (i = 0; i < elements.replace.length; i++) {
+      var element = elements.replace[i];
+      var selectedElement = document.querySelector(element.selector);
+      if (selectedElement) {
+        var i = 0;
+        while (i < element.parentlevel) {
+          selectedElement = selectedElement.parentNode;
+          i++;
+        }
+        if (!selectedElement.cloned) {
+          var clonedElement = selectedElement.cloneNode(true);
+          clonedElement.addEventListener("click", e => redirectClick(e, element));
+          clonedElement.cloned = true;
+          selectedElement.parentNode.replaceChild(clonedElement, selectedElement);
+        }
+      }
+    }
+    await sleep(100);
+  }
+}
+
+function redirectClick(e, element) {
+  console.log("REDIRECT");
+  e.preventDefault();
+  e.stopPropagation();
+  ipcRenderer.sendToHost("redirectClick", element.action);
+}
+
 /*
 if (document.readyState === "complete") {
   start();
@@ -493,7 +541,7 @@ function findConfirmButton(ignoreForm) {
 }
 
 function findCookieButton() {
-  console.log("find Cookie Button");
+  //console.log("find Cookie Button");
   var t = Array.from(
     document.querySelectorAll(
       "#onetrust-accept-btn-handler, [class~=cc-compliance] > [class~=cc-dismiss], [class~='consent'] > a[class~='call'], [ba-click='{{allow()}}']"
@@ -524,7 +572,7 @@ function findCookieButton() {
       .filter(e => !isHidden(e))
       .filter(e => !e.disabled);
   }
-  console.log("return Cookie Button", t[0]);
+  //console.log("return Cookie Button", t[0]);
   return t[0];
 }
 

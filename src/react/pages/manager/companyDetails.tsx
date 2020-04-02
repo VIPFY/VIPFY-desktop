@@ -16,11 +16,14 @@ import { ADD_PROMOCODE } from "../../mutations/auth";
 import { now } from "moment";
 import LoadingDiv from "../../components/LoadingDiv";
 import { ErrorComp } from "../../common/functions";
+import { WorkAround } from "../../interfaces";
 
 const UPDATE_PIC = gql`
-  mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
-    updateEmployeePic(file: $file, userid: $unitid) {
-      id
+  mutation onUpdateCompanyPic($file: Upload!) {
+    updateCompanyPic(file: $file) {
+      unit: unitid {
+        id
+      }
       profilepicture
     }
   }
@@ -70,6 +73,11 @@ interface Props {
   applyPromocode: Function;
   setVatID: Function;
   isadmin: boolean;
+  company: {
+    id: string;
+    [moreProps: string]: any;
+  };
+  [moreProps: string]: any;
 }
 
 interface State {
@@ -92,7 +100,6 @@ class CompanyDetails extends React.Component<Props, State> {
   };
 
   uploadPic = async (picture: File) => {
-    const { userid } = this.props.match.params;
     await this.setState({ loading: true });
 
     try {
@@ -100,7 +107,7 @@ class CompanyDetails extends React.Component<Props, State> {
 
       await this.props.updatePic({
         context: { hasUpload: true },
-        variables: { file: resizedImage, unitid: userid }
+        variables: { file: resizedImage }
       });
 
       await this.setState({ loading: false });
@@ -112,7 +119,7 @@ class CompanyDetails extends React.Component<Props, State> {
 
   render() {
     return (
-      <Query pollInterval={60 * 10 * 1000 + 300} query={FETCH_COMPANY}>
+      <Query<WorkAround, WorkAround> pollInterval={60 * 10 * 1000 + 300} query={FETCH_COMPANY}>
         {({ loading, error, data }) => {
           if (loading) {
             return <LoadingDiv />;
@@ -153,7 +160,7 @@ class CompanyDetails extends React.Component<Props, State> {
                               }
                             }
                             name={name}
-                            onDrop={file => this.uploadPic(file)}
+                            onDrop={(file: File) => this.uploadPic(file)}
                             className="managerBigSquare noBottomMargin"
                             isadmin={this.props.isadmin}
                             formstyles={{ marginLeft: "0px", marginTop: "0px" }}
@@ -197,7 +204,7 @@ class CompanyDetails extends React.Component<Props, State> {
                             onClick={() => this.props.moveTo("lmanager")}>
                             <h1>Used Services</h1>
                             <h2>
-                              <Query
+                              <Query<WorkAround, WorkAround>
                                 pollInterval={60 * 10 * 1000 + 900}
                                 query={FETCH_COMPANY_SERVICES}
                                 fetchPolicy="cache-and-network">
@@ -205,6 +212,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                   if (loading) {
                                     return <LoadingDiv />;
                                   }
+
                                   if (error) {
                                     return <ErrorComp error={error} />;
                                   }
@@ -212,7 +220,7 @@ class CompanyDetails extends React.Component<Props, State> {
                                   return data &&
                                     data.fetchCompanyServices &&
                                     data.fetchCompanyServices.length
-                                    ? data.fetchCompanyServices.length
+                                    ? data.fetchCompanyServices.length - 1
                                     : 0;
                                 }}
                               </Query>
@@ -228,7 +236,7 @@ class CompanyDetails extends React.Component<Props, State> {
                             onClick={() => this.props.moveTo("lmanager")}>
                             <h1>Used Accounts</h1>
                             <h2>
-                              <Query
+                              <Query<WorkAround, WorkAround>
                                 pollInterval={60 * 10 * 1000 + 900}
                                 query={FETCH_COMPANY_SERVICES}
                                 fetchPolicy="cache-and-network">
@@ -242,14 +250,20 @@ class CompanyDetails extends React.Component<Props, State> {
                                   let sum = 0;
                                   if (data && data.fetchCompanyServices) {
                                     data.fetchCompanyServices.forEach(
-                                      s =>
+                                      (s: { orbitids: any[] }) =>
                                         s.orbitids &&
                                         s.orbitids.forEach(
-                                          o =>
+                                          (o: {
+                                            accounts: {
+                                              filter: (
+                                                arg0: (ac: { endtime: number }) => boolean
+                                              ) => { (): any; new (): any; length: any };
+                                            };
+                                          }) =>
                                             (sum +=
                                               o && o.accounts
                                                 ? o.accounts.filter(
-                                                    ac =>
+                                                    (ac: { endtime: number }) =>
                                                       ac &&
                                                       (ac.endtime == null || ac.endtime > now())
                                                   ).length
@@ -350,7 +364,7 @@ class CompanyDetails extends React.Component<Props, State> {
                             <UniversalTextInput
                               id={this.state.edit!.id}
                               label={this.state.edit!.label}
-                              livevalue={v => this.setState({ editvalue: v })}
+                              livevalue={(v: any) => this.setState({ editvalue: v })}
                               startvalue={this.state.edit!.startvalue}
                               type={this.state.edit!.type}
                             />
