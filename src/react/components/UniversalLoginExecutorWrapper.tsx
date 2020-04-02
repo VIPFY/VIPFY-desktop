@@ -27,6 +27,7 @@ interface SkipCondition {
   skipIfPassedEquals: boolean; // skip if the result success ("passed") of the test dependency equals this value
 }
 
+// don't change test order. it matters when it comes to deciding if a test can be skipped.
 const tests = [
   {
     expectLoginSuccess: false,
@@ -83,37 +84,41 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
   }
 
   advance() {
-    if (this.hasNextTest()) {
-      this.setState(state => {
-        return { ...state, currentTest: this.state.currentTest + 1 };
-      });
-    } else {
-      this.props.setResult(this.state.testResults);
-    }
+    this.props.setResult(this.state.testResults);
+
+    //if (this.hasNextTest()) {
+    this.setState(state => {
+      return { ...state, currentTest: this.state.currentTest + 1 };
+    });
+    //}
   }
 
   hasNextTest() {
     return !!tests[this.state.currentTest + 1];
   }
 
-  isStorageDataCleared(testNumber: number) {
-    return this.state.storageDataCleared[testNumber];
-  }
-
   clearStorageData(currentTest: number) {
+    if (this.state.storageDataCleared[currentTest]) {
+      return;
+    }
+
     session.fromPartition(SSO_TEST_PARTITION).clearStorageData();
     this.setState(state => {
       let storageDataCleared = state.storageDataCleared;
       storageDataCleared[currentTest] = true;
+
       return { ...state, storageDataCleared };
     });
   }
 
-  skipTest(currentTest: number, testResults: TestResult[]) {
-    this.setState(() => {
+  skipTest(currentTest: number) {
+    this.setState(state => {
+      let testResults = state.testResults;
       testResults[currentTest] = { skipped: true };
+
       return { testResults };
     });
+
     this.advance();
   }
 
@@ -121,18 +126,18 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
     const { currentTest, testResults } = this.state;
     const test = tests[currentTest];
 
-    if (test.skipCondition) {
-      const result = testResults[test.skipCondition.testDependency];
-      const skipConditionFulfilled =
-        result && result.passed === test.skipCondition.skipIfPassedEquals;
+    const skipConditionFulfilled =
+      test.skipCondition &&
+      testResults[test.skipCondition.testDependency] &&
+      testResults[test.skipCondition.testDependency].passed ===
+        test.skipCondition.skipIfPassedEquals;
 
-      if (skipConditionFulfilled) {
-        this.skipTest(currentTest, testResults);
-      }
+    if (skipConditionFulfilled) {
+      this.skipTest(currentTest);
     }
 
     if (!test.reuseSession) {
-      this.isStorageDataCleared(currentTest) || this.clearStorageData(currentTest);
+      this.clearStorageData(currentTest);
     }
 
     return (

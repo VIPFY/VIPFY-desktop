@@ -174,11 +174,11 @@ class UniversalLoginTest extends React.Component<Props, State> {
 
     return (
       <section className="admin">
-        <h1>Test Universal Login</h1>
+        <h1>Test Universal SSO Login</h1>
 
         <UniversalButton
           onClick={() => session.fromPartition("ssotest").clearStorageData()}
-          label="Clear ssoTest"
+          label="Clear all SSO Test Sessions"
           type="high"
         />
 
