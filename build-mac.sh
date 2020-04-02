@@ -12,6 +12,8 @@ BUILD_SERVER=$(cat .env | grep BUILD_SERVER)
 BUILD_SERVER=${BUILD_SERVER##BUILD_SERVER=}
 DEVELOPMENT=$(cat .env | grep DEVELOPMENT)
 DEVELOPMENT=${DEVELOPMENT##DEVELOPMENT=}
+APPLE_APP_PASSWORD=$(cat .env | grep APPLE_APP_PASSWORD)
+APPLE_APP_PASSWORD=${APPLE_APP_PASSWORD##APPLE_APP_PASSWORD=}
 
 # Login to the Apple and execute the script
 ssh -t nilsvossebein@192.168.1.9 '
@@ -21,7 +23,8 @@ ssh -t nilsvossebein@192.168.1.9 '
   export CHANNEL_ID='"'$CHANNEL_ID'"';
   export BUILD_SERVER='"'$BUILD_SERVER'"'
   export DEVELOPMENT='"'$DEVELOPMENT'"'
-  CHANNEL_ID=92c1a89400e8f1153d46aa73ec4ce4d9
+  export APPLE_ID=nv@vipfy.com
+  export APPLE_APP_PASSWORD='"'$APPLE_APP_PASSWORD'"'
 
   echo "Successfully logged into Mac"
   cd Documents

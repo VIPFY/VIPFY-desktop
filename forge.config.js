@@ -6,6 +6,10 @@ module.exports = {
     osxSign: {
       platform: "darwin",
       type: "distribution",
+      "gatekeeper-assess": false,
+      "hardened-runtime": true,
+      entitlements: "./src/apple-shit/entitlement.plist",
+      "entitlements-inherit": "./src/apple-shit/entitlement.plist",
       identity: "Developer ID Application: VIPFY GmbH (RD6VS27844)"
     }
   },
@@ -75,5 +79,8 @@ module.exports = {
         token: "4a3db0e625fbb3aec657f0e033bb8dd1"
       }
     }
-  ]
+  ],
+  hooks: {
+    postPackage: require("./src/apple-shit/notarize.js")
+  }
 };

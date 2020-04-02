@@ -15,8 +15,8 @@
     "start": "electron-forge start",
     "faststart": "electron-forge start"
   },
-  "keywords": [],
-  "author": "Vipfy GmbH",
+  "keywords": ["saas","react"],
+  "author": "VIPFY GmbH",
   "license": "proprietary",
   "prettier": {
     "printWidth": 100,
@@ -144,6 +144,7 @@
     "cross-zip-cli": "^1.0.0",
     "css-loader": "^3.4.2",
     "electron": "8.2.0",
+    "electron-notarize": "^0.3.0",
     "file-loader": "^6.0.0",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
     "jscrambler": "^5.4.0",
