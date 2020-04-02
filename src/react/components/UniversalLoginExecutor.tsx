@@ -1,11 +1,12 @@
 import * as React from "react";
 import WebView from "react-electron-web-view";
 import { sleep, getPreloadScriptPath } from "../common/functions";
-
-import { remote } from "electron";
 import UniversalTextInput from "./universalForms/universalTextInput";
 import UniversalButton from "./universalButtons/universalButton";
+import { remote } from "electron";
 const { session } = remote;
+const os = require("os");
+
 interface Props {
   loginUrl: string;
   username: string;
