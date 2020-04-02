@@ -15,6 +15,7 @@ APPLE_APP_PASSWORD=${APPLE_APP_PASSWORD##APPLE_APP_PASSWORD=}
 
 # Login to the Apple and execute the script
 ssh -t nilsvossebein@192.168.1.9 '
+  set -e
   export BRANCH='"'$BRANCH'"';
   export NUCLEUS_PW='"'$NUCLEUS_PW'"'
   export MAC_PW='"'$MAC_PW'"'
@@ -33,6 +34,9 @@ ssh -t nilsvossebein@192.168.1.9 '
   git checkout $BRANCH
   git pull
   npm i
+
+  echo "Create a custom tag for nucleus"
+  jq ".version = \"$(cat package.json | jq -r '.version')-dev-$(date +%Y-%m-%d)\" " package.json > package-temp.json && mv package-temp.json package.json
 
   echo "Editing config.json"
   cat config.json

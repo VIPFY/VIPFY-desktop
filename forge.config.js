@@ -1,19 +1,7 @@
-const fs = require("fs");
-const path = require("path");
-const moment = require("moment");
-
-const fullPath = path.join(__dirname + "/package.json");
-const packageJSON = fs.readFileSync(fullPath);
-
-const { version } = JSON.parse(packageJSON);
-const [major, minor, patch] = version.split(".");
-const devVersion = `${major}.${minor}.${patch}-dev-${moment().format("YYYY-MM-DD")}`;
-
 module.exports = {
   packagerConfig: {
     icon: "iconTransparent",
     asar: false,
-    appVersion: !!process.env.DEVELOPMENT ? devVersion : version,
     appCopyright: `©${new Date().getFullYear()} VIPFY GmbH`,
     osxSign: {
       platform: "darwin",
