@@ -13,6 +13,7 @@ module.exports = () => {
   const pathToVersion = path.join(
     __dirname + "/.." + "/.." + "/make/" + JSON.parse(package).version
   );
+  console.log("The path to the current version is: ", pathToVersion);
   console.log("Notarizing...");
 
   return notarize({

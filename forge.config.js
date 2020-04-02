@@ -8,7 +8,6 @@ const packageJSON = fs.readFileSync(fullPath);
 const { version } = JSON.parse(packageJSON);
 const [major, minor, patch] = version.split(".");
 const devVersion = `${major}.${minor}.${patch}-dev-${moment().format("YYYY-MM-DD")}`;
-console.log("FIRE: devVersion", devVersion);
 
 module.exports = {
   packagerConfig: {
