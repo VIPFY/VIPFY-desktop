@@ -144,7 +144,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
 
   renderTestResult(result: TestResult) {
     if (result.skipped) {
-      return <span style={{ color: "yellow" }}>Skipped</span>;
+      return <span style={{ color: "blue" }}>Skipped</span>;
     } else if (result.timedOut) {
       return <span style={{ color: "orange" }}>Timeout</span>;
     } else if (result.passed) {

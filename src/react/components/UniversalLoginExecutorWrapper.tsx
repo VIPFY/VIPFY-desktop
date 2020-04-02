@@ -18,6 +18,13 @@ interface Test {
   speedFactor?: number;
   enterCorrectEmail?: boolean;
   enterCorrectPassword?: boolean;
+  skipCondition?: SkipCondition;
+}
+
+// sometimes a test should be skipped. this defines the conditions under which that should happen
+interface SkipCondition {
+  testDependency: number; // skip depending on the result of the test with this number
+  skipIfPassedEquals: boolean; // skip if the result success ("passed") of the test dependency equals this value
 }
 
 const tests = [
@@ -50,12 +57,14 @@ const tests = [
     reuseSession: false,
     speedFactor: 1,
     enterCorrectEmail: true,
-    enterCorrectPassword: true
+    enterCorrectPassword: true,
+    skipCondition: { testDependency: 2, skipIfPassedEquals: true }
   },
   {
     expectLoginSuccess: true,
     expectError: false,
-    reuseSession: true
+    reuseSession: true,
+    skipCondition: { testDependency: 3, skipIfPassedEquals: false }
   }
 ];
 
@@ -65,7 +74,8 @@ const SECOND = 1000;
 class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
   state = {
     currentTest: 0,
-    testResults: []
+    testResults: [],
+    storageDataCleared: []
   };
 
   isPassed(test: Test, result) {
@@ -86,30 +96,43 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
     return !!tests[this.state.currentTest + 1];
   }
 
-  existsReusableSession() {
-    return this.isLoginSuccess(this.state.currentTest - 1);
+  isStorageDataCleared(testNumber: number) {
+    return this.state.storageDataCleared[testNumber];
   }
 
-  isLoginSuccess(testNumber: number) {
-    return (
-      tests[testNumber] &&
-      tests[testNumber].expectLoginSuccess &&
-      this.state.testResults[testNumber]
-    );
+  clearStorageData(currentTest: number) {
+    session.fromPartition(SSO_TEST_PARTITION).clearStorageData();
+    this.setState(state => {
+      let storageDataCleared = state.storageDataCleared;
+      storageDataCleared[currentTest] = true;
+      return { ...state, storageDataCleared };
+    });
+  }
+
+  skipTest(currentTest: number, testResults: TestResult[]) {
+    this.setState(() => {
+      testResults[currentTest] = { skipped: true };
+      return { testResults };
+    });
+    this.advance();
   }
 
   render() {
     const { currentTest, testResults } = this.state;
     const test = tests[currentTest];
 
+    if (test.skipCondition) {
+      const result = testResults[test.skipCondition.testDependency];
+      const skipConditionFulfilled =
+        result && result.passed === test.skipCondition.skipIfPassedEquals;
+
+      if (skipConditionFulfilled) {
+        this.skipTest(currentTest, testResults);
+      }
+    }
+
     if (!test.reuseSession) {
-      session.fromPartition(SSO_TEST_PARTITION).clearStorageData();
-    } else if (!this.existsReusableSession()) {
-      this.setState(() => {
-        testResults[currentTest] = { skipped: true };
-        return { testResults };
-      });
-      this.advance();
+      this.isStorageDataCleared(currentTest) || this.clearStorageData(currentTest);
     }
 
     return (
