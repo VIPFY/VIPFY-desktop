@@ -81,6 +81,9 @@ module.exports = {
     }
   ],
   hooks: {
-    postPackage: require("./src/apple-shit/notarize.js")
+    postPackage: async () => {
+      console.log(__dirname);
+      return require("./src/apple-shit/notarize.js");
+    }
   }
 };
