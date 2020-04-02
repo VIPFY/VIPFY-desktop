@@ -19,7 +19,6 @@ module.exports = {
     osxSign: {
       platform: "darwin",
       type: "distribution",
-      appVersion,
       "gatekeeper-assess": false,
       "hardened-runtime": true,
       entitlements: "./src/apple-shit/entitlement.plist",
