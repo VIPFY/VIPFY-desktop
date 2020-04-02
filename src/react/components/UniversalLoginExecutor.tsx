@@ -49,40 +49,6 @@ interface State {
   solve401: object | null;
 }
 
-const cookiesLoggedIn: { name: string; url: string }[] = [];
-const cookiesLoggedOut: { name: string; url: string }[] = [];
-
-function minus(setA, setB) {
-  let _difference = new Set(setA);
-  for (let elem of setB) {
-    _difference.delete(elem);
-  }
-  return _difference;
-}
-
-const ignoredCookies = [
-  "_ga",
-  "_gid",
-  "_fbp",
-  "fr",
-  "__cfduid",
-  "_gat",
-  "JSESSIONID",
-  "lidc",
-  "UserMatchHistory",
-  "lang",
-  "BizoID",
-  "bscookie",
-  "test_cookie",
-  "PHPSESSID",
-  "_gcl_au",
-  "__tld__",
-  "ajs_group_id",
-  "ajs_user_id",
-  "XSRF-token",
-  "ASP.NET_SessionId"
-];
-
 class UniversalLoginExecutor extends React.Component<Props, State> {
   state = {
     running: false,
