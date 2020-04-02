@@ -39,7 +39,6 @@ ssh -t nilsvossebein@192.168.1.9 '
 
   echo "Editing config.json"
   cat config.json
-  echo $DEVELOPMENT
   ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" "$DEVELOPMENT"
 
   echo "Unlock the default keychain"
