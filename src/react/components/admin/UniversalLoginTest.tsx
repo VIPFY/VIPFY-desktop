@@ -36,7 +36,6 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   }
 
   advance(allTestsFinishedForCurrentSite: boolean) {
-    debugger;
     if (!allTestsFinishedForCurrentSite || !this.state.running) {
       return;
     }
