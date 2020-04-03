@@ -20,6 +20,7 @@ interface State {
     email: string;
     password: string;
     testResults?: TestResult[]; // not present in Sites imported from ./sites which causes typescript problems
+    allTestsFinished?: boolean;
   }[];
 }
 
@@ -103,22 +104,25 @@ class UniversalLoginTest extends React.Component<Props, State> {
           </td>
         </tr>
 
-        {siteUnderTest === site && (
+        {siteUnderTest === site && !site.allTestsFinished && (
           <tr>
             <td colSpan={8}>
               <UniversalLoginExecutorWrapper
                 loginUrl={site.url}
                 username={site.email}
                 password={site.password}
-                setResult={testResults => {
+                setResult={(testResults, allTestsFinished) => {
                   this.setState(prev => {
                     let sites = [...prev.sites];
                     sites[prev.currentTest] = {
                       ...sites[prev.currentTest],
-                      testResults
+                      testResults,
+                      allTestsFinished
                     };
+
                     return { sites };
                   });
+
                   this.advance();
                 }}
               />
