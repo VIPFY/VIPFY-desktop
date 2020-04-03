@@ -86,7 +86,13 @@ export default (props: Props) => {
       );
 
     case "passwordRecovery":
-      return <PasswordRecovery email={email} backFunction={() => changeProgress("login")} />;
+      return (
+        <PasswordRecovery
+          continueFunction={() => props.moveTo("/area/dashboard")}
+          email={email}
+          backFunction={() => changeProgress("login")}
+        />
+      );
 
     default:
       return (

@@ -197,6 +197,22 @@ export async function decryptLicence(
   return result;
 }
 
+export async function decryptMessage(
+  encrypted: Buffer,
+  publicKey: Buffer,
+  privateKey: Buffer
+): Promise<Buffer> {
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
+
+  return await sodium.crypto_box_seal_open(
+    encrypted,
+    new X25519PublicKey(publicKey),
+    new X25519SecretKey(privateKey)
+  );
+}
+
 export async function generateNewKeypair(): Promise<{ publicKey: Buffer; privateKey: Buffer }> {
   if (!sodium) {
     sodium = await SodiumPlus.auto();

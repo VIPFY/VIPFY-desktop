@@ -5,13 +5,17 @@ import { decode } from "jsonwebtoken";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import { ErrorComp } from "../../common/functions";
-import { generatePersonalKeypair, decryptPrivateKey } from "../../common/crypto";
+import { decryptPrivateKey, decryptMessage } from "../../common/crypto";
 import LoadingDiv from "../LoadingDiv";
 import { WorkAround } from "../../interfaces";
 
 const RECOVER_PASSWORD = gql`
-  mutation onRecoverPassword($keyData: RecoveryKeyInput!, $email: String!) {
-    recoverPassword(keyData: $keyData, email: $email)
+  mutation onRecoverPassword($token: String!, $secret: String!, $email: String!) {
+    recoverPassword(token: $token, secret: $secret, email: $email) {
+      ok
+      token
+      config
+    }
   }
 `;
 
@@ -19,6 +23,7 @@ const FETCH_RECOVERY_CHALLENGE = gql`
   query onFetchRecoveryChallenge($email: String!) {
     fetchRecoveryChallenge(email: $email) {
       encryptedKey
+      publicKey
       token
     }
   }
@@ -27,6 +32,7 @@ const FETCH_RECOVERY_CHALLENGE = gql`
 interface Props {
   backFunction: Function;
   email: string;
+  continueFunction: Function;
 }
 
 export default (props: Props) => {
@@ -126,7 +132,45 @@ export default (props: Props) => {
         <div className="holder-right">
           <h1>Recover your account</h1>
           {/* 8a9ElIr8l5goXUT2ub5D9cBiL4o//35J0e5i9l5rhtZY4QM/ */}
-          <Mutation<WorkAround, WorkAround> mutation={RECOVER_PASSWORD}>
+          <Mutation<WorkAround, WorkAround>
+            mutation={RECOVER_PASSWORD}
+            onCompleted={async ({ token, unitid, config }) => {
+              localStorage.setItem("token", token);
+              props.continueFunction();
+              // if (config.cookies) {
+              //   await props.client.query({ query: me });
+              //   try {
+              //     const configcookies = await decryptLicenceKey(this.props.client, {
+              //       key: { encrypted: config.cookies }
+              //     });
+              //     const cookiePromises = [];
+              //     configcookies.forEach(c => {
+              //       this.addUsedLicenceID(c.key);
+              //       c.cookies.forEach(async e => {
+              //         const scheme = e.secure ? "https" : "http";
+              //         const host = e.domain[0] === "." ? e.domain.substr(1) : e.domain;
+              //         const url = scheme + "://" + host;
+              //         e.url = url;
+              //         try {
+              //           await session
+              //             .fromPartition(`service-${c.key}`, { cache: true })
+              //             .cookies.set(e);
+              //         } catch (err) {
+              //           console.log("ERRPOR", err, e);
+              //         }
+              //       });
+              //     });
+              //     await Promise.all(cookiePromises);
+              //     localStorage.setItem("twoFAToken", token);
+              //     localStorage.setItem(
+              //       "key1",
+              //       encryptionkey1 ? encryptionkey1.toString("hex") : ""
+              //     );
+              //   } catch (err) {
+              //     console.debug("Error parsing cookies", err);
+              //   }
+              // }
+            }}>
             {(mutate, { loading: l2, error: e2 }) => {
               const handleSubmit = async e => {
                 try {
@@ -137,29 +181,25 @@ export default (props: Props) => {
                     .map(node => node.value)
                     .reduce((acc, cv) => acc + cv, "");
 
+                  const { encryptedKey, token, publicKey } = data.fetchRecoveryChallenge;
+
                   const keyBytes = await base64ToArrayBuffer(code);
 
                   const decryptedKey = await decryptPrivateKey(
-                    Buffer.from(data.fetchRecoveryChallenge.encryptedKey, "hex"),
+                    Buffer.from(encryptedKey, "hex"),
                     Buffer.from(keyBytes.slice(0, 32))
                   );
-                  console.log("FIRE: keyData", decryptedKey);
-                  console.log(
-                    "FIRE: data.fetchRecoveryChallenge.token",
-                    data.fetchRecoveryChallenge.token
+
+                  const { encryptedSecret } = decode(token);
+
+                  const decrypted = await decryptMessage(
+                    Buffer.from(encryptedSecret, "hex"),
+                    Buffer.from(publicKey, "hex"),
+                    decryptedKey
                   );
+                  const secret = decrypted.toString();
 
-                  const token = decode(data.fetchRecoveryChallenge.token);
-                  console.log("FIRE: token", token);
-                  // const buffer = new Buffer(data.fetchRecoveryChallenge.token, "base64");
-                  // const decrypted = crypto
-                  //   .privateDecrypt({ key: decryptedKey }, buffer)
-                  //   .toString("utf8");
-                  // console.log("FIRE: decrypted", decrypted);
-
-                  // console.log("FIRE: token", token);
-
-                  //  mutate({ variables: { keyData, email: props.email } });
+                  mutate({ variables: { token, secret, email: props.email } });
                 } catch (e3) {
                   setLocalError(e3);
                 }
