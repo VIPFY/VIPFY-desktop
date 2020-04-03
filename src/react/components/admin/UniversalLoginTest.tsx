@@ -134,12 +134,32 @@ class UniversalLoginTest extends React.Component<Props, State> {
   }
 
   renderTestStatus(testIndex: number, results: TestResult[], isUnderTest: boolean = false) {
-    if (this.hasResult(testIndex, results)) {
-      return this.renderTestResult(results[testIndex]);
-    } else {
+    if (!this.hasResult(testIndex, results)) {
       // test is either running or wasn't started yet
       return isUnderTest ? <i className="fal fa-spinner fa-spin" /> : " ";
     }
+
+    if (!results[testIndex].screenshot) {
+      return this.renderTestResult(results[testIndex]);
+    }
+
+    return (
+      <Tooltip
+        direction="left"
+        content={
+          <span>
+            <img
+              src={results[testIndex].screenshot}
+              style={{
+                width: "1024px",
+                objectFit: "cover"
+              }}
+            />
+          </span>
+        }>
+        {this.renderTestResult(results[testIndex])}
+      </Tooltip>
+    );
   }
 
   hasResult(testIndex: number, results: TestResult[]) {

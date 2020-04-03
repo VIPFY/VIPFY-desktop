@@ -157,7 +157,6 @@ class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
         speed={test.speedFactor}
         timeout={15 * SECOND}
         partition={SSO_TEST_PARTITION}
-        takeScreenshot={false}
         setResult={(result, screenshot) => {
           const testResult = {
             passed: this.isPassed(test, result),

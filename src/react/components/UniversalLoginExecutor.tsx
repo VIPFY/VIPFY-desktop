@@ -657,12 +657,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
           this.sentResult = true;
 
-          if (takeScreenshot) {
-            const image = await webview.getWebContents().capturePage();
-            this.props.setResult(resultValues, image.toDataURL({ scaleFactor: 0.5 }));
-          } else {
-            this.props.setResult(resultValues, "");
-          }
+          const image = await webview.getWebContents().capturePage();
+          this.props.setResult(resultValues, image.toDataURL({ scaleFactor: 0.5 }));
         }, this.screenshotDelay);
       } else {
         setTimeout(() => {
