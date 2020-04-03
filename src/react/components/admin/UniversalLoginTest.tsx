@@ -24,7 +24,7 @@ interface State {
   }[];
 }
 
-class UniversalLoginTest extends React.Component<Props, State> {
+class UniversalLoginTest extends React.PureComponent<Props, State> {
   state = {
     currentTest: -1,
     running: false,
@@ -35,8 +35,9 @@ class UniversalLoginTest extends React.Component<Props, State> {
     fs.writeFileSync("ssotest.json", JSON.stringify(this.state.sites));
   }
 
-  advance() {
-    if (!this.state.running) {
+  advance(allTestsFinishedForCurrentSite: boolean) {
+    debugger;
+    if (!allTestsFinishedForCurrentSite || !this.state.running) {
       return;
     }
 
@@ -49,7 +50,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
         nextSite = state.sites[nextTest];
       }
 
-      return { ...state, currentTest: nextTest };
+      return { currentTest: nextTest };
     });
   }
 
@@ -79,25 +80,6 @@ class UniversalLoginTest extends React.Component<Props, State> {
             </td>
           ))}
           <td>
-            {/*
-            <Tooltip
-              direction="left"
-              content={
-                <span>
-                  <img
-                    src={site.testResults.screenshot}
-                    style={{
-                      width: "1024px",
-                      objectFit: "cover"
-                    }}
-                  />
-                </span>
-              }>
-              <span>Screenshot</span>
-            </Tooltip>
-            */}
-          </td>
-          <td>
             <span onClick={() => this.setState({ currentTest: i, running: false })}>
               <i className="fal fa-arrow-square-right" />
             </span>
@@ -106,24 +88,26 @@ class UniversalLoginTest extends React.Component<Props, State> {
 
         {siteUnderTest === site && !site.allTestsFinished && (
           <tr>
-            <td colSpan={8}>
+            <td colSpan={7}>
               <UniversalLoginExecutorWrapper
                 loginUrl={site.url}
                 username={site.email}
                 password={site.password}
                 setResult={(testResults, allTestsFinished) => {
-                  this.setState(prev => {
-                    let sites = [...prev.sites];
-                    sites[prev.currentTest] = {
-                      ...sites[prev.currentTest],
-                      testResults,
-                      allTestsFinished
-                    };
+                  this.setState(
+                    prev => {
+                      let sites = [...prev.sites];
+                      sites[prev.currentTest] = {
+                        ...sites[prev.currentTest],
+                        testResults,
+                        allTestsFinished
+                      };
 
-                    return { sites };
-                  });
+                      return { sites };
+                    },
 
-                  this.advance();
+                    () => this.advance(this.state.sites[i].allTestsFinished)
+                  );
                 }}
               />
             </td>
@@ -215,7 +199,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
             <span
               onClick={async () => {
                 await this.setState({ running: true });
-                this.advance();
+                this.advance(true);
               }}>
               <i className="fal fa-play" />
             </span>

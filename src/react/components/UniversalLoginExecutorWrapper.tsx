@@ -72,7 +72,7 @@ const tests = [
 const SSO_TEST_PARTITION = "ssotest";
 const SECOND = 1000;
 
-class UniversalLoginExecutorWrapper extends React.Component<Props, State> {
+class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   state = {
     currentTest: 0,
     testResults: [],
