@@ -27,7 +27,7 @@ jobs:
       - run: set WEBSOCKET_SERVER=$WEBSOCKET_SERVER
       - run: set DEBUG=*
       - run:
-          name: Set our development channel ID
+          name: Set specific build variables
           command: ./set-dev-variables.sh "$CHANNEL_ID" "$SERVER_NAME" "$DEVELOPMENT" "$WEBSOCKET_SERVER"
           shell: bash.exe
       - run:
