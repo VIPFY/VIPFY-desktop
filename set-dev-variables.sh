@@ -36,5 +36,5 @@ else
     cat config.json | jq --arg WEBSOCKET_SERVER "$WEBSOCKET_SERVER" '.websocketServer = $WEBSOCKET_SERVER' config.json > config-temp.json && mv config-temp.json config.json
 fi
 
-echo "\033[0;36mNew Version"
+echo "\e[96mNew Version"
 cat config.json

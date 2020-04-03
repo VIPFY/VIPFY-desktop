@@ -26,7 +26,7 @@ ssh -t nilsvossebein@192.168.1.9 '
   export APPLE_APP_PASSWORD='"'$APPLE_APP_PASSWORD'"'
   export DEVELOPMENT=true
 
-  echo "\033[40m\033[0;36Successfully logged into Mac"
+  echo "\033[40m \033[0;36 Successfully logged into Mac"
   cd Documents
   rm -rf vipfy-desktop
   git clone git@bitbucket.org:vipfymarketplace/vipfy-desktop.git
@@ -39,19 +39,19 @@ ssh -t nilsvossebein@192.168.1.9 '
   echo "Create a custom tag for nucleus"
   jq ".version = \"$(cat package.json | jq -r '.version')-dev-$(date +%Y-%m-%d)\" " package.json > package-temp.json && mv package-temp.json package.json
 
-  echo "\033[40m\033[0;36Editing config.json"
-  echo "\033[0;37mOld Version"
+  echo "\033[40m \033[0;36 Editing config.json"
+  echo "\033[0;37m Old Version"
   cat config.json
-  ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" true wss://websockets.dev.vipfy.store/subscriptions
+  ./set-dev-variables.sh "$CHANNEL_ID" "$BUILD_SERVER" true
 
-  echo "\033[0;36mUnlocking the default keychain"
+  echo "\033[0;36m Unlocking the default keychain"
   security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
 
   DEBUG=electron-osx-sign* npm run publish-js
-  echo "\033[0;36mApp successfully built. Uploading now..."
+  echo "\033[0;36m App successfully built. Uploading now..."
   chmod +x .circleci/release-nucleus.sh
   ./.circleci/release-nucleus.sh "$NUCLEUS_PW" "$CHANNEL_ID"
 
-  echo "Successfully uploaded the App to Nucleus"
+  echo "\033[0;36m Successfully uploaded the App to Nucleus"
   exit
 '

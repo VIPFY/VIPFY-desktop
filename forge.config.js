@@ -81,9 +81,6 @@ module.exports = {
     }
   ],
   hooks: {
-    postPackage: async () => {
-      console.log(__dirname);
-      return (await require("./src/apple-shit/notarize.js"))();
-    }
+    postPackage: async () => (await require("./src/apple-shit/notarize.js"))()
   }
 };
