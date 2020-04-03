@@ -2,10 +2,14 @@ module.exports = {
   packagerConfig: {
     icon: "iconTransparent",
     asar: false,
-    appCopyright: "©2020 VIPFY GmbH",
+    appCopyright: `©${new Date().getFullYear()} VIPFY GmbH`,
     osxSign: {
       platform: "darwin",
       type: "distribution",
+      "gatekeeper-assess": false,
+      "hardened-runtime": true,
+      entitlements: "./src/apple-shit/entitlement.plist",
+      "entitlements-inherit": "./src/apple-shit/entitlement.plist",
       identity: "Developer ID Application: VIPFY GmbH (RD6VS27844)"
     }
   },
@@ -39,7 +43,7 @@ module.exports = {
     {
       name: "@electron-forge/maker-dmg",
       config: {
-        icon: "./iconTransparent.icns",
+        icon: "./src/apple-shit/vipfy_logo_mac.icns",
         background: "./dmgBackground.png"
       }
     }
@@ -75,5 +79,8 @@ module.exports = {
         token: "4a3db0e625fbb3aec657f0e033bb8dd1"
       }
     }
-  ]
+  ],
+  hooks: {
+    postPackage: async () => (await require("./src/apple-shit/notarize.js"))()
+  }
 };
