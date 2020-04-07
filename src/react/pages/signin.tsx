@@ -6,6 +6,7 @@ import AddMachineUser from "../components/signin/addMachineUser";
 import Store from "electron-store";
 import RegisterCompany from "../components/signin/companyRegister";
 import PasswordRecovery from "../components/signin/PasswordRecovery";
+import NewPassword from "../components/signin/NewPassword";
 
 interface Props {
   login: Function;
@@ -16,9 +17,10 @@ interface Props {
 
 export default (props: Props) => {
   const [progress, setProgress] = React.useState("login");
+  const [tokenData, setToken] = React.useState(null);
   const [email, setEmail] = React.useState("");
 
-  const changeProgress = s => {
+  const changeProgress = (s) => {
     props.resetError();
     const store = new Store();
 
@@ -57,7 +59,7 @@ export default (props: Props) => {
         <ChangeAccount
           backFunction={() => changeProgress("login")}
           addMachineUser={() => changeProgress("createUser")}
-          selectAccount={email => {
+          selectAccount={(email) => {
             setEmail(email);
             changeProgress("login");
           }}
@@ -88,9 +90,18 @@ export default (props: Props) => {
     case "passwordRecovery":
       return (
         <PasswordRecovery
-          continueFunction={() => props.moveTo("/area/dashboard")}
+          continueFunction={() => changeProgress("setNewPassword")}
+          setToken={(data) => setToken(data)}
           email={email}
           backFunction={() => changeProgress("login")}
+        />
+      );
+
+    case "setNewPassword":
+      return (
+        <NewPassword
+          tokenData={tokenData}
+          continueFunction={() => props.moveTo("/area/dashboard")}
         />
       );
 
@@ -99,7 +110,7 @@ export default (props: Props) => {
         <Login
           type="login"
           backFunction={() => null}
-          continueFunction={v => props.login(email, v)}
+          continueFunction={(v) => props.login(email, v)}
           email={email}
           changeUser={() => changeProgress("selectUser")}
           goToRecovery={() => changeProgress("passwordRecovery")}

@@ -32,6 +32,7 @@ const FETCH_RECOVERY_CHALLENGE = gql`
 interface Props {
   backFunction: Function;
   email: string;
+  setToken: Function;
   continueFunction: Function;
 }
 
@@ -39,12 +40,13 @@ export default (props: Props) => {
   const MAX_LENGTH = 4;
   const fields = [...Array(12).keys()];
   const [localError, setLocalError] = React.useState(null);
+  const [decSecret, setSecret] = React.useState(null);
   const { data, loading, error: queryError } = useQuery(FETCH_RECOVERY_CHALLENGE, {
     variables: { email: props.email },
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
   });
 
-  const base64ToArrayBuffer = base64 => {
+  const base64ToArrayBuffer = (base64) => {
     const binaryString = window.atob(base64);
 
     const bytes = new Uint8Array(binaryString.length);
@@ -109,15 +111,15 @@ export default (props: Props) => {
     }
   };
 
-  const renderRows = items =>
-    items.map(number => (
+  const renderRows = (items) =>
+    items.map((number) => (
       <React.Fragment>
         <input
           id={`input-${number}`}
           key={number}
           required
           maxLength={number < fields.length - 1 ? null : 4}
-          onKeyUp={e => onKeyUp(e, number)}
+          onKeyUp={(e) => onKeyUp(e, number)}
         />
         <i className="fal fa-minus" />
       </React.Fragment>
@@ -131,11 +133,11 @@ export default (props: Props) => {
 
         <div className="holder-right">
           <h1>Recover your account</h1>
-          {/* 8a9ElIr8l5goXUT2ub5D9cBiL4o//35J0e5i9l5rhtZY4QM/ */}
+
           <Mutation<WorkAround, WorkAround>
             mutation={RECOVER_PASSWORD}
-            onCompleted={async ({ token, unitid, config }) => {
-              localStorage.setItem("token", token);
+            onCompleted={async ({ recoverPassword: { token } }) => {
+              props.setToken({ token, email: props.email, secret: decSecret });
               props.continueFunction();
               // if (config.cookies) {
               //   await props.client.query({ query: me });
@@ -172,13 +174,13 @@ export default (props: Props) => {
               // }
             }}>
             {(mutate, { loading: l2, error: e2 }) => {
-              const handleSubmit = async e => {
+              const handleSubmit = async (e) => {
                 try {
                   e.preventDefault();
                   setLocalError(null);
                   const code = Object.values(e.target)
-                    .filter(node => node.value)
-                    .map(node => node.value)
+                    .filter((node) => node.value)
+                    .map((node) => node.value)
                     .reduce((acc, cv) => acc + cv, "");
 
                   const { encryptedKey, token, publicKey } = data.fetchRecoveryChallenge;
@@ -198,6 +200,7 @@ export default (props: Props) => {
                     decryptedKey
                   );
                   const secret = decrypted.toString();
+                  await setSecret(secret);
 
                   mutate({ variables: { token, secret, email: props.email } });
                 } catch (e3) {

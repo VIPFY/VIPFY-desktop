@@ -154,14 +154,14 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                   return filterError(error);
                 }
 
-                if (d2 && d2.fetchVipfyPlan) {
+                if (d2 && d2.fetchVipfyPlan && d2.fetchVipfyPlan.endtime) {
                   const vipfyPlan = d2.fetchVipfyPlan.plan.name;
                   // TODO: [VIP-314] Reimplement credits when new structure is clear
                   // const { fetchCredits } = data;
                   const expiry = moment(parseInt(d2.fetchVipfyPlan.endtime));
 
                   if (context) {
-                    if (moment().isAfter(expiry)) {
+                    if (expiry && moment().isAfter(expiry)) {
                       context.addHeaderNotification(
                         `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
                         { type: "error", key: "expire" }

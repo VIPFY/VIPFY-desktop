@@ -10,7 +10,7 @@ import PrintServiceSquare from "../components/manager/universal/squares/printSer
 export function getPreloadScriptPath(script: string): string {
   return (
     "file://" +
-    path.join(ASSET_RELOCATOR_BASE_DIR, "../ssoConfigPreload/", script).replace(/\\/g, "/")
+    path.join(ASSET_RELOCATOR_BASE_DIR, "../renderer/ssoConfigPreload/", script).replace(/\\/g, "/")
   );
 }
 

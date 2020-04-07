@@ -133,7 +133,7 @@ const RecoveryKey = (props: Props) => {
 };
 
 // Thou shall never delete this Hack, or the RecoveryKey functional component
-// will throw the root of all evil errors
+// will call upon the root of all theth evil errors
 export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
   constructor(props) {
     super(props);

@@ -136,7 +136,7 @@ export async function hashPasswordWithParams(
   );
   pw.fill(0);
 
-  //from the hashed passoword create a number of subkeys for various uses
+  // From the hashed passoword create a number of subkeys for various uses
   // the context is used to avoid accidentially reusing subkey ids
   const context = "VIPFYlog";
   if (context.length !== sodium.CRYPTO_KDF_CONTEXTBYTES) {
@@ -144,8 +144,6 @@ export async function hashPasswordWithParams(
     throw new Error("internal login error");
   }
 
-  // const loginkey = Buffer.alloc(64);
-  // const encryptionkey1 = Buffer.alloc(64);
   const loginkey = await sodium.crypto_kdf_derive_from_key(64, 1, context, masterkey);
   const encryptionkey1 = await sodium.crypto_kdf_derive_from_key(32, 2, context, masterkey);
 
@@ -153,6 +151,13 @@ export async function hashPasswordWithParams(
 }
 
 const paddingBlockLength = 128; // so far median licence length is 94, 99th percentile is 242
+
+/**
+ * Does exactly what it says, encrypts a Licence
+ *
+ * @param {string} licence
+ * @param {BufferEncoding} publicKey
+ */
 export async function encryptLicence(
   licence: string | Buffer | any,
   publicKey: Buffer

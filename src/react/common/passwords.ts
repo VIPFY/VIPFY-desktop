@@ -50,7 +50,7 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
       encryptedby: null
     };
 
-    // renecrypt old key
+    // reencrypt old key
     const d = await client.query({
       query: gql`
         query onFetchCurrentKey {
