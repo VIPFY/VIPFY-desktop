@@ -108,7 +108,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       step: 0
     };
 
-    this.clearTimeout(this.timeoutHandle);
+    this.clearTimeout();
 
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
@@ -134,8 +134,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 
   componentWillUnmount = async () => {
-    this.clearTimeout(this.timeoutHandle);
-    this.clearInterval(this.progressHandle);
+    this.clearTimeout();
+    this.clearProgressTimer();
 
     this.isUnmounted = true;
   };
@@ -601,7 +601,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 
   sendResult(resultValues) {
-    this.clearTimeout(this.timeoutHandle);
+    this.clearTimeout();
 
     const takeScreenshot = this.props.takeScreenshot;
 
@@ -653,7 +653,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         direct: true,
         error: false
       });
-      this.clearInterval(this.progressHandle);
+      this.clearProgressTimer();
     }
     this.progressCallbackRunning = true;
     this.progress += this.progressStep;
@@ -671,7 +671,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         this.timeout = false;
         this.progress = 1;
         this.sendResult({ ...this.loginState, loggedIn: false, error: true });
-        this.clearInterval(this.progressHandle);
+        this.clearProgressTimer();
       }
     }
 
@@ -679,12 +679,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       this.timeout = false;
       this.progress = 1;
       this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
-      this.clearInterval(this.progressHandle);
+      this.clearProgressTimer();
     }
 
     if (this.progress == 1) {
       if (this.progressHandle) {
-        this.clearInterval(this.progressHandle);
+        this.clearProgressTimer();
 
         if (this.timeout) {
           this.sendResult({ ...this.loginState, loggedIn: false, error: true });
@@ -699,17 +699,17 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     return await sleep(ms / this.props.speed!);
   }
 
-  clearInterval(interval: NodeJS.Timer) {
-    if (interval) {
-      clearInterval(interval);
-      interval = undefined;
+  clearProgressTimer() {
+    if (this.progressHandle) {
+      clearInterval(this.progressHandle);
+      this.progressHandle = undefined;
     }
   }
 
-  clearTimeout(timeout: NodeJS.Timeout) {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = undefined;
+  clearTimeout() {
+    if (this.timeoutHandle) {
+      clearTimeout(this.timeoutHandle);
+      this.timeoutHandle = undefined;
     }
   }
 
@@ -718,7 +718,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       this.timeout = false;
       this.progress = 1;
       this.props.setResult({ ...this.loginState, loggedIn: true, error: false, direct: true }, "");
-      this.clearInterval(this.progressHandle);
+      this.clearProgressTimer();
     }
   };
 
@@ -773,7 +773,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
               ""
             );
 
-            this.clearInterval(this.progressHandle);
+            this.clearProgressTimer();
           }
         }
         break;
@@ -835,7 +835,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
               ""
             );
 
-            this.clearInterval(this.progressHandle);
+            this.clearProgressTimer();
             return; //we are done with login
           }
           if (this.state.errorin) {
