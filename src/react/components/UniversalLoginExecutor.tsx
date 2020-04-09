@@ -1,6 +1,7 @@
 import * as React from "react";
 import WebView from "react-electron-web-view";
 import { sleep, getPreloadScriptPath } from "../common/functions";
+import { LoginResult } from "../interfaces";
 import UniversalTextInput from "./universalForms/universalTextInput";
 import UniversalButton from "./universalButtons/universalButton";
 import { remote } from "electron";
@@ -11,19 +12,11 @@ interface Props {
   loginUrl: string;
   username: string;
   password: string;
-  domain: string;
   timeout: number | null;
-  partition?: string;
   takeScreenshot?: boolean;
-  setResult: (
-    result: {
-      loggedIn: boolean;
-      error: boolean;
-      timedOut?: boolean;
-      direct?: boolean;
-    },
-    image: string
-  ) => void;
+  setResult: (result: LoginResult, image: string) => void;
+  domain?: string;
+  partition?: string;
   progress?: (progress: number) => void;
   speed?: number;
   className?: string;
@@ -37,8 +30,8 @@ interface Props {
   individualNotShow?: string;
   setViewTitle?: Function;
   addWebview?: Function;
-  loggedIn: Boolean;
-  deleteCookies?: Boolean;
+  loggedIn?: boolean;
+  deleteCookies?: boolean;
   webviewId?: number;
   modifyFields?: Object;
   blockUrls?: String[];
@@ -122,7 +115,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
-        this.sendResult({ loggedIn: false, error: false, timedOut: true, ...this.loginState });
+        this.sendResult({ ...this.loginState, loggedIn: false, error: false, timedOut: true });
       }, this.props.timeout);
     }
 
@@ -668,7 +661,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
           this.sentResult = true;
           this.props.setResult(
-            { ...resultValues, loggedIn: false, error: false, ...this.loginState },
+            { ...this.loginState, ...resultValues, loggedIn: false, error: false },
             ""
           );
         }, this.screenshotDelay);
@@ -687,10 +680,10 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       this.timeout = false;
       this.progress = 1;
       this.sendResult({
+        ...this.loginState,
         loggedIn: true,
         direct: true,
-        error: false,
-        ...this.loginState
+        error: false
       });
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
@@ -723,7 +716,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     if (this.webview && (await this.isLoggedIn(this.webview))) {
       this.timeout = false;
       this.progress = 1;
-      this.sendResult({ loggedIn: true, direct: true, error: false, ...this.loginState });
+      this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
@@ -735,7 +728,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
         if (this.timeout) {
-          this.sendResult({ loggedIn: false, error: true, ...this.loginState });
+          this.sendResult({ ...this.loginState, loggedIn: false, error: true });
         }
       }
     }
@@ -752,7 +745,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       //console.log("DIRECT LoggedIn", this.loginState);
       this.timeout = false;
       this.progress = 1;
-      this.props.setResult({ loggedIn: true, error: false, direct: true, ...this.loginState }, "");
+      this.props.setResult({ ...this.loginState, loggedIn: true, error: false, direct: true }, "");
       if (this.progressHandle) {
         clearInterval(this.progressHandle);
         this.progressHandle = undefined;
@@ -807,7 +800,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             this.timeout = false;
             this.progress = 1;
             this.props.setResult(
-              { loggedIn: true, error: false, direct: true, ...this.loginState },
+              { ...this.loginState, loggedIn: true, error: false, direct: true },
               ""
             );
             if (this.progressHandle) {
@@ -871,7 +864,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             this.timeout = false;
             this.progress = 1;
             this.props.setResult(
-              { loggedIn: true, error: false, direct: true, ...this.loginState },
+              { ...this.loginState, loggedIn: true, error: false, direct: true },
               ""
             );
             if (this.progressHandle) {

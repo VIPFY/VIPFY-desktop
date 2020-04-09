@@ -230,6 +230,24 @@ export interface WorkAround {
   [basicallyEverything: string]: any;
 }
 
+export interface LoginResult {
+  loggedIn: boolean;
+  error: boolean;
+  timedOut?: boolean;
+  direct?: boolean;
+  emailEntered?: boolean;
+  passwordEntered?: boolean;
+  domainEntered?: boolean;
+  domainNeeded?: boolean;
+  unloaded?: boolean;
+  tries?: number;
+  recaptcha?: boolean;
+  emailEnteredEnd?: boolean;
+  passwordEnteredEnd?: boolean;
+  domainEnteredEnd?: boolean;
+  step?: number;
+}
+
 export interface TestResult {
   skipped?: boolean; // test was skipped because either a precondition wasn't met or the test would have been redundant
   passed?: boolean;

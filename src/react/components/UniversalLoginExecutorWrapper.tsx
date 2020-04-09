@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalLoginExecutor from "./UniversalLoginExecutor";
-import { TestResult } from "../interfaces";
+import { LoginResult, TestResult } from "../interfaces";
 import { remote } from "electron";
 const { session } = remote;
 
@@ -79,8 +79,8 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
     storageDataCleared: []
   };
 
-  isPassed(test: Test, result) {
-    return test.expectLoginSuccess == result.loggedIn && test.expectError == result.error;
+  isPassed(test: Test, loginResult: LoginResult) {
+    return test.expectLoginSuccess == loginResult.loggedIn && test.expectError == loginResult.error;
   }
 
   advance() {
@@ -157,10 +157,10 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         speed={test.speedFactor}
         timeout={15 * SECOND}
         partition={SSO_TEST_PARTITION}
-        setResult={(result, screenshot) => {
+        setResult={(loginResult: LoginResult, screenshot: string) => {
           const testResult = {
-            passed: this.isPassed(test, result),
-            timedOut: result.timedOut,
+            passed: this.isPassed(test, loginResult),
+            timedOut: loginResult.timedOut,
             screenshot
           };
 

@@ -346,7 +346,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
               this.state.options.type == "execute" ? (
                 <UniversalLoginExecutor
                   key={`${this.state.setUrl}-${this.state.loginspeed}`}
-                  //keylog={`${this.state.setUrl}-${this.state.loginspeed}`}
                   loginUrl={this.props.url || this.state.setUrl}
                   username={this.state.key.email || this.state.key.username}
                   password={this.state.key.password}
@@ -356,27 +355,22 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   partition={`service-${this.state.licenceId}`}
                   className={cssClassWeb}
                   showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
-                  setResult={async ({
-                    loggedin,
-                    errorin,
-                    emailEntered,
-                    passwordEntered,
-                    direct
-                  }) => {
-                    if (loggedin && direct) {
+                  setResult={async ({ loggedIn, error, direct, emailEntered, passwordEntered }) => {
+                    if (loggedIn) {
                       this.hideLoadingScreen();
+
+                      if (emailEntered && passwordEntered && !direct) {
+                        await this.props.updateLicenceSpeed({
+                          variables: {
+                            licenceid: this.props.licenceID,
+                            speed: this.state.loginspeed,
+                            working: true
+                          }
+                        });
+                      }
                     }
-                    if (loggedin && emailEntered && passwordEntered) {
-                      this.hideLoadingScreen();
-                      await this.props.updateLicenceSpeed({
-                        variables: {
-                          licenceid: this.props.licenceID,
-                          speed: this.state.loginspeed,
-                          working: true
-                        }
-                      });
-                    }
-                    if (errorin) {
+
+                    if (error) {
                       if (this.state.loginspeed == 1) {
                         this.showErrorScreen();
                         await this.props.updateLicenceSpeed({
@@ -390,7 +384,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                         this.setState({
                           progress: 1,
                           error:
-                            "Sorry, Login was not possible. Please go back to your Dashboard and retry or contact our support if the problem persists.",
+                            "Sorry, login was not possible. Please go back to the Dashboard and retry. Contact support if the problem persists.",
                           errorshowed: true
                         });
                       } else {
@@ -405,13 +399,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                           return { loginspeed: 1, oldspeed: s.loginspeed };
                         });
                       }
-                      /*} else if (!loggedin && !emailEntered && !passwordEntered) {
-                      this.setState({
-                        progress: 1,
-                        error:
-                          "Sorry, Login was not possible. Please go back to your Dashboard and retry or contact our support if the problem persists.",
-                        errorshowed: true
-                      });*/
                     }
                   }}
                   progress={progress => this.setState({ progress })}
