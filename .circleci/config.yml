@@ -24,10 +24,11 @@ jobs:
       - run: set SERVER_NAME=$SERVER_NAME
       - run: set DEVELOPMENT=$DEVELOPMENT
       - run: set CHANNEL_ID=$CHANNEL_ID
+      - run: set WEBSOCKET_SERVER=$WEBSOCKET_SERVER
       - run: set DEBUG=*
       - run:
-          name: Set our development channel ID
-          command: ./set-dev-variables.sh "$CHANNEL_ID" "$SERVER_NAME" "$DEVELOPMENT"
+          name: Set specific build variables
+          command: ./set-dev-variables.sh "$CHANNEL_ID" "$SERVER_NAME" "$DEVELOPMENT" "$WEBSOCKET_SERVER"
           shell: bash.exe
       - run:
           name: Create a custom tag for nucleus
@@ -42,7 +43,7 @@ jobs:
           shell: bash.exe
       - run:
           name: Log in to nucleus and release the previously built version
-          command: ./.circleci/release-nucleus.sh $NUCLEUS_PW "$CHANNEL_ID"
+          command: ./.circleci/release-nucleus.sh "$NUCLEUS_PW" "$CHANNEL_ID"
           shell: bash.exe
 
 workflows:
