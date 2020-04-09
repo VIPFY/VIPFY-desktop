@@ -108,10 +108,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       step: 0
     };
 
-    if (this.timeoutHandle) {
-      clearTimeout(this.timeoutHandle);
-      this.timeoutHandle = undefined;
-    }
+    this.clearTimeout(this.timeoutHandle);
 
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
@@ -137,15 +134,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 
   componentWillUnmount = async () => {
-    if (this.timeoutHandle) {
-      clearTimeout(this.timeoutHandle);
-      this.timeoutHandle = undefined;
-    }
-
-    if (this.progressHandle) {
-      clearInterval(this.progressHandle);
-      this.progressHandle = undefined;
-    }
+    this.clearTimeout(this.timeoutHandle);
+    this.clearInterval(this.progressHandle);
 
     this.isUnmounted = true;
   };
@@ -205,8 +195,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
     const protocol = require("url").parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
-      //  shell.openExternal(e.url);
-
       //TODO HISTORY
       //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
 
@@ -270,7 +258,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         <WebView
           key={this.props.webviewId || `${this.props.loginUrl}-${this.props.speed}`}
           preload={getPreloadScriptPath("universalLogin.js")}
-          //webpreferences="webSecurity=no"
           src={this.state.currentUrl || this.props.loginUrl}
           partition={this.props.partition}
           className={this.props.className}
@@ -282,7 +269,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           style={this.props.style || {}}
           onNewWindow={e => this.onNewWindow(e)}
           onDidNavigateInPage={e => {
-            //console.log("Did Navigate", e);
             if (
               this.props.blockUrls &&
               this.webview &&
@@ -293,7 +279,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             }
           }}
           onDidNavigate={e => {
-            //console.log("DID NAVIGATE OUTSIDE", e);
             if (
               this.props.blockUrls &&
               this.webview &&
@@ -317,31 +302,17 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 
   async isLoggedIn(w) {
-    const l = ["signin", "login", "sign", /*"new",*/ "anmelden", "admin"];
+    const l = ["signin", "login", "sign", "anmelden", "admin"];
     const urlParts = ["pathname", "search", "hash", "hostname"];
     const initial = new URL(this.props.loginUrl);
     const now = new URL(w.src);
 
     for (const p of urlParts) {
-      //for (const m of l) {
       if (initial[p].includesAny(l) && !now[p].includesAny(l) && !this.props.noUrlCheck) {
-        //await sleep(200);
         return true;
       }
-      //}
     }
 
-    //const appcookies = await session.fromPartition(this.props.partition).cookies.get({});
-    //console.log(appcookies);
-
-    //Check if logout button present
-
-    /*w.getWebContents().executeJavaScript(
-      `ipcRenderer = ipcRenderer || require("electron").ipcRenderer;
-      document.querySelectorAll("#team_menu_user_details").length > 0 && ipcRenderer.sendToHost("loggedInObject", null);`
-    );*/
-
-    // let returnvalue = false;
     if (w && w.getWebContents()) {
       return await w
         .getWebContents()
@@ -630,10 +601,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 
   sendResult(resultValues) {
-    if (this.timeoutHandle) {
-      clearTimeout(this.timeoutHandle);
-      this.timeoutHandle = undefined;
-    }
+    this.clearTimeout(this.timeoutHandle);
 
     const takeScreenshot = this.props.takeScreenshot;
 
@@ -685,10 +653,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         direct: true,
         error: false
       });
-      if (this.progressHandle) {
-        clearInterval(this.progressHandle);
-        this.progressHandle = undefined;
-      }
+      this.clearInterval(this.progressHandle);
     }
     this.progressCallbackRunning = true;
     this.progress += this.progressStep;
@@ -705,11 +670,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       if (!this.props.noError && (await this.isErrorIn(this.webview))) {
         this.timeout = false;
         this.progress = 1;
-        this.sendResult({ loggedIn: false, error: true, ...this.loginState });
-        if (this.progressHandle) {
-          clearInterval(this.progressHandle);
-          this.progressHandle = undefined;
-        }
+        this.sendResult({ ...this.loginState, loggedIn: false, error: true });
+        this.clearInterval(this.progressHandle);
       }
     }
 
@@ -717,21 +679,19 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       this.timeout = false;
       this.progress = 1;
       this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
-      if (this.progressHandle) {
-        clearInterval(this.progressHandle);
-        this.progressHandle = undefined;
-      }
+      this.clearInterval(this.progressHandle);
     }
 
     if (this.progress == 1) {
       if (this.progressHandle) {
-        clearInterval(this.progressHandle);
-        this.progressHandle = undefined;
+        this.clearInterval(this.progressHandle);
+
         if (this.timeout) {
           this.sendResult({ ...this.loginState, loggedIn: false, error: true });
         }
       }
     }
+
     this.progressCallbackRunning = false;
   }
 
@@ -739,17 +699,26 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     return await sleep(ms / this.props.speed!);
   }
 
+  clearInterval(interval: NodeJS.Timer) {
+    if (interval) {
+      clearInterval(interval);
+      interval = undefined;
+    }
+  }
+
+  clearTimeout(timeout: NodeJS.Timeout) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = undefined;
+    }
+  }
+
   checkPreLoggedIn = async () => {
-    //console.log("CHECKPRELOGGEDIN");
     if (this.webview && (await this.isLoggedIn(this.webview))) {
-      //console.log("DIRECT LoggedIn", this.loginState);
       this.timeout = false;
       this.progress = 1;
       this.props.setResult({ ...this.loginState, loggedIn: true, error: false, direct: true }, "");
-      if (this.progressHandle) {
-        clearInterval(this.progressHandle);
-        this.progressHandle = undefined;
-      }
+      this.clearInterval(this.progressHandle);
     }
   };
 
@@ -803,10 +772,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
               { ...this.loginState, loggedIn: true, error: false, direct: true },
               ""
             );
-            if (this.progressHandle) {
-              clearInterval(this.progressHandle);
-              this.progressHandle = undefined;
-            }
+
+            this.clearInterval(this.progressHandle);
           }
         }
         break;
@@ -867,10 +834,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
               { ...this.loginState, loggedIn: true, error: false, direct: true },
               ""
             );
-            if (this.progressHandle) {
-              clearInterval(this.progressHandle);
-              this.progressHandle = undefined;
-            }
+
+            this.clearInterval(this.progressHandle);
             return; //we are done with login
           }
           if (this.state.errorin) {
@@ -924,11 +889,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
       case "checkfields":
         {
-          console.log("CHECKFIELDS", e.args[0], e.args[1]);
           this.checkedFields = e.args[0];
-          /*if (this.props.checkfields) {
-          this.props.checkfields(e.args[0]);
-        }*/
         }
         break;
 
