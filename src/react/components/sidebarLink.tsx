@@ -147,24 +147,26 @@ class SidebarLink extends React.Component<Props, State> {
                   style={{
                     backgroundImage:
                       licence.boughtplanid.planid.appid.icon &&
-                      getBgImageApp(licence.boughtplanid.planid.appid.icon, 24),
+                      getBgImageApp(licence.boughtplanid.planid.appid.icon, 32),
                   }}>
                   {this.props.openInstances[this.props.licence.id] && (
                     <i className="fa fa-circle active-app" />
                   )}
-                  {this.props.activeEmployee ? (
-                    <span className="active-user">
-                      <PrintEmployeeSquare
-                        hideTitle={true}
-                        size={16}
-                        className="managerSquare tiny-profile-pic"
-                        employee={this.props.activeEmployee}
-                        styles={{ marginTop: "0px" }}
-                      />
-                    </span>
-                  ) : (
-                    ""
-                  )}
+                  {
+                    /* this.props.activeEmployee */ true ? (
+                      <span className="active-user">
+                        <PrintEmployeeSquare
+                          hideTitle={true}
+                          size={16}
+                          className="managerSquare tiny-profile-pic"
+                          employee={this.props.activeEmployee}
+                          styles={{ marginTop: "0px" }}
+                        />
+                      </span>
+                    ) : (
+                      ""
+                    )
+                  }
                 </span>
               </div>
             </div>
