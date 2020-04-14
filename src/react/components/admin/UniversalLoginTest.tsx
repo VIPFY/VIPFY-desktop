@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import Tooltip from "react-tooltip-lite";
 import * as fs from "fs";
 import UniversalLoginExecutorWrapper from "../UniversalLoginExecutorWrapper";
-import UniversalLoginExecutor from "../UniversalLoginExecutor";
 import * as Sites from "./sites";
 import UniversalButton from "../universalButtons/universalButton";
+import { TestResult } from "../../interfaces";
 import { remote } from "electron";
 const { session } = remote;
 
@@ -19,123 +19,157 @@ interface State {
     url: string;
     email: string;
     password: string;
-    ignore: string;
-    image?: string;
-    emailEntered?: boolean;
-    passwordEntered?: boolean;
-    loggedIn?: boolean;
+    testResults?: TestResult[]; // not present in Sites imported from ./sites which causes typescript problems
+    allTestsFinished?: boolean;
   }[];
-  backgroundRunners: number[];
 }
 
-function average(arr: number[]) {
-  return arr.reduce((p, c) => p + c, 0) / arr.length;
-}
-
-class UniversalLoginTest extends React.Component<Props, State> {
+class UniversalLoginTest extends React.PureComponent<Props, State> {
   state = {
     currentTest: -1,
     running: false,
-    sites: Sites.sites,
-    backgroundRunners: []
+    sites: Sites.sites
   };
 
   componentDidUpdate() {
     fs.writeFileSync("ssotest.json", JSON.stringify(this.state.sites));
-
-    if (this.state.backgroundRunners.length < 3) {
-      for (let i = 0; i < this.state.sites.length; i++) {
-        if (
-          this.canTryLogin(this.state.sites[i]) &&
-          !this.state.backgroundRunners.includes(i) &&
-          this.state.sites[i].loggedIn === undefined &&
-          this.state.sites[i].image === undefined
-        ) {
-          this.setState(prev => ({ backgroundRunners: [...prev.backgroundRunners, i] }));
-          break;
-        }
-      }
-    }
   }
 
-  canTryLogin(s) {
-    if (s) {
-      return !(
-        s.email == "" ||
-        s.password == "" ||
-        s.url == "" ||
-        s.email == "-" ||
-        s.password == "-" ||
-        s.url == "-"
-      );
-    }
-    return false;
-  }
-
-  renderTable() {
-    return this.state.sites.map((site, i) => (
-      <tr key={`${site.app}_${i}`}>
-        <td>{site.app}</td>
-        <td>{this.displayBool(site.loggedin, this.state.currentTest == i)}</td>
-        <td>{this.displayBool(site.recaptcha, this.state.currentTest == i)}</td>
-        <td>{this.displayBool(site.emailEntered, this.state.currentTest == i)}</td>
-        <td>{this.displayBool(site.passwordEntered, this.state.currentTest == i)}</td>
-        <td>{this.displayBool(site.errorin, this.state.currentTest == i)}</td>
-        <td>{this.displayBool(site.fields, this.state.currentTest == i)}</td>
-        <td>{site.speed && site.speed.toFixed(1)}</td>
-        <td>
-          <Tooltip
-            direction="left"
-            content={
-              <span>
-                <img src={site.image} style={{ width: "1024px", objectFit: "cover" }} />
-              </span>
-            }>
-            <span>Details</span>
-          </Tooltip>
-        </td>
-        <td>
-          <span onClick={() => this.setState({ currentTest: i, running: false })}>
-            <i className="fal fa-arrow-square-right" />
-          </span>
-        </td>
-      </tr>
-    ));
-  }
-
-  displayBool(a: boolean, b: boolean = false) {
-    if (a === null || a === undefined) {
-      if (b) {
-        return <i className="fal fa-spinner fa-spin" />;
-      }
-      return " ";
-    }
-    return a ? <span style={{ color: "green" }}>✔</span> : <span style={{ color: "red" }}>×</span>;
-  }
-
-  advance() {
-    console.log("STATE", this.state);
-    if (!this.state.running) {
+  advance(allTestsFinishedForCurrentSite: boolean) {
+    if (!allTestsFinishedForCurrentSite || !this.state.running) {
       return;
     }
-    this.setState(oldstate => {
-      let c = oldstate.currentTest + 1;
-      let s = oldstate.sites[c];
-      console.log("ADVANCE", this.state);
-      while (!this.canTryLogin(s)) {
-        c++;
-        s = oldstate.sites[c];
+
+    this.setState(state => {
+      let nextTest = state.currentTest + 1;
+      let nextSite = state.sites[nextTest];
+
+      while (!this.loginDataAvailable(nextSite)) {
+        nextTest++;
+        nextSite = state.sites[nextTest];
       }
-      return { ...oldstate, currentTest: c };
+
+      return { currentTest: nextTest };
     });
   }
 
+  loginDataAvailable(site) {
+    if (!site) {
+      return false;
+    }
+
+    return !(
+      site.email == "" ||
+      site.password == "" ||
+      site.url == "" ||
+      site.email == "-" ||
+      site.password == "-" ||
+      site.url == "-"
+    );
+  }
+
+  renderTable(siteUnderTest) {
+    return this.state.sites.map((site, i) => (
+      <React.Fragment key={`${site.app}`}>
+        <tr>
+          <td>{site.app}</td>
+          {Array.from({ length: 5 }, (_, k) => (
+            <td key={`${site.app}_${i}_${k}`}>
+              {this.renderTestStatus(k, site.testResults, this.state.currentTest == i)}
+            </td>
+          ))}
+          <td>
+            <span onClick={() => this.setState({ currentTest: i, running: false })}>
+              <i className="fal fa-arrow-square-right" />
+            </span>
+          </td>
+        </tr>
+
+        {siteUnderTest === site && !site.allTestsFinished && (
+          <tr>
+            <td colSpan={7}>
+              <UniversalLoginExecutorWrapper
+                loginUrl={site.url}
+                username={site.email}
+                password={site.password}
+                setResult={(testResults, allTestsFinished) => {
+                  this.setState(
+                    prev => {
+                      let sites = [...prev.sites];
+                      sites[prev.currentTest] = {
+                        ...sites[prev.currentTest],
+                        testResults,
+                        allTestsFinished
+                      };
+
+                      return { sites };
+                    },
+
+                    () => this.advance(this.state.sites[i].allTestsFinished)
+                  );
+                }}
+              />
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    ));
+  }
+
+  renderTestStatus(testIndex: number, results: TestResult[], isUnderTest: boolean = false) {
+    if (!this.hasResult(testIndex, results)) {
+      // test is either running or wasn't started yet
+      return isUnderTest ? <i className="fal fa-spinner fa-spin" /> : " ";
+    }
+
+    if (!results[testIndex].screenshot) {
+      return this.renderTestResult(results[testIndex]);
+    }
+
+    return (
+      <Tooltip
+        direction="left"
+        content={
+          <span>
+            <img
+              src={results[testIndex].screenshot}
+              style={{
+                width: "1024px",
+                objectFit: "cover"
+              }}
+            />
+          </span>
+        }>
+        {this.renderTestResult(results[testIndex])}
+      </Tooltip>
+    );
+  }
+
+  hasResult(testIndex: number, results: TestResult[]) {
+    return results && results[testIndex];
+  }
+
+  renderTestResult(result: TestResult) {
+    const rendering = (color, text) => <span style={{ color }}>{text}</span>;
+
+    if (result.skipped) {
+      return rendering("blue", "Skipped");
+    } else if (result.timedOut) {
+      return rendering("orange", "Timeout");
+    } else if (result.passed) {
+      return rendering("green", "Passed");
+    } else {
+      return rendering("red", "Failed");
+    }
+  }
+
   renderProportion(key) {
-    let t = this.state.sites.filter(s => s[key] == true).length;
     let total = this.state.sites.filter(s => s[key] == true || s[key] === false).length;
     if (total == 0) {
       return <span>0/0</span>;
     }
+
+    let t = this.state.sites.filter(s => s[key] == true).length;
     return (
       <span>
         {t}/{total} ({((t / total) * 100).toFixed(2)}%)
@@ -144,17 +178,19 @@ class UniversalLoginTest extends React.Component<Props, State> {
   }
 
   render() {
-    //console.log("CT", this.state.sites);
-    const currentTest =
+    const siteUnderTest =
       this.state.currentTest === null ? null : this.state.sites[this.state.currentTest];
+
     return (
       <section className="admin">
-        <h1>This is just a heading</h1>
+        <h1>Test Universal SSO Login</h1>
+
         <UniversalButton
           onClick={() => session.fromPartition("ssotest").clearStorageData()}
-          label="Clear ssoTest"
+          label="Clear all SSO Test Sessions"
           type="high"
         />
+
         <div>
           {this.state.running ? (
             <span onClick={() => this.setState({ running: false })}>
@@ -164,7 +200,7 @@ class UniversalLoginTest extends React.Component<Props, State> {
             <span
               onClick={async () => {
                 await this.setState({ running: true });
-                this.advance();
+                this.advance(true);
               }}>
               <i className="fal fa-play" />
             </span>
@@ -173,91 +209,44 @@ class UniversalLoginTest extends React.Component<Props, State> {
         <table className="simpletable">
           <thead>
             <tr>
-              <th>App</th>
-              <th>Logged In</th>
-              <th>Recaptcha</th>
-              <th>Email</th>
-              <th>Password</th>
-              <th>Wrong Email / Password</th>
-              <th>Fields</th>
-              <th>Speed</th>
               <th />
+              <th>Test 1</th>
+              <th>Test 2</th>
+              <th>Test 3</th>
+              <th>Test 4</th>
+              <th>Test 5</th>
+            </tr>
+            <tr>
+              <th>Given:</th>
+              <th>Wrong Email</th>
+              <th>Wrong Password</th>
+              <th>Correct Credentials, Fast</th>
+              <th>Correct Credentials, Slow</th>
+              <th>Preexisting Session</th>
+            </tr>
+            <tr>
+              <th>Expected:</th>
+              <th>Error</th>
+              <th>Error</th>
+              <th>Login</th>
+              <th>Login</th>
+              <th>Login</th>
+            </tr>
+            <tr>
+              <th>Tests Passed:</th>
+              <th>{this.renderProportion("errorin")}</th>
+              <th>{this.renderProportion("errorin")}</th>
+              <th>{this.renderProportion("loggedin")}</th>
+              <th>{this.renderProportion("loggedin")}</th>
+              <th>{this.renderProportion("loggedin")}</th>
+            </tr>
+            <tr>
+              <th>App</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td />
-              <td>{this.renderProportion("loggedin")}</td>
-              <td>{this.renderProportion("recaptcha")}</td>
-              <td>{this.renderProportion("emailEntered")}</td>
-              <td>{this.renderProportion("passwordEntered")}</td>
-              <td>{this.renderProportion("errorin")}</td>
-              <td>{this.renderProportion("fields")}</td>
-              <td>{average(this.state.sites.map(s => s.speed).filter(s => !!s)).toFixed(1)}</td>
-              <td />
-              <td />
-            </tr>
-            {this.renderTable()}
-          </tbody>
+          <tbody>{this.renderTable(siteUnderTest)}</tbody>
         </table>
 
-        {currentTest && currentTest !== null && (
-          <UniversalLoginExecutorWrapper
-            loginUrl={currentTest.url}
-            username={currentTest.email}
-            password={currentTest.password}
-            timeout={60000}
-            partition="ssotest"
-            setResult={(result, image) => {
-              console.log("RESULT", result);
-              const ct = this.state.currentTest;
-              this.setState(prev => {
-                let sites = [...prev.sites];
-                sites[ct] = { ...sites[ct], ...result, image };
-                return { sites };
-              });
-              this.advance();
-            }}
-            checkfields={e => {
-              const ct = this.state.currentTest;
-              this.setState(prev => {
-                console.log("CHECK Fields", e);
-                let sites = [...prev.sites];
-                sites[ct] = { ...sites[ct], fields: e };
-                return { sites };
-              });
-            }}
-          />
-        )}
-        <div>
-          {/*this.state.backgroundRunners.map(r => (
-            <UniversalLoginExecutor
-              key={`bgrunner_${r}`}
-              loginUrl={this.state.sites[r].url}
-              username={this.state.sites[r].email}
-              password={this.state.sites[r].password}
-              timeout={6000}
-              partition={`ssotest_${r}`}
-              setResult={(result, image) => {
-                console.log("RESULT Background", result);
-                this.setState(prev => {
-                  let sites = [...prev.sites];
-                  sites[r] = { ...sites[r], ...result, image };
-                  let backgroundRunners = prev.backgroundRunners.filter(b => b !== r);
-
-                  return { sites, backgroundRunners };
-                });
-              }}
-              checkfields={e =>
-                this.setState(prev => {
-                  let sites = [...prev.sites];
-                  sites[r] = { ...sites[r], fields: e };
-                  return { sites };
-                })
-              }
-            />
-            ))*/}
-        </div>
         <button className="button-nav">
           <i className="fal fa-arrow-alt-from-right" />
           <Link to="/area/admin">Go Back</Link>
