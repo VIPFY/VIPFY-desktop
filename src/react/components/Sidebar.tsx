@@ -17,6 +17,7 @@ import ProfileMenu from "./ProfileMenu";
 import { FETCH_EMPLOYEES, fetchDepartmentsData, FETCH_COMPANY } from "../queries/departments";
 import { vipfyAdmins } from "../common/constants";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./security/graphqlOperations";
+import { autoUpdater } from "electron";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -123,6 +124,7 @@ interface State {
   notify: boolean;
   initialLoad: boolean;
   fetchedNotifications: any;
+  adminopen: boolean;
 }
 
 class Sidebar extends React.Component<SidebarProps, State> {
@@ -135,7 +137,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
     contextMenu: false,
     notify: false,
     initialLoad: true,
-    fetchedNotifications: new Set()
+    fetchedNotifications: new Set(),
+    adminopen: false,
   };
 
   componentDidMount() {
@@ -156,9 +159,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
         this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
         return {
           ...prev,
-          fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
+          fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications],
         };
-      }
+      },
     });
   }
 
@@ -207,10 +210,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
           await Promise.all([
             client.query({
               query: FETCH_EMPLOYEES,
-              ...options
+              ...options,
             }),
             client.query({ query: FETCH_USER_SECURITY_OVERVIEW }),
-            client.query({ query: fetchDepartmentsData })
+            client.query({ query: fetchDepartmentsData }),
           ]);
           break;
 
@@ -221,7 +224,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         case "domains":
           await client.query({
             query: FETCH_DOMAINS,
-            ...options
+            ...options,
           });
           break;
 
@@ -236,14 +239,14 @@ class Sidebar extends React.Component<SidebarProps, State> {
         case "paymentMethods":
           await client.query({
             query: FETCH_CARDS,
-            ...options
+            ...options,
           });
           break;
 
         case "promocode":
           await client.query({
             query: FETCH_CREDIT_DATA,
-            ...options
+            ...options,
           });
           break;
 
@@ -258,7 +261,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         case "me":
           await client.query({
             query: me,
-            ...options
+            ...options,
           });
           break;
 
@@ -269,7 +272,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
 
     for (let notification of notifications) {
-      this.setState(prevState => {
+      this.setState((prevState) => {
         const { fetchedNotifications } = prevState;
         fetchedNotifications.add(notification.id);
 
@@ -279,7 +282,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
   }
 
   // references: { key; element }[] = [];
-  goTo = view => this.props.moveTo(view);
+  goTo = (view) => this.props.moveTo(view);
 
   addReferences = (key, element, addRenderElement) => {
     // this.references.push({ key, element });
@@ -297,7 +300,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     this.addReferences(highlight, el, addRenderElement);
   };
 
-  listenKeyboard = e => {
+  listenKeyboard = (e) => {
     if (e.key === "Escape" || e.keyCode === 27) {
       this.setState({ showNotification: false });
     }
@@ -309,7 +312,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
   };
 
-  handleClickOutside = e => {
+  handleClickOutside = (e) => {
     this.handleClickInside();
     const domNode = ReactDOM.findDOMNode(this);
     if (
@@ -324,12 +327,70 @@ class Sidebar extends React.Component<SidebarProps, State> {
     if (this.state.donotopen) {
       this.setState({ donotopen: false });
     } else {
-      this.setState(prevState => ({ showNotification: !prevState.showNotification }));
+      this.setState((prevState) => ({ showNotification: !prevState.showNotification }));
     }
   };
 
-  renderLink = ({ label, location, icon, show, highlight }: SidebarLinks, addRenderElement) => {
+  renderKategories = (kategorie, addRenderElement, disabled) => {
+    const titel = kategorie[0];
+    const divList = [];
+    for (let i = 1; i < kategorie.length; i++) {
+      const label = kategorie[i].label;
+      const location = kategorie[i].location;
+      const icon = kategorie[i].icon;
+      const show = kategorie[i].isadmin;
+      const important = kategorie[i].important;
+      const highlight = kategorie[i].highlight;
+      let buttonClass = "naked-button adminHeadline-kategorieElement";
+
+      const id = label.toString() + location.toString();
+
+      if (
+        this.props.location.pathname.startsWith(`/area/${location}`) ||
+        `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
+      ) {
+        buttonClass += " selected";
+      }
+
+      const div = (
+        <button
+          style={this.state.adminopen ? {} : { width: "0px" }}
+          id={id}
+          disabled={disabled}
+          className={buttonClass}
+          onMouseDown={() => {
+            document.getElementById(id).className =
+              "naked-button adminHeadline-kategorieElement active";
+          }}
+          onMouseUp={() => {
+            document.getElementById(id).className = buttonClass;
+            this.goTo(location);
+          }}
+          onMouseLeave={() => {
+            document.getElementById(id).className = buttonClass;
+          }}>
+          <div className="label">{label}</div>
+        </button>
+      );
+      divList.push(div);
+    }
+
+    return (
+      <li>
+        <div className={"adminHeadline-kategorieTitel"}>{titel}</div>
+        {divList}
+      </li>
+    );
+  };
+
+  renderLink = (
+    { label, location, icon, show, highlight }: SidebarLinks,
+    addRenderElement,
+    disabled
+  ) => {
+    //return;
     let cssClass = "sidebar-link";
+    let buttonClass = "naked-button itemHolder";
     const { sidebarOpen } = this.props;
 
     if (!sidebarOpen) {
@@ -341,16 +402,32 @@ class Sidebar extends React.Component<SidebarProps, State> {
       `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
     ) {
       cssClass += " sidebar-active";
+      buttonClass += " selected";
     }
+    const id = label.toString() + location.toString() + icon.toString();
 
     if (show) {
       return (
         <li
           key={location}
           className={cssClass}
-          ref={el => this.maybeAddHighlightReference(location, highlight, el, addRenderElement)}>
-          <button className="naked-button itemHolder" onClick={() => this.goTo(location)}>
+          ref={(el) => this.maybeAddHighlightReference(location, highlight, el, addRenderElement)}>
+          <button
+            id={id}
+            disabled={disabled}
+            className={buttonClass}
+            onMouseDown={() => {
+              document.getElementById(id).className = "naked-button itemHolder active";
+            }}
+            onMouseUp={() => {
+              document.getElementById(id).className = buttonClass;
+              this.goTo(location);
+            }}
+            onMouseLeave={() => {
+              document.getElementById(id).className = buttonClass;
+            }}>
             <Tooltip
+              className="sidebar-tooltip"
               distance={12}
               arrowSize={5}
               useHover={!sidebarOpen}
@@ -360,6 +437,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 <i className={`fal fa-${icon} sidebar-icon`} />
               </div>
             </Tooltip>
+
             <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
               {label}
             </span>
@@ -375,135 +453,169 @@ class Sidebar extends React.Component<SidebarProps, State> {
       licences = [];
     }
 
+    const kategories = [
+      [
+        "MANAGEMENT",
+        {
+          label: "Team Manager",
+          location: "dmanager",
+          icon: "user-tag",
+          show: isadmin,
+          important: false,
+          highlight: "dmanager",
+        },
+        {
+          label: "Employee Manager",
+          location: "emanager",
+          icon: "users-cog",
+          show: isadmin,
+          important: false,
+          highlight: "emanager",
+        },
+        {
+          label: "Service Manager",
+          location: "lmanager",
+          icon: "credit-card-blank",
+          show: isadmin,
+          important: false,
+          highlight: "lmanager",
+        },
+      ],
+      [
+        "BILLING",
+        {
+          label: "Billing Informations",
+          location: "billing",
+          icon: "file-invoice-dollar",
+          show: isadmin && config.showBilling,
+          highlight: "billingelement",
+        },
+        {
+          label: "Billing History",
+          location: "billing",
+          icon: "file-invoice-dollar",
+          show: isadmin && config.showBilling,
+          highlight: "billingelement",
+        },
+        {
+          label: "Billing Statistics",
+          location: "billing",
+          icon: "file-invoice-dollar",
+          show: isadmin && config.showBilling,
+          highlight: "billingelement",
+        },
+      ],
+      [
+        "STATISTICS",
+        {
+          label: "Billing Statistics",
+          location: "billing",
+          icon: "file-invoice-dollar",
+          show: isadmin && config.showBilling,
+          highlight: "billingelement",
+        },
+        { label: "User Statistics", location: "Here Goes a Path" },
+      ],
+    ];
+
     const sidebarLinks = [
       {
         label: "Dashboard",
         location: "dashboard",
         icon: "home",
         show: true,
-        highlight: "dashboardelement"
+        highlight: "dashboardelement",
       },
       {
         label: "Message Center",
         location: "messagecenter",
         icon: "envelope",
-        show: config.showMessageCenter
-      },
-      {
-        label: "Billing",
-        location: "billing",
-        icon: "file-invoice-dollar",
-        show: isadmin && config.showBilling,
-        highlight: "billingelement"
+        show: config.showMessageCenter,
       },
       {
         label: "Security",
         location: "security",
         icon: "user-shield",
         show: isadmin,
-        highlight: "securityelement"
+        highlight: "securityelement",
       },
       {
         label: "Teams",
         location: "team",
         icon: "users",
         show: isadmin && config.showTeams,
-        highlight: "teamelement"
+        highlight: "teamelement",
       },
       {
         label: "Marketplace",
         location: "marketplace",
         icon: "shopping-cart",
         show: config.showMarketplace,
-        highlight: "marketplaceelement"
+        highlight: "marketplaceelement",
       },
       {
         label: "Account Integrator",
         location: "integrations",
         icon: "shapes",
         show: isadmin,
-        highlight: "integrationselement"
+        highlight: "integrationselement",
       },
       {
         label: "Domains",
         location: "domains",
         icon: "atlas",
-        show: config.showDomains
+        show: config.showDomains,
       },
       {
         label: "Usage Statistics",
         location: "usage",
         icon: "chart-line",
-        show: isadmin
+        show: isadmin,
       },
       {
         label: "Support",
         location: "support",
         icon: "ambulance",
         show: true,
-        highlight: "supportelement"
-      },
-      {
-        label: "Team Manager",
-        location: "dmanager",
-        icon: "user-tag",
-        show: isadmin,
-        important: false,
-        highlight: "dmanager"
-      },
-      {
-        label: "Employee Manager",
-        location: "emanager",
-        icon: "users-cog",
-        show: isadmin,
-        important: false,
-        highlight: "emanager"
-      },
-      {
-        label: "Service Manager",
-        location: "lmanager",
-        icon: "credit-card-blank",
-        show: isadmin,
-        important: false,
-        highlight: "lmanager"
+        highlight: "supportelement",
       },
       {
         label: "Universal Login",
         location: "universallogin",
         icon: "pager",
         show: isadmin && config.showUniversalLoginDebug && this.props.company.unit.id == 14,
-        important: false
+        important: false,
       },
       {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
-        show: config.showAdmin && vipfyAdmins.find(admin => admin == this.props.id),
-        highlight: "adminelement"
+        show: config.showAdmin && vipfyAdmins.find((admin) => admin == this.props.id),
+        highlight: "adminelement",
       },
       {
         label: "SSO Configurator",
         location: "ssoconfig",
         icon: "dice-d12",
         show: isadmin && config.showSsoConfig && this.props.company.unit.id == 14,
-        highlight: "ssoconfig"
+        highlight: "ssoconfig",
       },
       {
         label: "SSO Tester",
         location: "ssotest",
         icon: "dragon",
         show: false,
-        highlight: "ssotest"
+        highlight: "ssotest",
       },
       {
         label: "Vacation Requests",
         location: "vacation",
         icon: "umbrella-beach",
         show: config.showVacationRequests,
-        highlight: "vacation"
-      }
+        highlight: "vacation",
+      },
     ];
-    const filteredLicences0 = licences.filter(licence => {
+    const filteredLicences0 = licences.filter((licence) => {
       if (
         !(
           (!licence.disabled &&
@@ -632,148 +744,195 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     return (
       <AppContext.Consumer>
-        {context => (
+        {(context) => (
           <ul
-            className={`sidebar${sidebarOpen ? "" : "-small"} ${
-              this.props.impersonation ? "sidebar-impersonate" : ""
-            }`}
-            ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
-            <li className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
-              <Tooltip
-                distance={18}
-                arrowSize={5}
-                content={
-                  <div style={{ width: "75px" }}>{sidebarOpen ? "Hide" : "Open"} Sidebar</div>
-                }
-                direction="right">
-                <button
-                  className="naked-button sidebarButton"
-                  onClick={() => this.props.toggleSidebar()}
-                  style={{ margin: "8px 12px" }}>
-                  <i className="fal fa-angle-left" />
+            className={`sidebar${sidebarOpen ? "" : "-small"}${
+              this.state.adminopen ? "-admin" : ""
+            } ${this.props.impersonation ? "sidebar-impersonate" : ""}`}
+            ref={(el) => context.addRenderElement({ key: "sidebar", element: el })}>
+            <li
+              className={`sidebar-adminpanel${this.props.isadmin ? "" : " collapsed"}${
+                this.state.adminopen ? "" : " hidden"
+              }${sidebarOpen ? "" : " small"}`}>
+              <div className="adminHeadline">ADMINPANEL</div>
+              <ul>
+                {kategories.map((link) =>
+                  this.renderKategories(link, context.addRenderElement, false)
+                )}
+              </ul>
+            </li>
+            <ul className={`sidebar original${sidebarOpen ? "" : "-small"}`}>
+              <li className={`sidebar-nav-icon`}>
+                <Tooltip
+                  className="sidebar-tooltip-nav"
+                  distance={18}
+                  arrowSize={5}
+                  content={
+                    <div style={{ width: "75px" }}>{sidebarOpen ? "Hide" : "Open"} Sidebar</div>
+                  }
+                  direction="right">
+                  <button
+                    className="naked-button sidebarButton"
+                    onClick={() => this.props.toggleSidebar()}>
+                    {sidebarOpen ? (
+                      <i className="fal fa-angle-left" />
+                    ) : (
+                      <i className="fal fa-angle-right" />
+                    )}
+                  </button>
+                </Tooltip>
+              </li>
+
+              <li className="sidebar-main">
+                <ul>
+                  {sidebarLinks.map((link) =>
+                    this.renderLink(link, context.addRenderElement, false)
+                  )}
+                </ul>
+                <li className="divider" />
+
+                {/* Without temporary licences */}
+                <SidebarApps
+                  setApp={this.props.setApp}
+                  setInstance={this.props.setInstance}
+                  sidebarOpen={sidebarOpen}
+                  openInstances={this.props.openInstances}
+                  licences={filteredLicences.filter(
+                    ({ tags }) => tags.length < 1 || !tags.includes("vacation")
+                  )}
+                  viewID={this.props.viewID}
+                />
+
+                {/* Temporary licences */}
+                <SidebarApps
+                  header="Temporary Apps"
+                  icon="island-tropical"
+                  setApp={this.props.setApp}
+                  setInstance={this.props.setInstance}
+                  sidebarOpen={sidebarOpen}
+                  openInstances={this.props.openInstances}
+                  licences={filteredLicences.filter(
+                    ({ vacationend, vacationstart, tags }) =>
+                      tags.length > 0 &&
+                      tags.includes("vacation") &&
+                      vacationstart &&
+                      moment().isBefore(moment(vacationend))
+                  )}
+                  viewID={this.props.viewID}
+                />
+              </li>
+              <li className="divider bottom" />
+              <li
+                className={`sidebar-link${sidebarOpen ? "" : "-small"} ${
+                  this.state.notify ? "notify-user" : ""
+                }`}>
+                <button className="naked-button itemHolder" onClick={this.toggleNotificationPopup}>
+                  <Tooltip
+                    className="sidebar-tooltip"
+                    distance={12}
+                    arrowSize={5}
+                    useHover={!sidebarOpen}
+                    content="Notifications"
+                    direction="right">
+                    <div className="naked-button sidebarButton">
+                      <i className="far fa-bell" />
+                      <span className="notification-amount">
+                        {this.props.loading ||
+                        !this.props.data ||
+                        !this.props.data.fetchNotifications
+                          ? 0
+                          : this.props.data.fetchNotifications.length}
+                      </span>
+                    </div>
+                  </Tooltip>
+                  <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+                    Notifications
+                  </span>
                 </button>
-              </Tooltip>
-            </li>
+              </li>
+              {this.state.showNotification && (
+                <Notification
+                  //sidebar={"1"}
+                  moveTo={this.props.moveTo}
+                  data={this.props.data || {}}
+                  loading={this.props.loading}
+                  refetch={this.props.refetch}
+                  style={{ left: sidebarOpen ? "210px" : "50px", zIndex: 1000 }}
+                  closeme={() => this.setState({ showNotification: false, donotopen: true })}
+                />
+              )}
 
-            <li className="sidebar-main">
-              <ul>{sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}</ul>
-
-              {/* Without temporary licences */}
-              <SidebarApps
-                setApp={this.props.setApp}
-                setInstance={this.props.setInstance}
-                sidebarOpen={sidebarOpen}
-                openInstances={this.props.openInstances}
-                licences={filteredLicences.filter(
-                  ({ tags }) => tags.length < 1 || !tags.includes("vacation")
-                )}
-                viewID={this.props.viewID}
-              />
-
-              {/* Temporary licences */}
-              <SidebarApps
-                header="Temporary Apps"
-                icon="island-tropical"
-                setApp={this.props.setApp}
-                setInstance={this.props.setInstance}
-                sidebarOpen={sidebarOpen}
-                openInstances={this.props.openInstances}
-                licences={filteredLicences.filter(
-                  ({ vacationend, vacationstart, tags }) =>
-                    tags.length > 0 &&
-                    tags.includes("vacation") &&
-                    vacationstart &&
-                    moment().isBefore(moment(vacationend))
-                )}
-                viewID={this.props.viewID}
-              />
-            </li>
-
-            <li
-              className={`sidebar-link${sidebarOpen ? "" : "-small"} ${
-                this.state.notify ? "notify-user" : ""
-              }`}
-              style={{ height: "24px", marginTop: "16px" }}>
-              <button className="naked-button itemHolder" onClick={this.toggleNotificationPopup}>
-                <Tooltip
-                  distance={12}
-                  arrowSize={5}
-                  useHover={!sidebarOpen}
-                  content="Notifications"
-                  direction="right">
-                  <div className="naked-button sidebarButton">
-                    <i className="far fa-bell" />
-                    <span className="notification-amount">
-                      {this.props.loading || !this.props.data || !this.props.data.fetchNotifications
-                        ? 0
-                        : this.props.data.fetchNotifications.length}
-                    </span>
-                  </div>
-                </Tooltip>
-                <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
-                  Notifications
-                </span>
-              </button>
-            </li>
-            {this.state.showNotification && (
-              <Notification
-                //sidebar={"1"}
-                moveTo={this.props.moveTo}
-                data={this.props.data || {}}
-                loading={this.props.loading}
-                refetch={this.props.refetch}
-                style={{ left: sidebarOpen ? "210px" : "50px", zIndex: 1000 }}
-                closeme={() => this.setState({ showNotification: false, donotopen: true })}
-              />
-            )}
-
-            <li
-              className={`sidebar-link${sidebarOpen ? "" : "-small"}${
-                this.props.location.pathname.startsWith("/area/profile") ||
-                `${this.props.location.pathname}/dashboard`.startsWith("/area/profile")
-                  ? " sidebar-active"
-                  : ""
-              }`}>
-              <button
-                className="naked-button itemHolder"
-                onClick={() =>
-                  this.setState(prevState => ({ contextMenu: !prevState.contextMenu }))
-                }>
-                <Tooltip
-                  distance={12}
-                  arrowSize={5}
-                  useHover={!sidebarOpen}
-                  content={<UserName unitid={this.props.id} />}
-                  direction="right">
-                  <div className="naked-button sidebarButton">
-                    <PrintEmployeeSquare
-                      hideTitle={true}
-                      size={24}
-                      className="managerSquare small-profile-pic"
-                      employee={this.props}
-                      styles={{ marginTop: "0px" }}
-                    />
-                  </div>
-                </Tooltip>
-                <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
-                  <UserName unitid={this.props.id} />
-                </span>
-              </button>
-            </li>
-            {this.state.contextMenu && (
-              <ProfileMenu
-                closeme={() => this.setState({ contextMenu: false })}
-                sidebarOpen={this.props.sidebarOpen}
-                history={this.props.history}
-                id={this.props.id}
-                isadmin={this.props.isadmin}
-                logMeOut={this.props.logMeOut}
-                goTo={location => {
-                  this.goTo(location);
-                  this.setState({ contextMenu: false });
-                }}
-              />
-            )}
+              <li
+                className={`sidebar-link${sidebarOpen ? "" : "-small"}${
+                  this.props.location.pathname.startsWith("/area/profile") ||
+                  `${this.props.location.pathname}/dashboard`.startsWith("/area/profile")
+                    ? " sidebar-active"
+                    : ""
+                }`}>
+                <button
+                  className="naked-button itemHolder"
+                  onClick={() =>
+                    this.setState((prevState) => ({ contextMenu: !prevState.contextMenu }))
+                  }>
+                  <Tooltip
+                    className="sidebar-tooltip"
+                    distance={12}
+                    arrowSize={5}
+                    useHover={!sidebarOpen}
+                    content={<UserName unitid={this.props.id} />}
+                    direction="right">
+                    <div className="naked-button sidebarButton">
+                      <PrintEmployeeSquare
+                        hideTitle={true}
+                        size={24}
+                        className="managerSquare small-profile-pic"
+                        employee={this.props}
+                        styles={{ marginTop: "0px" }}
+                      />
+                    </div>
+                  </Tooltip>
+                  <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+                    <UserName unitid={this.props.id} />
+                  </span>
+                </button>
+              </li>
+              <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
+                <button
+                  className="naked-button itemHolder"
+                  onClick={() => {
+                    this.setState({ adminopen: !this.state.adminopen });
+                  }}>
+                  <Tooltip
+                    className="sidebar-tooltip"
+                    distance={12}
+                    arrowSize={5}
+                    useHover={!sidebarOpen}
+                    content="Open Admin Sidebar"
+                    direction="right">
+                    <div className="naked-button sidebarButton">
+                      <i>{/* Hier gehört das Bild hin */}</i>
+                    </div>
+                  </Tooltip>
+                  <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+                    Admid
+                  </span>
+                </button>
+              </li>
+              {this.state.contextMenu && (
+                <ProfileMenu
+                  closeme={() => this.setState({ contextMenu: false })}
+                  sidebarOpen={this.props.sidebarOpen}
+                  history={this.props.history}
+                  id={this.props.id}
+                  isadmin={this.props.isadmin}
+                  logMeOut={this.props.logMeOut}
+                  goTo={(location) => {
+                    this.goTo(location);
+                    this.setState({ contextMenu: false });
+                  }}
+                />
+              )}
+            </ul>
           </ul>
         )}
       </AppContext.Consumer>

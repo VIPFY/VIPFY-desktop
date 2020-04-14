@@ -2,8 +2,10 @@ import * as React from "react";
 import { Licence } from "../interfaces";
 import Tooltip from "react-tooltip-lite";
 import { getBgImageApp } from "../common/images";
+import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 
 interface Props {
+  disabled: boolean;
   licence: any;
   openInstances: any;
   sidebarOpen: boolean;
@@ -13,6 +15,7 @@ interface Props {
   viewID: number;
   isSearching: boolean;
   selected: boolean;
+  activeEmployee: any;
 }
 
 interface State {
@@ -25,7 +28,7 @@ class SidebarLink extends React.Component<Props, State> {
   state = {
     hover: false,
     dragging: false,
-    entered: false
+    entered: false,
   };
 
   showInstances = (licence: Licence) => {
@@ -40,7 +43,7 @@ class SidebarLink extends React.Component<Props, State> {
                 top: this.el ? this.el.getBoundingClientRect().top : "0px",
                 left: this.el ? this.el.getBoundingClientRect().left : "0px",
                 width: this.el ? this.el.getBoundingClientRect().width + 15 : "0px",
-                height: this.el ? this.el.getBoundingClientRect().height : "0px"
+                height: this.el ? this.el.getBoundingClientRect().height : "0px",
               }}
             />
             <div
@@ -51,9 +54,9 @@ class SidebarLink extends React.Component<Props, State> {
                   ? this.el.getBoundingClientRect().left +
                     this.el.getBoundingClientRect().width +
                     15
-                  : "0px"
+                  : "0px",
               }}>
-              {instances.map(e => {
+              {instances.map((e) => {
                 return (
                   <div
                     key={this.props.openInstances[licence.id][e].instanceId}
@@ -62,7 +65,7 @@ class SidebarLink extends React.Component<Props, State> {
                       backgroundColor:
                         this.props.viewID === this.props.openInstances[licence.id][e].instanceId
                           ? "#20BAA9"
-                          : ""
+                          : "",
                     }}
                     onClick={() =>
                       this.props.viewID === this.props.openInstances[licence.id][e].instanceId
@@ -83,7 +86,8 @@ class SidebarLink extends React.Component<Props, State> {
   render() {
     const { licence, openInstances, sidebarOpen, active, setTeam } = this.props;
 
-    let cssClass = "sidebar-link";
+    let cssClass = "sidebar-link service";
+    let buttonClass = "naked-button serviceHolder";
     let label = licence.boughtplanid.alias
       ? licence.boughtplanid.alias
       : licence.boughtplanid.planid.appid.name;
@@ -94,46 +98,75 @@ class SidebarLink extends React.Component<Props, State> {
     if (active) {
       cssClass += " sidebar-active";
     }
+    if (this.props.openInstances[this.props.licence.id]) {
+      buttonClass += " selected";
+    }
 
     return (
       <li
         id={licence.id}
-        className={`${cssClass} ${this.state.dragging ? "hold" : ""} ${
-          this.state.entered ? "hovered" : ""
-        }`}
+        className={cssClass}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        ref={el => (this.el = el)}>
+        ref={(el) => (this.el = el)}>
         <button
+          disabled={this.props.disabled}
+          id={licence.id + "button"}
           type="button"
-          onClick={
-            this.props.openInstances &&
-            (!this.props.openInstances[licence.id] ||
-              (this.props.openInstances[licence.id] &&
-                Object.keys(openInstances[licence.id]).length == 1))
-              ? () => {
-                  setTeam(licence.id);
-                }
-              : () => null
-          }
-          className={`naked-button itemHolder${
-            this.props.selected ? " selected" : ""
-          }`} /*sidebar-link-apps*/
+          onMouseDown={() => {
+            document.getElementById(licence.id + "button").className =
+              "naked-button serviceHolder active";
+          }}
+          onMouseUp={() => {
+            if (
+              this.props.openInstances &&
+              (!this.props.openInstances[licence.id] ||
+                (this.props.openInstances[licence.id] &&
+                  Object.keys(openInstances[licence.id]).length == 1))
+            ) {
+              setTeam(licence.id);
+            }
+            document.getElementById(licence.id + "button").className = buttonClass;
+          }}
+          onMouseLeave={() => {
+            document.getElementById(licence.id + "button").className = buttonClass;
+          }}
+          className={buttonClass} /*sidebar-link-apps*/
         >
-          <Tooltip direction="right" arrowSize={5} useHover={!sidebarOpen} content={label}>
+          <Tooltip
+            direction="right"
+            arrowSize={5}
+            useHover={!sidebarOpen}
+            content={label}
+            className="sidebar-tooltip">
             <div className="naked-button sidebarButton">
-              <span className="white-background" />
-              <span
-                className="service-logo-small"
-                style={{
-                  backgroundImage:
-                    licence.boughtplanid.planid.appid.icon &&
-                    getBgImageApp(licence.boughtplanid.planid.appid.icon, 24)
-                }}>
-                {this.props.openInstances[this.props.licence.id] && (
-                  <i className="fa fa-circle active-app" />
-                )}
-              </span>
+              <div className="service-hover">
+                <span className="white-background" />
+                <span
+                  className="service-logo-small"
+                  style={{
+                    backgroundImage:
+                      licence.boughtplanid.planid.appid.icon &&
+                      getBgImageApp(licence.boughtplanid.planid.appid.icon, 24),
+                  }}>
+                  {this.props.openInstances[this.props.licence.id] && (
+                    <i className="fa fa-circle active-app" />
+                  )}
+                  {this.props.activeEmployee ? (
+                    <span className="active-user">
+                      <PrintEmployeeSquare
+                        hideTitle={true}
+                        size={16}
+                        className="managerSquare tiny-profile-pic"
+                        employee={this.props.activeEmployee}
+                        styles={{ marginTop: "0px" }}
+                      />
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                </span>
+              </div>
             </div>
           </Tooltip>
 
