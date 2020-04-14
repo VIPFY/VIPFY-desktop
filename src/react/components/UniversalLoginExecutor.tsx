@@ -134,9 +134,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     const props = this.props;
     let update = false;
 
-    Object.keys(this.props).forEach(function (key) {
-      if (props[key] == nextProps[key] || typeof props[key] == "function") {
-      } else {
+    Object.keys(props).forEach(function (key) {
+      if (props[key] != nextProps[key] && typeof props[key] != "function") {
         if (
           (Array.isArray(props[key]) && props[key].length == nextProps[key].length) ||
           (props[key].fetchNotifications &&
@@ -146,13 +145,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           const arraycheck = Array.isArray(props[key])
             ? nextProps[key]
             : nextProps[key].fetchNotifications;
+
           array.forEach((element) => {
             if (!arraycheck.find((e) => e.id == element.id)) {
               update = true;
             }
           });
-        } else if (props[key] && key == "style" && props[key]!.height == nextProps[key].height) {
-          update = true;
         } else {
           update = true;
         }
@@ -160,12 +158,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     });
 
     const state = this.state;
-    Object.keys(this.state).forEach(function (key) {
-      if (state[key] == nextState[key] || typeof state[key] == "function") {
-      } else {
+    Object.keys(state).forEach(function (key) {
+      if (state[key] != nextState[key] && typeof state[key] != "function") {
         update = true;
       }
     });
+
     return update;
   }
 
