@@ -34,7 +34,7 @@ const tests = [
     expectError: true,
     reuseSession: false,
     speedFactor: 5,
-    enterCorrectEmail: false
+    enterCorrectEmail: false,
   },
   {
     expectLoginSuccess: false,
@@ -42,7 +42,7 @@ const tests = [
     reuseSession: false,
     speedFactor: 3,
     enterCorrectEmail: true,
-    enterCorrectPassword: false
+    enterCorrectPassword: false,
   },
   {
     expectLoginSuccess: true,
@@ -50,7 +50,7 @@ const tests = [
     reuseSession: false,
     speedFactor: 10,
     enterCorrectEmail: true,
-    enterCorrectPassword: true
+    enterCorrectPassword: true,
   },
   {
     expectLoginSuccess: true,
@@ -59,14 +59,14 @@ const tests = [
     speedFactor: 1,
     enterCorrectEmail: true,
     enterCorrectPassword: true,
-    skipCondition: { testDependency: 2, skipIfPassedEquals: true }
+    skipCondition: { testDependency: 2, skipIfPassedEquals: true },
   },
   {
     expectLoginSuccess: true,
     expectError: false,
     reuseSession: true,
-    skipCondition: { testDependency: 3, skipIfPassedEquals: false }
-  }
+    skipCondition: { testDependency: 3, skipIfPassedEquals: false },
+  },
 ];
 
 const SSO_TEST_PARTITION = "ssotest";
@@ -76,7 +76,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   state = {
     currentTest: 0,
     testResults: [],
-    storageDataCleared: []
+    storageDataCleared: [],
   };
 
   isPassed(test: Test, loginResult: LoginResult) {
@@ -85,9 +85,9 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
 
   advance() {
     if (this.hasNextTest()) {
-      this.setState(state => {
+      this.setState((state) => {
         return {
-          currentTest: state.currentTest + 1
+          currentTest: state.currentTest + 1,
         };
       });
     }
@@ -103,7 +103,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
     }
 
     session.fromPartition(SSO_TEST_PARTITION).clearStorageData();
-    this.setState(state => {
+    this.setState((state) => {
       let storageDataCleared = state.storageDataCleared;
       storageDataCleared[currentTest] = true;
 
@@ -112,7 +112,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   }
 
   setResult(currentTest: number, testResult: TestResult) {
-    this.setState(state => {
+    this.setState((state) => {
       let testResults = state.testResults;
       testResults[currentTest] = testResult;
 
@@ -150,18 +150,18 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
 
     return (
       <UniversalLoginExecutor
-        webviewId={this.state.currentTest}
         loginUrl={this.props.loginUrl}
         username={this.props.username + (test.enterCorrectEmail ? "" : "WRONG")}
         password={this.props.password + (test.enterCorrectPassword ? "" : "WRONG")}
         speed={test.speedFactor}
         timeout={15 * SECOND}
+        webviewId={this.state.currentTest}
         partition={SSO_TEST_PARTITION}
         setResult={(loginResult: LoginResult, screenshot: string) => {
           const testResult = {
             passed: this.isPassed(test, loginResult),
             timedOut: loginResult.timedOut,
-            screenshot
+            screenshot,
           };
 
           this.setResult(currentTest, testResult);

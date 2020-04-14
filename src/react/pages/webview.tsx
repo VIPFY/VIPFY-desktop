@@ -59,7 +59,7 @@ export type WebViewProps = {
   logError: Function;
   updateLicenceSpeed: Function;
   addWebview: Function;
-  loggedIn: Boolean;
+  loggedIn?: boolean;
 };
 
 // TODO: webpreferences="contextIsolation" would be nice, see https://github.com/electron-userland/electron-compile/issues/292 for blocker
@@ -90,7 +90,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     oldspeed: undefined,
     key: null,
     errorRecheck: false,
-    accountId: ""
+    accountId: "",
   };
 
   static getDerivedStateFromProps(
@@ -103,7 +103,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         previousLicenceId: prevState.licenceId,
         licenceId: nextProps.licenceID,
         showLoadingScreen: true,
-        progress: undefined
+        progress: undefined,
       };
     } else {
       return prevState;
@@ -113,7 +113,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   shouldComponentUpdate(nextProps, nextState) {
     const props = this.props;
     let update = false;
-    Object.keys(this.props).forEach(function(key) {
+    Object.keys(this.props).forEach(function (key) {
       if (props[key] == nextProps[key]) {
         //console.log("Same", key, props[key]);
       } else {
@@ -122,7 +122,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       }
     });
     const state = this.state;
-    Object.keys(this.state).forEach(function(key) {
+    Object.keys(this.state).forEach(function (key) {
       if (state[key] == nextState[key]) {
         //console.log("Same", key, props[key]);
       } else {
@@ -139,7 +139,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     this.setState({ intervalId, intervalId2 });
     if (this.state.previousLicenceId !== this.state.licenceId) {
       this.setState({
-        previousLicenceId: this.state.licenceId
+        previousLicenceId: this.state.licenceId,
       });
     }
     // see https://github.com/reactjs/rfcs/issues/26 for context why we wait until after mount
@@ -156,7 +156,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   async componentDidUpdate(prevProps: WebViewProps, prevState: WebViewState) {
     if (this.state.previousLicenceId !== this.state.licenceId) {
       await this.setState({
-        previousLicenceId: this.state.licenceId
+        previousLicenceId: this.state.licenceId,
       });
 
       // At this point, we're in the "commit" phase, so it's safe to load the new data.
@@ -195,7 +195,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
             }
           }
         `,
-        variables: { licenceid: this.state.licenceId, minutes: minutes }
+        variables: { licenceid: this.state.licenceId, minutes: minutes },
       });
     }
   };
@@ -234,7 +234,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         }
       }
       `,
-      fetchPolicy: "network-only"
+      fetchPolicy: "network-only",
     });
     let licence = result.data.fetchLicenceAssignment;
     console.log("LICENCE", licence);
@@ -268,7 +268,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       key: { ...key, domain: licence.boughtPlan.key.domain },
       oldspeed: undefined,
       progress: undefined,
-      accountId: licence.accountid
+      accountId: licence.accountid,
     });
   }
 
@@ -283,7 +283,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   showLoadingScreen(): void {
     this.setState({
       showLoadingScreen: true,
-      t: performance.now()
+      t: performance.now(),
     });
   }
 
@@ -327,7 +327,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     }
     return (
       <HeaderNotificationContext.Consumer>
-        {context => {
+        {(context) => {
           return (
             <div className={cssClass} id={`webview-${this.props.viewID}`}>
               {this.state.showLoadingScreen && (
@@ -354,7 +354,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   takeScreenshot={false}
                   partition={`service-${this.state.licenceId}`}
                   className={cssClassWeb}
-                  showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
+                  showLoadingScreen={(b) => this.setState({ showLoadingScreen: b })}
                   setResult={async ({ loggedIn, error, direct, emailEntered, passwordEntered }) => {
                     if (loggedIn) {
                       this.hideLoadingScreen();
@@ -364,8 +364,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                           variables: {
                             licenceid: this.props.licenceID,
                             speed: this.state.loginspeed,
-                            working: true
-                          }
+                            working: true,
+                          },
                         });
                       }
                     }
@@ -378,30 +378,30 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                             licenceid: this.props.licenceID,
                             speed: this.state.loginspeed,
                             oldspeed: this.state.oldspeed,
-                            working: false
-                          }
+                            working: false,
+                          },
                         });
                         this.setState({
                           progress: 1,
                           error:
                             "Sorry, login was not possible. Please go back to the Dashboard and retry. Contact support if the problem persists.",
-                          errorshowed: true
+                          errorshowed: true,
                         });
                       } else {
                         await this.props.updateLicenceSpeed({
                           variables: {
                             licenceid: this.props.licenceID,
                             speed: this.state.loginspeed,
-                            working: false
-                          }
+                            working: false,
+                          },
                         });
-                        this.setState(s => {
+                        this.setState((s) => {
                           return { loginspeed: 1, oldspeed: s.loginspeed };
                         });
                       }
                     }
                   }}
-                  progress={progress => this.setState({ progress })}
+                  progress={(progress) => this.setState({ progress })}
                   speed={this.state.loginspeed || 1}
                   style={
                     context.isActive
@@ -420,7 +420,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   individualNotShow={this.state.options.individualNotShow}
                   addWebview={this.props.addWebview}
                   licenceID={this.props.licenceID}
-                  setViewTitle={title =>
+                  setViewTitle={(title) =>
                     this.props.setViewTitle &&
                     this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
                   }
@@ -467,9 +467,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                                 appid: this.state.appid,
                                 error: this.state.error,
                                 loginspeed: this.state.loginspeed,
-                                label: "Account expired"
-                              }
-                            }
+                                label: "Account expired",
+                              },
+                            },
                           });
                         } catch (err) {
                           console.error(err);
@@ -493,9 +493,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                                 appid: this.state.appid,
                                 error: this.state.error,
                                 loginspeed: this.state.loginspeed,
-                                label: "Wrong credentials"
-                              }
-                            }
+                                label: "Wrong credentials",
+                              },
+                            },
                           });
                         } catch (err) {
                           console.error(err);
@@ -519,9 +519,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                                 appid: this.state.appid,
                                 error: this.state.error,
                                 loginspeed: this.state.loginspeed,
-                                label: "The login actually worked"
-                              }
-                            }
+                                label: "The login actually worked",
+                              },
+                            },
                           });
                         } catch (err) {
                           console.error(err);
@@ -545,9 +545,9 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                                 appid: this.state.appid,
                                 error: this.state.error,
                                 loginspeed: this.state.loginspeed,
-                                label: "Still on the LoginPage"
-                              }
-                            }
+                                label: "Still on the LoginPage",
+                              },
+                            },
                           });
                         } catch (err) {
                           console.error(err);
