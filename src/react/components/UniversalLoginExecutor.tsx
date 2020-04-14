@@ -41,26 +41,7 @@ interface State {
   solve401: object | null;
 }
 
-const initialLoginState = {
-  emailEntered: false,
-  passwordEntered: false,
-  domainEntered: false,
-  domainNeeded: !!this.props.domain,
-  unloaded: true,
-  tries: 0,
-  recaptcha: false,
-  emailEnteredEnd: false,
-  passwordEnteredEnd: false,
-  domainEnteredEnd: false,
-  step: 0,
-};
-
 class UniversalLoginExecutor extends React.Component<Props, State> {
-  state = {
-    running: false,
-    solve401: null,
-  };
-
   static defaultProps = {
     speed: 10,
     partition: "universalLogin",
@@ -70,7 +51,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     interactionHappenedCallback: () => null,
   };
 
-  loginState = initialLoginState;
+  state = {
+    running: false,
+    solve401: null,
+  };
+
+  loginState = this.initLoginState();
 
   mounted = 0;
   isUnmounted = false;
@@ -90,12 +76,28 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
   screenshotDelay = 500;
 
+  initLoginState() {
+    return {
+      emailEntered: false,
+      passwordEntered: false,
+      domainEntered: false,
+      domainNeeded: !!this.props.domain,
+      unloaded: true,
+      tries: 0,
+      recaptcha: false,
+      emailEnteredEnd: false,
+      passwordEnteredEnd: false,
+      domainEnteredEnd: false,
+      step: 0,
+    };
+  }
+
   reset() {
     if (this.props.deleteCookies) {
       session.fromPartition(this.props.partition).clearStorageData();
     }
 
-    this.loginState = initialLoginState;
+    this.loginState = this.initLoginState();
     this.clearTimeout();
 
     if (this.props.timeout) {
@@ -158,14 +160,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     });
 
     const state = this.state;
-
     Object.keys(this.state).forEach(function (key) {
       if (state[key] == nextState[key] || typeof state[key] == "function") {
       } else {
         update = true;
       }
     });
-
     return update;
   }
 
