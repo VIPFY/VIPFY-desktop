@@ -3,7 +3,7 @@ import {
   decryptPrivateKey,
   decryptLicence,
   encryptPrivateKey,
-  generateNewKeypair
+  generateNewKeypair,
 } from "./common/crypto";
 import { Buffer } from "buffer";
 export const typeDefs = gql`
@@ -44,8 +44,9 @@ export const resolvers = {
             }
           `,
           variables: { id: key.id },
-          fetchPolicy: forceFetch ? "network-only" : "cache-first"
+          fetchPolicy: forceFetch ? "network-only" : "cache-first",
         });
+
         if (!d.data || !d.data.fetchKey == null) {
           throw new Error(d.error);
         }
@@ -85,7 +86,7 @@ export const resolvers = {
                 }
               `,
               variables: { id: encryptedby.id },
-              fetchPolicy: forceFetch ? "network-only" : "cache-first"
+              fetchPolicy: forceFetch ? "network-only" : "cache-first",
             });
             if (!d.data || !d.data.fetchKey == null) {
               throw new Error(d.error);
@@ -104,7 +105,7 @@ export const resolvers = {
         }
         throw new Error("unable to decrypt key");
       }
-    }
+    },
   },
-  Query: {}
+  Query: {},
 };

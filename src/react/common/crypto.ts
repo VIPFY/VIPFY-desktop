@@ -19,7 +19,7 @@ export async function generatePersonalKeypair(
   return {
     privatekey: encPrivateKey.toString("hex"),
     publickey: publicKey.toString("hex"),
-    encryptedby: null
+    encryptedby: null,
   };
 }
 
@@ -49,7 +49,7 @@ export async function generateAdminKeypair(
   return {
     privatekey: encPrivateKey.toString("hex"),
     publickey: publicKey.toString("hex"),
-    encryptedby: encryptingPublicKey.toString("hex")
+    encryptedby: encryptingPublicKey.toString("hex"),
   };
 }
 
@@ -78,7 +78,7 @@ export async function hashPassword(
       }
     `,
     variables: { email },
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
   });
   console.log(pwParams);
   if (salt) {

@@ -23,10 +23,11 @@ import HeaderNotificationProvider from "./components/notifications/headerNotific
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
 import { hashPassword } from "./common/crypto";
 import { remote } from "electron";
-const { session, BrowserWindow } = remote;
+const { session } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
+import { WorkAround } from "./interfaces";
 
 const END_IMPERSONATION = gql`
   mutation onEndImpersonation($token: String!) {
@@ -81,7 +82,7 @@ const INITIAL_POPUP = {
   body: () => <div>No content</div>,
   props: {},
   type: "",
-  info: ""
+  info: "",
 };
 
 const INITIAL_STATE = {
@@ -94,7 +95,7 @@ const INITIAL_STATE = {
   reshow: null,
   twofactor: null,
   unitid: null,
-  usedLicenceIDs: []
+  usedLicenceIDs: [],
 };
 
 const SAVE_COOKIES = gql`
@@ -127,7 +128,7 @@ class App extends React.Component<AppProps, AppState> {
     await this.logMeOut();
   };
 
-  redeemSetupToken = async refetch => {
+  redeemSetupToken = async (refetch) => {
     try {
       const store = new Store();
       if (!store.has("setupkey")) {
@@ -136,7 +137,7 @@ class App extends React.Component<AppProps, AppState> {
       const setuptoken = store.get("setupkey");
       const res = await this.props.client.mutate({
         mutation: REDEEM_SETUPTOKEN,
-        variables: { setuptoken }
+        variables: { setuptoken },
       });
       const { token } = res.data.redeemSetupToken;
       localStorage.setItem("token", token);
@@ -159,10 +160,10 @@ class App extends React.Component<AppProps, AppState> {
 
   closePopup = () => this.setState({ popup: INITIAL_POPUP });
 
-  addUsedLicenceID = licenceID => {
-    this.setState(oldstate => {
+  addUsedLicenceID = (licenceID) => {
+    this.setState((oldstate) => {
       const newUsedLicenceIDs = oldstate.usedLicenceIDs;
-      if (newUsedLicenceIDs.findIndex(l => l == licenceID) == -1) {
+      if (newUsedLicenceIDs.findIndex((l) => l == licenceID) == -1) {
         newUsedLicenceIDs.push(licenceID);
         return { ...oldstate, usedLicenceIDs: newUsedLicenceIDs };
       } else {
@@ -178,7 +179,7 @@ class App extends React.Component<AppProps, AppState> {
         let token = null;
         try {
           const res = await this.props.endImpersonation({
-            variables: { token: impersonated }
+            variables: { token: impersonated },
           });
           token = res.endImpersonation;
         } catch (err) {
@@ -202,7 +203,7 @@ class App extends React.Component<AppProps, AppState> {
 
       if (this.state.usedLicenceIDs.length > 0) {
         await Promise.all(
-          this.state.usedLicenceIDs.map(licenceID =>
+          this.state.usedLicenceIDs.map((licenceID) =>
             session.fromPartition(`service-${licenceID}`).clearStorageData()
           )
         );
@@ -216,11 +217,11 @@ class App extends React.Component<AppProps, AppState> {
         const cookies = [];
 
         await Promise.all(
-          this.state.usedLicenceIDs.map(async licenceID => {
+          this.state.usedLicenceIDs.map(async (licenceID) => {
             const appcookies = await session.fromPartition(`service-${licenceID}`).cookies.get({});
             cookies.push({
               key: licenceID,
-              cookies: appcookies
+              cookies: appcookies,
             });
             return session.fromPartition(`service-${licenceID}`).clearStorageData();
           })
@@ -232,9 +233,9 @@ class App extends React.Component<AppProps, AppState> {
                 await getMyUnitId(this.props.client),
                 JSON.stringify(cookies),
                 this.props.client
-              )
-            ]
-          }
+              ),
+            ],
+          },
         });
       }
       try {
@@ -259,7 +260,7 @@ class App extends React.Component<AppProps, AppState> {
       let encryptionkey1: Buffer | null = null;
       ({ loginkey, encryptionkey1 } = await hashPassword(this.props.client, email, password));
       const res = await this.props.signIn({
-        variables: { email, passkey: loginkey.toString("hex") }
+        variables: { email, passkey: loginkey.toString("hex") },
       });
       const { token, twofactor, unitid, config } = res.data.signIn;
 
@@ -267,13 +268,14 @@ class App extends React.Component<AppProps, AppState> {
         await this.props.client.query({ query: me });
         try {
           const configcookies = await decryptLicenceKey(this.props.client, {
-            key: { encrypted: config.cookies }
+            key: { encrypted: config.cookies },
           });
+          console.log("FIRE: logMeIn -> configcookies", configcookies);
 
           const cookiePromises = [];
-          configcookies.forEach(c => {
+          configcookies.forEach((c) => {
             this.addUsedLicenceID(c.key);
-            c.cookies.forEach(async e => {
+            c.cookies.forEach(async (e) => {
               const scheme = e.secure ? "https" : "http";
               const host = e.domain[0] === "." ? e.domain.substr(1) : e.domain;
               const url = scheme + "://" + host;
@@ -319,7 +321,7 @@ class App extends React.Component<AppProps, AppState> {
   renderComponents = () => {
     if (localStorage.getItem("token")) {
       return (
-        <Query query={me} fetchPolicy="network-only">
+        <Query<WorkAround, WorkAround> query={me} fetchPolicy="network-only">
           {({ data, loading, error, refetch }) => {
             if (loading) {
               return <LoadingDiv />;
@@ -354,7 +356,7 @@ class App extends React.Component<AppProps, AppState> {
             if (!impersonateToken) {
               if (store.has("accounts")) {
                 machineuserarray = store.get("accounts");
-                const i = machineuserarray.findIndex(u => u.email == data.me.emails[0].email);
+                const i = machineuserarray.findIndex((u) => u.email == data.me.emails[0].email);
                 if (i != -1) {
                   machineuserarray.splice(i, 1);
                 }
@@ -363,20 +365,20 @@ class App extends React.Component<AppProps, AppState> {
                 email: data.me.emails[0].email,
                 name: data.me.firstname,
                 fullname: `${data.me.firstname} ${data.me.lastname}`,
-                profilepicture: data.me.profilepicture
+                profilepicture: data.me.profilepicture,
               });
               store.set("accounts", machineuserarray);
             }
 
             return (
               <HeaderNotificationContext.Consumer>
-                {context => {
+                {(context) => {
                   return (
                     <PostLogin
                       sidebarloaded={this.sidebarloaded}
                       setName={this.setName}
                       logMeOut={this.logMeOut}
-                      showPopup={data => this.renderPopup(data)}
+                      showPopup={(data) => this.renderPopup(data)}
                       moveTo={this.moveTo}
                       {...data.me}
                       employees={data.me.company.employees}
@@ -418,9 +420,9 @@ class App extends React.Component<AppProps, AppState> {
 
   sidebarloaded = () => this.setState({ sidebarloaded: true });
 
-  setrenderElements = references => this.setState({ renderElements: references });
+  setrenderElements = (references) => this.setState({ renderElements: references });
 
-  setreshowTutorial = section => {
+  setreshowTutorial = (section) => {
     switch (section) {
       case "dashboard":
         this.moveTo("dashboard");
@@ -431,15 +433,15 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({ reshow: section });
   };
 
-  addRenderElement = reference => {
+  addRenderElement = (reference) => {
     const oldreferences = [...this.references];
-    let index = this.references.findIndex(e => e.key == reference.key);
+    let index = this.references.findIndex((e) => e.key == reference.key);
     let oldref;
     if (index !== -1) {
       oldref = this.references.splice(index, 1);
     }
 
-    if (!this.references.find(e => e.key === reference.key)) {
+    if (!this.references.find((e) => e.key === reference.key)) {
       if (oldref && oldref.listener && oldref.action) {
         reference.element.addEventListener(oldref.listener, oldref.action);
       }
@@ -451,7 +453,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   addRenderAction = ({ key, listener, action }) => {
-    let index = this.references.findIndex(e => e.key == key);
+    let index = this.references.findIndex((e) => e.key == key);
     if (index !== -1 && this.references[index].listener != listener) {
       const oldref = this.references.splice(index, 1);
       if (oldref.element) {
@@ -470,12 +472,12 @@ class App extends React.Component<AppProps, AppState> {
           showPopup: (data: PopUp) => this.renderPopup(data),
           placeid,
           logOut: this.logMeOut,
-          renderTutorial: e => this.renderTutorial(e),
-          setrenderElements: e => this.setrenderElements(e),
-          addRenderElement: e => this.addRenderElement(e),
-          addRenderAction: e => this.addRenderAction(e),
+          renderTutorial: (e) => this.renderTutorial(e),
+          setrenderElements: (e) => this.setrenderElements(e),
+          addRenderElement: (e) => this.addRenderElement(e),
+          addRenderAction: (e) => this.addRenderAction(e),
           setreshowTutorial: this.setreshowTutorial,
-          references: this.references
+          references: this.references,
         }}
         className="full-size">
         <HeaderNotificationProvider>

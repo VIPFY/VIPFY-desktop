@@ -4,27 +4,22 @@ import gql from "graphql-tag";
 import { decode } from "jsonwebtoken";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
-import { ErrorComp } from "../../common/functions";
-import { decryptPrivateKey, decryptMessage } from "../../common/crypto";
+import { ErrorComp, base64ToArrayBuffer } from "../../common/functions";
+import { decryptMessage } from "../../common/crypto";
 import LoadingDiv from "../LoadingDiv";
 import { WorkAround } from "../../interfaces";
+import { FETCH_RECOVERY_CHALLENGE } from "../../queries/auth";
 
 const RECOVER_PASSWORD = gql`
   mutation onRecoverPassword($token: String!, $secret: String!, $email: String!) {
     recoverPassword(token: $token, secret: $secret, email: $email) {
-      ok
+      currentKey {
+        id
+        publickey
+        privatekey
+      }
       token
       config
-    }
-  }
-`;
-
-const FETCH_RECOVERY_CHALLENGE = gql`
-  query onFetchRecoveryChallenge($email: String!) {
-    fetchRecoveryChallenge(email: $email) {
-      encryptedKey
-      publicKey
-      token
     }
   }
 `;
@@ -32,30 +27,19 @@ const FETCH_RECOVERY_CHALLENGE = gql`
 interface Props {
   backFunction: Function;
   email: string;
-  setToken: Function;
+  setResponseData: Function;
   continueFunction: Function;
 }
 
 export default (props: Props) => {
   const MAX_LENGTH = 4;
-  const fields = [...Array(12).keys()];
+  const fields = [...Array(11).keys()];
   const [localError, setLocalError] = React.useState(null);
-  const [decSecret, setSecret] = React.useState(null);
+  const [fullCode, setCode] = React.useState(null);
   const { data, loading, error: queryError } = useQuery(FETCH_RECOVERY_CHALLENGE, {
     variables: { email: props.email },
     fetchPolicy: "network-only",
   });
-
-  const base64ToArrayBuffer = (base64) => {
-    const binaryString = window.atob(base64);
-
-    const bytes = new Uint8Array(binaryString.length);
-    for (var i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-
-    return bytes.buffer;
-  };
 
   const onKeyUp = (e, number) => {
     if (e.keyCode == 17 || e.key == "Control") {
@@ -133,45 +117,13 @@ export default (props: Props) => {
 
         <div className="holder-right">
           <h1>Recover your account</h1>
-
           <Mutation<WorkAround, WorkAround>
             mutation={RECOVER_PASSWORD}
-            onCompleted={async ({ recoverPassword: { token } }) => {
-              props.setToken({ token, email: props.email, secret: decSecret });
+            onCompleted={async ({ recoverPassword }) => {
+              delete recoverPassword.__typename;
+              props.setResponseData({ ...recoverPassword, email: props.email, code: fullCode });
+              setCode(null);
               props.continueFunction();
-              // if (config.cookies) {
-              //   await props.client.query({ query: me });
-              //   try {
-              //     const configcookies = await decryptLicenceKey(this.props.client, {
-              //       key: { encrypted: config.cookies }
-              //     });
-              //     const cookiePromises = [];
-              //     configcookies.forEach(c => {
-              //       this.addUsedLicenceID(c.key);
-              //       c.cookies.forEach(async e => {
-              //         const scheme = e.secure ? "https" : "http";
-              //         const host = e.domain[0] === "." ? e.domain.substr(1) : e.domain;
-              //         const url = scheme + "://" + host;
-              //         e.url = url;
-              //         try {
-              //           await session
-              //             .fromPartition(`service-${c.key}`, { cache: true })
-              //             .cookies.set(e);
-              //         } catch (err) {
-              //           console.log("ERRPOR", err, e);
-              //         }
-              //       });
-              //     });
-              //     await Promise.all(cookiePromises);
-              //     localStorage.setItem("twoFAToken", token);
-              //     localStorage.setItem(
-              //       "key1",
-              //       encryptionkey1 ? encryptionkey1.toString("hex") : ""
-              //     );
-              //   } catch (err) {
-              //     console.debug("Error parsing cookies", err);
-              //   }
-              // }
             }}>
             {(mutate, { loading: l2, error: e2 }) => {
               const handleSubmit = async (e) => {
@@ -183,26 +135,21 @@ export default (props: Props) => {
                     .map((node) => node.value)
                     .reduce((acc, cv) => acc + cv, "");
 
-                  const { encryptedKey, token, publicKey } = data.fetchRecoveryChallenge;
-
+                  const { token, publicKey } = data.fetchRecoveryChallenge;
                   const keyBytes = await base64ToArrayBuffer(code);
-
-                  const decryptedKey = await decryptPrivateKey(
-                    Buffer.from(encryptedKey, "hex"),
-                    Buffer.from(keyBytes.slice(0, 32))
-                  );
 
                   const { encryptedSecret } = decode(token);
 
-                  const decrypted = await decryptMessage(
+                  let secret = await decryptMessage(
                     Buffer.from(encryptedSecret, "hex"),
                     Buffer.from(publicKey, "hex"),
-                    decryptedKey
+                    Buffer.from(keyBytes)
                   );
-                  const secret = decrypted.toString();
-                  await setSecret(secret);
 
-                  mutate({ variables: { token, secret, email: props.email } });
+                  await setCode(code);
+                  mutate({ variables: { token, secret: secret.toString(), email: props.email } });
+
+                  secret = null;
                 } catch (e3) {
                   setLocalError(e3);
                 }

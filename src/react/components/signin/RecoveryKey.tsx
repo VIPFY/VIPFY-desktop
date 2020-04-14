@@ -3,19 +3,15 @@ import { remote } from "electron";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import IconButton from "../../common/IconButton";
-import {
-  generatePersonalKeypair,
-  getRandomBytes,
-  regenerateEncryptedPrivateKey
-} from "../../common/crypto";
+import { generateNewKeypair, encryptLicence } from "../../common/crypto";
 import { ErrorComp } from "../../common/functions";
 import gql from "graphql-tag";
 import { Mutation } from "react-apollo";
 import { WorkAround } from "../../interfaces";
 
 const SAVE_RECOVERY_KEY = gql`
-  mutation onSaveRecoveryKey($keyData: RecoveryKeyInput!) {
-    saveRecoveryKey(keyData: $keyData) {
+  mutation onSaveRecoveryKey($keyPair: RecoveryKeyInput!) {
+    saveRecoveryKey(keyData: $keyPair) {
       id
       recoverypublickey
       recoveryprivatekey
@@ -24,7 +20,8 @@ const SAVE_RECOVERY_KEY = gql`
 `;
 
 interface Props {
-  privateKey?: string;
+  recoveryCode?: string;
+  continueFunction?: Function;
 }
 
 const RecoveryKey = (props: Props) => {
@@ -34,24 +31,29 @@ const RecoveryKey = (props: Props) => {
   const [keyPair, setkeyPair] = React.useState(null);
 
   React.useEffect(async () => {
-    const thisWindow = await remote.getCurrentWindow();
-    setWindow(thisWindow);
+    try {
+      const thisWindow = await remote.getCurrentWindow();
+      setWindow(thisWindow);
 
-    const key = await getRandomBytes(36);
-    let base64Key = await key.toString("base64");
+      if (props.recoveryCode) {
+        setKey(props.recoveryCode);
+      } else {
+        const personalKeys = await generateNewKeypair();
 
-    if (props.privateKey) {
-      const newKeys = await regenerateEncryptedPrivateKey(
-        Buffer.from(key.slice(0, 32)),
-        Buffer.from(props.privateKey)
-      );
+        const privateKey = localStorage.getItem("key1");
+        const encryptedKey = await encryptLicence(Buffer.from(privateKey), personalKeys.publicKey);
 
-      setkeyPair(newKeys);
-    } else {
-      const personalKeys = await generatePersonalKeypair(key.slice(0, 32));
-      setkeyPair(personalKeys);
+        setkeyPair({
+          privatekey: encryptedKey.toString("hex"),
+          publickey: personalKeys.publicKey.toString("hex"),
+        });
+
+        setKey(personalKeys.privateKey.toString("base64"));
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Sorry, something went wrong. Please close and reopen the App.");
     }
-    setKey(base64Key);
   }, []);
 
   const generateReadableKey = () => {
@@ -99,7 +101,7 @@ const RecoveryKey = (props: Props) => {
                   {
                     header: "Your VIPFY Recovery Code",
                     // Without the deviceName property, the printer select menu does not show up
-                    deviceName: (printers && printers[0].name) || ""
+                    deviceName: (printers && printers[0].name) || "",
                   },
                   (_success, errorType) => {
                     if (errorType) {
@@ -121,7 +123,13 @@ const RecoveryKey = (props: Props) => {
                   label="login"
                   type="high"
                   className="continue-button"
-                  onClick={() => mutate({ variables: { keyData: keyPair } })}
+                  onClick={() => {
+                    if (props.recoveryCode) {
+                      props.continueFunction();
+                    } else {
+                      mutate({ variables: { keyPair } });
+                    }
+                  }}
                 />
               </React.Fragment>
             )}

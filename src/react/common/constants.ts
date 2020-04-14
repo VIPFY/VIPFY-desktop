@@ -5,11 +5,12 @@ export const PW_MIN_LENGTH = 10;
 export const preAppImageUrl = "https://appimages.vipfy.store/140/140/fit/";
 export const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 export const vipfyAdmins = [
-  "f876804e-efd0-48b4-a5b2-807cbf66315f",
-  "98cdb502-51fc-4c0d-a5c7-ee274b6bb7b5",
-  "96d65748-7d36-459a-97d0-7f52a7a4bbf0",
-  "91bd25cb-65cc-4dca-b0c8-285dbf5919f3"
+  "f876804e-efd0-48b4-a5b2-807cbf66315f", // Pascal
+  "98cdb502-51fc-4c0d-a5c7-ee274b6bb7b5", // Markus
+  "96d65748-7d36-459a-97d0-7f52a7a4bbf0", // Nils
+  "91bd25cb-65cc-4dca-b0c8-285dbf5919f3", // Jannis
 ];
+
 export const countries = [
   { value: "AT", name: "Austria", isEU: true },
   { value: "BE", name: "Belgium", isEU: true },
@@ -41,7 +42,7 @@ export const countries = [
   { value: "SE", name: "Sweden", isEU: true },
   { value: "GB", name: "United Kingdom", isEU: true },
   { value: "US", name: "United States of America", isEU: false },
-  { value: "OT", name: "Other", isEU: false }
+  { value: "OT", name: "Other", isEU: false },
 ];
 
 export const industries = [
@@ -64,7 +65,7 @@ export const industries = [
   { value: "71", name: "Arts, Entertainment, and Recreation" },
   { value: "72", name: "Accommodation and Food Services" },
   { value: "81", name: "Other Services (except Public Administration)" },
-  { value: "92", name: "Public Administration" }
+  { value: "92", name: "Public Administration" },
 ];
 
 export const subIndustries = {
@@ -73,17 +74,17 @@ export const subIndustries = {
     { value: "112", title: "Animal Production and Aquaculture" },
     { value: "113", title: "Forestry and Logging" },
     { value: "114", title: "Fishing, Hunting and Trapping" },
-    { value: "115", title: "Support Activities for Agriculture and Forestry" }
+    { value: "115", title: "Support Activities for Agriculture and Forestry" },
   ],
   "21": [
     { value: "211", title: "Oil and Gas Extraction" },
     { value: "212", title: "Mining (except Oil and Gas)" },
-    { value: "213", title: "Support Activities for Mining" }
+    { value: "213", title: "Support Activities for Mining" },
   ],
   "23": [
     { value: "236", title: "Construction of Buildings" },
     { value: "237", title: "Heavy and Civil Engineering Construction" },
-    { value: "238", title: "Specialty Trade Contractors" }
+    { value: "238", title: "Specialty Trade Contractors" },
   ],
   "31-33": [
     { value: "311", title: "Food Manufacturing" },
@@ -106,12 +107,12 @@ export const subIndustries = {
     { value: "335", title: "Electrical Equipment, Appliance, and Component Manufacturing" },
     { value: "336", title: "Transportation Equipment Manufacturing" },
     { value: "337", title: "Furniture and Related Product Manufacturing" },
-    { value: "339", title: "Miscellaneous Manufacturing" }
+    { value: "339", title: "Miscellaneous Manufacturing" },
   ],
   "42": [
     { value: "423", title: "Merchant Wholesalers, Durable Goods" },
     { value: "424", title: "Merchant Wholesalers, Nondurable Goods" },
-    { value: "425", title: "Wholesale Electronic Markets and Agents and Brokers" }
+    { value: "425", title: "Wholesale Electronic Markets and Agents and Brokers" },
   ],
   "44-45": [
     { value: "441", title: "Motor Vehicle and Parts Dealers" },
@@ -125,7 +126,7 @@ export const subIndustries = {
     { value: "451", title: "Sporting Goods, Hobby, Musical Instrument, and Book Stores" },
     { value: "452", title: "General Merchandise Stores" },
     { value: "453", title: "Miscellaneous Store Retailers" },
-    { value: "454", title: "Nonstore Retailers" }
+    { value: "454", title: "Nonstore Retailers" },
   ],
   "48-49": [
     { value: "481", title: "Air Transportation" },
@@ -138,7 +139,7 @@ export const subIndustries = {
     { value: "488", title: "Support Activities for Transportation" },
     { value: "491", title: "Postal Service" },
     { value: "492", title: "Couriers and Messengers" },
-    { value: "493", title: "Warehousing and Storage" }
+    { value: "493", title: "Warehousing and Storage" },
   ],
   "51": [
     { value: "511", title: "Publishing Industries (except Internet)" },
@@ -146,7 +147,7 @@ export const subIndustries = {
     { value: "515", title: "Broadcasting (except Internet)" },
     { value: "517", title: "Telecommunications" },
     { value: "518", title: "Data Processing, Hosting, and Related Services" },
-    { value: "519", title: "Other Information Services" }
+    { value: "519", title: "Other Information Services" },
   ],
   "52": [
     { value: "521", title: "Monetary Authorities-Central Bank" },
@@ -154,46 +155,46 @@ export const subIndustries = {
     {
       value: "523",
       title:
-        "Securities, Commodity Contracts, and Other Financial Investments and Related Activities"
+        "Securities, Commodity Contracts, and Other Financial Investments and Related Activities",
     },
     { value: "524", title: "Insurance Carriers and Related Activities" },
-    { value: "525", title: "Funds, Trusts, and Other Financial Vehicles" }
+    { value: "525", title: "Funds, Trusts, and Other Financial Vehicles" },
   ],
   "53": [
     { value: "531", title: "Real Estate" },
     { value: "532", title: "Rental and Leasing Services" },
     {
       value: "533",
-      title: "Lessors of Nonfinancial Intangible Assets (except Copyrighted Works)"
-    }
+      title: "Lessors of Nonfinancial Intangible Assets (except Copyrighted Works)",
+    },
   ],
   "56": [
     { value: "561", title: "Administrative and Support Services" },
-    { value: "562", title: "Waste Management and Remediation Services" }
+    { value: "562", title: "Waste Management and Remediation Services" },
   ],
   "62": [
     { value: "621", title: "Ambulatory Health Care Services" },
     { value: "622", title: "Hospitals" },
     { value: "623", title: "Nursing and Residential Care Facilities" },
-    { value: "624", title: "Social Assistance" }
+    { value: "624", title: "Social Assistance" },
   ],
   "71": [
     { value: "711", title: "Performing Arts, Spectator Sports, and Related Industries" },
     { value: "712", title: "Museums, Historical Sites, and Similar Institutions" },
-    { value: "713", title: "Amusement, Gambling, and Recreation Industries" }
+    { value: "713", title: "Amusement, Gambling, and Recreation Industries" },
   ],
   "72": [
     { value: "721", title: "Accommodation" },
-    { value: "722", title: "Food Services and Drinking Places" }
+    { value: "722", title: "Food Services and Drinking Places" },
   ],
   "81": [
     { value: "811", title: "Repair and Maintenance " },
     { value: "812", title: "Personal and Laundry Services" },
     {
       value: "813",
-      title: "Religious, Grantmaking, Civic, Professional, and SimilarOrganizations"
+      title: "Religious, Grantmaking, Civic, Professional, and SimilarOrganizations",
     },
-    { value: "814", title: "Private Households" }
+    { value: "814", title: "Private Households" },
   ],
   "92": [
     { value: "921", title: "Executive, Legislative, and Other General Government Support" },
@@ -202,12 +203,12 @@ export const subIndustries = {
     { value: "924", title: "Administration of Environmental Quality Programs" },
     {
       value: "925",
-      title: "Administration of Housing Programs, Urban Planning, and Community Development"
+      title: "Administration of Housing Programs, Urban Planning, and Community Development",
     },
     { value: "926", title: "Administration of Economic Programs" },
     { value: "927", title: "Space Research and Technology" },
-    { value: "928", title: "National Security and International Affairs" }
-  ]
+    { value: "928", title: "National Security and International Affairs" },
+  ],
 };
 
 export const addressFields = [
@@ -217,14 +218,14 @@ export const addressFields = [
     icon: "road",
     label: "Street",
     placeholder: "Your street",
-    required: true
+    required: true,
   },
   {
     type: "name",
     name: "zip",
     icon: "sort-numeric-up",
     label: "Zip",
-    placeholder: "Your zip code"
+    placeholder: "Your zip code",
   },
   {
     type: "name",
@@ -232,7 +233,7 @@ export const addressFields = [
     icon: "building",
     label: "City",
     placeholder: "Your city",
-    required: true
+    required: true,
   },
   {
     type: "select",
@@ -240,15 +241,15 @@ export const addressFields = [
     icon: "globe",
     label: "Your country",
     options: countries,
-    required: true
+    required: true,
   },
   {
     type: "name",
     name: "description",
     icon: "archive",
     label: "Description",
-    placeholder: "A short description"
-  }
+    placeholder: "A short description",
+  },
   // {
   //   type: "number",
   //   name: "priority",

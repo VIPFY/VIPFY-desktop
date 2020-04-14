@@ -2,11 +2,11 @@ import * as React from "react";
 import Login from "../components/signin/login";
 import ChangeAccount from "../components/dataForms/ChangeAccount";
 import AddMachineUser from "../components/signin/addMachineUser";
-
 import Store from "electron-store";
 import RegisterCompany from "../components/signin/companyRegister";
 import PasswordRecovery from "../components/signin/PasswordRecovery";
 import NewPassword from "../components/signin/NewPassword";
+import RecoveryKey from "../components/signin/RecoveryKey";
 
 interface Props {
   login: Function;
@@ -17,7 +17,7 @@ interface Props {
 
 export default (props: Props) => {
   const [progress, setProgress] = React.useState("login");
-  const [tokenData, setToken] = React.useState(null);
+  const [responseData, setResponseData] = React.useState(null);
   const [email, setEmail] = React.useState("");
 
   const changeProgress = (s) => {
@@ -90,9 +90,9 @@ export default (props: Props) => {
     case "passwordRecovery":
       return (
         <PasswordRecovery
-          continueFunction={() => changeProgress("setNewPassword")}
-          setToken={(data) => setToken(data)}
+          setResponseData={(data) => setResponseData(data)}
           email={email}
+          continueFunction={() => changeProgress("setNewPassword")}
           backFunction={() => changeProgress("login")}
         />
       );
@@ -100,7 +100,16 @@ export default (props: Props) => {
     case "setNewPassword":
       return (
         <NewPassword
-          tokenData={tokenData}
+          responseData={responseData}
+          setResponseData={(data) => setResponseData(data)}
+          continueFunction={() => changeProgress("setNewPassword")}
+        />
+      );
+
+    case "newRecoveryCode":
+      return (
+        <RecoveryKey
+          recoveryCode={responseData}
           continueFunction={() => props.moveTo("/area/dashboard")}
         />
       );

@@ -36,3 +36,13 @@ export const me = gql`
     }
   }
 `;
+
+export const FETCH_RECOVERY_CHALLENGE = gql`
+  query onFetchRecoveryChallenge($email: String!) {
+    fetchRecoveryChallenge(email: $email) {
+      encryptedKey
+      publicKey
+      token
+    }
+  }
+`;
