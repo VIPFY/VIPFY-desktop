@@ -298,135 +298,161 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         .getWebContents()
         .executeJavaScript(
           `
-        (function() {
-          if (!String.prototype.includesAny){
-          Object.defineProperty(String.prototype, "includesAny", {
-            value: function(searches) {
-              for (const search of searches) {
-                if (this.indexOf(search) !== -1) {
-                  return true;
-                }
-              }
-              return false;
+          (function () {
+            if (!String.prototype.includesAny) {
+              Object.defineProperty(String.prototype, "includesAny", {
+                value: function (searches) {
+                  for (const search of searches) {
+                    if (this.indexOf(search) !== -1) {
+                      return true;
+                    }
+                  }
+                 
+                  return false;
+                },
+              });
             }
-          });
-        }
-          if (!String.prototype.includesAnyRegExp){
-          Object.defineProperty(String.prototype, "includesAnyRegExp", {
-            value: function(searches) {
-              for (const search of searches) {
-                if (search.test(this)) {
-                  return true;
-                }
-              }
-              return false;
-            }
-          });
-        }
-
-        function isEqualOrChild(child, parent) {
-          if (child == parent) return true;
-          if (child === null || parent === null) return false;
-          while (child.parentElement !== null) {
-            child = child.parentElement;
-            if (child == parent) return true;
-          }
-          return false;
-        }
-        
-        function getMidPoint(e, doc) {
-          var rect = e.getBoundingClientRect();
-          const style = window.getComputedStyle(e);
-          var dx = 0;
-          var dy = 0;
-          if (doc) {
-            var iframe = document.querySelector(args.document);
-            var drect = iframe.getBoundingClientRect();
-            dx = drect.x;
-            dy = drect.y;
-          }
-          return {
-            x:
-              dx +
-              rect.x +
-              parseInt(style.paddingLeft) +
-              (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
-            y:
-              dy +
-              rect.y +
-              parseInt(style.paddingTop) +
-              (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
-          }; // bias to the left
-        }
-        
-        function isHidden(elem) {
-          if (!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length)) return true;
-          const style = window.getComputedStyle(elem);
-          if (style.display === "none" || style.opacity === 0 || style.visibility === "hidden") return true;
-          const pos = getMidPoint(elem);
-          const e = document.elementFromPoint(pos.x, pos.y);
-          return !isEqualOrChild(e, elem);
-        }
-
-
-          let attributes = [
-            "name",
-            "id",
-            "aria-label",
-            "aria-roledescription",
-            "aria-describedby",
-            "placeholder",
-            "ng-model",
-            "data-ng-model",
-            "data-callback",
-            "data-name",
-            "class",
-            "value",
-            "alt",
-            "data-testid",
-            "data-test-id",
-            "href",
-            "data-event-click-target",
-            "data-qa"
-          ];
           
-          let filterDom = (includesAny, excludesAll) => {
-            includesAny = includesAny.map(i => new RegExp(i));
-            excludesAll = excludesAll.map(i => new RegExp(i));
-            return function(element) {
-              if (!element.hasAttributes()) {
-                return false;
+            if (!String.prototype.includesAnyRegExp) {
+              Object.defineProperty(String.prototype, "includesAnyRegExp", {
+                value: function (searches) {
+                  for (const search of searches) {
+                    if (search.test(this)) {
+                      return true;
+                    }
+                  }
+             
+                  return false;
+                },
+              });
+            }
+          
+            function isEqualOrChild(child, parent) {
+              if (child == parent) return true;
+              if (child === null || parent === null) return false;
+          
+              while (child.parentElement !== null) {
+                child = child.parentElement;
+             
+                if (child == parent) {
+                  return true;
+                }
               }
-              /*if (element.offsetHeight == 0 || element.offsetWidth == 0) {
-                return false; //don't select elements that aren't visible
-              }*/
-              if (isHidden(element)){
-                return false;
+          
+              return false;
+            }
+          
+            function getMidPoint(e, doc) {
+              var rect = e.getBoundingClientRect();
+              const style = window.getComputedStyle(e);
+              var dx = 0;
+              var dy = 0;
+          
+              if (doc) {
+                var iframe = document.querySelector(args.document);
+                var drect = iframe.getBoundingClientRect();
+                dx = drect.x;
+                dy = drect.y;
               }
-              for (const attribute of attributes) {
-                const attr = element.attributes.getNamedItem(attribute);
-                if (attr == null) continue;
-                const val = attr.value.toLowerCase();
-                if (val.includesAnyRegExp(excludesAll)) {
+          
+              return {
+                x:
+                  dx +
+                  rect.x +
+                  parseInt(style.paddingLeft) +
+                  (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
+                y:
+                  dy +
+                  rect.y +
+                  parseInt(style.paddingTop) +
+                  (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2,
+              }; // bias to the left
+            }
+          
+            function isHidden(elem) {
+              if (!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length)) {
+                return true;
+              }
+          
+              const style = window.getComputedStyle(elem);
+          
+              if (style.display === "none" || style.opacity === 0 || style.visibility === "hidden") {
+                return true;
+              }
+          
+              const pos = getMidPoint(elem);
+              const e = document.elementFromPoint(pos.x, pos.y);
+          
+              return !isEqualOrChild(e, elem);
+            }
+          
+            let attributes = [
+              "name",
+              "id",
+              "aria-label",
+              "aria-roledescription",
+              "aria-describedby",
+              "placeholder",
+              "ng-model",
+              "data-ng-model",
+              "data-callback",
+              "data-name",
+              "class",
+              "value",
+              "alt",
+              "data-testid",
+              "data-test-id",
+              "href",
+              "data-event-click-target",
+              "data-qa",
+            ];
+          
+            let filterDom = (includesAny, excludesAll) => {
+              includesAny = includesAny.map((i) => new RegExp(i));
+              excludesAll = excludesAll.map((i) => new RegExp(i));
+
+              return function (element) {
+                if (!element.hasAttributes() || isHidden(element)) {
                   return false;
                 }
-              }
-              for (const attribute of attributes) {
-                const attr = element.attributes.getNamedItem(attribute);
-                if (attr === null) continue;
-                const val = attr.value.toLowerCase();
-                if (val.includesAnyRegExp(includesAny)) {
-                  return true;
+               
+                for (const attribute of attributes) {
+                  const attr = element.attributes.getNamedItem(attribute);
+                 
+                  if (attr == null) {
+                    continue;
+                  }
+
+                  const val = attr.value.toLowerCase();
+                  
+                  if (val.includesAnyRegExp(excludesAll)) {
+                    return false;
+                  }
                 }
-              }
-              if (includesAny.length == 0) return true;
-              return false;
+
+                for (const attribute of attributes) {
+                  const attr = element.attributes.getNamedItem(attribute);
+                
+                  if (attr === null) {
+                    continue;
+                  }
+                
+                  const val = attr.value.toLowerCase();
+                
+                  if (val.includesAnyRegExp(includesAny)) {
+                    return true;
+                  }
+                }
+
+                return includesAny.length == 0;
+              };
             };
-          }
+
           let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account", "cmds-header__avatar-menu qa-member-menu-trigger", "js_signout" ${
             this.props.individualShow ? `, "${this.props.individualShow}"` : ""
           }],[${this.props.individualNotShow ? `"${this.props.individualNotShow}"` : ""}]));
-          return loginarray.length > 0
+          
+          return loginarray.length > 0;
         })();
         `
         )
@@ -444,132 +470,161 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         .getWebContents()
         .executeJavaScript(
           `
-        (function() {
-
-          if (!String.prototype.includesAny){
-          Object.defineProperty(String.prototype, "includesAny", {
-            value: function(searches) {
-              for (const search of searches) {
-                if (this.indexOf(search) !== -1) {
-                  return true;
-                }
-              }
-              return false;
+          (function () {
+            if (!String.prototype.includesAny) {
+              Object.defineProperty(String.prototype, "includesAny", {
+                value: function (searches) {
+                  for (const search of searches) {
+                    if (this.indexOf(search) !== -1) {
+                      return true;
+                    }
+                  }
+                 
+                  return false;
+                },
+              });
             }
-          });
-        }
-        if (!String.prototype.includesAnyRegExp){
-          Object.defineProperty(String.prototype, "includesAnyRegExp", {
-            value: function(searches) {
-              for (const search of searches) {
-                if (search.test(this)) {
-                  return true;
-                }
-              }
-              return false;
-            }
-          });
-        }
-
-        function isEqualOrChild(child, parent) {
-          if (child == parent) return true;
-          if (child === null || parent === null) return false;
-          while (child.parentElement !== null) {
-            child = child.parentElement;
-            if (child == parent) return true;
-          }
-          return false;
-        }
-        
-        function getMidPoint(e, doc) {
-          var rect = e.getBoundingClientRect();
-          const style = window.getComputedStyle(e);
-          var dx = 0;
-          var dy = 0;
-          if (doc) {
-            var iframe = document.querySelector(args.document);
-            var drect = iframe.getBoundingClientRect();
-            dx = drect.x;
-            dy = drect.y;
-          }
-          return {
-            x:
-              dx +
-              rect.x +
-              parseInt(style.paddingLeft) +
-              (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
-            y:
-              dy +
-              rect.y +
-              parseInt(style.paddingTop) +
-              (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2
-          }; // bias to the left
-        }
-        
-        function isHidden(elem) {
-          if (!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length)) return true;
-          const style = window.getComputedStyle(elem);
-          if (style.display === "none" || style.opacity === 0 || style.visibility === "hidden") return true;
-          const pos = getMidPoint(elem);
-          const e = document.elementFromPoint(pos.x, pos.y);
-          return !isEqualOrChild(e, elem);
-        }
-
-          let attributes = [
-            "name",
-            "id",
-            "aria-label",
-            "aria-roledescription",
-            "placeholder",
-            "ng-model",
-            "data-ng-model",
-            "data-callback",
-            "data-name",
-            "class",
-            "value",
-            "alt",
-            "data-testid",
-            "data-test-id",
-            "href",
-            "data-event-click-target"
-          ];
           
-          let filterDom = (includesAny, excludesAll) => {
-            includesAny = includesAny.map(i => new RegExp(i));
-            excludesAll = excludesAll.map(i => new RegExp(i));
-            return function(element) {
-              if (!element.hasAttributes()) {
-                return false;
+            if (!String.prototype.includesAnyRegExp) {
+              Object.defineProperty(String.prototype, "includesAnyRegExp", {
+                value: function (searches) {
+                  for (const search of searches) {
+                    if (search.test(this)) {
+                      return true;
+                    }
+                  }
+                
+                  return false;
+                },
+              });
+            }
+          
+            function isEqualOrChild(child, parent) {
+              if (child == parent) return true;
+              if (child === null || parent === null) return false;
+         
+              while (child.parentElement !== null) {
+                child = child.parentElement;
+              
+                if (child == parent) {
+                  return true;
+                }
               }
-              /*if (element.offsetHeight == 0 || element.offsetWidth == 0) {
-                return false; //don't select elements that aren't visible
-              }*/
-              if (isHidden(element)){
-                return false;
+
+              return false;
+            }
+          
+            function getMidPoint(e, doc) {
+              var rect = e.getBoundingClientRect();
+              const style = window.getComputedStyle(e);
+              var dx = 0;
+              var dy = 0;
+          
+              if (doc) {
+                var iframe = document.querySelector(args.document);
+                var drect = iframe.getBoundingClientRect();
+                dx = drect.x;
+                dy = drect.y;
               }
-              for (const attribute of attributes) {
-                const attr = element.attributes.getNamedItem(attribute);
-                if (attr == null) continue;
-                const val = attr.value.toLowerCase();
-                if (val.includesAnyRegExp(excludesAll)) {
+          
+              return {
+                x:
+                  dx +
+                  rect.x +
+                  parseInt(style.paddingLeft) +
+                  (rect.width - parseInt(style.paddingLeft) - parseInt(style.paddingRight)) / 10,
+                y:
+                  dy +
+                  rect.y +
+                  parseInt(style.paddingTop) +
+                  (rect.height - parseInt(style.paddingTop) - parseInt(style.paddingBottom)) / 2,
+              }; // bias to the left
+            }
+          
+            function isHidden(elem) {
+              if (!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length)) return true;
+              
+              const style = window.getComputedStyle(elem);
+              
+              if (style.display === "none" || style.opacity === 0 || style.visibility === "hidden") {
+                return true;
+              }
+              
+              const pos = getMidPoint(elem);
+              const e = document.elementFromPoint(pos.x, pos.y);
+              
+              return !isEqualOrChild(e, elem);
+            }
+          
+            let attributes = [
+              "name",
+              "id",
+              "aria-label",
+              "aria-roledescription",
+              "placeholder",
+              "ng-model",
+              "data-ng-model",
+              "data-callback",
+              "data-name",
+              "class",
+              "value",
+              "alt",
+              "data-testid",
+              "data-test-id",
+              "href",
+              "data-event-click-target",
+            ];
+          
+            let filterDom = (includesAny, excludesAll) => {
+              includesAny = includesAny.map((i) => new RegExp(i));
+              excludesAll = excludesAll.map((i) => new RegExp(i));
+          
+              return function (element) {
+                if (!element.hasAttributes() || isHidden(element)) {
                   return false;
                 }
-              }
-              for (const attribute of attributes) {
-                const attr = element.attributes.getNamedItem(attribute);
-                if (attr === null) continue;
-                const val = attr.value.toLowerCase();
-                if (val.includesAnyRegExp(includesAny)) {
-                  return true;
+          
+                for (const attribute of attributes) {
+                  const attr = element.attributes.getNamedItem(attribute);
+                 
+                  if (attr == null) {
+                    continue;
+                  }
+
+                  const val = attr.value.toLowerCase();
+                  
+                  if (val.includesAnyRegExp(excludesAll)) {
+                    return false;
+                  }
                 }
-              }
-              if (includesAny.length == 0) return true;
-              return false;
+          
+                for (const attribute of attributes) {
+                  const attr = element.attributes.getNamedItem(attribute);
+                  
+                  if (attr === null) {
+                    continue;
+                  }
+                  
+                  const val = attr.value.toLowerCase();
+                  
+                  if (val.includesAnyRegExp(includesAny)) {
+                    return true;
+                  }
+                }
+          
+                return includesAny.length == 0;
+              };
             };
-          }
-          let errorarray = Array.from(document.querySelectorAll("*:not(:empty), .fa")).filter(filterDom(["error", "no-mail-icon", "danger", "validation-error"],["wrapper", "reset", "signup", "img__notification-error"]))
-          return errorarray.length > 0
-        })();
+          
+            let errorarray = Array.from(document.querySelectorAll("*:not(:empty), .fa")).filter(
+              filterDom(
+                ["error", "no-mail-icon", "danger", "validation-error"],
+                ["wrapper", "reset", "signup", "img__notification-error"]
+              )
+            );
+          
+            return errorarray.length > 0;
+          })();
         `
         )
         .then((e) => {
