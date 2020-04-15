@@ -13,10 +13,10 @@ interface Props {
   username: string;
   password: string;
   timeout: number | null;
-  takeScreenshot?: boolean;
+  partition: string;
   setResult: (result: LoginResult, image: string) => void;
+  takeScreenshot?: boolean;
   domain?: string;
-  partition?: string;
   progress?: (progress: number) => void;
   speed?: number;
   className?: string;
@@ -44,7 +44,6 @@ interface State {
 class UniversalLoginExecutor extends React.Component<Props, State> {
   static defaultProps = {
     speed: 10,
-    partition: "universalLogin",
     progress: () => null,
     takeScreenshot: true,
     className: "universalLoginExecutor",
