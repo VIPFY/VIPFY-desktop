@@ -55,9 +55,20 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     solve401: null,
   };
 
-  loginState = this.initLoginState();
+  loginState = {
+    emailEntered: false,
+    passwordEntered: false,
+    domainEntered: false,
+    domainNeeded: !!this.props.domain,
+    unloaded: true,
+    tries: 0,
+    recaptcha: false,
+    emailEnteredEnd: false,
+    passwordEnteredEnd: false,
+    domainEnteredEnd: false,
+    step: 0,
+  };
 
-  mounted = 0;
   isUnmounted = false;
 
   timeout = true;
@@ -75,29 +86,10 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
   screenshotDelay = 500;
 
-  initLoginState() {
-    return {
-      emailEntered: false,
-      passwordEntered: false,
-      domainEntered: false,
-      domainNeeded: !!this.props.domain,
-      unloaded: true,
-      tries: 0,
-      recaptcha: false,
-      emailEnteredEnd: false,
-      passwordEnteredEnd: false,
-      domainEnteredEnd: false,
-      step: 0,
-    };
-  }
-
-  reset() {
+  componentDidMount() {
     if (this.props.deleteCookies) {
       session.fromPartition(this.props.partition).clearStorageData();
     }
-
-    this.loginState = this.initLoginState();
-    this.clearTimeout();
 
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
@@ -110,16 +102,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     this.progressStep = ((1 - 2 * 0.2) * this.progressInterval) / this.props.timeout!;
     this.sentResult = false;
     this.progressCallbackRunning = false;
-  }
-
-  componentDidMount() {
-    this.reset();
-    this.mounted++;
     this.progressHandle = setInterval(this.progressCallback.bind(this), this.progressInterval);
-
-    if (this.props.deleteCookies) {
-      session.fromPartition(this.props.partition).clearStorageData();
-    }
   }
 
   componentWillUnmount = async () => {
@@ -164,17 +147,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     });
 
     return update;
-  }
-
-  componentWillUpdate(prevProps: Props) {
-    if (
-      prevProps.loginUrl != this.props.loginUrl ||
-      prevProps.speed != this.props.speed ||
-      prevProps.username != this.props.username ||
-      prevProps.password != this.props.password
-    ) {
-      this.reset();
-    }
   }
 
   onNewWindow(e): void {
