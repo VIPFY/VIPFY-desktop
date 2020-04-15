@@ -2,12 +2,12 @@ import * as React from "react";
 import { remote } from "electron";
 import gql from "graphql-tag";
 import { Mutation, useApolloClient } from "react-apollo";
-import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import IconButton from "../../common/IconButton";
 import { generateNewKeypair, encryptLicence } from "../../common/crypto";
 import { ErrorComp } from "../../common/functions";
 import { WorkAround } from "../../interfaces";
+import passwordForgot from "../../../images/forgot-password-new.png";
 
 const SAVE_RECOVERY_KEY = gql`
   mutation onSaveRecoveryKey($keyPair: RecoveryKeyInput!) {
@@ -19,62 +19,51 @@ const SAVE_RECOVERY_KEY = gql`
   }
 `;
 
-interface Props {
-  recoveryCode?: string;
-  token?: string;
-  encryptionKey?: string;
-  continueFunction?: Function;
-}
-
-const RecoveryKey = (props: Props) => {
+const RecoveryKey = () => {
   const client = useApolloClient();
 
   const [encryptionKey, setKey] = React.useState("");
   const [codeWindow, setWindow] = React.useState(null);
   const [printError, setError] = React.useState(null);
   const [keyPair, setkeyPair] = React.useState(null);
-  // tqI7KkVpX1DAWCAFpxdi58YWETc9hAXUFLvsg3ZBLfg=
 
   React.useEffect(async () => {
     try {
       const thisWindow = await remote.getCurrentWindow();
       setWindow(thisWindow);
 
-      if (props.recoveryCode) {
-        setKey(props.recoveryCode);
-      } else {
-        const personalKeys = await generateNewKeypair();
-        const { data } = await client.query({
-          query: gql`
-            query onFetchCurrentKey {
-              fetchCurrentKey {
+      const recoveryKeys = await generateNewKeypair();
+
+      const { data } = await client.query({
+        query: gql`
+          query onFetchCurrentKey {
+            fetchCurrentKey {
+              id
+              publickey
+              privatekey
+              encryptedby {
                 id
-                publickey
-                privatekey
-                encryptedby {
-                  id
-                }
-                privatekeyDecrypted @client
               }
+              privatekeyDecrypted @client
             }
-          `,
-          fetchPolicy: "network-only",
-        });
+          }
+        `,
+        fetchPolicy: "network-only",
+      });
 
-        const { privatekeyDecrypted } = data.fetchCurrentKey;
+      const { privatekeyDecrypted } = data.fetchCurrentKey;
 
-        const encryptedKey = await encryptLicence(
-          Buffer.from(privatekeyDecrypted, "hex"),
-          personalKeys.publicKey
-        );
+      const encryptedKey = await encryptLicence(
+        Buffer.from(privatekeyDecrypted, "hex"),
+        recoveryKeys.publicKey
+      );
 
-        setkeyPair({
-          privatekey: encryptedKey.toString("hex"),
-          publickey: personalKeys.publicKey.toString("hex"),
-        });
+      setkeyPair({
+        privatekey: encryptedKey.toString("hex"),
+        publickey: recoveryKeys.publicKey.toString("hex"),
+      });
 
-        setKey(personalKeys.privateKey.toString("base64"));
-      }
+      setKey(recoveryKeys.privateKey.toString("base64"));
     } catch (error) {
       console.error(error);
       setError("Sorry, something went wrong. Please close and reopen the App.");
@@ -149,14 +138,7 @@ const RecoveryKey = (props: Props) => {
                   type="high"
                   className="continue-button"
                   onClick={async () => {
-                    if (props.recoveryCode) {
-                      console.log(props);
-                      await localStorage.setItem("token", props.token);
-                      await localStorage.setItem("key1", props.encryptionKey);
-                      props.continueFunction();
-                    } else {
-                      mutate({ variables: { keyPair } });
-                    }
+                    mutate({ variables: { keyPair } });
                   }}
                 />
               </React.Fragment>
@@ -170,7 +152,7 @@ const RecoveryKey = (props: Props) => {
 
 // Thou shall never delete this Hack, or the RecoveryKey functional component
 // will call upon the root of all theth evil errors
-export default class ErrorBoundary extends React.Component<Props, { hasError: boolean }> {
+export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
@@ -190,6 +172,6 @@ export default class ErrorBoundary extends React.Component<Props, { hasError: bo
       return <h1>Something went wrong.</h1>;
     }
 
-    return <RecoveryKey {...this.props} />;
+    return <RecoveryKey />;
   }
 }

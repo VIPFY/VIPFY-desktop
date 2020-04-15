@@ -102,12 +102,12 @@ export default (props: Props) => {
         <NewPassword
           responseData={responseData}
           setResponseData={(data) => setResponseData(data)}
-          continueFunction={() => changeProgress("newRecoveryCode")}
+          continueFunction={() => changeProgress("login")}
         />
       );
 
     case "newRecoveryCode":
-      return <RecoveryKey {...responseData} continueFunction={() => changeProgress("login")} />;
+      return <RecoveryKey />;
 
     default:
       return (
@@ -123,4 +123,3 @@ export default (props: Props) => {
       );
   }
 };
-// IUPEFKCspZ1ABPyqFZeCIhYlLbB0pW8N6MvSZDJVKtQ=

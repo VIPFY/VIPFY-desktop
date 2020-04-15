@@ -3,6 +3,7 @@ import zxcvbn from "zxcvbn";
 import { encryptPrivateKey, generateNewKeypair } from "./crypto";
 import gql from "graphql-tag";
 import { getMyEmail } from "./functions";
+import { FETCH_RECOVERY_CHALLENGE } from "../queries/auth";
 
 // replaces CHANGE_PASSWORD
 export async function updatePassword(client, oldPw: string, newPw: string) {
@@ -41,7 +42,6 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
     // generate new key
     const { publicKey, privateKey } = await generateNewKeypair();
     const encPrivateKey = await encryptPrivateKey(privateKey, newKeys.encryptionkey1);
-    privateKey.fill(0); // overwrite it for security
 
     // add this key
     const newKey = {
@@ -50,24 +50,33 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
       encryptedby: null,
     };
 
-    // reencrypt old key
-    const d = await client.query({
-      query: gql`
-        query onFetchCurrentKey {
-          fetchCurrentKey {
-            id
-            publickey
-            privatekey
-            encryptedby {
+    const [d, { data }] = await Promise.all([
+      // reencrypt old key
+      client.query({
+        query: gql`
+          query onFetchCurrentKey {
+            fetchCurrentKey {
               id
+              publickey
+              privatekey
+              encryptedby {
+                id
+              }
+              privatekeyDecrypted @client
             }
-            privatekeyDecrypted @client
           }
-        }
-      `,
-      fetchPolicy: "network-only",
-    });
-    if (!d.data || !d.data.fetchCurrentKey) {
+        `,
+        fetchPolicy: "network-only",
+      }),
+      // Get the challenge from the cache
+      client.query({
+        query: FETCH_RECOVERY_CHALLENGE,
+        variables: { email },
+        fetchPolicy: "network-only",
+      }),
+    ]);
+
+    if (!d.data || !d.data.fetchCurrentKey || !data) {
       throw new Error(d);
     }
 
@@ -82,18 +91,28 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
       encryptedby: "new",
     };
 
+    // Generate new RecoverySecret
+    const recoveryPrivateKey = await encryptLicence(
+      privateKey,
+      Buffer.from(data.fetchRecoveryChallenge.publicKey, "hex")
+    );
+
+    privateKey.fill(0); // overwrite it for security
+
     const r = await client.mutate({
       mutation: gql`
         mutation updatePassword(
           $oldPasskey: String!
           $newPasskey: String!
           $passwordMetrics: PasswordMetricsInput!
+          $recoveryPrivateKey: String!
           $newKey: KeyInput!
           $replaceKeys: [KeyInput!]!
         ) {
           changePasswordEncrypted(
             oldPasskey: $oldPasskey
             newPasskey: $newPasskey
+            recoveryPrivateKey: $recoveryPrivateKey
             passwordMetrics: $passwordMetrics
             newKey: $newKey
             replaceKeys: $replaceKeys
@@ -107,6 +126,7 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
         oldPasskey: oldKeys.loginkey.toString("hex"),
         newPasskey: newKeys.loginkey.toString("hex"),
         newKey,
+        recoveryPrivateKey: recoveryPrivateKey.toString("hex"),
         replaceKeys: [replaceKey],
         passwordMetrics: {
           passwordlength,
@@ -192,7 +212,6 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
     // generate new key
     const { publicKey, privateKey } = await generateNewKeypair();
     const encPrivateKey = await encryptPrivateKey(privateKey, encryptionkey1);
-    privateKey.fill(0); // overwrite it for security
 
     // add this key
     const newKey = {
@@ -201,18 +220,25 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
       encryptedby: null,
     };
 
-    const licences = await client.query({
-      query: gql`
-        query licencekeys($unitid: ID!) {
-          fetchUserLicenceAssignments(unitid: $unitid) {
-            id
-            key
+    const [licences, { data }] = await Promise.all([
+      client.query({
+        query: gql`
+          query licencekeys($unitid: ID!) {
+            fetchUserLicenceAssignments(unitid: $unitid) {
+              id
+              key
+            }
           }
-        }
-      `,
-      fetchPolicy: "network-only",
-      variables: { unitid },
-    });
+        `,
+        fetchPolicy: "network-only",
+        variables: { unitid },
+      }),
+      client.query({
+        query: FETCH_RECOVERY_CHALLENGE,
+        variables: { email },
+        fetchPolicy: "network-only",
+      }),
+    ]);
 
     const licenceUpdates = (
       await Promise.all(
@@ -240,6 +266,13 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
       )
     ).filter((l) => l !== null);
 
+    // Generate new RecoverySecret
+    const recoveryPrivateKey = await encryptLicence(
+      privateKey,
+      Buffer.from(data.fetchRecoveryChallenge.publicKey, "hex")
+    );
+    privateKey.fill(0); // overwrite it for security
+
     const r = await client.mutate({
       mutation: gql`
         mutation updateEmployeePassword(
@@ -248,6 +281,7 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
           $passwordMetrics: PasswordMetricsInput!
           $logOut: Boolean
           $newKey: KeyInput!
+          $recoveryPrivateKey: String!
           $deprecateAllExistingKeys: Boolean!
           $licenceUpdates: [licenceKeyUpdateInput!]!
         ) {
@@ -255,6 +289,7 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
             unitid: $unitid
             newPasskey: $newPasskey
             passwordMetrics: $passwordMetrics
+            recoveryPrivateKey: $recoveryPrivateKey
             logOut: $logOut
             newKey: $newKey
             deprecateAllExistingKeys: $deprecateAllExistingKeys
@@ -277,6 +312,7 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
           passwordlength,
           passwordstrength,
         },
+        recoveryPrivateKey: recoveryPrivateKey.toString("hex"),
         newKey,
         licenceUpdates,
         deprecateAllExistingKeys: true,
