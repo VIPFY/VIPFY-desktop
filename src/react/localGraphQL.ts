@@ -1,10 +1,5 @@
 import gql from "graphql-tag";
-import {
-  decryptPrivateKey,
-  decryptLicence,
-  encryptPrivateKey,
-  generateNewKeypair,
-} from "./common/crypto";
+import { decryptPrivateKey, decryptLicence } from "./common/crypto";
 import { Buffer } from "buffer";
 export const typeDefs = gql`
   extend type Key {
@@ -17,7 +12,7 @@ export const resolvers = {
     privatekeyDecrypted: async (
       parent,
       _args,
-      { cache, client, forceFetch, getCacheKey, clientAwareness }
+      { _cache, client, forceFetch, _getCacheKey, _clientAwareness }
     ) => {
       let key = { ...parent };
 

@@ -12,8 +12,9 @@ import {
   encryptPrivateKey,
   encryptLicence,
   decryptMessage,
+  decryptLicence,
 } from "../../common/crypto";
-import { computePasswordScore } from "../../common/passwords";
+import { computePasswordScore, decryptLicenceKey } from "../../common/passwords";
 import welcomeImage from "../../../images/forgot-password-new.png";
 import { FETCH_RECOVERY_CHALLENGE } from "../../queries/auth";
 import gql from "graphql-tag";
@@ -107,16 +108,15 @@ export default (props: PasswordChangeProps) => {
         // Generate new key
         const { publicKey, privateKey } = await generateNewKeypair();
         const encPrivateKey = await encryptPrivateKey(privateKey, newKeys.encryptionkey1);
-        privateKey.fill(0); // overwrite it for security
 
         // Generate new RecoverySecret
         const recoveryKeyPair = await generateNewKeypair();
-        console.log("FIRE: recoveryKeyPair", recoveryKeyPair.privateKey.toString("base64"));
 
         const recoveryPrivateKey = await encryptLicence(
           Buffer.from(privateKey),
           recoveryKeyPair.publicKey
         );
+        privateKey.fill(0); // overwrite it for security
 
         const recoveryKeys = {
           privatekey: recoveryPrivateKey.toString("hex"),
@@ -138,7 +138,7 @@ export default (props: PasswordChangeProps) => {
           Buffer.from(keyBytes)
         );
 
-        let decryptedPrivateKey = await decryptMessage(
+        let decryptedPrivateKey = await decryptLicence(
           Buffer.from(data.fetchRecoveryChallenge.encryptedKey, "hex"),
           Buffer.from(data.fetchRecoveryChallenge.publicKey, "hex"),
           Buffer.from(keyBytes)
@@ -184,32 +184,17 @@ export default (props: PasswordChangeProps) => {
         secret = null;
         decryptedPrivateKey = null;
 
-        await localStorage.setItem("token", res.data.updateRecoveredPassword);
-        await localStorage.setItem("key1", newKeys.encryptionkey1.toString("hex"));
-
-        // if (config.cookies) {
-        //   await client.query({ query: me });
-        //   const configcookies = await decryptLicenceKey(client, {
-        //     key: { encrypted: config.cookies },
-        //   });
-        //   const cookiePromises = [];
-        //   configcookies.forEach((c) => {
-        //     // this.addUsedLicenceID(c.key);
-        //     c.cookies.forEach(async (e) => {
-        //       const scheme = e.secure ? "https" : "http";
-        //       const host = e.domain[0] === "." ? e.domain.substr(1) : e.domain;
-        //       const url = scheme + "://" + host;
-        //       e.url = url;
-        //       try {
-        //         await session.fromPartition(`service-${c.key}`, { cache: true }).cookies.set(e);
-        //       } catch (err) {
-        //         console.log("ERRPOR", err, e);
-        //       }
-        //     });
-        //   });
-        //   await Promise.all(cookiePromises);
-        // }
-        await props.setResponseData(recoveryKeyPair.privateKey.toString("base64"));
+        /*
+         * Pass this shit to the next component as setting the token will
+         * trigger a rerender which will push the User to the Dashboard
+         * without showing him the new Recovery Code
+         * I know it's ugly, but that's our architecture - Deal with it!
+         */
+        await props.setResponseData({
+          encryptionKey: newKeys.encryptionkey1.toString("hex"),
+          token: res.data.updateRecoveredPassword,
+          recoveryCode: recoveryKeyPair.privateKey.toString("base64"),
+        });
         await props.continueFunction();
       }
     } catch (error) {

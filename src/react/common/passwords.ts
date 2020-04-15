@@ -106,7 +106,7 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
       variables: {
         oldPasskey: oldKeys.loginkey.toString("hex"),
         newPasskey: newKeys.loginkey.toString("hex"),
-        newKey: newKey,
+        newKey,
         replaceKeys: [replaceKey],
         passwordMetrics: {
           passwordlength,
@@ -115,6 +115,7 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
       },
     });
     localStorage.setItem("key1", newKeys.encryptionkey1.toString("hex"));
+
     return r;
   } catch (error) {
     console.error(error);
@@ -334,7 +335,7 @@ export async function decryptLicenceKey(client, licence) {
         }
 
         let found = false;
-        for (const k of d.data.fetchKeys) {
+        for await (const k of d.data.fetchKeys) {
           try {
             const d = await client.query({
               query: gql`
@@ -363,7 +364,7 @@ export async function decryptLicenceKey(client, licence) {
             found = true;
             break; // success
           } catch (error) {
-            console.log("trying decrypting", error);
+            console.log("Error while trying to decrypt", error);
           }
         }
 
@@ -371,12 +372,13 @@ export async function decryptLicenceKey(client, licence) {
           break;
         }
       } catch (error) {
-        console.error("failed decrypting, trying next candidate", candidate, error);
+        console.info("Failed decrypting, trying next candidate", candidate);
+        console.error(error);
       }
     }
 
     if (!key) {
-      console.error("failed decrypting, exhausted all candidates", licence);
+      console.error("Failed decrypting, exhausted all candidates", licence);
       // TODO: add UI here
     }
   }

@@ -3,9 +3,9 @@ module.exports = {
   semi: true,
   tabWidth: 2,
   singleQuote: false,
-  trailingComma: "es5",
+  trailingComma: "none",
   bracketSpacing: true,
   jsxBracketSameLine: true,
   arrowParens: "avoid",
-  parser: "typescript"
+  parser: "typescript",
 };

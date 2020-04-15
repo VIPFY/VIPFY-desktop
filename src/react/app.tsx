@@ -21,7 +21,7 @@ import { resetLoggingContext } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
-import { hashPassword } from "./common/crypto";
+import { hashPassword, encryptLicence } from "./common/crypto";
 import { remote } from "electron";
 const { session } = remote;
 import "../css/layout.scss";
@@ -109,7 +109,7 @@ class App extends React.Component<AppProps, AppState> {
 
   references: { key; element; listener?; action? }[] = [];
 
-  componentDidMount() {
+  async componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
     // session.defaultSession.cookies.get({}, (error, cookies) => {
@@ -270,7 +270,6 @@ class App extends React.Component<AppProps, AppState> {
           const configcookies = await decryptLicenceKey(this.props.client, {
             key: { encrypted: config.cookies },
           });
-          console.log("FIRE: logMeIn -> configcookies", configcookies);
 
           const cookiePromises = [];
           configcookies.forEach((c) => {

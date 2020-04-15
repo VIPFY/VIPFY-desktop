@@ -1,12 +1,12 @@
 import * as React from "react";
 import { remote } from "electron";
+import gql from "graphql-tag";
+import { Mutation, useApolloClient } from "react-apollo";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import IconButton from "../../common/IconButton";
 import { generateNewKeypair, encryptLicence } from "../../common/crypto";
 import { ErrorComp } from "../../common/functions";
-import gql from "graphql-tag";
-import { Mutation } from "react-apollo";
 import { WorkAround } from "../../interfaces";
 
 const SAVE_RECOVERY_KEY = gql`
@@ -21,14 +21,19 @@ const SAVE_RECOVERY_KEY = gql`
 
 interface Props {
   recoveryCode?: string;
+  token?: string;
+  encryptionKey?: string;
   continueFunction?: Function;
 }
 
 const RecoveryKey = (props: Props) => {
+  const client = useApolloClient();
+
   const [encryptionKey, setKey] = React.useState("");
   const [codeWindow, setWindow] = React.useState(null);
   const [printError, setError] = React.useState(null);
   const [keyPair, setkeyPair] = React.useState(null);
+  // tqI7KkVpX1DAWCAFpxdi58YWETc9hAXUFLvsg3ZBLfg=
 
   React.useEffect(async () => {
     try {
@@ -39,9 +44,29 @@ const RecoveryKey = (props: Props) => {
         setKey(props.recoveryCode);
       } else {
         const personalKeys = await generateNewKeypair();
+        const { data } = await client.query({
+          query: gql`
+            query onFetchCurrentKey {
+              fetchCurrentKey {
+                id
+                publickey
+                privatekey
+                encryptedby {
+                  id
+                }
+                privatekeyDecrypted @client
+              }
+            }
+          `,
+          fetchPolicy: "network-only",
+        });
 
-        const privateKey = localStorage.getItem("key1");
-        const encryptedKey = await encryptLicence(Buffer.from(privateKey), personalKeys.publicKey);
+        const { privatekeyDecrypted } = data.fetchCurrentKey;
+
+        const encryptedKey = await encryptLicence(
+          Buffer.from(privatekeyDecrypted, "hex"),
+          personalKeys.publicKey
+        );
 
         setkeyPair({
           privatekey: encryptedKey.toString("hex"),
@@ -123,8 +148,11 @@ const RecoveryKey = (props: Props) => {
                   label="login"
                   type="high"
                   className="continue-button"
-                  onClick={() => {
+                  onClick={async () => {
                     if (props.recoveryCode) {
+                      console.log(props);
+                      await localStorage.setItem("token", props.token);
+                      await localStorage.setItem("key1", props.encryptionKey);
                       props.continueFunction();
                     } else {
                       mutate({ variables: { keyPair } });
@@ -142,7 +170,7 @@ const RecoveryKey = (props: Props) => {
 
 // Thou shall never delete this Hack, or the RecoveryKey functional component
 // will call upon the root of all theth evil errors
-export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
+export default class ErrorBoundary extends React.Component<Props, { hasError: boolean }> {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
@@ -162,6 +190,6 @@ export default class ErrorBoundary extends React.Component<{}, { hasError: boole
       return <h1>Something went wrong.</h1>;
     }
 
-    return <RecoveryKey />;
+    return <RecoveryKey {...this.props} />;
   }
 }
