@@ -15,7 +15,7 @@ import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
 import { FETCH_EMPLOYEES, fetchDepartmentsData, FETCH_COMPANY } from "../queries/departments";
-import { vipfyAdmins } from "../common/constants";
+import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./security/graphqlOperations";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
@@ -468,13 +468,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "lmanager",
       },
       {
-        label: "Universal Login",
-        location: "universallogin",
-        icon: "pager",
-        show: isadmin && config.showUniversalLoginDebug && this.props.company.unit.id == 14,
-        important: false,
-      },
-      {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
@@ -499,7 +492,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Vacation Requests",
         location: "vacation",
         icon: "umbrella-beach",
-        show: config.showVacationRequests,
+        show:
+          config.showVacationRequests &&
+          vipfyVacationAdmins.find((admin) => admin == this.props.id),
         highlight: "vacation",
       },
     ];

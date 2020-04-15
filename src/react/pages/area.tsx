@@ -36,7 +36,7 @@ import ClickTracker from "../components/ClickTracker";
 import EmployeeOverview from "./manager/employeeOverview";
 import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
-import UniversalLoginTest from "../components/admin/UniversalLoginTest";
+import UniversalLoginTest from "../components/admin/UniversalLoginTest/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
