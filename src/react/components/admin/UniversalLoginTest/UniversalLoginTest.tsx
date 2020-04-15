@@ -2,10 +2,10 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import Tooltip from "react-tooltip-lite";
 import * as fs from "fs";
-import UniversalLoginExecutorWrapper from "../UniversalLoginExecutorWrapper";
+import UniversalLoginExecutorWrapper from "./UniversalLoginExecutorWrapper";
 import * as Sites from "./sites";
-import UniversalButton from "../universalButtons/universalButton";
-import { TestResult } from "../../interfaces";
+import UniversalButton from "../../universalButtons/universalButton";
+import { TestResult } from "../../../interfaces";
 import { remote } from "electron";
 const { session } = remote;
 
@@ -28,7 +28,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   state = {
     currentTest: -1,
     running: false,
-    sites: Sites.sites
+    sites: Sites.sites,
   };
 
   componentDidUpdate() {
@@ -40,7 +40,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
       return;
     }
 
-    this.setState(state => {
+    this.setState((state) => {
       let nextTest = state.currentTest + 1;
       let nextSite = state.sites[nextTest];
 
@@ -94,12 +94,12 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 password={site.password}
                 setResult={(testResults, allTestsFinished) => {
                   this.setState(
-                    prev => {
+                    (prev) => {
                       let sites = [...prev.sites];
                       sites[prev.currentTest] = {
                         ...sites[prev.currentTest],
                         testResults,
-                        allTestsFinished
+                        allTestsFinished,
                       };
 
                       return { sites };
@@ -135,7 +135,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               src={results[testIndex].screenshot}
               style={{
                 width: "1024px",
-                objectFit: "cover"
+                objectFit: "cover",
               }}
             />
           </span>
@@ -164,12 +164,12 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   }
 
   renderProportion(key) {
-    let total = this.state.sites.filter(s => s[key] == true || s[key] === false).length;
+    let total = this.state.sites.filter((s) => s[key] == true || s[key] === false).length;
     if (total == 0) {
       return <span>0/0</span>;
     }
 
-    let t = this.state.sites.filter(s => s[key] == true).length;
+    let t = this.state.sites.filter((s) => s[key] == true).length;
     return (
       <span>
         {t}/{total} ({((t / total) * 100).toFixed(2)}%)
