@@ -22,8 +22,6 @@ import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
 import Security from "./security";
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
@@ -38,7 +36,7 @@ import ClickTracker from "../components/ClickTracker";
 import EmployeeOverview from "./manager/employeeOverview";
 import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
-import UniversalLoginTest from "../components/admin/UniversalLoginTest";
+import UniversalLoginTest from "../components/admin/UniversalLoginTest/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
@@ -94,7 +92,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     openInstances: {},
     activeTab: null,
     adminOpen: false,
-    consentPopup: false
+    consentPopup: false,
   };
 
   componentDidMount = async () => {
@@ -107,7 +105,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     }
   };
 
-  moveTo = path => {
+  moveTo = (path) => {
     if (!path.startsWith("app")) {
       this.setState({ viewID: -1 });
     }
@@ -116,12 +114,12 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   setApp = (assignmentId: number) => {
     if (this.state.openInstances[assignmentId]) {
-      this.setState(prevState => {
+      this.setState((prevState) => {
         const newstate = {
           ...prevState,
           app: assignmentId,
           licenceID: assignmentId,
-          viewID: Object.keys(prevState.openInstances[assignmentId])[0]
+          viewID: Object.keys(prevState.openInstances[assignmentId])[0],
         };
         return newstate;
       });
@@ -142,25 +140,25 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.moveTo("error");
   }
 
-  setSidebar = value => {
+  setSidebar = (value) => {
     this.setState({ sidebarOpen: value });
   };
 
   toggleChat = () => {
-    this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
+    this.setState((prevState) => ({ chatOpen: !prevState.chatOpen }));
   };
 
   toggleAdmin = () => {
-    this.setState(prevState => ({ adminOpen: !prevState.adminOpen }));
+    this.setState((prevState) => ({ adminOpen: !prevState.adminOpen }));
   };
 
   toggleSidebar = () => {
-    this.setState(prevState => ({ sidebarOpen: !prevState.sidebarOpen }));
+    this.setState((prevState) => ({ sidebarOpen: !prevState.sidebarOpen }));
   };
 
   addWebview = (licenceID, opendirect = false, url = undefined, loggedIn = false) => {
-    this.setState(prevState => {
-      const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
+    this.setState((prevState) => {
+      const viewID = Math.max(...prevState.webviews.map((o) => o.key), 0) + 1;
       const l = {
         licenceID: licenceID,
         plain: true,
@@ -168,7 +166,7 @@ class Area extends React.Component<AreaProps, AreaState> {
         viewID,
         addWebview: this.addWebview,
         url: url,
-        loggedIn
+        loggedIn,
       };
       const newview = <Webview {...this.state} {...this.props} {...l} />;
       return {
@@ -178,8 +176,8 @@ class Area extends React.Component<AreaProps, AreaState> {
             key: viewID,
             view: newview,
             instanceTitle: "Opening new service",
-            licenceID
-          }
+            licenceID,
+          },
         ],
         openInstances: {
           ...prevState.openInstances,
@@ -188,22 +186,22 @@ class Area extends React.Component<AreaProps, AreaState> {
               ? {
                   ...prevState.openInstances[licenceID],
 
-                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
+                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID },
                 }
               : {
-                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
-                }
+                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID },
+                },
         },
         app: opendirect ? licenceID : prevState.app,
         licenceID: opendirect ? licenceID : prevState.licenceID,
-        viewID: opendirect ? viewID : prevState.viewID
+        viewID: opendirect ? viewID : prevState.viewID,
       };
     });
     this.props.addUsedLicenceID(licenceID);
   };
 
   setViewTitle = (title, viewID, licenceID) => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       openInstances: {
         ...prevState.openInstances,
         [licenceID]:
@@ -214,17 +212,17 @@ class Area extends React.Component<AreaProps, AreaState> {
                 ...prevState.openInstances[licenceID],
                 [viewID]: {
                   instanceTitle: title,
-                  instanceId: viewID
-                }
+                  instanceId: viewID,
+                },
               }
-            : { ...prevState.openInstances[licenceID] }
+            : { ...prevState.openInstances[licenceID] },
       },
-      webviews: prevState.webviews.map(view => {
+      webviews: prevState.webviews.map((view) => {
         if (view.key == viewID) {
           view.instanceTitle = title;
         }
         return view;
-      })
+      }),
     }));
   };
 
@@ -234,10 +232,10 @@ class Area extends React.Component<AreaProps, AreaState> {
   }; */
 
   closeInstance = (viewID: number, licenceID: number) => {
-    const position = this.state.webviews.findIndex(view => view.key == viewID);
+    const position = this.state.webviews.findIndex((view) => view.key == viewID);
 
-    this.setState(prevState => {
-      const webviews = prevState.webviews.filter(view => view.key != viewID);
+    this.setState((prevState) => {
+      const webviews = prevState.webviews.filter((view) => view.key != viewID);
       const { openInstances } = prevState;
 
       if (openInstances[licenceID]) {
@@ -253,7 +251,7 @@ class Area extends React.Component<AreaProps, AreaState> {
 
     if (this.state.viewID == viewID) {
       if (this.props.history.location.pathname.startsWith("/area/app/")) {
-        this.setState(prevState => {
+        this.setState((prevState) => {
           if (prevState.webviews[position]) {
             this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[position].key };
@@ -269,27 +267,27 @@ class Area extends React.Component<AreaProps, AreaState> {
     }
   };
 
-  setInstance = viewID => {
-    const licenceID = this.state.webviews.find(e => e.key == viewID).licenceID;
+  setInstance = (viewID) => {
+    const licenceID = this.state.webviews.find((e) => e.key == viewID).licenceID;
     this.setState({ app: licenceID, licenceID, viewID });
     this.props.history.push(`/area/app/${licenceID}`);
   };
 
   handleDragStart = (viewID: number) => {
-    this.setState(prevState => {
-      const activeTab = prevState.webviews.find(tab => tab.key == viewID);
+    this.setState((prevState) => {
+      const activeTab = prevState.webviews.find((tab) => tab.key == viewID);
 
       return { activeTab, oldWebViews: prevState.webviews };
     });
   };
 
   handleDragOver = async (viewID: number) => {
-    await this.setState(prevState => {
-      const webviews = prevState.webviews.map(tab => {
+    await this.setState((prevState) => {
+      const webviews = prevState.webviews.map((tab) => {
         if (tab.key == viewID) {
           return prevState.activeTab;
         } else if (prevState.activeTab!.key == tab.key) {
-          return prevState.webviews.find(tab => tab.key == viewID);
+          return prevState.webviews.find((tab) => tab.key == viewID);
         } else {
           return tab;
         }
@@ -304,8 +302,8 @@ class Area extends React.Component<AreaProps, AreaState> {
   handleDragEnd = () => this.setState({ activeTab: null, webviews: this.state.oldWebViews });
 
   handleClose = (viewID: number, licenceID: number) => {
-    this.setState(prevState => {
-      const webviews = prevState.webviews.filter(view => view.key != viewID);
+    this.setState((prevState) => {
+      const webviews = prevState.webviews.filter((view) => view.key != viewID);
 
       return { webviews };
     });
@@ -350,7 +348,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "lmanager/:serviceid", component: ServiceDetails, admin: true },
       { path: "dmanager/:teamid", component: TeamDetails, admin: true },
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
-      { path: "company", component: CompanyDetails, admin: true }
+      { path: "company", component: CompanyDetails, admin: true },
     ];
     return (
       <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
@@ -369,9 +367,9 @@ class Area extends React.Component<AreaProps, AreaState> {
               <SideBarContext.Provider value={this.state.sidebarOpen}>
                 <UserContext.Provider value={{ userid: this.props.id }}>
                   <Route
-                    render={props => (
+                    render={(props) => (
                       <Query query={FETCH_NOTIFICATIONS} pollInterval={120000}>
-                        {res => (
+                        {(res) => (
                           <Sidebar
                             sidebarOpen={sidebarOpen}
                             setApp={this.setApp}
@@ -395,7 +393,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                     <Route
                       exact
                       path="/area/support"
-                      render={props => <SupportPage {...this.state} {...this.props} {...props} />}
+                      render={(props) => <SupportPage {...this.state} {...this.props} {...props} />}
                     />
 
                     <Route
@@ -414,7 +412,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                             key={path}
                             exact
                             path={`/area/${path}`}
-                            render={props => (
+                            render={(props) => (
                               <div
                                 className={`full-working ${chatOpen ? "chat-open" : ""} ${
                                   sidebarOpen ? "sidebar-open" : ""
@@ -442,7 +440,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                     <Route
                       exact
                       path="/area/domains/"
-                      render={props => (
+                      render={(props) => (
                         <div
                           className={`full-working ${chatOpen ? "chat-open" : ""} ${
                             sidebarOpen ? "sidebar-open" : ""
@@ -454,7 +452,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                     <Route
                       exact
                       path="/area/domains/:domain"
-                      render={props => (
+                      render={(props) => (
                         <div
                           className={`full-working ${chatOpen ? "chat-open" : ""} ${
                             sidebarOpen ? "sidebar-open" : ""
@@ -467,7 +465,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                     <Route
                       exact
                       path="/area/app/:licenceid"
-                      render={props => {
+                      render={(props) => {
                         if (
                           this.state.licenceID != props.match.params.licenceid ||
                           this.state.viewID == -1

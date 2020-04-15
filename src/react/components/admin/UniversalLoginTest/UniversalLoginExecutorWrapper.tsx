@@ -1,6 +1,7 @@
 import * as React from "react";
-import UniversalLoginExecutor from "./UniversalLoginExecutor";
-import { LoginResult, TestResult } from "../interfaces";
+import UniversalLoginExecutor from "../../UniversalLoginExecutor";
+import { LoginResult, TestResult } from "../../../interfaces";
+import * as Tests from "./tests";
 import { remote } from "electron";
 const { session } = remote;
 
@@ -27,48 +28,6 @@ interface SkipCondition {
   skipIfPassedEquals: boolean; // skip if the result success ("passed") of the test dependency equals this value
 }
 
-// don't change test order. it matters when it comes to deciding if a test can be skipped.
-const tests = [
-  {
-    expectLoginSuccess: false,
-    expectError: true,
-    reuseSession: false,
-    speedFactor: 5,
-    enterCorrectEmail: false,
-  },
-  {
-    expectLoginSuccess: false,
-    expectError: true,
-    reuseSession: false,
-    speedFactor: 3,
-    enterCorrectEmail: true,
-    enterCorrectPassword: false,
-  },
-  {
-    expectLoginSuccess: true,
-    expectError: false,
-    reuseSession: false,
-    speedFactor: 10,
-    enterCorrectEmail: true,
-    enterCorrectPassword: true,
-  },
-  {
-    expectLoginSuccess: true,
-    expectError: false,
-    reuseSession: false,
-    speedFactor: 1,
-    enterCorrectEmail: true,
-    enterCorrectPassword: true,
-    skipCondition: { testDependency: 2, skipIfPassedEquals: true },
-  },
-  {
-    expectLoginSuccess: true,
-    expectError: false,
-    reuseSession: true,
-    skipCondition: { testDependency: 3, skipIfPassedEquals: false },
-  },
-];
-
 const SSO_TEST_PARTITION = "ssotest";
 const SECOND = 1000;
 
@@ -94,7 +53,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   }
 
   hasNextTest() {
-    return !!tests[this.state.currentTest + 1];
+    return !!Tests.tests[this.state.currentTest + 1];
   }
 
   clearStorageData(currentTest: number) {
@@ -116,7 +75,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
       let testResults = state.testResults;
       testResults[currentTest] = testResult;
 
-      const allTestsFinished = testResults.length === tests.length;
+      const allTestsFinished = testResults.length === Tests.tests.length;
       this.props.setResult(testResults, allTestsFinished);
 
       return { testResults };
@@ -132,7 +91,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
 
   render() {
     const { currentTest, testResults } = this.state;
-    const test = tests[currentTest];
+    const test = Tests.tests[currentTest];
 
     const skipConditionFulfilled =
       test.skipCondition &&
