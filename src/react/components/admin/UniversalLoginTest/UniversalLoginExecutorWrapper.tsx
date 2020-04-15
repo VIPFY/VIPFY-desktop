@@ -109,6 +109,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
 
     return (
       <UniversalLoginExecutor
+        key={this.state.currentTest}
         loginUrl={this.props.loginUrl}
         username={this.props.username + (test.enterCorrectEmail ? "" : "WRONG")}
         password={this.props.password + (test.enterCorrectPassword ? "" : "WRONG")}
