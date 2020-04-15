@@ -12,7 +12,7 @@ const { session } = remote;
 interface Props {}
 
 interface State {
-  currentTest: number | null;
+  siteIndexUnderTest: number | null;
   runningInBatchMode: boolean;
   sites: {
     app: string;
@@ -26,7 +26,7 @@ interface State {
 
 class UniversalLoginTest extends React.PureComponent<Props, State> {
   state = {
-    currentTest: -1,
+    siteIndexUnderTest: -1,
     runningInBatchMode: false,
     sites: Sites.sites,
   };
@@ -36,20 +36,24 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   }
 
   advance(allTestsFinishedForCurrentSite: boolean) {
-    if (!allTestsFinishedForCurrentSite || !this.state.runningInBatchMode) {
+    if (!allTestsFinishedForCurrentSite) {
       return;
     }
 
     this.setState((state) => {
-      let nextTest = state.currentTest + 1;
-      let nextSite = state.sites[nextTest];
+      let nextSiteIndexUnderTest = -1;
 
-      while (!this.loginDataAvailable(nextSite)) {
-        nextTest++;
-        nextSite = state.sites[nextTest];
+      if (this.state.runningInBatchMode) {
+        nextSiteIndexUnderTest = state.siteIndexUnderTest + 1;
+        let nextSite = state.sites[nextSiteIndexUnderTest];
+
+        while (!this.loginDataAvailable(nextSite)) {
+          nextSiteIndexUnderTest++;
+          nextSite = state.sites[nextSiteIndexUnderTest];
+        }
       }
 
-      return { currentTest: nextTest };
+      return { siteIndexUnderTest: nextSiteIndexUnderTest };
     });
   }
 
@@ -68,18 +72,39 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     );
   }
 
+  handleResult(siteIndexUnderTest, testResults, allTestsFinished) {
+    this.setState(
+      (prev) => {
+        let sites = [...prev.sites];
+        sites[prev.siteIndexUnderTest] = {
+          ...sites[prev.siteIndexUnderTest],
+          testResults,
+          allTestsFinished,
+        };
+
+        return { sites };
+      },
+
+      () => this.advance(this.state.sites[siteIndexUnderTest].allTestsFinished)
+    );
+  }
+
   renderTable(siteUnderTest) {
-    return this.state.sites.map((site, i) => (
+    return this.state.sites.map((site, siteIndexUnderTest) => (
       <React.Fragment key={`${site.app}`}>
         <tr>
           <td>{site.app}</td>
-          {Array.from({ length: 5 }, (_, k) => (
-            <td key={`${site.app}_${i}_${k}`}>
-              {this.renderTestStatus(k, site.testResults, this.state.currentTest == i)}
+          {Array.from({ length: 5 }, (_, testIndex) => (
+            <td key={`${site.app}_${siteIndexUnderTest}_${testIndex}`}>
+              {this.renderTestStatus(
+                testIndex,
+                site.testResults,
+                this.state.siteIndexUnderTest == siteIndexUnderTest
+              )}
             </td>
           ))}
           <td>
-            <span onClick={() => this.setState({ currentTest: i, runningInBatchMode: false })}>
+            <span onClick={() => this.setState({ siteIndexUnderTest, runningInBatchMode: false })}>
               <i className="fal fa-arrow-square-right" />
             </span>
           </td>
@@ -93,22 +118,9 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 username={site.email}
                 password={site.password}
                 takeScreenshot={!this.state.runningInBatchMode}
-                setResult={(testResults, allTestsFinished) => {
-                  this.setState(
-                    (prev) => {
-                      let sites = [...prev.sites];
-                      sites[prev.currentTest] = {
-                        ...sites[prev.currentTest],
-                        testResults,
-                        allTestsFinished,
-                      };
-
-                      return { sites };
-                    },
-
-                    () => this.advance(this.state.sites[i].allTestsFinished)
-                  );
-                }}
+                setResult={(testResults, allTestsFinished) =>
+                  this.handleResult(siteIndexUnderTest, testResults, allTestsFinished)
+                }
               />
             </td>
           </tr>
@@ -180,7 +192,9 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
 
   render() {
     const siteUnderTest =
-      this.state.currentTest === null ? null : this.state.sites[this.state.currentTest];
+      this.state.siteIndexUnderTest === null
+        ? null
+        : this.state.sites[this.state.siteIndexUnderTest];
 
     return (
       <section className="admin">
