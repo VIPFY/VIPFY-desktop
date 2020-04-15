@@ -9,6 +9,7 @@ interface Props {
   loginUrl: string;
   username: string;
   password: string;
+  takeScreenshot: boolean;
   setResult: (testResults: TestResult[], allTestsFinished: boolean) => void;
 }
 
@@ -117,6 +118,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         timeout={15 * SECOND}
         webviewId={this.state.currentTest}
         partition={SSO_TEST_PARTITION}
+        takeScreenshot={this.props.takeScreenshot}
         setResult={(loginResult: LoginResult, screenshot: string) => {
           const testResult = {
             passed: this.isPassed(test, loginResult),

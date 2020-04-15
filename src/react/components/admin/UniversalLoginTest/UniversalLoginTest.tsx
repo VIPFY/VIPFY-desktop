@@ -13,7 +13,7 @@ interface Props {}
 
 interface State {
   currentTest: number | null;
-  running: boolean;
+  runningInBatchMode: boolean;
   sites: {
     app: string;
     url: string;
@@ -27,7 +27,7 @@ interface State {
 class UniversalLoginTest extends React.PureComponent<Props, State> {
   state = {
     currentTest: -1,
-    running: false,
+    runningInBatchMode: false,
     sites: Sites.sites,
   };
 
@@ -36,7 +36,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   }
 
   advance(allTestsFinishedForCurrentSite: boolean) {
-    if (!allTestsFinishedForCurrentSite || !this.state.running) {
+    if (!allTestsFinishedForCurrentSite || !this.state.runningInBatchMode) {
       return;
     }
 
@@ -79,7 +79,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             </td>
           ))}
           <td>
-            <span onClick={() => this.setState({ currentTest: i, running: false })}>
+            <span onClick={() => this.setState({ currentTest: i, runningInBatchMode: false })}>
               <i className="fal fa-arrow-square-right" />
             </span>
           </td>
@@ -92,6 +92,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 loginUrl={site.url}
                 username={site.email}
                 password={site.password}
+                takeScreenshot={!this.state.runningInBatchMode}
                 setResult={(testResults, allTestsFinished) => {
                   this.setState(
                     (prev) => {
@@ -192,14 +193,14 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
         />
 
         <div>
-          {this.state.running ? (
-            <span onClick={() => this.setState({ running: false })}>
+          {this.state.runningInBatchMode ? (
+            <span onClick={() => this.setState({ runningInBatchMode: false })}>
               <i className="fal fa-pause" />
             </span>
           ) : (
             <span
               onClick={async () => {
-                await this.setState({ running: true });
+                await this.setState({ runningInBatchMode: true });
                 this.advance(true);
               }}>
               <i className="fal fa-play" />
