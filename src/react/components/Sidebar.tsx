@@ -27,6 +27,7 @@ const NOTIFICATION_SUBSCRIPTION = gql`
       icon
       changed
       link
+      options
     }
   }
 `;
@@ -149,37 +150,24 @@ class Sidebar extends React.Component<SidebarProps, State> {
         if (!subscriptionData.data || subscriptionData.error) {
           return prev;
         }
-
         this.setState({ notify: true });
         setTimeout(() => this.setState({ notify: false }), 5000);
 
-        this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
-        return {
-          ...prev,
-          fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
-        };
+        if (
+          subscriptionData.data.newNotification &&
+          subscriptionData.data.newNotification.options &&
+          subscriptionData.data.newNotification.options.type != "update"
+        ) {
+          this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
+          return {
+            ...prev,
+            fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
+          };
+        } else {
+          return prev;
+        }
       }
     });
-  }
-
-  componentDidUpdate(prevProps) {
-    if (
-      this.props.data &&
-      prevProps.data &&
-      this.props.data.fetchNotifications &&
-      prevProps.data.fetchNotifications != this.props.data.fetchNotifications
-    ) {
-      // We want to avoid calling the refetch on the initial data fetching
-      if (this.state.initialLoad) {
-        return this.setState({ initialLoad: false });
-      } else {
-        const filteredCategories = this.props.data.fetchNotifications.filter(
-          ({ changed }) => changed.length > 0
-        );
-
-        this.refetchCategories(filteredCategories, this.props.client);
-      }
-    }
   }
 
   componentWillUnmount() {

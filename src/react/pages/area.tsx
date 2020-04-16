@@ -53,6 +53,7 @@ import TeamOverview from "./manager/teamOverview";
 import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
+import FloatingNotifications from "../components/notifications/floatingNotifications";
 
 interface AreaProps {
   history: any[];
@@ -372,6 +373,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                     render={props => (
                       <Query query={FETCH_NOTIFICATIONS} pollInterval={120000}>
                         {res => (
+                          <>
                           <Sidebar
                             sidebarOpen={sidebarOpen}
                             setApp={this.setApp}
@@ -386,6 +388,21 @@ class Area extends React.Component<AreaProps, AreaState> {
                             {...res}
                             moveTo={this.moveTo}
                           />
+                            <FloatingNotifications
+                              sidebarOpen={sidebarOpen}
+                              setApp={this.setApp}
+                              viewID={this.state.viewID}
+                              views={this.state.webviews}
+                              openInstances={this.state.openInstances}
+                              toggleSidebar={this.toggleSidebar}
+                              setInstance={this.setInstance}
+                              {...this.props}
+                              licences={licences}
+                              {...props}
+                              {...res}
+                              moveTo={this.moveTo}
+                            />
+                          </>
                         )}
                       </Query>
                     )}
