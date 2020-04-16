@@ -22,8 +22,6 @@ import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
 import Security from "./security";
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
 import Integrations from "./integrations";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
@@ -38,7 +36,7 @@ import ClickTracker from "../components/ClickTracker";
 import EmployeeOverview from "./manager/employeeOverview";
 import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
-import UniversalLoginTest from "../components/admin/UniversalLoginTest";
+import UniversalLoginTest from "../components/admin/UniversalLoginTest/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
@@ -374,20 +372,20 @@ class Area extends React.Component<AreaProps, AreaState> {
                       <Query query={FETCH_NOTIFICATIONS} pollInterval={120000}>
                         {res => (
                           <>
-                          <Sidebar
-                            sidebarOpen={sidebarOpen}
-                            setApp={this.setApp}
-                            viewID={this.state.viewID}
-                            views={this.state.webviews}
-                            openInstances={this.state.openInstances}
-                            toggleSidebar={this.toggleSidebar}
-                            setInstance={this.setInstance}
-                            {...this.props}
-                            licences={licences}
-                            {...props}
-                            {...res}
-                            moveTo={this.moveTo}
-                          />
+                            <Sidebar
+                              sidebarOpen={sidebarOpen}
+                              setApp={this.setApp}
+                              viewID={this.state.viewID}
+                              views={this.state.webviews}
+                              openInstances={this.state.openInstances}
+                              toggleSidebar={this.toggleSidebar}
+                              setInstance={this.setInstance}
+                              {...this.props}
+                              licences={licences}
+                              {...props}
+                              {...res}
+                              moveTo={this.moveTo}
+                            />
                             <FloatingNotifications
                               sidebarOpen={sidebarOpen}
                               setApp={this.setApp}
