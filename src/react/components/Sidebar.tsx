@@ -27,6 +27,7 @@ const NOTIFICATION_SUBSCRIPTION = gql`
       icon
       changed
       link
+      options
     }
   }
 `;
@@ -135,7 +136,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     contextMenu: false,
     notify: false,
     initialLoad: true,
-    fetchedNotifications: new Set(),
+    fetchedNotifications: new Set()
   };
 
   componentDidMount() {
@@ -149,37 +150,24 @@ class Sidebar extends React.Component<SidebarProps, State> {
         if (!subscriptionData.data || subscriptionData.error) {
           return prev;
         }
-
         this.setState({ notify: true });
         setTimeout(() => this.setState({ notify: false }), 5000);
 
-        this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
-        return {
-          ...prev,
-          fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications],
-        };
-      },
-    });
-  }
-
-  componentDidUpdate(prevProps) {
-    if (
-      this.props.data &&
-      prevProps.data &&
-      this.props.data.fetchNotifications &&
-      prevProps.data.fetchNotifications != this.props.data.fetchNotifications
-    ) {
-      // We want to avoid calling the refetch on the initial data fetching
-      if (this.state.initialLoad) {
-        return this.setState({ initialLoad: false });
-      } else {
-        const filteredCategories = this.props.data.fetchNotifications.filter(
-          ({ changed }) => changed.length > 0
-        );
-
-        this.refetchCategories(filteredCategories, this.props.client);
+        if (
+          subscriptionData.data.newNotification &&
+          subscriptionData.data.newNotification.options &&
+          subscriptionData.data.newNotification.options.type != "update"
+        ) {
+          this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
+          return {
+            ...prev,
+            fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
+          };
+        } else {
+          return prev;
+        }
       }
-    }
+    });
   }
 
   componentWillUnmount() {
@@ -207,10 +195,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
           await Promise.all([
             client.query({
               query: FETCH_EMPLOYEES,
-              ...options,
+              ...options
             }),
             client.query({ query: FETCH_USER_SECURITY_OVERVIEW }),
-            client.query({ query: fetchDepartmentsData }),
+            client.query({ query: fetchDepartmentsData })
           ]);
           break;
 
@@ -221,7 +209,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         case "domains":
           await client.query({
             query: FETCH_DOMAINS,
-            ...options,
+            ...options
           });
           break;
 
@@ -236,14 +224,14 @@ class Sidebar extends React.Component<SidebarProps, State> {
         case "paymentMethods":
           await client.query({
             query: FETCH_CARDS,
-            ...options,
+            ...options
           });
           break;
 
         case "promocode":
           await client.query({
             query: FETCH_CREDIT_DATA,
-            ...options,
+            ...options
           });
           break;
 
@@ -258,7 +246,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         case "me":
           await client.query({
             query: me,
-            ...options,
+            ...options
           });
           break;
 
@@ -269,7 +257,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
 
     for (let notification of notifications) {
-      this.setState((prevState) => {
+      this.setState(prevState => {
         const { fetchedNotifications } = prevState;
         fetchedNotifications.add(notification.id);
 
@@ -279,7 +267,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
   }
 
   // references: { key; element }[] = [];
-  goTo = (view) => this.props.moveTo(view);
+  goTo = view => this.props.moveTo(view);
 
   addReferences = (key, element, addRenderElement) => {
     // this.references.push({ key, element });
@@ -297,7 +285,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     this.addReferences(highlight, el, addRenderElement);
   };
 
-  listenKeyboard = (e) => {
+  listenKeyboard = e => {
     if (e.key === "Escape" || e.keyCode === 27) {
       this.setState({ showNotification: false });
     }
@@ -309,7 +297,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
   };
 
-  handleClickOutside = (e) => {
+  handleClickOutside = e => {
     this.handleClickInside();
     const domNode = ReactDOM.findDOMNode(this);
     if (
@@ -324,7 +312,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     if (this.state.donotopen) {
       this.setState({ donotopen: false });
     } else {
-      this.setState((prevState) => ({ showNotification: !prevState.showNotification }));
+      this.setState(prevState => ({ showNotification: !prevState.showNotification }));
     }
   };
 
@@ -348,7 +336,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         <li
           key={location}
           className={cssClass}
-          ref={(el) => this.maybeAddHighlightReference(location, highlight, el, addRenderElement)}>
+          ref={el => this.maybeAddHighlightReference(location, highlight, el, addRenderElement)}>
           <button className="naked-button itemHolder" onClick={() => this.goTo(location)}>
             <Tooltip
               distance={12}
@@ -381,67 +369,67 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "dashboard",
         icon: "home",
         show: true,
-        highlight: "dashboardelement",
+        highlight: "dashboardelement"
       },
       {
         label: "Message Center",
         location: "messagecenter",
         icon: "envelope",
-        show: config.showMessageCenter,
+        show: config.showMessageCenter
       },
       {
         label: "Billing",
         location: "billing",
         icon: "file-invoice-dollar",
         show: isadmin && config.showBilling,
-        highlight: "billingelement",
+        highlight: "billingelement"
       },
       {
         label: "Security",
         location: "security",
         icon: "user-shield",
         show: isadmin,
-        highlight: "securityelement",
+        highlight: "securityelement"
       },
       {
         label: "Teams",
         location: "team",
         icon: "users",
         show: isadmin && config.showTeams,
-        highlight: "teamelement",
+        highlight: "teamelement"
       },
       {
         label: "Marketplace",
         location: "marketplace",
         icon: "shopping-cart",
         show: config.showMarketplace,
-        highlight: "marketplaceelement",
+        highlight: "marketplaceelement"
       },
       {
         label: "Account Integrator",
         location: "integrations",
         icon: "shapes",
         show: isadmin,
-        highlight: "integrationselement",
+        highlight: "integrationselement"
       },
       {
         label: "Domains",
         location: "domains",
         icon: "atlas",
-        show: config.showDomains,
+        show: config.showDomains
       },
       {
         label: "Usage Statistics",
         location: "usage",
         icon: "chart-line",
-        show: isadmin,
+        show: isadmin
       },
       {
         label: "Support",
         location: "support",
         icon: "ambulance",
         show: true,
-        highlight: "supportelement",
+        highlight: "supportelement"
       },
       {
         label: "Team Manager",
@@ -449,7 +437,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         icon: "user-tag",
         show: isadmin,
         important: false,
-        highlight: "dmanager",
+        highlight: "dmanager"
       },
       {
         label: "Employee Manager",
@@ -457,7 +445,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         icon: "users-cog",
         show: isadmin,
         important: false,
-        highlight: "emanager",
+        highlight: "emanager"
       },
       {
         label: "Service Manager",
@@ -465,40 +453,39 @@ class Sidebar extends React.Component<SidebarProps, State> {
         icon: "credit-card-blank",
         show: isadmin,
         important: false,
-        highlight: "lmanager",
+        highlight: "lmanager"
       },
       {
         label: "Admin",
         location: "admin",
         icon: "layer-plus",
-        show: config.showAdmin && vipfyAdmins.find((admin) => admin == this.props.id),
-        highlight: "adminelement",
+        show: config.showAdmin && vipfyAdmins.find(admin => admin == this.props.id),
+        highlight: "adminelement"
       },
       {
         label: "SSO Configurator",
         location: "ssoconfig",
         icon: "dice-d12",
         show: isadmin && config.showSsoConfig && this.props.company.unit.id == 14,
-        highlight: "ssoconfig",
+        highlight: "ssoconfig"
       },
       {
         label: "SSO Tester",
         location: "ssotest",
         icon: "dragon",
         show: false,
-        highlight: "ssotest",
+        highlight: "ssotest"
       },
       {
         label: "Vacation Requests",
         location: "vacation",
         icon: "umbrella-beach",
         show:
-          config.showVacationRequests &&
-          vipfyVacationAdmins.find((admin) => admin == this.props.id),
-        highlight: "vacation",
-      },
+          config.showVacationRequests && vipfyVacationAdmins.find(admin => admin == this.props.id),
+        highlight: "vacation"
+      }
     ];
-    const filteredLicences0 = licences.filter((licence) => {
+    const filteredLicences0 = licences.filter(licence => {
       if (
         !(
           (!licence.disabled &&
@@ -627,12 +614,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     return (
       <AppContext.Consumer>
-        {(context) => (
+        {context => (
           <ul
             className={`sidebar${sidebarOpen ? "" : "-small"} ${
               this.props.impersonation ? "sidebar-impersonate" : ""
             }`}
-            ref={(el) => context.addRenderElement({ key: "sidebar", element: el })}>
+            ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
             <li className={`sidebar-nav-icon${sidebarOpen ? "" : "-turn"}`}>
               <Tooltip
                 distance={18}
@@ -651,7 +638,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
             </li>
 
             <li className="sidebar-main">
-              <ul>{sidebarLinks.map((link) => this.renderLink(link, context.addRenderElement))}</ul>
+              <ul>{sidebarLinks.map(link => this.renderLink(link, context.addRenderElement))}</ul>
 
               {/* Without temporary licences */}
               <SidebarApps
@@ -732,7 +719,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
               <button
                 className="naked-button itemHolder"
                 onClick={() =>
-                  this.setState((prevState) => ({ contextMenu: !prevState.contextMenu }))
+                  this.setState(prevState => ({ contextMenu: !prevState.contextMenu }))
                 }>
                 <Tooltip
                   distance={12}
@@ -763,7 +750,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 id={this.props.id}
                 isadmin={this.props.isadmin}
                 logMeOut={this.props.logMeOut}
-                goTo={(location) => {
+                goTo={location => {
                   this.goTo(location);
                   this.setState({ contextMenu: false });
                 }}

@@ -15,7 +15,7 @@ import UniversalCheckbox from "../../../universalForms/universalCheckbox";
 interface Props {
   service: any;
   close: Function;
-  alias: string | null;
+  alias?: string | null;
   createOrbit: Function;
   externalplan: any;
 }
