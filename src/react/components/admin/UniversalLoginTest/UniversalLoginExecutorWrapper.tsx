@@ -2,8 +2,6 @@ import * as React from "react";
 import UniversalLoginExecutor from "../../UniversalLoginExecutor";
 import { LoginResult, TestResult } from "../../../interfaces";
 import * as Tests from "./tests";
-import { remote } from "electron";
-const { session } = remote;
 
 interface Props {
   loginUrl: string;
@@ -34,9 +32,8 @@ const SECOND = 1000;
 
 class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   state = {
-    currentTest: 0,
+    currentTestIndex: 0,
     testResults: [],
-    storageDataCleared: [],
   };
 
   isPassed(test: Test, loginResult: LoginResult) {
@@ -47,34 +44,20 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
     if (this.hasNextTest()) {
       this.setState((state) => {
         return {
-          currentTest: state.currentTest + 1,
+          currentTestIndex: state.currentTestIndex + 1,
         };
       });
     }
   }
 
   hasNextTest() {
-    return !!Tests.tests[this.state.currentTest + 1];
+    return !!Tests.tests[this.state.currentTestIndex + 1];
   }
 
-  clearStorageData(currentTest: number) {
-    if (this.state.storageDataCleared[currentTest]) {
-      return;
-    }
-
-    session.fromPartition(SSO_TEST_PARTITION).clearStorageData();
-    this.setState((state) => {
-      let storageDataCleared = state.storageDataCleared;
-      storageDataCleared[currentTest] = true;
-
-      return { storageDataCleared };
-    });
-  }
-
-  setResult(currentTest: number, testResult: TestResult) {
+  setResult(currentTestIndex: number, testResult: TestResult) {
     this.setState((state) => {
       let testResults = state.testResults;
-      testResults[currentTest] = testResult;
+      testResults[currentTestIndex] = testResult;
 
       const allTestsFinished = testResults.length === Tests.tests.length;
       this.props.setResult(testResults, allTestsFinished);
@@ -85,48 +68,47 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
     this.advance();
   }
 
-  skipTest(currentTest: number) {
+  skipTest(currentTestIndex: number) {
     const testResult = { skipped: true };
-    this.setResult(currentTest, testResult);
+    this.setResult(currentTestIndex, testResult);
   }
 
   render() {
-    const { currentTest, testResults } = this.state;
-    const test = Tests.tests[currentTest];
+    const { currentTestIndex, testResults } = this.state;
+    const { loginUrl, username, password, takeScreenshot } = this.props;
+
+    const test = Tests.tests[currentTestIndex];
+    const condition = test.skipCondition;
 
     const skipConditionFulfilled =
-      test.skipCondition &&
-      testResults[test.skipCondition.testDependency] &&
-      testResults[test.skipCondition.testDependency].passed ===
-        test.skipCondition.skipIfPassedEquals;
+      condition &&
+      testResults[condition.testDependency] &&
+      testResults[condition.testDependency].passed === condition.skipIfPassedEquals;
 
     if (skipConditionFulfilled) {
-      this.skipTest(currentTest);
-    }
-
-    if (!test.reuseSession) {
-      this.clearStorageData(currentTest);
+      this.skipTest(currentTestIndex);
+      return null;
     }
 
     return (
       <UniversalLoginExecutor
-        key={this.state.currentTest}
-        loginUrl={this.props.loginUrl}
-        username={this.props.username + (test.enterCorrectEmail ? "" : "WRONG")}
-        password={this.props.password + (test.enterCorrectPassword ? "" : "WRONG")}
+        key={currentTestIndex}
+        loginUrl={loginUrl}
+        username={username + (test.enterCorrectEmail ? "" : "NO")}
+        password={password + (test.enterCorrectPassword ? "" : "NO")}
         speed={test.speedFactor}
         timeout={15 * SECOND}
-        webviewId={this.state.currentTest}
+        webviewId={currentTestIndex}
         partition={SSO_TEST_PARTITION}
-        takeScreenshot={this.props.takeScreenshot}
+        deleteCookies={!test.reuseSession}
+        takeScreenshot={takeScreenshot}
         setResult={(loginResult: LoginResult, screenshot: string) => {
           const testResult = {
             passed: this.isPassed(test, loginResult),
             timedOut: loginResult.timedOut,
             screenshot,
           };
-
-          this.setResult(currentTest, testResult);
+          this.setResult(currentTestIndex, testResult);
         }}
       />
     );
