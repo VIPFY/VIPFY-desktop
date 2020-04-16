@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalLoginExecutor from "../../UniversalLoginExecutor";
 import { LoginResult, TestResult } from "../../../interfaces";
-import * as Tests from "./tests";
+import { tests, Test } from "./tests";
 
 interface Props {
   loginUrl: string;
@@ -11,20 +11,9 @@ interface Props {
   setResult: (testResults: TestResult[], allTestsFinished: boolean) => void;
 }
 
-interface Test {
-  expectLoginSuccess: boolean;
-  expectError: boolean;
-  reuseSession: boolean;
-  speedFactor?: number;
-  enterCorrectEmail?: boolean;
-  enterCorrectPassword?: boolean;
-  skipCondition?: SkipCondition;
-}
-
-// sometimes a test should be skipped. this defines the conditions under which that should happen
-interface SkipCondition {
-  testDependency: number; // skip depending on the result of the test with this number
-  skipIfPassedEquals: boolean; // skip if the result success ("passed") of the test dependency equals this value
+interface State {
+  currentTestIndex: number;
+  testResults: TestResult[];
 }
 
 const SSO_TEST_PARTITION = "ssotest";
@@ -51,7 +40,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   }
 
   hasNextTest() {
-    return !!Tests.tests[this.state.currentTestIndex + 1];
+    return !!tests[this.state.currentTestIndex + 1];
   }
 
   setResult(currentTestIndex: number, testResult: TestResult) {
@@ -59,7 +48,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
       let testResults = state.testResults;
       testResults[currentTestIndex] = testResult;
 
-      const allTestsFinished = testResults.length === Tests.tests.length;
+      const allTestsFinished = testResults.length === tests.length;
       this.props.setResult(testResults, allTestsFinished);
 
       return { testResults };
@@ -77,7 +66,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
     const { currentTestIndex, testResults } = this.state;
     const { loginUrl, username, password, takeScreenshot } = this.props;
 
-    const test = Tests.tests[currentTestIndex];
+    const test = tests[currentTestIndex];
     const condition = test.skipCondition;
 
     const skipConditionFulfilled =
@@ -100,7 +89,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         timeout={15 * SECOND}
         webviewId={currentTestIndex}
         partition={SSO_TEST_PARTITION}
-        deleteCookies={!test.reuseSession}
+        deleteCookies={test.deleteCookies}
         takeScreenshot={takeScreenshot}
         setResult={(loginResult: LoginResult, screenshot: string) => {
           const testResult = {
