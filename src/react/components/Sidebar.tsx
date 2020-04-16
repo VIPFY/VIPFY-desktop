@@ -15,7 +15,7 @@ import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
 import { FETCH_EMPLOYEES, fetchDepartmentsData, FETCH_COMPANY } from "../queries/departments";
-import { vipfyAdmins } from "../common/constants";
+import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./security/graphqlOperations";
 import { autoUpdater } from "electron";
 
@@ -331,17 +331,18 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
   };
 
-  renderKategories = (kategorie, addRenderElement, disabled) => {
-    const titel = kategorie[0];
+  rendercategories = (category, addRenderElement, disabled) => {
+    const title = category[0];
     const divList = [];
-    for (let i = 1; i < kategorie.length; i++) {
-      const label = kategorie[i].label;
-      const location = kategorie[i].location;
-      const icon = kategorie[i].icon;
-      const show = kategorie[i].isadmin;
-      const important = kategorie[i].important;
-      const highlight = kategorie[i].highlight;
-      let buttonClass = "naked-button adminHeadline-kategorieElement";
+
+    for (let i = 1; i < category.length; i++) {
+      const label = category[i].label;
+      const location = category[i].location;
+      const icon = category[i].icon;
+      const show = category[i].isadmin;
+      const important = category[i].important;
+      const highlight = category[i].highlight;
+      let buttonClass = "naked-button adminHeadline-categoryElement";
 
       const id = label.toString() + location.toString();
 
@@ -360,7 +361,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
           className={buttonClass}
           onMouseDown={() => {
             document.getElementById(id).className =
-              "naked-button adminHeadline-kategorieElement active";
+              "naked-button adminHeadline-categoryElement active";
           }}
           onMouseUp={() => {
             document.getElementById(id).className = buttonClass;
@@ -377,7 +378,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     return (
       <li>
-        <div className={"adminHeadline-kategorieTitel"}>{titel}</div>
+        <div className={"adminHeadline-categoryTitle"}>{title}</div>
         {divList}
       </li>
     );
@@ -453,7 +454,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
       licences = [];
     }
 
-    const kategories = [
+    const categories = [
       [
         "MANAGEMENT",
         {
@@ -533,6 +534,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
         show: config.showMessageCenter,
       },
       {
+        label: "Billing",
+        location: "billing",
+        icon: "file-invoice-dollar",
+        show: isadmin && config.showBilling,
+        highlight: "billingelement",
+      },
+      {
         label: "Security",
         location: "security",
         icon: "user-shield",
@@ -580,11 +588,28 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "supportelement",
       },
       {
-        label: "Universal Login",
-        location: "universallogin",
-        icon: "pager",
-        show: isadmin && config.showUniversalLoginDebug && this.props.company.unit.id == 14,
+        label: "Team Manager",
+        location: "dmanager",
+        icon: "user-tag",
+        show: isadmin,
         important: false,
+        highlight: "dmanager",
+      },
+      {
+        label: "Employee Manager",
+        location: "emanager",
+        icon: "users-cog",
+        show: isadmin,
+        important: false,
+        highlight: "emanager",
+      },
+      {
+        label: "Service Manager",
+        location: "lmanager",
+        icon: "credit-card-blank",
+        show: isadmin,
+        important: false,
+        highlight: "lmanager",
       },
       {
         label: "Admin",
@@ -611,7 +636,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Vacation Requests",
         location: "vacation",
         icon: "umbrella-beach",
-        show: config.showVacationRequests,
+        show:
+          config.showVacationRequests &&
+          vipfyVacationAdmins.find((admin) => admin == this.props.id),
         highlight: "vacation",
       },
     ];
@@ -756,8 +783,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
               }${sidebarOpen ? "" : " small"}`}>
               <div className="adminHeadline">ADMINPANEL</div>
               <ul>
-                {kategories.map((link) =>
-                  this.renderKategories(link, context.addRenderElement, false)
+                {categories.map((link) =>
+                  this.rendercategories(link, context.addRenderElement, false)
                 )}
               </ul>
             </li>
