@@ -106,7 +106,7 @@ class OrbitSection extends React.Component<Props, State> {
           this.props.orbit.key.domain.search(/:\/\/{1}/) + 3
         )) ||
       "https://",
-    selfhosting: this.props.orbit.key.selfhosting
+    selfhosting: this.props.orbit.key && this.props.orbit.key.selfhosting
   };
 
   showStatus(e) {

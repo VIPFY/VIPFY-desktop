@@ -1028,7 +1028,8 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
           disabled={
             !(
               this.state.deleteArray.orbit ||
-              (this.state.deleteArray.teams && this.state.deleteArray.teams.find(t => t.bool)) ||
+              (this.state.deleteArray.teams &&
+                this.state.deleteArray.teams.find(t => t && t.bool)) ||
               (this.state.deleteArray.accounts &&
                 this.state.deleteArray.accounts.find(a => a && a.bool)) ||
               (this.state.deleteArray.accounts &&

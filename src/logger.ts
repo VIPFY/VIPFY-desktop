@@ -29,46 +29,46 @@ configure({
     logstash: {
       type: logstashudp,
       host: "clientlogs.vipfy.store",
-      port: 80,
+      port: 80
     },
-    logstash_filtered: { type: "logLevelFilter", appender: "logstash", level: "info" },
+    logstash_filtered: { type: "logLevelFilter", appender: "logstash", level: "info" }
   },
-  categories: { default: { appenders: activeAppenders, level: "trace", enableCallStack: true } },
+  categories: { default: { appenders: activeAppenders, level: "trace", enableCallStack: true } }
 });
 
 export const logger = getLogger("vipfy");
 export const resetLoggingContext = () => {
-  // logger.clearContext();
-  // consoleLogger.clearContext();
-  // addToLoggerContext("process_start_time", new Date(process.getCreationTime()));
-  // addToLoggerContext("host_arch", os.arch());
-  // addToLoggerContext("freemem", os.freemem());
-  // addToLoggerContext("totalmem", os.totalmem());
-  // addToLoggerContext("os_platform", os.platform());
-  // addToLoggerContext("os_version", os.release());
-  // addToLoggerContext("host_uptime", os.uptime());
+  logger.clearContext();
+  consoleLogger.clearContext();
+  addToLoggerContext("process_start_time", new Date(process.getCreationTime()));
+  addToLoggerContext("host_arch", os.arch());
+  addToLoggerContext("freemem", os.freemem());
+  addToLoggerContext("totalmem", os.totalmem());
+  addToLoggerContext("os_platform", os.platform());
+  addToLoggerContext("os_version", os.release());
+  addToLoggerContext("host_uptime", os.uptime());
 };
 
 const consoleLogger = getLogger("vipfy.console");
-// console.trace = consoleLogger.trace.bind(consoleLogger);
-// console.debug = consoleLogger.debug.bind(consoleLogger);
-// console.log = consoleLogger.debug.bind(consoleLogger);
-// console.info = consoleLogger.info.bind(consoleLogger);
-// console.warn = consoleLogger.warn.bind(consoleLogger);
-// console.error = consoleLogger.error.bind(consoleLogger);
+console.trace = consoleLogger.trace.bind(consoleLogger);
+console.debug = consoleLogger.debug.bind(consoleLogger);
+console.log = consoleLogger.debug.bind(consoleLogger);
+console.info = consoleLogger.info.bind(consoleLogger);
+console.warn = consoleLogger.warn.bind(consoleLogger);
+console.error = consoleLogger.error.bind(consoleLogger);
 
 export const addToLoggerContext = (key: string, value: any) => {
   consoleLogger.addContext(key, value);
   logger.addContext(key, value);
 };
 
-// addToLoggerContext("process_start_time", new Date(process.getCreationTime()));
-// addToLoggerContext("host_arch", os.arch());
-// addToLoggerContext("freemem", os.freemem());
-// addToLoggerContext("totalmem", os.totalmem());
-// addToLoggerContext("os_platform", os.platform());
-// addToLoggerContext("os_version", os.release());
-// addToLoggerContext("host_uptime", os.uptime());
+addToLoggerContext("process_start_time", new Date(process.getCreationTime()));
+addToLoggerContext("host_arch", os.arch());
+addToLoggerContext("freemem", os.freemem());
+addToLoggerContext("totalmem", os.totalmem());
+addToLoggerContext("os_platform", os.platform());
+addToLoggerContext("os_version", os.release());
+addToLoggerContext("host_uptime", os.uptime());
 
 if (is.renderer()) {
   window.onerror = function (msg, url, lineNo, columnNo, error) {

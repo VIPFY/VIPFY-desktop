@@ -267,7 +267,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
           : optionsobject.loginspeed
         : 10,
       appid: licence.boughtPlan.plan.app.id,
-      key: { ...key, domain: licence.boughtPlan.key.domain },
+      key: { ...key, domain: licence.boughtPlan.key && licence.boughtPlan.key.domain },
       oldspeed: undefined,
       progress: undefined,
       accountId: licence.accountid,
