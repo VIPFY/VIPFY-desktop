@@ -15,13 +15,15 @@ interface State {
   siteIndexUnderTest: number | null;
   runningInBatchMode: boolean;
   sites: Site[];
+  takeScreenshots: boolean;
 }
 
 class UniversalLoginTest extends React.PureComponent<Props, State> {
   state = {
     siteIndexUnderTest: -1,
     runningInBatchMode: false,
-    sites
+    sites,
+    takeScreenshots: true
   };
 
   componentDidUpdate() {
@@ -72,6 +74,14 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     this.setState(
       (prev: State) => {
         let sites = [...prev.sites];
+
+        testResults = testResults.map(v => {
+          if (this.state.runningInBatchMode && v.passed) {
+            delete v.screenshot;
+          }
+          return v;
+        });
+
         sites[prev.siteIndexUnderTest] = {
           ...sites[prev.siteIndexUnderTest],
           testResults,
@@ -129,7 +139,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 loginUrl={site.url}
                 username={site.email}
                 password={site.password}
-                takeScreenshot={!this.state.runningInBatchMode}
+                takeScreenshot={!this.state.runningInBatchMode || this.state.takeScreenshots}
                 setResult={(testResults: TestResult[], allTestsFinished: boolean) =>
                   this.handleResult(siteIndexUnderTest, testResults, allTestsFinished)
                 }
@@ -239,7 +249,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
         <div>
           {this.state.runningInBatchMode ? (
             <span onClick={() => this.setState({ runningInBatchMode: false })}>
-              <i className="fal fa-pause" />
+              <i className="fal fa-pause fa-2x" />
             </span>
           ) : (
             <span
@@ -247,7 +257,22 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 await this.setState({ runningInBatchMode: true });
                 this.advance(true);
               }}>
-              <i className="fal fa-play" />
+              <i className="fal fa-play fa-2x" />
+            </span>
+          )}
+          {this.state.takeScreenshots ? (
+            <span onClick={() => this.setState({ takeScreenshots: false })}>
+              <span className="fa-stack" style={{ verticalAlign: "top" }}>
+                <i className="fal fa-camera fa-stack-1x"></i>
+                <i className="fal fa-ban fa-stack-2x"></i>
+              </span>
+            </span>
+          ) : (
+            <span
+              onClick={async () => {
+                await this.setState({ takeScreenshots: true });
+              }}>
+              <i className="fal fa-camera fa-2x" />
             </span>
           )}
         </div>
