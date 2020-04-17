@@ -7,7 +7,7 @@ import { sites, Site } from "./sites";
 import UniversalButton from "../../universalButtons/universalButton";
 import { TestResult } from "../../../interfaces";
 import { remote } from "electron";
-const { session } = remote;
+const { session, dialog } = remote;
 
 interface Props {}
 
@@ -275,6 +275,40 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               <i className="fal fa-camera fa-2x" />
             </span>
           )}
+          <span
+            onClick={async () => {
+              const res = await dialog.showOpenDialog({
+                filters: [
+                  { name: "JSON", extensions: ["json"] },
+                  { name: "All Files", extensions: ["*"] }
+                ]
+              });
+              if (res.canceled) {
+                return;
+              }
+              const sites = JSON.parse(fs.readFileSync(res.filePaths[0], { encoding: "utf8" }));
+              await this.setState({ sites });
+            }}
+            title="load saved state">
+            <i className="fal fa-folder-open fa-2x" />
+          </span>
+          <span
+            onClick={async () => {
+              const res = await dialog.showSaveDialog({
+                defaultPath: "ssotest.json",
+                filters: [
+                  { name: "JSON", extensions: ["json"] },
+                  { name: "All Files", extensions: ["*"] }
+                ]
+              });
+              if (res.canceled) {
+                return;
+              }
+              fs.writeFileSync(res.filePath, JSON.stringify(this.state.sites));
+            }}
+            title="load saved state">
+            <i className="fal fa-save fa-2x" />
+          </span>
         </div>
         <table className="simpletable">
           <thead>
