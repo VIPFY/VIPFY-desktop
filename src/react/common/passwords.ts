@@ -101,11 +101,11 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
 
     const r = await client.mutate({
       mutation: gql`
-        mutation updatePassword(
+        mutation onChangePasswordEncrypted(
           $oldPasskey: String!
           $newPasskey: String!
           $passwordMetrics: PasswordMetricsInput!
-          $recoveryPrivateKey: String!
+          $recoveryPrivateKey: String
           $newKey: KeyInput!
           $replaceKeys: [KeyInput!]!
         ) {
@@ -281,7 +281,7 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
           $passwordMetrics: PasswordMetricsInput!
           $logOut: Boolean
           $newKey: KeyInput!
-          $recoveryPrivateKey: String!
+          $recoveryPrivateKey: String
           $deprecateAllExistingKeys: Boolean!
           $licenceUpdates: [licenceKeyUpdateInput!]!
         ) {
