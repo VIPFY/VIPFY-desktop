@@ -15,7 +15,7 @@ export interface SkipCondition {
 }
 
 // don't change test order. it matters when it comes to deciding if a test can be skipped.
-export const tests = [
+export const tests: Test[] = [
   {
     expectLoginSuccess: false,
     expectError: true,

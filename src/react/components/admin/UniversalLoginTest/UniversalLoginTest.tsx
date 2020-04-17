@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Tooltip from "react-tooltip-lite";
 import * as fs from "fs";
 import UniversalLoginExecutorWrapper from "./UniversalLoginExecutorWrapper";
-import * as Sites from "./sites";
+import { sites, Site } from "./sites";
 import UniversalButton from "../../universalButtons/universalButton";
 import { TestResult } from "../../../interfaces";
 import { remote } from "electron";
@@ -14,21 +14,14 @@ interface Props {}
 interface State {
   siteIndexUnderTest: number | null;
   runningInBatchMode: boolean;
-  sites: {
-    app: string;
-    url: string;
-    email: string;
-    password: string;
-    testResults?: TestResult[]; // not present in Sites imported from ./sites which causes typescript problems
-    allTestsFinished?: boolean;
-  }[];
+  sites: Site[];
 }
 
 class UniversalLoginTest extends React.PureComponent<Props, State> {
   state = {
     siteIndexUnderTest: -1,
     runningInBatchMode: false,
-    sites: Sites.sites,
+    sites,
   };
 
   componentDidUpdate() {
@@ -40,8 +33,9 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
       return;
     }
 
-    this.setState((state) => {
+    this.setState((state: State) => {
       let nextSiteIndexUnderTest = -1;
+      let sites = state.sites;
 
       if (this.state.runningInBatchMode) {
         nextSiteIndexUnderTest = state.siteIndexUnderTest + 1;
@@ -51,13 +45,15 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
           nextSiteIndexUnderTest++;
           nextSite = state.sites[nextSiteIndexUnderTest];
         }
+
+        sites = this.resetResultsInSites(state, nextSiteIndexUnderTest);
       }
 
-      return { siteIndexUnderTest: nextSiteIndexUnderTest };
+      return { sites, siteIndexUnderTest: nextSiteIndexUnderTest };
     });
   }
 
-  loginDataAvailable(site) {
+  loginDataAvailable(site: Site) {
     if (!site) {
       return false;
     }
@@ -72,9 +68,9 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     );
   }
 
-  handleResult(siteIndexUnderTest, testResults, allTestsFinished) {
+  handleResult(siteIndexUnderTest: number, testResults: TestResult[], allTestsFinished: boolean) {
     this.setState(
-      (prev) => {
+      (prev: State) => {
         let sites = [...prev.sites];
         sites[prev.siteIndexUnderTest] = {
           ...sites[prev.siteIndexUnderTest],
@@ -89,12 +85,33 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     );
   }
 
-  renderTable(siteUnderTest) {
-    return this.state.sites.map((site, siteIndexUnderTest) => (
+  resetResultsInSites(state: State, siteIndex: number) {
+    let sites = state.sites;
+
+    sites[siteIndex].testResults = [];
+    sites[siteIndex].allTestsFinished = false;
+
+    return sites;
+  }
+
+  async runTestOnSite(siteIndexUnderTest: number) {
+    this.setState((state: State) => {
+      const sites = this.resetResultsInSites(state, siteIndexUnderTest);
+      return { sites, siteIndexUnderTest, runningInBatchMode: false };
+    });
+  }
+
+  renderTable(siteUnderTest: Site) {
+    return this.state.sites.map((site: Site, siteIndexUnderTest: number) => (
       <React.Fragment key={`${site.app}`}>
         <tr>
           <td>{site.app}</td>
-          {Array.from({ length: 5 }, (_, testIndex) => (
+          <td>
+            <span onClick={() => this.runTestOnSite(siteIndexUnderTest)}>
+              <i className="fal fa-play" />
+            </span>
+          </td>
+          {Array.from({ length: 5 }, (_, testIndex: number) => (
             <td key={`${site.app}_${siteIndexUnderTest}_${testIndex}`}>
               {this.renderTestStatus(
                 testIndex,
@@ -103,11 +120,6 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               )}
             </td>
           ))}
-          <td>
-            <span onClick={() => this.setState({ siteIndexUnderTest, runningInBatchMode: false })}>
-              <i className="fal fa-arrow-square-right" />
-            </span>
-          </td>
         </tr>
 
         {siteUnderTest === site && !site.allTestsFinished && (
@@ -118,7 +130,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 username={site.email}
                 password={site.password}
                 takeScreenshot={!this.state.runningInBatchMode}
-                setResult={(testResults, allTestsFinished) =>
+                setResult={(testResults: TestResult[], allTestsFinished: boolean) =>
                   this.handleResult(siteIndexUnderTest, testResults, allTestsFinished)
                 }
               />
@@ -152,7 +164,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 />
               </span>
             }>
-            <span style={{ color: "grey" }}>{this.renderFAIcon("camera")}</span>
+            <span style={{ color: "grey" }}>{this.renderTestResultIcon("camera")}</span>
           </Tooltip>
         )}
       </React.Fragment>
@@ -163,17 +175,17 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     return results && results[testIndex];
   }
 
-  renderFAIcon(iconName: string) {
-    return <i className={"fas fa-" + iconName} style={{ paddingRight: "10px" }} />;
+  renderTestResultIcon(iconName: string) {
+    return <i className={"fal fa-" + iconName} style={{ paddingRight: "10px" }} />;
   }
 
   renderTestResult(result: TestResult) {
     const rendering = (color: string, iconName: string) => (
-      <span style={{ color }}>{this.renderFAIcon(iconName)}</span>
+      <span style={{ color }}>{this.renderTestResultIcon(iconName)}</span>
     );
 
     if (result.skipped) {
-      return rendering("lightgrey", "fast-forward");
+      return rendering("lightgrey", "step-forward");
     } else if (result.timedOut) {
       return rendering("orange", "alarm-exclamation");
     } else if (result.passed) {
@@ -183,16 +195,26 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     }
   }
 
-  renderProportion(key) {
-    let total = this.state.sites.filter((s) => s[key] == true || s[key] === false).length;
-    if (total == 0) {
+  renderProportion(testIndex: number) {
+    const sitesWithResult = this.state.sites.filter(
+      (site: Site) => !!site.testResults && site.testResults[testIndex]
+    );
+
+    const totalSitesWithResult = sitesWithResult.length;
+
+    if (totalSitesWithResult == 0) {
       return <span>0/0</span>;
     }
 
-    let t = this.state.sites.filter((s) => s[key] == true).length;
+    const totalSitesWithPassedTestResult = sitesWithResult.filter(
+      (site: Site) => site.testResults[testIndex].passed
+    ).length;
+
+    const percentage = (totalSitesWithPassedTestResult / totalSitesWithResult) * 100;
+
     return (
       <span>
-        {t}/{total} ({((t / total) * 100).toFixed(2)}%)
+        {totalSitesWithPassedTestResult}/{totalSitesWithResult} ({percentage.toFixed(2)}%)
       </span>
     );
   }
@@ -231,7 +253,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
         <table className="simpletable">
           <thead>
             <tr>
-              <th />
+              <th colSpan={2} />
               <th>Test 1</th>
               <th>Test 2</th>
               <th>Test 3</th>
@@ -239,7 +261,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               <th>Test 5</th>
             </tr>
             <tr>
-              <th>Given:</th>
+              <th colSpan={2}>Given:</th>
               <th>Wrong Email</th>
               <th>Wrong Password</th>
               <th>Correct Credentials, Fast</th>
@@ -247,7 +269,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               <th>Preexisting Session</th>
             </tr>
             <tr>
-              <th>Expected:</th>
+              <th colSpan={2}>Expected:</th>
               <th>Error</th>
               <th>Error</th>
               <th>Login</th>
@@ -255,12 +277,12 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               <th>Login</th>
             </tr>
             <tr>
-              <th>Tests Passed:</th>
-              <th>{this.renderProportion("errorin")}</th>
-              <th>{this.renderProportion("errorin")}</th>
-              <th>{this.renderProportion("loggedin")}</th>
-              <th>{this.renderProportion("loggedin")}</th>
-              <th>{this.renderProportion("loggedin")}</th>
+              <th colSpan={2}>Tests Passed:</th>
+              <th>{this.renderProportion(0)}</th>
+              <th>{this.renderProportion(1)}</th>
+              <th>{this.renderProportion(2)}</th>
+              <th>{this.renderProportion(3)}</th>
+              <th>{this.renderProportion(4)}</th>
             </tr>
             <tr>
               <th>App</th>
