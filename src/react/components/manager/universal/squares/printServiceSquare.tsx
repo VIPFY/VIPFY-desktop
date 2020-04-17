@@ -43,7 +43,9 @@ class PrintServiceSquare extends React.Component<Props, State> {
                 backgroundImage: `url(https://appimages.vipfy.store/${size}/${size}/fit/${encodeURI(
                   appidFunction(service).icon
                 )})`,
-                backgroundColor: "unset"
+                backgroundColor: "unset",
+                width: this.props.size,
+                height: this.props.size
               }
             : additionalStyles || {}
         }>
