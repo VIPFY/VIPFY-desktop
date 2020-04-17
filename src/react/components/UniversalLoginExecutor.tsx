@@ -47,12 +47,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     progress: () => null,
     takeScreenshot: true,
     className: "universalLoginExecutor",
-    interactionHappenedCallback: () => null,
+    interactionHappenedCallback: () => null
   };
 
   state = {
     running: false,
-    solve401: null,
+    solve401: null
   };
 
   loginState = {
@@ -66,7 +66,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     emailEnteredEnd: false,
     passwordEnteredEnd: false,
     domainEnteredEnd: false,
-    step: 0,
+    step: 0
   };
 
   isUnmounted = false;
@@ -128,8 +128,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             ? nextProps[key]
             : nextProps[key].fetchNotifications;
 
-          array.forEach((element) => {
-            if (!arraycheck.find((e) => e.id == element.id)) {
+          array.forEach(element => {
+            if (!arraycheck.find(e => e.id == element.id)) {
               update = true;
             }
           });
@@ -169,8 +169,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         <div>
           <UniversalTextInput
             id="htaccessusername"
-            livevalue={(v) =>
-              this.setState((oldstate) => {
+            livevalue={v =>
+              this.setState(oldstate => {
                 const solve401 = oldstate.solve401;
                 solve401.username = v;
                 return { oldstate, solve401 };
@@ -181,8 +181,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           <UniversalTextInput
             id="htaccesspassword"
             type="password"
-            livevalue={(v) =>
-              this.setState((oldstate) => {
+            livevalue={v =>
+              this.setState(oldstate => {
                 const solve401 = oldstate.solve401;
                 solve401.password = v;
                 return { ...oldstate, solve401 };
@@ -194,7 +194,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             type="high"
             onClick={() => {
               this.props.showLoadingScreen(true);
-              this.setState((oldstate) => {
+              this.setState(oldstate => {
                 const urlParts = this.props.loginUrl.split("://", 2);
                 const url = `${urlParts[0]}://${oldstate.solve401.username}:${oldstate.solve401.password}@${urlParts[1]}`;
                 return { ...oldstate, currentUrl: url, solve401: null };
@@ -211,7 +211,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         darwin:
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36",
         linux:
-          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36",
+          "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"
       };
       return (
         <WebView
@@ -224,16 +224,16 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             useragentStrings[os.platform()] ||
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
           }
-          onIpcMessage={(e) => this.onIpcMessage(e)}
+          onIpcMessage={e => this.onIpcMessage(e)}
           style={this.props.style || {}}
-          onNewWindow={(e) => this.onNewWindow(e)}
-          onDidNavigate={(e) => {
+          onNewWindow={e => this.onNewWindow(e)}
+          onDidNavigate={e => {
             if (e.httpResponseCode == 401) {
               this.props.showLoadingScreen(false);
               this.setState({ solve401: {} });
             }
           }}
-          onPageTitleUpdated={(title) =>
+          onPageTitleUpdated={title =>
             this.props.setViewTitle && this.props.setViewTitle(title.title)
           }
         />
@@ -416,7 +416,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         })();
         `
         )
-        .then((e) => {
+        .then(e => {
           return e;
         });
     } else {
@@ -587,7 +587,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           })();
         `
         )
-        .then((e) => {
+        .then(e => {
           return e;
         });
     } else {
@@ -614,7 +614,9 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           this.sentResult = true;
 
           const image = await webview.getWebContents().capturePage();
-          this.props.setResult(resultValues, image.toDataURL({ scaleFactor: 0.5 }));
+          const size = image.getSize();
+          const resized = image.resize({ width: size.width / 2, height: size.height / 2 });
+          this.props.setResult(resultValues, resized.toDataURL());
         }, this.screenshotDelay);
       } else {
         setTimeout(() => {
@@ -646,7 +648,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         ...this.loginState,
         loggedIn: true,
         direct: true,
-        error: false,
+        error: false
       });
       this.clearProgressTimer();
     }
@@ -737,7 +739,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             x: e.args[0],
             y: e.args[1],
             button: "left",
-            clickCount: 1,
+            clickCount: 1
           });
           await this.modifiedSleep(Math.random() * 30 + 50);
           w.sendInputEvent({
@@ -745,7 +747,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             x: e.args[0],
             y: e.args[1],
             button: "left",
-            clickCount: 1,
+            clickCount: 1
           });
           await this.modifiedSleep(Math.random() * 30 + 200);
           w.send("clicked");
@@ -840,7 +842,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           e.target.send("loginData", {
             ...this.loginState,
             speed: this.props.speed,
-            execute: this.props.execute,
+            execute: this.props.execute
           });
         }
         break;
