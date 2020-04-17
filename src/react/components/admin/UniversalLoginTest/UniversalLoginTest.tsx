@@ -21,7 +21,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   state = {
     siteIndexUnderTest: -1,
     runningInBatchMode: false,
-    sites,
+    sites
   };
 
   componentDidUpdate() {
@@ -75,7 +75,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
         sites[prev.siteIndexUnderTest] = {
           ...sites[prev.siteIndexUnderTest],
           testResults,
-          allTestsFinished,
+          allTestsFinished
         };
 
         return { sites };
@@ -159,7 +159,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                   src={results[testIndex].screenshot}
                   style={{
                     width: "1024px",
-                    objectFit: "cover",
+                    objectFit: "cover"
                   }}
                 />
               </span>
@@ -197,7 +197,8 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
 
   renderProportion(testIndex: number) {
     const sitesWithResult = this.state.sites.filter(
-      (site: Site) => !!site.testResults && site.testResults[testIndex]
+      (site: Site) =>
+        !!site.testResults && site.testResults[testIndex] && !site.testResults[testIndex].skipped
     );
 
     const totalSitesWithResult = sitesWithResult.length;
