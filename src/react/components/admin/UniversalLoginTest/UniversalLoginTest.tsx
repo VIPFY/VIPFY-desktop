@@ -135,26 +135,27 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
       return isUnderTest ? <i className="fal fa-spinner fa-spin" /> : " ";
     }
 
-    if (!results[testIndex].screenshot) {
-      return this.renderTestResult(results[testIndex]);
-    }
-
     return (
-      <Tooltip
-        direction="left"
-        content={
-          <span>
-            <img
-              src={results[testIndex].screenshot}
-              style={{
-                width: "1024px",
-                objectFit: "cover",
-              }}
-            />
-          </span>
-        }>
+      <React.Fragment>
         {this.renderTestResult(results[testIndex])}
-      </Tooltip>
+        {results[testIndex].screenshot && (
+          <Tooltip
+            tagName="span"
+            content={
+              <span>
+                <img
+                  src={results[testIndex].screenshot}
+                  style={{
+                    width: "1024px",
+                    objectFit: "cover",
+                  }}
+                />
+              </span>
+            }>
+            <span style={{ color: "grey" }}>{this.renderFAIcon("camera")}</span>
+          </Tooltip>
+        )}
+      </React.Fragment>
     );
   }
 
@@ -162,17 +163,23 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     return results && results[testIndex];
   }
 
+  renderFAIcon(iconName: string) {
+    return <i className={"fas fa-" + iconName} style={{ paddingRight: "10px" }} />;
+  }
+
   renderTestResult(result: TestResult) {
-    const rendering = (color, text) => <span style={{ color }}>{text}</span>;
+    const rendering = (color: string, iconName: string) => (
+      <span style={{ color }}>{this.renderFAIcon(iconName)}</span>
+    );
 
     if (result.skipped) {
-      return rendering("blue", "Skipped");
+      return rendering("lightgrey", "fast-forward");
     } else if (result.timedOut) {
-      return rendering("orange", "Timeout");
+      return rendering("orange", "alarm-exclamation");
     } else if (result.passed) {
-      return rendering("green", "Passed");
+      return rendering("green", "check-square");
     } else {
-      return rendering("red", "Failed");
+      return rendering("red", "bolt");
     }
   }
 
