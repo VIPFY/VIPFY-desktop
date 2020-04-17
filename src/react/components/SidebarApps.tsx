@@ -30,17 +30,17 @@ class SidebarApps extends React.Component<Props, State> {
     context: false,
     clientX: 0,
     clientY: 0,
-    selected: -1
+    selected: -1,
   };
 
   wrapper = React.createRef();
 
   componentDidMount() {
-    document.addEventListener("mousedown", e => this.handleClickOutside(e));
+    document.addEventListener("mousedown", (e) => this.handleClickOutside(e));
   }
 
   componentWillUnmount() {
-    document.removeEventListener("mousedown", e => this.handleClickOutside(e));
+    document.removeEventListener("mousedown", (e) => this.handleClickOutside(e));
   }
 
   handleClickOutside(event) {
@@ -55,9 +55,9 @@ class SidebarApps extends React.Component<Props, State> {
   }
 
   toggleApps = () =>
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
-      showApps: !prevState.showApps
+      showApps: !prevState.showApps,
     }));
 
   handleArrowKeys(key) {
@@ -66,7 +66,7 @@ class SidebarApps extends React.Component<Props, State> {
         if (
           (this.state.showMoreApps &&
             this.state.selected <
-              this.props.licences.filter(licence => {
+              this.props.licences.filter((licence) => {
                 if (licence.boughtplanid.alias) {
                   return licence.boughtplanid.alias
                     .toUpperCase()
@@ -80,7 +80,7 @@ class SidebarApps extends React.Component<Props, State> {
                 1) ||
           (!this.state.showMoreApps && this.state.selected < 4)
         ) {
-          this.setState(oldstate => ({ ...oldstate, selected: oldstate.selected + 1 }));
+          this.setState((oldstate) => ({ ...oldstate, selected: oldstate.selected + 1 }));
         }
         break;
       case "ArrowUp":
@@ -89,14 +89,14 @@ class SidebarApps extends React.Component<Props, State> {
             this.searchInput.focus();
           }*/
           if (this.state.selected >= 0) {
-            this.setState(oldstate => ({ ...oldstate, selected: oldstate.selected - 1 }));
+            this.setState((oldstate) => ({ ...oldstate, selected: oldstate.selected - 1 }));
           }
         }
         break;
       case "Enter":
         {
           const licences = this.props.licences
-            .filter(licence => {
+            .filter((licence) => {
               if (licence.boughtplanid.alias) {
                 return licence.boughtplanid.alias
                   .toUpperCase()
@@ -159,12 +159,12 @@ class SidebarApps extends React.Component<Props, State> {
     const input = (style = {}) => (
       <div style={{ marginLeft: "8px", width: "calc(100% - 48px)" }}>
         <input
-          ref={node => (this.searchInput = node)}
+          ref={(node) => (this.searchInput = node)}
           value={this.state.searchString}
-          onChange={e => this.setState({ searchString: e.target.value, selected: -1 })}
+          onChange={(e) => this.setState({ searchString: e.target.value, selected: -1 })}
           placeholder="Search Apps"
           className={`sidebar-search${style ? style : sidebarOpen ? "" : "-tooltip"}`}
-          onContextMenu={e => {
+          onContextMenu={(e) => {
             e.preventDefault();
             this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
           }}
@@ -183,17 +183,18 @@ class SidebarApps extends React.Component<Props, State> {
 
     return (
       <ul
-        style={{ marginTop: "40px" }}
-        onKeyDown={e => this.handleArrowKeys(e.key)}
+        className="sidebar-main sidebarAppsholder"
+        onKeyDown={(e) => this.handleArrowKeys(e.key)}
         onBlur={() => this.setState({ selected: -1 })}>
-        <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
+        {/* <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
           <button
             type="button"
             onClick={this.toggleApps}
-            className="naked-button itemHolder" /*sidebar-link-apps*/
+            className="naked-button itemHolder" sidebar-link-apps
             style={{ justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
               <Tooltip
+                className="sidebar-tooltip"
                 useHover={!sidebarOpen}
                 distance={7}
                 arrowSize={5}
@@ -210,6 +211,7 @@ class SidebarApps extends React.Component<Props, State> {
 
             <div style={{ position: "absolute", left: "187px" }}>
               <Tooltip
+                className="sidebar-tooltip"
                 arrowSize={5}
                 distance={12}
                 useHover={sidebarOpen}
@@ -221,20 +223,24 @@ class SidebarApps extends React.Component<Props, State> {
               </Tooltip>
             </div>
           </button>
-        </li>
+        </li> */}
 
         <li>
           <ul className="sidebar-apps">
-            {showApps && (
+            {/* {showApps && (
               <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`} ref={this.wrapper}>
                 <button
                   type="button"
                   onClick={() => this.searchInput.focus()}
                   className={`naked-button itemHolder${
                     this.state.selected == -1 ? " selected" : ""
-                  }`} /*sidebar-link-apps*/
+                  }`} /*sidebar-link-apps
                 >
-                  <Tooltip useHover={!sidebarOpen} direction="right" content={input()}>
+                  <Tooltip
+                    useHover={!sidebarOpen}
+                    direction="right"
+                    content={input()}
+                    className="sidebar-tooltip">
                     <div className="naked-button sidebarButton">
                       <i className="carret fal fa-search" />
                     </div>
@@ -278,12 +284,12 @@ class SidebarApps extends React.Component<Props, State> {
                   )}
                 </button>
               </li>
-            )}
+            )} */}
 
             {showApps &&
               licences.length > 0 &&
               licences
-                .filter(licence => {
+                .filter((licence) => {
                   if (licence.boughtplanid.alias) {
                     return licence.boughtplanid.alias
                       .toUpperCase()
@@ -328,7 +334,7 @@ class SidebarApps extends React.Component<Props, State> {
                       l.vacationstart <= moment.now() &&
                       ((l.vacationend && l.vacationend > moment.now()) || l.vacationend == null))
                 )*/
-                .filter((_, index) => (showMoreApps ? true : index < 5))
+                /* .filter((_, index) => (showMoreApps ? true : index < 5)) */
                 .map((licence, index) => {
                   if (!licence) {
                     return;
@@ -341,6 +347,7 @@ class SidebarApps extends React.Component<Props, State> {
                   }
                   return (
                     <SidebarLink
+                      disabled={false}
                       key={`ServiceLogo-${licence.id}`}
                       licence={licence}
                       openInstances={openInstances}
@@ -361,19 +368,20 @@ class SidebarApps extends React.Component<Props, State> {
           </ul>
         </li>
 
-        {showApps && licences.length > 5 && (
+        {/* {showApps && licences.length > 5 && (
           <li className={`sidebar-link show-more${sidebarOpen ? "" : "-small"}`}>
             <button
               type="button"
               onClick={() =>
-                this.setState(prevState => ({
+                this.setState((prevState) => ({
                   ...prevState,
-                  showMoreApps: !prevState.showMoreApps
+                  showMoreApps: !prevState.showMoreApps,
                 }))
               }
-              className="naked-button itemHolder" /*sidebar-link-apps*/
+              className="naked-button itemHolder" /*sidebar-link-apps
               style={{ color: "#ffffff80" }}>
               <Tooltip
+                className="sidebar-tooltip"
                 arrowSize={5}
                 distance={12}
                 useHover={!sidebarOpen}
@@ -388,7 +396,7 @@ class SidebarApps extends React.Component<Props, State> {
               </span>
             </button>
           </li>
-        )}
+        )} */}
       </ul>
     );
   }
