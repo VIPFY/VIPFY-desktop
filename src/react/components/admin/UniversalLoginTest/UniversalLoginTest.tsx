@@ -248,7 +248,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
 
         <div>
           {this.state.runningInBatchMode ? (
-            <span onClick={() => this.setState({ runningInBatchMode: false })}>
+            <span onClick={() => this.setState({ runningInBatchMode: false })} style={{marginRight: "8px"}}>
               <i className="fal fa-pause fa-2x" />
             </span>
           ) : (
@@ -256,12 +256,12 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               onClick={async () => {
                 await this.setState({ runningInBatchMode: true });
                 this.advance(true);
-              }}>
+              }} style={{marginRight: "8px"}}>
               <i className="fal fa-play fa-2x" />
             </span>
           )}
           {this.state.takeScreenshots ? (
-            <span onClick={() => this.setState({ takeScreenshots: false })}>
+            <span onClick={() => this.setState({ takeScreenshots: false })} style={{marginRight: "8px"}}>
               <span className="fa-stack" style={{ verticalAlign: "top" }}>
                 <i className="fal fa-camera fa-stack-1x"></i>
                 <i className="fal fa-ban fa-stack-2x"></i>
@@ -271,7 +271,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             <span
               onClick={async () => {
                 await this.setState({ takeScreenshots: true });
-              }}>
+              }} style={{marginRight: "8px"}}>
               <i className="fal fa-camera fa-2x" />
             </span>
           )}
@@ -289,7 +289,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               const sites = JSON.parse(fs.readFileSync(res.filePaths[0], { encoding: "utf8" }));
               await this.setState({ sites });
             }}
-            title="load saved state">
+            title="Load from file" style={{marginRight: "8px"}}>
             <i className="fal fa-folder-open fa-2x" />
           </span>
           <span
@@ -306,7 +306,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               }
               fs.writeFileSync(res.filePath, JSON.stringify(this.state.sites));
             }}
-            title="load saved state">
+            title="Save results to file">
             <i className="fal fa-save fa-2x" />
           </span>
         </div>
