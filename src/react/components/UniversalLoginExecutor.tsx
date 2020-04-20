@@ -34,6 +34,7 @@ interface Props {
   deleteCookies?: boolean;
   webviewId?: number;
   modifyFields?: Object;
+  licenceID?: string;
 }
 
 interface State {
@@ -157,7 +158,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       //TODO HISTORY
       //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
 
-      if (e.url.indexOf("wchat") == -1) {
+      if (this.props.addWebview && e.url.indexOf("wchat") == -1) {
         this.props.addWebview(this.props.licenceID, true, e.url, true);
       }
     }
