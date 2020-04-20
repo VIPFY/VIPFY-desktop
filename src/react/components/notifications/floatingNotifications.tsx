@@ -5,6 +5,7 @@ interface Props {
   sidebarOpen: boolean;
   data: any;
   subscribeToMore: Function;
+  adminOpen?: boolean;
 }
 interface State {
   initialLoad: boolean;
@@ -128,10 +129,15 @@ class FloatingNotifications extends React.Component<Props, State> {
   }
 
   render() {
+    let left = 72;
+    if (this.props.sidebarOpen) {
+      left += 176;
+    }
+    if (this.props.adminOpen) {
+      left += 176;
+    }
     return (
-      <div
-        className="floatingNotificationsHolder"
-        style={{ left: this.props.sidebarOpen ? "248px" : "56px" }}>
+      <div className="floatingNotificationsHolder" style={{ left }}>
         {this.floatingNotifications.map(fn => fn && fn.element)}
       </div>
     );
