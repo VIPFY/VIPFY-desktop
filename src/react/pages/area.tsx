@@ -51,7 +51,7 @@ import TeamOverview from "./manager/teamOverview";
 import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
-import Order from "./marketplace/order";
+//import Order from "./marketplace/order";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
