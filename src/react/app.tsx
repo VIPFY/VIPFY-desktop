@@ -27,6 +27,7 @@ const { session, BrowserWindow } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
+import { WorkAround } from "./interfaces";
 
 const END_IMPERSONATION = gql`
   mutation onEndImpersonation($token: String!) {
@@ -38,6 +39,7 @@ interface AppProps {
   client: ApolloClient<InMemoryCache>;
   history: any;
   logoutFunction: Function;
+  showPlanFunction: Function;
   upgradeErrorHandlerSetter: Function;
   me: any;
   moveTo: Function;
@@ -74,6 +76,7 @@ interface AppState {
   twofactor: string | null;
   unitid: string | null;
   usedLicenceIDs: string[];
+  showPlanModal: boolean;
 }
 
 const INITIAL_POPUP = {
@@ -96,7 +99,8 @@ const INITIAL_STATE = {
   reshow: null,
   twofactor: null,
   unitid: null,
-  usedLicenceIDs: []
+  usedLicenceIDs: [],
+  showPlanModal: false
 };
 
 const tutorial = gql`
@@ -135,6 +139,7 @@ class App extends React.Component<AppProps, AppState> {
 
   componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
+    this.props.showPlanFunction(this.showPlanModal);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
     // session.defaultSession.cookies.get({}, (error, cookies) => {
     //   if (error) {
@@ -335,6 +340,8 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
+  showPlanModal = () => this.setState({ showPlanModal: true });
+
   moveTo = (path: string) => {
     if (!(this.props.location.pathname === `/area/${path}`)) {
       this.setState({ page: path });
@@ -345,7 +352,7 @@ class App extends React.Component<AppProps, AppState> {
   renderComponents = () => {
     if (localStorage.getItem("token")) {
       return (
-        <Query query={me} fetchPolicy="network-only">
+        <Query<WorkAround, WorkAround> query={me} fetchPolicy="network-only">
           {({ data, loading, error, refetch }) => {
             if (loading) {
               return <LoadingDiv />;
@@ -402,8 +409,10 @@ class App extends React.Component<AppProps, AppState> {
                       sidebarloaded={this.sidebarloaded}
                       setName={this.setName}
                       logMeOut={this.logMeOut}
+                      closePlanModal={() => this.setState({ showPlanModal: false })}
                       showPopup={data => this.renderPopup(data)}
                       moveTo={this.moveTo}
+                      showPlanModal={this.state.showPlanModal}
                       {...data.me}
                       employees={data.me.company.employees}
                       profilepicture={data.me.profilepicture}
@@ -489,14 +498,12 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { placeid, popup } = this.state;
-
     return (
       <AppContext.Provider
         value={{
           showPopup: (data: PopUp) => this.renderPopup(data),
           placeid,
           logOut: this.logMeOut,
-          renderTutorial: e => this.renderTutorial(e),
           setrenderElements: e => this.setrenderElements(e),
           addRenderElement: e => this.addRenderElement(e),
           addRenderAction: e => this.addRenderAction(e),

@@ -16,13 +16,18 @@ import config from "../configurationManager";
 import { logger } from "../logger";
 import { typeDefs, resolvers } from "./localGraphQL";
 
+interface MemoryObject {
+  __typename: string;
+  [someProp: string]: any;
+}
+
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
 // eslint-disable-next-line
 const secure = config.backendSSL ? "s" : "";
 
 const cache = new InMemoryCache({
-  dataIdFromObject: object => {
+  dataIdFromObject: (object: MemoryObject) => {
     switch (object.__typename) {
       case "AppUsage":
         if (object.app && object.app.id !== undefined) {
@@ -169,8 +174,12 @@ const wsLink = new WebSocketLink({
   }
 });
 
-// We pass our logout function here to log the User out in case of Auth Errors
+// Declaring of Functions which will get logic on Mount. Otherwise an Error occurs.
 let logout = () => {
+  return;
+};
+
+let showPlanModal = () => {
   return;
 };
 
@@ -186,19 +195,14 @@ let dismissHeaderNotification = (_a, _b) => {
   return;
 };
 
+// Setting the declared Functions logic.
 export const setLogoutFunction = logoutFunc => {
   logout = logoutFunc;
   window.logout = logoutFunc;
 };
-
-export const setUpgradeErrorHandler = handlerFunc => {
-  handleUpgradeError = handlerFunc;
-};
-
-export const setHeaderNotification = addFunction => {
-  addHeaderNotification = addFunction;
-};
-
+export const setShowPlanFunction = showPlanFunc => (showPlanModal = showPlanFunc);
+export const setUpgradeErrorHandler = handlerFunc => (handleUpgradeError = handlerFunc);
+export const setHeaderNotification = addFunction => (addHeaderNotification = addFunction);
 export const setDismissHeaderNotification = removeFunction => {
   dismissHeaderNotification = removeFunction;
 };
@@ -212,6 +216,9 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         return logger.error(
           `[RightsError]: Message: ${message}, Seems like a user doesn't have the neccessary rights`
         );
+      } else if (data && data.code == 402) {
+        console.log("FIRE: errorLink -> data", data);
+        return showPlanModal();
       } else if (data && data.code == 426) {
         handleUpgradeError();
       }

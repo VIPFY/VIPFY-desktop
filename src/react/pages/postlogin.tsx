@@ -1,5 +1,4 @@
 import * as React from "react";
-import { decode } from "jsonwebtoken";
 import { Query, withApollo } from "react-apollo";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
@@ -11,8 +10,10 @@ import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment from "moment";
-import { filterError, concatName } from "../common/functions";
+import { concatName } from "../common/functions";
 import UserName from "../components/UserName";
+import { WorkAround } from "../interfaces";
+import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -27,6 +28,8 @@ interface PostLoginProps {
   history: any;
   context: any;
   addUsedLicenceID: Function;
+  showPlanModal: boolean;
+  closePlanModal: Function;
 }
 
 interface State {
@@ -54,12 +57,12 @@ class PostLogin extends React.Component<PostLoginProps, State> {
   render() {
     const isImpersonating = !!localStorage.getItem("impersonator-token");
     return (
-      <Query query={me}>
+      <Query<WorkAround, WorkAround> query={me}>
         {({ data, loading, error, refetch }) => {
-          const { context, ...clearProps } = this.props;
+          const { context, ...pureProps } = this.props;
 
           if (loading) {
-            return <LoadingDiv text="Preparing Vipfy for you" />;
+            return <LoadingDiv />;
           }
 
           if (error || !data || !data.me) {
@@ -98,7 +101,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
               }
             );
 
-            clearProps.impersonation = true;
+            pureProps.impersonation = true;
           }
 
           if (!data.me.company.setupfinished) {
@@ -113,13 +116,13 @@ class PostLogin extends React.Component<PostLoginProps, State> {
             return (
               <FirstLogin
                 setFirstLogin={() => this.setState({ firstLogin: true })}
-                {...clearProps}
+                {...pureProps}
               />
             );
           }
 
           if (data.me.needspasswordchange && !this.reachedArea && !isImpersonating) {
-            return <PasswordChange firstLogin={this.state.firstLogin} {...clearProps} />;
+            return <PasswordChange firstLogin={this.state.firstLogin} {...pureProps} />;
           }
 
           if (data.me.needstwofa) {
@@ -130,7 +133,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                   dontClose={true}
                   finishSetup={() => {
                     refetch();
-                    clearProps.history.push("/area/dashboard");
+                    pureProps.history.push("/area/dashboard");
                   }}
                   user={data.me}
                 />
@@ -143,10 +146,12 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           }
 
           return (
-            <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
-              {({ data, error }) => {
-                if (error) {
-                  return filterError(error);
+            <Query<WorkAround, WorkAround>
+              pollInterval={60 * 60 * 1000 + 10000}
+              query={FETCH_VIPFY_PLAN}>
+              {({ data, error: e2 }) => {
+                if (e2) {
+                  console.error(e2);
                 }
 
                 if (data && data.fetchVipfyPlan) {
@@ -161,11 +166,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                         `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
                         { type: "error", key: "expire" }
                       );
-                    } else if (
-                      moment()
-                        .add(3, "months")
-                        .isBefore(expiry)
-                    ) {
+                    } else if (moment().add(3, "months").isBefore(expiry)) {
                       // nothing to do
                     } else {
                       context.addHeaderNotification(
@@ -177,10 +178,14 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                 }
 
                 return (
-                  <Area
-                    {...clearProps}
-                    style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
-                  />
+                  <React.Fragment>
+                    <Area
+                      {...pureProps}
+                      style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
+                    />
+
+                    {pureProps.showPlanModal && <VIPFYPlanPopup close={pureProps.closePlanModal} />}
+                  </React.Fragment>
                 );
               }}
             </Query>
