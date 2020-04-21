@@ -1,5 +1,4 @@
 import * as React from "react";
-import { decode } from "jsonwebtoken";
 import { Query, withApollo } from "react-apollo";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
@@ -12,7 +11,7 @@ import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment from "moment";
 import { filterError, concatName } from "../common/functions";
-import UserName from "../components/UserName";
+import { WorkAround } from "../interfaces";
 
 interface PostLoginProps {
   logMeOut: Function;
@@ -27,6 +26,9 @@ interface PostLoginProps {
   history: any;
   context: any;
   addUsedLicenceID: Function;
+  firstname: string;
+  middlename: string;
+  lastname: string;
 }
 
 interface State {
@@ -53,13 +55,14 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
   render() {
     const isImpersonating = !!localStorage.getItem("impersonator-token");
+
     return (
-      <Query query={me}>
+      <Query<WorkAround, WorkAround> query={me}>
         {({ data, loading, error, refetch }) => {
           const { context, ...clearProps } = this.props;
 
           if (loading) {
-            return <LoadingDiv text="Preparing Vipfy for you" />;
+            return <LoadingDiv />;
           }
 
           if (error || !data || !data.me) {
@@ -87,7 +90,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
           if (isImpersonating) {
             context.addHeaderNotification(
-              `You are impersonating the User ${concatName(this.props)}`,
+              `You are impersonating the User ${concatName(clearProps)}`,
               {
                 type: "impersonation",
                 key: "impersonator",
@@ -143,20 +146,22 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           }
 
           return (
-            <Query pollInterval={60 * 60 * 1000 + 10000} query={FETCH_VIPFY_PLAN}>
-              {({ data, error }) => {
+            <Query<WorkAround, WorkAround>
+              pollInterval={60 * 60 * 1000 + 10000}
+              query={FETCH_VIPFY_PLAN}>
+              {({ data: d2, error }) => {
                 if (error) {
                   return filterError(error);
                 }
 
-                if (data && data.fetchVipfyPlan) {
-                  const vipfyPlan = data.fetchVipfyPlan.plan.name;
+                if (d2 && d2.fetchVipfyPlan && d2.fetchVipfyPlan.endtime) {
+                  const vipfyPlan = d2.fetchVipfyPlan.plan.name;
                   // TODO: [VIP-314] Reimplement credits when new structure is clear
                   // const { fetchCredits } = data;
-                  const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
+                  const expiry = moment(parseInt(d2.fetchVipfyPlan.endtime));
 
                   if (context) {
-                    if (moment().isAfter(expiry)) {
+                    if (expiry && moment().isAfter(expiry)) {
                       context.addHeaderNotification(
                         `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
                         { type: "error", key: "expire" }

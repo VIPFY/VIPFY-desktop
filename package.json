@@ -17,11 +17,30 @@
     "start": "electron-forge start",
     "faststart": "electron-forge start"
   },
-  "keywords": [
-    "saas",
-    "react"
+  "keywords": [],
+  "author": "Vipfy GmbH",
+  "contributors": [
+    {
+      "name": "Pascal Clanget",
+      "email": "pc@vipfy.store"
+    },
+    {
+      "name": "Jannis Froese",
+      "email": "jf@vipfy.store"
+    },
+    {
+      "name": "Nils Vossebein",
+      "email": "nv@vipfy.store"
+    },
+    {
+      "name": "Osama Haroon",
+      "email": "osama.haroon@vipfy.store"
+    },
+    {
+      "name": "Stanimir Iglev",
+      "email": "stanimir.iglev@vipfy.store"
+    }
   ],
-  "author": "VIPFY GmbH",
   "license": "proprietary",
   "config": {
     "forge": "./forge.config.js"
@@ -91,7 +110,7 @@
     "prop-types": "^15.7.2",
     "psl": "^1.8.0",
     "random-number-csprng": "^1.0.2",
-    "react": "^16.13.0",
+    "react": "^16.13.1",
     "react-apexcharts": "^1.2.1",
     "react-apollo": "^3.1.3",
     "react-calendar": "^2.19.2",
