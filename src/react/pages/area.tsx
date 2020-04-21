@@ -55,6 +55,7 @@ import LoginIntegrator from "../components/admin/LoginIntegrator";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
+import { AppContext } from "../common/functions";
 
 interface AreaProps {
   history: any[];
@@ -271,10 +272,10 @@ class Area extends React.Component<AreaProps, AreaState> {
     }
   };
 
-  rendercategories = (categories, categorie) => (
+  rendercategories = (categories, categorie, addRenderElement) => (
     <li>
       <div className={"adminHeadline-categoryTitle"}>{categorie}</div>
-      {categories[categorie].map(({ label, location, ...categoryProps }) => {
+      {categories[categorie].map(({ label, location, highlight, ...categoryProps }) => {
         let buttonClass = "naked-button adminHeadline-categoryElement";
 
         const id = label.toString() + location.toString();
@@ -288,6 +289,7 @@ class Area extends React.Component<AreaProps, AreaState> {
 
         return (
           <button
+            ref={element => addRenderElement({ key: highlight, element })}
             {...categoryProps}
             id={id}
             className={buttonClass}
@@ -528,6 +530,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "company", component: CompanyDetails, admin: true }
     ];
     return (
+      <AppContext.Consumer>
+        {context => (
       <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
         {({ data, loading, error }) => {
           if (loading) {
@@ -561,6 +565,29 @@ class Area extends React.Component<AreaProps, AreaState> {
                               {...props}
                               {...res}
                               moveTo={this.moveTo}
+                                  adminOpen={
+                                    routes.find(r => {
+                                      const splits = r.path.split(":");
+                                      const slashsplits = splits[0].split("/");
+                                      const locationssplits = this.props.history.location.pathname.split(
+                                        "/"
+                                      );
+
+                                      let location = "";
+                                      locationssplits.forEach((l, k) => {
+                                        if (k > 0 && k <= slashsplits.length + 1) {
+                                          location += "/";
+                                          location += l;
+                                        }
+                                      });
+
+                                      if (`/area/${splits[0]}` == location) {
+                                        return true;
+                                      } else {
+                                        return false;
+                                      }
+                                    })?.admin
+                                  }
                             />
                             <FloatingNotifications
                               sidebarOpen={sidebarOpen}
@@ -609,7 +636,9 @@ class Area extends React.Component<AreaProps, AreaState> {
                     <Route
                       exact
                       path="/area/support"
-                      render={props => <SupportPage {...this.state} {...this.props} {...props} />}
+                          render={props => (
+                            <SupportPage {...this.state} {...this.props} {...props} />
+                          )}
                     />
 
                     <Route
@@ -655,11 +684,21 @@ class Area extends React.Component<AreaProps, AreaState> {
                                     <div
                                       className={`sidebar-adminpanel${
                                         sidebarOpen ? "" : " small"
-                                      }`}>
+                                          }`}
+                                          ref={element =>
+                                            context.addRenderElement({
+                                              key: "adminSideBar",
+                                              element
+                                            })
+                                          }>
                                       <div className="adminHeadline">ADMIN PANEL</div>
                                       <ul>
                                         {Object.keys(this.categories).map(categorie =>
-                                          this.rendercategories(this.categories, categorie)
+                                              this.rendercategories(
+                                                this.categories,
+                                                categorie,
+                                                context.addRenderElement
+                                              )
                                         )}
                                       </ul>
                                     </div>
@@ -747,9 +786,6 @@ class Area extends React.Component<AreaProps, AreaState> {
                     handleDragLeave={this.handleDragLeave}
                     handleClose={this.handleClose}
                   />
-                  {this.state.consentPopup && (
-                    <Consent close={() => this.setState({ consentPopup: false })} />
-                  )}
                   {this.props.needspasswordchange &&
                     !localStorage.getItem("impersonator-token") && (
                       <ForcedPasswordChange email={this.props.emails[0].email} />
@@ -757,12 +793,17 @@ class Area extends React.Component<AreaProps, AreaState> {
                   {this.props.isadmin &&
                     this.props.tutorialprogress &&
                     this.props.highlightReferences && <TutorialBase {...this.props} />}
+                      {this.state.consentPopup && (
+                        <Consent close={() => this.setState({ consentPopup: false })} />
+                      )}
                 </UserContext.Provider>
               </SideBarContext.Provider>
             </div>
           );
         }}
       </Query>
+        )}
+      </AppContext.Consumer>
     );
   }
 }

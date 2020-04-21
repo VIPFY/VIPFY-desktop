@@ -85,10 +85,10 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
       <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchDepartmentsData}>
         {({ loading, error, data }) => {
           if (loading) {
-            return "Loading...";
+            return <div>"Loading..."</div>;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <div>Error! {error.message}</div>;
           }
           const employees = data.fetchDepartmentsData[0].employees;
           return (
