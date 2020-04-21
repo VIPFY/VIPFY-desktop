@@ -82,6 +82,7 @@ class FloatingNotifications extends React.Component<Props, State> {
           const updateElement = this.floatingNotifications.find(fn => fn.id == updateNot.id);
           if (updateElement) {
             const updatedElement = {
+              ...updateElement,
               data: { ...updateElement.data, ...updateNot },
               element: (
                 <FloatingNotification

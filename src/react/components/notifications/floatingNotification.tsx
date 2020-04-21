@@ -65,13 +65,17 @@ class FloatingNotification extends React.Component<Props, State> {
         <div className="notificationText">
           <div className="title">{this.props.title}</div>
           {this.props.text && <span>{this.props.text}</span>}
-          {this.props.progress != undefined && (
+          {this.props.progress != undefined && this.props.progress != null && (
             <div>
               <div className="progressText">
-                {this.props.progress != 0 ? `${this.props.progress}%` : "Loading..."}
+                {this.props.progress.count != 0 ? `${this.props.progress.count}%` : "Loading..."}
               </div>
               <div className="progressHolder">
-                <div className="progressBar" style={{ width: this.props.progress * 2 }}></div>
+                <div
+                  className="progressBar"
+                  style={Object.assign(this.props.progress.styles || {}, {
+                    width: this.props.progress.count * 2
+                  })}></div>
               </div>
             </div>
           )}
