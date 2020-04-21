@@ -27,7 +27,7 @@ const { session, BrowserWindow } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
-import { WorkAround } from "./interfaces";
+import { WorkAround, Expired_Plan } from "./interfaces";
 
 const END_IMPERSONATION = gql`
   mutation onEndImpersonation($token: String!) {
@@ -77,6 +77,7 @@ interface AppState {
   unitid: string | null;
   usedLicenceIDs: string[];
   showPlanModal: boolean;
+  expiredPlan?: Expired_Plan;
 }
 
 const INITIAL_POPUP = {
@@ -100,7 +101,8 @@ const INITIAL_STATE = {
   twofactor: null,
   unitid: null,
   usedLicenceIDs: [],
-  showPlanModal: false
+  showPlanModal: false,
+  expiredPlan: null
 };
 
 const tutorial = gql`
@@ -340,7 +342,10 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
-  showPlanModal = () => this.setState({ showPlanModal: true });
+  showPlanModal = expiredPlan => {
+    console.log("FIRE: data", data);
+    this.setState({ showPlanModal: true });
+  };
 
   moveTo = (path: string) => {
     if (!(this.props.location.pathname === `/area/${path}`)) {

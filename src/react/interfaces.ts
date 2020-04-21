@@ -254,3 +254,13 @@ export interface TestResult {
   timedOut?: boolean;
   screenshot?: string;
 }
+
+export interface Expired_Plan {
+  id: string;
+  endtime: Date;
+  features: {
+    teams?: number;
+    users?: number;
+    integrations?: number;
+  };
+}

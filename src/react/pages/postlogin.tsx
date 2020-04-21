@@ -158,9 +158,10 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                   const vipfyPlan = data.fetchVipfyPlan.plan.name;
                   // TODO: [VIP-314] Reimplement credits when new structure is clear
                   // const { fetchCredits } = data;
-                  const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
 
-                  if (context) {
+                  if (context && data.fetchVipfyPlan.endtime) {
+                    const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
+
                     if (moment().isAfter(expiry)) {
                       context.addHeaderNotification(
                         `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,

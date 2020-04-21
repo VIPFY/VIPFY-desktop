@@ -179,7 +179,7 @@ let logout = () => {
   return;
 };
 
-let showPlanModal = () => {
+let showPlanModal = _data => {
   return;
 };
 
@@ -217,8 +217,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
           `[RightsError]: Message: ${message}, Seems like a user doesn't have the neccessary rights`
         );
       } else if (data && data.code == 402) {
-        console.log("FIRE: errorLink -> data", data);
-        return showPlanModal();
+        return showPlanModal(data.expiredPlan);
       } else if (data && data.code == 426) {
         handleUpgradeError();
       }
