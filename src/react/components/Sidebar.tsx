@@ -112,6 +112,7 @@ export type SidebarProps = {
   loading: boolean;
   refetch: Function;
   company: any;
+  adminOpen: boolean;
 };
 
 interface State {
@@ -197,8 +198,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
               query: FETCH_EMPLOYEES,
               ...options
             }),
-            client.query({ query: FETCH_USER_SECURITY_OVERVIEW }),
-            client.query({ query: fetchDepartmentsData })
+            client.query({ query: FETCH_USER_SECURITY_OVERVIEW, ...options }),
+            client.query({ query: fetchDepartmentsData, ...options })
           ]);
           break;
 
@@ -251,7 +252,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "company":
-          await client.query({ query: FETCH_COMPANY });
+          await client.query({ query: FETCH_COMPANY, ...options });
           break;
       }
     }
@@ -550,6 +551,17 @@ class Sidebar extends React.Component<SidebarProps, State> {
       });
     }
 
+    let cssClass = "sidebar-link";
+    let buttonClass = "naked-button itemHolder";
+
+    if (!sidebarOpen) {
+      cssClass += "-small";
+    }
+    if (this.props.adminOpen) {
+      cssClass += " sidebar-active";
+      buttonClass += " selected";
+    }
+
     return (
       <AppContext.Consumer>
         {context => (
@@ -679,9 +691,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
               )}
 
               {this.props.isadmin && (
-                <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
+                <li
+                  className={cssClass}
+                  ref={el => context.addRenderElement({ key: "adminPanel", element: el })}>
                   <button
-                    className="naked-button itemHolder"
+                    className={buttonClass}
                     onClick={() => {
                       this.props.moveTo("company");
                     }}>

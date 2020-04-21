@@ -45,6 +45,7 @@ class TutorialsIntro extends React.Component<Props, State> {
     }
   };
 
+  adminPanelClick = () => this.props.goToTutorial(1);
   sidebarClick = () => this.props.goToTutorial(2);
   addEmpClick = () => this.props.goToTutorial(3);
   errorEmp = () => this.props.goToTutorial(3);
@@ -69,6 +70,29 @@ class TutorialsIntro extends React.Component<Props, State> {
 
   close = a => {
     const { references, closeTutorial } = this.props;
+    if (
+      references.find(e => e.key == "adminPanel") &&
+      references.find(e => e.key == "adminPanel")!.element
+    ) {
+      references.find(e => e.key == "adminPanel")!.element.style.zIndex = "";
+      references.find(e => e.key === "adminPanel")!.element.style.boxShadow = "";
+      references.find(e => e.key === "adminPanel")!.element.style.position = "";
+      references
+        .find(e => e.key === "adminPanel")!
+        .element.removeEventListener("click", this.adminPanelClick);
+    }
+    if (
+      references.find(e => e.key == "sidebar") &&
+      references.find(e => e.key == "sidebar")!.element
+    ) {
+      references.find(e => e.key == "sidebar")!.element.style.zIndex = "";
+    }
+    if (
+      references.find(e => e.key == "adminSideBar") &&
+      references.find(e => e.key == "adminSideBar")!.element
+    ) {
+      references.find(e => e.key == "adminSideBar")!.element.style.zIndex = "";
+    }
     if (
       references.find(e => e.key == "emanager") &&
       references.find(e => e.key == "emanager")!.element
@@ -182,12 +206,70 @@ class TutorialsIntro extends React.Component<Props, State> {
   contentrender(context) {
     const { tutorialId, goToTutorial } = this.props;
     const references = context.references;
+    console.log("references", references);
     switch (tutorialId) {
+      case -1:
+        if (
+          references.find(e => e.key == "sidebar") &&
+          references.find(e => e.key == "sidebar")!.element &&
+          references.find(e => e.key == "adminPanel") &&
+          references.find(e => e.key == "adminPanel")!.element
+        ) {
+          references.find(e => e.key == "sidebar")!.element.style.zIndex = "auto";
+          references.find(e => e.key == "adminPanel")!.element.style.zIndex = "3000000";
+          references.find(e => e.key === "adminPanel")!.element.style.boxShadow =
+            "0px 0px 15px 0px white";
+          references.find(e => e.key === "adminPanel")!.element.style.position = "relative";
+          references
+            .find(e => e.key === "adminPanel")!
+            .element.addEventListener("click", this.adminPanelClick);
+        }
+        return (
+          <div id="overlay">
+            <div
+              className="tutorialPopupLeft"
+              style={{
+                top: references.find(e => e.key === "adminPanel")
+                  ? this.calculateTop(references.find(e => e.key === "adminPanel")!.element, -40)
+                  : "",
+                left: references.find(e => e.key === "adminPanel")
+                  ? this.calculateLeft(references.find(e => e.key === "adminPanel")!.element, 0, 2)
+                  : ""
+              }}>
+              <div className="tutorialCloseInfo" onClick={() => this.close({ tutorial: "intro" })}>
+                <i className="fas fa-times" /> Close this tour.
+                <br />
+                For any further question simply contact our support
+              </div>
+              <div className="tutorialContent">
+                <p>First of all: All your company tools are located here.</p>
+                <p style={{ fontWeight: "bold" }}>Click on the AdminPanel</p>
+              </div>
+            </div>
+          </div>
+        );
       case 1:
         if (
+          references.find(e => e.key == "sidebar") &&
+          references.find(e => e.key == "sidebar")!.element &&
+          references.find(e => e.key == "adminPanel") &&
+          references.find(e => e.key == "adminPanel")!.element
+        ) {
+          references.find(e => e.key == "sidebar")!.element.style.zIndex = "";
+          references.find(e => e.key == "adminPanel")!.element.style.zIndex = "";
+          references.find(e => e.key === "adminPanel")!.element.style.boxShadow = "";
+          references.find(e => e.key === "adminPanel")!.element.style.position = "";
+          references
+            .find(e => e.key === "adminPanel")!
+            .element.removeEventListener("click", this.adminPanelClick);
+        }
+        if (
+          references.find(e => e.key == "adminSideBar") &&
+          references.find(e => e.key == "adminSideBar")!.element &&
           references.find(e => e.key == "emanager") &&
           references.find(e => e.key == "emanager")!.element
         ) {
+          references.find(e => e.key == "adminSideBar")!.element.style.zIndex = "auto";
           references.find(e => e.key == "emanager")!.element.style.zIndex = "3000000";
           references.find(e => e.key === "emanager")!.element.style.boxShadow =
             "0px 0px 15px 0px white";
@@ -529,9 +611,12 @@ class TutorialsIntro extends React.Component<Props, State> {
 
       case 5:
         if (
+          references.find(e => e.key == "adminSideBar") &&
+          references.find(e => e.key == "adminSideBar")!.element &&
           references.find(e => e.key == "lmanager") &&
           references.find(e => e.key == "lmanager")!.element
         ) {
+          references.find(e => e.key == "adminSideBar")!.element.style.zIndex = "auto";
           references.find(e => e.key == "lmanager")!.element.style.zIndex = "3000000";
           references.find(e => e.key === "lmanager")!.element.style.boxShadow =
             "0px 0px 15px 0px white";
@@ -1309,7 +1394,7 @@ class TutorialsIntro extends React.Component<Props, State> {
               />
               <UniversalButton
                 type="low"
-                onClick={() => goToTutorial(1)}
+                onClick={() => goToTutorial(-1)}
                 label="First steps with VIPFY"
               />
             </div>
