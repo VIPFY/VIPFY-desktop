@@ -23,7 +23,15 @@ export default (props: Props) => {
   });
 
   const handleClickOutside = event => {
-    if (contextMenuRef.current && !contextMenuRef!.current!.contains(event.target)) {
+    if (
+      contextMenuRef.current &&
+      !contextMenuRef!.current!.contains(event.target) &&
+      !(
+        event.target.id == "profileOpener" ||
+        (event.target.parentElement && event.target.parentElement.id == "profileOpener")
+      )
+    ) {
+      console.log("OUTSIDE", event);
       props.closeme();
     }
   };
@@ -36,12 +44,12 @@ export default (props: Props) => {
         left: sidebarOpen ? "210px" : "50px",
         zIndex: 1000
       }}>
-      {isadmin && (
+      {/*isadmin && (
         <button className="naked-button" onClick={() => props.goTo("company")}>
           <span>Company Settings</span>
           <i className="fal fa-external-link-alt" />
         </button>
-      )}
+      )*/}
       <button className="naked-button" onClick={() => props.goTo(`profile/${id}`)}>
         <span>Profile</span>
         <i className="fal fa-external-link-alt" />

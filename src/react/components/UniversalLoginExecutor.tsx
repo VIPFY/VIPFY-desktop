@@ -5,6 +5,11 @@ import { LoginResult } from "../interfaces";
 import UniversalTextInput from "./universalForms/universalTextInput";
 import UniversalButton from "./universalButtons/universalButton";
 import { remote } from "electron";
+import { parse } from "url";
+import psl from "psl";
+import gql from "graphql-tag";
+import { withApollo } from "react-apollo";
+import PopupBase from "../popups/universalPopups/popupBase";
 const { session } = remote;
 const os = require("os");
 
@@ -40,6 +45,7 @@ interface Props {
 interface State {
   running: boolean;
   solve401: object | null;
+  multipleChoose: any;
 }
 
 class UniversalLoginExecutor extends React.Component<Props, State> {
@@ -53,7 +59,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
   state = {
     running: false,
-    solve401: null
+    solve401: null,
+    multipleChoose: null
   };
 
   loginState = {
@@ -150,19 +157,49 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     return update;
   }
 
-  onNewWindow(e): void {
+  onNewWindow = async e => {
     //if webview tries to open new window, open it in default browser
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
-    const protocol = require("url").parse(e.url).protocol;
+    const app = await this.props.client.query({
+      query: gql`
+        query fetchLicenceAssignmentsByDomain($domain: String, $hostname: String) {
+          fetchLicenceAssignmentsByDomain(domain: $domain, hostname: $hostname) {
+            id
+            alias
+          }
+        }
+      `,
+      fetchPolicy: "network-only",
+      variables: {
+        domain: psl.parse(parse(e.url).hostname)?.domain,
+        hostname: parse(e.url).hostname
+      }
+    });
+
+    const protocol = parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
       //TODO HISTORY
       //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
 
-      if (this.props.addWebview && e.url.indexOf("wchat") == -1) {
+      //TODO: [VIP-1210] Choose account when there are multiple ones
+      if (
+        app.data.fetchLicenceAssignmentsByDomain &&
+        app.data.fetchLicenceAssignmentsByDomain.length > 0
+      ) {
+        if (this.props.addWebview && app.data.fetchLicenceAssignmentsByDomain.length > 1) {
+          this.setState({
+            multipleChoose: app.data.fetchLicenceAssignmentsByDomain.map(a => {
+              return { ...a, url: e.url };
+            })
+          });
+        } else {
+          this.props.addWebview(app.data.fetchLicenceAssignmentsByDomain[0].id, true, e.url, false);
+        }
+      } else if (this.props.addWebview && e.url.indexOf("wchat") == -1) {
         this.props.addWebview(this.props.licenceID, true, e.url, true);
       }
     }
-  }
+  };
 
   render() {
     if (this.state.solve401 != null) {
@@ -215,29 +252,58 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"
       };
       return (
-        <WebView
-          key={this.props.webviewId || `${this.props.loginUrl}-${this.props.speed}`}
-          preload={getPreloadScriptPath("universalLogin.js")}
-          src={this.state.currentUrl || this.props.loginUrl}
-          partition={this.props.partition}
-          className={this.props.className}
-          useragent={
-            useragentStrings[os.platform()] ||
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
-          }
-          onIpcMessage={e => this.onIpcMessage(e)}
-          style={this.props.style || {}}
-          onNewWindow={e => this.onNewWindow(e)}
-          onDidNavigate={e => {
-            if (e.httpResponseCode == 401) {
-              this.props.showLoadingScreen(false);
-              this.setState({ solve401: {} });
+        <>
+          <WebView
+            key={this.props.webviewId || `${this.props.loginUrl}-${this.props.speed}`}
+            preload={getPreloadScriptPath("universalLogin.js")}
+            src={this.state.currentUrl || this.props.loginUrl}
+            partition={this.props.partition}
+            className={this.props.className}
+            useragent={
+              useragentStrings[os.platform()] ||
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
             }
-          }}
-          onPageTitleUpdated={title =>
-            this.props.setViewTitle && this.props.setViewTitle(title.title)
-          }
-        />
+            onIpcMessage={e => this.onIpcMessage(e)}
+            style={this.props.style || {}}
+            onNewWindow={e => this.onNewWindow(e)}
+            onDidNavigate={e => {
+              if (e.httpResponseCode == 401) {
+                this.props.showLoadingScreen(false);
+                this.setState({ solve401: {} });
+              }
+            }}
+            onPageTitleUpdated={title =>
+              this.props.setViewTitle && this.props.setViewTitle(title.title)
+            }
+          />
+          {this.state.multipleChoose != null && (
+            <PopupBase small={true}>
+              <h2>You can open this link in multiple Accounts.</h2>
+
+              {this.state.multipleChoose.map(c => (
+                <div style={{ marginTop: "24px" }}>
+                  <UniversalButton
+                    type="high"
+                    onClick={() => {
+                      console.log("CLICK", c);
+                      this.props.addWebview(c.id, true, c.url, false);
+                      this.setState({ multipleChoose: null });
+                    }}
+                    label={c.alias}
+                  />
+                </div>
+              ))}
+
+              <UniversalButton
+                type="high"
+                onClick={() => {
+                  this.setState({ multipleChoose: null });
+                }}
+                label="Cancel Navigation"
+              />
+            </PopupBase>
+          )}
+        </>
       );
     }
   }
@@ -898,4 +964,4 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 }
 
-export default UniversalLoginExecutor;
+export default withApollo(UniversalLoginExecutor);

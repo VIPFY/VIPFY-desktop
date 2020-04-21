@@ -15,7 +15,7 @@ interface Props {
   viewID: number;
   isSearching: boolean;
   selected: boolean;
-  activeEmployee: any;
+  multipleOrbits?: boolean;
 }
 
 interface State {
@@ -28,7 +28,7 @@ class SidebarLink extends React.Component<Props, State> {
   state = {
     hover: false,
     dragging: false,
-    entered: false,
+    entered: false
   };
 
   showInstances = (licence: Licence) => {
@@ -43,7 +43,7 @@ class SidebarLink extends React.Component<Props, State> {
                 top: this.el ? this.el.getBoundingClientRect().top : "0px",
                 left: this.el ? this.el.getBoundingClientRect().left : "0px",
                 width: this.el ? this.el.getBoundingClientRect().width + 15 : "0px",
-                height: this.el ? this.el.getBoundingClientRect().height : "0px",
+                height: this.el ? this.el.getBoundingClientRect().height : "0px"
               }}
             />
             <div
@@ -54,9 +54,9 @@ class SidebarLink extends React.Component<Props, State> {
                   ? this.el.getBoundingClientRect().left +
                     this.el.getBoundingClientRect().width +
                     15
-                  : "0px",
+                  : "0px"
               }}>
-              {instances.map((e) => {
+              {instances.map(e => {
                 return (
                   <div
                     key={this.props.openInstances[licence.id][e].instanceId}
@@ -65,7 +65,7 @@ class SidebarLink extends React.Component<Props, State> {
                       backgroundColor:
                         this.props.viewID === this.props.openInstances[licence.id][e].instanceId
                           ? "#20BAA9"
-                          : "",
+                          : ""
                     }}
                     onClick={() =>
                       this.props.viewID === this.props.openInstances[licence.id][e].instanceId
@@ -82,6 +82,19 @@ class SidebarLink extends React.Component<Props, State> {
       }
     }
   };
+
+  stringToColour(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let colour = "#";
+    for (let i = 0; i < 3; i++) {
+      let value = (hash >> (i * 8)) & 0xff;
+      colour += ("00" + value.toString(16)).substr(-2);
+    }
+    return colour;
+  }
 
   render() {
     const { licence, openInstances, sidebarOpen, active, setTeam } = this.props;
@@ -108,7 +121,7 @@ class SidebarLink extends React.Component<Props, State> {
         className={cssClass}
         onMouseEnter={() => this.setState({ hover: true })}
         onMouseLeave={() => this.setState({ hover: false })}
-        ref={(el) => (this.el = el)}>
+        ref={el => (this.el = el)}>
         <button
           disabled={this.props.disabled}
           id={licence.id + "button"}
@@ -147,26 +160,22 @@ class SidebarLink extends React.Component<Props, State> {
                   style={{
                     backgroundImage:
                       licence.boughtplanid.planid.appid.icon &&
-                      getBgImageApp(licence.boughtplanid.planid.appid.icon, 32),
+                      getBgImageApp(licence.boughtplanid.planid.appid.icon, 32)
                   }}>
                   {this.props.openInstances[this.props.licence.id] && (
                     <i className="fa fa-circle active-app" />
                   )}
-                  {
-                    /* this.props.activeEmployee */ true ? (
-                      <span className="active-user">
-                        <PrintEmployeeSquare
-                          hideTitle={true}
-                          size={16}
-                          className="managerSquare tiny-profile-pic"
-                          employee={this.props.activeEmployee}
-                          styles={{ marginTop: "0px" }}
-                        />
-                      </span>
-                    ) : (
-                      ""
-                    )
-                  }
+                  {this.props.multipleOrbits ? (
+                    <span className="active-user">
+                      <div
+                        className="tiny-profile-pic"
+                        style={{ backgroundColor: this.stringToColour(label) }}>
+                        {label.substring(0, 1)}
+                      </div>
+                    </span>
+                  ) : (
+                    ""
+                  )}
                 </span>
               </div>
             </div>

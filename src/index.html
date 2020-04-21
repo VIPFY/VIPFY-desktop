@@ -1,32 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link href="https://fonts.googleapis.com/css?family=Dosis:200,300,400,500,600,700,800|Fjalla+One|Quicksand:300,400,500,700&amp;subset=latin-ext"
-      rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,100i,300,300i,400,400i,500,500i,700,700i&amp;subset=latin-ext"
-      rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i&amp;subset=latin-ext"
-      rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Dosis:200,300,400,500,600,700,800|Fjalla+One|Quicksand:300,400,500,700&amp;subset=latin-ext"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,100i,300,300i,400,400i,500,500i,700,700i&amp;subset=latin-ext"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i&amp;subset=latin-ext"
+      rel="stylesheet"
+    />
     <script id="stripe-js" src="https://js.stripe.com/v3/" async></script>
 
     <script type="text/javascript">
-      window.smartlook||(function(d) {
-      var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
-      var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
-      c.charset='utf-8';c.src='https://rec.smartlook.com/recorder.js';h.appendChild(c);
-      })(document);
-      smartlook('init', '85b64c6b1c67cabc2fbed64b22d3087fc99e0566');
+      window.smartlook ||
+        (function(d) {
+          var o = (smartlook = function() {
+              o.api.push(arguments);
+            }),
+            h = d.getElementsByTagName("head")[0];
+          var c = d.createElement("script");
+          o.api = new Array();
+          c.async = true;
+          c.type = "text/javascript";
+          c.charset = "utf-8";
+          c.src = "https://rec.smartlook.com/recorder.js";
+          h.appendChild(c);
+        })(document);
+      smartlook("init", "85b64c6b1c67cabc2fbed64b22d3087fc99e0566");
     </script>
   </head>
 
   <body style="overflow: hidden; background-color: rgba(0,0,0,0); margin: 0">
     <header id="titlebar">
       <section id="titlebar-logo">
-        <div id="titlebar-logo-img"></div>
+        <!--<div id="titlebar-logo-img"></div>-->
         <div id="versionnumber"></div>
       </section>
       <section id="header-arrows"></section>
