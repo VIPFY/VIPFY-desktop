@@ -11,8 +11,7 @@ import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import gql from "graphql-tag";
 import moment from "moment";
 import { concatName } from "../common/functions";
-import UserName from "../components/UserName";
-import { WorkAround } from "../interfaces";
+import { WorkAround, Expired_Plan } from "../interfaces";
 import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
 
 interface PostLoginProps {
@@ -29,6 +28,7 @@ interface PostLoginProps {
   context: any;
   addUsedLicenceID: Function;
   showPlanModal: boolean;
+  expiredPlan: Expired_Plan;
   closePlanModal: Function;
 }
 
@@ -185,7 +185,12 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                       style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
                     />
 
-                    {pureProps.showPlanModal && <VIPFYPlanPopup close={pureProps.closePlanModal} />}
+                    {pureProps.showPlanModal && (
+                      <VIPFYPlanPopup
+                        plan={this.props.expiredPlan}
+                        close={pureProps.closePlanModal}
+                      />
+                    )}
                   </React.Fragment>
                 );
               }}

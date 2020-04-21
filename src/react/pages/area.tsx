@@ -52,6 +52,7 @@ import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
+import { WorkAround } from "../interfaces";
 
 interface AreaProps {
   history: any[];
@@ -352,7 +353,9 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "company", component: CompanyDetails, admin: true }
     ];
     return (
-      <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
+      <Query<WorkAround, WorkAround>
+        query={fetchUserLicences}
+        variables={{ unitid: this.props.id }}>
         {({ data, loading, error }) => {
           if (loading) {
             return <LoadingDiv />;

@@ -343,8 +343,7 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   showPlanModal = expiredPlan => {
-    console.log("FIRE: data", data);
-    this.setState({ showPlanModal: true });
+    this.setState({ showPlanModal: true, expiredPlan });
   };
 
   moveTo = (path: string) => {
@@ -418,6 +417,7 @@ class App extends React.Component<AppProps, AppState> {
                       showPopup={data => this.renderPopup(data)}
                       moveTo={this.moveTo}
                       showPlanModal={this.state.showPlanModal}
+                      expiredPlan={this.state.expiredPlan}
                       {...data.me}
                       employees={data.me.company.employees}
                       profilepicture={data.me.profilepicture}
