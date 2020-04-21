@@ -38,11 +38,11 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
   };
 
   componentDidMount() {
-    document.addEventListener("keydown", this.handleEnter, true);
+    document.addEventListener("keydown", this.handleEnter);
   }
 
   componentWillUnmount() {
-    document.removeEventListener("keydown", this.handleEnter, true);
+    document.removeEventListener("keydown", this.handleEnter);
   }
 
   private handleEnter = (e): void => {

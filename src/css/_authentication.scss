@@ -1,0 +1,217 @@
+.two-factor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #367AA5FF;
+
+  .holder-right {
+    height: 369px !important;
+  }
+
+  p {
+    text-align: unset !important;
+    margin-top: unset !important;
+    height: unset !important;
+  }
+
+  ol {
+    list-style: unset;
+    margin-left: 17px;
+    width: 300px;
+
+    li {
+      list-style: decimal;
+      margin-bottom: 25px;
+    }
+  }
+
+  .universalCoverButton {
+    align-self: flex-end;
+    position: absolute;
+    bottom: 80px;
+    right: 120px;
+
+    div {
+      width: 80px;
+    }
+  }
+}
+
+#two-factor-form {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  input {
+    text-align: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    background: #F5F5F5FF;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
+    outline: none;
+    border: 0;
+    margin: 0 8px;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      /* display: none; <- Crashes Chrome on hover */
+      -webkit-appearance: none;
+      margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+    }
+  }
+}
+
+.password-recovery {
+  @extend .dataGeneralForm;
+
+  .holder-right {
+    width: 400px;
+    margin-left: 0;
+  }
+
+  #recovery-form {
+    margin: 46px 0 30px;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    grid-row-gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(16px, 32px));
+
+    i {
+      &:last-of-type {
+        display: none;
+      }
+    }
+
+    input {
+      grid-column: span 2;
+      width: 64px;
+      height: 32px;
+      text-align: center;
+      border-radius: 4px;
+      background-color: #F5F5F5FF;
+      box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
+      outline: none;
+      border: 0;
+    }
+
+    &:invalid + div > button:last-of-type > .universalButton {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.recovery-screen {
+  @extend .dataGeneralForm;
+  position: relative;
+  padding-left: 68px;
+  padding-right: 68px;
+
+  .explanation {
+    position: relative;
+  }
+
+  h1 {
+    margin-left: 12px;
+    font-size: 24px;
+  }
+
+  .attention-box {
+    background: rgba(255, 111, 97, 0.35);
+    display: flex;
+    flex-flow: column;
+    margin: 32px 0 16px;
+    padding: 12px 16px 12px 12px;
+    border-radius: 8px;
+    line-height: 24px;
+
+    i {
+      color: rgba(238, 104, 91, 1);
+      font-size: 24px;
+      font-weight: 400;
+    }
+
+    .recovery-text {
+      margin: 12px 0 24px;
+    }
+  }
+
+  .recovery-code-holder {
+    margin-left: 12px;
+
+    .recovery-code {
+      margin-top: 8px;
+
+      span {
+        font-size: 24px;
+        font-weight: bold;
+        font-family: Verdana, Geneva, Tahoma;
+      }
+    }
+  }
+
+  .continue-button {
+    position: absolute;
+    right: 0;
+    bottom: 50px;
+  }
+}
+
+.new-password {
+  .welcome-holder {
+    .welcome-text {
+      width: 380px;
+
+      .hide {
+        opacity: 0;
+      }
+
+      #password-fields {
+        flex: 3;
+        display: flex;
+        flex-flow: column;
+        justify-content: space-around;
+        transition: all 300ms ease-in-out;
+
+        .ReactPasswordStrength-input {
+          max-width: 380px;
+          padding: 14px 0;
+        }
+
+        label {
+          position: relative;
+
+          .naked-button {
+            position: absolute;
+            right: 0;
+            bottom: 38px;
+          }
+
+          &:last-of-type {
+            .naked-button {
+              bottom: 20px;
+            }
+          }
+        }
+
+        .password-hint {
+          font-size: 12px;
+          margin-top: 8px;
+        }
+      }
+
+      .password-match {
+        color: $vipfy-cancel-color;
+      }
+
+      .universal-buttons {
+        flex: 2;
+        align-items: end;
+        justify-content: flex-end;
+      }
+    }
+  }
+}

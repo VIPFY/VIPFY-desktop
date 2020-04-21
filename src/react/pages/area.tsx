@@ -51,12 +51,15 @@ import TeamOverview from "./manager/teamOverview";
 import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
+import RecoveryKey from "../components/signin/RecoveryKey";
+import { WorkAround } from "../interfaces";
 //import Order from "./marketplace/order";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 
 interface AreaProps {
+  id: string;
   history: any[];
   moveTo: Function;
   consent?: boolean;
@@ -66,6 +69,9 @@ interface AreaProps {
   tutorialprogress?: any;
   highlightReferences?: any;
   addUsedLicenceID: Function;
+  client: any;
+  recoverypublickey?: string;
+  needstowfa: boolean;
 }
 
 interface AreaState {
@@ -527,8 +533,21 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
       { path: "company", component: CompanyDetails, admin: true }
     ];
+
+    const isImpersonating = !!localStorage.getItem("impersonator-token");
+
+    if (!this.props.recoverypublickey && !isImpersonating) {
+      return (
+        <div className="centralize backgroundLogo">
+          <RecoveryKey />
+        </div>
+      );
+    }
+
     return (
-      <Query query={fetchUserLicences} variables={{ unitid: this.props.id }}>
+      <Query<WorkAround, WorkAround>
+        query={fetchUserLicences}
+        variables={{ unitid: this.props.id }}>
         {({ data, loading, error }) => {
           if (loading) {
             return <LoadingDiv />;
@@ -537,6 +556,7 @@ class Area extends React.Component<AreaProps, AreaState> {
           if (error) {
             return <ErrorPage />;
           }
+
           const licences = data.fetchUserLicenceAssignments;
           return (
             <div className="area" style={this.props.style}>

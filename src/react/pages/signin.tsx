@@ -2,9 +2,11 @@ import * as React from "react";
 import Login from "../components/signin/login";
 import ChangeAccount from "../components/dataForms/ChangeAccount";
 import AddMachineUser from "../components/signin/addMachineUser";
-
 import Store from "electron-store";
 import RegisterCompany from "../components/signin/companyRegister";
+import PasswordRecovery from "../components/signin/PasswordRecovery";
+import NewPassword from "../components/signin/NewPassword";
+import RecoveryKey from "../components/signin/RecoveryKey";
 
 interface Props {
   login: Function;
@@ -13,89 +15,111 @@ interface Props {
   resetError: Function;
 }
 
-interface State {
-  progress: string;
-  email: string;
-}
+export default (props: Props) => {
+  const [progress, setProgress] = React.useState("login");
+  const [responseData, setResponseData] = React.useState(null);
+  const [email, setEmail] = React.useState("");
 
-class SignIn extends React.Component<Props, State> {
-  state = {
-    progress: "login",
-    email: ""
+  const changeProgress = (s) => {
+    props.resetError();
+    const store = new Store();
+
+    if (s != "registerCompany" && (!store.has("accounts") || store.get("accounts").length == 0)) {
+      setProgress("createUser");
+    } else {
+      setProgress(s);
+    }
   };
 
-  changeProgress(s) {
-    this.props.resetError();
-    const store = new Store();
-    if (s != "registercompany" && (!store.has("accounts") || store.get("accounts").length == 0)) {
-      this.setState({ progress: "createuser" });
-    } else {
-      this.setState({ progress: s });
-    }
-  }
-
-  componentDidMount() {
+  React.useEffect(() => {
     const store = new Store();
     if (!store.has("accounts") || store.get("accounts").length == 0) {
-      this.setState({ progress: "createuser" });
+      setProgress("createUser");
     } else {
-      this.setState({ email: store.get("accounts")[store.get("accounts").length - 1].email });
+      setEmail(store.get("accounts")[store.get("accounts").length - 1].email);
     }
-  }
+  }, []);
 
-  render() {
-    switch (this.state.progress) {
-      case "login":
-        return (
-          <Login
-            type="login"
-            backFunction={() => null}
-            continueFunction={(pw, email) => this.props.login(email, pw)}
-            email={this.state.email}
-            changeUser={() => this.changeProgress("selectuser")}
-            error={this.props.error}
-          />
-        );
-      case "selectuser":
-        return (
-          <ChangeAccount
-            backFunction={() => this.changeProgress("login")}
-            addMachineUser={() => this.changeProgress("createuser")}
-            selectAccount={email => {
-              this.setState({ email });
-              this.changeProgress("login");
-            }}
-            registerCompany={() => this.changeProgress("registercompany")}
-          />
-        );
-      case "createuser":
-        return (
-          <AddMachineUser
-            continueFunction={(email: string) => this.setState({ email: email, progress: "login" })}
-            backFunction={() => this.changeProgress("selectuser")}
-            registerCompany={() => this.changeProgress("registercompany")}
-          />
-        );
-      case "registercompany":
-        return (
-          <RegisterCompany
-            backFunction={() => this.changeProgress("login")}
-            continueFunction={() => this.props.moveTo("/area/dashboard")}
-          />
-        );
-      default:
-        return (
-          <Login
-            type="login"
-            backFunction={() => null}
-            continueFunction={v => this.props.login(this.state.email, v)}
-            email={this.state.email}
-            changeUser={() => this.changeProgress("selectuser")}
-            error={this.props.error}
-          />
-        );
-    }
-  }
-}
+  switch (progress) {
+    case "login":
+      return (
+        <Login
+          type="login"
+          backFunction={() => null}
+          continueFunction={(pw, email) => props.login(email, pw)}
+          goToRecovery={() => changeProgress("passwordRecovery")}
+          email={email}
+          changeUser={() => changeProgress("selectUser")}
+          error={props.error}
+        />
+      );
 
-export default SignIn;
+    case "selectUser":
+      return (
+        <ChangeAccount
+          backFunction={() => changeProgress("login")}
+          addMachineUser={() => changeProgress("createUser")}
+          selectAccount={(email) => {
+            setEmail(email);
+            changeProgress("login");
+          }}
+          registerCompany={() => changeProgress("registerCompany")}
+        />
+      );
+
+    case "createUser":
+      return (
+        <AddMachineUser
+          continueFunction={(email: string) => {
+            setProgress("login");
+            setEmail(email);
+          }}
+          backFunction={() => changeProgress("selectuser")}
+          registerCompany={() => changeProgress("registerCompany")}
+        />
+      );
+
+    case "registerCompany":
+      return (
+        <RegisterCompany
+          backFunction={() => changeProgress("login")}
+          continueFunction={() => props.moveTo("/area/dashboard")}
+        />
+      );
+
+    case "passwordRecovery":
+      return (
+        <PasswordRecovery
+          setResponseData={(data) => setResponseData(data)}
+          email={email}
+          continueFunction={() => changeProgress("setNewPassword")}
+          backFunction={() => changeProgress("login")}
+        />
+      );
+
+    case "setNewPassword":
+      return (
+        <NewPassword
+          responseData={responseData}
+          setResponseData={(data) => setResponseData(data)}
+          continueFunction={() => changeProgress("login")}
+        />
+      );
+
+    case "newRecoveryCode":
+      return <RecoveryKey />;
+
+    default:
+      return (
+        <Login
+          type="login"
+          backFunction={() => null}
+          continueFunction={(v) => props.login(email, v)}
+          email={email}
+          changeUser={() => changeProgress("selectUser")}
+          goToRecovery={() => changeProgress("passwordRecovery")}
+          error={props.error}
+        />
+      );
+  }
+};

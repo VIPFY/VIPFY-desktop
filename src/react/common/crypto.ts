@@ -19,8 +19,24 @@ export async function generatePersonalKeypair(
   return {
     privatekey: encPrivateKey.toString("hex"),
     publickey: publicKey.toString("hex"),
-    encryptedby: null
+    encryptedby: null,
   };
+}
+
+/**
+ * Returns a newly encrypted Private Key
+ *
+ * @param encryptionKey The Encryption key that the key should be encrypted with
+ * @param privateKey The key to be encrypted
+ */
+export async function regenerateEncryptedPrivateKey(
+  encryptionKey: Buffer,
+  privateKey: Buffer
+): Promise<{ privatekey: string; encryptedby: string }> {
+  const encPrivateKey = await encryptPrivateKey(privateKey, encryptionKey);
+  privateKey.fill(0); // overwrite it for security
+
+  return { privatekey: encPrivateKey.toString("hex"), encryptedby: null };
 }
 
 export async function generateAdminKeypair(
@@ -33,7 +49,7 @@ export async function generateAdminKeypair(
   return {
     privatekey: encPrivateKey.toString("hex"),
     publickey: publicKey.toString("hex"),
-    encryptedby: encryptingPublicKey.toString("hex")
+    encryptedby: encryptingPublicKey.toString("hex"),
   };
 }
 
@@ -62,7 +78,7 @@ export async function hashPassword(
       }
     `,
     variables: { email },
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
   });
   console.log(pwParams);
   if (salt) {
@@ -120,7 +136,7 @@ export async function hashPasswordWithParams(
   );
   pw.fill(0);
 
-  //from the hashed passoword create a number of subkeys for various uses
+  // From the hashed passoword create a number of subkeys for various uses
   // the context is used to avoid accidentially reusing subkey ids
   const context = "VIPFYlog";
   if (context.length !== sodium.CRYPTO_KDF_CONTEXTBYTES) {
@@ -128,8 +144,6 @@ export async function hashPasswordWithParams(
     throw new Error("internal login error");
   }
 
-  // const loginkey = Buffer.alloc(64);
-  // const encryptionkey1 = Buffer.alloc(64);
   const loginkey = await sodium.crypto_kdf_derive_from_key(64, 1, context, masterkey);
   const encryptionkey1 = await sodium.crypto_kdf_derive_from_key(32, 2, context, masterkey);
 
@@ -137,6 +151,13 @@ export async function hashPasswordWithParams(
 }
 
 const paddingBlockLength = 128; // so far median licence length is 94, 99th percentile is 242
+
+/**
+ * Does exactly what it says, encrypts a Licence
+ *
+ * @param {string} licence
+ * @param {BufferEncoding} publicKey
+ */
 export async function encryptLicence(
   licence: string | Buffer | any,
   publicKey: Buffer
@@ -181,6 +202,22 @@ export async function decryptLicence(
   return result;
 }
 
+export async function decryptMessage(
+  encrypted: Buffer,
+  publicKey: Buffer,
+  privateKey: Buffer
+): Promise<Buffer> {
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
+
+  return await sodium.crypto_box_seal_open(
+    encrypted,
+    new X25519PublicKey(publicKey),
+    new X25519SecretKey(privateKey)
+  );
+}
+
 export async function generateNewKeypair(): Promise<{ publicKey: Buffer; privateKey: Buffer }> {
   if (!sodium) {
     sodium = await SodiumPlus.auto();
@@ -192,12 +229,20 @@ export async function generateNewKeypair(): Promise<{ publicKey: Buffer; private
   return { publicKey, privateKey };
 }
 
+export async function getRandomBytes(bytes: number) {
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
+
+  return await sodium.randombytes_buf(bytes);
+}
+
 export async function encryptPrivateKey(privateKey: Buffer, passKey: Buffer): Promise<Buffer> {
   if (!sodium) {
     sodium = await SodiumPlus.auto();
   }
 
-  const nonce = await sodium.randombytes_buf(24);
+  const nonce = await getRandomBytes(24);
   const result = await sodium.crypto_secretbox(privateKey, nonce, new CryptographyKey(passKey));
   return Buffer.concat([nonce, result]);
 }

@@ -1,9 +1,7 @@
 import * as React from "react";
 import UniversalTextInput from "../../../universalForms/universalTextInput";
 import UploadImage from "../uploadImage";
-import ReactPasswordStrength from "react-password-strength";
 import { PW_MIN_LENGTH } from "../../../../common/constants";
-import { randomPassword } from "../../../../common/passwordgen";
 import PasswordInput from "../../../../components/PasswordInput";
 
 interface Props {

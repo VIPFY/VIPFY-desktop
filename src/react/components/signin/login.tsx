@@ -12,6 +12,7 @@ interface Props {
   backFunction: Function;
   error?: string;
   changeUser: Function;
+  goToRecovery: Function;
 }
 
 interface State {
@@ -111,9 +112,15 @@ class Login extends React.Component<Props, State> {
               />
             </div>
 
-            <div className="login-buttons" style={{ justifyContent: "flex-end" }}>
+            <div className="login-buttons">
               <UniversalButton
-                label={this.state.submitting ? <i className="fal fa-spinner fa-spin" /> : "login"}
+                label="Forgot password"
+                type="low"
+                disabled={this.state.submitting}
+                onClick={this.props.goToRecovery}
+              />
+              <UniversalButton
+                label="login"
                 type="high"
                 disabled={this.state.field2 == "" || this.state.submitting}
                 onClick={async () => {
