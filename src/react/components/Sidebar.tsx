@@ -704,7 +704,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                       distance={12}
                       arrowSize={5}
                       useHover={!sidebarOpen}
-                      content="Open Admin Sidebar"
+                      content={`${this.props.adminOpen ? "Close" : "Open"} Admin Sidebar`}
                       direction="right">
                       <div className="naked-button sidebarButton">
                         <i className="fal fa-users-crown" />
