@@ -4,7 +4,7 @@ import configJSON from "../config.json";
 const devCheck = !!process.env.DEVELOPMENT || configJSON.development;
 
 let config = {
-  backendHost: process.env.SERVER_NAME || configJSON.server, //backendHost: "api.vipfy.store",
+  backendHost: process.env.SERVER_NAME || configJSON.server,
   backendPort: process.env.SERVER_PORT || configJSON.serverPort,
   backendSSL: process.env.hasOwnProperty("SERVER_SSL")
     ? process.env.SERVER_SSL !== "0" &&
