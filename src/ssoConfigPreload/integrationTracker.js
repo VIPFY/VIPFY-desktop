@@ -7,6 +7,8 @@ let recaptchaConfirmOnce = false;
 let checkRecaptcha = false;
 let bot = false;
 let webview;
+//let ticking = false;
+var scrollTimer = -1;
 
 var listeners = [];
 
@@ -15,6 +17,7 @@ const asktypes = ["input", "textbox"];
 (function() {
   Element.prototype._addEventListener = Element.prototype.addEventListener;
   Element.prototype.addEventListener = function(a, b, c) {
+    console.log("Element.prototype.addEventListener");
     if (c == undefined) c = false;
     this._addEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -24,11 +27,13 @@ const asktypes = ["input", "textbox"];
   };
 
   Element.prototype.getEventListeners = function(a) {
+    console.log("Element.prototype.getEventListener");
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) return this.eventListenerList;
     return this.eventListenerList[a];
   };
   Element.prototype.clearEventListeners = function(a) {
+    console.log("Element.prototype.clearEventListener");
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) {
       for (var x in this.getEventListeners()) this.clearEventListeners(x);
@@ -44,6 +49,7 @@ const asktypes = ["input", "textbox"];
 
   Element.prototype._removeEventListener = Element.prototype.removeEventListener;
   Element.prototype.removeEventListener = function(a, b, c) {
+    console.log("Element.prototype.removeEventListener");
     if (c == undefined) c = false;
     this._removeEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -121,7 +127,6 @@ async function onExecute(args1, booler) {
   console.log("ON EXECUTE", args1, booler);
   await execute(args1, booler);
   //reset everything
-  //await ipcRenderer.sendToHost("readyForNextStep");
   listeners = [];
   iframeList = [];
   stopped = false;
@@ -137,7 +142,7 @@ ipcRenderer.on("delockItem", async (e, args1) => {
     return;
   }
   element.disabled = false;
-  element.clearEventListeners(); //entferne das perventDefault
+  element.clearEventListeners(); //remove the perventDefault
   const listeners1 =
     listeners[
       listeners.findIndex(elemente => {
@@ -159,6 +164,7 @@ ipcRenderer.on("delockItem", async (e, args1) => {
 
 ipcRenderer.on("givePosition", async (e, args1, args2, args3) => {
   const ding = document.querySelector(args1);
+  console.log("givePositionBack", ding, args1);
   if (ding == null) {
     return;
   }
@@ -197,23 +203,9 @@ function giveIframeEvents(iframe, list, events) {
         iframe.contentWindow.document.addEventListener("paste", e => findTarget(e, iframe), true);
       }
     });
-    /* iframe.contentWindow.document.addEventListener("DOMSubtreeModified", e => {
-      console.log(e.target, e.target.contentWindow.document);
-    });*/
   }
   var observer = new MutationObserver(callback2);
   observer.observe(iframe, config);
-  /*iframe.contentWindow.document.addEventListener("DOMSubtreeModified", (e) => {
-   if (e.target.tagName=="IFRAME"){
-        console.log("IFRAME ALL", e);
-        e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
-        e.target.contentWindow.document.addEventListener("input", findTarget,true);
-        e.target.contentWindow.document.addEventListener("click", findTarget,true);
-        e.target.contentWindow.document.addEventListener("paste", findTarget,true);
-        findAllIframes(e.target.contentWindow.document);
-    }
-  })
-    */
 }
 
 function removeIframeEvents(iframe, list, events) {
@@ -255,31 +247,14 @@ function removeIframeEvents(iframe, list, events) {
         );
       }
     });
-    /* iframe.contentWindow.document.addEventListener("DOMSubtreeModified", e => {
-      console.log(e.target, e.target.contentWindow.document);
-    });*/
   }
   var observer = new MutationObserver(callback2);
   observer.observe(iframe, config);
-  /*iframe.contentWindow.document.addEventListener("DOMSubtreeModified", (e) => {
-   if (e.target.tagName=="IFRAME"){
-        console.log("IFRAME ALL", e);
-        e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
-        e.target.contentWindow.document.addEventListener("input", findTarget,true);
-        e.target.contentWindow.document.addEventListener("click", findTarget,true);
-        e.target.contentWindow.document.addEventListener("paste", findTarget,true);
-        findAllIframes(e.target.contentWindow.document);
-    }
-  })
-    */
 }
 
-function findAllIframes(doc, remove = false) {
-  //console.log("findAllIframes called");
+function findAllIframes(doc, remove) {
   let iframes = doc.querySelectorAll("iframe");
-  //console.log("IFRAMES", iframes, doc);
   iframes.forEach(iframe => {
-    //console.log("IFRAME", iframe, isHidden(iframe));
     if (!isHidden(iframe) && iframe.contentDocument) {
       findAllIframes(iframe.contentWindow.document);
     }
@@ -292,7 +267,6 @@ function findAllIframes(doc, remove = false) {
     }
   }
   iframes = machKaputt;
-  //console.log("New iframes", iframes)
   if (remove) {
     iframes.forEach(iframe => removeIframeEvents(iframe, true, true));
   } else {
@@ -300,25 +274,15 @@ function findAllIframes(doc, remove = false) {
   }
 }
 
-//console.log(webview[0]);
-
 var config = { attributes: true, childList: true, subtree: true };
 
 var callback1 = function(mutationsList, observer) {
-  //console.log(iframeList);
-  //var newChilds = [];
   for (var mutation of mutationsList) {
     if (mutation.type == "childList") {
       mutation.addedNodes.forEach(node => {
-        //console.log("Node added", node.tagName);
-        //if(node.tagName == "IFRAME") {
-        //giveIframeEvents(node);
         findAllIframes(document);
-        //}
-        //newChilds.push(node);
       });
       mutation.removedNodes.forEach(node => {
-        //console.log("Node removed", node.tagName);
         if (node.tagName == "IFRAME") {
           var index = iframeList.indexOf(node);
           if (index > -1) {
@@ -326,14 +290,8 @@ var callback1 = function(mutationsList, observer) {
           }
         }
       });
-      /*             console.log('A child node has been added or removed.');
-       */
     }
-    /* else if (mutation.type == 'attributes') {
-            console.log('The ' + mutation.attributeName + ' attribute was modified.');
-        } */
   }
-  //return newChilds;
 };
 
 var callback2 = function(mutationsList, observer) {
@@ -360,50 +318,14 @@ var callback2 = function(mutationsList, observer) {
   }
 };
 
-//webview.addEventListener("loadend", () => {console.log("Yeaaa")});
-/* window.addEventListener("DOMSubtreeModified", (e) => {
-    if (e.target.tagName=="IFRAME"){
-        console.log("IFRAME", e);
-        e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
-        e.target.contentWindow.document.addEventListener("input", findTarget,true);
-        e.target.contentWindow.document.addEventListener("click", findTarget,true);
-        e.target.contentWindow.document.addEventListener("paste", findTarget,true);
-        findAllIframes(e.target.contentWindow.document);
-
-        e.target.contentWindow.addEventListener("load", () => {
-            e.target.contentWindow.document.addEventListener("keyup", findTarget,true);
-            e.target.contentWindow.document.addEventListener("input", findTarget,true);
-            e.target.contentWindow.document.addEventListener("click", findTarget,true);
-            e.target.contentWindow.document.addEventListener("paste", findTarget,true);
-            findAllIframes(e.target.contentWindow.document);
-        });
-    }
-    else if (e.target.id) {
-        console.log("EVENT", e)
-    }
-}) */
-
-/// **
 window.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.sendToHost("loaded");
-  /*document.addEventListener("click", findTarget, true);
-  document.addEventListener("keyup", findTarget, true);
-  document.addEventListener("input", findTarget, true);
-  document.addEventListener("paste", findTarget, true);*/
-  //findAllIframes(document);
 });
 
 window.addEventListener("load", () => {
   ipcRenderer.sendToHost("loaded");
-  //   //webview = document.getElementById("LoginFinder");
-  //   document.addEventListener("click", findTarget, true);
-  //   document.addEventListener("keyup", findTarget, true);
-  //   document.addEventListener("input", findTarget, true);
-  //   document.addEventListener("paste", findTarget, true);
-  //   findAllIframes(document);
 });
 
-//document.addEventListener("click", findTarget);
 var observer = new MutationObserver(callback1);
 observer.observe(document, config);
 
@@ -432,7 +354,9 @@ function findTarget(event, iframe) {
   if (bot) {
     return;
   }
+
   console.log("findTarget", event, event.target, iframe);
+  //return;
   /* if(event.type == "click") {
         console.log("Event", event)
     } */
@@ -456,6 +380,7 @@ function findTarget(event, iframe) {
     listeners.push([event.target, listenersers]); //
     button.clearEventListeners();
     button.addEventListener("click", e => {
+      console.log("listener added");
       e.preventDefault();
       return false;
     });
@@ -592,52 +517,13 @@ function findTarget(event, iframe) {
     button.value,
     createObjFromDom(element1),
     "ID-Elements " + Array.from(document.querySelectorAll(iselector)).length,
-    //document.querySelectorAll("INPUT"),
     event.type,
     selector,
     { x: rect.x, y: rect.y },
     iselector
-  ); /* ipcRenderer.sendToHost(
-    "sendMessage",
-    event.target.tagName,
-    event.target.type,
-    event.type,
-    asktypes.includes(event.target.tagName.toLowerCase()),
-    event.type == "click"
-  ); */ //clientLeft clientTop
-
-  /* ipcRenderer.sendToHost(
-    "sendClick",
-    [event.target.clientWidth, event.target.clientHeight, event.offsetX, event.offsetY],
-    [
-      [event.screenX - event.offsetX, event.screenY - event.offsetY],
-      event.target.clientWidth,
-      event.target.clientHeight,
-      event.target.clientLeft,
-      event.target.clientTop
-    ]
-  );  */ if (
-    asktypes.includes(event.target.tagName.toLowerCase()) &&
-    event.type == "click" &&
-    wereans[0]
-  ) {
-    ipcRenderer.sendToHost(
-      "gotClicked",
-      wereans[1].clientWidth,
-      wereans[1].clientHeight,
-      rect.x,
-      rect.y
-    );
-  } else {
-    ipcRenderer.sendToHost(
-      "gotClicked",
-      event.target.clientWidth,
-      event.target.clientHeight,
-      rect.x,
-      rect.y
-    );
-  }
+  );
   event.target.disabled = true;
+  console.log("buttons disabled");
 }
 
 function elemIsButton(t) {
@@ -771,13 +657,26 @@ window.addEventListener("load", async () => {
   }
 });
 
+ipcRenderer.once("startTracking", () => {
+  window.addEventListener("scroll", function(e) {
+    ipcRenderer.sendToHost("startScroll", window.scrollY);
+  });
+});
+
 ipcRenderer.on("startTracking", () => {
   console.log("START TRACKING");
+  //remove Listeners first in case they already exist (no doubles);
+  document.removeEventListener("click", findTarget, true);
+  document.removeEventListener("keyup", findTarget, true);
+  document.removeEventListener("input", findTarget, true);
+  document.removeEventListener("paste", findTarget, true);
   document.addEventListener("click", findTarget, true);
   document.addEventListener("keyup", findTarget, true);
   document.addEventListener("input", findTarget, true);
   document.addEventListener("paste", findTarget, true);
-  findAllIframes(document);
+  ipcRenderer.sendToHost("trackingStarted");
+
+  findAllIframes(document, false);
 });
 
 ipcRenderer.on("removeTracking", () => {
@@ -785,7 +684,52 @@ ipcRenderer.on("removeTracking", () => {
   document.removeEventListener("keyup", findTarget, true);
   document.removeEventListener("input", findTarget, true);
   document.removeEventListener("paste", findTarget, true);
+  ipcRenderer.sendToHost("trackingEnded");
+
   findAllIframes(document, true);
+});
+
+ipcRenderer.on("hide element", async (e, args1, args2, args3) => {
+  let ding = document.querySelector(args1);
+  for (let i = 0; i < args3; i++) {
+    if (ding.displaySave) {
+      ipcRenderer.sendToHost("true PPP");
+    } else {
+      ipcRenderer.sendToHost("false PPP");
+    }
+    ipcRenderer.sendToHost(
+      "Hide Element triggered",
+      ding.style.display,
+      ding.displaySave,
+      args2,
+      1
+    );
+    if (args2) {
+      //Hide Element
+      if (!(ding.style.display == "none")) {
+        ding.displaySave = ding.style.display;
+        ding.style.display = "none";
+      }
+    } else {
+      //Show Element
+      if (
+        ding.style.display == "none" &&
+        ding.displaySave !== undefined &&
+        ding.displaySave != null
+      ) {
+        ding.style.display = ding.displaySave;
+        ding.displaySave = null;
+      }
+    }
+    ding = ding.parentElement;
+  }
+  //Show the parentElement if is was hiden from me and is not anymore in the list
+  if (ding.style.display == "none" && ding.displaySave !== undefined && ding.displaySave != null) {
+    ding.style.display = ding.displaySave;
+    ding.displaySave = null;
+  }
+
+  ipcRenderer.sendToHost("Hide Element triggered", ding.style.display, ding.displaySave, args2, 2);
 });
 
 ipcRenderer.on("getSelectOptions", async (e, args1) => {
@@ -805,58 +749,7 @@ function clickAlert() {
 }
 
 async function start() {
-  //First say Hello
-  console.log("SAY HELLO 2");
-  //await sleep(300);
   ipcRenderer.sendToHost("hello");
-  /*console.log("TEST");
-  totaltime = 0;
-  //stopped = true;
-  while (!stopped && !checkRecaptcha && totaltime < 5000) {
-    if (!cookiefound) {
-      let cookiebutton = findCookieButton();
-      console.log("FIND COOKIE", cookiebutton);
-      if (cookiebutton) {
-        await sleep(300);
-        await clickButton(cookiebutton);
-        ipcRenderer.sendToHost("reset");
-        await new Promise(resolve =>
-          ipcRenderer.once("done", async (e, args) => {
-            if (stopped) return;
-            resolve();
-          })
-          );
-          cookiefound = true;
-        }
-
-        let recaptcha = findRecaptcha();
-      console.log("recaptcha", recaptcha);
-      
-      if (recaptcha) {
-        await recaptchaClick(recaptcha);
-
-        checkRecaptcha = true;
-        
-        if (!recaptchaConfirmOnce) {
-          setInterval(verifyRecaptcha, 200);
-        }
-      } else {
-        // ipcRenderer.sendToHost("recaptchaSuccess");
-      }
-    }
-    console.log("TEST2");
-    await sleep(100);
-    totaltime += 100;
-  }
-  console.log("TEST NACH");*/
-
-  /*await execute([
-    { operation: "waitandfill", args: { selector: "#customerUrl", fillkey: "domain" } },
-    { operation: "click", args: { selector: "#support-login" } },
-    { operation: "waitandfill", args: { selector: "#user_email", fillkey: "username" } },
-    { operation: "waitandfill", args: { selector: "#user_password", fillkey: "password" } },
-    { operation: "click", args: { selector: "input[type='submit'][name='commit']" } }
-  ]);*/
 }
 
 ipcRenderer.on("execute", async (e, args1) => {
@@ -1010,12 +903,6 @@ async function recaptchaClick(recap) {
 start();
 
 async function fillFormField(target, fillkey) {
-  //console.log("FILL", target, content);
-  //if (stopped) throw new Error("abort");
-  //target.focus();
-  // await sleep(250);
-  // target.focus();
-  //  await sleep(250);
   const p = new Promise(resolve =>
     ipcRenderer.once("formFieldFilled", async (e, key) => {
       //if (stopped) return;
