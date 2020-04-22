@@ -38,7 +38,6 @@ class FloatingNotifications extends React.Component<Props, State> {
         if (!subscriptionData.data || subscriptionData.error) {
           return prev;
         }
-
         if (
           subscriptionData.data.newNotification &&
           subscriptionData.data.newNotification.options &&
@@ -65,18 +64,12 @@ class FloatingNotifications extends React.Component<Props, State> {
                   );
                   this.forceUpdate();
                 }}
-                progress={newNot.options && newNot.options.progress}
-                button={newNot.options && newNot.options.button}
-                autoclose={newNot.options && newNot.options.autoclose}
-                failed={newNot.options && newNot.options.failed}
+                {...newNot.options}
               />
             )
           });
 
-          return {
-            ...prev,
-            fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
-          };
+          return prev;
         } else {
           const updateNot = subscriptionData.data.newNotification;
 
@@ -101,24 +94,8 @@ class FloatingNotifications extends React.Component<Props, State> {
                     );
                     this.forceUpdate();
                   }}
-                  progress={
-                    (updateNot.options && updateNot.options.progress) ||
-                    (updateElement.data.options && updateElement.data.options.progress)
-                  }
-                  button={
-                    (updateNot.options && updateNot.options.button) ||
-                    (updateElement.data.options && updateElement.data.options.button)
-                  }
-                  autoclose={
-                    (updateNot.options && updateNot.options.autoclose) ||
-                    (updateElement.data.options && updateElement.data.options.autoclose)
-                  }
-                  failed={
-                    (updateNot.options && updateNot.options.failed) ||
-                    ((!updateNot.options || updateNot.options.failed == null) &&
-                      updateElement.data.options &&
-                      updateElement.data.options.failed)
-                  }
+                  {...updateElement.data.options}
+                  {...updateNot.options}
                 />
               )
             };
