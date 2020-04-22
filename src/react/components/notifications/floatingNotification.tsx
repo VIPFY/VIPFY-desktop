@@ -28,7 +28,10 @@ class FloatingNotification extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className={`floatingNotification ${this.props.disabled ? "disabled" : "useable"}`}>
+      <div
+        className={`floatingNotification ${this.props.disabled ? "disabled" : "useable"} ${
+          this.props.failed ? "failed" : ""
+        }`}>
         {!this.props.disabled && (
           <div className="closeButton" onClick={() => this.props.close()}>
             <i className="fal fa-times"></i>
@@ -73,9 +76,9 @@ class FloatingNotification extends React.Component<Props, State> {
               <div className="progressHolder">
                 <div
                   className="progressBar"
-                  style={Object.assign(this.props.progress.styles || {}, {
+                  style={{
                     width: this.props.progress.count * 2
-                  })}></div>
+                  }}></div>
               </div>
             </div>
           )}
