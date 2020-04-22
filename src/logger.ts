@@ -71,7 +71,7 @@ addToLoggerContext("os_version", os.release());
 addToLoggerContext("host_uptime", os.uptime()); */
 
 if (is.renderer()) {
-  window.onerror = function(msg, url, lineNo, columnNo, error) {
+  window.onerror = function (msg, url, lineNo, columnNo, error) {
     logger.error(error);
   };
 }

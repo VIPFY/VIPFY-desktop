@@ -1,10 +1,5 @@
 import gql from "graphql-tag";
-import {
-  decryptPrivateKey,
-  decryptLicence,
-  encryptPrivateKey,
-  generateNewKeypair
-} from "./common/crypto";
+import { decryptPrivateKey, decryptLicence } from "./common/crypto";
 import { Buffer } from "buffer";
 export const typeDefs = gql`
   extend type Key {
@@ -17,7 +12,7 @@ export const resolvers = {
     privatekeyDecrypted: async (
       parent,
       _args,
-      { cache, client, forceFetch, getCacheKey, clientAwareness }
+      { _cache, client, forceFetch, _getCacheKey, _clientAwareness }
     ) => {
       let key = { ...parent };
 
@@ -44,8 +39,9 @@ export const resolvers = {
             }
           `,
           variables: { id: key.id },
-          fetchPolicy: forceFetch ? "network-only" : "cache-first"
+          fetchPolicy: forceFetch ? "network-only" : "cache-first",
         });
+
         if (!d.data || !d.data.fetchKey == null) {
           throw new Error(d.error);
         }
@@ -85,7 +81,7 @@ export const resolvers = {
                 }
               `,
               variables: { id: encryptedby.id },
-              fetchPolicy: forceFetch ? "network-only" : "cache-first"
+              fetchPolicy: forceFetch ? "network-only" : "cache-first",
             });
             if (!d.data || !d.data.fetchKey == null) {
               throw new Error(d.error);
@@ -104,7 +100,7 @@ export const resolvers = {
         }
         throw new Error("unable to decrypt key");
       }
-    }
+    },
   },
-  Query: {}
+  Query: {},
 };

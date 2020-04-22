@@ -181,19 +181,27 @@ class SidebarApps extends React.Component<Props, State> {
       </div>
     );
 
+    const appOrbitCount = [];
+    licences.forEach(l =>
+      appOrbitCount[l.boughtplanid.planid.appid.id]
+        ? appOrbitCount[l.boughtplanid.planid.appid.id].push(l.id)
+        : (appOrbitCount[l.boughtplanid.planid.appid.id] = [])
+    );
+
     return (
       <ul
-        style={{ marginTop: "40px" }}
+        className="sidebar-main sidebarAppsholder"
         onKeyDown={e => this.handleArrowKeys(e.key)}
         onBlur={() => this.setState({ selected: -1 })}>
-        <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
+        {/* <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
           <button
             type="button"
             onClick={this.toggleApps}
-            className="naked-button itemHolder" /*sidebar-link-apps*/
+            className="naked-button itemHolder" sidebar-link-apps
             style={{ justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
               <Tooltip
+                className="sidebar-tooltip"
                 useHover={!sidebarOpen}
                 distance={7}
                 arrowSize={5}
@@ -210,6 +218,7 @@ class SidebarApps extends React.Component<Props, State> {
 
             <div style={{ position: "absolute", left: "187px" }}>
               <Tooltip
+                className="sidebar-tooltip"
                 arrowSize={5}
                 distance={12}
                 useHover={sidebarOpen}
@@ -221,20 +230,24 @@ class SidebarApps extends React.Component<Props, State> {
               </Tooltip>
             </div>
           </button>
-        </li>
+        </li> */}
 
         <li>
           <ul className="sidebar-apps">
-            {showApps && (
+            {/* {showApps && (
               <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`} ref={this.wrapper}>
                 <button
                   type="button"
                   onClick={() => this.searchInput.focus()}
                   className={`naked-button itemHolder${
                     this.state.selected == -1 ? " selected" : ""
-                  }`} /*sidebar-link-apps*/
+                  }`} /*sidebar-link-apps
                 >
-                  <Tooltip useHover={!sidebarOpen} direction="right" content={input()}>
+                  <Tooltip
+                    useHover={!sidebarOpen}
+                    direction="right"
+                    content={input()}
+                    className="sidebar-tooltip">
                     <div className="naked-button sidebarButton">
                       <i className="carret fal fa-search" />
                     </div>
@@ -278,7 +291,7 @@ class SidebarApps extends React.Component<Props, State> {
                   )}
                 </button>
               </li>
-            )}
+            )} */}
 
             {showApps &&
               licences.length > 0 &&
@@ -328,7 +341,7 @@ class SidebarApps extends React.Component<Props, State> {
                       l.vacationstart <= moment.now() &&
                       ((l.vacationend && l.vacationend > moment.now()) || l.vacationend == null))
                 )*/
-                .filter((_, index) => (showMoreApps ? true : index < 5))
+                /* .filter((_, index) => (showMoreApps ? true : index < 5)) */
                 .map((licence, index) => {
                   if (!licence) {
                     return;
@@ -341,6 +354,7 @@ class SidebarApps extends React.Component<Props, State> {
                   }
                   return (
                     <SidebarLink
+                      disabled={false}
                       key={`ServiceLogo-${licence.id}`}
                       licence={licence}
                       openInstances={openInstances}
@@ -355,25 +369,29 @@ class SidebarApps extends React.Component<Props, State> {
                       viewID={this.props.viewID}
                       isSearching={this.state.searchString === ""}
                       selected={this.state.selected == index}
+                      multipleOrbits={
+                        appOrbitCount[licence.boughtplanid.planid.appid.id].length > 0
+                      }
                     />
                   );
                 })}
           </ul>
         </li>
 
-        {showApps && licences.length > 5 && (
+        {/* {showApps && licences.length > 5 && (
           <li className={`sidebar-link show-more${sidebarOpen ? "" : "-small"}`}>
             <button
               type="button"
               onClick={() =>
-                this.setState(prevState => ({
+                this.setState((prevState) => ({
                   ...prevState,
-                  showMoreApps: !prevState.showMoreApps
+                  showMoreApps: !prevState.showMoreApps,
                 }))
               }
-              className="naked-button itemHolder" /*sidebar-link-apps*/
+              className="naked-button itemHolder" /*sidebar-link-apps
               style={{ color: "#ffffff80" }}>
               <Tooltip
+                className="sidebar-tooltip"
                 arrowSize={5}
                 distance={12}
                 useHover={!sidebarOpen}
@@ -388,7 +406,7 @@ class SidebarApps extends React.Component<Props, State> {
               </span>
             </button>
           </li>
-        )}
+        )} */}
       </ul>
     );
   }

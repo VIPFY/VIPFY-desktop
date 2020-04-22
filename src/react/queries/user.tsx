@@ -104,6 +104,8 @@ export const QUERY_ME = gql`
       twofa
       deleted
       companyban
+      recoverypublickey
+      recoveryprivatekey
       vacations {
         id
         starttime

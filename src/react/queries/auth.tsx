@@ -31,6 +31,18 @@ export const me = gql`
       config
       tutorialprogress
       needstwofa
+      recoverypublickey
+      recoveryprivatekey
+    }
+  }
+`;
+
+export const FETCH_RECOVERY_CHALLENGE = gql`
+  query onFetchRecoveryChallenge($email: String!) {
+    fetchRecoveryChallenge(email: $email) {
+      encryptedKey
+      publicKey
+      token
     }
   }
 `;

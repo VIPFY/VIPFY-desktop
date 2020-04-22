@@ -1,11 +1,11 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Mutation, Query, graphql, withApollo } from "react-apollo";
+import { Query, graphql, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import UniversalLoginExecutor from "../../components/UniversalLoginExecutor";
-import { SSO } from "../../interfaces";
+import { LoginResult, SSO } from "../../interfaces";
 import { CREATE_OWN_APP } from "../../mutations/products";
 import LogoExtractor from "../../components/ssoconfig/LogoExtractor";
 import fail_pic from "../../../images/sso_creation_fail.png";
@@ -14,13 +14,10 @@ import loading_pic from "../../../images/sso_creation_loading.png";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import { fetchDepartmentsData } from "../../queries/departments";
 import UniversalDropDownInput from "../../components/universalForms/universalDropdownInput";
-import { concatName, sleep } from "../../common/functions";
+import { concatName } from "../../common/functions";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
-import {
-  createEncryptedLicenceKeyObject,
-  createLicenceKeyFragmentForUser
-} from "../../common/licences";
+import { createEncryptedLicenceKeyObject } from "../../common/licences";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../queries/billing";
 
 const FAILED_INTEGRATION = gql`
@@ -109,12 +106,6 @@ interface State {
   user: any;
   result: any;
   receivedData: boolean;
-}
-
-interface Result {
-  emailEntered: boolean;
-  loggedin: boolean;
-  passwordEntered: boolean;
 }
 
 class SelfSaving extends React.Component<Props, State> {
@@ -284,7 +275,7 @@ class SelfSaving extends React.Component<Props, State> {
         squareImages = [iconFile, iconFile];
       }
       if (
-        this.state.result.loggedin &&
+        this.state.result.loggedIn &&
         this.state.result.emailEntered &&
         this.state.result.passwordEntered
       ) {
@@ -583,7 +574,7 @@ class SelfSaving extends React.Component<Props, State> {
                     partition={`self-sso-${this.props.sso.name}`}
                     timeout={40000}
                     takeScreenshot={false}
-                    setResult={async (result: Result) => {
+                    setResult={async (result: LoginResult) => {
                       await this.setState(oldstate => {
                         if (!oldstate.receivedData) {
                           return { ...oldstate, result, receivedData: true };
